@@ -1,0 +1,14 @@
+pref("extensions.daumtoolbar.isFirstTime", true);
+pref("extensions.daumtoolbar.lastDate", "");
+pref("extensions.daumtoolbar.uuid", "empty");
+pref("extensions.daumtoolbar.isViewGoDaum", true);
+pref("extensions.daumtoolbar.isViewSearchBar", true);
+pref("extensions.daumtoolbar.isViewMail", true);
+pref("extensions.daumtoolbar.isViewCafe", true);
+pref("extensions.daumtoolbar.isViewBlog", true);
+pref("extensions.daumtoolbar.isViewDic", true);
+pref("extensions.daumtoolbar.isViewNews", true);
+pref("extensions.daumtoolbar.isViewCalendar", true);
+pref("extensions.daumtoolbar.isViewUCC", true);
+pref("extensions.daumtoolbar.isViewSearchRank", true);
+pref("extensions.daumtoolbar.isViewRanking", true);

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+<ShortName>goo Green Label</ShortName>
+<Description>goo Green Label</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16">data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAABILAAASCwAAEAAAABAAAABgzYQAK7xbADmEAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMiIiIiIiIiMjMzMzMzMzMiMzMBERAzMyIzMBAAAQMzIjMxAzMwEzMiMzAQAAEDMyIzMxEREDMzIjMxEzMzMzMiMzARERMzMyIzMxAAATMzIjMzEDMBMzMiMzMQAAEzMyIzMzEREBEzIjMzMzMBEDMiMzMzMzMzMyMiIiIiIiIiMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</Image>
+<Url type="text/html" method="GET" template="http://green.search.goo.ne.jp/search_en?MT={searchTerms}&amp;IE=UTF-8&amp;from=eco_firefox"></Url>
+</SearchPlugin>

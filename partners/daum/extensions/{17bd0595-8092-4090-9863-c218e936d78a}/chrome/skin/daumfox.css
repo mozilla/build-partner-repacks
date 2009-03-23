@@ -1,0 +1,69 @@
+#tidLogin {
+	padding-left: 0.5em;
+}
+
+#tidDaum {
+	padding-left: 0.5em;
+}
+
+#tidSearchType {
+	border: none;
+	cursor: pointer;
+	max-height: 20px;
+	min-width: 5em;
+	margin: 0;
+	margin-right: 0.2em;
+	padding: 0;
+	padding-right: 0.2em;
+}
+
+#tidSearchType:hover {
+	border: none;
+	outline: none;
+}
+
+#tidSearchType:active {
+	border: none;
+	outline: none;
+}
+
+#DaumSearchInput {
+	-moz-appearance: none !important;
+	max-height: 28px;
+	border: 2px solid;
+	-moz-border-left-colors: #6e99fe;
+	-moz-border-right-colors: #6e99fe;
+	-moz-border-top-colors: #6e99fe;
+	-moz-border-bottom-colors: #6e99fe;
+	padding: 0;
+	min-width: 100px;
+	margin: 2px;
+	background-color: white;
+}
+
+#DaumSearchSubmit {
+	cursor: pointer;
+	width: 44px;
+	max-height: 27px;
+	border: 1px solid #6e99fe;
+	margin: 2px;
+	margin-right: 5px;
+}
+
+#popSearchType{
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	background-color: white;
+	border-width: 1px;
+	-moz-border-top-colors: #6e99fe;
+	-moz-border-bottom-colors: #6e99fe;
+	-moz-border-left-colors: #6e99fe;
+	-moz-border-right-colors: #6e99fe;
+
+	margin-top: 2px;
+	margin-left: -4px;
+}
+
+.tb_popup {
+	border:0;
+}

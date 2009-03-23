@@ -1,0 +1,52 @@
+/**
+ * Copyright (C) 2007-2008 eBay Inc. All Rights Reserved.
+ */
+
+body,td {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 10px;
+}
+
+h1 {
+  font-weight: bold;
+  color: #666666;
+  font-size: 16px;
+}
+
+table {
+  border: 1px solid #333333;
+}
+
+tr.header {
+  font-weight: bold;
+}
+
+tr.level-FATAL {
+  background-color: #CC0000;
+  color: #FFFFFF;
+}
+
+tr.level-ERROR {
+  background-color: #FF9900;
+  color: #FFFFFF;
+}
+
+tr.level-WARN {
+  background-color: #FFFF33;
+  color: #000000;
+}
+
+tr.level-DEBUG {
+  background-color: #66CC00;
+  color: #000000;
+}
+
+tr.level-INFO {
+  background-color: #3366FF;
+  color: #FFFFFF;
+}
+
+tr.level-TRACE {
+  background-color: #B4D0FC;
+  color: #000000;
+}

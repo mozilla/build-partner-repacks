@@ -1,0 +1,24 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+<ShortName>T-Online</ShortName>
+<Description>Search with T-Online</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16">data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAOwwAADsMBx2%2BoZAAAAAd0SU1FB9YDAwsOAM9wQsMAAADrSURBVDhPY%2Fz%2F%2Fz8DSQCoAQj%2B%2FfzzY%2B9dPOjn8UcQlQwQ6u%2BTT48YKoHohcWMLzPPPBFtAbLfZ2z%2B2LT%2FqXQHkP1MtgtFw%2B%2Bbb0Aqsjb%2F%2F%2FMPKPFUrhPI%2FTL1FMisD9%2Bfq%2FUBueganvA2%2Fvv%2BGyKKrAHI%2FXnwARYNrz0XQlRjagCJCLei%2BuHjz5%2BHHuLR8G35FRQNQM41GECzAVkcEUpA1gQYQNOALE6Zhk8wgGYDsjiKDXAfYw0luCw0ppFVk6zh348%2FT%2FgagTH1ym4OmkFYnPTKatZjzjpIugKiJ6Kt7zM3IWvD7iRMg%2BEiAH82Z%2BUMwKeHAAAAAElFTkSuQmCC</Image>
+<Url type="text/html" method="GET" template="http://suche.t-online.de/fast-cgi/tsc">
+  <Param name="q" value="{searchTerms}"/>
+  <Param name="mandant" value="toi"/>
+  <Param name="device"  value="html"/>
+  <Param name="portallanguage"
+	                value="de"/>
+  <Param name="userlanguage"
+	                value="de"/>
+  <Param name="dia"     value="portal"/>
+  <Param name="context" value="internet-tab"/>
+  <Param name="tpc"     value="internet"/>
+  <Param name="ptl"     value="std"/>
+  <Param name="classification"
+	                value="internet-tab_internet_std"/>
+  <Param name="lang"    value="any"/>
+  <Param name="suchraum" value="1"/>
+</Url>
+<SearchForm>http://suche.t-online.de/toi/html/de/startseite_de.html</SearchForm>
+</SearchPlugin>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/xul.css" type="text/css"?>
+<?xml-stylesheet href="chrome://daumfox/skin/daumfox.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://daumfox/content/daumfox.dtd">
+
+<window xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	
+	<script src="chrome://daumfox/content/daumfox.js"/>
+	<script src="chrome://daumfox/content/menupopup.js"/>
+	
+	<html:iframe src="&daumtoolbar.calendar.url;" width="200" height="400"/>
+</window>

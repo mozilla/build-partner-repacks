@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>로그인</title>
+<script type="text/javascript">
+var mainwin = opener.document.getElementById("main-window");
+var gBrowser = opener.document.getElementById("content");
+
+function init()
+{
+	var id = document.getElementById("id");
+
+	id.focus();
+}
+
+function checkLogin(id, pw)
+{
+    var request = new XMLHttpRequest();
+	request.open("POST", 'https://logins.daum.net/Mail-bin/login.cgi?id='+id+'&pw='+pw+'&enpw='+pw, false);
+	request.send(null);
+	var x= request.getResponseHeader("X-DaumLogin-Error");
+
+	if (x == "200 OK")
+	{
+		return true;
+	}
+	else if (x == "203 Auth Error")
+	{
+		return "아이디 혹은 비밀번호가 일치하지 않습니다.";
+	}
+	else if(x == "404 Auth Error")
+	{
+		return "아이디가 존재하지 않습니다.";
+	}
+	else
+	{
+		return "알 수 없는 에러입니다.";
+	}
+
+}
+function goKeyLogin(e)
+{
+	if(e.keyCode == 13)
+	{
+		goLogin();
+	}
+}
+
+// 메일 갯수 반환
+// type=="totalmailcnt" : 전체 메일수
+// type=="newmailcnt" : 새 메일수
+function getMailNumber(type)
+{
+	// 사용자 메일서버 가져오기
+	var request = new XMLHttpRequest();
+	request.open("GET", 'http://toolbar.daum.net/auth/GetUserInfo.jsp', false);
+	request.send(null);
+	var resText = request.responseText;
+
+	var userMailServer = resText.substring(resText.indexOf("<mailhost>")+10, resText.indexOf("</mailhost>"));
+
+	var request = new XMLHttpRequest();
+	request.open("GET", 'http://' + userMailServer + '/Mail-bin/api/maillist.cgi', false);
+	request.send(null);
+	var xmlObj = request.responseXML;
+
+	if("new" == type)
+		return xmlObj.getElementsByTagName("head")[0].getAttribute("newmailcnt");
+	else
+		return xmlObj.getElementsByTagName("head")[0].getAttribute("totalmailcnt");
+
+}
+
+function getMemoNumber()
+{
+	// 사용자 메일서버 가져오기
+	var request = new XMLHttpRequest();
+	request.open("GET", 'http://msg.planet.daum.net/dove/message/GetNewMemoHdn.do', false);
+	request.send(null);
+	var resText = request.responseText;
+
+	var memoNumber = parseInt(resText.substring(resText.indexOf("<NewCnt>")+8, resText.indexOf("</NewCnt>")));
+
+	return memoNumber;
+}
+
+
+function goLogin()
+{
+// 1. Toobar Login URL로 id, pw를 보낸다. 
+// 2. 결과값에 따라 실패한 경우, warning을 출력한다.
+// 3. 성공하였으면 윈도우 닫고 화면을 갱신한다.
+
+	var id = document.getElementById("id").value;
+	var pw = document.getElementById("pw").value;
+	var result = checkLogin(id, pw);
+
+	if (result == true)
+	{
+//		opener.document.getElementById("tidLogin").image = "chrome://daumfox/skin/logout.gif"
+		// 새로운 메일이 있는지 체크
+		if( getMailNumber("new") > 0)
+		{
+			var tidMail = opener.document.getElementById("tidMail");
+			tidMail.image = "chrome://daumfox/skin/tb_mail_new.gif";
+		}
+
+		// 새로운 쪽지가 있는지 체크
+		if( getMemoNumber() > 0)
+		{
+			var tidCafe = opener.document.getElementById("tidCafe");
+			tidCafe.image = "chrome://daumfox/skin/tb_cafe_new.gif";
+		}
+
+		var browser = gBrowser.mCurrentBrowser;
+
+		if(browser.currentURI.spec.substring(0, 7) == "http://" && browser.currentURI.host.lastIndexOf(".daum.net") > 0)
+		{
+			browser.loadURI(browser.currentURI.spec);
+		}
+		self.close();
+		mainwin.focus();
+	}
+	else
+	{
+		var warning = document.getElementById("warning");
+		warning.innerHTML = "<img src=\"warning.gif\" />" + result;
+	}
+}
+
+function goRegister() {
+// 메인창을 회원 가입으로 보내고 윈도우는 닫기
+	var browser = gBrowser.mCurrentBrowser;
+
+	browser.loadURI("https://register.daum.net/joinindaum/intro.join?t__nil_loginbox=registration&nil_profile=firefox");
+
+	self.close();
+}
+
+function goFindId() {
+// 메인창을 ID찾기로 보내고 윈도우는 닫기
+	var browser = gBrowser.mCurrentBrowser;
+
+	browser.loadURI("https://user.daum.net/findid/html/index.html?t__nil_loginbox=password&nil_profile=firefox");
+
+	self.close();
+}
+</script>
+</head>
+<body onload="init();" style="background: url('toolbar_login.png') no-repeat;">
+
+<form id="test">
+<input type="text" name="id" id="id" size="12" style="position:absolute;top:50;left:70">
+<input type="password" name="pw" id="pw" size="12" style="position:absolute;top:74;left:70" onkeyup="goKeyLogin(event);">
+<!--
+<input type="checkbox" name="saveid" id="saveid" style="margin:0; position:absolute;top:102;left:70" disabled>
+<input type="checkbox" name="savepw" id="savepw" style="margin:0; position:absolute;top:102;left:146" disabled>
+//-->
+
+<div id="warning" style="color:#FF8214;position:absolute;top:122;left:40;font-size:12px;"></div>
+
+<a href="javascript:goLogin();">
+<img src="1x1.gif" width="55" height="44" style="position:absolute;top:52;left:184;border:0"></a>
+<a href="javascript:goRegister();"><img src="1x1.gif" width="48" height="12"  style="position:absolute;top:150;left:58;border:0"></a>
+<a href="javascript:goFindId();"><img src="1x1.gif" width="92" height="12"  style="position:absolute;top:150;left:110;border:0"></a>
+</form>
+</body>
+</html>
+

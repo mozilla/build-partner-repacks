@@ -1,0 +1,12 @@
+# content  fotofox  content/
+content  fotofox  jar:kodak.jar!/content/
+
+# locale  fotofox  en  locale/en/
+locale  fotofox  en  jar:kodak.jar!/locale/en/
+
+# skin  fotofox  classic/1.0  skin/kodak/
+skin  fotofox  classic/1.0  jar:kodak.jar!/skin/kodak/
+
+overlay  chrome://browser/content/browser.xul    chrome://fotofox/content/overlays/fotofoxOverlay.xul
+style    chrome://global/content/customizeToolbar.xul   chrome://fotofox/skin/pickup.css
+

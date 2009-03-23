@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?> 
+<?xml-stylesheet href="chrome://daumfox/skin/daumfox.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://daumfox/content/daumfox.dtd">
+
+<dialog xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        id="daumAboutDialog"
+        windowtype="Browser:About"
+        title="&daumtoolbar.label;"
+        buttons="accept">
+    
+	<vbox flex="1" id="clientBox">
+		<image src="chrome://daumfox/skin/tb_info.gif" width="340" height="165"/>
+	</vbox>
+</dialog>

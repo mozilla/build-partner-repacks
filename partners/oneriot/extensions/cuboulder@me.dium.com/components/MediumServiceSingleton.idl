@@ -1,0 +1,87 @@
+/*
+ * Copyright (C) 2006 to the Present, Medium, Inc. - ALL RIGHTS RESERVED
+ * 
+ * This source code contains proprietary information of Medium, Inc.
+ * and its receipt or possession does not convey any rights to reproduce or
+ * disclose its contents, or to manufacture, use or sell anything it may
+ * describe. Reproduction, disclosure or use without specific written
+ * authorization from Medium, Inc. is strictly prohibited.
+ * 
+ * Medium, Inc. may have patents, patent applications, trademarks, copyrights,
+ * or other intellectual property rights covering this source code. The receipt
+ * or possession of this source code does not give you any license to these
+ * patents, trademarks, copyrights, or other intellectual property.
+ *
+ * $Id$
+ */
+#include "nsISupports.idl"
+
+interface IMediumConnectionListener;
+interface IMediumServiceContext;
+interface IMediumSendMessageCallback;
+
+[
+    scriptable,
+    uuid(569895d5-4058-4c48-82e8-68c234fcb46f)
+]
+interface IMediumServiceSingleton :
+    nsISupports
+{
+    readonly attribute boolean isConnected;
+    readonly attribute boolean isAuthenticated;
+    void authenticate( in AString username, in AString password, in boolean rememberMe);
+    void logout();
+
+    void addConnectionListener( in IMediumConnectionListener listener);
+    void removeConnectionListener( in IMediumConnectionListener listener);
+
+    IMediumServiceContext createContext();
+
+    void sendMessage( in AString message, in IMediumSendMessageCallback callback);
+    
+    readonly attribute AString username;    
+};
+
+[
+    scriptable,
+    uuid(be1a6f78-399f-49dc-bd35-20c174c17341)
+]
+interface IMediumConnectionListener :
+    nsISupports
+{
+    void onConnected();
+    void onDisconnected();
+
+    void onAuthenticationSucceeded();
+    void onAuthenticationFailed( in AString message);
+
+    boolean onMessageReceived( in AString message);
+};
+
+[
+    scriptable,
+    uuid(403560ae-d197-470f-b34a-77ae85b3e593)
+]
+interface IMediumServiceContext :
+    nsISupports
+{
+    readonly attribute AString id;
+
+    void sensorOn();
+    void sensorOff();
+
+    void activate();
+    void deactivate();
+
+    void close();
+};
+
+[
+    scriptable,
+    uuid(42021d3e-8197-4944-a229-b45f6ebbe27f)
+]
+interface IMediumSendMessageCallback :
+    nsISupports
+{
+    void onMessageSent( in boolean succeeded, in AString reply);
+};

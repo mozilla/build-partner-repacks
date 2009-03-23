@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+	<ShortName>OneRiot Search</ShortName>
+	<Description>OneRiot is a social search engine. We help users find the most vibrant content on the web. Our search results are completely unique, and reflect what's resonating with the online community right now. When you search with OneRiot, you're really checking the pulse of information on the internet.</Description>
+	<Tags>search social crowd-powered popular oneriot toolbar sidebar surf with friends www.oneriot</Tags>
+	<Contact>info@oneriot.com</Contact>
+	<Url type="application/x-suggestions+json" method="GET" template="http://suggestqueries.google.com/complete/search?output=firefox&amp;client=firefox&amp;hl={moz:locale}&amp;q={searchTerms}"/>
+	<Url type="application/atom+xml" template="http://www.oneriot.com/search/r?q={searchTerms}&amp;format=atom&amp;p=ffsearchbar/20081004"/>
+	<Url type="application/rss+xml" template="http://www.oneriot.com/search/r?q={searchTerms}&amp;format=rss&amp;p=ffsearchbar/20081004"/>
+	<Url type="text/html" template="http://www.oneriot.com/search/r?q={searchTerms}&amp;format=html&amp;p=ffsearchbar/20081004"/>
+	<LongName>OneRiot Social Search</LongName>
+	<Image height="64" width="64" type="image/png">http://www.oneriot.com/images/oneriotsearch.png</Image>
+	<Image height="16" width="16" type="image/vnd.microsoft.icon">http://www.oneriot.com/images/favicon.ico</Image>
+	<Query role="example" searchTerms="cat" />
+	<Developer>I Alongi, N Fisher, C Lintz, Y Pavlidis, R Watler, D Young</Developer>
+	<Attribution>OneRiot Social Search Copyright 2008, http://www.oneriot.com</Attribution>
+	<SyndicationRight>open</SyndicationRight>
+	<AdultContent>false</AdultContent>
+	<Language>en-us</Language>
+	<OutputEncoding>UTF-8</OutputEncoding>
+	<InputEncoding>UTF-8</InputEncoding>
+ </OpenSearchDescription>

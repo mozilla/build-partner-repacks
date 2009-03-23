@@ -1,0 +1,4 @@
+content	daumfox	chrome/content/
+locale daumfox ko-KR chrome/locale/ko-KR/
+skin daumfox classic/1.0 chrome/skin/
+overlay	chrome://browser/content/browser.xul	chrome://daumfox/content/daumfoxOverlay.xul

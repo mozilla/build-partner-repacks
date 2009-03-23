@@ -1,0 +1,8 @@
+overlay	chrome://browser/content/browser.xul	chrome://greengoo/content/browserCustomizeToolbarOverlay.xul
+
+skin	greengoo-platform	classic/1.0	jar:chrome/greengoo.jar!/skin/classic/greengoo/
+
+override chrome://greengoo-platform/skin/overlayStyle-compat.css	chrome://greengoo/skin/dummy.css
+override chrome://greengoo-platform/skin/overlayStyle-compat.css	chrome://greengoo-platform/skin/overlayStyle-fx3.css	appversion>=3.0b4pre
+override chrome://greengoo-platform/skin/textshadow-targets-compat.css	chrome://greengoo/skin/dummy.css
+override chrome://greengoo-platform/skin/textshadow-targets-compat.css	chrome://greengoo-platform/skin/textshadow-targets-fx3.css	appversion>=3.0b4pre

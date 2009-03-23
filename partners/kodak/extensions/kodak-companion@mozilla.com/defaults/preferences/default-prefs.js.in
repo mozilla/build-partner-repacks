@@ -1,0 +1,19 @@
+/* Default Preferences for the fotofox Photo Uploader */
+
+/* XULRunner Prefs ... not yet
+pref("toolkit.defaultChromeURI", "chrome://fotofox/content/fotofox.xul"); */
+/* For the next one, the value has to match the windowtype attribute
+   in the main XUL file specified above
+pref("toolkit.singletonWindowType", "fotofox:main"); */
+
+/* Other prefs */
+pref("@prefsroot@.brand", "@brand@");
+pref("@prefsroot@.preferredservice", "@preferredservice@");
+pref("@prefsroot@.firstrun", true);
+pref("@prefsroot@.sidebarfirstrun", true);
+pref("@prefsroot@.username", "");
+pref("@prefsroot@.openin", 2);
+pref("@prefsroot@.savelogin", false);
+pref("@prefsroot@.maintainstate", false);
+pref("@prefsroot@.removeonupload", true);
+pref("@prefsroot@.usefilenamefortitle", true);

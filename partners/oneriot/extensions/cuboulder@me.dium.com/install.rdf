@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<!--
+ Copyright (C) 2006 to the Present, Medium, Inc. - ALL RIGHTS RESERVED
+ 
+ This source code contains proprietary information of Medium, Inc.
+ and its receipt or possession does not convey any rights to reproduce or
+ disclose its contents, or to manufacture, use or sell anything it may
+ describe. Reproduction, disclosure or use without specific written
+ authorization from Medium, Inc. is strictly prohibited.
+ 
+ Medium, Inc. may have patents, patent applications, trademarks, copyrights,
+ or other intellectual property rights covering this source code. The receipt
+ or possession of this source code does not give you any license to these
+ patents, trademarks, copyrights, or other intellectual property.
+
+ $Id$
+-->
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>cuboulder@me.dium.com</em:id>
+    <em:version>1.0.1.8263</em:version>
+    
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id><!-- Firefox -->
+        <em:minVersion>2.0</em:minVersion>
+        <em:maxVersion>3.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+    <em:targetApplication>
+      <Description>
+        <em:id>{a463f10c-3994-11da-9945-000d60ca027b}</em:id><!-- Flock -->
+        <em:minVersion>1.0</em:minVersion>
+        <em:maxVersion>1.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    
+    <em:name>Unofficial CU Boulder Toolbar</em:name>
+    <em:description>Helpful links for CU students.</em:description>
+    <em:creator>me.dium.com</em:creator>
+    <em:homepageURL>http://me.dium.com/</em:homepageURL>
+    <em:updateURL>https://ffupdate.getmedium.com/cuboulder.rdf</em:updateURL>
+    <em:iconURL>chrome://cuboulder/skin/extensionIcon.png</em:iconURL>
+
+    <em:file>
+      <Description about="urn:mozilla:extension:file:cuboulder.jar">
+        <em:package>content/</em:package>
+        <em:skin>skin/</em:skin>
+        <em:locale>locale/en-US/</em:locale>
+      </Description>
+    </em:file>
+    
+  </Description>      
+
+</RDF>

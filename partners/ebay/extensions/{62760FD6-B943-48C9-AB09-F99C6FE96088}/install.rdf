@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2008 eBay Inc. All Rights Reserved.
+  -->
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+   <Description about="urn:mozilla:install-manifest">
+      <em:id>{62760FD6-B943-48C9-AB09-F99C6FE96088}</em:id>
+      <em:version>1.6.6</em:version>
+      <em:name>Firefox Companion for eBay</em:name>
+      <em:description>
+        View your watching, selling or bidding items.
+      </em:description>
+      <em:localized>
+        <Description>
+          <em:locale>de-DE</em:locale>
+          <em:name>Firefox Companion für eBay</em:name>
+          <em:description>
+            Behalten Sie die Angebote im Blick, die Sie beobachten,
+            verkaufen oder auf die Sie bieten.
+          </em:description>
+        </Description>
+      </em:localized>
+      <em:localized>
+        <Description>
+          <em:locale>fr-FR</em:locale>
+          <em:name>Compagnon Firefox pour eBay</em:name>
+          <em:description>
+            Voir la liste de mes affaires à suivre, mes ventes ou mes enchères
+            en cours.
+          </em:description>
+        </Description>
+      </em:localized>
+      <em:creator>Glaxstar Limited</em:creator>
+      <em:homepageURL>http://www.ebay.com/</em:homepageURL>
+      <em:optionsURL>chrome://ebaycompanion/content/ebayOptions.xul</em:optionsURL>
+      <em:iconURL>chrome://ebaycompanion/skin/eBay32x32.png</em:iconURL>
+      <em:aboutURL>chrome://ebaycompanion/content/aboutDialog.xul</em:aboutURL>
+      <em:type>2</em:type>
+      <em:targetApplication>
+         <Description>
+            <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+            <em:minVersion>2.0</em:minVersion>
+            <em:maxVersion>3.0.*</em:maxVersion>
+         </Description>
+      </em:targetApplication>
+   </Description>
+</RDF>

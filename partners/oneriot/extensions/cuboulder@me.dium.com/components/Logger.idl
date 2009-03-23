@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2006 to the Present, Medium, Inc. - ALL RIGHTS RESERVED
+ * 
+ * This source code contains proprietary information of Medium, Inc.
+ * and its receipt or possession does not convey any rights to reproduce or
+ * disclose its contents, or to manufacture, use or sell anything it may
+ * describe. Reproduction, disclosure or use without specific written
+ * authorization from Medium, Inc. is strictly prohibited.
+ * 
+ * Medium, Inc. may have patents, patent applications, trademarks, copyrights,
+ * or other intellectual property rights covering this source code. The receipt
+ * or possession of this source code does not give you any license to these
+ * patents, trademarks, copyrights, or other intellectual property.
+ *
+ * $Id$
+ */
+#include "nsISupports.idl"
+
+[
+    scriptable,
+    uuid(7607ffe2-8306-4d02-8d45-92b2f5713842)
+]
+interface IMediumJSException :
+    nsISupports
+{
+    readonly attribute AString message;
+    readonly attribute AString fileName;
+    readonly attribute PRUint32 lineNumber;
+    readonly attribute AString stack;
+};
+
+[
+    scriptable,
+    uuid(345df947-6a00-4679-953e-90812b898bfe)
+]
+interface IMediumLogger :
+    nsISupports
+{
+    readonly attribute boolean isErrorLoggingEnabled;
+    readonly attribute boolean isWarningLoggingEnabled;
+    readonly attribute boolean isExceptionLoggingEnabled;
+    readonly attribute boolean isDebugLoggingEnabled;
+
+    void logError( in AString message);
+    void logWarning( in AString message);
+    void logException( in nsISupports e);
+    void logJSException( in IMediumJSException e);
+    void logDebug( in AString message);
+};
