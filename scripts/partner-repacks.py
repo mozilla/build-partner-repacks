@@ -132,11 +132,11 @@ def getFormattedPlatform(platform):
 
 #########################################################################
 def getFileExtension(platform):
-    if (platform == 'linux-i686'):
+    if isLinux(platform):
         return "tar.bz2"
-    if (platform == 'mac'):
+    if isMac(platform):
         return "dmg"
-    if (platform == 'win32'):
+    if isWin(platform):
         return "installer.exe"
     return None
 
@@ -275,6 +275,11 @@ if __name__ == '__main__':
                       dest="build_number",
                       default=BUILD_NUMBER,
                       help="Set the build number for repacking")
+    parser.add_option("--verify-only",
+                      action="store_true",
+                      dest="verify_only",
+                      default=False,
+                      help="Check for existing partner repacks.")
     (options, args) = parser.parse_args()
 
     # Pre-flight checks
@@ -298,19 +303,19 @@ if __name__ == '__main__':
         sys.exit(1)
 
     base_workdir = os.getcwd();
-    
+
     # Remote dir where we can find builds.
     candidates_web_dir = "/pub/mozilla.org/firefox/nightly/%s-candidates/build%s" % (options.version, options.build_number)
  
     # Local directories for builds
-    original_builds_dir = "original_builds/%s" % options.version
-    repacked_builds_dir = "repacked_builds/%s" % options.version
-    if not os.path.exists(original_builds_dir):
-        mkdir(original_builds_dir)
-    if not os.path.exists(repacked_builds_dir):
-        mkdir(repacked_builds_dir)
-
-    print
+    original_builds_dir = "original_builds/%s/build%s" % (options.version, str(options.build_number))
+    repacked_builds_dir = "repacked_builds/%s/build%s" % (options.version, str(options.build_number))
+    if not options.verify_only:
+        if not os.path.exists(original_builds_dir):
+            mkdir(original_builds_dir)
+        if not os.path.exists(repacked_builds_dir):
+            mkdir(repacked_builds_dir)
+        print
 
 # For each partner in the partners dir
 ##    Read/check the config file
@@ -319,20 +324,27 @@ if __name__ == '__main__':
 ##    Upload repacks back to ???stage
 
     for partner_dir in os.listdir(options.partners_dir):
+        if options.partner:
+            if options.partner != partner_dir:
+                continue
         full_partner_dir = "%s/%s" % (options.partners_dir,partner_dir)
         if not os.path.isdir(full_partner_dir):
             continue
         repack_cfg = "%s/repack.cfg" % str(full_partner_dir)
-        print "Starting repack process for partner: %s" % partner_dir
+        if not options.verify_only:
+            print "Starting repack process for partner: %s" % partner_dir
+        else: 
+            print "Verifying existing repacks for partner: %s" % partner_dir
         if not os.path.exists(repack_cfg):
             print "%s doesn't exist, skipping this partner" % repack_cfg
             continue
         repack_info = parseRepackConfig(repack_cfg)
 
         partner_repack_dir = "%s/%s" % (repacked_builds_dir, partner_dir)
-        if os.path.exists(partner_repack_dir):
-            rmdirRecursive(partner_repack_dir)
-        mkdir(partner_repack_dir)
+        if not options.verify_only:
+            if os.path.exists(partner_repack_dir):
+                rmdirRecursive(partner_repack_dir)
+            mkdir(partner_repack_dir)
  
         # Figure out which base builds we need to repack.
         for locale in repack_info['locales']:
@@ -348,28 +360,44 @@ if __name__ == '__main__':
 
                 # Check to see if this build is already on disk, i.e.
                 # has already been downloaded.
-                if os.path.exists(local_filepath):
-                    print "Found %s on disk, not downloading" % filename
-                else:
-                    # Download original build from stage
-                    print os.getcwd()
-                    os.chdir(original_builds_dir)
-                    original_build_url = "http://%s%s/%s" % (STAGING_SERVER,
-                                                             candidates_web_dir,
-                                                             filename
+                if not options.verify_only:
+                    if os.path.exists(local_filepath):
+                        print "Found %s on disk, not downloading" % filename
+                    else:
+                        # Download original build from stage
+                        print os.getcwd()
+                        os.chdir(original_builds_dir)
+                        original_build_url = "http://%s%s/%s" % (STAGING_SERVER,
+                                                                 candidates_web_dir,
+                                                                 filename
                                                             )
-                    wget_cmd = "wget %s" % original_build_url
-                    shellCommand(wget_cmd)
-                    os.chdir(base_workdir);
+                        wget_cmd = "wget -q %s" % original_build_url
+                        shellCommand(wget_cmd)
+                        os.chdir(base_workdir);
  
                     # Make sure we have the local file now               
                     if not os.path.exists(local_filepath):
                         print "Unable to retrieve %s" % filename
                         sys.exit(1)
                 
-                repack_build[platform_formatted](filename,
-                                                 full_partner_dir,
-                                                 original_builds_dir,
-                                                 partner_repack_dir)
+                    repack_build[platform_formatted](filename,
+                                                     full_partner_dir,
+                                                     original_builds_dir,
+                                                     partner_repack_dir)
+                else:
+                    repacked_build = "%s/%s" % (partner_repack_dir, filename)
+                    if not os.path.exists(repacked_build):
+                        print "Error: missing expected repack for partner %s: %s" % (partner_dir, filename)
+                        error = True
+
+        # Remove our working dir so things are all cleaned up and ready for
+        # easy upload.
+        workingDir = "%s/working" % partner_repack_dir
+        rmdirRecursive(workingDir)
         
-        print
+        if not options.verify_only:
+            print
+
+    if error:
+        sys.exit(1)
+
