@@ -287,17 +287,20 @@ if __name__ == '__main__':
         print "Error: you must specify a version number."
         error = True
 
-    if not which("7za"):
-        print "Error: couldn't find the 7za executable in PATH."
-        error = True
-
-    if not which("pkg-dmg"):
-        print "Error: couldn't find the pkg-dmg executable in PATH."
-        error = True 
-
     if not os.path.isdir(options.partners_dir):
         print "Error: partners dir %s is not a directory." % partners_dir
         error = True
+
+    # We only care about the tools if we're actually going to
+    # do some repacking.
+    if not options.verify_only:
+        if not which("7za"):
+            print "Error: couldn't find the 7za executable in PATH."
+            error = True
+
+        if not which("pkg-dmg"):
+            print "Error: couldn't find the pkg-dmg executable in PATH."
+            error = True
 
     if error:
         sys.exit(1)
