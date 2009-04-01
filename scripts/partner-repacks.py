@@ -5,8 +5,6 @@ from shutil import copy, copytree, move
 from subprocess import Popen
 from optparse import OptionParser
 
-
-#HG_REPO = "http://hg.mozilla.org/users/coop_mozilla.com/partner-repacks"
 PARTNERS_DIR = "../partners"
 BUILD_NUMBER = "1"
 STAGING_SERVER = "stage.mozilla.org"
@@ -69,9 +67,22 @@ def rmdirRecursive(dir):
     os.rmdir(dir)
 
 #########################################################################
+def printSeparator():
+    print "##################################################"
+
+#########################################################################
 def shellCommand(cmd):
+    # Shell command output gets dumped immediately to stdout, whereas 
+    # print statements get buffered unless we flush them explicitly.
+    sys.stdout.flush()
     p = Popen(cmd, shell=True)
-    return os.waitpid(p.pid, 0)
+    (rpid, ret) = os.waitpid(p.pid, 0)
+    if ret != 0:
+        ret_real = (ret & 0xFF00) >> 8
+        print "Error: shellCommand had non-zero exit status: %d" % ret_real 
+        print "command was: %s" % cmd
+        sys.exit(ret_real)
+    return True
    
 #########################################################################
 def mkdir(dir, mode=0777):
@@ -141,114 +152,131 @@ def getFileExtension(platform):
     return None
 
 #########################################################################
-def repackLinux(build, partner_dir, build_dir, repack_dir):
-    print "Repacking linux build %s" % build
+class RepackBase(object):
+    def __init__(self, build, partner_dir, build_dir, repack_dir):
+        self.base_dir = os.getcwd()
+        self.build = build
+        self.full_build_path = "%s/%s/%s" % (self.base_dir, build_dir, build)
+        self.full_partner_path = "%s/%s" % (self.base_dir, partner_dir)
+        self.working_dir = "%s/working" % repack_dir
+        mkdir(self.working_dir)
+        self.platform = None
 
-    base_dir = os.getcwd();
-    full_build_path = "%s/%s/%s" % (base_dir, build_dir, build)
-    full_partner_path = "%s/%s" % (base_dir, partner_dir)
-    working_dir = "%s/working" % repack_dir
-    mkdir(working_dir)
-    os.chdir(working_dir)
+    def announceStart(self):
+        print "### Repacking %s build %s" % (self.platform, self.build)
 
-    copy(full_build_path, '.')
-    uncompressed_build = build.replace('.bz2','')
-    bunzip2_cmd = "bunzip2 %s" % build
-    shellCommand(bunzip2_cmd)
-    if not os.path.exists(uncompressed_build):
-        print "Unable to uncompress build %s" % build
-        sys.exit(1)
+    def unpackBuild(self):    
+        copy(self.full_build_path, '.')
 
-    # Check whether we've already copied files over for this partner.
-    if not os.path.exists('firefox'):
-        mkdir('firefox')
-        for i in ['distribution', 'extensions', 'searchplugins']:
-            full_path = "%s/%s" % (full_partner_path, i)
-            if os.path.exists(full_path):
-                copytree(full_path, "firefox/%s" % i)
- 
-    tar_cmd = "tar rvf %s firefox" % uncompressed_build
-    shellCommand(tar_cmd)
-    
-    bzip2_command = "bzip2 %s" % uncompressed_build
-    shellCommand(bzip2_command)
-    
-    move(build, '..')
- 
-    os.chdir(base_dir)
+    def copyFiles(self, platform_dir):
+        # Check whether we've already copied files over for this partner.
+        if not os.path.exists(platform_dir):
+            mkdir(platform_dir)
+            for i in ['distribution', 'extensions', 'searchplugins']:
+                full_path = "%s/%s" % (self.full_partner_path, i)
+                if os.path.exists(full_path):
+                    copytree(full_path, "%s/%s" % (platform_dir,i)) 
 
-#########################################################################
-def repackMac(build, partner_dir, build_dir, repack_dir):
-    print "Repacking Mac build %s" % build
+    def repackBuild(self):
+        # Subclass me.
+        pass
 
-    base_dir = os.getcwd();
-    full_build_path = "%s/%s/%s" % (base_dir, build_dir, build)
-    full_partner_path = "%s/%s" % (base_dir, partner_dir)
-    working_dir = "%s/working" % repack_dir
-    mkdir(working_dir)
-    os.chdir(working_dir)
+    def cleanup(self):
+        move(self.build, '..')
 
-    mountpoint = "/tmp/FirefoxInstaller"
-    mkdir(mountpoint)
-
-    # Verify that Firefox isn't currently mounted on our mountpoint.
-    if os.path.exists("%s/Firefox.app" % mountpoint):
-        print "Firefox is already mounted at %s" % mountpoint
-        sys.exit(1)
-    
-    attach_cmd = "hdiutil attach -mountpoint %s -readonly -private -noautoopen %s" % (mountpoint, full_build_path)
-    shellCommand(attach_cmd)
-    rsync_cmd  = "rsync -a %s/ stage/" % mountpoint
-    shellCommand(rsync_cmd)
-    eject_cmd  = "hdiutil eject %s" % mountpoint
-    shellCommand(eject_cmd)
-    os.remove("stage/ ")
-    for i in ['distribution', 'extensions', 'searchplugins']:
-        full_path = "%s/%s" % (full_partner_path, i)
-        if os.path.exists(full_path):
-            cp_cmd = "cp -r %s stage/Firefox.app/Contents/MacOS" % full_path
-            shellCommand(cp_cmd)
-    pkg_cmd = "pkg-dmg --source stage/ --target ../%s --volname 'Firefox' --icon stage/.VolumeIcon.icns --symlink '/Applications':' '" % build
-    shellCommand(pkg_cmd)
-    rmdirRecursive("stage")
-
-    os.chdir(base_dir)
+    def doRepack(self):
+        self.announceStart()
+        os.chdir(self.working_dir)
+        self.unpackBuild()
+        self.copyFiles()
+        self.repackBuild()
+        self.cleanup()
+        os.chdir(self.base_dir)        
 
 #########################################################################
-def repackWin32(build, partner_dir, build_dir, repack_dir):
-    print "Repacking win32 build %s" % build
+class RepackLinux(RepackBase):
+    def __init__(self, build, partner_dir, build_dir, repack_dir):
+        super(RepackLinux, self).__init__(build, partner_dir, build_dir, repack_dir)
+        self.platform = "linux"
+        self.uncompressed_build = build.replace('.bz2','')
 
-    base_dir = os.getcwd();
-    full_build_path = "%s/%s/%s" % (base_dir, build_dir, build)
-    full_partner_path = "%s/%s" % (base_dir, partner_dir)
-    working_dir = "%s/working" % repack_dir
-    mkdir(working_dir)
-    os.chdir(working_dir)
+    def unpackBuild(self):
+        super(RepackLinux, self).unpackBuild()
+        bunzip2_cmd = "bunzip2 %s" % self.build
+        shellCommand(bunzip2_cmd)
+        if not os.path.exists(self.uncompressed_build):
+            print "Error: Unable to uncompress build %s" % self.build
+            sys.exit(1)
 
-    copy(full_build_path, '.')
+    def copyFiles(self):
+        super(RepackLinux, self).copyFiles('firefox')
 
-    # Check whether we've already copied files over for this partner.
-    if not os.path.exists('nonlocalized'):
-        mkdir('nonlocalized')
-        for i in ['distribution', 'extensions', 'searchplugins']:
-            full_path = "%s/%s" % (full_partner_path, i)
-            if os.path.exists(full_path):
-                copytree(full_path, "nonlocalized/%s" % i)
- 
-    zip_cmd = "7za a %s nonlocalized" % build
-    shellCommand(zip_cmd)
+    def repackBuild(self):
+        tar_cmd = "tar rvf %s firefox" % self.uncompressed_build
+        shellCommand(tar_cmd)
+        bzip2_command = "bzip2 %s" % self.uncompressed_build
+        shellCommand(bzip2_command)
+
+#########################################################################
+class RepackMac(RepackBase):
+    def __init__(self, build, partner_dir, build_dir, repack_dir):
+        super(RepackMac, self).__init__(build, partner_dir, build_dir, repack_dir)
+        self.platform = "mac"
+        self.mountpoint = "/tmp/FirefoxInstaller"
+
+    def unpackBuild(self):
+        mkdir(self.mountpoint)
+
+        # Verify that Firefox isn't currently mounted on our mountpoint.
+        if os.path.exists("%s/Firefox.app" % self.mountpoint):
+            print "Error: Firefox is already mounted at %s" % self.mountpoint
+            sys.exit(1)
     
-    move(build, '..')
- 
-    os.chdir(base_dir)
+        attach_cmd = "hdiutil attach -mountpoint %s -readonly -private -noautoopen %s" % (self.mountpoint, self.full_build_path)
+        shellCommand(attach_cmd)
+        rsync_cmd  = "rsync -a %s/ stage/" % self.mountpoint
+        shellCommand(rsync_cmd)
+        eject_cmd  = "hdiutil eject %s" % self.mountpoint
+        shellCommand(eject_cmd)
 
+        # Disk images contain a link " " to "Applications/" that we need 
+        # to get rid of while working with it uncompressed. 
+        os.remove("stage/ ")
+
+    def copyFiles(self):
+        for i in ['distribution', 'extensions', 'searchplugins']:
+            full_path = "%s/%s" % (self.full_partner_path, i)
+            if os.path.exists(full_path):
+                cp_cmd = "cp -r %s stage/Firefox.app/Contents/MacOS" % full_path
+                shellCommand(cp_cmd)
+
+    def repackBuild(self):
+        pkg_cmd = "pkg-dmg --source stage/ --target ../%s --volname 'Firefox' --icon stage/.VolumeIcon.icns --symlink '/Applications':' '" % self.build
+        shellCommand(pkg_cmd)
+
+    def cleanup(self):
+        rmdirRecursive("stage")
+
+#########################################################################
+class RepackWin32(RepackBase):
+    def __init__(self, build, partner_dir, build_dir, repack_dir):
+        super(RepackWin32, self).__init__(build, partner_dir, build_dir, repack_dir)
+        self.platform = "win32"
+
+    def copyFiles(self):
+        super(RepackWin32, self).copyFiles('nonlocalized')
+
+    def repackBuild(self):
+        zip_cmd = "7za a %s nonlocalized" % self.build
+        shellCommand(zip_cmd)
+ 
 #########################################################################
 if __name__ == '__main__':
     error = False
     partner_builds = {}
-    repack_build = {'linux-i686': repackLinux,
-                    'mac':        repackMac,
-                    'win32':      repackWin32
+    repack_build = {'linux-i686': RepackLinux,
+                    'mac':        RepackMac,
+                    'win32':      RepackWin32
     }
 
     parser = OptionParser(usage="usage: %prog [options]")
@@ -283,7 +311,7 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
     # Pre-flight checks
-    if len(args) < 0 or not options.version:
+    if not options.version:
         print "Error: you must specify a version number."
         error = True
 
@@ -314,17 +342,14 @@ if __name__ == '__main__':
     original_builds_dir = "original_builds/%s/build%s" % (options.version, str(options.build_number))
     repacked_builds_dir = "repacked_builds/%s/build%s" % (options.version, str(options.build_number))
     if not options.verify_only:
-        if not os.path.exists(original_builds_dir):
-            mkdir(original_builds_dir)
-        if not os.path.exists(repacked_builds_dir):
-            mkdir(repacked_builds_dir)
-        print
+        mkdir(original_builds_dir)
+        mkdir(repacked_builds_dir)
+        printSeparator()
 
-# For each partner in the partners dir
-##    Read/check the config file
-##    Download required builds (if not already on disk)
-##    Perform repacks
-##    Upload repacks back to ???stage
+    # For each partner in the partners dir
+    ##    Read/check the config file
+    ##    Download required builds (if not already on disk)
+    ##    Perform repacks
 
     for partner_dir in os.listdir(options.partners_dir):
         if options.partner:
@@ -335,11 +360,11 @@ if __name__ == '__main__':
             continue
         repack_cfg = "%s/repack.cfg" % str(full_partner_dir)
         if not options.verify_only:
-            print "Starting repack process for partner: %s" % partner_dir
+            print "### Starting repack process for partner: %s" % partner_dir
         else: 
-            print "Verifying existing repacks for partner: %s" % partner_dir
+            print "### Verifying existing repacks for partner: %s" % partner_dir
         if not os.path.exists(repack_cfg):
-            print "%s doesn't exist, skipping this partner" % repack_cfg
+            print "### %s doesn't exist, skipping this partner" % repack_cfg
             continue
         repack_info = parseRepackConfig(repack_cfg)
 
@@ -365,10 +390,9 @@ if __name__ == '__main__':
                 # has already been downloaded.
                 if not options.verify_only:
                     if os.path.exists(local_filepath):
-                        print "Found %s on disk, not downloading" % filename
+                        print "### Found %s on disk, not downloading" % filename
                     else:
                         # Download original build from stage
-                        print os.getcwd()
                         os.chdir(original_builds_dir)
                         original_build_url = "http://%s%s/%s" % (STAGING_SERVER,
                                                                  candidates_web_dir,
@@ -380,13 +404,14 @@ if __name__ == '__main__':
  
                     # Make sure we have the local file now               
                     if not os.path.exists(local_filepath):
-                        print "Unable to retrieve %s" % filename
+                        print "Error: Unable to retrieve %s" % filename
                         sys.exit(1)
                 
-                    repack_build[platform_formatted](filename,
-                                                     full_partner_dir,
-                                                     original_builds_dir,
-                                                     partner_repack_dir)
+                    repackObj = repack_build[platform_formatted](filename, 
+                                                                 full_partner_dir, 
+                                                                 original_builds_dir, 
+                                                                 partner_repack_dir)
+                    repackObj.doRepack()
                 else:
                     repacked_build = "%s/%s" % (partner_repack_dir, filename)
                     if not os.path.exists(repacked_build):
@@ -399,7 +424,7 @@ if __name__ == '__main__':
         rmdirRecursive(workingDir)
         
         if not options.verify_only:
-            print
+            printSeparator()
 
     if error:
         sys.exit(1)
