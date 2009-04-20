@@ -1,0 +1,9 @@
+﻿<!ENTITY prefwindow.title "标签页管理器选项">
+<!ENTITY pane1.title "标签页管理器">
+<!ENTITY checkIncludeNewTabs.label "在当前标签页旁边打开新建标签页">
+<!ENTITY checkIncludeNewTabs.accesskey "N">
+<!ENTITY checkOpenUrlInTab.label "默认在新标签页打开地址栏地址，按Alt+Enter输入时在当前页打开(不选则相反)">
+<!ENTITY checkOpenUrlInTab.accesskey "U">
+<!ENTITY checkOpenSearchInTab.label "在新的标签页打开搜索结果">
+<!ENTITY checkOpenSearchInTab.accesskey "S">
+<!ENTITY mouseTabInfo.description "使用鼠标中键点击或者按住Ctrl(苹果机上是Apple键)点击链接，可以在新的标签页打开链接(包含历史和书签)">

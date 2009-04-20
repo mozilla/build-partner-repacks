@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE prefwindow SYSTEM "chrome://tabimprovelite/locale/prefwindow.dtd">
+<overlay id="tabimprovelite_preferences_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<!-- Merge with the BrowserPreferences Window -->
+	<prefwindow id="BrowserPreferences">
+		<prefpane id="pane1" label="&pane1.title;" image="chrome://tabimprovelite/skin/icon32.png">
+			<preferences>
+				<preference id="includeNewTabs" name="extensions.tabimprovelite.includeNewTabs" type="bool"/>
+				<preference id="openUrlInTab" name="extensions.tabimprovelite.openUrlInTab" type="bool"/>
+				<preference id="openSearchInTab" name="browser.search.openintab" type="bool"/>
+			</preferences>
+			<groupbox>
+				<caption label="&pane1.title;"/>
+				<checkbox id="checkIncludeNewTabs" preference="includeNewTabs" label="&checkIncludeNewTabs.label;" accesskey="&checkIncludeNewTabs.accesskey;"/>
+				<checkbox id="checkOpenUrlInTab" preference="openUrlInTab" label="&checkOpenUrlInTab.label;" accesskey="&checkOpenUrlInTab.accesskey;"/>
+				<checkbox id="checkOpenSearchInTab" preference="openSearchInTab" label="&checkOpenSearchInTab.label;" accesskey="&checkOpenSearchInTab.accesskey;"/>
+				<box orient="horizontal" align="center"><image src="chrome://tabimprovelite/skin/information-24.png" height="24px" align="center" flex="0"/><label flex="1">&mouseTabInfo.description;</label></box>
+			</groupbox>	
+		</prefpane> 
+	</prefwindow>
+</overlay>

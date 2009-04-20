@@ -38,16 +38,24 @@ EbayDisplayList.prototype = {
    */
   _init : function() {
     //dump("EbayDisplayList.init().\n");
+    var timer = CC["@mozilla.org/timer;1"].createInstance(CI.nsITimer);
+    var that = this;
 
     this._logService =
       CC["@glaxstar.org/autotrader/log-service;1"].
         getService(CI.gsILoggingService);
-    this._dsService =
-      CC["@glaxstar.org/autotrader/autotrader-datasource-service;1"].
-        getService(CI.gsIAutotraderDatasourceService);
     this._observerService =
       CC["@mozilla.org/observer-service;1"].getService(CI.nsIObserverService);
     this._observerService.addObserver(this, "ebayComp-hide-item", false);
+
+    // Avoid cycles in initialisation.
+    timer.initWithCallback({
+      notify : function() {
+        that._dsService =
+          CC["@glaxstar.org/autotrader/autotrader-datasource-service;1"].
+            getService(CI.gsIAutotraderDatasourceService);
+      }
+    }, 0, CI.nsITimer.TYPE_ONE_SHOT);
   },
 
   /**

@@ -1,0 +1,16 @@
+content	quicklaunch		content/	contentaccessible=yes
+skin	quicklaunch	classic/1.0	skin/
+style 	chrome://global/content/customizeToolbar.xul	chrome://quicklaunch/skin/quicklaunch.css
+overlay	chrome://browser/content/browser.xul	chrome://quicklaunch/content/quicklaunch.xul
+
+override chrome://quicklaunch/content/quicklaunch.xul chrome://quicklaunch/content/quicklaunch-mac.xul os=Darwin
+override chrome://quicklaunch/content/quicklaunch.xul chrome://quicklaunch/content/quicklaunch-linux.xul os=Linux
+
+override chrome://quicklaunch/skin/image/toolbarbutton.png chrome://quicklaunch/skin/image/toolbarbutton-mac.png os=Darwin
+override chrome://quicklaunch/skin/image/toolbarbutton.png chrome://quicklaunch/skin/image/toolbarbutton-linux.png os=Linux
+
+override chrome://quicklaunch/skin/image/quicklaunch.png chrome://quicklaunch/skin/image/quicklaunch-mac.png os=Darwin
+override chrome://quicklaunch/skin/image/quicklaunch.png chrome://quicklaunch/skin/image/quicklaunch-linux.png os=Linux
+
+locale quicklaunch zh-CN locale/zh-CN/
+locale quicklaunch en-US locale/en-US/

@@ -1,0 +1,41 @@
+overlay chrome://browser/content/browser.xul chrome://personas/content/personas.xul
+
+# Register a resource: protocol alias so we can refer to files in this package
+# with URLs of the form resource://personas/path/to/file,
+# f.e. resource://personas/modules/service.js.
+resource personas   ./
+
+content  personas             jar:chrome/personas.jar!/content/
+
+# Register separate skins for each primary platform so we can fit personas
+# into each one's very different skin.
+skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/windows/   appversion>=3.0    os=WINNT
+skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/mac3.0/    appversion<3.1b2   os=Darwin
+skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/mac3.1/    appversion>=3.1b2  os=Darwin
+skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/linux/     appversion>=3.0    os=Linux
+
+# localizations in alphabetical order
+# Localizations that are commented out are disabled because they are out of date.
+locale   personas   bg-BG       jar:chrome/personas.jar!/locale/bg-BG/
+locale   personas   cs-CZ       jar:chrome/personas.jar!/locale/cs-CZ/
+locale   personas   da-DK       jar:chrome/personas.jar!/locale/da-DK/
+locale   personas   de-DE       jar:chrome/personas.jar!/locale/de-DE/
+locale   personas   en-US       jar:chrome/personas.jar!/locale/en-US/
+locale   personas   es-CL       jar:chrome/personas.jar!/locale/es-CL/
+#locale   personas   es-ES       chrome/locale/es-ES/
+#locale   personas   es-VE       chrome/locale/es-VE/
+locale   personas   fr-FR       jar:chrome/personas.jar!/locale/fr-FR/
+locale   personas   he-IL       jar:chrome/personas.jar!/locale/he-IL/
+#locale   personas   hr-HR       chrome/locale/hr-HR/
+locale   personas   it-IT       jar:chrome/personas.jar!/locale/it-IT/
+locale   personas   ja-JP       jar:chrome/personas.jar!/locale/ja-JP/
+locale   personas   ko-KR       jar:chrome/personas.jar!/locale/ko-KR/
+#locale   personas   nb-NO       chrome/locale/nb-NO/
+#locale   personas   pl-PL       chrome/locale/pl-PL/
+locale   personas   pt-BR       jar:chrome/personas.jar!/locale/pt-BR/
+#locale   personas   ru-RU       chrome/locale/ru-RU/
+#locale   personas   sk-SK       chrome/locale/sk-SK/
+#locale   personas   sv-SE       chrome/locale/sv-SE/
+#locale   personas   tr-TR       chrome/locale/tr-TR/
+#locale   personas   zh-CN       chrome/locale/zh-CN/
+#locale   personas   zh-TW       chrome/locale/zh-TW/

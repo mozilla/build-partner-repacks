@@ -7,8 +7,8 @@ SHA1-Digest: 8RHZ0uUrxScBNJtHgI/t7stA9yA=
 
 Name: chrome/ebaycompanion.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: r3i63pKzsvEIlWmcmnU/Bw==
-SHA1-Digest: B1pfE1XdMk5zYZyZWw6e69jRuus=
+MD5-Digest: gNx9UziwalhecGh5QwW3Rg==
+SHA1-Digest: PXuGU+2YIQ+xa/3WxlM72JvmgnY=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -67,8 +67,8 @@ SHA1-Digest: 2sNBjgDUip0gGuL6pR+JELCCZOg=
 
 Name: components/gsEbayDisplayList.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: XcvoNDoZ9VdzuwRyAS5pow==
-SHA1-Digest: pnhgPOXhIqM1rFvsfTBsOgqac1g=
+MD5-Digest: CsBIvRJTxIgDn71F+AA+OA==
+SHA1-Digest: p+TSA8ktKg5O/q1kqOu55g/V63E=
 
 Name: components/gsEbayEncryptionService.js
 Digest-Algorithms: MD5 SHA1
@@ -227,8 +227,8 @@ SHA1-Digest: JuxV50FR1xHJXwt6bnZV64EsJMU=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: FOSUt1zDbUrantmh9IlMMQ==
-SHA1-Digest: uEDo7glMqw7qJf4cUxIwVFKM2lw=
+MD5-Digest: y3WBDFXST+YkgawuG/1YGA==
+SHA1-Digest: j6FI8UbdliZEoPQxn4LE9iaH/jU=
 
 Name: platform/Darwin_ppc-gcc3/components/EbayAccessService.dylib
 Digest-Algorithms: MD5 SHA1
@@ -242,13 +242,13 @@ SHA1-Digest: jQFs9xCcaNXW8SZYMUsdLiZXW5E=
 
 Name: platform/Darwin_x86-gcc3/components/EbayAccessService.dylib
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Hziqojr0Ro9DZxDZ9tYI/w==
-SHA1-Digest: Zgg28SnEsS5XaObtycfk3JFSXbw=
+MD5-Digest: +UO9RWW2YQ1CzdVlCmHyMQ==
+SHA1-Digest: YrC36vRf45Mi5WV1YU1KqTU9o8U=
 
 Name: platform/Darwin_x86-gcc3/components/EbayFormSubmitObserver.dylib
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 4oQQkd3MZZoZlumjYlVm+Q==
-SHA1-Digest: pk5s72at3uJGt3FjjKnXIdhUy7c=
+MD5-Digest: Y6ogEpGkIoI5owiEYpedTg==
+SHA1-Digest: 4ewf7IJEOkPCqkHpDTWJUYGlvX8=
 
 Name: platform/Linux/components/EbayAccessService.so
 Digest-Algorithms: MD5 SHA1
