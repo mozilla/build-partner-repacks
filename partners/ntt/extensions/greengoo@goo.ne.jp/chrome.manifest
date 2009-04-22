@@ -108,4 +108,5 @@ locale	greengoo	ja	jar:chrome/greengoo.jar!/locale/ja/greengoo/
 
 
 overlay	chrome://browser/content/browser.xul	chrome://greengoo/content/browserOverlay.xul
+overlay	chrome://greengoo/content/config.xul	chrome://greengoo/content/configOverlay.xul
 style	chrome://global/content/customizeToolbar.xul	chrome://greengoo/skin/buttons.css

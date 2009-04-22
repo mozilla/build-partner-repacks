@@ -1,9 +1,0 @@
-<!ENTITY prefwindow.title "Tab Improve Lite Preferences">
-<!ENTITY pane1.title "Tab Improve Lite">
-<!ENTITY checkIncludeNewTabs.label "Open new tab next to the current tab">
-<!ENTITY checkIncludeNewTabs.accesskey "N">
-<!ENTITY checkOpenUrlInTab.label "Open urls in new tab, when Press Alt+Enter in the location bar to open the url in the current tab(If uncheck, press Alt+Enter to open url in new tab)">
-<!ENTITY checkOpenUrlInTab.accesskey "U">
-<!ENTITY checkOpenSearchInTab.label "Open search in new tab">
-<!ENTITY checkOpenSearchInTab.accesskey "S">
-<!ENTITY mouseTabInfo.description "Middle click or press Ctrl(Apple for Mac) while left click on links to open in new tabs, bookmarks and history included.">
