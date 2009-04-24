@@ -1,0 +1,5 @@
+skin	browser	G-Fox_Theme	jar:chrome/gfox.xpi!/browser/
+skin	communicator	G-Fox_Theme	jar:chrome/gfox.xpi!/communicator/
+skin	global	G-Fox_Theme	jar:chrome/gfox.xpi!/global/
+skin	mozapps	G-Fox_Theme	jar:chrome/gfox.xpi!/mozapps/
+skin	help	G-Fox_Theme	jar:chrome/gfox.xpi!/help/

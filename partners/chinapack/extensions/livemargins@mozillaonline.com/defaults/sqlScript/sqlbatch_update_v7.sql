@@ -1,0 +1,9 @@
+ALTER TABLE tb_tag RENAME TO tb_tag_old;
+ALTER TABLE tb_albumHistory RENAME TO tb_albumHistory_old;
+ALTER TABLE tb_videoHistory RENAME TO tb_videoHistory_old;
+CREATE TABLE IF NOT EXISTS `tb_tag` (`fd_tagType` VARCHAR NOT NULL, `fd_tagName` VARCHAR NOT NULL, `fd_createModify` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `fd_parentName` VARCHAR DEFAULT NULL, `fd_jsonValue` VARCHAR DEFAULT '', `fd_index` INTEGER DEFAULT 0, `fd_id` INTEGER PRIMARY KEY AUTOINCREMENT, UNIQUE (`fd_tagType`,`fd_tagName`));
+CREATE TABLE IF NOT EXISTS `tb_albumHistory` (`fd_imageURL` VARCHAR NOT NULL, `fd_categoryName` VARCHAR DEFAULT '', `fd_lastModify` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `fd_jsonValue` VARCHAR DEFAULT ``, `fd_index` INTEGER DEFAULT 0, `fd_id` INTEGER PRIMARY KEY AUTOINCREMENT, UNIQUE (`fd_imageURL`,`fd_categoryName`));
+CREATE TABLE IF NOT EXISTS `tb_videoHistory` (`fd_widgetId` INTEGER NOT NULL DEFAULT '0' ,`fd_keyword` VARCHAR DEFAULT '' ,`fd_widgetCategoryId` VARCHAR DEFAULT '' ,`fd_widgetAppearence` TEXT DEFAULT '' ,`fd_lastModify` TIMESTAMP DEFAULT '''2008-1-1 00:00:01''' , `fd_imageURL` VARCHAR DEFAULT '', `fd_index` VARCHAR NOT NULL  DEFAULT '', `fd_orderIndex` INTEGER DEFAULT 0, `fd_id` INTEGER PRIMARY KEY AUTOINCREMENT, UNIQUE (`fd_index` desc));
+INSERT OR REPLACE INTO tb_tag(`fd_tagType`,`fd_tagName`) SELECT fd_tagType, fd_tagName FROM tb_tag_old;
+INSERT OR REPLACE INTO tb_albumHistory (`fd_imageURL`, `fd_lastModify`, `fd_jsonValue`, `fd_index`) SELECT fd_imageURL, fd_lastModify, fd_jsonValue, fd_index FROM tb_albumHistory_old;
+INSERT INTO tb_videoHistory (fd_widgetId,fd_keyword,fd_widgetCategoryId,fd_widgetAppearence,fd_lastModify,fd_imageURL,fd_index) SELECT fd_widgetId,fd_keyword,fd_widgetCategoryId,fd_widgetAppearence,fd_lastModify,fd_imageURL,fd_index FROM tb_videoHistory_old;

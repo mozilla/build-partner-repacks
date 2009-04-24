@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet href="chrome://zoompanel/content/zoompanel.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % overlayDTD SYSTEM "chrome://zoompanel/locale/zoompanel.dtd">
+%overlayDTD;
+<!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd" >
+%browserDTD;
+]>
+<overlay id="zoompanelOverlay"
+		xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" >
+		
+	<script type="application/x-javascript" src="chrome://zoompanel/content/zoompanel.js"></script>
+		
+	<statusbar id="status-bar">
+		<stringbundleset>
+			<stringbundle id="zoompanel-strings" src="chrome://zoompanel/locale/zoompanel.properties" />
+		</stringbundleset>
+		
+		<statusbarpanel id="zoompanel-statusbar">
+			<menulist id="zoompanel-menulist"
+					editable="true"
+					value="100"
+					onkeyup="zoompanel.onKeyUp(event)"
+					onselect="zoompanel.applyZoomChange(this)">
+				<menupopup id="zoompanel-menupopup" onpopupshowing="zoompanel.loadPopup(this)">
+					<menuseparator id="zoompanel-menuseparator" />
+					<menuitem label="300%" value="300"></menuitem>
+					<menuitem label="200%" value="200"></menuitem>
+					<menuitem label="150%" value="150"></menuitem>
+					<menuitem label="125%" value="125"></menuitem>
+					<menuitem label="100%" value="100"></menuitem>
+					<menuitem label="75%" value="75"></menuitem>
+					<menuitem label="50%" value="50"></menuitem>
+				</menupopup>
+			</menulist>
+		</statusbarpanel>
+		
+	</statusbar>
+	
+</overlay>

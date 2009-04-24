@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS `tb_tag` (`fd_tagType` VARCHAR NOT NULL, `fd_tagName` VARCHAR NOT NULL, `fd_createModify` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `fd_parentName` VARCHAR DEFAULT NULL, `fd_jsonValue` VARCHAR DEFAULT '', `fd_index` INTEGER DEFAULT 0, UNIQUE (`fd_tagType`,`fd_tagName`));
+CREATE TABLE IF NOT EXISTS `tb_rs_tagAndItem` (`fd_tagType` VARCHAR NOT NULL DEFAULT 'album', `fd_tagName` VARCHAR NOT NULL DEFAULT 'default', `fd_itemKey` VARCHAR NOT NULL, `fd_jsonValue` VARCHAR DEFAULT '', UNIQUE (`fd_tagType`,`fd_tagName`,`fd_itemKey`));
+INSERT OR REPLACE INTO tb_tag(`fd_tagType`,`fd_tagName`) values ('album','default');
+INSERT OR REPLACE INTO tb_rs_tagAndItem (`fd_itemKey`) SELECT fd_imageURL FROM tb_albumHistory;

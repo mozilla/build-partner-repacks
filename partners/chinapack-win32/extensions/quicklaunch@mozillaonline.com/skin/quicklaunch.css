@@ -1,0 +1,11 @@
+﻿.quicklaunch-active {
+	list-style-image: url("chrome://quicklaunch/skin/image/toolbarbutton.png");
+}
+
+toolbar[iconsize="small"] .quicklaunch-active  {
+  list-style-image: url("chrome://quicklaunch/skin/image/toolbarbutton.png");
+}
+
+.quicklaunch-active > dropmarker {
+	display: none !important;
+}

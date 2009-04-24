@@ -1,0 +1,16 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+.tabbrowser-tabs {
+  -moz-binding:url("chrome://tabimprovelite/content/tabbar.xml#tabbrowser-tabs") !important;
+}
+
+#tabimprovelite-newbutton {
+}
+
+#tabimprovelite-newbutton:hover {
+  background-color: rgba(0,0,0,0.10);
+}
+
+#tabimprovelite-newbutton:hover:active {
+  background-color: rgba(0,0,0,0.20);
+}

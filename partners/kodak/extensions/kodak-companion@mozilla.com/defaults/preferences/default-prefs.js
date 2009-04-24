@@ -16,4 +16,4 @@ pref("extensions.kodakcompanion.openin", 2);
 pref("extensions.kodakcompanion.savelogin", false);
 pref("extensions.kodakcompanion.maintainstate", false);
 pref("extensions.kodakcompanion.removeonupload", true);
-pref("extensions.kodakcompanion.usefilenamefortitle", true);
+pref("extensions.kodakcompanion.usetitle", 1);
