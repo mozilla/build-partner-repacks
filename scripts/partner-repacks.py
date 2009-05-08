@@ -127,6 +127,9 @@ def parseRepackConfig(file):
             if value == 'true':
                 config['platforms'].append(key)
             continue
+        if key == 'migrationWizardDisabled':
+            if value.lower() == 'true':
+                config['migrationWizardDisabled'] = True
     return config
 
 #########################################################################
@@ -153,12 +156,13 @@ def getFileExtension(platform):
 
 #########################################################################
 class RepackBase(object):
-    def __init__(self, build, partner_dir, build_dir, repack_dir):
+    def __init__(self, build, partner_dir, build_dir, repack_dir, repack_info):
         self.base_dir = os.getcwd()
         self.build = build
         self.full_build_path = "%s/%s/%s" % (self.base_dir, build_dir, build)
         self.full_partner_path = "%s/%s" % (self.base_dir, partner_dir)
         self.working_dir = "%s/working" % repack_dir
+        self.repack_info = repack_info
         mkdir(self.working_dir)
         self.platform = None
 
@@ -168,6 +172,18 @@ class RepackBase(object):
     def unpackBuild(self):    
         copy(self.full_build_path, '.')
 
+    def createOverrideIni(self, partner_path):
+        ''' Some partners need to override the migration wizard. This is done
+            by adding an override.ini file to the base install dir.
+        '''
+        filename='%s/override.ini' % partner_path
+        if self.repack_info.has_key('migrationWizardDisabled'):
+            if not os.path.isfile(filename):
+                f=open(filename,'w')
+                f.write('[XRE]\n')
+                f.write('EnableProfileMigrator=0\n')
+                f.close()
+
     def copyFiles(self, platform_dir):
         # Check whether we've already copied files over for this partner.
         if not os.path.exists(platform_dir):
@@ -176,6 +192,7 @@ class RepackBase(object):
                 full_path = "%s/%s" % (self.full_partner_path, i)
                 if os.path.exists(full_path):
                     copytree(full_path, "%s/%s" % (platform_dir,i)) 
+            self.createOverrideIni(platform_dir)
 
     def repackBuild(self):
         # Subclass me.
@@ -195,8 +212,10 @@ class RepackBase(object):
 
 #########################################################################
 class RepackLinux(RepackBase):
-    def __init__(self, build, partner_dir, build_dir, repack_dir):
-        super(RepackLinux, self).__init__(build, partner_dir, build_dir, repack_dir)
+    def __init__(self, build, partner_dir, build_dir, repack_dir, repack_info):
+        super(RepackLinux, self).__init__(build, partner_dir,
+                                          build_dir, repack_dir,
+                                          repack_info)
         self.platform = "linux"
         self.uncompressed_build = build.replace('.bz2','')
 
@@ -219,8 +238,10 @@ class RepackLinux(RepackBase):
 
 #########################################################################
 class RepackMac(RepackBase):
-    def __init__(self, build, partner_dir, build_dir, repack_dir):
-        super(RepackMac, self).__init__(build, partner_dir, build_dir, repack_dir)
+    def __init__(self, build, partner_dir, build_dir, repack_dir, repack_info):
+        super(RepackMac, self).__init__(build, partner_dir,
+                                        build_dir, repack_dir,
+                                        repack_info)
         self.platform = "mac"
         self.mountpoint = "/tmp/FirefoxInstaller"
 
@@ -249,6 +270,7 @@ class RepackMac(RepackBase):
             if os.path.exists(full_path):
                 cp_cmd = "cp -r %s stage/Firefox.app/Contents/MacOS" % full_path
                 shellCommand(cp_cmd)
+        self.createOverrideIni('stage/Firefox.app/Contents/MacOS')
 
     def repackBuild(self):
         pkg_cmd = "pkg-dmg --source stage/ --target ../%s --volname 'Firefox' --icon stage/.VolumeIcon.icns --symlink '/Applications':' '" % self.build
@@ -259,8 +281,10 @@ class RepackMac(RepackBase):
 
 #########################################################################
 class RepackWin32(RepackBase):
-    def __init__(self, build, partner_dir, build_dir, repack_dir):
-        super(RepackWin32, self).__init__(build, partner_dir, build_dir, repack_dir)
+    def __init__(self, build, partner_dir, build_dir, repack_dir, repack_info):
+        super(RepackWin32, self).__init__(build, partner_dir,
+                                          build_dir, repack_dir,
+                                          repack_info)
         self.platform = "win32"
 
     def copyFiles(self):
@@ -410,7 +434,8 @@ if __name__ == '__main__':
                     repackObj = repack_build[platform_formatted](filename, 
                                                                  full_partner_dir, 
                                                                  original_builds_dir, 
-                                                                 partner_repack_dir)
+                                                                 partner_repack_dir,
+                                                                 repack_info)
                     repackObj.doRepack()
                 else:
                     repacked_build = "%s/%s" % (partner_repack_dir, filename)
