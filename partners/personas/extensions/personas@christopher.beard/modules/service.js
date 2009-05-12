@@ -54,6 +54,9 @@ Cu.import("resource://personas/modules/URI.js");
 const PERSONAS_EXTENSION_ID = "personas@christopher.beard";
 
 let PersonaService = {
+  THUNDERBIRD_ID: "{3550f703-e582-4d05-9a08-453d09bdfdc6}",
+  FIREFOX_ID:     "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+
   //**************************************************************************//
   // Shortcuts
 
@@ -62,6 +65,13 @@ let PersonaService = {
   get _prefs() {
     delete this._prefs;
     return this._prefs = new Preferences("extensions.personas.");
+  },
+
+  get appInfo() {
+    delete this.appInfo;
+    return this.appInfo = Cc["@mozilla.org/xre/app-info;1"].
+                           getService(Ci.nsIXULAppInfo).
+                           QueryInterface(Ci.nsIXULRuntime);
   },
 
 
@@ -231,11 +241,13 @@ let PersonaService = {
   },
 
   _refreshPersona: function() {
-    // Only refresh the persona if the user selected a specific persona.
-    // If the user selected a random persona, we'll change it the next time
-    // we refresh the directory, and if the user selected the default persona,
-    // we don't need to refresh it, as it doesn't change.
-    if (this.selected != "current" || !this.currentPersona)
+    // Only refresh the persona if the user selected a specific persona
+    // from the gallery.  If the user selected a random persona, we'll change it
+    // the next time we refresh the directory; if the user selected
+    // the default persona, we don't need to refresh it, as it doesn't change;
+    // and if the user selected a custom persona (which doesn't have an ID),
+    // it's not clear what refreshing it would mean.
+    if (this.selected != "current" || !this.currentPersona || !this.currentPersona.id)
       return;
 
     let lastTwoDigits = new String(this.currentPersona.id).substr(-2).split("");

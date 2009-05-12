@@ -102,19 +102,26 @@ function closePopup()
 	}
 }
 
+function print_r(obj)
+{
+	var msg = "";
+
+	for(var i in obj)
+	{
+		msg += i + ":" + obj[i] + "\n";
+	}
+
+	alert(msg);
+}
+
+
 // 창 사이즈 조정.
 function resizeWindow()
-{	
-	var maxX = pop.scrollMaxX + pop.outerWidth + 2;
-	var maxY = pop.scrollMaxY + pop.outerHeight + 2;
-
-	if(crr_menu == "tidCalendar")
+{
+	if(crr_menu == "tidRanking")
 	{
-		maxX = 189;
-		pop.resizeTo(maxX, maxY);
-	}
-	else
-	{
+		var maxX = pop.scrollMaxX + pop.outerWidth + 2;
+		var maxY = pop.scrollMaxY + pop.outerHeight + 2;
 		// 문서의 크기만큼 지정(하지만 생각보다 더 크게 나온다.)
 		pop.resizeTo(maxX, maxY);
 		
@@ -130,7 +137,19 @@ function resizeWindow()
 			pop.resizeBy(0, -1);
 		}
 		pop.resizeBy(0, 2);
+		return;
 	}
+
+	var b = pop.document.getElementsByTagName("body")[0]
+	b.style.overflow = "auto";
+
+	var maxX = b.scrollWidth + 2;
+	var maxY = b.scrollHeight + 2;
+
+	if(crr_menu == "tidNews")	maxX = 245;
+
+	pop.resizeTo(maxX, maxY);
+	b.style.overflow = "hidden";
 }
 
 function viewPopup(anchor_name, pop_name, url, event)

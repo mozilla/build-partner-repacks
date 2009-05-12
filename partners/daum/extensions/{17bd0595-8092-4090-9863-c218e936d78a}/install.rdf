@@ -4,16 +4,16 @@
          xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <RDF:Description RDF:about="rdf:#$CZwll"
                    em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
-                   em:minVersion="2.*"
-                   em:maxVersion="3.*" />
+                   em:minVersion="2.0"
+                   em:maxVersion="3.1b3" />
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
                    em:id="{17bd0595-8092-4090-9863-c218e936d78a}"
-                   em:name="Daum툴바"
-                   em:version="1.0.2.1"
+                   em:name="Daum Toolbar"
+                   em:version="1.0.3"
                    em:creator="Daum DNA Lab"
                    em:description="Daum을 편리하게 사용하기 위한 툴바입니다."
                    em:homepageURL="http://toolbar.daum.net/"
-                   em:updateURL="https://apis.daum.net/firefox/update.rdf">
+                >
     <em:contributor>Yun Seok-chan</em:contributor>
     <em:contributor>Park Sang-kil</em:contributor>
     <em:contributor>Lee Seung-chul</em:contributor>

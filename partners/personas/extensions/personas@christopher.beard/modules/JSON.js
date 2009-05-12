@@ -34,6 +34,30 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * This module wraps the incompatible Gecko 1.9.0 (Firefox 3.0) and Gecko 1.9.1
+ * (Firefox 3.5) JSON APIs, presenting the Gecko 1.9.1 API on both versions,
+ * for extensions that support multiple versions of Gecko-based applications.
+ *
+ * Import this module into your extension to parse and stringify JSON in both
+ * Firefox 3.0 and 3.5 (and other Gecko-based applications, like Thunderbird)
+ * without checking the application's version each time.
+ *
+ * Note: don't import this into the global namespace!  If you do, you'll hork
+ * native application code that expects the Gecko 1.9.0 API.  Instead, import it
+ * into your own object like this:
+ *
+ *   let MyExtension = {
+ *     JSON: null,
+ *     ...
+ *   };
+ *   Components.utils.import("chrome://myextension/modules/JSON.js", MyExtension);
+ *   // Now MyExtension.JSON is an object implementing the Gecko 1.9.1 JSON API.
+ *
+ * The Gecko 1.9.1 (Firefox 3.5) JSON API is documented in the article:
+ *   https://developer.mozilla.org/En/Using_JSON_in_Firefox
+ */
+
 let EXPORTED_SYMBOLS = ["JSON"];
 
 const Cc = Components.classes;
@@ -41,15 +65,15 @@ const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
 
-// This module wraps the inconsistent Firefox 3.0 and 3.1 JSON APIs, presenting
-// the 3.1 API on both versions.  We only need this while we support Firefox 3.0
-// so we don't have to branch each time we want to do JSON work.
+let appInfo = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULAppInfo);
 
-if (Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULAppInfo).version.indexOf("3.0") == 0) {
+if (appInfo.platformVersion.indexOf("1.9.0") == 0) {
+  // Declare JSON with |var| so it'll be defined outside the enclosing
+  // conditional block.
   var JSON = {
-    JSON: null,
-    parse: function(jsonString) { return this.JSON.fromString(jsonString) },
-    stringify: function(jsObject) { return this.JSON.toString(jsObject) }
+      JSON: null,
+      parse: function(jsonString) { return this.JSON.fromString(jsonString) },
+      stringify: function(jsObject) { return this.JSON.toString(jsObject) }
   }
   Cu.import("resource://gre/modules/JSON.jsm", JSON);
 }

@@ -78,7 +78,7 @@
 		image="chrome://daumfox/skin/tb_mail.gif" 
 		tooltiptext="&daumtoolbar.mail.tooltip;">
 		<menupopup id="popMail" position="after_start" class="tb_popup">
-			<iframe id="popMail_frame" width="50" height="50" />
+			<iframe id="popMail_frame" width="257" height="201" />
 		</menupopup>
 	</toolbarbutton>
         <toolbarbutton id="tidCafe"
@@ -121,15 +121,6 @@
 		tooltiptext="&daumtoolbar.calendar.tooltip;">
 		<menupopup id="popCalendar" position="after_start" class="tb_popup">
 			<iframe id="popCalendar_frame" width="50" height="50" />
-		</menupopup>
-	</toolbarbutton>
-        <toolbarbutton id="tidUCC"
-		label="&daumtoolbar.ucc.label;"
-		oncommand="viewPopup('tidUCC', 'popUCC', '&daumtoolbar.ucc.url;');"
-		image="chrome://daumfox/skin/tb_ucc.gif"
-		tooltiptext="&daumtoolbar.ucc.tooltip;">
-		<menupopup id="popUCC" position="after_start" class="tb_popup">
-			<iframe id="popUCC_frame" width="50" height="50"/>
 		</menupopup>
 	</toolbarbutton>
         <toolbarbutton id="tidSearchRank"

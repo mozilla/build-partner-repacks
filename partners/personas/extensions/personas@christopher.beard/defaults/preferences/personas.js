@@ -24,17 +24,17 @@ pref("extensions.personas.lastversion", "firstrun");
 // to another, since we set the If-Modified-Since header so we can find out
 // when a persona record has changed, and that header doesn't get preserved
 // across redirects because of bug 401564.
-pref("extensions.personas.url", "http://www.getpersonas.com/store/");
+pref("extensions.personas.url", "http://www.getpersonas.com/static/");
 
 // The location of the web directory.
 // We load a variety of URLs relative to this one.
-pref("extensions.personas.siteURL", "http://www.getpersonas.com/store/");
+pref("extensions.personas.siteURL", "http://www.getpersonas.com/");
 
 // The authorizedHosts preference is a comma and/or space-separated list
 // of domains allowed to set and preview personas.
 // At a minimum, it must contain a value matching the domain at which the web
 // directory is located in order for the directory to work.
-pref("extensions.personas.authorizedHosts", "getpersonas.com, www.getpersonas.com");
+pref("extensions.personas.authorizedHosts", "getpersonas.com, www.getpersonas.com, personas.services.mozilla.com");
 
 pref("extensions.personas.lastselected0", "");
 pref("extensions.personas.lastselected1", "");

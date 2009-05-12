@@ -7,15 +7,15 @@ function hiddenProc()
 		win = (opener) ? opener : window;
 
 		win.document.getElementById("tidDaum").hidden = !prefBranch.getBoolPref("isViewGoDaum");
-		win.document.getElementById("DaumSearchInput").hidden = !prefBranch.getBoolPref("isViewSearchbar");
-		win.document.getElementById("DaumSearchSubmit").hidden = !prefBranch.getBoolPref("isViewSearchbar");
+		win.document.getElementById("DaumSearchInput").hidden = !prefBranch.getBoolPref("isViewSearchBar");
+		win.document.getElementById("DaumSearchSubmit").hidden = !prefBranch.getBoolPref("isViewSearchBar");
 		win.document.getElementById("tidMail").hidden = !prefBranch.getBoolPref("isViewMail");
 		win.document.getElementById("tidCafe").hidden = !prefBranch.getBoolPref("isViewCafe");
 		win.document.getElementById("tidBlog").hidden = !prefBranch.getBoolPref("isViewBlog");
 		win.document.getElementById("tidDic").hidden = !prefBranch.getBoolPref("isViewDic");
 		win.document.getElementById("tidNews").hidden = !prefBranch.getBoolPref("isViewNews");
 		win.document.getElementById("tidCalendar").hidden = !prefBranch.getBoolPref("isViewCalendar");
-		win.document.getElementById("tidUCC").hidden = !prefBranch.getBoolPref("isViewUCC");
+//		win.document.getElementById("tidUCC").hidden = !prefBranch.getBoolPref("isViewUCC");
 		win.document.getElementById("tidSearchRank").hidden = !prefBranch.getBoolPref("isViewSearchRank");
 		win.document.getElementById("tidRanking").hidden = !prefBranch.getBoolPref("isViewRanking");
 	}

@@ -26,7 +26,7 @@
 		<checkbox id="chkDic" label="&daumtoolbar.config.viewDic;" src="chrome://daumfox/skin/tb_dic.gif"/>
 		<checkbox id="chkNews" label="&daumtoolbar.config.viewNews;" src="chrome://daumfox/skin/tb_news.gif"/>
 		<checkbox id="chkCalendar" label="&daumtoolbar.config.viewCalendar;" src="chrome://daumfox/skin/tb_calendar.gif"/>
-		<checkbox id="chkUCC" label="&daumtoolbar.config.viewUCC;" src="chrome://daumfox/skin/tb_ucc.gif"/>
+<!--		<checkbox id="chkUCC" label="&daumtoolbar.config.viewUCC;" src="chrome://daumfox/skin/tb_ucc.gif"/>//-->
 		<checkbox id="chkSearchRank" label="&daumtoolbar.config.viewSearchRank;" src="chrome://daumfox/skin/tb_searchrank.gif"/>
 		<checkbox id="chkRanking" label="&daumtoolbar.config.viewRanking;" src="chrome://daumfox/skin/tb_ranking.gif"/>
 	</groupbox>
