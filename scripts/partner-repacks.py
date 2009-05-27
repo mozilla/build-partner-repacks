@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys
+import os, re, sys
 from shutil import copy, copytree, move
 from subprocess import Popen
 from optparse import OptionParser
@@ -145,23 +145,74 @@ def getFormattedPlatform(platform):
     return None
 
 #########################################################################
-def getFileExtension(platform):
+def getFilename(version, platform, locale, file_ext):
+    '''Returns the properly formatted filename based on the version string.
+       File location/nomenclature changed starting with 3.5.
+    '''
+    version_formatted = version
+
+    # Deal with alpha/beta releases.
+    m = re.match('(\d\.\d)(a|b|rc)(\d+)', version)
+    if m:
+        if m.group(2) == 'b':
+            greek = "Beta"
+        elif m.group(2) == 'a':
+            greek = "Alpha"
+        else:
+            greek = "RC"
+        version_formatted = "%s %s %s" % (m.group(1), greek, m.group(3))
+        
+    if version.startswith('3.0'):
+        return "firefox-%s.%s.%s.%s" % (version,
+                                        locale,
+                                        platform,
+                                        file_ext)
+    else:
+        if isLinux(platform):            
+            return "firefox-%s.%s" % (version,
+                                      file_ext)
+        if isMac(platform):
+            return "Firefox %s.%s" % (version_formatted,
+                                      file_ext)
+        if isWin(platform):            
+            return "Firefox Setup %s.%s" % (version_formatted,
+                                            file_ext)
+        
+    return None
+
+#########################################################################
+def getLocalFilePath(version, base_dir, platform, locale):
+    '''Returns the properly formatted filepath based on the version string.
+       File location/nomenclature changed starting with 3.5.
+    '''
+    if version.startswith('3.0'):
+        return "%s" % (base_dir)
+
+    return "%s/%s/%s" % (base_dir, platform, locale)
+
+#########################################################################
+def getFileExtension(version, platform):
     if isLinux(platform):
         return "tar.bz2"
     if isMac(platform):
         return "dmg"
     if isWin(platform):
-        return "installer.exe"
+        if version.startswith('3.0'):
+            return "installer.exe"
+        else:
+            return "exe"
     return None
 
 #########################################################################
 class RepackBase(object):
-    def __init__(self, build, partner_dir, build_dir, repack_dir, repack_info):
+    def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
+                 repack_info):
         self.base_dir = os.getcwd()
         self.build = build
         self.full_build_path = "%s/%s/%s" % (self.base_dir, build_dir, build)
         self.full_partner_path = "%s/%s" % (self.base_dir, partner_dir)
-        self.working_dir = "%s/working" % repack_dir
+        self.working_dir = working_dir
+        self.final_dir = final_dir
         self.repack_info = repack_info
         mkdir(self.working_dir)
         self.platform = None
@@ -178,7 +229,7 @@ class RepackBase(object):
         '''
         filename='%s/override.ini' % partner_path
         if self.repack_info.has_key('migrationWizardDisabled'):
-            if not os.path.isfile(filename):
+            if not os.path.isfile(filename): 
                 f=open(filename,'w')
                 f.write('[XRE]\n')
                 f.write('EnableProfileMigrator=0\n')
@@ -195,11 +246,13 @@ class RepackBase(object):
             self.createOverrideIni(platform_dir)
 
     def repackBuild(self):
-        # Subclass me.
         pass
-
+        
     def cleanup(self):
-        move(self.build, '..')
+        if self.final_dir == '.':
+            move(self.build, '..')
+        else:
+            move(self.build, "../%s" % self.final_dir)
 
     def doRepack(self):
         self.announceStart()
@@ -212,10 +265,11 @@ class RepackBase(object):
 
 #########################################################################
 class RepackLinux(RepackBase):
-    def __init__(self, build, partner_dir, build_dir, repack_dir, repack_info):
+    def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
+                 repack_info):
         super(RepackLinux, self).__init__(build, partner_dir,
-                                          build_dir, repack_dir,
-                                          repack_info)
+                                          build_dir, working_dir,
+                                          final_dir, repack_info)
         self.platform = "linux"
         self.uncompressed_build = build.replace('.bz2','')
 
@@ -238,10 +292,11 @@ class RepackLinux(RepackBase):
 
 #########################################################################
 class RepackMac(RepackBase):
-    def __init__(self, build, partner_dir, build_dir, repack_dir, repack_info):
+    def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
+                 repack_info):
         super(RepackMac, self).__init__(build, partner_dir,
-                                        build_dir, repack_dir,
-                                        repack_info)
+                                        build_dir, working_dir,
+                                        final_dir, repack_info)
         self.platform = "mac"
         self.mountpoint = "/tmp/FirefoxInstaller"
 
@@ -253,7 +308,7 @@ class RepackMac(RepackBase):
             print "Error: Firefox is already mounted at %s" % self.mountpoint
             sys.exit(1)
     
-        attach_cmd = "hdiutil attach -mountpoint %s -readonly -private -noautoopen %s" % (self.mountpoint, self.full_build_path)
+        attach_cmd = "hdiutil attach -mountpoint %s -readonly -private -noautoopen \"%s\"" % (self.mountpoint, self.full_build_path)
         shellCommand(attach_cmd)
         rsync_cmd  = "rsync -a %s/ stage/" % self.mountpoint
         shellCommand(rsync_cmd)
@@ -273,25 +328,27 @@ class RepackMac(RepackBase):
         self.createOverrideIni('stage/Firefox.app/Contents/MacOS')
 
     def repackBuild(self):
-        pkg_cmd = "pkg-dmg --source stage/ --target ../%s --volname 'Firefox' --icon stage/.VolumeIcon.icns --symlink '/Applications':' '" % self.build
+        pkg_cmd = "pkg-dmg --source stage/ --target \"%s\" --volname 'Firefox' --icon stage/.VolumeIcon.icns --symlink '/Applications':' '" % self.build
         shellCommand(pkg_cmd)
 
     def cleanup(self):
+        super(RepackMac, self).cleanup()
         rmdirRecursive("stage")
 
 #########################################################################
 class RepackWin32(RepackBase):
-    def __init__(self, build, partner_dir, build_dir, repack_dir, repack_info):
+    def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
+                 repack_info):
         super(RepackWin32, self).__init__(build, partner_dir,
-                                          build_dir, repack_dir,
-                                          repack_info)
+                                          build_dir, working_dir,
+                                          final_dir, repack_info)
         self.platform = "win32"
 
     def copyFiles(self):
         super(RepackWin32, self).copyFiles('nonlocalized')
 
     def repackBuild(self):
-        zip_cmd = "7za a %s nonlocalized" % self.build
+        zip_cmd = "7za a \"%s\" nonlocalized" % self.build
         shellCommand(zip_cmd)
  
 #########################################################################
@@ -397,58 +454,85 @@ if __name__ == '__main__':
             if os.path.exists(partner_repack_dir):
                 rmdirRecursive(partner_repack_dir)
             mkdir(partner_repack_dir)
+            working_dir = "%s/working" % partner_repack_dir
+            mkdir(working_dir)
  
         # Figure out which base builds we need to repack.
         for locale in repack_info['locales']:
             for platform in repack_info['platforms']:
                 platform_formatted = getFormattedPlatform(platform)
-                file_ext = getFileExtension(platform_formatted);
-                filename = "firefox-%s.%s.%s.%s" % (options.version,
-                                                    locale,
-                                                    platform_formatted,
-                                                    file_ext)
-                local_filepath = "%s/%s" % (original_builds_dir,
-                                            filename)
+                file_ext = getFileExtension(options.version,
+                                            platform_formatted);
+                filename = getFilename(options.version,
+                                       platform_formatted,
+                                       locale,
+                                       file_ext)
+                local_filepath = getLocalFilePath(options.version,
+                                                  original_builds_dir,
+                                                  platform_formatted,
+                                                  locale
+                                                 )
+                if not options.verify_only:
+                    mkdir(local_filepath)
+                local_filename = "%s/%s" % (local_filepath, filename)
+                if options.version.startswith('3.0'):
+                    final_dir = '.'
+                else:
+                    final_dir = "%s/%s" % (platform_formatted,
+                                           locale
+                                          )
+                    if not options.verify_only:
+                        mkdir("%s/%s" % (partner_repack_dir, final_dir))
 
                 # Check to see if this build is already on disk, i.e.
                 # has already been downloaded.
                 if not options.verify_only:
-                    if os.path.exists(local_filepath):
+                    if os.path.exists(local_filename):
                         print "### Found %s on disk, not downloading" % filename
                     else:
                         # Download original build from stage
-                        os.chdir(original_builds_dir)
-                        original_build_url = "http://%s%s/%s" % (STAGING_SERVER,
-                                                                 candidates_web_dir,
-                                                                 filename
-                                                            )
-                        wget_cmd = "wget -q %s" % original_build_url
+                        os.chdir(local_filepath)
+                        if options.version.startswith('3.0'):
+                            original_build_url = "http://%s%s/%s" % \
+                                                 (STAGING_SERVER,
+                                                  candidates_web_dir,
+                                                  filename
+                                                 )
+                        else:
+                            original_build_url = "http://%s%s/%s/%s/%s" % \
+                                                 (STAGING_SERVER,
+                                                  candidates_web_dir,
+                                                  platform_formatted,
+                                                  locale,
+                                                  filename
+                                                 )
+                            
+                        wget_cmd = "wget -q \"%s\"" % original_build_url
                         shellCommand(wget_cmd)
                         os.chdir(base_workdir);
- 
+                         
                     # Make sure we have the local file now               
-                    if not os.path.exists(local_filepath):
+                    if not os.path.exists(local_filename):
                         print "Error: Unable to retrieve %s" % filename
                         sys.exit(1)
-                
+
                     repackObj = repack_build[platform_formatted](filename, 
-                                                                 full_partner_dir, 
-                                                                 original_builds_dir, 
-                                                                 partner_repack_dir,
+                                                                 full_partner_dir,
+                                                                 local_filepath,
+                                                                 working_dir,
+                                                                 final_dir,
                                                                  repack_info)
                     repackObj.doRepack()
                 else:
-                    repacked_build = "%s/%s" % (partner_repack_dir, filename)
+                    repacked_build = "%s/%s/%s" % (partner_repack_dir, final_dir, filename)
                     if not os.path.exists(repacked_build):
-                        print "Error: missing expected repack for partner %s: %s" % (partner_dir, filename)
+                        print "Error: missing expected repack for partner %s (%s/%s): %s" % (partner_dir, platform_formatted, locale, filename)
                         error = True
-
-        # Remove our working dir so things are all cleaned up and ready for
-        # easy upload.
-        workingDir = "%s/working" % partner_repack_dir
-        rmdirRecursive(workingDir)
         
         if not options.verify_only:
+            # Remove our working dir so things are all cleaned up and ready for
+            # easy upload.
+            rmdirRecursive(working_dir)
             printSeparator()
 
     if error:
