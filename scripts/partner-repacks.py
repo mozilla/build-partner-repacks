@@ -334,6 +334,7 @@ class RepackMac(RepackBase):
     def cleanup(self):
         super(RepackMac, self).cleanup()
         rmdirRecursive("stage")
+        rmdirRecursive(self.mountpoint)
 
 #########################################################################
 class RepackWin32(RepackBase):
@@ -460,6 +461,11 @@ if __name__ == '__main__':
         # Figure out which base builds we need to repack.
         for locale in repack_info['locales']:
             for platform in repack_info['platforms']:
+                # ja-JP-mac only exists for Mac, so skip non-existent
+                # platform/locale combos.
+                if (locale == 'ja' and isMac(platform)) or \
+                   (locale == 'ja-JP-mac' and not isMac(platform)):
+                   continue
                 platform_formatted = getFormattedPlatform(platform)
                 file_ext = getFileExtension(options.version,
                                             platform_formatted);
