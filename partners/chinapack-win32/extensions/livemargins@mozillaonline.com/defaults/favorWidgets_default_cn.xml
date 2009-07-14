@@ -14,7 +14,7 @@
 		<widgetName>ilinkoolbar.appbuttonbar.album.tooltip</widgetName>
 		<description>Photos</description>
 		<widgetValue>
-		ia={did:60,icon:"XK.png",cmd:"new juiceapp_specialWidgetCommand(btn,juiceapp_favorBoxManager,'chrome://juice/content/appFocus/specialWidget/album/album.htm');",t:"%u80A1%u7968%u884C%u60C5",a:777,tpl:'picccc',tid:60,defaultCallBack:""};
+		ia={did:60,icon:"XK.png",cmd:"new juiceapp_specialWidgetCommand(btn,juiceapp_favorBoxManager,'chrome://juice/content/appFocus/specialWidget/album/album.htm');",t:"%u80A1%u7968%u884C%u60C5",a:777,tpl:'picccc',tid:60,defaultCallBack:"juiceapp_commonUtil.overlay.ns.addScript(win.document,'','try{if(typeof initJurlFunction == \"function\") initJurlFunction();}catch(e){juiceapp_logMessage(e);}');"};
 		</widgetValue>
 		<checked>true</checked>
 	</favorWidget>
@@ -45,12 +45,23 @@
 		</widgetValue>
 		<checked>false</checked>
 	</favorWidget>
+	<!--
 	<favorWidget>
 		<widgetID>10</widgetID>
 		<widgetName>ilinkoolbar.appbuttonbar.games.tooltip</widgetName>
 		<description>部落战争</description>
 		<widgetValue>
 		ia={did:60,icon:"chrome://juice/skin/images/apps_bar/new/YX.png",cmd:"new juiceapp_specialWidgetCommand(btn,juiceapp_favorBoxManager,'http://tools.weelaa.com/tr/');",t:"%u80A1%u7968%u884C%u60C5",a:777,tpl:'picccc',tid:60,defaultCallBack:""};
+		</widgetValue>
+		<checked>false</checked>
+	</favorWidget>	
+	-->	
+	<favorWidget>
+		<widgetID>11</widgetID>
+		<widgetName>ilinkoolbar.appbuttonbar.tv.tooltip</widgetName>
+		<description>电视</description>
+		<widgetValue>
+		ia={did:60,icon:"chrome://juice/skin/images/apps_bar/new/TV.png",cmd:"new juiceapp_specialWidgetCommand(btn,juiceapp_favorBoxManager,'http://www.smgbb.cn/firefox/index.html');",t:"%u80A1%u7968%u884C%u60C5",a:777,tpl:'picccc',tid:60,defaultCallBack:""};
 		</widgetValue>
 		<checked>false</checked>
 	</favorWidget>		

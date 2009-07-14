@@ -451,7 +451,11 @@ var EbayAlertService = {
     this._observerService.
       notifyObservers(aAlert, EBAYCOMP_TOPIC_NEW_ALERT, null);
 
-    this._displaySystemNotification(aAlert);
+    // XXX: commented out this line to prevent generation of system
+    // notifications because they cause a occasional bug that shows a
+    // notification in the top left corner and ther user is not able to dismiss
+    // it unless killing Firefox or restarting the computer.
+    //this._displaySystemNotification(aAlert);
 
     soundsAreEnabled = prefService.
                          getBoolPref(EBAYCOMP_BRANCH_ALERTS_ENABLESOUND);
@@ -489,6 +493,7 @@ var EbayAlertService = {
       title = this._stringBundle.
                 GetStringFromName(EBAYCOMP_ALERT_TITLE_PREFIX + aAlert.type);
       message = aAlert.item.title;
+      var that = this;
       clickListener = {
         observe : function(aSubject, aTopic, aData) {
           if (aTopic == "alertclickcallback"  && mostRecentWindow != null) {
@@ -497,6 +502,8 @@ var EbayAlertService = {
               CC["@growl.info/notifications;1"].getService(CI.grINotifications).
                 makeAppFocused();
             }
+          } else if (aTopic == "alertfinished") {
+            that._alertDisplayed = false;
           }
         }
       };
@@ -504,10 +511,14 @@ var EbayAlertService = {
       // if Growl (MacOS X) is not available, use the standard alerts service
       if (!growlIsAvailable) {
         try {
-          var alertsService = CC["@mozilla.org/alerts-service;1"].
-                                getService(CI.nsIAlertsService);
-          alertsService.
-            showAlertNotification(icon, title, message, true, "", clickListener);
+          if (!this._alertDisplayed) {
+            this._alertDisplayed = true;
+            var alertsService = CC["@mozilla.org/alerts-service;1"].
+                                  getService(CI.nsIAlertsService);
+            alertsService.
+              showAlertNotification(
+                icon, title, message, true, "", clickListener);
+          }
         }
         catch (e) {
           // MacOS X causes an exception when calling getService

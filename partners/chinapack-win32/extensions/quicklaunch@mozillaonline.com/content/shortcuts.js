@@ -18,6 +18,7 @@
 		}
 		
 		var keyIds = new Array(
+				"separator",
 				"key_newNavigatorTab", 
 				"key_close", 
 				"key_reload", 

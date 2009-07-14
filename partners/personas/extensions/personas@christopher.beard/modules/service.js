@@ -74,6 +74,21 @@ let PersonaService = {
                            QueryInterface(Ci.nsIXULRuntime);
   },
 
+  get extension() {
+    delete this.extension;
+
+    if (this.appInfo.ID == this.FIREFOX_ID) {
+      return this.extension = Cc["@mozilla.org/fuel/application;1"].
+                              getService(Ci.fuelIApplication).
+                              extensions.get(PERSONAS_EXTENSION_ID);
+    }
+
+    // If STEEL provides a FUEL-compatible extIExtension interface
+    // in Thunderbird, return it here.
+
+    return this.extension = null;
+  },
+
 
   //**************************************************************************//
   // Initialization & Destruction
@@ -87,6 +102,9 @@ let PersonaService = {
 
     let timerManager = Cc["@mozilla.org/updates/timer-manager;1"].
                        getService(Ci.nsIUpdateTimerManager);
+
+    if (this.extension && this.extension.firstRun)
+      this._setFirstRunPersona();
 
     // Refresh data, then set a timer to refresh it periodically.
     // This isn't quite right, since we always load data on startup, even if
@@ -497,6 +515,42 @@ let PersonaService = {
   resetPersona: function() {
     this.previewingPersona = null;
     Observers.notify("personas:persona:changed");
+  },
+
+  /**
+   * Sets the persona specified by the initial_persona cookie during first run.
+   */
+  _setFirstRunPersona : function() {
+    let authorizedHosts = this._prefs.get("authorizedHosts").split(/[, ]+/);
+    let cookieManager =
+      Cc["@mozilla.org/cookiemanager;1"].getService(Ci.nsICookieManager);
+    let cookieEnu = cookieManager.enumerator;
+    let selectedCookie = null;
+
+    while (cookieEnu.hasMoreElements()) {
+      let cookie = cookieEnu.getNext().QueryInterface(Ci.nsICookie);
+
+      if (cookie.name == "initial_persona" &&
+          authorizedHosts.some(function(v) v == cookie.host)) {
+
+        // There could be more than one "initial_persona" cookie. The cookie
+        // with latest expiration time is selected.
+        if (null == selectedCookie ||
+            cookie.expires > selectedCookie.expires) {
+          selectedCookie = cookie;
+        }
+
+        cookieManager.remove(cookie.host, cookie.name, cookie.path, false);
+      }
+    }
+
+    if (null != selectedCookie) {
+      let personaJSON = decodeURIComponent(selectedCookie.value);
+      this.changeToPersona(JSON.parse(personaJSON));
+    }
+    else {
+      this.changeToPersona(JSON.parse(this._prefs.get("initial")));
+    }
   },
 
   onQuitApplication: function() {

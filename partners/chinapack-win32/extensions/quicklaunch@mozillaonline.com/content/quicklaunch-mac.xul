@@ -9,7 +9,7 @@
 		<toolbarbutton id="quicklaunch-button" class="toolbarbutton-1 quicklaunch-active" label="&quicklaunch-label;" tooltiptext="&quicklaunch-toolTips;" type="menu">
 			<menupopup id="shortcuts-moon-menupopup" onpopupshowing="moon_shortcuts.loadPopup(this)">
 				<menuitem label="&quicklaunch-paintWebpage;" class="menuitem-iconic" image="chrome://quicklaunch/skin/image/screencut.png" oncommand="quicklaunch_openPageWithPreview()"/>
-				<menuseparator/>
+				<menuitem label="&quicklaunch-switchProfile;" class="menuitem-iconic" image="chrome://quicklaunch/skin/image/switchprofile.png" oncommand="quicklaunch_toProfileManager();"/>
 			</menupopup>
 		</toolbarbutton>
 	</toolbarpalette>

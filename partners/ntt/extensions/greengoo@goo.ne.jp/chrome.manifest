@@ -1,3 +1,23 @@
+# ***** BEGIN LICENSE BLOCK *****
+# Green Goo
+# Copyright (C) 2007-2009  NTT Resonant Inc.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# ***** END LICENSE BLOCK *****
+
 content	greengoo	jar:chrome/greengoo.jar!/content/greengoo/
 
 
@@ -97,9 +117,15 @@ overlay	chrome://reporter/content/reportWizard.xul	chrome://greengoo/content/ove
 skin	greengoo	classic/1.0	jar:chrome/greengoo.jar!/skin/classic/greengoo/
 
 override chrome://greengoo/skin/textshadow-compat.css	chrome://greengoo/skin/dummy.css
-override chrome://greengoo/skin/textshadow-compat.css	chrome://greengoo/skin/textshadow-fx3.css	appversion>=3.0b4pre
 override chrome://greengoo/skin/textshadow-targets-compat.css	chrome://greengoo/skin/textshadow-targets-fx2.css
+
+override chrome://greengoo/skin/textshadow-compat.css	chrome://greengoo/skin/textshadow-fx3.css	appversion>=3.0b4pre
 override chrome://greengoo/skin/textshadow-targets-compat.css	chrome://greengoo/skin/dummy.css	appversion>=3.0b4pre
+
+override chrome://greengoo/skin/textshadow-compat.css	chrome://greengoo/skin/dummy.css	appversion>=3.5b4pre
+override chrome://greengoo/skin/textshadow-targets.css	chrome://greengoo/skin/textshadow-targets-fx3.5.css	appversion>=3.5b4pre
+override chrome://greengoo/skin/textshadow-hacks.css	chrome://greengoo/skin/dummy.css	appversion>=3.5b4pre
+
 
 
 locale	greengoo	en-US	jar:chrome/greengoo.jar!/locale/en-US/greengoo/

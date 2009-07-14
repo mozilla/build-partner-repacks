@@ -8,7 +8,7 @@
    xmlns:em="http://www.mozilla.org/2004/em-rdf#">
    <Description about="urn:mozilla:install-manifest">
       <em:id>{62760FD6-B943-48C9-AB09-F99C6FE96088}</em:id>
-      <em:version>1.6.10</em:version>
+      <em:version>1.6.11</em:version>
       <em:name>Firefox Companion for eBay</em:name>
       <em:description>
         View your watching, selling or bidding items.

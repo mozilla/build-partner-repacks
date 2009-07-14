@@ -20,6 +20,8 @@ skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/linux/             ap
 skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/linux/             application={ec8030f7-c20a-464f-9b0e-13a3a9e97384}                      os=SunOS
 skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/linux/             application={ec8030f7-c20a-464f-9b0e-13a3a9e97384}                      os=FreeBSD
 skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/linux/thunderbird/ application={3550f703-e582-4d05-9a08-453d09bdfdc6}                      os=Linux
+skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/linux/thunderbird/ application={3550f703-e582-4d05-9a08-453d09bdfdc6}                      os=SunOS
+skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/linux/thunderbird/ application={3550f703-e582-4d05-9a08-453d09bdfdc6}                      os=FreeBSD
 skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/winxp/thunderbird/ application={3550f703-e582-4d05-9a08-453d09bdfdc6}                      os=WINNT   osversion<6
 skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/vista/thunderbird/ application={3550f703-e582-4d05-9a08-453d09bdfdc6}                      os=WINNT   osversion>=6
 skin  personas  classic/1.0  jar:chrome/personas.jar!/skin/mac/thunderbird/   application={3550f703-e582-4d05-9a08-453d09bdfdc6}                      os=Darwin
@@ -38,11 +40,13 @@ locale   personas   en-US       jar:chrome/personas.jar!/locale/en-US/
 locale   personas   es-CL       jar:chrome/personas.jar!/locale/es-CL/
 #locale   personas   es-ES       chrome/locale/es-ES/
 #locale   personas   es-VE       chrome/locale/es-VE/
+locale   personas   fi-FI       jar:chrome/personas.jar!/locale/fi-FI/
 locale   personas   fr-FR       jar:chrome/personas.jar!/locale/fr-FR/
 locale   personas   fy-NL       jar:chrome/personas.jar!/locale/fy-NL/
 locale   personas   gl-ES       jar:chrome/personas.jar!/locale/gl-ES/
 locale   personas   he-IL       jar:chrome/personas.jar!/locale/he-IL/
 #locale   personas   hr-HR       chrome/locale/hr-HR/
+locale   personas   hu-HU       jar:chrome/personas.jar!/locale/hu-HU/
 locale   personas   it-IT       jar:chrome/personas.jar!/locale/it-IT/
 locale   personas   ja-JP       jar:chrome/personas.jar!/locale/ja-JP/
 locale   personas   ko-KR       jar:chrome/personas.jar!/locale/ko-KR/

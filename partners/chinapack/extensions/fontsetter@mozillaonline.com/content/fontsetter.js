@@ -496,7 +496,9 @@ function fontsetter_checkFirstRun(){
 	// attribute has any effect anyway at the moment).
 	//		window.resizeTo(parseInt(window.outerWidth)+1, window.outerHeight);
 	//		window.resizeTo(parseInt(window.outerWidth)-1, window.outerHeight);
-			if (clearTypeTuner.isClearTypeOn()){
+
+	//			The line below is removed, because I can't remember why it's here
+	//			if (clearTypeTuner.isClearTypeOn()){
 				for (var i = 0; i < localFonts.length; ++i) {
 					if (localFonts[i] == "微软雅黑"){
 						fontsetter_setFont("微软雅黑");
@@ -505,7 +507,7 @@ function fontsetter_checkFirstRun(){
 						clearTypeTuner.setClearTypeOn();
 					}
 				}
-			}
+//			}
 		} catch (e) {
 			LOG("fontsetter: check first run: set clear type exception: " + e.toString());
 			return;

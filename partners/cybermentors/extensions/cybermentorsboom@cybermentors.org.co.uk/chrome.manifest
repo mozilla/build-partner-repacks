@@ -1,0 +1,34 @@
+overlay chrome://browser/content/browser.xul chrome://cybermentorsboom/content/btOverlay.xul
+overlay chrome://browser/content/browser.xul chrome://cybermentorsboom/content/btBoom_cybermentors.xul
+#overlay chrome://browser/content/browser.xul chrome://cybermentorsboom/content/btOverlayHelp.xul os!=Darwin
+#overlay chrome://browser/content/browser.xul chrome://cybermentorsboom/content/btOverlayHelpMac.xul os=Darwin
+#overlay chrome://browser/content/browser.xul chrome://cybermentorsboom/content/btOverlayHelp.xul appversion<3
+#overlay chrome://global/content/customizeToolbar.xul chrome://cybermentorsboom/content/btCustomizeToolbarOverlay.xul
+#Theming - cybermentors
+style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/browser.css
+style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/browser-mac.css os=Darwin
+style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/browser-win.css os!=Darwin
+
+#style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/tabbrowser.css
+#style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/tabbrowser-mac.css os=Darwin appversion<=3.0.*
+#style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/tabbrowser-win.css os!=Darwin
+#style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/tabbrowser-mac35.css os=Darwin appversion>3.0.*
+
+style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/urlbar.css
+style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/urlbar-mac.css os=Darwin appversion<=3.0.*
+style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/urlbar-win.css os!=Darwin
+style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/urlbar-mac35.css os=Darwin appversion>3.0.*
+style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/urlbar-win35.css os!=Darwin appversion>3.0.*
+
+#style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/menubar-win.css os!=Darwin
+
+#style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/toolbarbuttons.css
+#style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/toolbarbuttons-mac.css os=Darwin
+#style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/toolbarbuttons-win.css os!=Darwin
+#style chrome://global/content/customizeToolbar.xul chrome://cybermentorsboom/skin/cybermentors/toolbarbuttons.css
+
+style chrome://browser/content/browser.xul chrome://cybermentorsboom/skin/cybermentors/style-override.css
+
+content  cybermentorsboom             chrome/chromeFiles/content/
+skin     cybermentorsboom classic/2.0 chrome/chromeFiles/skin/
+locale   cybermentorsboom en-US       chrome/chromeFiles/locale/en-US/

@@ -1,0 +1,299 @@
+/* XP Specific URLBar Changes */
+#main-window[btBoom="cybermentors"]
+  #urlbar {
+    border: none !important;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    height: 26px !important;
+    padding-right: 11px !important;
+  }
+
+/* Fixed bg color because of text select bg bug on winxp */
+ #main-window[btBoom="cybermentors"]
+  #urlbar .textbox-input-box {
+    background-color: rgba(255,255,255,0) !important;
+    margin-left: 0px !important; margin-right: 0px !important;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #identity-box {
+    border: none !important;
+    margin-left: 0px !important;
+    min-width: 44px;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #identity-box > hbox {
+    border: none !important;
+    background-color: transparent !important;
+    background-image: none !important; 
+    -moz-border-radius: 0px !important;
+    margin-right: 0px !important;
+}
+
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedIdentity {
+    margin-right: 0px !important;
+    padding-left: 12px !important;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedIdentity > hbox {
+    padding-right: 0px !important;
+    -moz-box-align: center !important;
+  }
+/* Win32 fix, moving this to smaller padding, from 20,
+   too much space to right */
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedIdentity > hbox > label {
+    margin-right: 0px !important;
+    padding-right: 5px !important;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedDomain {
+    margin-right: 0px !important;
+    padding-left: 12px !important;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedDomain > hbox {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+    -moz-box-align: center !important;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedDomain > hbox > label {
+    margin-right: 0px !important;
+    padding-right: 13px !important;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #identity-box.unknownIdentity > hbox > #identity-icon-label {
+    display: -moz-box !important;
+  }
+
+/* weird extra spacing on the right in windows */
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedDomain > hbox > label#identity-icon-label[value=""] {
+    display: -moz-box !important;
+    min-width: 1px;
+    width: 1px !important;
+    padding: 0px !important;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #identity-icon-label[value=""] {
+    display: -moz-box !important;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #urlbar > .autocomplete-history-dropmarker {
+    background: none !important;
+    border: none !important;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #urlbar > .autocomplete-history-dropmarker:hover {
+    background: none !important;
+    border: none !important;
+  }
+
+/* Win32 specific styling */
+#main-window[btBoom="cybermentors"]
+  #searchbar .searchbar-textbox {
+    background-color: transparent !important;
+    border: none !important;
+  }
+  
+/* Fixed bg color because of text select bg bug on winxp */
+#main-window[btBoom="cybermentors"]
+  .searchbar-textbox > .autocomplete-textbox-container > hbox.textbox-input-box {
+    background-color: rgba(255,255,255,0) !important;
+    margin-left: 44px !important;
+    min-height: 26px !important;
+  }
+  
+#main-window[btBoom="cybermentors"]
+  .searchbar-textbox  .searchbar-engine-button {
+    margin-left: -44px !important;
+    min-width: 44px !important; min-height: 26px !important;
+    border: none !important;
+  }
+  
+#main-window[btBoom="cybermentors"]
+  .searchbar-textbox .search-go-container {
+    min-height: 26px !important; min-width: 26px !important;
+  }
+  
+#main-window[btBoom="cybermentors"]
+  .searchbar-textbox .searchbar-dropmarker-image {
+    margin-left: 1px;
+  }
+  
+/* Win32 fix for the blue highlight for detected engine notification showing up
+ * in the wrong location
+ *
+ */
+#main-window[btBoom="cybermentors"]
+  .searchbar-engine-button > .button-box {
+    background-position: 22px 50%;
+  }
+
+
+/*
+ * Win32 fixes for the identity part of the urlbar
+ */
+
+/* Regular identity bar (unknown identity) puts the favicon to the left. */
+#main-window[btBoom="cybermentors"]
+  #identity-box.unknownIdentity #page-proxy-stack {
+    padding-left: 8px;
+    padding-right: 0px;
+  }
+
+
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedDomain {
+   
+  }
+
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedDomain > hbox {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-secure-end.png") no-repeat center right !important;
+    padding-right: 13px !important;
+  }
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedDomain > hbox > #identity-icon-label {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-secure-mid.png") repeat-x center center !important;
+    margin-right: 0px;
+  }
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedDomain > hbox > #page-proxy-stack {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-secure-mid.png") repeat-x center center !important;
+    min-height: 26px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+  
+/*active */
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedDomain:hover:active > hbox {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-secure-end-active.png") no-repeat center right !important;
+    padding-right: 13px !important;
+  }
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedDomain:hover:active > hbox > #identity-icon-label {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-secure-mid-active.png") repeat-x center center !important;
+    margin-right: 0px;
+  }
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedDomain:hover:active > hbox > #page-proxy-stack {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-secure-mid-active.png") repeat-x center center !important;
+    min-height: 26px;
+  }  
+  
+/*focused */
+#main-window[btBoom="cybermentors"]
+  #urlbar[focused="true"] > #identity-box.verifiedDomain > hbox {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-secure-end-focused.png") no-repeat center right !important;
+    padding-right: 13px !important;
+  }
+#main-window[btBoom="cybermentors"]
+  #urlbar[focused="true"] > #identity-box.verifiedDomain > hbox > #identity-icon-label {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-secure-mid-focused.png") repeat-x center center !important;
+    margin-right: 0px;
+  }
+#main-window[btBoom="cybermentors"]
+  #urlbar[focused="true"] > #identity-box.verifiedDomain > hbox > #page-proxy-stack {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-secure-mid-focused.png") repeat-x center center !important;
+    min-height: 26px;
+  }  
+
+/* Verified Identity Fix in windows */
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedIdentity {
+    
+  }
+
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedIdentity > hbox {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-verified-end.png") no-repeat center right !important;
+    padding-right: 13px !important;
+    padding-left: 0px !important;
+  }
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedIdentity > hbox > #identity-icon-label {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-verified-mid.png") repeat-x center center !important;
+    margin-right: 0px;
+  }
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedIdentity > hbox > #page-proxy-stack {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-verified-mid.png") repeat-x center center !important;
+    min-height: 26px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+  
+/*active */
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedIdentity:hover:active > hbox {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-verified-end-active.png") no-repeat center right !important;
+    padding-right: 13px !important;
+    padding-left: 0px !important;
+  }
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedIdentity:hover:active > hbox > #identity-icon-label {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-verified-mid-active.png") repeat-x center center !important;
+    margin-right: 0px;
+  }
+#main-window[btBoom="cybermentors"]
+  #identity-box.verifiedIdentity:hover:active > hbox > #page-proxy-stack {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-verified-mid-active.png") repeat-x center center !important;
+    min-height: 26px;
+  }  
+  
+/*focused */
+#main-window[btBoom="cybermentors"]
+  #urlbar[focused="true"] > #identity-box.verifiedIdentity > hbox {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-verified-end-focused.png") no-repeat center right !important;
+    padding-right: 13px !important;
+    padding-left: 0px !important;
+  }
+#main-window[btBoom="cybermentors"]
+  #urlbar[focused="true"] > #identity-box.verifiedIdentity > hbox > #identity-icon-label {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-verified-mid-focused.png") repeat-x center center !important;
+    margin-right: 0px;
+  }
+#main-window[btBoom="cybermentors"]
+  #urlbar[focused="true"] > #identity-box.verifiedIdentity > hbox > #page-proxy-stack {
+    background: url("../../skin/cybermentors/resources/urlbar/startcap-verified-mid-focused.png") repeat-x center center !important;
+    min-height: 26px;
+  }  
+
+/* Linux Fixes */
+#main-window[btBoom="cybermentors"]
+  #urlbar .autocomplete-textbox-container {
+    -moz-appearance: none;
+  }
+/* Fix for xp classic theme */
+#main-window[btBoom="cybermentors"]
+  #urlbar {
+    -moz-appearance: none;
+  }
+/* This is breaking windows, need a separate linux file
+#main-window[btBoom="cybermentors"]
+  #urlbar > .autocomplete-history-dropmarker {
+    -moz-appearance: none;
+    list-style-image: url("../../skin/cybermentors/resources/icons/autocomplete-dropmarker.png") !important;
+    -moz-box-align: center;
+    border: none !important;
+    width: 16px;
+  }
+*/
+  
+#main-window[btBoom="cybermentors"]
+  #searchbar .searchbar-textbox {
+    -moz-appearance: none;
+  }

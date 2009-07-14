@@ -5,7 +5,7 @@
  
    <em:id>{19503e42-ca3c-4c27-b1e2-9cdb2170ee34}</em:id>
    <em:name>FlashGot</em:name>
-   <em:version>1.1.8</em:version>
+   <em:version>1.1.9.4</em:version>
    <em:description>Enables Firefox, Mozilla Suite, Netscape and Thunderbird to handle single and massive (&quot;all&quot; and &quot;selection&quot;) downloads using the most popular external download managers for Windows, Mac OS X, Linux and FreeBSD (dozens currently supported, see Extension's Home Page for details). FlashGot offers also a Build Gallery functionality which helps to synthetize full media galleries in one page, from serial contents originally scattered on several pages, for easy and fast &quot;download all&quot;.</em:description>
    <em:creator>Giorgio Maone</em:creator>
    
@@ -85,7 +85,7 @@
      <Description>
      <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
      <em:minVersion>1.5</em:minVersion>
-     <em:maxVersion>3.2a1pre</em:maxVersion>
+     <em:maxVersion>3.6a1pre</em:maxVersion>
      </Description>
    </em:targetApplication>
    

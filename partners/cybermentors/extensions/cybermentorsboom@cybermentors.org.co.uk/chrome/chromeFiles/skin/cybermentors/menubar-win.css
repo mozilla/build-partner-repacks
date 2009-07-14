@@ -1,0 +1,35 @@
+#main-window[btBoom="cybermentors"]
+  #toolbar-menubar menubar > menu {
+    color: #000 !important;
+  }
+
+#main-window[btBoom="cybermentors"] #main-menubar > menu:hover {
+  opacity: 0.75;
+}
+  
+/* Menubar Text BG styling for windows/linux 
+#main-window[btBoom="cybermentors"] #main-menubar > menu {
+  -moz-appearance: none;
+  background-color: transparent;
+  background-image: url("../../skin/cybermentors/resources/menubar/txt-end_bg.png");
+  background-repeat: no-repeat;
+  background-position: top right;
+  min-height: 16px;
+  -moz-box-align: start !important;
+  padding-right: 10px;
+  border: none !important;
+  margin-top: 3px;
+  margin-right: 2px;
+}
+  
+  #main-window[btBoom="cybermentors"] #main-menubar > menu > label {
+    background-color: transparent;
+    background-image: url("../../skin/cybermentors/resources/menubar/txt-start_bg.png");
+    background-repeat: no-repeat;
+    background-position: top left;
+    min-height: 16px;
+    padding-left: 10px;
+    margin: 0px 0px 0px 0px !important;
+    color: #fff;
+    font-weight: bold;
+  }

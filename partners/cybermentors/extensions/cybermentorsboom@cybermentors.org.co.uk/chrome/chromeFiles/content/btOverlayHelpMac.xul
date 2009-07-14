@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE btClient SYSTEM "../locale/btClient.dtd">
+<overlay
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script src="chrome://browser/content/utilityOverlay.js"/>
+
+    <menupopup id="menu_HelpPopup">
+
+    <menuseparator id="bt-helpmenu-separator"/>
+    <menuitem label="&bt-helpmenu.label;"
+              id="bt-help"
+              oncommand="BrandThunder.clients.&btClient;.utilities.openLink(BrandThunder.clients.&btClient;, event, 'http://getsatisfaction.com/brandthunder');"
+              onclick="checkForMiddleClick(this, event);"/>
+  </menupopup> 
+</overlay>

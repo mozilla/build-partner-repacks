@@ -8,7 +8,7 @@
 	<toolbarpalette id="BrowserToolbarPalette">
 		<toolbarbutton id="quicklaunch-button" class="toolbarbutton-1 quicklaunch-active" label="&quicklaunch-label;" tooltiptext="&quicklaunch-toolTips;" type="menu">
 			<menupopup id="shortcuts-moon-menupopup" onpopupshowing="moon_shortcuts.loadPopup(this)">
-				<menuseparator/>
+				<menuitem label="&quicklaunch-switchProfile;" class="menuitem-iconic" image="chrome://quicklaunch/skin/image/switchprofile.png" oncommand="quicklaunch_toProfileManager();"/>
 			</menupopup>
 		</toolbarbutton>
 	</toolbarpalette>

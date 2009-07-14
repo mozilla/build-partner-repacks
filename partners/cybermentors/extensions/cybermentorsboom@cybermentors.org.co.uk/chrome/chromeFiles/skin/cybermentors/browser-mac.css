@@ -1,0 +1,15 @@
+
+/* Workaround for Firefox #main-window background bug */
+#main-window[btBoom="cybermentors"]
+  menupopup > arrowscrollbox,
+#main-window[btBoom="cybermentors"]
+  popup:not([id="autoscroller"]) > arrowscrollbox {
+    -moz-appearance: menupopup !important;
+  }
+
+#bt-cybermentors-toolbar bttoolbarbutton:not([type="menu"]) button hbox {
+  padding-bottom: 2px !important;
+}
+#bt-cybermentors-toolbar bttoolbarbutton[type="menu"] button hbox {
+  padding-bottom: 1px !important;
+}

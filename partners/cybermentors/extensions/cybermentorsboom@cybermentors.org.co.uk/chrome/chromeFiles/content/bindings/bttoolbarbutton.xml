@@ -1,0 +1,287 @@
+<?xml version="1.0"?>
+
+<bindings id="btbuttonBindings"
+			xmlns="http://www.mozilla.org/xbl"
+			xmlns:html="http://www.w3.org/1999/xhtml"
+			xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+			xmlns:xbl="http://www.mozilla.org/xbl">
+
+	<binding id="bttoolbarbutton" extends="xul:box">
+		<content>
+		<xul:hbox>
+				<xul:button anonid="bttoolbarbutton-button" xbl:inherits="label,type">
+					<xul:menupopup anonid="bttoolbarbutton-popup">
+						<children/>
+					</xul:menupopup>
+				</xul:button>
+			</xul:hbox>
+		</content>
+		<handlers>
+			<handler event="mouseover">
+				<![CDATA[
+			if (this.adfeed) {
+				this.buttonTimer = window.setTimeout(this.displayShoppingTip(this), 500);
+			}
+				]]>
+			</handler>
+			<handler event="mouseout">
+				<![CDATA[
+				if (this.adfeed && this.buttonTimer) {
+					window.clearTimeout(this.buttonTimer);
+					this.buttonTimer = 0;
+				}
+				]]>
+			</handler>
+			<handler event="command">
+				<![CDATA[
+					var target;
+					if (event.originalTarget.id) {
+						target = event.originalTarget;
+					} else {
+						target = event.target;
+					}
+					if (target.hasAttribute("bt-url")) {
+						this.brandObject.utilities.openLink(this.brandObject, event, target.getAttribute("bt-url"));
+					} else if (target.hasAttribute("bt-sidebar")) {
+					  var sidebar = target.getAttribute("bt-sidebar");
+						toggleSidebar(sidebar);
+						if (!document.getElementById(sidebar).hasAttribute("checked")) {
+						  document.getElementById("main-window").removeAttribute("btSidebar");
+						}
+					}
+					if (this.hasAttribute("type") && (this.getAttribute("type") == "menu-button")) {
+						if (target.nodeName == "menuitem") {
+							this.setAttribute("label", target.getAttribute("label"));
+							this.setAttribute("bt-url", target.getAttribute("bt-url"));
+							if (this.btPrefBranch) {
+								this.btPrefBranch.setCharPref(this.id + ".url", target.getAttribute("bt-url"))
+								this.btPrefBranch.setCharPref(this.id + ".label", target.getAttribute("label"))
+							}
+						}
+					}
+					if (this.adfeed) {
+						this.shoppingtooltip.hidePopup();
+					}
+				]]>
+			</handler>
+		</handlers>
+		<implementation>
+			<constructor>
+				<![CDATA[
+				this.observerService = Components.classes["@mozilla.org/observer-service;1"]
+																				 .getService(Components.interfaces.nsIObserverService)
+
+				if (this.hasAttribute('btBoomBundle')) {
+					this.btBoomBundle = document.getElementById(this.getAttribute('btBoomBundle'));
+				}
+				if (this.hasAttribute('brand')) {
+					this.brandObject = BrandThunder.clients[this.getAttribute('brand')];
+				}
+				if (this.hasAttribute('adfeed')) {
+					this.adfeed = this.getAttribute('adfeed');
+				}
+				
+				if (this.brandObject) {
+					this.btPrefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+																				.getService(Components.interfaces.nsIPrefService)
+																				.getBranch("extensions.brandthunder.");
+				}
+				if (this.btBoomBundle) {
+					var label = this.getString(this.id + ".label");
+					if (label) {
+						this.setAttribute("label", label);
+					}
+					var type = this.getAttribute("type");
+					switch (type) {
+						case "menu-button":
+							try {
+								url = this.btPrefBranch.getCharPref(this.id + ".url");
+								this.setAttribute("bt-url", url);
+							} catch (ex) {}
+							try {
+								label = this.btPrefBranch.getCharPref(this.id + ".label");
+								this.setAttribute("label", label);
+							} catch (ex) {}
+						case "menu":
+							var menupopup = getAnonymousElementByAttribute(this, "anonid", "bttoolbarbutton-popup");
+							if (menupopup.childNodes.length == 0) {
+								var i = 1;
+								var menuitem;
+								while ((label = this.getString(this.id + "-" + i + ".label"))) {
+								    if (label.match(/-+/g)) {
+									  menuitem = document.createElement("menuseparator");
+									} else {
+									  menuitem = document.createElement("menuitem");
+									  menuitem.setAttribute("label", label);
+									  menuitem.setAttribute("id", this.id + "-" + i);
+									  url = this.getString(this.id + "-" + i + ".url");
+									  if (url) {
+										  menuitem.setAttribute("bt-url", url);
+									  }
+									  sidebar = this.getString(this.id + "-" + i + ".sidebar");
+									  if (sidebar) {
+										  menuitem.setAttribute("bt-sidebar", sidebar);
+									  }
+									}
+									menupopup.appendChild(menuitem);
+									i++;
+								}
+							}
+						default:
+							var url = this.getString(this.id + ".url");
+							if (url) {
+								this.setAttribute("bt-url", url);
+							} else {
+								var sidebar = this.getString(this.id + ".sidebar");
+								if (sidebar) {
+									this.setAttribute("bt-sidebar", sidebar);
+								}
+							}
+					}
+					if (this.adfeed) {
+										var mainPopupSet = document.getElementById("mainPopupSet");
+				this.shoppingtooltip = document.createElement("panel");
+				this.shoppingtooltip.setAttribute("id", this.id + "-tooltip")
+				this.shoppingimage = document.createElement("image");
+				this.shoppingimage.setAttribute("id", this.id + "-tooltip-image");
+				this.shoppingimage.addEventListener("click", this.clickedTip(this), false);
+				this.shoppingimage.addEventListener("mouseover", this.cancelTimeout(this), false);
+				this.shoppingimage.addEventListener("mouseout", this.startTimeout(this), false);
+				this.shoppingtooltip.appendChild(this.shoppingimage);
+				mainPopupSet.appendChild(this.shoppingtooltip);
+				this.getShoppingAdFeed();
+
+					}
+				}
+				]]>
+			</constructor>
+			<destructor>
+			if (this.adfeed) {
+				this.shoppingimage.removeEventListener("click", this.clickedTip(this), false);
+				this.shoppingimage.removeEventListener("mouseover", this.cancelTimeout(this), false);
+				this.shoppingimage.removeEventListener("mouseout", this.startTimeout(this), false);
+			}
+			</destructor>
+			<field name="btPrefBranch"/>
+			<field name="brandObject"/>
+			<field name="btBoomBundle"/>
+			<field name="observerService"/>
+			<field name="adfeed"/>
+			<field name="shoppingtooltip"/>
+			<field name="shoppingimage"/>
+			<field name="popupTimer">
+				0
+			</field>
+			<field name="buttonTimer">
+				0
+			</field>
+			<method name="cancelTimeout">
+				<parameter name="btshoppingbutton"/>
+				<body>
+				return function() {
+					if (btshoppingbutton.popupTimer > 0) {
+						window.clearTimeout(btshoppingbutton.popupTimer);
+					}
+				}
+				</body>
+			</method>
+			<method name="startTimeout">
+				<parameter name="btshoppingbutton"/>
+				<body>
+				return function() {
+					btshoppingbutton.cancelTimeout();
+					function hideShoppingTip() {
+						btshoppingbutton.shoppingtooltip.hidePopup();
+					}
+					btshoppingbutton.popupTimer = window.setTimeout(hideShoppingTip, 2000);
+				}
+				</body>
+			</method>
+			<method name="displayShoppingTip">
+				<parameter name="btshoppingbutton"/>
+				<body>
+					<![CDATA[
+				return function() {
+			if (btshoppingbutton.shoppingimage.hasAttribute("url") &&
+				btshoppingbutton.shoppingimage.hasAttribute("src")) {
+						btshoppingbutton.shoppingtooltip.openPopup(btshoppingbutton, "after_pointer", 0, 0, false, null);
+						if (btshoppingbutton.popupTimer > 0) {
+							window.clearTimeout(btshoppingbutton.popupTimer);
+						}
+						function hideShoppingTip() {
+							btshoppingbutton.shoppingtooltip.hidePopup();
+						}
+						btshoppingbutton.popupTimer = window.setTimeout(hideShoppingTip, 2000);
+			}
+				}
+					]]>
+				</body>
+			</method>
+			<method name="clickedTip">
+				<parameter name="btshoppingbutton"/>
+				<body>
+				return function(event) {
+					if (event.target.hasAttribute("url")) {
+						btshoppingbutton.brandObject.utilities.openLink(btshoppingbutton.brandObject, event, event.target.getAttribute("url"));
+					}
+					btshoppingbutton.shoppingtooltip.hidePopup();
+				}
+				</body>
+			</method>
+			<method name="getShoppingAdFeed">
+				<body>
+					<![CDATA[
+					var btshoppingbutton = this;
+					var request = new XMLHttpRequest();
+					request.open('GET', this.adfeed, true);
+					request.onreadystatechange = function() {
+						if (request.readyState == 4) {
+							if (request.status == 200) {
+								var domParser = Components.classes["@mozilla.org/xmlextras/domparser;1"]
+																					.createInstance(Components.interfaces.nsIDOMParser);
+								var doc = domParser.parseFromString(request.responseText, "text/xml");
+								var entrys = doc.getElementsByTagName("entry");
+								var curEntry = 0;
+								if (entrys.length > 1) {
+									curEntry=Math.floor(Math.random()*entrys.length);
+								}
+								var links = entrys[curEntry].getElementsByTagName("link");
+								for (var i=0; i < links.length; i++) {
+									if (links[i].hasAttribute("type") && (links[i].getAttribute("type") == "text/html")) {
+										btshoppingbutton.shoppingimage.setAttribute("url", links[i].getAttribute("href"));
+									}
+									if (links[i].hasAttribute("type") && (links[i].getAttribute("type") == "image/jpeg")) {
+										btshoppingbutton.shoppingimage.setAttribute("src", links[i].getAttribute("href"));
+									}
+								}
+							}
+						}
+					}
+					request.send(null);
+					]]>
+				</body>
+			</method>      
+			<method name="getString">
+				<parameter name="id"/>
+				<body>
+					<![CDATA[
+					var string;
+					if (this.btBoomBundle) {
+						try {
+							string = this.btBoomBundle.getString(id);
+						} catch(ex) {
+						}
+					}
+					if (!string) {
+						try {
+							string = this.btClientBundle.getString(id);
+						} catch(ex) {
+						}
+					}
+					return string;
+					]]>
+				</body>
+			</method>
+		</implementation>
+	</binding>
+</bindings>

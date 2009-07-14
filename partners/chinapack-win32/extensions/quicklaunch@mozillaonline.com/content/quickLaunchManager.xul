@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<!DOCTYPE dialog [
+<!ENTITY % quicklaunchDTD SYSTEM "chrome://quicklaunch/locale/quicklaunch.dtd">
+%quicklaunchDTD;
+]>
+
+<dialog id="quickLaunchManagerWindow"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="&quicklaunch-manageQuickLaunch;"
+        windowtype="mozilla:quickLaunchManager"
+        orient="vertical"
+        style="width: 42em;"
+        buttons="accept"
+        buttonlabelaccept="&accept.label;"
+        ondialogaccept="return AcceptDialog();"
+        onload="StartUp();">
+
+  <script type="application/x-javascript" src="chrome://quicklaunch/content/quickLaunchManager.js"/>
+
+  <dialogheader class="header-large" id="header" title="&quickLaunchManager.title;" description="&quickLaunchManager.Description;"/>
+
+  <hbox class="wizard-box" flex="1">
+
+    <!-- instructions -->
+    <vbox>
+     <hbox>
+        <vbox flex="1" id="managebuttons">
+          <button id="newButton" label="&newButton.label;" accesskey="&newButton.accesskey;" oncommand="addQuickLaunch();"/>
+          <button id="renameButton" label="&editButton.label;" accesskey="&editButton.accesskey;" oncommand="editQuickLaunch();"/>
+          <button id="deleteButton" label="&deleteButton.label;" accesskey="&deleteButton.accesskey;" oncommand="deleteQuickLaunch();"/>
+        </vbox>
+        <spacer flex="2"/>
+      </hbox>
+    </vbox>
+
+    <separator class="thin" orient="vertical"/>
+
+    <vbox flex="1">
+      <tree id="quicklaunch-tree" flex="1" style="height: 0px;" seltype="single"
+            hidecolumnpicker="true"
+            onselect="DoEnabling();"
+            onkeypress="HandleKeyEvent(event);">
+        <treecols>
+		  <treecol label="&quickLaunchColoums.image;" flex="1"/>
+          <treecol label="&quickLaunchColoums.name;" flex="1"/>
+		  <treecol label="&quickLaunchColoums.path;" flex="1"/>
+		  <treecol label="&quickLaunchColoums.arguments;" flex="1"/>
+        </treecols>
+        <treechildren id="quicklaunchs" ondblclick="HandleClickEvent(event);" datasources="profile:quicklaunch.sqlite" ref="*" querytype="storage">
+		  <template>
+		    <query>
+			  select name,path,args from quicklaunchs
+			</query>
+			<action>
+			  <treeitem uri="?">
+			    <treerow>
+				  <treecell src="moz-icon:file:///?path"/>
+				  <treecell label="?name"/>
+				  <treecell label="?path"/>
+				  <treecell label="?args"/>
+				</treerow>
+			  </treeitem>
+			</action>
+		  </template>
+		</treechildren>
+      </tree>
+    </vbox>
+  </hbox>
+</dialog>

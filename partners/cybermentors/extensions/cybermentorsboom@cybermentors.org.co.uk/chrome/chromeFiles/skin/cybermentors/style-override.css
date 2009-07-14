@@ -1,0 +1,130 @@
+#bt-cybermentors-toolbar {
+  background-color: #bce6e8 !important;
+  height: 25px !important;
+  -moz-appearance: none;
+}
+
+/* BT Boom Button */
+#bt-cybermentors-toolbar btboombutton button {
+  -moz-appearance: none;
+	background-color: transparent !important;
+  min-width: 10px;
+  min-height: 20px;
+  border: 0px solid #ff0000;
+  margin-top: 0px !important; margin-bottom: 0px !important;
+  margin-right: 3px;
+  margin-left: 3px;
+  padding-left: 0px !important;
+  padding-right: 5px !important;
+  padding-top: 0px;
+  padding-bottom: 0px;
+	height: 22px;
+}
+
+
+#bt-cybermentors-toolbar bttoolbarbutton.bt-default button {
+	background-image: url("../../skin/cybermentors/resources/toolbar/btn-norm-end-bg.png");
+	padding-right: 7px!important;
+	color: #000000;
+}
+
+#bt-cybermentors-toolbar bttoolbarbutton.bt-default button > hbox {
+  background-image: url("../../skin/cybermentors/resources/toolbar/btn-norm-start-bg.png");
+  padding-left: 6px; padding-right: 0px;
+}
+
+#bt-cybermentors-toolbar bttoolbarbutton.bt-default:hover button {
+  background-image: url("../../skin/cybermentors/resources/toolbar/btn-hover-end-bg.png");
+}
+#bt-cybermentors-toolbar bttoolbarbutton.bt-default:hover:active button,
+#bt-cybermentors-toolbar bttoolbarbutton.bt-default:active button {
+  background-image: url("../../skin/cybermentors/resources/toolbar/btn-active-end-bg.png");
+}
+
+#bt-cybermentors-toolbar bttoolbarbutton.bt-default:hover button > hbox {
+  background-image: url("../../skin/cybermentors/resources/toolbar/btn-hover-start-bg.png");
+}
+
+#bt-cybermentors-toolbar bttoolbarbutton.bt-default:hover:active button > hbox,
+#bt-cybermentors-toolbar bttoolbarbutton.bt-default:active button > hbox {
+  background-image: url("../../skin/cybermentors/resources/toolbar/btn-active-start-bg.png");
+}
+/*
+#bt-cybermentors-toolbar btfeedreader2 #feedreader-sidebar-toggle {
+	background-image: url("../../skin/cybermentors/resources/toolbar/feed-expand-btn.png") !important;
+}
+
+#bt-cybermentors-toolbar btfeedreader2 #feedreader-sidebar-toggle[checked="true"] {
+	background-image: url("../../skin/cybermentors/resources/toolbar/feed-minimize-btn.png") !important;
+}
+
+#bt-cybermentors-toolbar btfeedreader2 #feedreader-reload {
+	background-image: url("../../skin/cybermentors/resources/toolbar/feed-reload-btn.png") !important;
+}
+#bt-cybermentors-toolbar btfeedreader2 #feedreader-left-cap {
+	background-image: url("../../skin/cybermentors/resources/toolbar/feed-txt-left.png");
+}
+
+#bt-cybermentors-toolbar btfeedreader2 #feedreader-right-cap {
+	background-image: url("../../skin/cybermentors/resources/toolbar/feed-txt-right.png");
+}
+
+#bt-cybermentors-toolbar btfeedreader2 #feedreader-previous {
+	background-image: url("../../skin/cybermentors/resources/toolbar/feed-prev-btn.png") !important;
+}
+
+#bt-cybermentors-toolbar btfeedreader2 #feedreader-next {
+	background-image: url("../../skin/cybermentors/resources/toolbar/feed-next-btn.png") !important;
+}
+
+#bt-cybermentors-toolbar btfeedreader2 #feedreader > #feedreader-feedname {
+	background-image: url("../../skin/cybermentors/resources/toolbar/feed-txt-bg.png") !important;
+}
+#bt-cybermentors-toolbar btfeedreader2 #feedreader > #feedreader-textbox {
+	background-image: url("../../skin/cybermentors/resources/toolbar/feed-txt-bg.png") !important;
+}
+
+#bt-cybermentors-toolbar btfeedreader2 #feedreader-reload {
+	display: none;
+}
+*/
+
+/* Social Buttons */
+/*
+ #bt-cybermentors-toolbar bttoolbarbutton.bt-social-button button {
+  opacity: 0.75;
+  min-width: 20px;
+  min-height: 20px;
+  height: 20px;
+  width: 20px;
+  background-repeat: no-repeat;
+  background-position: center left;
+  margin-left: 2px !important;
+  margin-right: 2px !important;
+  margin: 0px;
+  cursor: pointer;
+  -moz-appearance: none;
+  border: none;
+  background-color: transparent;
+}
+
+#bt-cybermentors-toolbar bttoolbarbutton.bt-social-button button:hover {
+	opacity: 1;
+}
+
+#bt-cybermentors-toolbar bttoolbarbutton#bt-cybermentors-button-youtube button {
+  background-image: url("../../skin/cybermentors/resources/toolbar/youtube-icon.png");
+}
+#bt-cybermentors-toolbar bttoolbarbutton#bt-cybermentors-button-myspace button {
+  background-image: url("../../skin/cybermentors/resources/toolbar/myspace-icon.png");
+}
+#bt-cybermentors-toolbar bttoolbarbutton#bt-cybermentors-button-facebook button {
+  background-image: url("../../skin/cybermentors/resources/toolbar/facebook-icon.png");
+}
+#bt-cybermentors-toolbar bttoolbarbutton#bt-cybermentors-button-twitter button {
+  background-image: url("../../skin/cybermentors/resources/toolbar/twitter-icon.png");
+}
+#bt-cybermentors-toolbar bttoolbarbutton#bt-cybermentors-button-flickr button {
+  background-image: url("../../skin/cybermentors/resources/toolbar/flickr-icon.png");
+}
+*/

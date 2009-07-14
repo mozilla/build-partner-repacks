@@ -50,10 +50,14 @@ window.addEventListener("load", function(event){
 	/* following codes are modified from internet. http://www.firefox.net.cn/forum/viewtopic.php?printertopic=1&t=24895&postdays=0&postorder=asc&start=0&finish_rel=-10000*/
     /*open url in new tab, open in current tab with alt key */
     try { // firefox 3.0.*
+		//alert(BrowserLoadURL.toString());
         eval("BrowserLoadURL = " + BrowserLoadURL.toString().replace(
             'aTriggeringEvent && aTriggeringEvent.altKey', '(getBoolPref("extensions.tabimprovelite.openUrlInTab", true) ^ (aTriggeringEvent && aTriggeringEvent.altKey)) && (gBrowser.currentURI.spec!="about:blank" ||gBrowser.webProgress.isLoadingDocument)'));
     }
-    catch(e) { // firefox 3.1 not support yet
+    catch(e) { // firefox 3.1 and up
+		var urlbar = document.getElementById("urlbar");
+//		alert(urlbar.handleCommand.toString());
+        eval("urlbar.handleCommand = " + urlbar.handleCommand.toString().replace('aTriggeringEvent && aTriggeringEvent.altKey', '(getBoolPref("extensions.tabimprovelite.openUrlInTab", true) ^ (aTriggeringEvent && aTriggeringEvent.altKey)) && (gBrowser.currentURI.spec!="about:blank" ||gBrowser.webProgress.isLoadingDocument)')); 
     }
 	
 	/* open search in tabs*/
@@ -61,12 +65,12 @@ window.addEventListener("load", function(event){
         var cName = "@mozilla.org/preferences-service;1";
         var fPref = Components.classes[cName].getService(Components
             .interfaces.nsIPrefService);
-        if (fPref.getBoolPref("browser.search.openintab") == true){
-			eval("document.getElementById(\"searchbar\").handleSearchCommand = " + document.getElementById("searchbar").handleSearchCommand.toString().replace(
+ 		eval("document.getElementById(\"searchbar\").handleBaseCommand = " + document.getElementById("searchbar").handleBaseCommand.toString().replace(
 				'if ((aEvent && aEvent.altKey) ^ newTabPref)','if (((aEvent && aEvent.altKey) ^ newTabPref) && (gBrowser.currentURI.spec!="about:blank" ||gBrowser.webProgress.isLoadingDocument))'));
-	        eval("whereToOpenLink = " + whereToOpenLink.toString().replace(
-	            'if (!e) {', 'if (e&&e.currentTarget.getAttribute("anonid")\
-	            =="search-go-button" && (gBrowser.currentURI.spec!="about:blank" ||gBrowser.webProgress.isLoadingDocument)) return "tab"; $&'));
-		}
+//			alert(document.getElementById("searchbar").handleBaseCommand);
+//			alert(whereToOpenLink);
+        eval("whereToOpenLink = " + whereToOpenLink.toString().replace(
+            'if (!e) {', 'if (e&&e.currentTarget.getAttribute("anonid")\
+            =="search-go-button" && e.button == 0 && !e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey && getBoolPref("browser.search.openintab", true) && (gBrowser.currentURI.spec!="about:blank" ||gBrowser.webProgress.isLoadingDocument)) return "tab"; $&'));
     }catch(e){} 
 }, false);

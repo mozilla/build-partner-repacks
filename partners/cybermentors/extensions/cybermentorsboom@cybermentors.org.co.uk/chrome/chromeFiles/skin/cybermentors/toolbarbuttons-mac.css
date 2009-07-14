@@ -1,0 +1,41 @@
+          /* Navigation buttons *
+
+#main-window[btBoom="cybermentors"]
+  #urlbar-container #go-button,
+#main-window[btBoom="cybermentors"]
+  #searchbar .searchbar-box toolbarbutton.search-go-button {
+    padding: 0px;
+  }
+
+#main-window[btBoom="cybermentors"]
+  toolbar[mode="icons"] #back-forward-dropmarker > dropmarker {
+    display: none;
+  }
+  
+#main-window[btBoom="cybermentors"]
+  #back-forward-dropmarker[disabled="true"] {
+    list-style-image: url(chrome://global/skin/arrow/arrow-dn-dis.gif) !important;
+    -moz-image-region: rect(0px 11px 0px 11px) !important;
+  }
+  
+#main-window[btBoom="cybermentors"]
+  #back-forward-dropmarker[disabled="true"][chromedir="rtl"] {
+    list-style-image: url(chrome://global/skin/arrow/arrow-dn-dis.gif) !important;
+    -moz-image-region: rect(0px 11px 0px 11px) !important;
+  }
+  
+#main-window[btBoom="cybermentors"]
+  #back-forward-dropmarker:hover:active:not([disabled]),
+#main-window[btBoom="cybermentors"]
+  #back-forward-dropmarker[open="true"] {
+    list-style-image: url(chrome://global/skin/arrow/arrow-dn-hov.gif) !important;
+    -moz-image-region: rect(0px 11px 0px 11px) !important;
+  }
+  
+#main-window[btBoom="cybermentors"]
+  #back-forward-dropmarker[chromedir="rtl"]:hover:active:not([disabled]),
+#main-window[btBoom="cybermentors"]
+  #back-forward-dropmarker[open="true"][chromedir="rtl"] {
+    list-style-image: url(chrome://global/skin/arrow/arrow-dn-hov.gif) !important;
+    -moz-image-region: rect(0px 11px 0px 11px) !important;
+  }

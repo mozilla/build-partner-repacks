@@ -1,0 +1,26 @@
+btbutton {
+	-moz-binding: url('btbutton.xml#btbutton');
+}
+
+/* Brand Thunder logo button */
+btbutton button {
+  -moz-appearance: none;
+  background-color: transparent !important; /* win32 fix */
+  border: none !important;  /*win32 fix */
+  list-style-image: url("resources/btbutton/bt-logo.png") !important;
+  width: 36px; height: 25px;
+  min-width: 5px;
+  margin: 1px 6px 1px 3px !important;
+  padding: 0px !important;
+}
+
+btbutton .box-inherit {
+  padding: 0px !important;
+}
+
+btbutton .button-icon {
+  height: 18px !important;
+}
+btbutton dropmarker {
+  display: none;
+}

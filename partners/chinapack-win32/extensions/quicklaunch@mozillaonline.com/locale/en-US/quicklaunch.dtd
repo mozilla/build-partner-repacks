@@ -5,5 +5,24 @@
 <!ENTITY quicklaunch-calc "Calculator">
 <!ENTITY quicklaunch-myComputer "My Computer">
 <!ENTITY quicklaunch-paintWebpage "Capture Webpage">
-<!ENTITY quicklaunch-paintWebpage "Switch Profile">
-
+<!ENTITY quicklaunch-switchProfile "Switch Profile">
+<!ENTITY quicklaunch-manageQuickLaunch "Manage Your Own EasyAccess">
+<!ENTITY quicklaunch-moreQuickLaunchs "More EasyAccess">
+<!ENTITY quickLaunchColoums.image "Image">
+<!ENTITY quickLaunchColoums.name "Name">
+<!ENTITY quickLaunchColoums.path "Path">
+<!ENTITY quickLaunchColoums.arguments "Arguments">
+<!ENTITY quickLaunchManager.Description "Add,modify or delete your own EasyAccess here">
+<!ENTITY quickLaunchManager.title "EasyAccess Manager">
+<!ENTITY newButton.label "Add EasyAccess">
+<!ENTITY newButton.accesskey "N">
+<!ENTITY editButton.label "Edit EasyAccess">
+<!ENTITY editButton.accesskey "R">
+<!ENTITY deleteButton.label "Delete EasyAccess">
+<!ENTITY deleteButton.accesskey "D">
+<!ENTITY accept.label "OK">
+<!ENTITY quickLaunchEdit.label "EasyAccess Editor">
+<!ENTITY quickLaunchEdit.description "Please input path,name and arguments for your EasyAccess">
+<!ENTITY quickLaunchEdit.name "Name for your EasyAccess">
+<!ENTITY quickLaunchEdit.path "File Path for your EasyAccess">
+<!ENTITY quickLaunchEdit.arguments "Arguments for your EasyAccess">

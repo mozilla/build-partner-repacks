@@ -1,0 +1,192 @@
+bttoolbarbutton {
+	-moz-binding: url('bttoolbarbutton.xml#bttoolbarbutton');
+}
+
+bttoolbarbutton button {
+  -moz-appearance: none;
+}
+
+bttoolbarbutton.bt-default button {
+  list-style-image: none;
+  -moz-appearance: none;
+  min-width: 10px;
+  min-height: 20px;
+  height: 20px;
+  border: 0px solid #ff0000;
+  margin-top: 0px !important; margin-bottom: 0px !important;
+  margin-left: 3px;
+  margin-right: 0px;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-position: center right;
+  background-repeat: no-repeat;
+  background-color: transparent !important;
+  color: #000;
+  font-size: 10px;
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+  font-weight: bold;
+}
+
+bttoolbarbutton.bt-buttonbar button {
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+}
+
+bttoolbarbutton.bt-default.bt-buttonbar.bt-buttonbar-start button {
+  background-image: url("resources/bttoolbarbutton/btn-norm-start-bg.png");
+}
+
+bttoolbarbutton.bt-default.bt-buttonbar.bt-buttonbar-start button > hbox,
+bttoolbarbutton.bt-default.bt-buttonbar.bt-buttonbar-start button:hover > hbox,
+bttoolbarbutton.bt-default.bt-buttonbar.bt-buttonbar-start button:hover:active > hbox,
+bttoolbarbutton.bt-default.bt-buttonbar.bt-buttonbar-start button:active > hbox {
+  background-image: none;
+}
+
+bttoolbarbutton.bt-buttonbar.bt-buttonbar-start button {
+  padding-left: 12px !important;
+  background-position: center left;
+  background-repeat: no-repeat;
+}
+
+bttoolbarbutton.bt-default.bt-buttonbar.bt-buttonbar-end button {
+  background-image: url("resources/bttoolbarbutton/btn-norm-start-bg-rtl.png");
+}
+
+bttoolbarbutton.bt-default.bt-buttonbar.bt-buttonbar-end button > hbox,
+bttoolbarbutton.bt-default.bt-buttonbar.bt-buttonbar-end button:hover > hbox,
+bttoolbarbutton.bt-default.bt-buttonbar.bt-buttonbar-end button:hover:active > hbox,
+bttoolbarbutton.bt-default.bt-buttonbar.bt-buttonbar-end button:active > hbox {
+  background-image: none;
+}
+
+bttoolbarbutton.bt-buttonbar.bt-buttonbar-end button {
+  padding-right: 12px !important;
+  background-position: center right;
+  background-repeat: no-repeat;
+}
+
+bttoolbarbutton.bt-default:not([type~="menu-button"]):not([class~="bt-buttonbar"]) button {
+  background-image: url("resources/bttoolbarbutton/btn-norm-end-bg.png");
+  padding-right: 18px !important;
+  margin-right: 3px;
+}
+
+bttoolbarbutton.bt-default button > hbox {
+  -moz-appearance: none;
+  display: -moz-box !important;
+  border: 0px solid #FFF0ff;
+  padding-left: 16px; padding-right: 0px;
+  padding-bottom: 0px;
+  margin: 0px !important;
+  min-height: 20px;
+  background-position: center left;
+  background-repeat: no-repeat;
+  background-color: transparent !important;
+  -moz-box-pack: center;
+  list-style-image: none !important;
+}
+
+bttoolbarbutton.bt-default:not([class~="bt-buttonbar"]) button > hbox {
+  background-image: url("resources/bttoolbarbutton/btn-norm-start-bg.png");
+}
+
+bttoolbarbutton.bt-default.bt-buttonbar button > hbox {
+  background-image: url("resources/bttoolbarbutton/btn-norm-mid-bg.png");
+}
+
+bttoolbarbutton.bt-buttonbar button > hbox {
+  padding-left: 0px;
+  background-repeat: repeat-x;
+}
+
+bttoolbarbutton.bt-default:hover button {
+  -moz-appearance: none;
+  border: 0px solid #ff0000;
+  background-repeat: no-repeat;
+  background-color: transparent !important;
+  color: #FFF;
+}
+
+bttoolbarbutton.bt-default:not([type="menu-button"]):not([class~="bt-buttonbar"]):hover button {
+  background-image: url("resources/bttoolbarbutton/btn-hover-end-bg.png");
+  padding-right:18px !important;
+}
+
+bttoolbarbutton.bt-default:hover button > hbox {
+  -moz-appearance: none;
+  border: 0px solid #FFF0ff;
+  background-repeat: no-repeat;
+  background-color: transparent !important;
+}
+
+bttoolbarbutton.bt-default:not([class~="bt-buttonbar"]):hover button > hbox {
+  background-image: url("resources/bttoolbarbutton/btn-hover-start-bg.png");
+}
+
+bttoolbarbutton.bt-default.bt-buttonbar:hover button > hbox {
+  background-image: url("resources/bttoolbarbutton/btn-hover-mid-bg.png");
+}
+
+bttoolbarbutton.bt-buttonbar:hover button > hbox {
+  background-repeat: repeat-x;
+  padding-left: 0px;
+}
+
+bttoolbarbutton.bt-default:hover:active button,
+bttoolbarbutton.bt-default:active button {
+  -moz-appearance: none;
+  border: 0px solid #ff0000;
+  background-repeat: no-repeat;
+  background-color: transparent !important;
+  color: #FFF;
+}
+
+bttoolbarbutton.bt-default:not([type="menu-button"]):not([class~="bt-buttonbar"]):hover:active button,
+bttoolbarbutton.bt-default:not([type="menu-button"]):not([class~="bt-buttonbar"]):active button {
+  background-image: url("resources/bttoolbarbutton/btn-active-end-bg.png");
+  padding-right: 18px !important;
+}
+
+bttoolbarbutton.bt-default:hover:active button > hbox,
+bttoolbarbutton.bt-default:active button > hbox {
+  -moz-appearance: none;
+  border: 0px solid #FFF0ff;
+  background-repeat: no-repeat;
+  outline: none !important;
+  background-color: transparent !important;
+}
+
+bttoolbarbutton.bt-default:not([class~="bt-buttonbar"]):hover:active button > hbox,
+bttoolbarbutton.bt-default:not([class~="bt-buttonbar"]):active button > hbox {
+  background-image: url("resources/bttoolbarbutton/btn-active-start-bg.png");
+}
+
+bttoolbarbutton.bt-default.bt-buttonbar:hover:active button > hbox,
+bttoolbarbutton.bt-default.bt-buttonbar:active button > hbox {
+  background-image: url("resources/bttoolbarbutton/btn-active-mid-bg.png");
+}
+
+bttoolbarbutton.bt-buttonbar:hover:active button > hbox,
+bttoolbarbutton.bt-buttonbar:active button > hbox {
+  background-repeat: repeat-x;
+}
+
+
+bttoolbarbutton.bt-default[type="menu-button"] dropmarker {
+	-moz-appearance: none !important; /* Linux Fix */
+  min-height: 20px !important;
+  min-width: 18px;
+  border: 0px solid #ff0000;
+  margin-top: 0px !important; margin-bottom: 0px !important;
+  margin-right: 3px;
+  margin-left: 0px;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  list-style-image: none !important;
+  background-image: url("resources/btselectbutton/btn-dropmarker-bg.png");
+  background-position: top right;
+  background-repeat: no-repeat;
+}

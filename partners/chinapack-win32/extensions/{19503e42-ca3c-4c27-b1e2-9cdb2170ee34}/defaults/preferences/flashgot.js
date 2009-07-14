@@ -57,7 +57,7 @@ pref("flashgot.dmsopts.Net_Transport_2.stripHash", true);
 pref("flashgot.dmsopts.FlashGet.asciiFilter", true);
 pref("flashgot.dmsopts.FlashGet.cookiePersistence", 24);
 
-
+pref("flashgot.dmsopts.JDownloader.url", "http://localhost:9666/flashgot");
 
 
 

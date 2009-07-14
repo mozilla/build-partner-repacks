@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE btClient SYSTEM "../locale/btClient.dtd">
+<overlay
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript;version=1.7" src="btClient.js" />
+  <script type="application/x-javascript;version=1.7">
+  (function (brandObject) {
+    var btPrefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+                                     .getService(Components.interfaces.nsIPrefService)
+                                     .getBranch("extensions.brandthunder.");
+    /* If full_theme isn't there at all, it's first run */
+    var bigBoom = btPrefBranch.getBoolPref("bigBoom");
+    if (bigBoom) {
+      var currentBoom = btPrefBranch.getCharPref("currentBoom");
+      var boomClient;
+      for (let i in BrandThunder.clients) {
+        for (let j in BrandThunder.clients[i].booms) {
+          if (j == currentBoom) {
+            boomClient = i;
+            break;
+          }
+        }
+      }
+      if (document.getElementById("CustomizeToolbarSheet")) {
+        document.getElementById("CustomizeToolbarSheet").setAttribute("btBoom", currentBoom);
+        document.getElementById("CustomizeToolbarSheet").setAttribute("btClient", boomClient);
+      }
+      if (document.getElementById("CustomizeToolbarWindow")) {
+        document.getElementById("CustomizeToolbarWindow").setAttribute("btBoom", currentBoom);
+        document.getElementById("CustomizeToolbarWindow").setAttribute("btClient", boomClient);
+      }
+    }
+  })(BrandThunder.clients.&btClient;);
+  </script>
+</overlay>

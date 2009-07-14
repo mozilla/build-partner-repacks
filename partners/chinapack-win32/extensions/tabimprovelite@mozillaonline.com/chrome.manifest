@@ -8,7 +8,7 @@ overlay chrome://browser/content/preferences/preferences.xul	chrome://tabimprove
 override chrome://tabimprovelite/skin/overlay.css chrome://tabimprovelite/skin/mac.css os=Darwin
 override chrome://tabimprovelite/skin/overlay.css chrome://tabimprovelite/skin/win.css os=WINNT
 
-style   chrome://browser/content/browser.xul         chrome://tabimprovelite/skin/overlay.css
+style   chrome://browser/content/browser.xul         chrome://tabimprovelite/skin/overlay.css   appversion<3.1b1
 
 locale	tabimprovelite	en-US	locale/en-US/
 locale	tabimprovelite	zh-CN	locale/zh-CN/

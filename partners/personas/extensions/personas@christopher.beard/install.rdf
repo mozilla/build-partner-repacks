@@ -5,7 +5,7 @@
 
     <em:id>personas@christopher.beard</em:id>
     <em:name>Personas for Firefox</em:name>
-    <em:version>1.1</em:version>
+    <em:version>1.2.1</em:version>
     <em:description>Themes, skins, fur coats and more.</em:description>
 
     <em:creator>Chris Beard</em:creator>
@@ -14,6 +14,7 @@
 
     <!-- Localizers (from Babelzilla and other places) in alphabetical order -->
     <em:translator>a007son</em:translator>        <!-- zh-TW, forum      -->
+    <em:translator>AtteL</em:translator>          <!-- fi-FI, Babelzilla -->
     <em:translator>dogi</em:translator>           <!-- de-DE, Babelzilla -->
     <em:translator>drry</em:translator>           <!-- ja-JP, Babelzilla -->
     <em:translator>Ersen Yoldac</em:translator>   <!-- tr-TR, Babelzilla -->
@@ -23,6 +24,7 @@
     <em:translator>Joergen</em:translator>        <!-- da-DK, Babelzilla -->
     <em:translator>jojaba</em:translator>         <!-- fr-FR, Babelzilla -->
     <em:translator>jooliaan</em:translator>       <!-- it-IT, Babelzilla -->
+    <em:translator>kkemenczy</em:translator>      <!-- hu-HU, Babelzilla -->
     <em:translator>kustodian</em:translator>      <!-- sr-RS, Babelzilla -->
     <em:translator>Lisman</em:translator>         <!-- it-IT, Babelzilla -->
     <em:translator>lois</em:translator>           <!-- gl-ES, Babelzilla -->

@@ -1,0 +1,14 @@
+
+overlay	chrome://browser/content/browser.xul	chrome://foxytunes/content/foxytunesOverlay.xul
+overlay	chrome://global/content/commonDialog.xul	chrome://foxytunes/content/commonDialogWidthFixerOverlay.xul
+overlay	chrome://messenger/content/mailWindowOverlay.xul	chrome://foxytunes/content/foxytunesOverlay.xul
+overlay	chrome://messenger/content/messengercompose/messengercompose.xul	chrome://foxytunes/content/foxytunesOverlay.xul
+overlay	chrome://navigator/content/navigator.xul	chrome://foxytunes/content/foxytunesOverlay.xul
+overlay	chrome://emusic/content/startup.xul	chrome://foxytunes/content/foxytunesOverlay.xul
+overlay	chrome://foxytunes/content/extras/uninstallExtension.xul	chrome://foxytunes/content/foxytunesOverlay.xul
+content	foxytunes	jar:chrome/foxytunes.jar!/content/
+skin	foxytunes	classic/1.0	jar:chrome/foxytunes.jar!/skin/classic/
+locale	foxytunes	en-US	jar:chrome/foxytunes.jar!/content/locale/en-US/
+
+content	foxytunes-public	jar:chrome/foxytunes.jar!/public-content/ contentaccessible=yes
+content	foxytunes-public	jar:chrome/foxytunes.jar!/public-content/

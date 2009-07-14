@@ -126,13 +126,16 @@ function quicklaunch_runProc(fileName,args){
 	try{
 		netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
 		var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+		LOG(fileName);
+		LOG(args);
+
 		file.initWithPath(fileName);
 //		file.launch();
 		var process=Components.classes['@mozilla.org/process/util;1'].createInstance(Components.interfaces.nsIProcess);
 		process.init(file);
 		var arguments = args;
 		process.run(false,arguments,arguments.length);
-	}catch(e){alert(e);}
+	}catch(e){LOG(e);}
 }
 
 function quicklaunch_runProcWithLaunch(fileName){
@@ -293,6 +296,25 @@ function quicklaunch_toProfileManager()
   }
   // Here, we don't care about the result code
   // that was returned in the param block.
+}
+
+function quicklaunch_manageQuickLaunch(){
+  const wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                         .getService(Components.interfaces.nsIWindowMediator);
+  var promgrWin = wm.getMostRecentWindow( "mozilla:quickLaunchManager" );
+  if (promgrWin) {
+    promgrWin.focus();
+  } else {
+    var params = Components.classes["@mozilla.org/embedcomp/dialogparam;1"]
+                 .createInstance(Components.interfaces.nsIDialogParamBlock);
+    params.SetNumberStrings(1);
+    params.SetString(0, "menu");
+    window.openDialog("chrome://quicklaunch/content/quickLaunchManager.xul",
+                "",
+                "centerscreen,chrome,titlebar,modal",
+                params);
+	document.getElementById("more-quicklaunchs-menupopup").builder.rebuild();
+  }
 }
 
 window.addEventListener("load", quicklaunch_init,false);

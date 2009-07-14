@@ -1,0 +1,247 @@
+/* BT: win Tab Override */
+/* Tab Strip Bottom bar */
+/*#main-window[btBoom="cybermentors"]
+  .tabs-bottom {
+    background-image: none;
+    border-top: 0px !important;
+  }
+/*
+
+/* Unfocused window, selected tab */
+#main-window[btBoom="cybermentors"]:not([active="true"])
+  .tabbrowser-tab[selected="true"] {
+    background-color: transparent !important;
+    background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-active-end-bg.png");
+    background-repeat: no-repeat;
+    background-position: top right;
+    padding-right: 7px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    margin-top: 0px;
+    margin-bottom: 3px;
+    opacity: 0.65;
+    border: none;
+  }
+  #main-window[btBoom="cybermentors"]:not([active="true"])
+    .tabbrowser-tab[selected="true"] > .tab-icon-image {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-active-start-bg.png");
+      background-repeat: no-repeat;
+      padding-left: 7px;
+      padding-top: 6px;
+      padding-bottom: 4px;
+      opacity: 1;
+      border: none;
+      height: 26px;
+      width: 23px;
+      margin: 0px;
+    }
+  #main-window[btBoom="cybermentors"]:not([active="true"])
+    .tabbrowser-tab[selected="true"] > .tab-text {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-active-mid-bg.png");
+      background-repeat: repeat-x;
+      padding-top: 7px;
+      padding-left: 2px;
+      opacity: 1;
+      border: none;
+      height: 26px;
+      margin: 0px;
+      color: #fff;
+      text-shadow: none !important;
+    }
+  #main-window[btBoom="cybermentors"]:not([active="true"])
+    .tabbrowser-tab[selected="true"] > .tab-close-button {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-active-mid-bg.png");
+      background-repeat: repeat-x;
+      opacity: 1;
+      border: none;
+      height: 26px;
+      padding-top: 3px;
+      margin: 0px;
+    }
+    #main-window[btBoom="cybermentors"]:not([active="true"])
+      .tabbrowser-tab[selected="true"] > .tab-close-button > image {
+        margin: 0px;
+      }
+
+/* Unfocused window, unselected tab */
+#main-window[btBoom="cybermentors"]:not([active="true"])
+  .tabbrowser-tab:not([selected="true"]) {
+    background-color: transparent !important;
+    background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-inactive-end-bg.png");
+    background-repeat: no-repeat;
+    background-position: top right;
+    padding-right: 7px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    margin-top: 0px;
+    margin-bottom: 3px;
+    opacity: 0.65;
+    border: none;
+  }
+  #main-window[btBoom="cybermentors"]:not([active="true"])
+    .tabbrowser-tab:not([selected="true"]) > .tab-icon-image {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-inactive-start-bg.png");
+      background-repeat: no-repeat;
+      padding-left: 7px;
+      padding-top: 6px;
+      padding-bottom: 4px;
+      opacity: 1;
+      border: none;
+      height: 26px;
+      width: 23px;
+      margin: 0px;
+    }
+  #main-window[btBoom="cybermentors"]:not([active="true"])
+    .tabbrowser-tab:not([selected="true"]) > .tab-text {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-inactive-mid-bg.png");
+      background-repeat: repeat-x;
+      padding-top: 7px;
+      padding-left: 2px;
+      opacity: 1;
+      border: none;
+      height: 26px;
+      margin: 0px;
+    }
+  #main-window[btBoom="cybermentors"]:not([active="true"])
+    .tabbrowser-tab:not([selected="true"]) > .tab-close-button {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-inactive-mid-bg.png");
+      background-repeat: repeat-x;
+      opacity: 1;
+      border: none;
+      height: 26px;
+      padding-top: 3px;
+      margin: 0px;
+    }
+    #main-window[btBoom="cybermentors"]:not([active="true"])
+      .tabbrowser-tab:not([selected="true"]) > .tab-close-button > image {
+        margin: 0px;
+      }
+
+/* focused window, selected tab */
+#main-window[btBoom="cybermentors"][active="true"]
+  .tabbrowser-tab[selected="true"] {
+    background-color: transparent !important;
+    background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-active-end-bg.png");
+    background-repeat: no-repeat;
+    background-position: top right;
+    padding-right: 7px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    margin-top: 0px;
+    margin-bottom: 3px;
+    opacity: 1;
+    border: none;
+  }
+  #main-window[btBoom="cybermentors"][active="true"]
+    .tabbrowser-tab[selected="true"] > .tab-icon-image {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-active-start-bg.png");
+      background-repeat: no-repeat;
+      padding-left: 7px;
+      padding-top: 6px;
+      padding-bottom: 4px;
+      border: none;
+      height: 26px;
+      width: 23px;
+      margin: 0px;
+    }
+  #main-window[btBoom="cybermentors"][active="true"]
+    .tabbrowser-tab[selected="true"] > .tab-text {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-active-mid-bg.png");
+      background-repeat: repeat-x;
+      padding-top: 7px;
+      padding-left: 2px;
+      border: none;
+      height: 26px;
+      margin: 0px;
+      color: #fff;
+      text-shadow: none !important;
+    }
+  #main-window[btBoom="cybermentors"][active="true"]
+    .tabbrowser-tab[selected="true"] > .tab-close-button {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-active-mid-bg.png");
+      background-repeat: repeat-x;
+      border: none;
+      height: 26px;
+      padding-top: 3px;
+      margin: 0px;
+    }
+    #main-window[btBoom="cybermentors"][active="true"]
+      .tabbrowser-tab[selected="true"] > .tab-close-button > image {
+        margin: 0px;
+      }
+
+
+/* focused window, unselected tab */
+#main-window[btBoom="cybermentors"][active="true"]
+  .tabbrowser-tab:not([selected="true"]) {
+    background-color: transparent !important;
+    background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-inactive-end-bg.png");
+    background-repeat: no-repeat;
+    background-position: top right;
+    padding-right: 7px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    margin-top: 0px;
+    margin-bottom: 3px;
+    opacity: 0.75;
+    border: none;
+  }
+#main-window[btBoom="cybermentors"][active="true"]
+  .tabbrowser-tab:not([selected="true"]):hover {
+    opacity: 1;
+  }
+  #main-window[btBoom="cybermentors"][active="true"]
+    .tabbrowser-tab:not([selected="true"]) > .tab-icon-image {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-inactive-start-bg.png");
+      background-repeat: no-repeat;
+      padding-left: 7px;
+      padding-top: 6px;
+      padding-bottom: 4px;
+      opacity: 1;
+      border: none;
+      height: 26px;
+      width: 23px;
+      margin: 0px;
+    }
+  #main-window[btBoom="cybermentors"][active="true"]
+    .tabbrowser-tab:not([selected="true"]) > .tab-text {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-inactive-mid-bg.png");
+      background-repeat: repeat-x;
+      padding-top: 7px;
+      padding-left: 2px;
+      opacity: 1;
+      border: none;
+      height: 26px;
+      margin: 0px;
+    }
+  #main-window[btBoom="cybermentors"][active="true"]
+    .tabbrowser-tab:not([selected="true"]) > .tab-close-button {
+      background-color: transparent !important;
+      background-image: url("../../skin/cybermentors/resources/tabbrowser/win35/wintab-inactive-mid-bg.png");
+      background-repeat: repeat-x;
+      opacity: 1;
+      border: none;
+      height: 26px;
+      padding-top: 3px;
+      margin: 0px;
+    }
+    #main-window[btBoom="cybermentors"][active="true"]
+      .tabbrowser-tab:not([selected="true"]) > .tab-close-button > image {
+        margin: 0px;
+      }
+

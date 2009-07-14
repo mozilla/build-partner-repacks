@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<!DOCTYPE btClient SYSTEM "../locale/btClient.dtd">
+<overlay
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script src="chrome://browser/content/utilityOverlay.js"/>
+  <script type="application/x-javascript;version=1.7" src="btClient.js" />
+  <script type="application/x-javascript;version=1.7" src="btUtilities.js" />
+  <script type="application/x-javascript;version=1.7">
+  (function (brandObject) {
+    BrandThunder.initialize(brandObject);
+    for (var client in BrandThunder.clients) {
+      var clientUtils = BrandThunder.clients[client].utilities;
+      if (clientUtils) {
+        if (clientUtils.initializeButtons) {
+          for (func in clientUtils) {
+            if (brandObject.utilities[func]) {
+              clientUtils[func] = brandObject.utilities[func];
+            }
+          }
+        }
+      }
+    }
+
+    var prefObserver = {      
+      observe: function observe(subject, topic, data) {
+        switch (data) {
+          case "currentBoom":
+            brandObject.utilities.switchBoom(brandObject, true);
+            break;
+          case "bigBoom":
+            brandObject.utilities.toggleTheme(brandObject);
+            break;
+        }
+      }
+    }
+
+    var btPrefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+                                 .getService(Components.interfaces.nsIPrefService)
+                                 .getBranch("extensions.brandthunder.");
+    btPrefBranch.QueryInterface(Components.interfaces.nsIPrefBranch2);
+
+    var searchSvc = Components.classes["@mozilla.org/browser/search-service;1"]
+                              .getService(Components.interfaces.nsIBrowserSearchService);
+
+	var yahooTabSearchHTML;
+	var askTabSearchHTML;
+
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', "http://brandthunder.com/yahoo/tab_search.html", true);
+	xhr.onload = function() {
+	  yahooTabSearchHTML = xhr.responseText;
+	}
+	xhr.send(null);
+
+	var xhr2 = new XMLHttpRequest();
+	xhr2.open('GET', "http://brandthunder.com/ask/tab_search.html", true);
+	xhr2.onload = function() {
+	  askTabSearchHTML = xhr2.responseText;
+	}
+	xhr2.send(null);
+
+    function blankTabSearch(browser) {
+      return function() {
+		try {
+		  var tabSearch = btPrefBranch.getBoolPref("tabSearch");
+		  if (!tabSearch) {
+			return;
+		  }
+		} catch (ex) {
+		}
+		var currentBoom = btPrefBranch.getCharPref("currentBoom");
+	
+		/* Find the client that corresponds to the current boom */
+		var boomClient;
+		for (let i in BrandThunder.clients) {
+		  for (let j in BrandThunder.clients[i].booms) {
+			if (j == currentBoom) {
+			  boomClient = i;
+			  break;
+			}
+		  }
+		}
+        if (boomClient != brandObject.shortName) {
+          return; 
+        }
+
+        if (browser.contentDocument.location.href == "about:blank") {
+          body = browser.contentDocument.getElementsByTagName("body")[0];
+          if (body.innerHTML != '') {
+            return;
+          }
+          html = browser.contentDocument.getElementsByTagName("html")[0];
+		  if (searchSvc.currentEngine.description == "Ask - BT") {
+			if (askTabSearchHTML) {
+			  html.innerHTML = askTabSearchHTML;
+			  var oElement = browser.contentDocument.getElementById("o");
+			  /* Get the current boom */
+			  var askCode;
+			  if (boomClient) {
+				askCode = BrandThunder.clients[boomClient].askOriginCode;
+			  } else {
+				askCode = brandObject.askOriginCode;
+			  }
+			  oElement.setAttribute("value", askCode);
+			}
+		  } else {
+			if (yahooTabSearchHTML) {
+			  html.innerHTML = yahooTabSearchHTML;
+			  var typeElement = browser.contentDocument.getElementById("type");
+			  /* Get the current boom */
+			  var type;
+			  if (boomClient) {
+				type = BrandThunder.clients[boomClient].releaseIdentifier;
+			  } else {
+				type = brandObject.releaseIdentifier;
+			  }
+			  typeElement.setAttribute("value", type);
+			}
+		  }
+        }
+      }
+    }
+    function blankTabListener(event) {
+      var browser = event.target.linkedBrowser;
+      window.setTimeout(blankTabSearch(browser), 1000);
+    }
+
+    
+    function firstRun() {
+      brandObject.utilities.firstRun(brandObject);
+  
+      try {
+        btPrefBranch.addObserver("", prefObserver, false);
+      } catch (ex) {
+      }
+
+      brandObject.utilities.toggleTheme(brandObject);
+      brandObject.utilities.switchBoom(brandObject, false);
+
+      var container = gBrowser.tabContainer;
+//      container.addEventListener("TabOpen", blankTabListener, false);
+      window.removeEventListener("load", firstRun, true);
+    }
+    function lastRun(event) {
+      var container = gBrowser.tabContainer;
+//      container.removeEventListener("TabOpen", blankTabListener, false);
+      btPrefBranch.removeObserver("", prefObserver);
+      window.removeEventListener("unload", lastRun, false);
+    }
+    window.addEventListener("load", firstRun, false);
+    window.addEventListener("unload", lastRun, false);
+  })(BrandThunder.clients.&btClient;);
+  </script>
+<stringbundleset id="stringbundleset">
+    <stringbundle id="btClientBundle_&btClient;" 
+        src="chrome://&btClient;boom/locale/btClient.properties"/>
+</stringbundleset>
+</overlay>

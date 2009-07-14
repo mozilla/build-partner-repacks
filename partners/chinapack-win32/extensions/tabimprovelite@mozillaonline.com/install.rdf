@@ -7,7 +7,7 @@ xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
 		<em:id>tabimprovelite@mozillaonline.com</em:id>
 		<em:name>Tab Improvement Lite</em:name>
-		<em:version>0.2.5</em:version>
+		<em:version>0.2.7</em:version>
 		<em:description>Tabs open to the right of the current one, double click to close the tab and add an new tab button on the right side of tab bar. Open Url and search in new tabs</em:description>
 		<em:creator>Amax Guan@mozillaonline.com</em:creator>
 		<em:contributor>John Mellor</em:contributor>
@@ -22,7 +22,7 @@ xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 			<Description>
 				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
 				<em:minVersion>3.0a1</em:minVersion>
-				<em:maxVersion>3.0.*</em:maxVersion>
+				<em:maxVersion>3.5.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 

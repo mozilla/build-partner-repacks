@@ -1,0 +1,99 @@
+/* Specifies either a repeating background or the background on the far right */
+/* MUST specify the background color */
+#main-window[btBoom="cybermentors"] {
+  -moz-appearance: none;
+  background-image: url("../../skin/cybermentors/resources/window-bg.png"); 
+/*  background-repeat: repeat-x; */
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-color: #bce6e8;
+}
+
+/* Background color should be duplicated here to cover background image in fullscreen */
+#main-window[btBoom="cybermentors"] #navigator-toolbox[inFullscreen="true"] {
+  background-color: #bce6e8;
+}
+
+/* Specifies the left background, usually the logo*/ 
+#main-window[btBoom="cybermentors"]
+  #navigator-toolbox {
+    -moz-appearance: none;
+    background-color: transparent;
+    border: 0px;
+    padding-bottom: 0px;
+  }
+
+/* Specify indentation required to move menu and navbar away from logo */
+#main-window[btBoom="cybermentors"]  
+  #navigator-toolbox[bttoolbar="true"] #bt-cybermentors-toolbar,
+#main-window[btBoom="cybermentors"]
+  #nav-bar,
+#main-window[btBoom="cybermentors"]
+  #toolbar-menubar {
+    margin-left: 10px;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #nav-bar {
+    /* Not using background image in this theme for nav-bar
+    background-image: url("../../skin/cybermentors/resources/navbar-bg.png") !important;
+    background-repeat: repeat-x;
+    */
+    background-image: none !important; /* no background image */
+    background-color: transparent !important;
+    height: 37px;
+    border: 0px;
+  }
+
+/* Most clients hide the boom button in the Big Boom view */
+#main-window[btBoom="cybermentors"]
+  btboombutton {
+    display: none !important;
+  }
+
+#main-window[btBoom="cybermentors"]
+  #toolbar-menubar {
+    -moz-appearance: none;
+    background-color: transparent !important;
+    height: 23px;
+    max-height: 23px;
+    border: 0px;
+  }
+
+#main-window[btBoom="cybermentors"]
+  toolbar {
+    -moz-appearance: none !important;
+    background-color: -moz-dialog;
+  }
+
+#main-window[btBoom="cybermentors"][chromehidden~="toolbar"] #navigator-toolbox,
+#main-window[btBoom="cybermentors"][chromehidden~="menubar"] #navigator-toolbox,
+#main-window[btBoom="cybermentors"][chromehidden~="menubar"],
+#main-window[btBoom="cybermentors"] #navigator-toolbox[inFullscreen="true"] {
+  background-image: none;
+}
+
+#main-window[btBoom="cybermentors"][chromehidden~="toolbar"] #nav-bar,
+#main-window[btBoom="cybermentors"][chromehidden~="menubar"] #nav-bar,
+#main-window[btBoom="cybermentors"][chromehidden~="menubar"] #bt-cybermentors-toolbar,
+#main-window[btBoom="cybermentors"] #navigator-toolbox[inFullscreen="true"] #nav-bar {
+  margin-left: 0px !important;
+}
+
+#main-window[btBoom="cybermentors"]:not([chromehidden~="menubar"])[chromehidden~="toolbar"],
+#main-window[btBoom="cybermentors"]:not([chromehidden~="menubar"])[chromehidden~="toolbar"]
+  #toolbar-menubar {
+    height: 0px;
+    max-height: 0px;
+    margin-left: 0px !important;
+	background-image: none;
+}
+
+#main-window[btBoom="cybermentors"]  
+  #navigator-toolbox[bttoolbar="true"] #bt-cybermentors-toolbar{
+    background-color: transparent !important;
+    background-image: none !important;
+    height: 25px;
+    color: #000;
+    border: none;
+  }

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE btClient SYSTEM "../locale/btClient.dtd">
+<window
+        onload="openSidebar();"
+        onunload="closeSidebar();"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript;version=1.7">
+<![CDATA[
+    function openSidebar() {
+      var observerService = Components.classes["@mozilla.org/observer-service;1"]
+                                      .getService(Components.interfaces.nsIObserverService)
+
+      sidebarBox = window.top.document.getElementById("sidebar-box");
+      var sidebarid = sidebarBox.getAttribute("sidebarcommand");
+      var broadcaster = window.top.document.getElementById(sidebarid);
+      if (broadcaster.hasAttribute("btBoomBundle")) {
+        var btBoomBundle = window.top.document.getElementById(broadcaster.getAttribute('btBoomBundle'));
+      }
+      if (broadcaster.hasAttribute("brand")) {
+        var brandObject = window.top.BrandThunder.clients[broadcaster.getAttribute('brand')];
+      }
+
+      var url = btBoomBundle.getString(sidebarid + ".url");
+      if (sidebarBox.hasAttribute("btSidebarParams")) {
+        url += '?' + sidebarBox.getAttribute("btSidebarParams");
+      }
+      var width = btBoomBundle.getString(sidebarid + ".width");
+      
+      if ((!window.top.document.getElementById("sidebar-box").width) ||
+          (window.top.document.getElementById("sidebar-box").width < width)) {
+        window.top.document.getElementById("sidebar-box").width = width;
+      }
+      if (url) {
+        window.top.document.getElementById('sidebar').setAttribute("src", url);
+      }
+      window.top.document.getElementById("main-window").setAttribute("btSidebar", sidebarid);
+    }
+    function closeSidebar() {
+    }
+]]>
+  </script>
+</window>

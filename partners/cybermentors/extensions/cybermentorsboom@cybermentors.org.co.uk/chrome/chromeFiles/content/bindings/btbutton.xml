@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<bindings id="btbuttonBindings"
+      xmlns="http://www.mozilla.org/xbl"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+      xmlns:xbl="http://www.mozilla.org/xbl">
+
+  <binding id="btbutton" extends="xul:box">
+    <content>
+    <xul:button id="bt-button-brandthunder" class="bt_brandthunder_btn"
+            type="menu">
+      <xul:menupopup anonid="btbutton-bt-popup">
+        <xul:menuitem anonid="btbutton-tutorial-menu" label="Tutorial"/>
+        <xul:menuitem anonid="btbutton-faqs-menu" label="FAQS"/>
+        <xul:menuitem anonid="btbutton-help-menu" label="Help"/>
+        <xul:menuseparator/>
+        <xul:menuitem class="menuitem-iconic" image="http://w.sharethis.com/images/share-icon-16x16.png" anonid="btbutton-sharethis-menu" label="Share This"/>
+        <xul:menuseparator/>
+        <xul:menu anonid="btbutton-boomswitch-menu" label="Boom your browser!">
+          <xul:menupopup anonid="btbutton-boomswitch-popup">
+          </xul:menupopup>
+        </xul:menu>
+        <xul:menuitem anonid="btbutton-boomtype-menu" label="Display Toolbar Only"/>
+        <xul:menuseparator/>
+        <xul:menuitem anonid="btbutton-uninstall-menu" label="Uninstall"/>
+        <xul:menuseparator/>
+        <xul:menuitem anonid="btbutton-brandthunder-menu" label="Brand Thunder"/>
+      </xul:menupopup>
+    </xul:button>
+
+    </content>
+    <handlers>
+      <handler event="command">
+        <![CDATA[
+        switch (event.originalTarget.getAttribute("anonid")) {
+          case "btbutton-tutorial-menu":
+          case "btbutton-sharethis-menu":
+          case "btbutton-help-menu":
+          case "btbutton-faqs-menu":
+          case "btbutton-brandthunder-menu":
+          case "btbutton-morebooms-menu":
+            this.brandObject.utilities.openLink(this.brandObject, event, event.originalTarget.getAttribute("url"));
+            break;
+          case "btbutton-uninstall-menu":
+            this.brandObject.utilities.uninstall(this.brandObject, this.btClientBundle);
+            break;
+          case "btbutton-boomtype-menu":
+            this.toolbarMenuCommand(event);
+            break;
+        }
+        if (event.originalTarget.hasAttribute("boom")) {
+          this.btPrefBranch.setCharPref("currentBoom", event.originalTarget.getAttribute("boom"));
+          var prefbranch=Components.classes["@mozilla.org/preferences-service;1"]
+                                  .getService(Components.interfaces.nsIPrefBranch);
+          var dynamicBoom = false;
+          try {
+            dynamicBoom = this.btPrefBranch.getBoolPref("dynamicBoom");
+          } catch (ex) {}
+          if (!dynamicBoom) {
+            if (prefbranch.getCharPref("general.skins.selectedSkin") != "classic/1.0") {
+              this.switchRestart();
+            }
+          }
+        }
+        ]]>
+      </handler>
+      <handler event="popupshowing">
+        <![CDATA[
+        switch (event.originalTarget.getAttribute("anonid")) {
+          case "btbutton-bt-popup":
+            var menu = getAnonymousElementByAttribute(this, "anonid", "btbutton-boomtype-menu");
+            var full = true;
+            try {
+              full = this.btPrefBranch.getBoolPref("bigBoom");
+            } catch (ex) {}
+            var prefbranch=Components.classes["@mozilla.org/preferences-service;1"]
+                                     .getService(Components.interfaces.nsIPrefBranch);
+
+            var dynamicBoom = false;
+            try {
+              dynamicBoom = this.btPrefBranch.getBoolPref("dynamicBoom");
+            } catch (ex) {}
+
+            if (!full || (!dynamicBoom && prefbranch.getCharPref("general.skins.selectedSkin") != "classic/1.0")) {
+              menu.setAttribute("label", this.getString("bt-bigboom.label"));
+            } else {
+              menu.setAttribute("label", this.getString("bt-smallboom.label"));
+            }
+            
+            /* If the current boom has NO buttons, don't allow a switch to small boom */
+            if (this.smallBoom == false) {
+              menu.hidden = true;
+            }
+            break;
+          case "btbutton-boomswitch-popup":
+            for (let i= event.originalTarget.childNodes.length - 1; i >= 0; i--) {
+                event.originalTarget.removeChild(event.originalTarget.childNodes.item(i));
+            }
+            var currentBoom = this.btPrefBranch.getCharPref("currentBoom");
+            for (let i in BrandThunder.clients) {
+              var boomLength = 0;
+              for (let j in BrandThunder.clients[i].booms) {
+                boomLength++;
+              }
+              if (boomLength > 1) {
+                var menu = document.createElement("menu");
+                menu.setAttribute("label", BrandThunder.clients[i].clientName);
+                var menupopup = document.createElement("menupopup");
+                menu.appendChild(menupopup);
+                for (let j in BrandThunder.clients[i].booms) {
+                  var menuitem = document.createElement("menuitem");
+                  menuitem.setAttribute("label", BrandThunder.clients[i].booms[j]);
+                  menuitem.setAttribute("boom", j);
+                  if (j == currentBoom) {
+                    menuitem.setAttribute("type", "checkbox");
+                    menuitem.setAttribute("checked", "true");
+                  }
+                  menupopup.appendChild(menuitem);
+                }
+                event.originalTarget.appendChild(menu);
+              } else {
+                for (let j in BrandThunder.clients[i].booms) {
+                  var menuitem = document.createElement("menuitem");
+                  menuitem.setAttribute("label", BrandThunder.clients[i].booms[j]);
+                  menuitem.setAttribute("boom", j);
+                  if (j == currentBoom) {
+                    menuitem.setAttribute("type", "checkbox");
+                    menuitem.setAttribute("checked", "true");
+                  }
+                  event.originalTarget.appendChild(menuitem);
+                }
+              }
+            }
+            var menusep = document.createElement("menuseparator");
+            event.originalTarget.appendChild(menusep);
+            var menuitem = document.createElement("menuitem");
+            menuitem.setAttribute("anonid", "btbutton-morebooms-menu")
+            menuitem.setAttribute("url", this.getString("bt-morebooms.url"));
+            menuitem.setAttribute("label", this.getString("bt-morebooms.label"));
+            event.originalTarget.appendChild(menuitem);
+            break;
+        }
+        ]]>
+      </handler>
+    </handlers>
+    <implementation>
+      <constructor>
+        <![CDATA[
+        if (this.hasAttribute('btBoomBundle')) {
+          this.btBoomBundle = document.getElementById(this.getAttribute('btBoomBundle'));
+        }
+        if (this.hasAttribute('btClientBundle')) {
+          this.btClientBundle = document.getElementById(this.getAttribute('btClientBundle'));
+        }
+        if (this.hasAttribute('brand')) {
+          this.brandObject = BrandThunder.clients[this.getAttribute('brand')];
+        }
+        if (this.hasAttribute('smallBoom')) {
+          var smallBoom = this.getAttribute("smallBoom");
+          if (smallBoom == "false") {
+            this.smallBoom = false;
+          }
+        }
+        
+        if (this.brandObject) {
+          this.btPrefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+                                        .getService(Components.interfaces.nsIPrefService)
+                                        .getBranch("extensions.brandthunder.");
+        }
+        var menu = getAnonymousElementByAttribute(this, "anonid", "btbutton-tutorial-menu");
+        menu.setAttribute("url", this.getString("bt-tutorial.url"));
+        menu.setAttribute("label", this.getString("bt-tutorial.label"));
+        var menu = getAnonymousElementByAttribute(this, "anonid", "btbutton-faqs-menu");
+        menu.setAttribute("url", this.getString("bt-faqs.url"));
+        menu.setAttribute("label", this.getString("bt-faqs.label"));
+        var menu = getAnonymousElementByAttribute(this, "anonid", "btbutton-sharethis-menu");
+        menu.setAttribute("url", this.getString("bt-sharethis.url"));
+        menu.setAttribute("label", this.getString("bt-sharethis.label"));
+        var menu = getAnonymousElementByAttribute(this, "anonid", "btbutton-help-menu");
+        menu.setAttribute("url", this.getString("bt-help.url"));
+        menu.setAttribute("label", this.getString("bt-help.label"));
+        var menu = getAnonymousElementByAttribute(this, "anonid", "btbutton-uninstall-menu");
+        menu.setAttribute("label", this.getString("bt-uninstall.label"));
+        var menu = getAnonymousElementByAttribute(this, "anonid", "btbutton-boomswitch-menu");
+        menu.setAttribute("label", this.getString("bt-boomswitch.label"));
+        var menu = getAnonymousElementByAttribute(this, "anonid", "btbutton-boomtype-menu");
+        menu.setAttribute("label", this.getString("bt-toolbar.label"));
+        var menu = getAnonymousElementByAttribute(this, "anonid", "btbutton-brandthunder-menu");
+        menu.setAttribute("url", this.getString("bt-brandthunder.url"));
+        menu.setAttribute("label", this.getString("bt-brandthunder.label"));
+        ]]>
+      </constructor>
+      <destructor>
+      </destructor>
+      <field name="btPrefBranch"/>
+      <field name="brandObject"/>
+      <field name="btClientBundle"/>
+      <field name="btBoomBundle"/>
+      <field name="smallBoom">
+        true
+      </field>
+      <method name="switchRestart">
+        <body>
+          var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                                       .getService(Components.interfaces.nsIPromptService);
+          var button = promptService.confirmEx(window, this.btClientBundle.getString("clientName"), this.btClientBundle.getString("switch.confirm"),
+                                               (promptService.BUTTON_TITLE_YES * promptService.BUTTON_POS_0) +
+                                               (promptService.BUTTON_TITLE_NO * promptService.BUTTON_POS_1),
+                                               null, null, null, null, {});
+          if (button == 0) {
+            this.btPrefBranch.setBoolPref("bigBoom", true);
+            this.brandObject.utilities.restartApp();
+          }
+        </body>
+      </method>
+      <method name="toolbarMenuCommand">
+        <parameter name="event"/>
+        <body>
+          <![CDATA[
+          var prefbranch=Components.classes["@mozilla.org/preferences-service;1"]
+                                  .getService(Components.interfaces.nsIPrefBranch);
+          var dynamicBoom = false;
+          try {
+            dynamicBoom = this.btPrefBranch.getBoolPref("dynamicBoom");
+          } catch (ex) {}
+          if (!dynamicBoom) {
+            if (prefbranch.getCharPref("general.skins.selectedSkin") != "classic/1.0") {
+              this.switchRestart();
+              return;
+            }
+          }
+
+          var bigBoom = this.btPrefBranch.getBoolPref("bigBoom");
+          this.btPrefBranch.setBoolPref("bigBoom", !bigBoom);
+          ]]>
+        </body>
+      </method>
+      <method name="getString">
+        <parameter name="id"/>
+        <body>
+          <![CDATA[
+          var string;
+          if (this.btBoomBundle) {
+            try {
+              string = this.btBoomBundle.getString(id);
+            } catch(ex) {
+            }
+          }
+          if (!string) {
+            try {
+              string = this.btClientBundle.getString(id);
+            } catch(ex) {
+            }
+          }
+          return string;
+          ]]>
+        </body>
+      </method>
+    </implementation>
+  </binding>
+</bindings>
