@@ -1,0 +1,6 @@
+syntax: glob
+
+*~
+*.pyc
+scripts/original_builds
+scripts/repacked_builds
