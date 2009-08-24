@@ -419,6 +419,7 @@ if __name__ == '__main__':
 
     # Remote dir where we can find builds.
     candidates_web_dir = "/pub/mozilla.org/firefox/nightly/%s-candidates/build%s" % (options.version, options.build_number)
+    win32_candidates_web_dir = candidates_web_dir + '/unsigned'
  
     # Local directories for builds
     original_builds_dir = "original_builds/%s/build%s" % (options.version, str(options.build_number))
@@ -498,16 +499,20 @@ if __name__ == '__main__':
                     else:
                         # Download original build from stage
                         os.chdir(local_filepath)
+                        if isWin(platform):
+                            candidates_dir = win32_candidates_web_dir
+                        else:
+                            candidates_dir = candidates_web_dir
                         if options.version.startswith('3.0'):
                             original_build_url = "http://%s%s/%s" % \
                                                  (STAGING_SERVER,
-                                                  candidates_web_dir,
+                                                  candidates_dir,
                                                   filename
                                                  )
                         else:
                             original_build_url = "http://%s%s/%s/%s/%s" % \
                                                  (STAGING_SERVER,
-                                                  candidates_web_dir,
+                                                  candidates_dir,
                                                   platform_formatted,
                                                   locale,
                                                   filename
