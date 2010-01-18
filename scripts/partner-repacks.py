@@ -8,6 +8,7 @@ from optparse import OptionParser
 PARTNERS_DIR = "../partners"
 BUILD_NUMBER = "1"
 STAGING_SERVER = "stage.mozilla.org"
+PKG_DMG = "pkg-dmg"
 
 #########################################################################
 # Source: 
@@ -328,7 +329,8 @@ class RepackMac(RepackBase):
         self.createOverrideIni('stage/Firefox.app/Contents/MacOS')
 
     def repackBuild(self):
-        pkg_cmd = "pkg-dmg --source stage/ --target \"%s\" --volname 'Firefox' --icon stage/.VolumeIcon.icns --symlink '/Applications':' '" % self.build
+        pkg_cmd = "%s --source stage/ --target \"%s\" --volname 'Firefox' --icon stage/.VolumeIcon.icns --symlink '/Applications':' '" % (options.pkg_dmg,
+                                                           self.build)
         shellCommand(pkg_cmd)
 
     def cleanup(self):
@@ -385,6 +387,18 @@ if __name__ == '__main__':
                       dest="build_number",
                       default=BUILD_NUMBER,
                       help="Set the build number for repacking")
+    parser.add_option("",
+                      "--pkg-dmg",
+                      action="store",
+                      dest="pkg_dmg",
+                      default=PKG_DMG,
+                      help="Set the path to the pkg-dmg for Mac packaging")
+    parser.add_option("",
+                      "--staging-server",
+                      action="store",
+                      dest="staging_server",
+                      default=STAGING_SERVER,
+                      help="Set the staging server to use for downloading/uploading.")
     parser.add_option("--verify-only",
                       action="store_true",
                       dest="verify_only",
@@ -408,7 +422,7 @@ if __name__ == '__main__':
             print "Error: couldn't find the 7za executable in PATH."
             error = True
 
-        if not which("pkg-dmg"):
+        if not which(options.pkg_dmg):
             print "Error: couldn't find the pkg-dmg executable in PATH."
             error = True
 
@@ -505,13 +519,13 @@ if __name__ == '__main__':
                             candidates_dir = candidates_web_dir
                         if options.version.startswith('3.0'):
                             original_build_url = "http://%s%s/%s" % \
-                                                 (STAGING_SERVER,
+                                                 (options.staging_server,
                                                   candidates_dir,
                                                   filename
                                                  )
                         else:
                             original_build_url = "http://%s%s/%s/%s/%s" % \
-                                                 (STAGING_SERVER,
+                                                 (options.staging_server,
                                                   candidates_dir,
                                                   platform_formatted,
                                                   locale,
