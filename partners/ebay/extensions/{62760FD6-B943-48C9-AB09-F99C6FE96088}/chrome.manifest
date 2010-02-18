@@ -1,9 +1,28 @@
-overlay chrome://browser/content/browser.xul  chrome://ebaycompanion/content/ebay.xul
+##
+# Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+##
 
-content ebaycompanion             jar:chrome/ebaycompanion.jar!/content/
-skin    ebaycompanion classic/1.0 jar:chrome/ebaycompanion.jar!/skin/
-locale  ebaycompanion en-US       jar:chrome/ebaycompanion.jar!/locale/en-US/
-locale  ebaycompanion de-DE       jar:chrome/ebaycompanion.jar!/locale/de-DE/
-locale  ebaycompanion fr-FR       jar:chrome/ebaycompanion.jar!/locale/fr-FR/
+content     ebaycompanion          jar:chrome/ebaycompanion.jar!/content/
+locale      ebaycompanion en-US    jar:chrome/ebaycompanion.jar!/locale/en-US/
+locale      ebaycompanion en-GB    jar:chrome/ebaycompanion.jar!/locale/en-GB/
+locale      ebaycompanion es-ES    jar:chrome/ebaycompanion.jar!/locale/es-ES/
+locale      ebaycompanion fr       jar:chrome/ebaycompanion.jar!/locale/fr/
+locale      ebaycompanion de       jar:chrome/ebaycompanion.jar!/locale/de/
+locale      ebaycompanion it       jar:chrome/ebaycompanion.jar!/locale/it/
+locale      ebaycompanion pl       jar:chrome/ebaycompanion.jar!/locale/pl/
+locale      ebaycompanion nl-NL    jar:chrome/ebaycompanion.jar!/locale/nl-NL/
 
-style   chrome://global/content/customizeToolbar.xul  chrome://ebaycompanion/skin/ebay.css
+# OS-specific.
+skin        ebaycompanion          classic/1.0 jar:chrome/ebaycompanion.jar!/skin/all/
+skin        ebaycompanion-os       classic/1.0 jar:chrome/ebaycompanion.jar!/skin/unix/
+skin        ebaycompanion-os       classic/1.0 jar:chrome/ebaycompanion.jar!/skin/win/     os=WINNT
+skin        ebaycompanion-os       classic/1.0 jar:chrome/ebaycompanion.jar!/skin/mac/     os=Darwin
+
+# Resources.
+resource    ebaycompanion          modules/
+resource    glaxebay               modules/common/glaxstar/
+
+overlay     chrome://browser/content/browser.xul  chrome://ebaycompanion/content/browser.xul
+
+style       chrome://global/content/customizeToolbar.xul  chrome://ebaycompanion/content/bindings/bindings.css
+style       chrome://global/content/customizeToolbar.xul  chrome://ebaycompanion/skin/ebay.css

@@ -1,42 +1,9 @@
-
+content	ytoolbar	jar:chrome/ytoolbar.jar!/content/ytoolbar/
 overlay	chrome://browser/content/browser.xul	chrome://ytoolbar/content/ytoolbarOverlay.xul
 overlay	chrome://navigator/content/navigator.xul	chrome://ytoolbar/content/ytoolbarOverlay.xul
-content	ytoolbar	jar:chrome/ytoolbar.jar!/content/ytoolbar/
+
 
 skin	ytoolbar	classic/1.0	jar:chrome/ytoolbar.jar!/skin/classic/ytoolbar/
 style	chrome://browser/content/browser.xul	chrome://ytoolbar/skin/ytoolbar.css
 style	chrome://global/content/customizeToolbar.xul	chrome://ytoolbar/skin/ytoolbar.css
 
-locale	ytoolbar	de	jar:chrome/ytoolbar.jar!/locale/de/ytoolbar/
-
-locale	ytoolbar	en-UK	jar:chrome/ytoolbar.jar!/locale/en-UK/ytoolbar/
-
-locale	ytoolbar	en-US	jar:chrome/ytoolbar.jar!/locale/en-US/ytoolbar/
-
-locale	ytoolbar	es	jar:chrome/ytoolbar.jar!/locale/es-ES/ytoolbar/
-
-locale	ytoolbar	fr	jar:chrome/ytoolbar.jar!/locale/fr/ytoolbar/
-
-locale	ytoolbar	kr	jar:chrome/ytoolbar.jar!/locale/kr/ytoolbar/
-
-locale	ytoolbar	zh-HK	jar:chrome/ytoolbar.jar!/locale/zh-HK/ytoolbar/
-
-locale	ytoolbar	zh-TW	jar:chrome/ytoolbar.jar!/locale/zh-TW/ytoolbar/
-
-locale	ytoolbar	zh-CN	jar:chrome/ytoolbar.jar!/locale/zh-CN/ytoolbar/
-
-locale	ytoolbar	es-AR	jar:chrome/ytoolbar.jar!/locale/es-AR/ytoolbar/
-
-locale	ytoolbar	es-MX	jar:chrome/ytoolbar.jar!/locale/es-MX/ytoolbar/
-
-locale	ytoolbar	e1	jar:chrome/ytoolbar.jar!/locale/e1/ytoolbar/
-
-locale	ytoolbar	cf	jar:chrome/ytoolbar.jar!/locale/fr-CA/ytoolbar/
-
-locale	ytoolbar	in	jar:chrome/ytoolbar.jar!/locale/in/ytoolbar/
-
-locale	ytoolbar	it	jar:chrome/ytoolbar.jar!/locale/it/ytoolbar/
-
-locale	ytoolbar	nz	jar:chrome/ytoolbar.jar!/locale/nz/ytoolbar/
-
-locale	ytoolbar	pt-BR	jar:chrome/ytoolbar.jar!/locale/pt-BR/ytoolbar/

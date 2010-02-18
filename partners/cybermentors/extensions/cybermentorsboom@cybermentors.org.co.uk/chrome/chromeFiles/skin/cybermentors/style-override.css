@@ -1,7 +1,8 @@
 #bt-cybermentors-toolbar {
-  background-color: #bce6e8 !important;
+  background-color: transparent !important;
   height: 25px !important;
   -moz-appearance: none;
+  text-shadow: none !important;
 }
 
 /* BT Boom Button */

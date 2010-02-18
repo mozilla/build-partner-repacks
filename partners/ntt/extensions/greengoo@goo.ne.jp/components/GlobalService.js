@@ -15,7 +15,7 @@
  * The Original Code is My Theme.
  *
  * The Initial Developer of the Original Code is ClearCode Inc.
- * Portions created by the Initial Developer are Copyright (C) 2007-2009
+ * Portions created by the Initial Developer are Copyright (C) 2007-2010
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): SHIMODA Hiroshi <shimoda@clear-code.com>
@@ -52,9 +52,14 @@ const kOVERLAY_STYLE_TARGET_EXCEPTIONS = [
 	];
 
 const kPREF_ROOT                = 'extensions.greengoo';
-const kPREF_STYLE_ENABLED       = 'extensions.greengoo.style.enabled';
-const kPREF_CONFIRM_ENABLED     = 'extensions.greengoo.style.confirm.enabled';
-const kPREF_TEXTSHADOW_ENABLED  = 'extensions.greengoo.style.textshadow';
+const kPREF_STYLE_ENABLED       = kPREF_ROOT + '.style.enabled';
+const kPREF_CONFIRM_ENABLED     = kPREF_ROOT + '.style.confirm.enabled';
+const kPREF_TEXTSHADOW_ENABLED  = kPREF_ROOT + '.style.textshadow';
+
+const kPREF_LAST_SELECTED_THEME       = 'extensions.lastSelectedSkin';
+const kPREF_SELECTED_THEME            = 'general.skins.selectedSkin';
+const kPREF_LIGHTWEIGHT_THEME_ENABLED = 'lightweightThemes.isThemeSelected';
+const kPREF_LIGHTWEIGHT_THEME_PREVIEW = kPREF_ROOT + '.lightweightThemes.previewing';
 
 const kMYTHEME_PREF = 'extensions.mytheme.installed';
 
@@ -75,6 +80,10 @@ const kOVERLAY_TEXTSHADOW = '_textshadow';
 
 const ObserverService = Components.classes['@mozilla.org/observer-service;1']
 			.getService(Components.interfaces.nsIObserverService);
+const XULAppInfo = Components.classes['@mozilla.org/xre/app-info;1']
+			.getService(Components.interfaces.nsIXULAppInfo);
+const Comparator = Components.classes['@mozilla.org/xpcom/version-comparator;1']
+			.getService(Components.interfaces.nsIVersionComparator);
 
 var WindowWatcher,
 	Pref,
@@ -151,6 +160,7 @@ GlobalOverlayStyleService.prototype = {
  
 	onStartup : function() 
 	{
+		Pref.setBoolPref(kPREF_LIGHTWEIGHT_THEME_PREVIEW, false);
 		this.checkCompeting();
 	},
  
@@ -213,13 +223,27 @@ GlobalOverlayStyleService.prototype = {
 				checked
 			) == 0) {
 			if (theme) {
-				Pref.setCharPref('extensions.lastSelectedSkin', kBASE_THEME);
-				if (Pref.getBoolPref('extensions.dss.enabled')) {
-					Pref.setCharPref('general.skins.selectedSkin', kBASE_THEME);
+				var isBaseTheme = true;
+				try {
+					isBaseTheme = Pref.getCharPref(kPREF_LAST_SELECTED_THEME) != kBASE_THEME;
 				}
-				else {
-					Pref.setBoolPref('extensions.dss.switchPending', true);
-					shouldRestart = true;
+				catch(e) {
+				}
+				if (!isBaseTheme) {
+					Pref.setCharPref(kPREF_LAST_SELECTED_THEME, kBASE_THEME);
+					if (Pref.getBoolPref('extensions.dss.enabled')) {
+						Pref.setCharPref(kPREF_SELECTED_THEME, kBASE_THEME);
+					}
+					else {
+						Pref.setBoolPref('extensions.dss.switchPending', true);
+						shouldRestart = true;
+					}
+				}
+				try {
+					if (Pref.getBoolPref(kPREF_LIGHTWEIGHT_THEME_ENABLED))
+						Pref.setBoolPref(kPREF_LIGHTWEIGHT_THEME_ENABLED, false);
+				}
+				catch(e) {
 				}
 			}
 			if (extensions.length) {
@@ -255,7 +279,7 @@ GlobalOverlayStyleService.prototype = {
 		}
 
 		try {
-			if (Pref.getCharPref('extensions.lastSelectedSkin') == kBASE_THEME) {
+			if (Pref.getCharPref(kPREF_LAST_SELECTED_THEME) == kBASE_THEME) {
 				return false;
 			}
 		}
@@ -350,15 +374,38 @@ GlobalOverlayStyleService.prototype = {
 			aWindow.document.loadOverlay(kOVERLAY_STYLE_URI, null);
 
 			var observer = new WindowObserver(aWindow);
-			aWindow.setTimeout('document.documentElement.setAttribute("'+kOVERLAY_READY_ATTRIBUTE+'", true);', 0);
 
 			Pref.addObserver(kPREF_ROOT, observer, false);
+			Pref.addObserver(kPREF_LIGHTWEIGHT_THEME_ENABLED, observer, false);
 
 			observer.observe(null, 'nsPref:changed', kPREF_STYLE_ENABLED);
+
+			aWindow.setTimeout(function() {
+				aWindow.document.documentElement.setAttribute(kOVERLAY_READY_ATTRIBUTE, true);
+
+				// for lightweight theme
+				var gBrowser = aWindow.document.getElementById('content');
+				if (gBrowser && gBrowser.localName == 'tabbrowser') {
+					gBrowser.mPanelContainer.addEventListener('PreviewBrowserTheme', observer, false, true);
+					gBrowser.mPanelContainer.addEventListener('ResetBrowserThemePreview', observer, false, true);
+					gBrowser.mTabContainer.addEventListener('TabSelect', observer, false);
+				}
+				aWindow.addEventListener('pagehide', observer, false);
+			}, 0);
 
 			aWindow.addEventListener('unload', function() {
 				aWindow.removeEventListener('unload', arguments.callee, false);
 				Pref.removeObserver(kPREF_ROOT, observer, false);
+				Pref.removeObserver(kPREF_LIGHTWEIGHT_THEME_ENABLED, observer, false);
+
+				// for lightweight theme
+				var gBrowser = aWindow.document.getElementById('content');
+				if (gBrowser && gBrowser.localName == 'tabbrowser') {
+					gBrowser.mPanelContainer.removeEventListener('PreviewBrowserTheme', observer, false, true);
+					gBrowser.mPanelContainer.removeEventListener('ResetBrowserThemePreview', observer, false, true);
+					gBrowser.mTabContainer.removeEventListener('TabSelect', observer, false);
+				}
+				aWindow.removeEventListener('pagehide', observer, false);
 			}, false);
 		}, false);
 	},
@@ -380,6 +427,10 @@ const kOSX_UNIFIED_WINDOWS = [
 		'chrome://browser/content/browser.xul',
 		'chrome://browser/content/pageinfo/pageInfo.xul',
 		'chrome://browser/content/places/places.xul',
+		'chrome://messenger/content/messenger.xul',
+		'chrome://messenger/content/messageWindow.xul',
+		'chrome://messenger/content/messengercompose/messengercompose.xul',
+		'chrome://messenger/content/addressbook/addressbook.xul',
 		'chrome://global/content/console.xul',
 		'chrome://mozapps/content/extensions/extensions.xul'
 	].join('\n');
@@ -438,6 +489,8 @@ WindowObserver.prototype = {
 		{
 			case kPREF_STYLE_ENABLED:
 			case kPREF_TEXTSHADOW_ENABLED:
+			case kPREF_LIGHTWEIGHT_THEME_ENABLED:
+			case kPREF_LIGHTWEIGHT_THEME_PREVIEW:
 				var node = this.window.document.documentElement;
 				var color = this.window.getComputedStyle(node, '').backgroundColor;
 				if (Pref.getBoolPref(kPREF_STYLE_ENABLED) &&
@@ -494,19 +547,39 @@ WindowObserver.prototype = {
  
 	get isGecko19()
 	{
-		const XULAppInfo = Components.classes['@mozilla.org/xre/app-info;1']
-				.getService(Components.interfaces.nsIXULAppInfo);
-		var version = XULAppInfo.platformVersion.split('.');
-		return parseInt(version[0]) >= 2 || parseInt(version[1]) >= 9;
+		return Comparator.compare(XULAppInfo.platformVersion, '1.9') >= 0;
 	},
  
 	get isGecko191()
 	{
-		const XULAppInfo = Components.classes['@mozilla.org/xre/app-info;1']
-				.getService(Components.interfaces.nsIXULAppInfo);
-		var version = XULAppInfo.platformVersion.split('.');
-		if (version.length < 3) return false;
-		return this.isGecko19 && parseInt(version[2]) >= 1;
+		return Comparator.compare(XULAppInfo.platformVersion, '1.9.1') >= 0;
+	},
+ 
+	handleEvent : function(aEvent)
+	{
+		// ignore events from background tabs
+		switch (aEvent.type)
+		{
+			case 'PreviewBrowserTheme':
+			case 'ResetBrowserThemePreview':
+			case 'TabSelect':
+				if (aEvent.target.ownerDocument.defaultView.top != this.window.content)
+					return;
+				break;
+		}
+
+		switch (aEvent.type)
+		{
+			case 'PreviewBrowserTheme':
+				Pref.setBoolPref(kPREF_LIGHTWEIGHT_THEME_PREVIEW, true);
+				break;
+
+			case 'ResetBrowserThemePreview':
+			case 'pagehide':
+			case 'TabSelect':
+				Pref.setBoolPref(kPREF_LIGHTWEIGHT_THEME_PREVIEW, false);
+				break;
+		}
 	}
  
 }; 
@@ -514,12 +587,25 @@ WindowObserver.prototype = {
 var StyleChecker = { 
 	isBaseThemeSelected : function()
 	{
+		var isBaseTheme = false;
+		var usingLightWeightTheme = false;
+		var previewingLightWeightTheme = false;
 		try {
-			return Pref.getCharPref('general.skins.selectedSkin') == kBASE_THEME;
+			isBaseTheme = Pref.getCharPref(kPREF_SELECTED_THEME) == kBASE_THEME;
 		}
 		catch(e) {
-			return false;
 		}
+		try {
+			usingLightWeightTheme = Pref.getBoolPref(kPREF_LIGHTWEIGHT_THEME_ENABLED);
+		}
+		catch(e) {
+		}
+		try {
+			previewingLightWeightTheme = Pref.getBoolPref(kPREF_LIGHTWEIGHT_THEME_PREVIEW);
+		}
+		catch(e) {
+		}
+		return isBaseTheme && !usingLightWeightTheme && !previewingLightWeightTheme;
 	},
 };
  

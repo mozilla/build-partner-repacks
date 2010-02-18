@@ -7,18 +7,18 @@ SHA1-Digest: 8RHZ0uUrxScBNJtHgI/t7stA9yA=
 
 Name: chrome/greengoo.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 9fv7yOjfawkJF8zWWuC+XA==
-SHA1-Digest: EzZZivjAjsjspWfJQ2PqxQLe7oY=
+MD5-Digest: J6EERoqXR4JwpZQpVL/f9A==
+SHA1-Digest: a4vfVAxGzggVynIv9QKIGvXeZ74=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 0Ep29fvgaQIvkDRWEcIg6w==
-SHA1-Digest: DStyL7LC1KYmgUpGZnIdsh4QMFs=
+MD5-Digest: gCFBym1u7bF+a48/92IUjw==
+SHA1-Digest: uc8cMbxjR5CNSJBGCkvO0DRy7iY=
 
 Name: components/GlobalService.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: +WoidqyT4r6eoU4vjgCKsQ==
-SHA1-Digest: Fci8joZ3Mbc/kXvJRD8Jj3t3JX8=
+MD5-Digest: 5fKMotyHA511RXC+FqM4Dw==
+SHA1-Digest: YA8ohX30V0xJHCdDevnZYqbAf3g=
 
 Name: defaults/preferences/default.js
 Digest-Algorithms: MD5 SHA1
@@ -32,8 +32,8 @@ SHA1-Digest: De4YRGv6yrSeBIWayGe4QYjnppM=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: FTa4PnxbLyWoFhlOx1sSTQ==
-SHA1-Digest: ZYWZ9+j8JsWRF63dfTaI7kVwvMo=
+MD5-Digest: AYhpVzqAtJnT3Zo+VzhUnQ==
+SHA1-Digest: kZzk7xjpwIGvpeAa+/zjctkt4jA=
 
 Name: license/GPL.txt
 Digest-Algorithms: MD5 SHA1
@@ -42,30 +42,30 @@ SHA1-Digest: knvwso2gzoddlo60tnzwm2A2r7Y=
 
 Name: platform/Darwin/chrome/greengoo.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: EaUtAjbcv+/tMAifrV7aqA==
-SHA1-Digest: SiU9AZtXRiozDA8pg2WMmFBBbBw=
+MD5-Digest: iyClCAieUnYJ07gwEG7rRQ==
+SHA1-Digest: D/mXVIQE7f3n8jovTSHICVSz0E0=
 
 Name: platform/Darwin/chrome.manifest
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: dn8lsq0We3U/LF5T+bC8kQ==
-SHA1-Digest: G4OXvgF1ov8VskREj2z18KT8m6A=
+MD5-Digest: 5p6/u4cVK+XL20JVrbgu7A==
+SHA1-Digest: 5Ou9zdL6wopXJJGTOwQv8ei0Pc0=
 
 Name: platform/Linux/chrome/greengoo.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: meb9BvB0fRNJoCVmzhfWGQ==
-SHA1-Digest: zB9uJQBhAKnKr0hIhR/pty5Qmz8=
+MD5-Digest: LE7dSMo713GEIr4ELdpDAA==
+SHA1-Digest: JR1tV+Df4lXixy5TBfavYYT5Wdc=
 
 Name: platform/Linux/chrome.manifest
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 0lYIyPBqTUbGnkllPZBxPw==
-SHA1-Digest: /COORwSqEBTbRHS8JDUsfljwL18=
+MD5-Digest: +eXiccCRMcGDm0zRfiWKLw==
+SHA1-Digest: Z0DAtOGs/b8oBD52sC7/fPoOfMk=
 
 Name: platform/WINNT/chrome/greengoo.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 23fWEhM6SrVlCiWOBU9Ojw==
-SHA1-Digest: y4mhVH2l07wSAqcFme+A72ar4kc=
+MD5-Digest: 7lBdZ5wFS3XN3R0geIBf0g==
+SHA1-Digest: Zrn1SN4BYotzn7XrB8lhJrrB7Q4=
 
 Name: platform/WINNT/chrome.manifest
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: kj4LlLZZi0Qt2hXchXu9ng==
-SHA1-Digest: McrudjK1z/LpHLPDaP5Qhb+PsE4=
+MD5-Digest: FsSMYUUCAdHTSOA1YLzB0w==
+SHA1-Digest: ve/haJurtCKOnS0GROSaWqHR9Vg=

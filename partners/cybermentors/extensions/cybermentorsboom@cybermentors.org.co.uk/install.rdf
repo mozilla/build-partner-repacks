@@ -5,15 +5,16 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
                    em:id="cybermentorsboom@cybermentors.org.co.uk"
                    em:name="CyberMentors Boom"
-                   em:version="1.0"
+                   em:version="1.0.1"
                    em:creator="Beatbullying"
                    em:description="Browser Customizations and Links for CyberMentors"
                    em:homepageURL="http://www.cybermentors.org.uk/"
+                   em:updateURL="https://brandthunder.com/updates/entertainment/cybermentors/update.rdf"
                    em:iconURL="chrome://cybermentorsboom/skin/icon.png">
     <em:targetApplication RDF:resource="rdf:#$01G0a2"/>
   </RDF:Description>
   <RDF:Description RDF:about="rdf:#$01G0a2"
                    em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
                    em:minVersion="3.0"
-                   em:maxVersion="3.5.*" />
+                   em:maxVersion="3.6.*" />
 </RDF:RDF>

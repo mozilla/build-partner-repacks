@@ -7,275 +7,285 @@ SHA1-Digest: 8RHZ0uUrxScBNJtHgI/t7stA9yA=
 
 Name: chrome/ebaycompanion.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: XGVxh70JtN9Tgn/UEPqs2g==
-SHA1-Digest: icpZmleSI9nPeWZnZ1RYTyFDa/k=
+MD5-Digest: 76XWJD3Sj+qnpJ+aiXyb7g==
+SHA1-Digest: FEWIbNqmpjVAqvhagkWUCZt7Cts=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: EydZptGH0yl1wneBkQz6bA==
-SHA1-Digest: BlvcfYXaafHGRv0YSjUKM+ioolA=
+MD5-Digest: aaiwg9Y3EoMjfP9Ppyf40A==
+SHA1-Digest: hxhus0m9F7UF0bZu+NRVaJyAFls=
 
-Name: components/gsAccountGuardDatasourceService.js
+Name: components/ebayArgumentHandler.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: cSIsL42Pk8ik+nfmkotwXA==
-SHA1-Digest: Iv8TFtbnVdMhx6CUXg3HSmkhGKI=
+MD5-Digest: lgemmEVQ7UXKEdwFBSF3Zg==
+SHA1-Digest: Ic/922eQxYpDBnQbfplMeCWVTGY=
 
-Name: components/gsAccountGuardService.js
+Name: components/ebayAutoCompleteSearch.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: kodfTO0dg1h+I+3eWWp1Qw==
-SHA1-Digest: ak/1HZjYWZBxYPVhwELkgdWA6bs=
+MD5-Digest: y6Zec0pIvdPVdDTPIazCcA==
+SHA1-Digest: cRyjac0DwC5djNGCn95sd1NoxC4=
 
-Name: components/gsAutotraderAlert.js
+Name: components/ecIEbayAccessComponent.xpt
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 8Jv575SDhmuKy1s5UAQr8Q==
-SHA1-Digest: L2lqwUC5/nfiglgF1bYu50rM/jo=
+MD5-Digest: NvJojCCvHdYKIs9Tx9Z+SQ==
+SHA1-Digest: 6BU//NuAKVqq5fOFz2QSA9CZz9Q=
 
-Name: components/gsAutotraderAlertService.js
+Name: components/ecIEbayApiCallback.xpt
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: neXvFHZCzsu5HrRZL2uxNQ==
-SHA1-Digest: w4jX6ambS7enVDQHM8yItypYc5A=
+MD5-Digest: 5V3ztMcRT7fekDfxGTfUzQ==
+SHA1-Digest: KYqhLXZd9+5lF5be/7Pz53VyiQg=
 
-Name: components/gsAutotraderDatasourceService.js
+Name: components/ecIEbayApiRequest.xpt
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: o1k3G6fxXqZjSWRKlUBq7g==
-SHA1-Digest: hoA5Ess165CxuKrqd+kYHYPV2Q4=
+MD5-Digest: LwTTaefq7N7GvQ4kwhvDag==
+SHA1-Digest: bhIXYlh3FVq3NmSBAEmBbOMfxBg=
 
-Name: components/gsAutotraderDSUpdateService.js
+Name: components/ecIEbayArgumentsHandler.xpt
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 1RjMFkom+JUjYpvcgRpskQ==
-SHA1-Digest: b8Nx+qUKOwLe1zWnaxiBQpy2IAw=
+MD5-Digest: QYXdOr0BlfKyPPVWlfEQFg==
+SHA1-Digest: iwYhxiz1nyB6Rb5POJNzYEyxxWQ=
 
-Name: components/gsAutotraderFeedback.js
+Name: components/ecIEbayShortcutMaker.xpt
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 4TR4nrAQRyZ9Y9/f3pWgeQ==
-SHA1-Digest: eYy2D8xE1Gs9P0bqwQZSG4U02bk=
+MD5-Digest: +tBOb0thoJQG1KkUODHd2g==
+SHA1-Digest: 6CzZByAndQL+hWbJ/Rf9KjaDhqo=
 
-Name: components/gsAutotraderItem.js
+Name: defaults/ebay.ico
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: ivvrk40qiSkQAsphe8ew2Q==
-SHA1-Digest: 7ghufZUR4iCc5Kfy6R1ixT8AWe8=
+MD5-Digest: tQPtHSklHMU1Dd+z5B79UA==
+SHA1-Digest: 3N504NpVWr1v+u2fGZjRG6iutts=
 
-Name: components/gsAutotraderTimeInterval.js
+Name: defaults/preferences/preferences.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 5OgzyrZ/ZK8zfQKOl3897Q==
-SHA1-Digest: 06CTyyuxLbaUJx/rpjWqmbT82UM=
-
-Name: components/gsEbayAutoCompleteSearch.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: yIflDoGYIdn5T/JfBCmULQ==
-SHA1-Digest: 2sNBjgDUip0gGuL6pR+JELCCZOg=
-
-Name: components/gsEbayDisplayList.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: CsBIvRJTxIgDn71F+AA+OA==
-SHA1-Digest: p+TSA8ktKg5O/q1kqOu55g/V63E=
-
-Name: components/gsEbayEncryptionService.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: iMnMznxufOqA23O+yy9sFQ==
-SHA1-Digest: MGzZKCCLTWyF8nFvwQQN04pvUs4=
-
-Name: components/gsEbayUserService.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: bZQ06LSOGlUnQZ+ORSrMbg==
-SHA1-Digest: 0tvT+BlI5xtwNO0ZUeKuI2y6FFU=
-
-Name: components/gsIAccountGuardDatasourceService.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: eNk+lQ7D32E0r2jy9Zv0xA==
-SHA1-Digest: kCAYBzHV8CJWs5w0C20qB7BvE1A=
-
-Name: components/gsIAccountGuardService.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: k0pYXnyBSqZfbwMf6m0YFA==
-SHA1-Digest: HsH0PETle3ejJaEMY7nbg+du/Po=
-
-Name: components/gsIAutotraderAlert.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: BRXQzZQ7zownXklgSTH6zA==
-SHA1-Digest: gT0i1NQu8N2b7CsMgupGZboMgfI=
-
-Name: components/gsIAutotraderAlertService.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: +585mkO9a9x8Tf6cBVGVoQ==
-SHA1-Digest: jJ4sENO1z6+OAIvQzKo1P+e5xV8=
-
-Name: components/gsIAutotraderDatasourceService.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: 6XQRpjkhNxBELUdJ/Hqpeg==
-SHA1-Digest: o7W+QewEvKSrLEa73ZhFPPfYSG8=
-
-Name: components/gsIAutotraderDSUpdateService.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: 2apWgZMcwbwuxZTv4gji9Q==
-SHA1-Digest: hxA1c0ogInm5VXlOoaD06vdhb9U=
-
-Name: components/gsIAutotraderFeedback.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: xKsz32s1elLt6EqX2mGthQ==
-SHA1-Digest: wLzaeUzrDC5zUl+Ys21QpuMs8Vw=
-
-Name: components/gsIAutotraderItem.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: oM/ds/AvZKYs/NvJLauGJQ==
-SHA1-Digest: 2j+dEfENiraAYSO78AitZTAMm8c=
-
-Name: components/gsIAutotraderTimeInterval.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: 2zXnWzLwDIAUXvTK/aW5yw==
-SHA1-Digest: xTeXhHqwAAuWhLiKqA+MVCHytmQ=
-
-Name: components/gsIEbayAccessService.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: TnXfZh08hg3UIcn7tSFsQg==
-SHA1-Digest: wSbXqckZvyD/3I9AQsGEu6ffCWQ=
-
-Name: components/gsIEbayCallback.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: BFhw86q4dlaRGqFFk7YeOA==
-SHA1-Digest: TnMl/4+SAltAsTGZWn9zOxc3LEQ=
-
-Name: components/gsIEbayDisplayList.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: TUxp6/4kNRphZHWECCJ/mw==
-SHA1-Digest: qleY0ZfF03vCVhEDZRucixsywXU=
-
-Name: components/gsIEbayEncryptionService.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: w5XsoMVvLIxTzeHXcLj/yQ==
-SHA1-Digest: pgAixJI9NC+lz/cqnQz7dUnZqjQ=
-
-Name: components/gsIEbayUserService.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: l0y2FEnxGkLi+OaRcFBhxw==
-SHA1-Digest: Vg+raBIf8znxK2PabciUpo+nKmY=
-
-Name: components/gsIEbayUserSession.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: l+D/v4Vy8oEd5n3js74tIw==
-SHA1-Digest: vBo8ofwCF8d7HGJ7rweQZe/L1l8=
-
-Name: components/gsILoggingService.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: xwk3MZUFuwPpqFrkQU3T1w==
-SHA1-Digest: Ny9jRnGtTS5l8lKAZ5HF4bCDcq0=
-
-Name: components/gsLoggingService.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: 9u4UZAAvmhrfl05zDToIiQ==
-SHA1-Digest: dv2gYa3bDi4GSZr+1sa7C6TX88o=
-
-Name: defaults/accountGuard.rdf
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: 5Su00e1bvUFfnmxePzaRmw==
-SHA1-Digest: Nc49w+28nxSd6/BZbKVWCm0n3No=
-
-Name: defaults/eBayComp.rdf
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: yq6MCR5DG5/rWffiu3z4zQ==
-SHA1-Digest: lV5n26MTwtGLmO39tADTf0P3JRo=
-
-Name: defaults/Feedback.xsl
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: uvICs+I4su4ZWk05OAYXxg==
-SHA1-Digest: DbSPhX00xqn0X6BnkN5K/nZ3Fwo=
-
-Name: defaults/Item.xsl
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: M4MLZrMTgjd+E5SNa/GreQ==
-SHA1-Digest: uCEZCUNupufofhAJYGqlT8lDZ+4=
-
-Name: defaults/logStyle.css
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: 6p9+TUtsnE82dkhvLi2RvQ==
-SHA1-Digest: rAKigA8DaFRFmRTAdrPyisfLgj0=
-
-Name: defaults/logViewer.html
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: OPKej9/swu5vJNZtVnnt7w==
-SHA1-Digest: KDQOXFAmOZ8VsDjSIoDWJa/ErZ8=
-
-Name: defaults/MyeBayBuying.xsl
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: JO3s40taH3CCNqBhX6Mq/Q==
-SHA1-Digest: XZah2t27sOaCNiKIVFsBLUt7D9Q=
-
-Name: defaults/MyeBaySelling.xsl
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: aPXV4xsVR6col25nJmM7YQ==
-SHA1-Digest: uHOHB4ZPzbJ5RkfrH3Kk9xnITuw=
-
-Name: defaults/MyMessages.xsl
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: mMWZOt7k6Te49yXdPJ/68Q==
-SHA1-Digest: HnEu3eCVfbFQCYVF8t3q9mOIJh0=
-
-Name: defaults/preferences/ebay.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: fvTeA0tceQm+Mts7ehHRXQ==
-SHA1-Digest: 1IRk0URJHV7XfG0Yhbg4kRwtvcc=
-
-Name: defaults/template-hidden.rdf
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: xH1uY/O3Xi9g4c0xuAcFFQ==
-SHA1-Digest: oefK9CKMhHWPc2zjTDYMDRyXdpE=
-
-Name: defaults/users-feedback.rdf
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: d+J55BDxmfuSfvDuviv0mw==
-SHA1-Digest: JuxV50FR1xHJXwt6bnZV64EsJMU=
+MD5-Digest: 8zOxfn9KduhMEGAT+M5Bxw==
+SHA1-Digest: B8Bhy5HWf7+T1Pt32vd5bshmsek=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: tX/+C3vrF1VTgUOTEUAVug==
-SHA1-Digest: pPXcM3cmF+TjtSeGXw1Omjn8MY4=
+MD5-Digest: gnp0tMTKP5b8ubgMtXkhoA==
+SHA1-Digest: TodIg09s5O87RlF39aI5iMVN+LI=
 
-Name: platform/Darwin_ppc-gcc3/components/EbayAccessService.dylib
+Name: modules/activityLogger.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: hgvLGeZiehIlMqWmhPPzpg==
-SHA1-Digest: cbWaDfnKKGkJiBjyJFsFxxUUfE0=
+MD5-Digest: H6Phw+ytIoPdiScBKDau3g==
+SHA1-Digest: /Ao4KSt0lHvFx1Ix9vsjlW0pPpk=
 
-Name: platform/Darwin_ppc-gcc3/components/EbayFormSubmitObserver.dylib
+Name: modules/alertsGenerator.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: y3nrWh8e4+tyTuR13AJAmA==
-SHA1-Digest: jQFs9xCcaNXW8SZYMUsdLiZXW5E=
+MD5-Digest: 3NUvq8wH84Y3pMqwHU+CSA==
+SHA1-Digest: oActCUhWV4r+tZ3YPdZ5GEWVzBQ=
 
-Name: platform/Darwin_x86-gcc3/components/EbayAccessService.dylib
+Name: modules/alertsService.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: +UO9RWW2YQ1CzdVlCmHyMQ==
-SHA1-Digest: YrC36vRf45Mi5WV1YU1KqTU9o8U=
+MD5-Digest: 6rCq/pAT+GvPp7JvCeEjHA==
+SHA1-Digest: DE1nT5t+a0Ni5LpOI+XGaYAe9UQ=
 
-Name: platform/Darwin_x86-gcc3/components/EbayFormSubmitObserver.dylib
+Name: modules/apiCoordinator.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Y6ogEpGkIoI5owiEYpedTg==
-SHA1-Digest: 4ewf7IJEOkPCqkHpDTWJUYGlvX8=
+MD5-Digest: FV7qufvbQVZF1sJQ2QSLFQ==
+SHA1-Digest: 44o2RKX4SSE644kE17OGUgKpx5o=
 
-Name: platform/Linux/components/EbayAccessService.so
+Name: modules/apis/clientAlertsApi.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: uWE2LAh/tSqTQ5cCMTFRUw==
-SHA1-Digest: R3ov0cAIrmARUABRRKDW0yrMdk8=
+MD5-Digest: DRU3y0er9lBVlJzaL+fwCA==
+SHA1-Digest: GoA90N0L5Aj7HQuNToqXV71dVsA=
 
-Name: platform/Linux/components/EbayFormSubmitObserver.so
+Name: modules/apis/shoppingApi.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: e1NMpTV/jDgITqTWSaggBg==
-SHA1-Digest: hgBCDaBW0RRsiGtoVbwjW2a0jQg=
+MD5-Digest: 4OnWU/9FMbA1Jb8fQqIvCA==
+SHA1-Digest: CIbfeOv+SMW23XGiuHFxMrFEZFo=
 
-Name: platform/linux-gnu/components/EbayAccessService.so
+Name: modules/apis/tradingApi.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: yS+H9qk2xufyhRQOS7HRWw==
-SHA1-Digest: PqS1QwY+1P78gRhtcIguWbC9yqo=
+MD5-Digest: tRSxrt/nI2T/az441C4zjQ==
+SHA1-Digest: bR7/Ri6eSn6GSyc3ZkkxL/ikTqM=
 
-Name: platform/linux-gnu/components/EbayFormSubmitObserver.so
+Name: modules/common/glaxstar/gsCommon.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: z+lcbhHTiBr9ndIc6eBNgA==
-SHA1-Digest: iZmdb4BS9o5zWIMhZKn09zqw7fY=
+MD5-Digest: 4VyH+xVYiL937sV3CXbVYw==
+SHA1-Digest: 5jNxmlOfyPrtmdF0dlAbPD6Nbzc=
 
-Name: platform/WINNT/components/EbayAccessService.dll
+Name: modules/common/glaxstar/log4moz.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 5ilH/Li6zRqhinJNHksFTQ==
-SHA1-Digest: cBHtAiYYnrs8cmiqTnIvvfY+26w=
+MD5-Digest: dNjK3jq6m83NOpuLS9apnA==
+SHA1-Digest: +m9SRmuvALZZHslG2JaqqKkvEmo=
 
-Name: platform/WINNT/components/EbayFormSubmitObserver.dll
+Name: modules/common/glaxstar/Util/gsUtilBase64Encoder.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: KHh/YZ7XTmP3cBdVyKJk5A==
-SHA1-Digest: U+4wj9gQbYqwOHsMp/DIaFwOfxg=
+MD5-Digest: AaLyWM7AAp2xkbd1TWAe0Q==
+SHA1-Digest: +RQR7iut2eT8F8bJYgWXyVIaIFI=
+
+Name: modules/common/glaxstar/Util/gsUtilCommon.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: BZYjoP8wOmBwu9xrxU5TsQ==
+SHA1-Digest: RAxzk343l58e2Uda0wUKYyo+Ce4=
+
+Name: modules/common/glaxstar/Util/gsUtilCompressionService.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 2BFhFCEzCyXyi2p0C/U8NQ==
+SHA1-Digest: ixPn3ztNLZ/1qFzJ5wGlc5ejVxk=
+
+Name: modules/constants.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: +wp/NVCslqQez/hDnbmgbA==
+SHA1-Digest: WGezDCFFMb1mB6D/q8uPVen6xMo=
+
+Name: modules/datasource.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: QiNcs9jt+h+72TTbFnw2xw==
+SHA1-Digest: ynQfWt2oHvWHAfBGC+THhAIuTms=
+
+Name: modules/debugger.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: QS4ywZ0lGZ8xUmiYPcTjHQ==
+SHA1-Digest: Wdp0QO9bJDMFkjjtwpg98IUIYMY=
+
+Name: modules/helpers/apiHelper.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: CCFZVWBjahxZxUMGi7837A==
+SHA1-Digest: YVv5vGoG/7E33mGq1/gKg8kJnXE=
+
+Name: modules/helpers/eventTracker.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: d4GHwpeDup3rzlmEvUTjbQ==
+SHA1-Digest: wUEnQn61OPXDhtHR9p2g/xTc3yk=
+
+Name: modules/helpers/informationNotificationHelper.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: oNumx5jamZE9HfBS2tohdw==
+SHA1-Digest: 49chpAOLVLw/BCDqo4zmjYl40Nc=
+
+Name: modules/helpers/itemList.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: tIAQgsdsXP3Ax49WcbSjjw==
+SHA1-Digest: UZ6vKcfPUMSGvqj9xygHAFWQNEY=
+
+Name: modules/helpers/logger.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: gyCLsyxQeosC5FtVkOeuAQ==
+SHA1-Digest: oYKRXLs4nyVqVaDigna9pTAxf/8=
+
+Name: modules/helpers/objectHelper.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: rA8ajdpEwhKzBDFgSisqsg==
+SHA1-Digest: 2RtwLZO/tP2QZBKJB6s7JvgQG2A=
+
+Name: modules/helpers/observers.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: +McHA/IUy6iF497oES9kEA==
+SHA1-Digest: smhqB2t/z88DyFNloColBzT3Z50=
+
+Name: modules/helpers/preferences.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: WNGIZ2uE4BgFmtGoTXhRnQ==
+SHA1-Digest: 2d/l5coTlbjJ/X+DREUxOc7f6CU=
+
+Name: modules/helpers/shortcutHelper.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: Gkk9ZGVcDYSAY8CvZEJ/QQ==
+SHA1-Digest: yXIId7f8D6KknatgKesEdMgzl4E=
+
+Name: modules/helpers/storageHelper.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: yk6fyykMeLDwyOsH6JwGeA==
+SHA1-Digest: cknP4EFlxBu+t/Oyx4NitSpBgio=
+
+Name: modules/helpers/stringBundle.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 6s7l4aoAlFRx4Dwedrb1dw==
+SHA1-Digest: sO9ROT73Pi8gW2k+rgySJ9tDw/A=
+
+Name: modules/helpers/timer.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: nj/pNw6RqNHtoGit2BvXog==
+SHA1-Digest: U5tsPZbI8923xsgQOCrpiEC/wCw=
+
+Name: modules/helpers/warningNotificationHelper.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 3nfWp9NTgf+GtMLwcyS9ag==
+SHA1-Digest: 2QNp640R9mrdpcR/ypUUc+PUhdw=
+
+Name: modules/objects/account.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: NTmCgIPI2MCxWAddMnSp7w==
+SHA1-Digest: wiZgGvuAwxq12Pr5jlSZDSv5YPk=
+
+Name: modules/objects/alert.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: a18NKY+CwNfQamdzT5b2Jg==
+SHA1-Digest: Z1xocWrmbleMkFS5yGkMP56n0sw=
+
+Name: modules/objects/favoriteSeller.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: y3IvDeVozEAVO+p5diU8nQ==
+SHA1-Digest: L7zycbYnnA1WdS4BGA3rwhm9BFA=
+
+Name: modules/objects/feedback.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: Th14SxfzHvTuuhcih22P1Q==
+SHA1-Digest: iW41aS8s6q/Wj58S80X4q839g6s=
+
+Name: modules/objects/item.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 2AJ3EkEdw5c/YperG5mHDg==
+SHA1-Digest: dZSnm3+aRnxOufZO3yDHSlDsnyY=
+
+Name: modules/objects/notification.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: QE5oDpgd70tIuDCahpSilw==
+SHA1-Digest: I6uWEc0nNYW7WwOibPlUBZKXpjo=
+
+Name: modules/objects/transaction.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: /7qs9FxHBUM+qQbpnHDUQQ==
+SHA1-Digest: Fwjdj58TXFJLtfyEuF8yGgKS/fg=
+
+Name: modules/storage/migrations.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: SpHNAKnI0gSh4m0Ln711cw==
+SHA1-Digest: yyd3jcXduXH2OfVEStYz/GU/kXQ=
+
+Name: modules/storage/objectsStorage.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: YC5bgilhsiNxGxfGqvQycA==
+SHA1-Digest: tWblcuuMI9NmsiVJRTYQKRE8Fro=
+
+Name: modules/storage/propertiesStorage.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 5gm6CUCCpEpwGiU1qrCAUQ==
+SHA1-Digest: xsxX6jltOIYNxPTYJB1Qe/U4d0k=
+
+Name: modules/uninstallManager.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: fUnbsvqLpE5gvly6G1AI2Q==
+SHA1-Digest: MB+HPThxxxSpgSedC0aoFsXV8mE=
+
+Name: platform/Darwin_ppc-gcc3/components/ebayAccessComponent.dylib
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: D+1DlGAb01Eng5r2RLXf0g==
+SHA1-Digest: HWx0iJ8wOj9b05y2ivsyslZk4sk=
+
+Name: platform/Darwin_x86-gcc3/components/ebayAccessComponent.dylib
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: fhTh3YzbzlJ8VU+DapMqRg==
+SHA1-Digest: Yc1MCmUMF2njI1plzDm5q5OR/Gw=
+
+Name: platform/Linux/components/ebayAccessComponent.so
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: X6fR/ELER/zED2CyvBCuLg==
+SHA1-Digest: xUmwLldMZFBJmjg4NuY9w5AiyHE=
+
+Name: platform/linux-gnu/components/ebayAccessComponent.so
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: Dwxp7m+B/flUoOCGEPwecg==
+SHA1-Digest: wyP0FysXDR8NYxpmqgZuxwmuCro=
+
+Name: platform/WINNT/components/ebayAccessComponent.dll
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: mnX+CHyV7sptU7M6heb6jQ==
+SHA1-Digest: YUGgWcfd/+Qtc79DhWbKAdlkOuQ=
+
+Name: platform/WINNT/components/ebayShortcutMaker.dll
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 0vDsfJ/Tf8Y5pBA+wJS95g==
+SHA1-Digest: ahsLEDZpkQKMbsDw7we3R2WAspc=

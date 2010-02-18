@@ -14,7 +14,7 @@
 # The Original Code is My Theme.
 #
 # The Initial Developer of the Original Code is ClearCode Inc.
-# Portions created by the Initial Developer are Copyright (C) 2007-2009
+# Portions created by the Initial Developer are Copyright (C) 2007-2010
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): SHIMODA Hiroshi <shimoda@clear-code.com>
@@ -39,12 +39,22 @@ overlay	chrome://browser/content/browser.xul	chrome://greengoo/content/browserCu
 skin	greengoo-platform	classic/1.0	jar:chrome/greengoo.jar!/skin/classic/greengoo/
 
 override chrome://greengoo-platform/skin/overlayStyle-compat.css	chrome://greengoo/skin/dummy.css
-override chrome://greengoo-platform/skin/overlayStyle-compat.css	chrome://greengoo-platform/skin/overlayStyle-fx3.css	appversion>=3.0b4pre
+override chrome://greengoo-platform/skin/overlayStyle-compat.css	chrome://greengoo-platform/skin/overlayStyle-fx3.css	appversion>=3.0
 
 override chrome://greengoo-platform/skin/overlayStyle-compat2.css	chrome://greengoo/skin/dummy.css
-override chrome://greengoo-platform/skin/overlayStyle-compat2.css	chrome://greengoo-platform/skin/overlayStyle-fx3.5.css	appversion>=3.5b4pre
+# Firefox
+override chrome://greengoo-platform/skin/overlayStyle-compat2.css	chrome://greengoo-platform/skin/overlayStyle-fx3.5.css	application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion>=3.5
+#Thunderbird
+override chrome://greengoo-platform/skin/overlayStyle-compat2.css	chrome://greengoo-platform/skin/overlayStyle-fx3.5.css	application={3550f703-e582-4d05-9a08-453d09bdfdc6} appversion>=3.0
+
+override chrome://greengoo-platform/skin/overlayStyle-compat3.css	chrome://greengoo/skin/dummy.css
+# Firefox
+override chrome://greengoo-platform/skin/overlayStyle-compat3.css	chrome://greengoo-platform/skin/overlayStyle-fx3.6.css	application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion>=3.6b5
 
 override chrome://greengoo-platform/skin/textshadow-targets-compat.css	chrome://greengoo/skin/dummy.css
-override chrome://greengoo-platform/skin/textshadow-targets-compat.css	chrome://greengoo-platform/skin/textshadow-targets-fx3.css	appversion>=3.0b4pre
-override chrome://greengoo-platform/skin/textshadow-targets-compat.css	chrome://greengoo-platform/skin/textshadow-targets-fx3.5.css	appversion>=3.5b4pre
+override chrome://greengoo-platform/skin/textshadow-targets-compat.css	chrome://greengoo-platform/skin/textshadow-targets-fx3.css	appversion>=3.0
+# Firefox
+override chrome://greengoo-platform/skin/textshadow-targets-compat.css	chrome://greengoo-platform/skin/textshadow-targets-fx3.5.css	application={ec8030f7-c20a-464f-9b0e-13a3a9e97384} appversion>=3.5
+# Thudnerbird
+override chrome://greengoo-platform/skin/textshadow-targets-compat.css	chrome://greengoo-platform/skin/textshadow-targets-fx3.5.css	application={3550f703-e582-4d05-9a08-453d09bdfdc6} appversion>=3.0
 

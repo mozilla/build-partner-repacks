@@ -15,30 +15,13 @@
 		<em:iconURL>chrome://ytoolbar/skin/yahooicon.png</em:iconURL>
 		<em:id>{635abd67-4fe9-1b23-4f01-e679fa7484c1}</em:id>
 		<em:name>Yahoo! Toolbar</em:name>
-		<em:optionsURL>chrome://ytoolbar/content/dialog.xul#option</em:optionsURL>
-		<em:version>1.6.6.20090220</em:version>
-		<em:updateURL>https://us.data.toolbar.yahoo.com/dl/toolbar/mx/yhoo/v1/yhoo/update.rdf</em:updateURL>
+		<em:optionsURL>chrome://ytoolbar/content/option.xul</em:optionsURL>
+		<em:version>2.1.2.20100127023632</em:version>				
+		<em:updateURL>https://us.data.toolbar.yahoo.com/dl/toolbar//yhoo/v1/yhoo/update.rdf</em:updateURL>		
 		<em:file>
 			<Description about="urn:mozilla:extension:file:ytoolbar.jar">
-				<em:locale>locale/de/ytoolbar/</em:locale>
-				<em:locale>locale/en-UK/ytoolbar/</em:locale>
-				<em:locale>locale/en-US/ytoolbar/</em:locale>
-				<em:locale>locale/es-ES/ytoolbar/</em:locale>
-				<em:locale>locale/fr/ytoolbar/</em:locale>
-				<em:locale>locale/kr/ytoolbar/</em:locale>
-				<em:locale>locale/zh-HK/ytoolbar/</em:locale>
-				<em:locale>locale/zh-TW/ytoolbar/</em:locale>
-				<em:locale>locale/zh-CN/ytoolbar/</em:locale>
-				<em:locale>locale/es-AR/ytoolbar/</em:locale>
-				<em:locale>locale/es-MX/ytoolbar/</em:locale>
-				<em:locale>locale/e1/ytoolbar/</em:locale>
-				<em:locale>locale/fr-CA/ytoolbar/</em:locale>
-				<em:locale>locale/in/ytoolbar/</em:locale>
-				<em:locale>locale/it/ytoolbar/</em:locale>
-				<em:locale>locale/nz/ytoolbar/</em:locale>
-				<em:locale>locale/pt-BR/ytoolbar/</em:locale>
-				<em:package>content/ytoolbar/</em:package>
-				<em:skin>skin/classic/ytoolbar/</em:skin>
+            <em:package>content/ytoolbar/</em:package>
+            <em:skin>skin/classic/ytoolbar/</em:skin>
 			</Description>
 		</em:file>
 
@@ -46,8 +29,8 @@
 		<em:targetApplication>
 			<Description>
 				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-				<em:minVersion>1.5</em:minVersion>
-				<em:maxVersion>3.*.*</em:maxVersion>
+				<em:minVersion>3.0</em:minVersion>
+				<em:maxVersion>3.7a1pre</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 		
@@ -56,7 +39,7 @@
 		 <Description>
 		   <em:id>{a463f10c-3994-11da-9945-000d60ca027b}</em:id>
 		   <em:minVersion>0.5</em:minVersion>
-		   <em:maxVersion>1.0+</em:maxVersion>
+		   <em:maxVersion>2.*.*</em:maxVersion>
 		 </Description>
 		</em:targetApplication>
 

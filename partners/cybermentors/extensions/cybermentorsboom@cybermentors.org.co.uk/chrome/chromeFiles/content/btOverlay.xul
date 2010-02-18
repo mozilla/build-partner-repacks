@@ -2,7 +2,6 @@
 <!DOCTYPE btClient SYSTEM "../locale/btClient.dtd">
 <overlay
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script src="chrome://browser/content/utilityOverlay.js"/>
   <script type="application/x-javascript;version=1.7" src="btClient.js" />
   <script type="application/x-javascript;version=1.7" src="btUtilities.js" />
   <script type="application/x-javascript;version=1.7">

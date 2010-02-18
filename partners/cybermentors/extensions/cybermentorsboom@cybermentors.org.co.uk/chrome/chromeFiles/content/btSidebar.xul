@@ -26,18 +26,21 @@
         url += '?' + sidebarBox.getAttribute("btSidebarParams");
       }
       var width = btBoomBundle.getString(sidebarid + ".width");
-      
+
       if ((!window.top.document.getElementById("sidebar-box").width) ||
           (window.top.document.getElementById("sidebar-box").width < width)) {
         window.top.document.getElementById("sidebar-box").width = width;
       }
       if (url) {
-        window.top.document.getElementById('sidebar').setAttribute("src", url);
+		document.getElementById("bt-sidebar-content").setAttribute("src", url);
       }
       window.top.document.getElementById("main-window").setAttribute("btSidebar", sidebarid);
     }
     function closeSidebar() {
+      window.top.document.getElementById("main-window").removeAttribute("btSidebar");
     }
 ]]>
   </script>
+        <browser id="bt-sidebar-content" type="content"
+                 flex="1"/>
 </window>
