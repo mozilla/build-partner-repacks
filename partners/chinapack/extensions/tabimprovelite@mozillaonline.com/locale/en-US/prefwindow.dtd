@@ -7,3 +7,5 @@
 <!ENTITY checkOpenSearchInTab.label "Open search in new tab">
 <!ENTITY checkOpenSearchInTab.accesskey "S">
 <!ENTITY mouseTabInfo.description "Middle click or press Ctrl(Apple for Mac) while left click on links to open in new tabs, bookmarks and history included.">
+<!ENTITY checkOpenTabInBackground.label "Open diverted tabs in background">
+<!ENTITY checkOpenTabInBackground.accesskey "B">

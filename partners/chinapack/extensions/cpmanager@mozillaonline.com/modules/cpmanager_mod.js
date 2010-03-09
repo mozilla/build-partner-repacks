@@ -13,7 +13,8 @@ function cpmanager_LOG (msg) {
 var cp_mod = {
 	inited : false,
 	antiCheating : true,
-	firstTime : false
+	firstTime : false,
+	touched : false,
 };
 
 var cpmanager_FileUtil = {

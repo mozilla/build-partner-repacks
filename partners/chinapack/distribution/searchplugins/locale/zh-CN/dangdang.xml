@@ -1,0 +1,8 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+<ShortName>当当网</ShortName>
+<Description>当当网搜索</Description>
+<InputEncoding>gb2312</InputEncoding>
+<Image width="16" height="16">data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAFbSURBVHjaYvz//z8DJYAFROx9eU9o3t0zKX8YGK+uenRlK5I8sumMMEaphnX2259fOQJktWaCDai+tHfDyZf3bJmYWRjKtOwiu64fWYHLxlRlk5Luqwe7Gf79ZXj987s0E0jw3PtnegyMjAz/fv1g+P3vrwY+J1/68EKH4e9vsHtufn6jADagVtshXotf/KC9jObCCHndifgMyFY1q7OUUFmrLiCxJ1/dsosRFIhTbp9kZ2FkZvv5789vFkYmtve/frAAbWJY/fjqW5jGZZYhwrc+v2VgZ2L+JcrB/Q+ohomXle0X2ADGFfVkRwUTA4UA7IK5984p3f78ToaJkRGvYqDzGfa8vHvqyOtH31HSQbKS0T0gdY8YG59+/8wLNAA1IbGtavz6598/LmIMSFQy8sVIib8hmv8RESb/GRkZL2AYgJxMCYG5d88yYDNgYKIxT82ihJHS7AwQYACZZYv4l6IZYwAAAABJRU5ErkJggg==</Image>
+<Url type="text/html" method="GET" template="http://union.dangdang.com/transfer/transfer.aspx?from=P-270288&amp;backurl=http://search.dangdang.com/search.aspx?key={searchTerms}" />
+<SearchForm>http://www.dangdang.com/</SearchForm>
+</SearchPlugin>

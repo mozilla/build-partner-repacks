@@ -7,6 +7,8 @@ overlay chrome://browser/content/preferences/preferences.xul	chrome://tabimprove
 
 override chrome://tabimprovelite/skin/overlay.css chrome://tabimprovelite/skin/mac.css os=Darwin
 override chrome://tabimprovelite/skin/overlay.css chrome://tabimprovelite/skin/win.css os=WINNT
+override chrome://tabimprovelite/content/option.xul chrome://tabimprovelite/content/option-3.6.xul appversion>3.6
+
 
 style   chrome://browser/content/browser.xul         chrome://tabimprovelite/skin/overlay.css   appversion<3.1b1
 

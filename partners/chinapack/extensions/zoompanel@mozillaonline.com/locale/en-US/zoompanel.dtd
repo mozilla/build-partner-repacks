@@ -1,1 +1,4 @@
-<!ENTITY zoompanel.zoomtextonly "Zoom Text Only">
+<!ENTITY zoompanel.tooltiptext "Click to popup zoom panel">
+<!ENTITY zoompanel.zoomin "Zoom In">
+<!ENTITY zoompanel.zoomout "Zoom Out">
+<!ENTITY zoompanel.reset "Reset">

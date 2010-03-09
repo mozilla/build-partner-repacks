@@ -406,6 +406,8 @@ function fontsetter_rebuildMenu(){
 	var index = 0;
 	if (mainFonts.length > 0){
 		for (var i = 0; i < mainFonts.length; ++i) {
+			// the following line is added for Lenovo font links... which sucks
+			if (mainFonts[i].substr(mainFonts[i].length - 5) == "_boot") {continue;}
 			var menuItem = fontsetter_createMenuItem(mainFonts[i],index);
 			menupopup.appendChild(menuItem);
 			try {

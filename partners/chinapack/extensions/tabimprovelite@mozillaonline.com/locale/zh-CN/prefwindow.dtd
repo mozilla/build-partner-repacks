@@ -7,3 +7,5 @@
 <!ENTITY checkOpenSearchInTab.label "在新的标签页打开搜索结果">
 <!ENTITY checkOpenSearchInTab.accesskey "S">
 <!ENTITY mouseTabInfo.description "使用鼠标中键点击或者按住Ctrl(苹果机上是Apple键)点击链接，可以在新的标签页打开链接(包含历史和书签)">
+<!ENTITY checkOpenTabInBackground.label "在背景打开点击链接产生的新标签页">
+<!ENTITY checkOpenTabInBackground.accesskey "B">

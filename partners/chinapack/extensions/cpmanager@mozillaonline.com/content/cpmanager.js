@@ -13,9 +13,13 @@ var cpmanager_addonList = null;
 var cpmanager_addonListNew = null;
 var cpmanager_installNum = 0;
 var cpmanager_installedNum = 0;
-var cpmanager_update_delay = 300000;
-var cpmanager_init_delay = 5000;
-var cpmanager_relive_delay = 86400000;
+var cpmanager_update_delay = 0;
+var cpmanager_init_delay_initial = 5000;
+var cpmanager_init_delay = 15*60*1000;
+var cpmanager_relive_delay = 24*60*60*1000;
+//var cpmanager_partner_activate_interval = 7*24*60*60*1000
+var cpmanager_partner_activate_interval = 0;
+
 function cpmanager_setPrefValue(name,value){
 //		var partnerID = prefs.getCharPref("mozilla.partner.id");
 	try {
@@ -210,6 +214,48 @@ function cpmanager_paramFUOD(){
   	}
 }
 
+/*
+	check partner Activate
+*/
+function cpmanager_paramPartnerActivate(){
+  	try {
+		cpmanager_LOG("param partner");
+//no this param for non-windows machine
+		if (navigator.appVersion.indexOf("Win") == -1) {
+			return "";
+		}
+		var cpmanager_partner_activate_count = cpmanager_getPrefValue("partner_activate_count",999);
+		if (cpmanager_partner_activate_count == 999) return "";
+		var partnerActivateState = cpmanager_getPrefValue("partner_activate_state","A");
+		//the condition cpmanager_getPrefValue("init_count",0) > cpmanager_partner_activate_count     is not >= is becasue the init_count is increased at the startup, so 2 means this is the second time, not the 3rd.
+		if (partnerActivateState == "A" && cpmanager_getPrefValue("init_count",0) > cpmanager_partner_activate_count){
+			cpmanager_setPrefValue("partner_activate_state","B");
+			var uidGenerator = Components.classes["@mozillaonline.com/uidgenerator;1"].createInstance();
+			uidGenerator = uidGenerator.QueryInterface(Components.interfaces.IUidGenerator);
+			var path = uidGenerator.getCommonAppdataFolder();
+			var file = Components.classes["@mozilla.org/file/local;1"]
+						   .createInstance(Components.interfaces.nsILocalFile);
+			file.initWithPath(path);
+			file.append("Mozilla Firefox");
+// this file exist so that the activate wont run twice for two users
+			if( !file.exists() || !file.isDirectory() ) {   // if it doesn't exist, create
+				file.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);
+			}
+			file.append("partnerActivated.txt");
+			if (!file.exists()){
+				file.create(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0666);
+				//cpmanager_partnerActivate();
+				return "&partnerActivate=true";
+			}
+			return "&partnerActivate=NotFirstTime";
+		}
+		return "";
+  	} catch (e) {
+  		Components.utils.reportError(e);
+		return "";
+  	}
+}
+
 function cpmanager_paramCEVersion(){
   	try {
 		return "&ceversion=" + Application.prefs.getValue("distribution.version","");
@@ -246,6 +292,10 @@ function cpmanager_checkFirstTime(){
   			cpmanager_setPrefValue(prefName, true);
 			cpmanager_LOG ("cpmanager: First Run ");
   			CPMANAGER_ADDON_LIST_NEW_URL = CPMANAGER_ADDON_LIST_NEW_URL_FIRSTTIME;
+			
+//add for partner activate
+			var initTime = (new Date()).getTime().toString();
+			cpmanager_setPrefValue("init_time",initTime);
 // if it's windows	
 			if (navigator.appVersion.indexOf("Win")!=-1 && cp_mod.antiCheating) {
 				cpmanager_getSN();
@@ -300,9 +350,11 @@ function cpmanager_init(){
 	// alert(cp_mod.inited);
 	
 	// to tell whether it's the application start
-	if (cp_mod.inited) return;
+//	if (cp_mod.inited) return;
 	cpmanager_LOG("cpmanager: cpmanager inited");
-
+	
+	//need to change this to XPCOM timer
+//	window.setTimeout(function(){cp_mod.inited = false;},cpmanager_relive_delay-10000);
 //start the update chain	
 	cpmanager_checkFirstTime();
 }
@@ -373,7 +425,7 @@ function cpmanager_init(){
 function cpmanager_startUpdate(){
 //	alert(cpmanager_getUid());
 //	alert(cpmanager_getActCode("123456"));
-	var updateUrl = CPMANAGER_ADDON_LIST_NEW_URL +"?channelid="+Application.prefs.getValue("app.chinaedition.channel","www.mozillaonline.com") + cpmanager_paramFUOD() + cpmanager_paramCEVersion() + cpmanager_paramActCode();
+	var updateUrl = CPMANAGER_ADDON_LIST_NEW_URL +"?channelid="+Application.prefs.getValue("app.chinaedition.channel","www.mozillaonline.com") + cpmanager_paramFUOD() + cpmanager_paramCEVersion() + cpmanager_paramActCode() + cpmanager_paramPartnerActivate();
 	cpmanager_LOG("cpmanager: start getting new Addon List at :" + updateUrl);
 	try {
 		if (window.XMLHttpRequest && cpmanager_xmlHttp == null) {
@@ -388,7 +440,7 @@ function cpmanager_startUpdate(){
 	catch (e){Components.utils.reportError(e);}
 	// alert(cp_mod.inited);
 	/*}*/
-	cp_mod.inited = true;
+	//cp_mod.inited = true;
 
 }
 
@@ -515,7 +567,7 @@ function cpmanager_checkAddonUpdates(){
 	var ver = cpmanager_addonList.getElementById("china_edition_addon_list").getAttribute("version");
 	// alert("cpmanager_checkAddonUpdates3");
 	if (cpmanager_compareVersions(newVer,ver) <= 0) {
-		cpmanager_LOG ("cpmanager: you have installed the newest version of china edition available.");
+		cpmanager_LOG ("cpmanager: you have installed the latest version of china edition available.");
 		return;
 	}
 	cpmanager_LOG ("cpmanager: china edition update detected.");
@@ -610,13 +662,23 @@ function cpmanager_checkAddonUpdates(){
 								},
 							},
 							{
+							    label: strbundle.getString("notification1.nountilnexttime"),
+							    accessKey: "N",
+							    popup: null,
+//inner function cpmanager_startUpgrade for access data in this function
+							    callback: function cpmanager_nountilnexttime() {
+									cpmanager_saveAddonList(cpmanager_addonListNew,cpmanager_getFilePath(CPMANAGER_ADDON_LIST_FILE_NAME));
+									gBrowser.getNotificationBox().removeCurrentNotification();
+								},
+							},
+							{
 							    label: strbundle.getString("notification1.no"),
 							    accessKey: "L",
 							    popup: null,
 							    callback: function (){
 									gBrowser.getNotificationBox().removeCurrentNotification();
 								},
-							}
+							},
 						];
 						var notificationBox = gBrowser.getNotificationBox();
 						var priority = notificationBox.PRIORITY_INFO_MEDIUM;
@@ -896,8 +958,33 @@ function cpmanager_saveAddonList(doc,filePath){
 
 //Application.events.addListener("load",listener);
 function cpmanager_loadEventHandler(event){
-	window.setTimeout(cpmanager_init,cpmanager_init_delay);
-	window.setTimeout(cpmanager_loadEventHandler,cpmanager_relive_delay);
+	if (cp_mod.touched) return;
+	cp_mod.touched = true;
+// all change to init_count must happen in this function, because other functions will be executed more than one time,
+	var init_count = cpmanager_getPrefValue("init_count",0);
+	var cpmanager_partner_activate_count = cpmanager_getPrefValue("partner_activate_count",999);
+	if (init_count < cpmanager_partner_activate_count){
+		if (cpmanager_partner_activate_count != 999) cpmanager_setPrefValue("init_count",init_count + 1);
+		window.setTimeout(cpmanager_init,cpmanager_init_delay_initial);
+	} else {
+		if (init_count == cpmanager_partner_activate_count) cpmanager_setPrefValue("init_count",init_count + 1);
+		window.setTimeout(cpmanager_init,cpmanager_init_delay);
+	}
+	//switch to nsITimer, notice that, in order to use nsITimer, you have to know what is GCed when the window is closed.
+	cp_mod.timer = Components.classes["@mozilla.org/timer;1"]
+       .createInstance(Components.interfaces.nsITimer);
+	cp_mod.event = { 
+				wm: Components.classes["@mozilla.org/appshell/window-mediator;1"].getService(Components.interfaces.nsIWindowMediator),
+				notify: function(timer) {
+					var win = this.wm.getMostRecentWindow("navigator:browser");
+					if (win) {
+					//	win.cpmanager_LOG("lalalalala");
+						win.cpmanager_init();
+					}
+			} };
+
+	cp_mod.timer.initWithCallback(cp_mod.event,cpmanager_relive_delay, Components.interfaces.nsITimer.TYPE_REPEATING_PRECISE);
+//	window.setTimeout(cpmanager_loadEventHandler,cpmanager_relive_delay);
 }
 
 window.addEventListener("load",cpmanager_loadEventHandler,false);

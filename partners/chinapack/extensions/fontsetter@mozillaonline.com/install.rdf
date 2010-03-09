@@ -5,7 +5,7 @@
 
 	<Description about="urn:mozilla:install-manifest">
 		<em:id>fontsetter@mozillaonline.com</em:id>
-		<em:version>0.2.8</em:version>
+		<em:version>0.2.9</em:version>
 		<em:name>Font Setter</em:name>
 		<em:description>Choose your favorite fonts for menu and content.</em:description>
 		<em:creator>Amax Guan@Mozilla Online</em:creator>
@@ -17,7 +17,7 @@
 			<Description>
 				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
 				<em:minVersion>3.0a1</em:minVersion>
-				<em:maxVersion>3.5.*</em:maxVersion>
+				<em:maxVersion>3.6.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 		

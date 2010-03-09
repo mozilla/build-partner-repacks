@@ -1,3 +1,3 @@
 pref("browser.tabs.autoHide", false);
 pref("browser.download.useDownloadDir", false);
-pref("flashgot.version", "1.1.9.4");
+pref("flashgot.version", "1.2");

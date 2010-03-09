@@ -8,12 +8,14 @@
 				<preference id="includeNewTabs" name="extensions.tabimprovelite.includeNewTabs" type="bool"/>
 				<preference id="openUrlInTab" name="extensions.tabimprovelite.openUrlInTab" type="bool"/>
 				<preference id="openSearchInTab" name="browser.search.openintab" type="bool"/>
+				<preference id="openTabInBackground" name="browser.tabs.loadDivertedInBackground" type="bool"/>
 			</preferences>
 			<groupbox>
 				<caption label="&pane1.title;"/>
 				<checkbox id="checkIncludeNewTabs" preference="includeNewTabs" label="&checkIncludeNewTabs.label;" accesskey="&checkIncludeNewTabs.accesskey;"/>
 				<checkbox id="checkOpenUrlInTab" preference="openUrlInTab" label="&checkOpenUrlInTab.label;" accesskey="&checkOpenUrlInTab.accesskey;"/>
 				<checkbox id="checkOpenSearchInTab" preference="openSearchInTab" label="&checkOpenSearchInTab.label;" accesskey="&checkOpenSearchInTab.accesskey;"/>
+				<checkbox id="checkOpenTabInBackground" preference="openTabInBackground" label="&checkOpenTabInBackground.label;" accesskey="&checkOpenTabInBackground.accesskey;"/>
 				<box orient="horizontal" align="center"><image src="chrome://tabimprovelite/skin/information-24.png" height="24px" align="center" flex="0"/><label flex="1">&mouseTabInfo.description;</label></box>
 			</groupbox>	
 		</prefpane> 

@@ -5,12 +5,11 @@
 
         <Description about="urn:mozilla:install-manifest">
                 <em:id>zoompanel@mozillaonline.com</em:id>
-                <em:version>0.2.2</em:version>
+                <em:version>0.4</em:version>
 
                 <em:name>Zoom Panel</em:name>
                 <em:description>Quick zoom using the zoom panel on status bar.</em:description>
                 <em:creator>Mozilla Online</em:creator>
-                <em:contributor>Daniel Glazman (Glazou)</em:contributor>
                 <em:homepageURL>http://www.mozillaonline.com/</em:homepageURL>
 				<em:iconURL>chrome://zoompanel/content/zoompanel.png</em:iconURL>
 
@@ -18,7 +17,7 @@
                         <Description>
                                 <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
                                 <em:minVersion>3.0a1</em:minVersion>
-                                <em:maxVersion>3.5.*</em:maxVersion>
+                                <em:maxVersion>3.6.*</em:maxVersion>
                         </Description>
                 </em:targetApplication>
 
@@ -31,7 +30,6 @@
 						<em:name>快速缩放</em:name>
 						<em:description>在状态栏上使用快速缩放功能</em:description>
 		                <em:creator>Mozilla Online</em:creator>
-       			        <em:contributor>Daniel Glazman (Glazou)</em:contributor>
 		                <em:homepageURL>http://www.mozillaonline.com/</em:homepageURL>
 					</Description>
 				</em:localized>

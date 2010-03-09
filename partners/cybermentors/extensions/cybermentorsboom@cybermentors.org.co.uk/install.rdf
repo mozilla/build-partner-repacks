@@ -9,7 +9,6 @@
                    em:creator="Beatbullying"
                    em:description="Browser Customizations and Links for CyberMentors"
                    em:homepageURL="http://www.cybermentors.org.uk/"
-                   em:updateURL="https://brandthunder.com/updates/entertainment/cybermentors/update.rdf"
                    em:iconURL="chrome://cybermentorsboom/skin/icon.png">
     <em:targetApplication RDF:resource="rdf:#$01G0a2"/>
   </RDF:Description>

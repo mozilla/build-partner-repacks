@@ -10,7 +10,7 @@ window.addEventListener("load", function(event){
 			}
 			node = node.parentNode;
 		}
-	}, false)
+	}, false);
 
 // below is integrated from tabs open relative
 	tabimprovelite_tabsopenrelative_nextTab = 1;
@@ -26,17 +26,19 @@ window.addEventListener("load", function(event){
 	    catch (ex) {}
 	}, false);
 
-	eval("gBrowser.addTab = " + gBrowser.addTab.toString().replace(
-	    'if (t.previousSibling.selected)',
-	    'if (tabimprovelite_tabsopenrelative_ignoreNext) { \
-			tabimprovelite_tabsopenrelative_ignoreNext = false; \
-	    } \
-	    else if (!arguments.callee.caller || !arguments.callee.caller.caller || arguments.callee.caller.caller.name != "BrowserOpenTab" || getBoolPref("extensions.tabimprovelite.includeNewTabs", false)) { \
-	        this.moveTabTo(t, this.mCurrentTab._tPos + tabimprovelite_tabsopenrelative_nextTab); \
-	        tabimprovelite_tabsopenrelative_nextTab++; \
-	    } \
-	    if (t.previousSibling.selected)'
-	));
+	if (Application.version < "3.6") {
+		eval("gBrowser.addTab = " + gBrowser.addTab.toString().replace(
+			'if (t.previousSibling.selected)',
+			'if (tabimprovelite_tabsopenrelative_ignoreNext) { \
+				tabimprovelite_tabsopenrelative_ignoreNext = false; \
+			} \
+			else if (!arguments.callee.caller || !arguments.callee.caller.caller || arguments.callee.caller.caller.name != "BrowserOpenTab" || getBoolPref("extensions.tabimprovelite.includeNewTabs", false)) { \
+				this.moveTabTo(t, this.mCurrentTab._tPos + tabimprovelite_tabsopenrelative_nextTab); \
+				tabimprovelite_tabsopenrelative_nextTab++; \
+			} \
+			if (t.previousSibling.selected)'
+		));
+	}
 //	alert(gBrowser.addTab.toString());
 	
 	/* Don't open links from external applications relatively */
@@ -65,9 +67,11 @@ window.addEventListener("load", function(event){
         var cName = "@mozilla.org/preferences-service;1";
         var fPref = Components.classes[cName].getService(Components
             .interfaces.nsIPrefService);
- 		eval("document.getElementById(\"searchbar\").handleBaseCommand = " + document.getElementById("searchbar").handleBaseCommand.toString().replace(
+//		alert(document.getElementById("searchbar").handleSearchCommand);
+
+ 		eval("document.getElementById(\"searchbar\").handleSearchCommand = " + document.getElementById("searchbar").handleSearchCommand.toString().replace(
 				'if ((aEvent && aEvent.altKey) ^ newTabPref)','if (((aEvent && aEvent.altKey) ^ newTabPref) && (gBrowser.currentURI.spec!="about:blank" ||gBrowser.webProgress.isLoadingDocument))'));
-//			alert(document.getElementById("searchbar").handleBaseCommand);
+//		alert(document.getElementById("searchbar").handleSearchCommand);
 //			alert(whereToOpenLink);
         eval("whereToOpenLink = " + whereToOpenLink.toString().replace(
             'if (!e) {', 'if (e&&e.currentTarget.getAttribute("anonid")\

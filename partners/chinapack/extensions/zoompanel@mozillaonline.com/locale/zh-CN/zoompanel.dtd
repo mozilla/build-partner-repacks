@@ -1,1 +1,4 @@
-<!ENTITY zoompanel.zoomtextonly "仅缩放文字">
+<!ENTITY zoompanel.tooltiptext "点击打开缩放面板">
+<!ENTITY zoompanel.zoomin "放大">
+<!ENTITY zoompanel.zoomout "缩小">
+<!ENTITY zoompanel.reset "恢复正常">

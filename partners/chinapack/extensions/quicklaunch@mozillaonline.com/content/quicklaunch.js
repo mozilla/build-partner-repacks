@@ -184,14 +184,17 @@ function quicklaunch_printScreen() {
 
 	canvas.height = desth;
 	canvas.width = destw;
-	ctx.drawWindow(content, 0, 0, destw, desth, "rgb(0,0,0)");
+	ctx.clearRect(0, 0, destw, desth);
+    ctx.save();
+	ctx.drawWindow(content, 0, 0, destw, desth, "rgb(255,255,255)");
 	
 	return canvas.toDataURL("image/png", "");
-	
+/*	
 	var img = new Image();
 	img.src = canvas.toDataURL("image/png", "");
 	document.popupNode = img;
 	goDoCommand("cmd_copyImageContents");
+*/
 }
 
 function quicklaunch_savePageToClipboard(){
