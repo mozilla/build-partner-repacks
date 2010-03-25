@@ -2,6 +2,7 @@
 
 import os, re, sys
 from shutil import copy, copytree, move
+import subprocess
 from subprocess import Popen
 from optparse import OptionParser
 
@@ -9,9 +10,11 @@ PARTNERS_DIR = "../partners"
 BUILD_NUMBER = "1"
 STAGING_SERVER = "stage.mozilla.org"
 PKG_DMG = "pkg-dmg"
+SBOX_HOME = '/scratchbox/users/cltbld/home/cltbld/'
+SBOX_PATH = '/scratchbox/moz_scratchbox'
 
 #########################################################################
-# Source: 
+# Source:
 # http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
 def which(program):
     def is_exe(fpath):
@@ -73,29 +76,30 @@ def printSeparator():
 
 #########################################################################
 def shellCommand(cmd):
-    # Shell command output gets dumped immediately to stdout, whereas 
+    # Shell command output gets dumped immediately to stdout, whereas
     # print statements get buffered unless we flush them explicitly.
     sys.stdout.flush()
     p = Popen(cmd, shell=True)
     (rpid, ret) = os.waitpid(p.pid, 0)
     if ret != 0:
         ret_real = (ret & 0xFF00) >> 8
-        print "Error: shellCommand had non-zero exit status: %d" % ret_real 
+        print "Error: shellCommand had non-zero exit status: %d" % ret_real
         print "command was: %s" % cmd
         sys.exit(ret_real)
     return True
-   
+
 #########################################################################
 def mkdir(dir, mode=0777):
     if not os.path.exists(dir):
         return os.makedirs(dir, mode)
     return True
-   
+
 #########################################################################
 def isLinux(platform):
     if (platform.find('linux') != -1):
         return True
     return False
+
 #########################################################################
 def isMac(platform):
     if (platform.find('mac') != -1):
@@ -109,9 +113,15 @@ def isWin(platform):
     return False
 
 #########################################################################
-def parseRepackConfig(file):
+def isMaemo(platform):
+    if (platform.find('maemo') != -1):
+        return True
+    return False
+
+#########################################################################
+def parseRepackConfig(file, platforms):
     config = {}
-    
+
     config['platforms'] = []
     f= open(file, 'r')
     for line in f:
@@ -124,14 +134,15 @@ def parseRepackConfig(file):
         if key == 'locales':
             config['locales'] = value.split(' ')
             continue
-        if isLinux(key) or isMac(key) or isWin(key):
-            if value == 'true':
+        if isLinux(key) or isMac(key) or isWin(key) or isMaemo(key):
+            if key in platforms and value == 'true':
                 config['platforms'].append(key)
             continue
         if key == 'migrationWizardDisabled':
             if value.lower() == 'true':
                 config['migrationWizardDisabled'] = True
-    return config
+    if config['platforms']:
+        return config
 
 #########################################################################
 def getFormattedPlatform(platform):
@@ -143,6 +154,8 @@ def getFormattedPlatform(platform):
         return "mac"
     if isWin(platform):
         return "win32"
+    if isMaemo(platform):
+        return "maemo"
     return None
 
 #########################################################################
@@ -162,23 +175,33 @@ def getFilename(version, platform, locale, file_ext):
         else:
             greek = "RC"
         version_formatted = "%s %s %s" % (m.group(1), greek, m.group(3))
-        
+
     if version.startswith('3.0'):
         return "firefox-%s.%s.%s.%s" % (version,
                                         locale,
                                         platform,
                                         file_ext)
     else:
-        if isLinux(platform):            
+        if isLinux(platform):
             return "firefox-%s.%s" % (version,
                                       file_ext)
         if isMac(platform):
             return "Firefox %s.%s" % (version_formatted,
                                       file_ext)
-        if isWin(platform):            
+        if isWin(platform):
             return "Firefox Setup %s.%s" % (version_formatted,
                                             file_ext)
-        
+
+        if isMaemo(platform):
+            deb_name_url = "http://%s%s/%s/%s/deb_name.txt" % \
+                           (options.staging_server,
+                            candidates_web_dir,
+                            platform_formatted,
+                            locale)
+            filename = re.sub('\n', '', Popen(['curl', deb_name_url],
+                             stdout=subprocess.PIPE).communicate()[0])
+            return filename
+
     return None
 
 #########################################################################
@@ -221,7 +244,7 @@ class RepackBase(object):
     def announceStart(self):
         print "### Repacking %s build %s" % (self.platform, self.build)
 
-    def unpackBuild(self):    
+    def unpackBuild(self):
         copy(self.full_build_path, '.')
 
     def createOverrideIni(self, partner_path):
@@ -230,7 +253,7 @@ class RepackBase(object):
         '''
         filename='%s/override.ini' % partner_path
         if self.repack_info.has_key('migrationWizardDisabled'):
-            if not os.path.isfile(filename): 
+            if not os.path.isfile(filename):
                 f=open(filename,'w')
                 f.write('[XRE]\n')
                 f.write('EnableProfileMigrator=0\n')
@@ -243,12 +266,12 @@ class RepackBase(object):
             for i in ['distribution', 'extensions', 'searchplugins']:
                 full_path = "%s/%s" % (self.full_partner_path, i)
                 if os.path.exists(full_path):
-                    copytree(full_path, "%s/%s" % (platform_dir,i)) 
+                    copytree(full_path, "%s/%s" % (platform_dir,i))
             self.createOverrideIni(platform_dir)
 
     def repackBuild(self):
         pass
-        
+
     def cleanup(self):
         if self.final_dir == '.':
             move(self.build, '..')
@@ -262,7 +285,7 @@ class RepackBase(object):
         self.copyFiles()
         self.repackBuild()
         self.cleanup()
-        os.chdir(self.base_dir)        
+        os.chdir(self.base_dir)
 
 #########################################################################
 class RepackLinux(RepackBase):
@@ -308,7 +331,7 @@ class RepackMac(RepackBase):
         if os.path.exists("%s/Firefox.app" % self.mountpoint):
             print "Error: Firefox is already mounted at %s" % self.mountpoint
             sys.exit(1)
-    
+
         attach_cmd = "hdiutil attach -mountpoint %s -readonly -private -noautoopen \"%s\"" % (self.mountpoint, self.full_build_path)
         shellCommand(attach_cmd)
         rsync_cmd  = "rsync -a %s/ stage/" % self.mountpoint
@@ -316,8 +339,8 @@ class RepackMac(RepackBase):
         eject_cmd  = "hdiutil eject %s" % self.mountpoint
         shellCommand(eject_cmd)
 
-        # Disk images contain a link " " to "Applications/" that we need 
-        # to get rid of while working with it uncompressed. 
+        # Disk images contain a link " " to "Applications/" that we need
+        # to get rid of while working with it uncompressed.
         os.remove("stage/ ")
 
     def copyFiles(self):
@@ -353,20 +376,78 @@ class RepackWin32(RepackBase):
     def repackBuild(self):
         zip_cmd = "7za a \"%s\" nonlocalized" % self.build
         shellCommand(zip_cmd)
- 
+
+#########################################################################
+class RepackMaemo(RepackBase):
+    def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
+                 repack_info, sbox_path=SBOX_PATH, sbox_home=SBOX_HOME):
+        super(RepackMaemo, self).__init__(build, partner_dir,
+                                          build_dir, working_dir,
+                                          final_dir, repack_info)
+        self.platform = "maemo"
+        self.sbox_path = sbox_path
+        self.sbox_home = sbox_home
+        self.tmpdir = "%s/tmp_deb" % self.base_dir
+
+    def unpackBuild(self):
+        mkdir("%s/DEBIAN" % self.tmpdir)
+        super(RepackMaemo, self).unpackBuild()
+        commandList = [
+         'ar -p %s data.tar.gz | tar -zx -C %s' % (self.build, self.tmpdir),
+         'ar -p %s control.tar.gz | tar -zx -C %s/DEBIAN' % (self.build,
+                                                             self.tmpdir)
+        ]
+        for command in commandList:
+            status = shellCommand(command)
+            if not status:
+                print "Error while running '%s'." % command
+                sys.exit(status)
+
+    def copyFiles(self):
+        full_path = "%s/preferences" % self.full_partner_path
+        if os.path.exists(full_path):
+            cp_cmd = "cp %s/* %s/opt/mozilla/[a-z\-\.0-9]*/defaults/preferences/" % \
+                (full_path, self.tmpdir)
+            shellCommand(cp_cmd)
+
+    def repackBuild(self):
+        rel_base_dir = re.sub('^.*%s' % self.sbox_home, '', self.base_dir)
+        repack_cmd = '%s -p -d %s "dpkg-deb -b tmp_deb %s"' % (self.sbox_path,
+                                                           rel_base_dir,
+                                                           self.build)
+        print repack_cmd
+        shellCommand(repack_cmd)
+        print self.build
+
+    def cleanup(self):
+        print self.final_dir
+        move(os.path.join(self.base_dir, self.build), "../%s" % self.final_dir)
+        rmdirRecursive(self.tmpdir)
+
+    def doRepack(self):
+        self.announceStart()
+        os.chdir(self.working_dir)
+        self.unpackBuild()
+        self.copyFiles()
+        self.repackBuild()
+        self.cleanup()
+        os.chdir(self.base_dir)
+
 #########################################################################
 if __name__ == '__main__':
     error = False
     partner_builds = {}
+    default_platforms = ['linux-i686', 'mac', 'win32']
     repack_build = {'linux-i686': RepackLinux,
                     'mac':        RepackMac,
-                    'win32':      RepackWin32
+                    'win32':      RepackWin32,
+                    'maemo':      RepackMaemo
     }
 
     parser = OptionParser(usage="usage: %prog [options]")
-    parser.add_option("-d", 
+    parser.add_option("-d",
                       "--partners-dir",
-                      action="store", 
+                      action="store",
                       dest="partners_dir",
                       default=PARTNERS_DIR,
                       help="Specify the directory where the partner config files are found.")
@@ -375,6 +456,17 @@ if __name__ == '__main__':
                       action="store",
                       dest="partner",
                       help="Repack for a single partner, specified by name."
+                     )
+    parser.add_option("--platform",
+                     action="append",
+                     dest="platforms",
+                     help="Specify platform (multiples ok)."
+                     )
+    parser.add_option("--nightly-dir",
+                     action="store",
+                     dest="nightly_dir",
+                     default="firefox/nightly",
+                     help="Specify the subdirectory where candidates live (default firefox/nightly)."
                      )
     parser.add_option("-v",
                       "--version",
@@ -415,14 +507,17 @@ if __name__ == '__main__':
         print "Error: partners dir %s is not a directory." % partners_dir
         error = True
 
+    if not options.platforms:
+        options.platforms = default_platforms
+
     # We only care about the tools if we're actually going to
     # do some repacking.
     if not options.verify_only:
-        if not which("7za"):
+        if "win32" in options.platforms and not which("7za"):
             print "Error: couldn't find the 7za executable in PATH."
             error = True
 
-        if not which(options.pkg_dmg):
+        if "mac" in options.platforms and not which(options.pkg_dmg):
             print "Error: couldn't find the pkg-dmg executable in PATH."
             error = True
 
@@ -432,9 +527,9 @@ if __name__ == '__main__':
     base_workdir = os.getcwd();
 
     # Remote dir where we can find builds.
-    candidates_web_dir = "/pub/mozilla.org/firefox/nightly/%s-candidates/build%s" % (options.version, options.build_number)
+    candidates_web_dir = "/pub/mozilla.org/%s/%s-candidates/build%s" % (options.nightly_dir, options.version, options.build_number)
     win32_candidates_web_dir = candidates_web_dir + '/unsigned'
- 
+
     # Local directories for builds
     original_builds_dir = "original_builds/%s/build%s" % (options.version, str(options.build_number))
     repacked_builds_dir = "repacked_builds/%s/build%s" % (options.version, str(options.build_number))
@@ -458,12 +553,14 @@ if __name__ == '__main__':
         repack_cfg = "%s/repack.cfg" % str(full_partner_dir)
         if not options.verify_only:
             print "### Starting repack process for partner: %s" % partner_dir
-        else: 
+        else:
             print "### Verifying existing repacks for partner: %s" % partner_dir
         if not os.path.exists(repack_cfg):
             print "### %s doesn't exist, skipping this partner" % repack_cfg
             continue
-        repack_info = parseRepackConfig(repack_cfg)
+        repack_info = parseRepackConfig(repack_cfg, options.platforms)
+        if not repack_info:
+            continue
 
         partner_repack_dir = "%s/%s" % (repacked_builds_dir, partner_dir)
         if not options.verify_only:
@@ -472,7 +569,7 @@ if __name__ == '__main__':
             mkdir(partner_repack_dir)
             working_dir = "%s/working" % partner_repack_dir
             mkdir(working_dir)
- 
+
         # Figure out which base builds we need to repack.
         for locale in repack_info['locales']:
             for platform in repack_info['platforms']:
@@ -482,17 +579,18 @@ if __name__ == '__main__':
                    (locale == 'ja-JP-mac' and not isMac(platform)):
                    continue
                 platform_formatted = getFormattedPlatform(platform)
+
                 file_ext = getFileExtension(options.version,
-                                            platform_formatted);
+                                            platform_formatted)
                 filename = getFilename(options.version,
                                        platform_formatted,
                                        locale,
                                        file_ext)
+
                 local_filepath = getLocalFilePath(options.version,
                                                   original_builds_dir,
                                                   platform_formatted,
-                                                  locale
-                                                 )
+                                                  locale)
                 if not options.verify_only:
                     mkdir(local_filepath)
                 local_filename = "%s/%s" % (local_filepath, filename)
@@ -531,17 +629,17 @@ if __name__ == '__main__':
                                                   locale,
                                                   filename
                                                  )
-                            
+
                         wget_cmd = "wget -q \"%s\"" % original_build_url
                         shellCommand(wget_cmd)
                         os.chdir(base_workdir);
-                         
-                    # Make sure we have the local file now               
+
+                    # Make sure we have the local file now
                     if not os.path.exists(local_filename):
                         print "Error: Unable to retrieve %s" % filename
                         sys.exit(1)
 
-                    repackObj = repack_build[platform_formatted](filename, 
+                    repackObj = repack_build[platform_formatted](filename,
                                                                  full_partner_dir,
                                                                  local_filepath,
                                                                  working_dir,
@@ -553,7 +651,7 @@ if __name__ == '__main__':
                     if not os.path.exists(repacked_build):
                         print "Error: missing expected repack for partner %s (%s/%s): %s" % (partner_dir, platform_formatted, locale, filename)
                         error = True
-        
+
         if not options.verify_only:
             # Remove our working dir so things are all cleaned up and ready for
             # easy upload.
