@@ -141,6 +141,9 @@ def parseRepackConfig(file, platforms):
         if key == 'migrationWizardDisabled':
             if value.lower() == 'true':
                 config['migrationWizardDisabled'] = True
+            continue
+        if key == 'deb_section':
+            config['deb_section'] = re.sub('/', '\/', value)
     if config['platforms']:
         return config
 
@@ -410,6 +413,13 @@ class RepackMaemo(RepackBase):
                 (full_path, self.tmpdir)
             shellCommand(cp_cmd)
 
+    def mungeControl(self):
+        print self.repack_info
+        if 'deb_section' in self.repack_info:
+            munge_cmd="sed -i -e 's/^Section: .*$/Section: %s/' %s/DEBIAN/control" % (self.repack_info['deb_section'], self.tmpdir)
+            print munge_cmd
+            shellCommand(munge_cmd)
+
     def repackBuild(self):
         rel_base_dir = re.sub('^.*%s' % self.sbox_home, '', self.base_dir)
         repack_cmd = '%s -p -d %s "dpkg-deb -b tmp_deb %s"' % (self.sbox_path,
@@ -429,6 +439,7 @@ class RepackMaemo(RepackBase):
         os.chdir(self.working_dir)
         self.unpackBuild()
         self.copyFiles()
+        self.mungeControl()
         self.repackBuild()
         self.cleanup()
         os.chdir(self.base_dir)
