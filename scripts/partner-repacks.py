@@ -158,7 +158,7 @@ def getFormattedPlatform(platform):
     if isWin(platform):
         return "win32"
     if isMaemo(platform):
-        return "maemo"
+        return platform
     return None
 
 #########################################################################
@@ -387,10 +387,10 @@ class RepackMaemo(RepackBase):
         super(RepackMaemo, self).__init__(build, partner_dir,
                                           build_dir, working_dir,
                                           final_dir, repack_info)
-        self.platform = "maemo"
         self.sbox_path = sbox_path
         self.sbox_home = sbox_home
         self.tmpdir = "%s/tmp_deb" % self.base_dir
+        self.platform = platform_formatted
 
     def unpackBuild(self):
         mkdir("%s/DEBIAN" % self.tmpdir)
@@ -409,7 +409,7 @@ class RepackMaemo(RepackBase):
     def copyFiles(self):
         full_path = "%s/preferences" % self.full_partner_path
         if os.path.exists(full_path):
-            cp_cmd = "cp %s/* %s/opt/mozilla/[a-z\-\.0-9]*/defaults/preferences/" % \
+            cp_cmd = "cp %s/* %s/opt/mozilla/[a-z\-\.0-9]*/defaults/pref/" % \
                 (full_path, self.tmpdir)
             shellCommand(cp_cmd)
 
@@ -452,7 +452,8 @@ if __name__ == '__main__':
     repack_build = {'linux-i686': RepackLinux,
                     'mac':        RepackMac,
                     'win32':      RepackWin32,
-                    'maemo':      RepackMaemo
+                    'maemo4':     RepackMaemo,
+                    'maemo5-gtk': RepackMaemo
     }
 
     parser = OptionParser(usage="usage: %prog [options]")
