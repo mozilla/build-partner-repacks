@@ -5,13 +5,28 @@ from shutil import copy, copytree, move
 import subprocess
 from subprocess import Popen
 from optparse import OptionParser
+import urllib
 
-PARTNERS_DIR = "../partners"
-BUILD_NUMBER = "1"
-STAGING_SERVER = "stage.mozilla.org"
-PKG_DMG = "pkg-dmg"
+# Set default values.
+PARTNERS_DIR = '../partners'
+BUILD_NUMBER = '1'
+STAGING_SERVER = 'stage.mozilla.org'
+HGROOT = 'http://hg.mozilla.org'
+REPO = 'releases/mozilla-1.9.2'
+
+PKG_DMG = 'pkg-dmg'
+SEVENZIP_BIN = '7za'
+UPX_BIN = 'upx'
+
 SBOX_HOME = '/scratchbox/users/cltbld/home/cltbld/'
 SBOX_PATH = '/scratchbox/moz_scratchbox'
+
+SEVENZIP_BUNDLE = 'app.7z'
+SEVENZIP_APPTAG = 'app.tag'
+SEVENZIP_APPTAG_PATH = os.path.join('browser/installer/windows', SEVENZIP_APPTAG)
+SEVENZIP_HEADER = '7zSD.sfx'
+SEVENZIP_HEADER_PATH = os.path.join('other-licenses/7zstub/firefox', SEVENZIP_HEADER)
+SEVENZIP_HEADER_COMPRESSED = SEVENZIP_HEADER + '.compressed'
 
 #########################################################################
 # Source:
@@ -117,6 +132,10 @@ def isMaemo(platform):
     if (platform.find('maemo') != -1):
         return True
     return False
+
+#########################################################################
+def createTagFromVersion(version):
+    return 'FIREFOX_' + str(version).replace('.','_') + '_RELEASE'
 
 #########################################################################
 def parseRepackConfig(file, platforms):
@@ -377,7 +396,7 @@ class RepackWin32(RepackBase):
         super(RepackWin32, self).copyFiles('nonlocalized')
 
     def repackBuild(self):
-        zip_cmd = "7za a \"%s\" nonlocalized" % self.build
+        zip_cmd = "%s a \"%s\" nonlocalized" % (SEVENZIP_BIN, self.build)
         shellCommand(zip_cmd)
 
 #########################################################################
@@ -445,6 +464,68 @@ class RepackMaemo(RepackBase):
         os.chdir(self.base_dir)
 
 #########################################################################
+def repackSignedBuilds(repack_dir):
+    if not os.path.isdir(repack_dir):
+        return False
+    base_dir = os.getcwd()
+
+    if not os.path.exists(SEVENZIP_APPTAG):
+        if not getSingleFileFromHg(SEVENZIP_APPTAG_PATH):
+            print "Error: Unable to retrieve %s" % SEVENZIP_APPTAG
+            sys.exit(1)
+    if not os.path.exists(SEVENZIP_HEADER_COMPRESSED):
+        if not os.path.exists(SEVENZIP_HEADER) and \
+           not getSingleFileFromHg(SEVENZIP_HEADER_PATH):
+            print "Error: Unable to retrieve %s" % SEVENZIP_HEADER
+            sys.exit(1)
+        upx_cmd = '%s --best -o \"%s\" \"%s\"' % (UPX_BIN,
+                                                  SEVENZIP_HEADER_COMPRESSED,
+                                                  SEVENZIP_HEADER)
+        shellCommand(upx_cmd)
+        if not os.path.exists(SEVENZIP_HEADER_COMPRESSED):
+            print "Error: Unable to compress %s" % SEVENZIP_HEADER
+            sys.exit(1)
+
+    for f in [SEVENZIP_HEADER_COMPRESSED, SEVENZIP_APPTAG, 'repack-signed.sh']:
+        copy(f, repack_dir)
+    
+    os.chdir(repack_dir)
+    print "Running repack.sh"
+    shellCommand('./repack-signed.sh')
+    for f in [SEVENZIP_HEADER_COMPRESSED, SEVENZIP_APPTAG, 'repack-signed.sh']:
+        os.remove(f)
+    os.chdir(base_dir)
+
+#########################################################################
+def retrieveFile(url, file_path):
+  failedDownload = False
+  try:
+    urllib.urlretrieve(url.replace(' ','%20'), file_path)
+  except:
+    print "exception: n  %s, n  %s, n  %s n  when downloading %s" % \
+          (sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2], url)
+    failedDownload = True
+
+  # remove potentially only partially downloaded file, 
+  if failedDownload:
+    if os.path.exists(file_path):
+      try:
+        os.remove(file_path)
+      except:
+        print "exception: n  %s, n  %s, n  %s n  when trying to remove file %s" %\
+              (sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2], file_path)
+    sys.exit(1)
+
+  return True
+
+#########################################################################
+def getSingleFileFromHg(file):
+    file_path = os.path.basename(file)
+    url = os.path.join(options.hgroot, options.repo, 
+                       'raw-file', options.tag, file)
+    return retrieveFile(url, file_path)
+        
+#########################################################################
 if __name__ == '__main__':
     error = False
     partner_builds = {}
@@ -492,6 +573,29 @@ if __name__ == '__main__':
                       default=BUILD_NUMBER,
                       help="Set the build number for repacking")
     parser.add_option("",
+                      "--signed",
+                      action="store_true",
+                      dest="use_signed",
+                      default=False,
+                      help="Use Windows builds that have already been signed")
+    parser.add_option("",
+                      "--hgroot",
+                      action="store",
+                      dest="hgroot",
+                      default=HGROOT,
+                      help="Set the root URL for retrieving files from hg")
+    parser.add_option("-r",
+                      "--repo",
+                      action="store",
+                      dest="repo",
+                      default=REPO,
+                      help="Set the release tag used for retrieving files from hg")
+    parser.add_option("-t",
+                      "--tag",
+                      action="store",
+                      dest="tag",
+                      help="Set the release tag used for retrieving files from hg")
+    parser.add_option("",
                       "--pkg-dmg",
                       action="store",
                       dest="pkg_dmg",
@@ -515,6 +619,12 @@ if __name__ == '__main__':
         print "Error: you must specify a version number."
         error = True
 
+    if not options.tag:
+        options.tag = createTagFromVersion(options.version)
+        if not options.tag:
+          print "Error: you must specify a release tag for hg."
+          error = True
+
     if not os.path.isdir(options.partners_dir):
         print "Error: partners dir %s is not a directory." % partners_dir
         error = True
@@ -525,8 +635,14 @@ if __name__ == '__main__':
     # We only care about the tools if we're actually going to
     # do some repacking.
     if not options.verify_only:
-        if "win32" in options.platforms and not which("7za"):
-            print "Error: couldn't find the 7za executable in PATH."
+        if "win32" in options.platforms and not which(SEVENZIP_BIN):
+            print "Error: couldn't find the %s executable in PATH." % SEVENZIP_BIN
+            error = True
+
+        if "win32" in options.platforms and \
+           options.use_signed and \
+           not which(UPX_BIN):
+            print "Error: couldn't find the %s executable in PATH." % UPX_BIN
             error = True
 
         if "mac" in options.platforms and not which(options.pkg_dmg):
@@ -540,7 +656,11 @@ if __name__ == '__main__':
 
     # Remote dir where we can find builds.
     candidates_web_dir = "/pub/mozilla.org/%s/%s-candidates/build%s" % (options.nightly_dir, options.version, options.build_number)
-    win32_candidates_web_dir = candidates_web_dir + '/unsigned'
+    if options.use_signed:
+        win32_candidates_web_dir = candidates_web_dir
+    else:
+        win32_candidates_web_dir = candidates_web_dir + '/unsigned'
+
 
     # Local directories for builds
     original_builds_dir = "original_builds/%s/build%s" % (options.version, str(options.build_number))
@@ -642,8 +762,7 @@ if __name__ == '__main__':
                                                   filename
                                                  )
 
-                        wget_cmd = "wget -q \"%s\"" % original_build_url
-                        shellCommand(wget_cmd)
+                        retrieveFile(original_build_url, filename)
                         os.chdir(base_workdir);
 
                     # Make sure we have the local file now
@@ -665,6 +784,11 @@ if __name__ == '__main__':
                         error = True
 
         if not options.verify_only:
+            # Check to see whether we repacked any signed Windows builds. If we
+            # did we need to do some scrubbing before we upload them for
+            # re-signing.
+            if 'win32' in repack_info['platforms'] and options.use_signed:
+                repackSignedBuilds(repacked_builds_dir)
             # Remove our working dir so things are all cleaned up and ready for
             # easy upload.
             rmdirRecursive(working_dir)
@@ -672,4 +796,3 @@ if __name__ == '__main__':
 
     if error:
         sys.exit(1)
-
