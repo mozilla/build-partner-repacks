@@ -139,7 +139,7 @@ def isMac32(platform):
 
 #########################################################################
 def isMac64(platform):
-    if (platform.find('mac64') != -1):
+    if platform.find('macosx64') != -1 or (platform.find('mac64') != -1):
         return True
     return False
 
@@ -204,7 +204,7 @@ def parseRepackConfig(file, platforms):
             config['deb_section'] = re.sub('/', '\/', value)
         if isValidPlatform(key):
             platform_formatted = getFormattedPlatform(key)
-            if platform_formatted in platforms and value.lower() == 'true':
+            if platform_formatted in [getFormattedPlatform(p) for p in platforms] and value.lower() == 'true':
                 config['platforms'].append(platform_formatted)
             continue
     if config['platforms']:
@@ -213,6 +213,8 @@ def parseRepackConfig(file, platforms):
 #########################################################################
 def getFormattedPlatform(platform):
     '''Returns the platform in the format used in building package names.
+       Note: we rely on this code being idempotent
+       i.e. getFormattedPlatform(getFormattedPlatform(foo)) should work
     '''
     if isLinux64(platform):
         return "linux-x86_64"
