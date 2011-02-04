@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os, re, sys
+from os import path
 from shutil import copy, copytree, move
 import subprocess
 from subprocess import Popen
@@ -8,24 +9,25 @@ from optparse import OptionParser
 import urllib
 
 # Set default values.
-PARTNERS_DIR = '../partners'
+PARTNERS_DIR = path.join(path.dirname(__file__), path.join('..', 'partners'))
 BUILD_NUMBER = '1'
 STAGING_SERVER = 'stage.mozilla.org'
 HGROOT = 'http://hg.mozilla.org'
 REPO = 'releases/mozilla-1.9.2'
+DEFAULT_OUTPUT_DIR = 'partner-repacks/%(partner)s/%(platform)s/%(locale)s'
 
 PKG_DMG = 'pkg-dmg'
 SEVENZIP_BIN = '7za'
 UPX_BIN = 'upx'
 
-SBOX_HOME = '/scratchbox/users/cltbld/home/cltbld/'
-SBOX_PATH = '/scratchbox/moz_scratchbox'
+SBOX_HOME = path.join('/scratchbox', 'users', 'cltbld', 'home', 'cltbld')
+SBOX_PATH = path.join('/scratchbox', 'moz_scratchbox')
 
 SEVENZIP_BUNDLE = 'app.7z'
 SEVENZIP_APPTAG = 'app.tag'
-SEVENZIP_APPTAG_PATH = os.path.join('browser/installer/windows', SEVENZIP_APPTAG)
+SEVENZIP_APPTAG_PATH = path.join('browser/installer/windows', SEVENZIP_APPTAG)
 SEVENZIP_HEADER = '7zSD.sfx'
-SEVENZIP_HEADER_PATH = os.path.join('other-licenses/7zstub/firefox', SEVENZIP_HEADER)
+SEVENZIP_HEADER_PATH = path.join('other-licenses/7zstub/firefox', SEVENZIP_HEADER)
 SEVENZIP_HEADER_COMPRESSED = SEVENZIP_HEADER + '.compressed'
 
 #########################################################################
@@ -202,6 +204,10 @@ def parseRepackConfig(file, platforms):
             continue
         if key == 'deb_section':
             config['deb_section'] = re.sub('/', '\/', value)
+            continue
+        if key == 'output_dir':
+            config['output_dir'] = value
+            continue
         if isValidPlatform(key):
             platform_formatted = getFormattedPlatform(key)
             if platform_formatted in [getFormattedPlatform(p) for p in platforms] and value.lower() == 'true':
@@ -286,7 +292,7 @@ def getLocalFilePath(version, base_dir, platform, locale):
     if version.startswith('3.0'):
         return "%s" % (base_dir)
 
-    return "%s/%s/%s" % (base_dir, platform, locale)
+    return path.join(base_dir, platform, locale)
 
 #########################################################################
 def getFileExtension(version, platform):
@@ -307,8 +313,8 @@ class RepackBase(object):
                  platform_formatted, repack_info):
         self.base_dir = os.getcwd()
         self.build = build
-        self.full_build_path = "%s/%s/%s" % (self.base_dir, build_dir, build)
-        self.full_partner_path = "%s/%s" % (self.base_dir, partner_dir)
+        self.full_build_path = path.join(self.base_dir, build_dir, build)
+        self.full_partner_path = path.join(self.base_dir, partner_dir)
         self.working_dir = working_dir
         self.final_dir = final_dir
         self.platform_formatted = platform_formatted
@@ -331,7 +337,7 @@ class RepackBase(object):
         ''' Some partners need to override the migration wizard. This is done
             by adding an override.ini file to the base install dir.
         '''
-        filename='%s/override.ini' % partner_path
+        filename = path.join(partner_path, 'override.ini')
         if self.repack_info.has_key('migrationWizardDisabled'):
             if not os.path.isfile(filename):
                 f=open(filename,'w')
@@ -344,19 +350,16 @@ class RepackBase(object):
         if not os.path.exists(platform_dir):
             mkdir(platform_dir)
             for i in ['distribution', 'extensions', 'searchplugins']:
-                full_path = "%s/%s" % (self.full_partner_path, i)
+                full_path = path.join(self.full_partner_path, i)
                 if os.path.exists(full_path):
-                    copytree(full_path, "%s/%s" % (platform_dir,i))
+                    copytree(full_path, path.join(platform_dir, i))
             self.createOverrideIni(platform_dir)
 
     def repackBuild(self):
         pass
 
     def cleanup(self):
-        if self.final_dir == '.':
-            move(self.build, '..')
-        else:
-            move(self.build, "../%s" % self.final_dir)
+        move(self.build, self.final_dir)
 
     def doRepack(self):
         self.announceStart()
@@ -405,13 +408,13 @@ class RepackMac(RepackBase):
         super(RepackMac, self).__init__(build, partner_dir, build_dir, 
                                         working_dir, final_dir,
                                         platform_formatted, repack_info)
-        self.mountpoint = "/tmp/FirefoxInstaller"
+        self.mountpoint = path.join("/tmp", "FirefoxInstaller")
 
     def unpackBuild(self):
         mkdir(self.mountpoint)
 
         # Verify that Firefox isn't currently mounted on our mountpoint.
-        if os.path.exists("%s/Firefox.app" % self.mountpoint):
+        if os.path.exists(path.join(self.mountpoint, "Firefox.app")):
             print "Error: Firefox is already mounted at %s" % self.mountpoint
             sys.exit(1)
 
@@ -432,11 +435,13 @@ class RepackMac(RepackBase):
 
     def copyFiles(self):
         for i in ['distribution', 'extensions', 'searchplugins']:
-            full_path = "%s/%s" % (self.full_partner_path, i)
+            full_path = path.join(self.full_partner_path, i)
             if os.path.exists(full_path):
-                cp_cmd = "cp -r %s stage/Firefox.app/Contents/MacOS" % full_path
+                cp_cmd = "cp -r %s %s" % (full_path,
+                  path.join("stage", "Firefox.app", "Contents", "MacOS"))
                 shellCommand(cp_cmd)
-        self.createOverrideIni('stage/Firefox.app/Contents/MacOS')
+        self.createOverrideIni(path.join("stage", "Firefox.app", "Contents",
+                                         "MacOS"))
 
     def repackBuild(self):
         if options.quiet:
@@ -485,15 +490,15 @@ class RepackMaemo(RepackBase):
 
         self.sbox_path = sbox_path
         self.sbox_home = sbox_home
-        self.tmpdir = "%s/tmp_deb" % self.base_dir
+        self.tmpdir = path.join(self.base_dir, "tmp_deb")
 
     def unpackBuild(self):
-        mkdir("%s/DEBIAN" % self.tmpdir)
+        debianDir = path.join(self.tmpdir, "DEBIAN")
+        mkdir(debianDir)
         super(RepackMaemo, self).unpackBuild()
         commandList = [
          'ar -p %s data.tar.gz | tar -zx -C %s' % (self.build, self.tmpdir),
-         'ar -p %s control.tar.gz | tar -zx -C %s/DEBIAN' % (self.build,
-                                                             self.tmpdir)
+         'ar -p %s control.tar.gz | tar -zx -C %s' % (self.build, debianDir)
         ]
         for command in commandList:
             status = shellCommand(command)
@@ -502,7 +507,7 @@ class RepackMaemo(RepackBase):
                 sys.exit(status)
 
     def copyFiles(self):
-        full_path = "%s/preferences" % self.full_partner_path
+        full_path = path.join(self.full_partner_path, "preferences")
         if os.path.exists(full_path):
             cp_cmd = "cp %s/* %s/opt/mozilla/[a-z\-\.0-9]*/defaults/pref/" % \
                 (full_path, self.tmpdir)
@@ -525,8 +530,7 @@ class RepackMaemo(RepackBase):
         print self.build
 
     def cleanup(self):
-        print self.final_dir
-        move(os.path.join(self.base_dir, self.build), "../%s" % self.final_dir)
+        move(path.join(self.base_dir, self.build), path.join("..", self.final_dir))
         rmdirRecursive(self.tmpdir)
 
     def doRepack(self):
@@ -714,7 +718,7 @@ if __name__ == '__main__':
           error = True
 
     if not os.path.isdir(options.partners_dir):
-        print "Error: partners dir %s is not a directory." % partners_dir
+        print "Error: partners dir %s is not a directory." % options.partners_dir
         error = True
 
     if not options.platforms:
@@ -751,8 +755,8 @@ if __name__ == '__main__':
 
 
     # Local directories for builds
-    original_builds_dir = "original_builds/%s/build%s" % (options.version, str(options.build_number))
-    repacked_builds_dir = "repacked_builds/%s/build%s" % (options.version, str(options.build_number))
+    original_builds_dir = path.join(os.getcwd(), "original_builds", options.version, "build%s" % str(options.build_number))
+    repacked_builds_dir = path.join(os.getcwd(), "repacked_builds", options.version, "build%s" % str(options.build_number), "unsigned")
     if not options.verify_only:
         mkdir(original_builds_dir)
         mkdir(repacked_builds_dir)
@@ -763,18 +767,18 @@ if __name__ == '__main__':
     ##    Download required builds (if not already on disk)
     ##    Perform repacks
 
-    for partner_dir in os.listdir(options.partners_dir):
+    for partner in os.listdir(options.partners_dir):
         if options.partner:
-            if options.partner != partner_dir:
+            if options.partner != partner:
                 continue
-        full_partner_dir = "%s/%s" % (options.partners_dir,partner_dir)
+        full_partner_dir = path.join(options.partners_dir, partner)
         if not os.path.isdir(full_partner_dir):
             continue
-        repack_cfg = "%s/repack.cfg" % str(full_partner_dir)
+        repack_cfg = path.join(str(full_partner_dir), "repack.cfg")
         if not options.verify_only:
-            print "### Starting repack process for partner: %s" % partner_dir
+            print "### Starting repack process for partner: %s" % partner
         else:
-            print "### Verifying existing repacks for partner: %s" % partner_dir
+            print "### Verifying existing repacks for partner: %s" % partner
         if not os.path.exists(repack_cfg):
             print "### %s doesn't exist, skipping this partner" % repack_cfg
             continue
@@ -782,13 +786,8 @@ if __name__ == '__main__':
         if not repack_info:
             continue
 
-        partner_repack_dir = "%s/%s" % (repacked_builds_dir, partner_dir)
-        if not options.verify_only:
-            if os.path.exists(partner_repack_dir):
-                rmdirRecursive(partner_repack_dir)
-            mkdir(partner_repack_dir)
-            working_dir = "%s/working" % partner_repack_dir
-            mkdir(working_dir)
+        partner_repack_dir = path.join(repacked_builds_dir,
+                                       repack_info.get('output_dir', DEFAULT_OUTPUT_DIR))
 
         # Figure out which base builds we need to repack.
         for locale in repack_info['locales']:
@@ -813,15 +812,14 @@ if __name__ == '__main__':
                                                   locale)
                 if not options.verify_only:
                     mkdir(local_filepath)
-                local_filename = "%s/%s" % (local_filepath, filename)
-                if options.version.startswith('3.0'):
-                    final_dir = '.'
-                else:
-                    final_dir = "%s/%s" % (platform_formatted,
-                                           locale
-                                          )
-                    if not options.verify_only:
-                        mkdir("%s/%s" % (partner_repack_dir, final_dir))
+                local_filename = path.join(local_filepath, filename)
+                final_dir = partner_repack_dir % locals()
+                if not options.verify_only:
+                    if os.path.exists(final_dir):
+                        rmdirRecursive(final_dir)
+                    os.makedirs(final_dir)
+                    working_dir = path.join(final_dir, "working")
+                    os.makedirs(working_dir)
 
                 # Check to see if this build is already on disk, i.e.
                 # has already been downloaded.
@@ -867,10 +865,12 @@ if __name__ == '__main__':
                                                                  platform_formatted,
                                                                  repack_info)
                     repackObj.doRepack()
+                    rmdirRecursive(working_dir)
                 else:
-                    repacked_build = "%s/%s/%s" % (partner_repack_dir, final_dir, filename)
+                    repacked_build = path.join(partner_repack_dir, final_dir,
+                                               filename)
                     if not os.path.exists(repacked_build):
-                        print "Error: missing expected repack for partner %s (%s/%s): %s" % (partner_dir, platform_formatted, locale, filename)
+                        print "Error: missing expected repack for partner %s (%s/%s): %s" % (partner, platform_formatted, locale, filename)
                         error = True
 
         if not options.verify_only:
@@ -881,7 +881,6 @@ if __name__ == '__main__':
                 repackSignedBuilds(repacked_builds_dir)
             # Remove our working dir so things are all cleaned up and ready for
             # easy upload.
-            rmdirRecursive(working_dir)
             printSeparator()
 
     if error:
