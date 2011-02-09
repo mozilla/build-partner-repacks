@@ -578,6 +578,17 @@ def repackSignedBuilds(repack_dir):
     os.chdir(base_dir)
 
 #########################################################################
+def isValidFile(file_path):
+  # We can do any kind of validation we want here, but for now we keep it 
+  # simple by checking to see if our file size is bigger than a 404 page.
+  # This is a very coarse estimate of whether we have a real file downloaded.
+  size_threshold = 1000
+  if os.path.getsize(file_path) < size_threshold:
+    return False
+  else:
+    return True
+
+#########################################################################
 def retrieveFile(url, file_path):
   failedDownload = False
   try:
@@ -587,17 +598,21 @@ def retrieveFile(url, file_path):
           (sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2], url)
     failedDownload = True
 
-  # remove potentially only partially downloaded file, 
-  if failedDownload:
-    if os.path.exists(file_path):
+  if os.path.exists(file_path):
+    if not isValidFile(file_path):
+      failedDownload = True
       try:
         os.remove(file_path)
       except:
         print "exception: n  %s, n  %s, n  %s n  when trying to remove file %s" %\
               (sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2], file_path)
-    sys.exit(1)
+  else:
+    failedDownload = True
 
-  return True
+  if failedDownload:
+    return False
+  else:
+    return True
 
 #########################################################################
 def getSingleFileFromHg(file):
@@ -693,6 +708,11 @@ if __name__ == '__main__':
                       dest="staging_server",
                       default=STAGING_SERVER,
                       help="Set the staging server to use for downloading/uploading.")
+    parser.add_option("--skip-missing",
+                      action="store_true",
+                      dest="skip_missing",
+                      default=False,
+                      help="Skip missing locales/installers and continue processing repacks.")
     parser.add_option("--verify-only",
                       action="store_true",
                       dest="verify_only",
@@ -767,6 +787,7 @@ if __name__ == '__main__':
     ##    Download required builds (if not already on disk)
     ##    Perform repacks
 
+    failed_downloads = {}
     for partner in os.listdir(options.partners_dir):
         if options.partner:
             if options.partner != partner:
@@ -854,8 +875,20 @@ if __name__ == '__main__':
 
                     # Make sure we have the local file now
                     if not os.path.exists(local_filename):
-                        print "Error: Unable to retrieve %s" % filename
-                        sys.exit(1)
+                        print "Error: Unable to retrieve %s\n" % filename
+                        if options.skip_missing:
+                            # Add failed download to reporting list for later
+                            # display.
+                            if failed_downloads.has_key(locale):
+                                if failed_downloads[locale].has_key(original_build_url):
+                                    failed_downloads[locale][original_build_url].append(partner)
+                                else:
+                                    failed_downloads[locale][original_build_url] = [partner]
+                            else:
+                                    failed_downloads[locale] = {original_build_url: [partner]}
+                            continue
+                        else:
+                            sys.exit(1)
 
                     repackObj = repack_build[platform_formatted](filename,
                                                                  full_partner_dir,
@@ -883,5 +916,14 @@ if __name__ == '__main__':
             # easy upload.
             printSeparator()
 
+    if options.skip_missing and len(failed_downloads) > 0:
+        print "Failed downloads:"
+        for locale in failed_downloads:
+            print "Locale: %s" % locale
+            for url in failed_downloads[locale]:
+                print "URL: %s" % url
+                print "Which affects the following partners: " + str(failed_downloads[locale][url])
+            print "==="
     if error:
         sys.exit(1)
+
