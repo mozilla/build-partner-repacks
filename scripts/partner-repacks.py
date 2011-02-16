@@ -106,7 +106,7 @@ def shellCommand(cmd):
     return True
 
 #########################################################################
-def mkdir(dir, mode=0777):
+def mkdir(dir, mode=0755):
     if not os.path.exists(dir):
         return os.makedirs(dir, mode)
     return True
@@ -310,7 +310,7 @@ def getFileExtension(version, platform):
 #########################################################################
 class RepackBase(object):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 platform_formatted, repack_info):
+                 platform_formatted, repack_info, file_mode=0644):
         self.base_dir = os.getcwd()
         self.build = build
         self.full_build_path = path.join(self.base_dir, build_dir, build)
@@ -319,6 +319,7 @@ class RepackBase(object):
         self.final_dir = final_dir
         self.platform_formatted = platform_formatted
         self.repack_info = repack_info
+        self.file_mode = file_mode
         mkdir(self.working_dir)
 
     def announceStart(self):
@@ -360,6 +361,7 @@ class RepackBase(object):
 
     def cleanup(self):
         move(self.build, self.final_dir)
+        os.chmod(path.join(self.final_dir, path.basename(self.build)), self.file_mode)
 
     def doRepack(self):
         self.announceStart()
@@ -531,6 +533,7 @@ class RepackMaemo(RepackBase):
 
     def cleanup(self):
         move(path.join(self.base_dir, self.build), path.join("..", self.final_dir))
+        os.chmod(path.join(self.final_dir, path.basename(self.build)), self.file_mode)
         rmdirRecursive(self.tmpdir)
 
     def doRepack(self):
@@ -838,9 +841,9 @@ if __name__ == '__main__':
                 if not options.verify_only:
                     if os.path.exists(final_dir):
                         rmdirRecursive(final_dir)
-                    os.makedirs(final_dir)
+                    mkdir(final_dir)
                     working_dir = path.join(final_dir, "working")
-                    os.makedirs(working_dir)
+                    mkdir(working_dir)
 
                 # Check to see if this build is already on disk, i.e.
                 # has already been downloaded.
