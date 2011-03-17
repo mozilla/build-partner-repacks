@@ -20,7 +20,7 @@ PKG_DMG = 'pkg-dmg'
 SEVENZIP_BIN = '7za'
 UPX_BIN = 'upx'
 
-SBOX_HOME = path.join('/scratchbox', 'users', 'cltbld', 'home', 'cltbld')
+SBOX_HOME = '/scratchbox/users/cltbld/home/cltbld/'
 SBOX_PATH = path.join('/scratchbox', 'moz_scratchbox')
 
 SEVENZIP_BUNDLE = 'app.7z'
