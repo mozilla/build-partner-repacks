@@ -30,6 +30,8 @@ SEVENZIP_HEADER = '7zSD.sfx'
 SEVENZIP_HEADER_PATH = path.join('other-licenses/7zstub/firefox', SEVENZIP_HEADER)
 SEVENZIP_HEADER_COMPRESSED = SEVENZIP_HEADER + '.compressed'
 
+WINDOWS_DEST_DIR = 'core'
+
 #########################################################################
 # Source:
 # http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
@@ -469,16 +471,17 @@ class RepackWin(RepackBase):
                                         platform_formatted, repack_info)
 
     def copyFiles(self):
-        super(RepackWin, self).copyFiles('nonlocalized')
+        super(RepackWin, self).copyFiles(WINDOWS_DEST_DIR)
 
     def repackBuild(self):
         if options.quiet:
             zip_redirect = ">/dev/null"
         else:
             zip_redirect = "" 
-        zip_cmd = "%s a \"%s\" nonlocalized %s" % (SEVENZIP_BIN, 
-                                                   self.build,
-                                                   zip_redirect)
+        zip_cmd = "%s a \"%s\" %s %s" % (SEVENZIP_BIN, 
+                                         self.build,
+                                         WINDOWS_DEST_DIR,
+                                         zip_redirect)
         shellCommand(zip_cmd)
 
 #########################################################################
@@ -716,6 +719,11 @@ if __name__ == '__main__':
                       dest="skip_missing",
                       default=False,
                       help="Skip missing locales/installers and continue processing repacks.")
+    parser.add_option("--use-release-builds",
+                      action="store_true",
+                      dest="use_release_builds",
+                      default=False,
+                      help="Use release builds rather than candidate builds.")
     parser.add_option("--verify-only",
                       action="store_true",
                       dest="verify_only",
@@ -767,15 +775,23 @@ if __name__ == '__main__':
     if error:
         sys.exit(1)
 
+    # Prior to Firefox 4, our distro and extension files went in a
+    # different dir.
+    if options.version.startswith('3.'):
+        WINDOWS_DEST_DIR = 'nonlocalized'
+
     base_workdir = os.getcwd();
 
     # Remote dir where we can find builds.
-    candidates_web_dir = "/pub/mozilla.org/%s/%s-candidates/build%s" % (options.nightly_dir, options.version, options.build_number)
-    if options.use_signed:
+    if options.use_release_builds:
+        candidates_web_dir = "/pub/mozilla.org/firefox/releases/%s" % options.version
         win_candidates_web_dir = candidates_web_dir
     else:
-        win_candidates_web_dir = candidates_web_dir + '/unsigned'
-
+        candidates_web_dir = "/pub/mozilla.org/%s/%s-candidates/build%s" % (options.nightly_dir, options.version, options.build_number)
+        if options.use_signed:
+            win_candidates_web_dir = candidates_web_dir
+        else:
+            win_candidates_web_dir = candidates_web_dir + '/unsigned'
 
     # Local directories for builds
     original_builds_dir = path.join(os.getcwd(), "original_builds", options.version, "build%s" % str(options.build_number))
@@ -852,7 +868,6 @@ if __name__ == '__main__':
                         print "### Found %s on disk, not downloading" % local_filename
                     else:
                         # Download original build from stage
-                        print "### Downloading %s" % local_filename
                         os.chdir(local_filepath)
                         if isWin(platform):
                             candidates_dir = win_candidates_web_dir
@@ -873,6 +888,8 @@ if __name__ == '__main__':
                                                   filename
                                                  )
 
+                        print "### Downloading: %s" % original_build_url
+                        print "###          To: %s" % local_filename
                         retrieveFile(original_build_url, filename)
                         os.chdir(base_workdir);
 
