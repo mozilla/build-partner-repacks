@@ -228,8 +228,10 @@ def getFormattedPlatform(platform):
         return "linux-x86_64"
     if isLinux(platform):
         return "linux-i686"
+    # With Firefox4, we produce a single universal binary (32bit/64bit)
+    # that goes into the mac/ dir for candidates/releases.
     if isMac64(platform):
-        return "mac64"
+        return "mac"
     if isMac(platform):
         return "mac"
     if isWin64(platform):
