@@ -432,6 +432,9 @@ class RepackMac(RepackBase):
         shellCommand(attach_cmd)
         rsync_cmd  = "rsync -a %s/ stage/" % self.mountpoint
         shellCommand(rsync_cmd)
+        # Flush disk cache to prevent "Resource busy" failures
+        sync_cmd  = "/bin/sync"
+        shellCommand(sync_cmd)
         eject_cmd  = "hdiutil eject %s %s" % (quiet_flag, self.mountpoint)
         shellCommand(eject_cmd)
 
