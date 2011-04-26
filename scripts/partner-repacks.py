@@ -411,30 +411,15 @@ class RepackLinux(RepackBase):
 class RepackMac(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  platform_formatted, repack_info):
-        super(RepackMac, self).__init__(build, partner_dir, build_dir, 
+        super(RepackMac, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
                                         platform_formatted, repack_info)
         self.mountpoint = path.join("/tmp", "FirefoxInstaller")
 
     def unpackBuild(self):
-        mkdir(self.mountpoint)
-
-        # Verify that Firefox isn't currently mounted on our mountpoint.
-        if os.path.exists(path.join(self.mountpoint, "Firefox.app")):
-            print "Error: Firefox is already mounted at %s" % self.mountpoint
-            sys.exit(1)
-
-        if options.quiet:
-            quiet_flag = "-quiet"
-        else:
-            quiet_flag = "" 
-        attach_cmd = "hdiutil attach -mountpoint %s -readonly -private %s -noautoopen \"%s\"" % (self.mountpoint, quiet_flag, self.full_build_path)
-        shellCommand(attach_cmd)
-        rsync_cmd  = "rsync -a %s/ stage/" % self.mountpoint
-        shellCommand(rsync_cmd)
-        eject_cmd  = "hdiutil eject %s %s" % (quiet_flag, self.mountpoint)
-        shellCommand(eject_cmd)
-
+        cmd = '%s "%s" "%s" stage/' % (options.dmg_extract_script,
+                                       self.full_build_path, self.mountpoint)
+        shellCommand(cmd)
         # Disk images contain a link " " to "Applications/" that we need
         # to get rid of while working with it uncompressed.
         os.remove("stage/ ")
@@ -462,7 +447,6 @@ class RepackMac(RepackBase):
     def cleanup(self):
         super(RepackMac, self).cleanup()
         rmdirRecursive("stage")
-        rmdirRecursive(self.mountpoint)
 
 #########################################################################
 class RepackWin(RepackBase):
@@ -711,6 +695,11 @@ if __name__ == '__main__':
                       default=PKG_DMG,
                       help="Set the path to the pkg-dmg for Mac packaging")
     parser.add_option("",
+                      "--dmg-extract-script",
+                      action="store",
+                      dest="dmg_extract_script",
+                      help="Set the path to the dmg extracting tool")
+    parser.add_option("",
                       "--staging-server",
                       action="store",
                       dest="staging_server",
@@ -772,6 +761,10 @@ if __name__ == '__main__':
 
         if "mac" in options.platforms and not which(options.pkg_dmg):
             print "Error: couldn't find the pkg-dmg executable in PATH."
+            error = True
+
+        if "mac" in options.platforms and not which(options.dmg_extract_script):
+            print "Error: couldn't find the dmg extract script."
             error = True
 
     if error:
