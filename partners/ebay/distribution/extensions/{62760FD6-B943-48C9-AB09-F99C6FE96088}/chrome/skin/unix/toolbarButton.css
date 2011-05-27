@@ -1,0 +1,15 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+.ec-statusbar-button toolbarbutton {
+  -moz-appearance: none;
+}
+
+.ec-statusbar-button .toolbarbutton-menubutton-button {
+  padding: 0px 0px 0px 4px !important;
+}
+
+.ec-statusbar-button .toolbarbutton-menubutton-dropmarker {
+  padding: 0px 2px 0px 2px !important;
+}

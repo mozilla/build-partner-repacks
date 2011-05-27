@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2011 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- ebay favorite seller -->
+  <binding id="gs-ebay-favorite-seller">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/favoriteSeller.css" />
+    </resources>
+
+    <content>
+      <xul:hbox class="gs-ebay-favorite-seller-container" flex="1">
+        <xul:stack flex="1">
+          <xul:hbox class="gs-ebay-favorite-seller-background" flex="1" />
+          <xul:hbox flex="1">
+            <xul:vbox class="gs-ebay-favorite-seller-content-box" flex="1">
+              <xul:hbox class="gs-ebay-favorite-seller-content">
+                <xul:label anonid="gs-ebay-favorite-seller-label"
+                  class="gs-ebay-favorite-seller-label" crop="end" flex="1"
+                  onclick="document.getBindingParent(this).openFavoriteSeller(event);"/>
+              </xul:hbox>
+            </xul:vbox>
+          </xul:hbox>
+        </xul:stack>
+      </xul:hbox>
+    </content>
+
+    <implementation>
+      <!-- Associated favorite seller. -->
+      <field name="_favoriteSeller">null</field>
+
+      <!-- Property to access the favorite seller. -->
+      <property name="favoriteSeller">
+        <getter>
+          return this._favoriteSeller;
+        </getter>
+        <setter>
+          <![CDATA[
+            this._favoriteSeller = val;
+            this._updateFavoriteSeller();
+          ]]>
+        </setter>
+      </property>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the favorite seller info in the binding.
+        -->
+      <method name="_updateFavoriteSeller">
+        <body>
+          <![CDATA[
+            let sellerNameLabel = this._getElement("gs-ebay-favorite-seller-label");
+
+            let favoriteSeller = this.favoriteSeller;
+            let sellerLabel =
+              EbayCompanion.Constants.getUTF8(favoriteSeller.get("sellerId"));
+            let storeName =
+              EbayCompanion.Constants.getUTF8(favoriteSeller.get("storeName"));
+            if (storeName && storeName.length > 0) {
+              sellerLabel += " (" + storeName + ")";
+            }
+            sellerNameLabel.value = sellerLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Opens the favorite seller in a new tab
+        -->
+      <method name="openFavoriteSeller">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            let sellerId = this.favoriteSeller.get("sellerId");
+            EbayCompanion.openPage(
+              aEvent,
+              'favoriteSellerClick',
+              'merchant',
+              { userid: sellerId });
+          ]]>
+        </body>
+      </method>
+
+    </implementation>
+
+  </binding>
+</bindings>

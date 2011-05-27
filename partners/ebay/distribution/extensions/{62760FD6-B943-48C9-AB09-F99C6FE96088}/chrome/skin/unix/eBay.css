@@ -1,0 +1,11 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+#sidebar {
+  min-width: 226px !important;
+}
+
+#gs-ebay-alert-panel {
+  background: transparent !important;
+}

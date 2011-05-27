@@ -1,0 +1,13 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+.gs-ebay-alert-container {
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  padding: 3px;
+}
+
+.gs-ebay-alert-footer-position {
+  margin: 0px 4px 0px 4px !important;
+}

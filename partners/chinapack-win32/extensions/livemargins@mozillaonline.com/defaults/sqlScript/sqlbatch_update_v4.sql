@@ -1,3 +1,0 @@
-ALTER TABLE tb_rs_tagAndItem RENAME TO tb_rs_tagAndItem_old;
-CREATE TABLE IF NOT EXISTS `tb_rs_tagAndItem` (`fd_tagType` VARCHAR NOT NULL DEFAULT 'album', `fd_tagName` VARCHAR NOT NULL DEFAULT 'default', `fd_itemKey` VARCHAR NOT NULL, `fd_jsonValue` VARCHAR DEFAULT '', UNIQUE (`fd_tagType`,`fd_itemKey`));
-INSERT INTO tb_rs_tagAndItem (`fd_tagType`, `fd_tagName`, `fd_itemKey`) SELECT `fd_tagType`, `fd_tagName`, `fd_itemKey` FROM tb_rs_tagAndItem_old;

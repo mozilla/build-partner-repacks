@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://mozapps/content/preferences/preferences.css" type="text/css"?>
+<?xml-stylesheet href="chrome://unitedtb/skin/pref/pref-window.css" type="text/css"?>
+<?xml-stylesheet href="chrome://unitedtb/content/pref/pref-region-xbl.css" type="text/css"?>
+
+<?xul-overlay href="chrome://unitedtb/content/pref/pref-general.xul"?>
+<?xul-overlay href="chrome://unitedtb/content/pref/pref-region.xul"?>
+
+<!DOCTYPE prefwindow [
+  <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd">
+  %brandDTD;
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/pref/pref-window.dtd">
+  %thisDTD;
+]>
+
+<prefwindow type="prefwindow"
+     id="united-pref-window"
+     title="&window.title;"
+     windowtype="Unitedtb:Preferences"
+     persist="lastSelected screenX screenY"
+     buttons="accept"
+     ondialogaccept="return upref.win.validateAllPanes(true);"
+     ondialogcancel="return upref.win.validateAllPanes(false);"
+     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/javascript"
+          src="chrome://unitedtb/content/util/common.js"/>
+  <script type="application/x-javascript">
+    var upref = {};
+    upref.win = {};
+    united.loadJS("chrome://unitedtb/content/pref/pref-window.js", upref.win);
+  </script>
+
+</prefwindow>

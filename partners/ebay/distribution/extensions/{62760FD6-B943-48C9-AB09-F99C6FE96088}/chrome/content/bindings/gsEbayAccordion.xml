@@ -1,0 +1,857 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2010 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- Accordion -->
+  <binding id="gs-ebay-accordion">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/accordion.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/accordion.css" />
+    </resources>
+
+    <content>
+      <xul:vbox anonid="gs-ebay-accordion-box" flex="1">
+        <xul:vbox anonid="gs-ebay-accordion-items-container" >
+          <children />
+        </xul:vbox>
+        <xul:vbox anonid="gs-ebay-deal-details-container" flex="1"
+          class="gs-ebay-deal-details-container" collapsed="true">
+          <xul:gsebaydealpopup anonid="gs-ebay-deal-details" flex="1"/>
+        </xul:vbox>
+      </xul:vbox>
+    </content>
+
+    <implementation>
+      <field name="_dealDisplayed">null</field>
+
+      <!-- Property to know if the details panel is being displayed -->
+      <property name="detailsShown">
+        <getter>
+          let detailsContainer =
+            document.getAnonymousElementByAttribute(
+              this, "anonid", "gs-ebay-deal-details-container");
+          return !detailsContainer.hasAttribute("collapsed");
+        </getter>
+      </property>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Sets the accordion list opacity to the given value
+        -->
+      <method name="hideContainer">
+        <body>
+          <![CDATA[
+            let accordionItemsContainer =
+              this._getElement("gs-ebay-accordion-items-container");
+            accordionItemsContainer.style.opacity = 0;
+            accordionItemsContainer.setAttribute("collapsed", true);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Toggles an item from the accordion.
+        - @param aItem the item to be selected.
+        -->
+      <method name="toggleItem">
+        <parameter name="aItem" />
+        <body>
+          <![CDATA[
+            let children = this.childNodes;
+
+            for (let i = 0; i < children.length; i++) {
+
+              if (aItem.id == children[i].id) {
+                children[i].toggle();
+              } else {
+                children[i].collapse();
+              }
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Sets the accordion status based on the status array passed as
+        - parameter. If null is passed as parameter, the accordion persists the
+        - current status to the StateHelper class.
+        - @param aAccordionStatus the status to be set
+        -->
+      <method name="setAccordionStatus">
+        <parameter name="aAccordionStatus" />
+        <body>
+          <![CDATA[
+            let children = this.childNodes;
+            let statusArray = [];
+            for (let i = 0; i < children.length; i++) {
+              if (aAccordionStatus) {
+                if (aAccordionStatus[i]) {
+                  children[i].expand();
+                } else {
+                  children[i].collapse();
+                }
+              } else {
+                statusArray[i] = children[i].itemStatus ? 1 : 0;
+              }
+            }
+            if (statusArray.length > 0) {
+              EbayCompanion.StateHelper.accordionStatus = statusArray;
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Calls to show the deal details
+        - @param aDealNode the itemNode to see its details, null to hide the
+        - details panel
+        - @param aSkipAnimation true if skips animation.
+        -->
+      <method name="showDealDetails">
+        <parameter name="aDealNode" />
+        <parameter name="aSkipAnimation" />
+        <body>
+          <![CDATA[
+            EbayCompanion.Observers.notify(
+              aDealNode, "ebay-show-deal-details", aSkipAnimation);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Shows the deal details
+        - @param aDealNode the itemNode to see its details, null to hide the
+        - details panel
+        - @param aSkipAnimation true if skips animation.
+        -->
+      <method name="doShowDealDetails">
+        <parameter name="aDealNode" />
+        <parameter name="aSkipAnimation" />
+        <body>
+          <![CDATA[
+            let that = this;
+            let listContainer =
+              this._getElement("gs-ebay-accordion-items-container");
+            let dealDetails = this._getElement("gs-ebay-deal-details");
+            let detailsContainer =
+              this._getElement("gs-ebay-deal-details-container");
+            let deal = aDealNode.deal;
+
+            dealDetails.deal = deal;
+            if (listContainer.hasAttribute("collapsed") || aSkipAnimation) {
+              listContainer.setAttribute("collapsed", true);
+              detailsContainer.removeAttribute("collapsed");
+            } else {
+              this.animateList(listContainer, false,
+                function() { that.animateList(detailsContainer, true, null) });
+            }
+
+            this._dealDisplayed = aDealNode;
+            this._updateNavigationControls();
+            EbayCompanion.StateHelper.setDealDetails(deal);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Calls to hide the deal details
+        - @param aCallback the callback to be called after the item is shown (or
+        - the user goes back to the full list)
+        - @param aAnimateListDisplay whether to animate the list display or not
+        -->
+      <method name="hideDealDetails">
+        <parameter name="aCallback" />
+        <parameter name="aAnimateListDisplay" />
+        <parameter name="aSkipAnimation" />
+        <body>
+          <![CDATA[
+            let params = {
+              callback : aCallback,
+              animateListDisplay : aAnimateListDisplay,
+              skipAnimation : aSkipAnimation
+            };
+
+            EbayCompanion.Observers.notify(
+              params, "ebay-hide-deal-details", null);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Hides the deal details
+        - @param aCallback the callback to be called after the item is shown (or
+        - the user goes back to the full list)
+        - @param aAnimateListDisplay whether to animate the list display or not
+        -->
+      <method name="doHideDealDetails">
+        <parameter name="aCallback" />
+        <parameter name="aAnimateListDisplay" />
+        <parameter name="aSkipAnimation" />
+        <body>
+          <![CDATA[
+            let that = this;
+            let listContainer =
+              this._getElement("gs-ebay-accordion-items-container");
+            let dealDetails = this._getElement("gs-ebay-deal-details");
+            let detailsContainer =
+              this._getElement("gs-ebay-deal-details-container");
+
+            if (detailsContainer.hasAttribute("collapsed") || aSkipAnimation) {
+              detailsContainer.setAttribute("collapsed", true);
+              listContainer.removeAttribute("collapsed");
+              if (aCallback) {
+                aCallback();
+              }
+              if (aAnimateListDisplay) {
+                that.animateList(listContainer, true, null);
+              }
+            } else {
+              if (aCallback) {
+                // this internal callback hides de details panel, calls the
+                // callback and also changes the item list properties so it
+                // doesn't remain hidden
+                let internalCallback = function() {
+                  aCallback();
+                  listContainer.removeAttribute("collapsed");
+                  listContainer.style.opacity = 100;
+                };
+                this.animateList(detailsContainer, false, internalCallback);
+              } else {
+                this.animateList(detailsContainer, false,
+                  function() { that.animateList(listContainer, true, null) });
+              }
+            }
+
+            this._dealDisplayed = null;
+            this._updateNavigationControls();
+            EbayCompanion.StateHelper.setDealDetails(null);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Animates the element with a fade in and out effect.
+        - @param aElement the element
+        - @param aShow true if showing, false otherwise
+        - @param aCallback the callback method
+        -->
+      <method name="animateList">
+        <parameter name="aElement" />
+        <parameter name="aShow" />
+        <parameter name="aCallback" />
+        <body>
+          <![CDATA[
+            if (aShow) {
+              opacity = 0;
+              increment = (100 / 5);
+              limit = 100;
+              aElement.removeAttribute("collapsed");
+            } else {
+              opacity = 100;
+              increment = -(100 / 5);
+              limit = 0;
+            }
+
+            animationFunction = function() {
+              opacity += increment;
+              aElement.style.opacity = (opacity / 100);
+
+              if (aShow) {
+                if (opacity < limit) {
+                  window.setTimeout(animationFunction, 50);
+                } else {
+                  aElement.style.opacity = 100;
+                  if (aCallback) {
+                    aCallback();
+                  }
+                }
+              } else {
+                if (opacity > limit) {
+                  window.setTimeout(animationFunction, 50);
+                } else {
+                  if (0 == opacity) {
+                    aElement.setAttribute("collapsed", true);
+                  }
+                  if (aCallback) {
+                    aCallback();
+                  }
+                }
+              }
+            };
+
+            animationFunction();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Scrolls the next or previous deal in the details panel, based on the
+        - aForward attribute passed by parameter
+        - @param aForward whether to show next or previous deal
+        - @param aEvent the event that triggered this call
+        -->
+      <method name="scrollDeal">
+        <parameter name="aForward" />
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            let dealToShow = null;
+
+            if (aForward) {
+              dealToShow = this._nextDeal();
+            } else {
+              dealToShow = this._previousDeal();
+            }
+
+            if (dealToShow) {
+              this.showDealDetails(dealToShow);
+            }
+
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the navigation controls accordingly
+        -->
+      <method name="_updateNavigationControls">
+        <body>
+          <![CDATA[
+          try {
+            let nextDeal = this._nextDeal();
+            let previousDeal = this._previousDeal();
+
+            let detailsPanel = this._getElement("gs-ebay-deal-details");
+
+            if (nextDeal) {
+              //enable next button
+              detailsPanel.setAttribute("nextButtonDisabled", "false");
+            } else {
+              //disable next button
+              detailsPanel.setAttribute("nextButtonDisabled", "true");
+            }
+
+            if (previousDeal) {
+              //enable previous button
+              detailsPanel.setAttribute("previousButtonDisabled", "false");
+            } else {
+              //disable previous button
+              detailsPanel.setAttribute("previousButtonDisabled", "true");
+            }
+
+          } catch(e) {
+            EbayCompanion.logger.error(e);
+          }
+
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Called to return the next deal to be displayed in the deal details
+        - panel
+        -->
+      <method name="_nextDeal">
+        <body>
+          <![CDATA[
+            let nextDeal = null;
+            if (this._dealDisplayed) {
+              nextDeal = this._dealDisplayed.nextSibling;
+            }
+            return nextDeal;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Called to return the previous deal to be displayed in the deal details
+        - panel
+        -->
+      <method name="_previousDeal">
+        <body>
+          <![CDATA[
+            let previousDeal = null;
+            if (this._dealDisplayed) {
+              previousDeal = this._dealDisplayed.previousSibling;
+            }
+            return previousDeal;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Finds an deal.
+        - @para aDeal the deal
+        - @return the deal or null
+        -->
+      <method name="findDeal">
+        <parameter name="aDeal" />
+        <body>
+          <![CDATA[
+            let node = null;
+            let dealNode = null;
+            let dealsAccordion =
+              document.getElementById("gs-ebay-sidebar-deals-list");
+
+            for (let i = 0; i < dealsAccordion.childNodes.length; i++) {
+              node = dealsAccordion.childNodes[i];
+
+              if (node.deal.get("itemId") == aDeal.get("itemId")) {
+                dealNode = node;
+              }
+            }
+
+            return dealNode;
+          ]]>
+        </body>
+      </method>
+
+    </implementation>
+  </binding>
+
+  <!-- Accordion Item -->
+  <binding id="gs-ebay-accordion-item">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/accordion.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/accordion.css" />
+    </resources>
+
+    <content>
+      <xul:vbox flex="1" class="gs-ebay-accordion-item-container">
+        <xul:hbox anonid="gs-ebay-accordion-item-title-box" flex="1"
+          class="gs-ebay-accordion-item-title-box" onclick="toggle();"
+          selected="true" >
+          <xul:image class="gs-ebay-accordion-item-marker" />
+          <xul:label class="gs-ebay-accordion-item-title" flex="1"
+            xbl:inherits="value=title" />
+        </xul:hbox>
+        <xul:vbox anonid="gs-ebay-accordion-item-list">
+          <xul:vbox anonid="gs-ebay-accordion-children-container">
+            <children />
+          </xul:vbox>
+          <xul:hbox class="gs-ebay-accordion-item-link-container"
+            flex="1">
+              <xul:label anonid="gs-ebay-accordion-item-link-label"
+                class="gs-ebay-accordion-item-link-label" flex="1" />
+          </xul:hbox>
+        </xul:vbox>
+      </xul:vbox>
+    </content>
+
+    <implementation>
+
+      <!-- Property to accessed the item status. -->
+      <property name="itemStatus">
+        <getter>
+          let box = this._getElement("gs-ebay-accordion-item-list");
+
+          return !box.collapsed;
+        </getter>
+      </property>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Selects the item.
+        -->
+      <method name="selectItem">
+        <body>
+          <![CDATA[
+            this.parentNode.toggleItem(this);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Toggles the item.
+        -->
+      <method name="toggle">
+        <body>
+          <![CDATA[
+            let box = this._getElement("gs-ebay-accordion-item-list");
+
+            if (box.collapsed) {
+              this.expand();
+            } else {
+              this.collapse()
+            }
+
+            // persist the accordion status
+            this.parentNode.setAccordionStatus();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Expands the item.
+        -->
+      <method name="expand">
+        <body>
+          <![CDATA[
+            let box = this._getElement("gs-ebay-accordion-item-list");
+            let titleBox = this._getElement("gs-ebay-accordion-item-title-box");
+
+            box.collapsed = false;
+            //this.setAttribute("flex", "1");
+            titleBox.setAttribute("selected", true);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Collapses the item.
+        -->
+      <method name="collapse">
+        <body>
+          <![CDATA[
+            let box = this._getElement("gs-ebay-accordion-item-list");
+            let titleBox = this._getElement("gs-ebay-accordion-item-title-box");
+
+            box.collapsed = true;
+            //this.removeAttribute("flex");
+            titleBox.removeAttribute("selected");
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Sets the text in the bottom of the accordion item
+        - @param aText The text to display. Must be in markup format; HTML tags
+        - are allowed
+        - @param aCallbacks The callback functions associated with each markup
+        - link
+        -->
+      <method name="setLinkText">
+        <parameter name="aText" />
+        <parameter name="aCallbacks" />
+        <body>
+          <![CDATA[
+            let displayElement =
+              this._getElement("gs-ebay-accordion-item-link-label");
+            displayElement.value = aText;
+            // XXX: for some reason click event does not catch middle clicks,
+            // so we have to use mouseup
+            displayElement.addEventListener(
+                "mouseup", aCallbacks[0], false);
+          ]]>
+        </body>
+      </method>
+    </implementation>
+  </binding>
+
+  <!-- Accordion Item Search -->
+  <binding id="gs-ebay-accordion-item-searches"
+    extends="chrome://ebaycompanion/content/bindings/gsEbayAccordion.xml#gs-ebay-accordion-item">
+    <implementation>
+      <field name="_searchesList">null</field>
+      <field name="_observers">null</field>
+
+      <!--
+        - Constructor
+        -->
+      <constructor>
+        <![CDATA[
+          let that = this;
+          let emptyListText =
+            EbayCompanion.Constants.stringBundle.getString(
+              "ecSidebar.search.saved.null.label");
+          let openEmptyListLinkPage = function(event) {
+            EbayCompanion.openPage(event, "favoriteSearchClick", "savedSearches", {});
+          };
+
+          this.setLinkText(emptyListText, [openEmptyListLinkPage]);
+          this._observers = new EbayCompanion.Observers;
+          // observer to keep the list of favorite searches updated
+          this._observers.add(function() {
+              that.rebuildList();
+            }, "ebay-favorite-searches-updated");
+          this.rebuildList();
+        ]]>
+      </constructor>
+
+      <!--
+        - Destructor
+        -->
+      <destructor>
+        <![CDATA[
+          this._observers.removeAll();
+        ]]>
+      </destructor>
+
+      <!--
+        - Rebuilds the list.
+        -->
+      <method name="rebuildList">
+        <body>
+          <![CDATA[
+            try {
+              // remove any existing items
+              let child;
+
+              while (this.childNodes.length > 0) {
+                child = this.childNodes[0];
+                this.removeChild(child);
+              }
+
+              // rebuild item list from model
+              this._searchesList = EbayCompanion.Datasource.favoriteSearches();
+              if (this._searchesList) {
+                let favoriteSearch;
+                let favoriteSearchElement;
+                for (let i = 0; i < this._searchesList.length; i++) {
+                  favoriteSearch = this._searchesList[i];
+                  favoriteSearchElement =
+                    document.createElement("gsebayfavoritesearch");
+                  this.appendChild(favoriteSearchElement);
+                  favoriteSearchElement.favoriteSearch = favoriteSearch;
+                }
+              }
+            } catch(e) {
+              EbayCompanion.Logger.error(e);
+            }
+          ]]>
+        </body>
+      </method>
+    </implementation>
+  </binding>
+
+  <!-- Accordion Item Seller -->
+  <binding id="gs-ebay-accordion-item-sellers"
+    extends="chrome://ebaycompanion/content/bindings/gsEbayAccordion.xml#gs-ebay-accordion-item">
+    <implementation>
+      <field name="_sellersList">null</field>
+      <field name="_observers">null</field>
+
+      <!--
+        - Constructor
+        -->
+      <constructor>
+        <![CDATA[
+          let that = this;
+          let emptyListText =
+            EbayCompanion.Constants.stringBundle.getString(
+              "ecSidebar.favorite.sellers.null.label");
+          let openEmptyListLinkPage = function(event) {
+            EbayCompanion.openPage(event, "favoriteSellerClick", "savedSellers", {});
+          };
+
+          this.setLinkText(emptyListText, [openEmptyListLinkPage]);
+          this._observers = new EbayCompanion.Observers;
+          // observer to keep the list of favorite searches updated
+          this._observers.add(function() {
+              that.rebuildList();
+            }, "ebay-favorite-sellers-updated");
+          this.rebuildList();
+        ]]>
+      </constructor>
+
+      <!--
+        - Destructor
+        -->
+      <destructor>
+        <![CDATA[
+          this._observers.removeAll();
+        ]]>
+      </destructor>
+
+      <!--
+        - Rebuilds the list.
+        -->
+      <method name="rebuildList">
+        <body>
+          <![CDATA[
+            try {
+              // remove any existing items
+              let child;
+
+              while (this.childNodes.length > 0) {
+                child = this.childNodes[0];
+                this.removeChild(child);
+              }
+
+              // rebuild item list from model
+              this._sellersList = EbayCompanion.Datasource.favoriteSellers();
+              if (this._sellersList) {
+                let favoriteSeller;
+                let favoriteSellerElement;
+                for (let i = 0; i < this._sellersList.length; i++) {
+                  favoriteSeller = this._sellersList[i];
+                  favoriteSellerElement =
+                    document.createElement("gsebayfavoriteseller");
+                  this.appendChild(favoriteSellerElement);
+                  favoriteSellerElement.favoriteSeller = favoriteSeller;
+                }
+              }
+            } catch(e) {
+              EbayCompanion.Logger.error(e);
+            }
+          ]]>
+        </body>
+      </method>
+    </implementation>
+  </binding>
+
+  <!-- Accordion Item Deals -->
+  <binding id="gs-ebay-accordion-item-deals"
+    extends="chrome://ebaycompanion/content/bindings/gsEbayAccordion.xml#gs-ebay-accordion-item">
+    <implementation>
+      <field name="_observers">null</field>
+
+      <!--
+        - Constructor
+        -->
+      <constructor>
+        <![CDATA[
+          let that = this;
+          let emptyListText =
+            EbayCompanion.Constants.stringBundle.getString(
+              "ecSidebar.daily.deals.null.label");
+          let openEmptyListLinkPage = function(event) {
+            let dealsDomain = "deals";
+            let siteId =
+                EbayCompanion.Constants.siteIdForSite(
+                  EbayCompanion.Datasource.homeSite());
+            if (siteId == 3 || siteId == 77) {
+              dealsDomain = "dealseu";
+            }
+            let params = {
+              dealsDomain: dealsDomain
+            };
+            EbayCompanion.openPage(event, "dealClick", "viewDeals", params);
+          };
+
+          this.setLinkText(emptyListText, [openEmptyListLinkPage]);
+          this._observers = new EbayCompanion.Observers;
+          // observer to keep the list of daily deals updated
+          this._observers.add(function(subject, topic, data) {
+              that.rebuildList();
+            }, "ebay-daily-deals-updated");
+          this._observers.add(function(subject, topic, data) {
+              that.refreshDealsInfo();
+            }, "ebay-daily-deals-info-updated");
+          this.rebuildList();
+        ]]>
+      </constructor>
+
+      <!--
+        - Destructor
+        -->
+      <destructor>
+        <![CDATA[
+          this._observers.removeAll();
+        ]]>
+      </destructor>
+
+      <!--
+        - Rebuilds the list.
+        -->
+      <method name="rebuildList">
+        <body>
+          <![CDATA[
+            // Remove any existing items
+            try {
+              if (typeof(EbayCompanion.Deal) == "undefined") {
+                EbayCompanion._importModule("objects/deal.js");
+              }
+
+              let child;
+              while (this.childNodes.length > 0) {
+                child = this.childNodes[0];
+              // XXX: remove gsebayitem observers manually since when it is removed
+              // from the DOM tree its observers are not destroyed, and this causes
+              // errors in the console because the binding methods ARE destroyed
+                try {
+                  child.removeObservers();
+                } catch(e) {
+                }
+                child.item = null;
+                let deleted = this.removeChild(child);
+
+                delete deleted;
+              }
+
+              // Rebuild item list from model
+              let dealsArray = EbayCompanion.Datasource.dailyDeals;
+              if (dealsArray) {
+                let deal;
+                let dealElement;
+                // XXX: WE ONLY USE THE FIRST 4 DEALS IN THE LIST
+                for (let i = 0; i < dealsArray.length && i < 4; i++) {
+                  deal = dealsArray[i];
+                  dealElement = document.createElement("gsebaydeal");
+                  this.appendChild(dealElement);
+                  dealElement.deal = deal;
+                }
+              }
+            } catch(e) {
+              EbayCompanion.Logger.error(e);
+            }
+
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Refreshes the deals information.
+        -->
+      <method name="refreshDealsInfo">
+        <body>
+          <![CDATA[
+            // Remove any existing items
+            try {
+              let child;
+              let deal;
+              for (let i = 0; i < this.childNodes.length; i++) {
+                child = this.childNodes[i];
+                deal = EbayCompanion.Datasource.dailyDeals[i];
+                if (child.deal.get("itemId") == deal.get("itemId")) {
+                  child.deal = deal;
+                  EbayCompanion.Observers.notify(
+                    deal, "ebay-daily-deal-updated", null);
+                }
+              }
+            } catch(e) {
+              EbayCompanion.Logger.error(e);
+            }
+
+          ]]>
+        </body>
+      </method>
+
+    </implementation>
+  </binding>
+</bindings>

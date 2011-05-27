@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/horoscope/pref-horoscope.dtd">
+<?xml-stylesheet href="chrome://unitedtb/skin/horoscope/pref-horoscope.css" type="text/css"?>
+<overlay id="united-pref-horoscope-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <prefwindow id="united-pref-window">
+    <prefpane id="horoscope-pane"
+        label="&pane.title;"
+        onpaneload=""
+        insertafter="email-pane,search-pane,home-pane,general-pane"
+        >
+
+      <script type="application/x-javascript">
+        upref.horoscope = {};
+        united.loadJS("chrome://unitedtb/content/horoscope/pref-horoscope.js", upref.horoscope);
+      </script>
+
+      <preferences>
+        <preference id="extensions.unitedinternet.horoscope.sign"
+                    name="extensions.unitedinternet.horoscope.sign" type="string"/>
+        <preference id="extensions.unitedinternet.horoscope.type"
+                    name="extensions.unitedinternet.horoscope.type" type="string"/>
+        <preference id="extensions.unitedinternet.horoscope.sign.partner"
+                    name="extensions.unitedinternet.horoscope.sign.partner" type="string"/>
+        <preference id="extensions.unitedinternet.horoscope.gender"
+                    name="extensions.unitedinternet.horoscope.gender" type="string"/>
+      </preferences>
+
+      <vbox id="horoscope-settings">
+      <hbox pack="start">
+        <vbox>
+          <label value="&sign.label;" control="sign"/>
+          <menulist id="sign"
+                      preference="extensions.unitedinternet.horoscope.sign"
+                      >
+            <menupopup>
+              <menuitem value="none"
+                  label="&none.label;"/>
+              <menuitem value="widder"
+                  label="&widder.label;"/>
+              <menuitem value="stier"
+                  label="&stier.label;"/>
+              <menuitem value="zwillinge"
+                  label="&zwillinge.label;"/>
+              <menuitem value="krebs"
+                  label="&krebs.label;"/>
+              <menuitem value="loewe"
+                  label="&loewe.label;"/>
+              <menuitem value="jungfrau"
+                  label="&jungfrau.label;"/>
+              <menuitem value="waage"
+                  label="&waage.label;"/>
+              <menuitem value="skorpion"
+                  label="&scorpion.label;"/>
+              <menuitem value="schuetze"
+                  label="&schuetze.label;"/>
+              <menuitem value="steinbock"
+                  label="&steinbock.label;"/>
+              <menuitem value="wassermann"
+                  label="&wassermann.label;"/>
+              <menuitem value="fische"
+                  label="&fische.label;"/>
+            </menupopup>
+          </menulist>
+        </vbox>
+        <vbox>
+          <label value="&type.label;" control="type"/>
+          <menulist id="type"
+                      preference="extensions.unitedinternet.horoscope.type"
+                      >
+            <menupopup id="type-menu"/>
+          </menulist>
+        </vbox>
+      </hbox>
+      <hbox pack="start">
+        <vbox>
+          <label value="&gender.label;" control="gender"/>
+          <menulist id="gender"
+                      preference="extensions.unitedinternet.horoscope.gender"
+                      >
+            <menupopup>
+              <menuitem value="male"
+                  label="&male.label;"/>
+              <menuitem value="female"
+                  label="&female.label;"/>
+            </menupopup>
+          </menulist>
+        </vbox>
+        <vbox>
+          <label value="&sign.partner.label;" control="sign.partner"/>
+          <menulist id="sign.partner"
+                      preference="extensions.unitedinternet.horoscope.sign.partner"
+                      >
+            <menupopup>
+              <menuitem value="widder"
+                  label="&widder.label;"/>
+              <menuitem value="stier"
+                  label="&stier.label;"/>
+              <menuitem value="zwillinge"
+                  label="&zwillinge.label;"/>
+              <menuitem value="krebs"
+                  label="&krebs.label;"/>
+              <menuitem value="loewe"
+                  label="&loewe.label;"/>
+              <menuitem value="jungfrau"
+                  label="&jungfrau.label;"/>
+              <menuitem value="waage"
+                  label="&waage.label;"/>
+              <menuitem value="scorpion"
+                  label="&scorpion.label;"/>
+              <menuitem value="schuetze"
+                  label="&schuetze.label;"/>
+              <menuitem value="steinbock"
+                  label="&steinbock.label;"/>
+              <menuitem value="wassermann"
+                  label="&wassermann.label;"/>
+              <menuitem value="fische"
+                  label="&fische.label;"/>
+            </menupopup>
+          </menulist>
+        </vbox>
+      </hbox>
+      </vbox>
+    </prefpane>
+  </prefwindow>
+</overlay>

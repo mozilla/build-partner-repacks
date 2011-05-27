@@ -1,0 +1,5 @@
+<!ENTITY pane.title "Country">
+<!ENTITY module.general.label "Toolbar">
+<!ENTITY module.search.label "Search">
+<!ENTITY module.weather.label "Weather">
+<!ENTITY module.ticker.label "News">

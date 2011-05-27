@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>toolbar@web.de</em:id>
+    <em:version>1.5.3</em:version>
+    <em:name>WEB.DE Toolbar</em:name>
+    <em:description>Der sichere Klick in Ihr Postfach.</em:description>
+    <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
+    <em:homepageURL>http://go.web.de/home</em:homepageURL>
+    <em:updateURL>https://dl.web.de/toolbar/firefox/moztoolbar.rdf</em:updateURL>
+    <em:iconURL>chrome://unitedtb/skin/brand/icon-32.png</em:iconURL>
+    <em:optionsURL>chrome://unitedtb/content/pref/pref-window.xul</em:optionsURL>
+    <em:localized>
+        <Description>
+            <em:locale>en-US</em:locale>
+            <em:name>WEB.DE Toolbar</em:name>
+            <em:description>The safe way to access your personal mail.</em:description>
+            <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
+            <em:homepageURL>http://go.web.de/home</em:homepageURL>
+        </Description>
+        <Description>
+            <em:locale>de-DE</em:locale>
+            <em:name>WEB.DE Toolbar</em:name>
+            <em:description>Der sichere Klick in Ihr Postfach.</em:description>
+            <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
+            <em:homepageURL>http://go.web.de/home</em:homepageURL>
+        </Description>
+    </em:localized>
+
+    <!-- Firefox -->
+    <em:targetApplication>
+        <Description>
+            <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+            <em:minVersion>3.6</em:minVersion>
+            <em:maxVersion>4.0</em:maxVersion>
+        </Description>
+    </em:targetApplication>
+  </Description>
+</RDF>

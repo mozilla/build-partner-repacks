@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+    <ShortName>goo Green Label</ShortName> 
+    <Description>goo Green Label</Description>
+    <Url type="text/html" template="http://green.search.goo.ne.jp/search_en?MT={searchTerms}&amp;IE=UTF-8&amp;from=eco_plugin"/> 
+	<Image width="16" height="16">http://green.goo.ne.jp/favicon.ico</Image>
+</OpenSearchDescription>

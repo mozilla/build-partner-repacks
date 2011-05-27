@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/newtab/pref-newtab.dtd">
+<?xml-stylesheet href="chrome://unitedtb/skin/newtab/pref-newtab.css" type="text/css"?>
+<overlay id="united-pref-newtab-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <prefwindow id="united-pref-window">
+    <prefpane id="newtab-pane"
+        label="&pane.title;"
+        onpaneload=""
+        insertafter="email-pane,search-pane,home-pane,general-pane"
+        >
+      <preferences>
+        <preference id="extensions.unitedinternet.newtab.viewmode"
+                    name="extensions.unitedinternet.newtab.viewmode" type="int"/>
+        <preference id="extensions.unitedinternet.newtab.enabled"
+                    name="extensions.unitedinternet.newtab.enabled" type="bool"/>
+        <preference id="extensions.unitedinternet.newtab.setFocus"
+                    name="extensions.unitedinternet.newtab.setFocus" type="bool"/>
+      </preferences>
+
+      <hbox pack="start">
+        <vbox>
+          <label value="&viewmode.label;" control="viewmode"/>
+          <menulist id="viewmode"
+                      preference="extensions.unitedinternet.newtab.viewmode"
+                      >
+            <menupopup>
+              <menuitem value="1"
+                  label="&as-pics.label;" accesskey="&as-pics.accesskey;"/>
+              <menuitem value="2"
+                  label="&as-text.label;" accesskey="&as-text.accesskey;"/>
+            </menupopup>
+          </menulist>
+          <checkbox preference="extensions.unitedinternet.newtab.enabled"
+              label="&enabled.label;"/>
+          <checkbox preference="extensions.unitedinternet.newtab.setFocus"
+              label="&focus.label;"/>
+        </vbox>
+      </hbox>
+
+    </prefpane>
+  </prefwindow>
+</overlay>

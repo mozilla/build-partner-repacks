@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- ebay feedback box -->
+  <binding id="gs-ebay-feedback-box">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/feedbackBox.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/feedbackBox.css" />
+    </resources>
+
+    <content>
+      <xul:hbox class="gs-ebay-feedback-container" flex="1">
+        <xul:stack flex="1">
+          <xul:hbox class="gs-ebay-feedback-background" flex="1" />
+          <xul:hbox flex="1">
+            <xul:image anonid="gs-ebay-feedback-image"
+              class="gs-ebay-feedback-image" />
+            <xul:vbox class="gs-ebay-feedback-content-right">
+              <xul:hbox class="gs-ebay-feedback-title-box">
+                <xul:label class="gs-ebay-feedback-title" crop="end" flex="1"
+                  value="&ecAlert.feedback.title;" />
+                <xul:hbox class="gs-ebay-feedback-close-button-box">
+                  <xul:toolbarbutton anonid="gs-ebay-feedback-close-button"
+                    class="gs-ebay-feedback-close-button"
+                    tooltiptext="&ecAlert.dismiss.tooltip;"
+                    command="ec-alerts-close-command" />
+                </xul:hbox>
+              </xul:hbox>
+              <xul:description anonid="gs-ebay-feedback-description"
+                class="gs-ebay-feedback-description" />
+            </xul:vbox>
+          </xul:hbox>
+        </xul:stack>
+      </xul:hbox>
+    </content>
+
+    <implementation>
+      <!-- Associated item. -->
+      <field name="_item">null</field>
+
+      <!-- Property to accessed the item. -->
+      <property name="item">
+        <getter>
+          return this._item;
+        </getter>
+        <setter>
+          <![CDATA[
+            this._item = val;
+            this._updateItem(this._item);
+          ]]>
+        </setter>
+      </property>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the star color.
+        - @param aStarIndex the star index.
+        - @return the star color.
+        -->
+      <method name="_getStarColor">
+        <parameter name="aStarIndex" />
+        <body>
+          <![CDATA[
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let starColor =
+              stringBundle.getString("ecAlert.feedback.star." + aStarIndex);
+
+            return starColor;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the item info in the binding.
+        - @param aItem the item object.
+        -->
+      <method name="_updateItem">
+        <parameter name="aItem" />
+        <body>
+          <![CDATA[
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let feedbackImage = this._getElement("gs-ebay-feedback-image");
+            let feedbackDescription =
+              this._getElement("gs-ebay-feedback-description");
+            let starIndex = aItem.getStarIndex();
+            let starColor = this._getStarColor(starIndex);
+
+            feedbackImage.setAttribute("gsebaystar", starIndex);
+            feedbackDescription.textContent =
+              stringBundle.getString(
+                "ecAlert.feedback.message", [aItem.score, starColor]);
+          ]]>
+        </body>
+      </method>
+    </implementation>
+
+  </binding>
+</bindings>

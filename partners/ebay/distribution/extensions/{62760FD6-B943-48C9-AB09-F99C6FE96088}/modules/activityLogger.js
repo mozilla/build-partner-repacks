@@ -1,0 +1,29 @@
+/* Copyright (C) 2007-2011 eBay Inc. All Rights Reserved. */const EXPORTED_SYMBOLS=["ActivityLogger"];const Cc=Components.classes;const Ci=Components.interfaces;const Ce=Components.Exception;const Cr=Components.results;const Cu=Components.utils;var ActivityLogger={_init:function(){try{Cu.import("resource://ebaycompanion/helpers/logger.js");Cu.import("resource://ebaycompanion/helpers/observers.js");Cu.import("resource://ebaycompanion/datasource.js");Cu.import("resource://ebaycompanion/constants.js");this._observers=new Observers;let(that=this){this._observers.add(function()that._uninit(),"quit-application-granted");this._observers.add(function(subject,topic,data)
+that._accountLoggedIn(subject.object),"ebay-account-logged-in");this._observers.add(function(subject,topic,data)
+that._accountPropertyUpdated(subject.object,data),"ebay-account-property-updated");this._observers.add(function(subject,topic,data)
+that._accountLoggedOut(subject.object),"ebay-account-logged-out");this._observers.add(function(subject,topic,data)
+that._newObject(subject.object),"ebay-item-new");this._observers.add(function(subject,topic,data)
+that._objectPropertyUpdated(subject.object,data),"ebay-item-property-updated");this._observers.add(function(subject,topic,data)
+that._objectChanged(subject.object,data),"ebay-item-changed");this._observers.add(function(subject,topic,data)
+that._objectRemoved(subject.object),"ebay-item-removed");this._observers.add(function(subject,topic,data)
+that._newObject(subject.object),"ebay-transaction-new");this._observers.add(function(subject,topic,data)
+that._objectPropertyUpdated(subject.object,data),"ebay-transaction-property-updated");this._observers.add(function(subject,topic,data)
+that._objectRemoved(subject.object),"ebay-transaction-removed");this._observers.add(function(subject,topic,data)
+that._logAPICall(subject),"ebay-trading-api-call");this._observers.add(function(subject,topic,data)
+that._logAPICall(subject),"ebay-shopping-api-call");this._observers.add(function(subject,topic,data)
+that._logAPICall(subject),"ebay-client-alerts-api-call");}
+this._dirtyObjects=[];this._postUrl=Constants.prefBranch.get("debugging.activityLogger.postUrl");this._nativeJSON=Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);}
+catch(e){Logger.exception(e);}},_uninit:function(){this._observers.removeAll();},_accountLoggedIn:function(account){try{let accountCopy=account.copy();accountCopy.set("token","HIDDEN");let properties=this._propertiesOfObject(accountCopy);this._logEvent(accountCopy,"login",properties);let items=Datasource.items();for(let[itemId,item]in Iterator(items)){properties=this._propertiesOfObject(item);this._logEvent(item,"exists",properties);let transactions=Datasource.transactions(item.get("itemId"));if(transactions){for(let[transactionId,transaction]in Iterator(transactions)){properties=this._propertiesOfObject(transaction);this._logEvent(transaction,"exists",properties);}}}}
+catch(e){Logger.exception(e);}},_accountPropertyUpdated:function(account,property){try{let properties={};properties[property]=account.get(property);this._logEvent(account,"modified",properties);}
+catch(e){Logger.exception(e);}},_accountLoggedOut:function(account){try{let properties={};this._logEvent(account,"logout",properties);}
+catch(e){Logger.exception(e);}},_newObject:function(object){try{let properties=this._propertiesOfObject(object);this._logEvent(object,"added",properties);}
+catch(e){Logger.exception(e);}},_objectPropertyUpdated:function(object,property){try{let uniqueKey=this._uniqueKeyFor(object);let dirtyEntry=this._dirtyObjects[uniqueKey];if(!dirtyEntry){dirtyEntry={};this._dirtyObjects[uniqueKey]=dirtyEntry;}
+dirtyEntry[property]=true;}
+catch(e){Logger.exception(e);}},_objectChanged:function(object){try{let uniqueKey=this._uniqueKeyFor(object);let dirtyEntry=this._dirtyObjects[uniqueKey];if(dirtyEntry){let properties={};for each(let[property,]in Iterator(dirtyEntry)){properties[property]=object.get(property);}
+this._logEvent(object,"modified",properties);delete this._dirtyObjects[uniqueKey];}}
+catch(e){Logger.exception(e);}},_objectRemoved:function(object){try{let properties={};let event=this._logEvent(object,"removed",properties);}
+catch(e){Logger.exception(e);}},_uniqueKeyFor:function(object){let key="";switch(object.constructor.name){case"Item":key=""+object.get("itemId");break;case"Transaction":key=""+object.get("itemId")+"."+object.get("transactionId");break;case"Account":key=object.get("userId");break;default:Logger.error("Unrecognised object type: "+object.constructor.name,Logger.DUMP_STACK);key="ERROR";}
+return key;},_propertiesOfObject:function(object){let properties={};for(let[property,value]in Iterator(object)){properties[property.slice(1)]=value;}
+return properties;},_logEvent:function(object,eventName,properties){let out={};out.testClientId="Firefox";if(eventName.indexOf("logout")!=-1){out.testUserId=object;}else{out.testUserId=Datasource.activeAccount().get("userId");}
+out.timestamp=Date.now();out.objectType=object.constructor.name;out.uniqueKey=this._uniqueKeyFor(object);out.eventName=eventName;out.properties=properties;this._log(out);},_logAPICall:function(aAPIRecord){aAPIRecord.testClientId="Firefox";aAPIRecord.testUserId=Datasource.activeAccount().get("userId");aAPIRecord.timestamp=Date.now();aAPIRecord.objectType="request";aAPIRecord.eventName="added";this._log(aAPIRecord);},_log:function(dataObject){let request=Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);request.open("POST",this._postUrl);let message=this._nativeJSON.encode(dataObject);request.setRequestHeader("Content-Type","application/json");request.send(message);}}
+ActivityLogger._init();

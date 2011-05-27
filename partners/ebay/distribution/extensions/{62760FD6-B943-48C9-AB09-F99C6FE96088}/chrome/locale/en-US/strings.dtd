@@ -1,0 +1,240 @@
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!-- Browser overlay strings -->
+<!ENTITY ecGlobal.title                                "eBay Sidebar for Firefox">
+<!ENTITY ecOverlay.toggleSidebar.key                   "e">
+<!ENTITY ecOverlay.toggleSidebar.keyModifiers          "accel,shift">
+<!ENTITY ecOverlay.toggleSidebar.menuKey               "e">
+
+<!ENTITY ecGlobal.paginate.next.tooltip                "Next">
+<!ENTITY ecGlobal.paginate.previous.tooltip            "Previous">
+
+<!ENTITY ecBrowser.toolbarbutton.title                 "eBay">
+<!ENTITY ecBrowser.toolbarbutton.menu.home             "eBay Homepage">
+<!ENTITY ecBrowser.toolbarbutton.menu.home.key         "H">
+<!ENTITY ecBrowser.toolbarbutton.menu.buy              "Buy">
+<!ENTITY ecBrowser.toolbarbutton.menu.buy.key          "U">
+<!ENTITY ecBrowser.toolbarbutton.menu.sell             "Sell">
+<!ENTITY ecBrowser.toolbarbutton.menu.sell.key         "E">
+<!ENTITY ecBrowser.toolbarbutton.menu.myebay           "My eBay">
+<!ENTITY ecBrowser.toolbarbutton.menu.myebay.key       "M">
+<!ENTITY ecBrowser.toolbarbutton.menu.community        "Community">
+<!ENTITY ecBrowser.toolbarbutton.menu.community.key    "T">
+<!ENTITY ecBrowser.toolbarbutton.menu.paypal           "PayPal Homepage">
+<!ENTITY ecBrowser.toolbarbutton.menu.paypal.key       "A">
+<!ENTITY ecBrowser.toolbarbutton.menu.feedback         "eBay Sidebar Feedback">
+<!ENTITY ecBrowser.toolbarbutton.menu.feedback.key     "F">
+<!ENTITY ecBrowser.toolbarbutton.menu.openSidebar      "Open eBay Sidebar">
+<!ENTITY ecBrowser.toolbarbutton.menu.openSidebar.key  "O">
+<!ENTITY ecBrowser.toolbarbutton.menu.closeSidebar     "Close eBay Sidebar">
+<!ENTITY ecBrowser.toolbarbutton.menu.closeSidebar.key "C">
+<!ENTITY ecBrowser.toolbarbutton.menu.signin           "Sign in to eBay Sidebar">
+<!ENTITY ecBrowser.toolbarbutton.menu.signin.key       "S">
+<!ENTITY ecBrowser.toolbarbutton.menu.signout          "Sign out from eBay Sidebar">
+<!ENTITY ecBrowser.toolbarbutton.menu.signout.key      "D">
+<!ENTITY ecBrowser.toolbarbutton.menu.options          "Options...">
+<!ENTITY ecBrowser.toolbarbutton.menu.options.key      "P">
+<!ENTITY ecBrowser.toolbarbutton.menu.switchToButton   "Switch to button">
+<!ENTITY ecBrowser.toolbarbutton.menu.switchToButton.key "B">
+<!ENTITY ecBrowser.toolbarbutton.menu.sellers          "Saved Sellers">
+<!ENTITY ecBrowser.toolbarbutton.menu.sellers.signedout "Sign in to view">
+<!ENTITY ecBrowser.toolbarbutton.menu.sellers.manage   "Manage Saved Sellers">
+<!ENTITY ecBrowser.toolbarbutton.menu.sellers.null     "No Saved Sellers">
+<!ENTITY ecBrowser.toolbarbutton.menu.sellers.more     "More...">
+
+<!ENTITY ecItem.menu.global.open                       "Open Item in New Tab">
+<!ENTITY ecItem.menu.global.open.key                   "O">
+<!ENTITY ecItem.menu.global.remove                     "Remove from my eBay">
+<!ENTITY ecItem.menu.global.remove.key                 "M">
+<!ENTITY ecItem.menu.global.order                      "View Order Details">
+<!ENTITY ecItem.menu.global.order.key                  "D">
+
+<!ENTITY ecItem.menu.buying.make.offer                 "Make Offer">
+<!ENTITY ecItem.menu.buying.make.offer.key             "A">
+<!ENTITY ecItem.menu.buying.review.offer               "Review Offer">
+<!ENTITY ecItem.menu.buying.review.offer.key           "E">
+<!ENTITY ecItem.menu.buying.find                       "Find Similar">
+<!ENTITY ecItem.menu.buying.find.key                   "F">
+<!ENTITY ecItem.menu.buying.feedback                   "View Seller's Feedback">
+<!ENTITY ecItem.menu.buying.feedback.key               "V">
+<!ENTITY ecItem.menu.buying.items                      "View Seller's Other Items">
+<!ENTITY ecItem.menu.buying.items.key                  "T">
+<!ENTITY ecItem.menu.buying.contact                    "Ask Seller a Question">
+<!ENTITY ecItem.menu.buying.contact.key                "Q">
+<!ENTITY ecItem.menu.selling.revise                    "Revise Item">
+<!ENTITY ecItem.menu.selling.revise.key                "R">
+<!ENTITY ecItem.menu.selling.promote                   "Promote Item">
+<!ENTITY ecItem.menu.selling.promote.key               "P">
+<!ENTITY ecItem.menu.selling.sell                      "Sell Similar">
+<!ENTITY ecItem.menu.selling.sell.key                  "S">
+<!ENTITY ecItem.menu.selling.feedback                  "View Buyer's Feedback">
+<!ENTITY ecItem.menu.selling.feedback.key              "B">
+<!ENTITY ecItem.menu.selling.contact                   "Contact Buyer">
+<!ENTITY ecItem.menu.selling.contact.key               "C">
+<!ENTITY ecItem.menu.selling.review.offers             "Review Offers">
+<!ENTITY ecItem.menu.selling.review.offers.key         "O">
+
+<!ENTITY ecSidebar.search                              "Search eBay">
+<!ENTITY ecSidebar.search.tooltip                      "Search">
+<!ENTITY ecSidebar.search.saved.label                  "Saved searches">
+<!ENTITY ecSidebar.saved.sellers.label                 "Saved sellers">
+<!ENTITY ecSidebar.daily.deals.label                   "Daily Deals">
+<!ENTITY ecSidebar.label.welcome                       "Welcome to the eBay Sidebar for Firefox">
+<!ENTITY ecSidebar.label.instructions                  "Sign in to view items you're watching, selling or bidding on.">
+<!ENTITY ecSidebar.button.signin                       "Connect to eBay">
+
+<!ENTITY ecSidebar.tab.active.label                    "Active">
+<!ENTITY ecSidebar.tab.active.filter.all               "All">
+<!ENTITY ecSidebar.tab.active.filter.all.key           "L">
+<!ENTITY ecSidebar.tab.active.filter.buying            "Buying">
+<!ENTITY ecSidebar.tab.active.filter.buying.key        "B">
+<!ENTITY ecSidebar.tab.active.filter.watching          "Watching">
+<!ENTITY ecSidebar.tab.active.filter.watching.key      "W">
+<!ENTITY ecSidebar.tab.active.filter.selling           "Selling">
+<!ENTITY ecSidebar.tab.active.filter.selling.key       "S">
+
+<!ENTITY ecSidebar.tab.ended.label                     "Ended">
+<!ENTITY ecSidebar.tab.ended.filter.all                "All">
+<!ENTITY ecSidebar.tab.ended.filter.all.key            "L">
+<!ENTITY ecSidebar.tab.ended.filter.watching           "Watching">
+<!ENTITY ecSidebar.tab.ended.filter.watching.key       "W">
+<!ENTITY ecSidebar.tab.ended.filter.won                "Won">
+<!ENTITY ecSidebar.tab.ended.filter.won.key            "O">
+<!ENTITY ecSidebar.tab.ended.filter.lost               "Didn't Win">
+<!ENTITY ecSidebar.tab.ended.filter.lost.key           "T">
+<!ENTITY ecSidebar.tab.ended.filter.sold               "Sold">
+<!ENTITY ecSidebar.tab.ended.filter.sold.key           "D">
+<!ENTITY ecSidebar.tab.ended.filter.unsold             "Unsold">
+<!ENTITY ecSidebar.tab.ended.filter.unsold.key         "U">
+
+<!ENTITY ecSidebar.tab.more.label                      "More">
+
+<!ENTITY ecSidebar.user.hello                          "Signed in as ">
+<!ENTITY ecSidebar.user.username.tooltip               "eBay My World">
+<!ENTITY ecSidebar.user.feedback.tooltip               "View Feedback">
+<!ENTITY ecSidebar.user.menu.sign.out                  "Sign out">
+
+<!ENTITY ecSidebar.navigation.tooltip                  "eBay Homepage">
+<!ENTITY ecSidebar.navigation.menu.home                "eBay Homepage">
+<!ENTITY ecSidebar.navigation.menu.home.key            "H">
+<!ENTITY ecSidebar.navigation.menu.buy                 "Buy">
+<!ENTITY ecSidebar.navigation.menu.buy.key             "U">
+<!ENTITY ecSidebar.navigation.menu.sell                "Sell">
+<!ENTITY ecSidebar.navigation.menu.sell.key            "E">
+<!ENTITY ecSidebar.navigation.menu.myebay              "My eBay">
+<!ENTITY ecSidebar.navigation.menu.myebay.key          "M">
+<!ENTITY ecSidebar.navigation.menu.community           "Community">
+<!ENTITY ecSidebar.navigation.menu.community.key       "T">
+
+<!ENTITY ecSidebar.status.refresh.tooltip              "Force update">
+
+<!ENTITY ecOptions.window.title                        "eBay Sidebar Options">
+<!ENTITY ecOptions.tab.general                         "General">
+<!ENTITY ecOptions.tab.alerts                          "Alerts">
+<!ENTITY ecOptions.tab.legal                           "Legal">
+
+<!ENTITY ecOptions.general.ebayPages                   "eBay Pages">
+<!ENTITY ecOptions.general.whenOpeningPages            "When opening eBay web pages,">
+<!ENTITY ecOptions.general.useRegistrationSite         "Use whichever website my User ID is registered to">
+<!ENTITY ecOptions.general.useRegistrationSite.key     "R">
+<!ENTITY ecOptions.general.regSiteName                 "(for #1 this is #2)">
+<!ENTITY ecOptions.general.useThisSite                 "Always use this website:">
+<!ENTITY ecOptions.general.useThisSite.key             "T">
+<!ENTITY ecOptions.general.openPagesInNewTab           "Open every page in a new tab">
+<!ENTITY ecOptions.general.openPagesInNewTab.key       "O">
+<!ENTITY ecOptions.general.notifications               "Sidebar Notifications">
+<!ENTITY ecOptions.general.notifyWhen                  "Notify me in the Sidebar when:">
+<!ENTITY ecOptions.general.messageNotification         "I receive new messages">
+<!ENTITY ecOptions.general.messageNotification.key     "M">
+<!ENTITY ecOptions.general.feedbackNotification        "My feedback score changes">
+<!ENTITY ecOptions.general.feedbackNotification.key    "F">
+<!ENTITY ecOptions.general.security                    "Security">
+<!ENTITY ecOptions.general.connectAutomatically        "Connect automatically when Firefox starts">
+<!ENTITY ecOptions.general.connectAutomatically.key    "C">
+
+<!ENTITY ecOptions.alerts.tab.watching                 "Watching">
+<!ENTITY ecOptions.alerts.tab.buying                   "Buying">
+<!ENTITY ecOptions.alerts.tab.selling                  "Selling">
+<!ENTITY ecOptions.alerts.tab.sound                    "Sound">
+
+<!ENTITY ecOptions.alerts.alertOptions                 "Alert Display Options">
+<!ENTITY ecOptions.alerts.desktop                      "Alert in Desktop">
+<!ENTITY ecOptions.alerts.sidebar                      "Alert in Sidebar">
+
+<!ENTITY ecOptions.alerts.bidding.endingSoon           "Ending Soon">
+<!ENTITY ecOptions.alerts.bidding.endingSoon.key       "N">
+<!ENTITY ecOptions.alerts.bidding.outbid               "Outbid">
+<!ENTITY ecOptions.alerts.bidding.outbid.key           "U">
+<!ENTITY ecOptions.alerts.bidding.highBidder           "High Bidder">
+<!ENTITY ecOptions.alerts.bidding.highBidder.key       "H">
+<!ENTITY ecOptions.alerts.bidding.raisedBid            "Raised Bid">
+<!ENTITY ecOptions.alerts.bidding.raisedBid.key        "R">
+<!ENTITY ecOptions.alerts.bidding.itemWon              "Item Won">
+<!ENTITY ecOptions.alerts.bidding.itemWon.key          "W">
+<!ENTITY ecOptions.alerts.bidding.itemLost             "Item Not Won">
+<!ENTITY ecOptions.alerts.bidding.itemLost.key         "L">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.declined   "Best Offer Declined">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.declined.key  "D">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.expired    "Best Offer Expired">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.expired.key   "E">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.countered       "Counteroffer Received">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.countered.key   "C">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.itemWon    "Best Offer Accepted">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.itemWon.key   "A">
+<!ENTITY ecOptions.alerts.watching.endingSoon          "Ending Soon">
+<!ENTITY ecOptions.alerts.watching.endingSoon.key      "I">
+<!ENTITY ecOptions.alerts.selling.endingSoon           "Ending Soon">
+<!ENTITY ecOptions.alerts.selling.endingSoon.key       "O">
+<!ENTITY ecOptions.alerts.selling.itemSold             "Item Sold">
+<!ENTITY ecOptions.alerts.selling.itemSold.key         "S">
+<!ENTITY ecOptions.alerts.selling.itemUnsold           "Item Unsold">
+<!ENTITY ecOptions.alerts.selling.itemUnsold.key       "N">
+<!ENTITY ecOptions.alerts.selling.bidPlaced            "Bid Placed">
+<!ENTITY ecOptions.alerts.selling.bidPlaced.key        "B">
+<!ENTITY ecOptions.alerts.selling.bestOffer.itemSold   "Best Offer Accepted">
+<!ENTITY ecOptions.alerts.selling.bestOffer.itemSold.key   "C">
+<!ENTITY ecOptions.alerts.selling.bestOffer.newOffer   "Best Offer Received">
+<!ENTITY ecOptions.alerts.selling.bestOffer.newOffer.key   "F">
+
+
+<!ENTITY ecOptions.alerts.soundOptions                 "Alert Sounds">
+<!ENTITY ecOptions.alerts.sound.enable                 "Enable sound for all Alerts">
+<!ENTITY ecOptions.alerts.sound.enable.key             "E">
+
+<!ENTITY ecOptions.alerts.resetToDefaults              "Reset to Defaults">
+<!ENTITY ecOptions.alerts.resetToDefaults.key          "D">
+
+<!ENTITY ecOptions.legal.info                          "Read our [1 terms of use] and [2 privacy policy] below.">
+<!ENTITY ecOptions.legal.disagree                      "If you do not agree to these terms, we ask that you [1 uninstall] this extension.">
+<!ENTITY ecOptions.legal.print.button                  "Print">
+
+<!ENTITY ecLicence.window.title                        "eBay Sidebar License Agreement">
+<!ENTITY ecLicence.header.title                        "Sidebar for Firefox">
+<!ENTITY ecLicence.radio.agree                         "I agree to the [1 terms of use] and [2 privacy policy]">
+<!ENTITY ecLicence.radio.disagree                      "I do not agree">
+<!ENTITY ecLicence.button.continue                     "Continue">
+<!ENTITY ecLicence.menu.copy                           "Copy">
+<!ENTITY ecLicence.button.print                        "Print">
+
+<!ENTITY ecAlert.feedback.title                        "Congratulations!">
+<!ENTITY ecAlert.remindMeLater                         "Remind Me Later">
+<!ENTITY ecAlert.dismiss.tooltip                       "Dismiss">
+
+<!-- Item flyout -->
+<!ENTITY ecFlyout.back.to.items.label                  "Back to items">
+<!ENTITY ecFlyout.history.title                        "History">
+<!ENTITY ecFlyout.seller.openParenthesis.label         "(">
+<!ENTITY ecFlyout.seller.closeParenthesis.label        ")">
+<!ENTITY ecFlyout.shipping                             "Shipping">
+<!ENTITY ecFlyout.savings                              "Savings">
+<!ENTITY ecFlyout.quantity.title                       "Quantity">
+<!ENTITY ecFlyout.item.bids.maxBid                     "Your maximum bid">
+
+<!ENTITY ecAbout.label                                 "About the eBay Sidebar for Firefox">
+<!ENTITY ecAbout.trademarks.label                      "eBay Logos are trademarks of eBay Inc.">
+<!ENTITY ecAbout.copyright.label                       "© 2009 eBay Inc. All rights reserved.">
+<!ENTITY ecAbout.feedback.label                        "Feedback">
+<!ENTITY ecAbout.feedback.key                          "F">
+<!ENTITY ecAbout.ok.label                              "OK">

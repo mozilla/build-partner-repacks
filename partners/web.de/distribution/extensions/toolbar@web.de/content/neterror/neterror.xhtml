@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+  <!ENTITY % newtabDTD SYSTEM "chrome://unitedtb/locale/neterror/neterror.dtd">
+  %newtabDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+    <title>&neterror.title.label;</title>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
+
+    <link rel="stylesheet" type="text/css"
+      href="chrome://unitedtb/skin/neterror/neterror.css"/>
+</head>
+<body>
+    <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/util/uiutil.js"></script>
+    <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/neterror/neterror.js"></script>
+
+  <div id="page">
+    <div id="content">
+      <h2><div id="message" /><a id="logo" href=""><img src="chrome://unitedtb/skin/brand/icon-big.png" /></a></h2>
+      
+
+      <h3>&alternatives.header;</h3>
+      <ul>
+        <li>&search.intro;<br/>
+          <form id="searchform" onsubmit="onSearchButtonClicked(); return false;">
+            <input type="text"
+                   id="searchterm"
+                   value=""
+                   oninput="onSearchTextChanged(event);"
+                   ontextentered="onSearchTextEntered(event);" />
+            <input type="submit" class="button" value="&search.button.label;" />
+          </form>
+        </li>
+      </ul>
+      <div class="module">
+        <h3 class="moduleheader">&last-searches.label;</h3>
+        <div class="modulecontent">
+          <ul id="last-searches-list"
+              no-results-text="&no-last-searches.label;">
+            <li class="no-results">&no-last-searches.label;</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   <!--
+   - Note: It is important to run the script this way, instead of using
+   - an onload handler. This is because error pages are loaded as
+   - LOAD_BACKGROUND, which means that onload handlers will not be executed.
+   -->
+   <script type="application/x-javascript">onLoad();</script></body>
+</html>

@@ -1,0 +1,297 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2011 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- eBay Deal for the Sidebar -->
+  <binding id="gs-ebay-deal">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/deal.css" />
+    </resources>
+
+    <content>
+      <!-- Deal box context menu -->
+      <xul:menupopup anonid="ec-deal-context-menu"
+        onpopupshowing="_setContextMenuShowFlag(true);"
+        onpopuphidden="_setContextMenuShowFlag(false);">
+        <xul:menuitem anonid="ec-deal-context-view-in-tab"
+          label="&ecItem.menu.global.open;"
+          accesskey="&ecItem.menu.global.open.key;"
+          onclick="checkForMiddleClick(this, event);"
+          oncommand="Sidebar.dealContextClick(event, 'listing');" />
+      </xul:menupopup>
+
+      <xul:gsebaydealbox anonid="gs-ebay-deal-box" flex="1"/>
+
+    </content>
+
+    <handlers>
+      <handler event="focus" action="_focusDeal(event, true);" />
+      <handler event="blur" action="_focusDeal(event, false);" />
+      <handler event="keypress" keycode="VK_RETURN"
+        action="_selectDeal(event);" />
+      <!--<handler event="keypress" keycode="VK_DOWN" modifiers="alt"
+        action="_showDealPopup(event);" />-->
+
+      <handler event="mouseover">
+        <![CDATA[
+          let dealBox = this._getElement("gs-ebay-deal-box");
+          let that = this;
+
+          dealBox.setContainerHover(true);
+          that.setAttribute("ebaymouseover", true);
+          clearTimeout(that._mouseOutTimer);
+
+          this._mouseOverTimer = setTimeout(function() {
+            if (that.hasAttribute("ebaymouseover") &&
+                !that.hasAttribute("ebayhover")) {
+              that.setAttribute("ebayhover", true);
+              dealBox.onMouseOver();
+            }
+          }, 300);
+        ]]>
+      </handler>
+
+      <handler event="mouseout">
+        <![CDATA[
+          let dealBox = this._getElement("gs-ebay-deal-box");
+          let that = this;
+
+          this.removeAttribute("ebaymouseover", true);
+          clearTimeout(that._mouseOverTimer);
+
+          this._mouseOutTimer = setTimeout(function() {
+            if (!that.hasAttribute("ebaymouseover") &&
+                that.hasAttribute("ebayhover")) {
+              that.removeAttribute("ebayhover");
+              dealBox.onMouseOut();
+            } else {
+              dealBox.setContainerHover(false);
+            }
+          }, 100);
+        ]]>
+      </handler>
+
+      <handler event="click" phase="capturing">
+        <![CDATA[
+          // avoid right click, it shows the context menu.
+          if (event.button != 2) {
+            let target = event.originalTarget;
+            let bindingTarget = document.getBindingParent(target);
+
+            if ("menuitem" == target.localName) {
+              if (event.button == 1) {
+                target.parentNode.hidePopup();
+              }
+            } else if ("gsebaybutton" == bindingTarget.localName) {
+              EbayCompanion.itemButtonClick(
+                event, "dealClick", this.buttonAction, this.deal);
+            } else if("image" == target.localName &&
+                      target.getAttribute("anonid") ==
+                        "gs-ebay-deal-details-open-image" ||
+                      "vbox" == target.localName &&
+                      target.getAttribute("anonid") ==
+                        "gs-ebay-deal-details-open") {
+              // display the item details
+              let dealBoxBinding = document.getBindingParent(target);
+              let dealBinding = document.getBindingParent(dealBoxBinding);
+              let accordion = dealBinding.parentNode.parentNode;
+              accordion.showDealDetails(dealBinding);
+            }  else {
+              EbayCompanion.openPage(event, "dealClick", "listing",
+                {itemid: event.target.deal.get('itemId')});
+            }
+          }
+        ]]>
+      </handler>
+    </handlers>
+
+    <implementation>
+      <!-- Hover timer -->
+      <field name="_mouseOutTimer">null</field>
+      <field name="_mouseOverTimer">null</field>
+      <!-- Associated deal. -->
+      <field name="_deal">null</field>
+      <!-- Flag to know it the context menu is open. -->
+      <field name="_contextMenuOpened">false</field>
+
+      <!-- Property to access the deal. -->
+      <property name="deal">
+        <getter>
+          return this._deal;
+        </getter>
+        <setter>
+         <![CDATA[
+          this._deal = val;
+          if (null != this._deal) {
+            this.updateUI();
+          }
+         ]]>
+        </setter>
+      </property>
+
+      <!-- Property to access the button action. -->
+      <property name="buttonAction">
+        <getter>
+          return this.getAttribute('buttonAction');
+        </getter>
+        <setter>
+         <![CDATA[
+          this.setAttribute('buttonAction', val);
+         ]]>
+        </setter>
+      </property>
+
+      <!--
+        - Constructor.
+        -->
+      <constructor>
+        <![CDATA[
+          // set the context menu.
+          this.contextMenu = "_child";
+
+        ]]>
+      </constructor>
+
+      <!--
+        - Destructor.
+        -->
+      <destructor>
+        <![CDATA[
+        ]]>
+      </destructor>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the item UI.
+        - @param aItem the item element.
+        - @param aOriginalItem the previous item element.
+        -->
+      <method name="updateUI">
+        <parameter name="aDeal" />
+        <body>
+          <![CDATA[
+            let dealBox = this._getElement("gs-ebay-deal-box");
+
+            if (!aDeal) {
+              aDeal = this.deal;
+            }
+            dealBox.deal = aDeal;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Selects the deal by hitting enter key.
+        - @param aEvent the event object.
+        -->
+      <method name="_selectDeal">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            EbayCompanion.openPage(aEvent, 'itemClick', 'listing',
+              {itemid: aEvent.target.deal.get('itemId')});
+
+            aEvent.stopPropagation();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Focus the deal.
+        - @param aEvent the event object.
+        -->
+      <method name="_focusDeal">
+        <parameter name="aEvent" />
+        <parameter name="aFocus" />
+        <body>
+          <![CDATA[
+            let dealBox = this._getElement("gs-ebay-deal-box");
+
+            if (aFocus) {
+              dealBox.setAttribute("gsebayfocused", true);
+            } else {
+              dealBox.removeAttribute("gsebayfocused");
+            }
+
+            aEvent.stopPropagation();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Shows the deal popup.
+        - @param aEvent the event object.
+        -->
+      <method name="_showDealPopup">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            let menuPopup = this._getElement("ec-deal-context-menu");
+
+            menuPopup.openPopup(this, "after_end", 0, 0, false, true);
+
+            aEvent.stopPropagation();
+          ]]>
+        </body>
+      </method>
+
+
+      <!--
+        - Shows the deal flyout.
+        - @param aEvent the event object.
+        -->
+      <method name="_showDealFlyout">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            if (true == this._contextMenuOpened) {
+              aEvent.preventDefault();
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Sets the context menu opened flag.
+        - @param aValue true if opened, false otherwise.
+        -->
+      <method name="_setContextMenuShowFlag">
+        <parameter name="aValue" />
+        <body>
+          <![CDATA[
+            this._contextMenuOpened = aValue;
+
+            // XXX: Workaround to remove the hover focus when closing the
+            // context menu of the item.
+            if (!aValue) {
+              this.parentNode.focus();
+            }
+          ]]>
+        </body>
+      </method>
+    </implementation>
+
+  </binding>
+</bindings>

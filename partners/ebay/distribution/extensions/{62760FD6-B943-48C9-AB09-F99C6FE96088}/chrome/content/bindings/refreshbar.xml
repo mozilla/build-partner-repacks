@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+          xmlns:xbl="http://www.mozilla.org/xbl"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- Refresh Bar for bottom of Sidebar -->
+  <binding id="refresh-bar">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/refreshBar.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/refreshBar.css" />
+    </resources>
+    <content>
+      <xul:vbox flex="1">
+        <xul:hbox anonid="gs-ebay-refresh-bar-separator-container"
+          class="gs-ebay-refresh-bar-separator-container" flex="1">
+        </xul:hbox>
+        <xul:hbox class="gs-ebay-refresh-bar-box" flex="1">
+          <children includes="greetingwidget"/>
+          <xul:spacer flex="1" />
+          <xul:image anonid="gs-ebay-refresh-bar-button"
+            class="gs-ebay-refresh-bar-button"
+            tooltiptext="&ecSidebar.status.refresh.tooltip;" />
+        </xul:hbox>
+      </xul:vbox>
+    </content>
+
+    <handlers>
+      <handler event="click" phase="capturing">
+        <![CDATA[
+        if (2 != event.button) {
+          if (event.originalTarget == this._refreshButton &&
+              this._refreshButton.getAttribute("disabled") != "true" &&
+              this._refreshButton.getAttribute("busy") != "true") {
+            var event = document.createEvent("Event");
+
+            event.initEvent("command", true, true);
+            this.dispatchEvent(event);
+          }
+        }
+        ]]>
+      </handler>
+    </handlers>
+
+    <implementation>
+      <field name="_greetingWidget"><![CDATA[
+        document.getElementById("greeting-widget");
+      ]]></field>
+      <field name="_refreshButton"><![CDATA[
+        document.getAnonymousElementByAttribute(
+          this, "anonid", "gs-ebay-refresh-bar-button");
+      ]]></field>
+      <field name="_stopThrobAnimation">false</field>
+      <field name="_observers"><![CDATA[
+        new EbayCompanion.Observers;
+      ]]></field>
+      <field name="_stopThrobberTimer">null</field>
+
+      <constructor><![CDATA[
+        // Listen for updates starting and stopping
+        let that = this;
+        this._observers.add(function() that._updateThrobState(),
+                            "ebay-update-started");
+        this._observers.add(function(subject, topic, data) {
+                              that._updateThrobState();
+                              if (data == "Hard Update") {
+                                that._temporarilyDisableButton();
+                              }
+                            },
+                            "ebay-update-finished");
+        // Listen to login and logout notifications to update UI
+        this._observers.add(function() {
+                              that._updateLabel();
+                            }, "ebay-account-logged-in");
+        this._observers.add(function() {
+                              that._updateLabel();
+                            }, "ebay-account-logged-out");
+        // observers to change sign in UI and show/hide the throbber
+        this._observers.add(function(subject, topic, data) {
+                              that._startThrobbing(true);
+                            }, "ebay-sign-in-start");
+        this._observers.add(function(subject, topic, data) {
+                              that._stopThrobbing();
+                            }, "ebay-sign-in-stop");
+
+        this._updateLabel();
+        this._updateThrobState();
+      ]]></constructor>
+
+      <destructor><![CDATA[
+        this._observers.removeAll();
+      ]]></destructor>
+
+      <method name="_updateLabel">
+        <body><![CDATA[
+          let stringBundle = EbayCompanion.Constants.stringBundle;
+
+          // import the ApiCoordinator only if it is not already there
+          if (typeof(EbayCompanion.ApiCoordinator) == "undefined") {
+            EbayCompanion._importModule("apiCoordinator.js");
+          }
+
+          let numActiveUpdates = EbayCompanion.ApiCoordinator.numActiveUpdates;
+
+          let newLabel;
+          // import the ApiCoordinator only if it is not already there
+          if (typeof(EbayCompanion.Datasource) == "undefined") {
+            EbayCompanion._importModule("datasource.js");
+          }
+          let connected = EbayCompanion.Datasource.activeAccount() != null;
+          if (connected) {
+            this._greetingWidget.removeAttribute("collapsed");
+            this._refreshButton.removeAttribute("collapsed");
+          } else {
+            this._greetingWidget.setAttribute("collapsed", true);
+            this._refreshButton.setAttribute("collapsed", true);
+          }
+        ]]></body>
+      </method>
+
+      <method name="_updateThrobState">
+        <body><![CDATA[
+          if (typeof(EbayCompanion.ApiCoordinator) == "undefined") {
+            EbayCompanion._importModule("apiCoordinator.js");
+          }
+          let numActiveUpdates = EbayCompanion.ApiCoordinator.numActiveUpdates;
+          if (numActiveUpdates > 0) {
+            this._startThrobbing(false);
+          } else {
+            this._stopThrobbing();
+          }
+        ]]></body>
+      </method>
+
+      <method name="_startThrobbing">
+        <parameter name="signInThrobber" />
+        <body><![CDATA[
+          let button = this._refreshButton;
+
+          if (button.hasAttribute("busy")) {
+            // already animating; no need to start
+            return;
+          }
+
+          // if this is a hard update, update the refresh bar label
+          if (!signInThrobber) {
+            this._updateLabel();
+          } else {
+            // if this is just a sign in progress display, do not update the
+            // refresh bar label, but remove the collapsed attribute from the
+            // throbber to see it "throbbing" :P
+            button.removeAttribute("collapsed");
+          }
+
+          button.setAttribute("busy", true);
+          // set the stopThrobberTimer to stop the throbber if the for some
+          // reason it is taking more than 60 seconds.
+          let that = this;
+          this._stopThrobberTimer = new EbayCompanion.Timer(function () {
+              EbayCompanion.ApiCoordinator.resetNumActiveUpdates();
+              that._stopThrobbing();
+            }, 60 * 1000, EbayCompanion.Timer.TYPE_ONE_SHOT);
+        ]]></body>
+      </method>
+
+      <method name="_stopThrobbing">
+        <body><![CDATA[
+          this._refreshButton.removeAttribute("busy");
+          this._updateLabel();
+          if (this._stopThrobberTimer) {
+            this._stopThrobberTimer.cancel();
+            this._stopThrobberTimer = null;
+          }
+        ]]></body>
+      </method>
+
+      <method name="_temporarilyDisableButton">
+        <body><![CDATA[
+          this._refreshButton.setAttribute("disabled", true);
+          let that = this;
+          window.setTimeout(function() that._refreshButton.
+                                         removeAttribute("disabled"),
+                            30000);
+        ]]></body>
+      </method>
+
+    </implementation>
+  </binding>
+</bindings>

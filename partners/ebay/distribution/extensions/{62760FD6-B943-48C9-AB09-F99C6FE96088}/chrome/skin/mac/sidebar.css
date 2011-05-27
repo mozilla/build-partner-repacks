@@ -1,0 +1,23 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+#gs-ebay-sidebar-signin-box {
+  background-image: -moz-linear-gradient(#FFF, #EBEBEB);
+}
+
+#active-filter-menupopup menuitem[checked="true"] > .menu-iconic-left {
+  -moz-margin-start: 0px;
+}
+
+#active-filter-menupopup menuitem:not([checked="true"]) > .menu-iconic-left {
+  -moz-padding-start: 15px;
+}
+
+#ended-filter-menupopup menuitem[checked="true"] > .menu-iconic-left {
+  -moz-margin-start: 0px;
+}
+
+#ended-filter-menupopup menuitem:not([checked="true"]) > .menu-iconic-left {
+  -moz-padding-start: 15px;
+}

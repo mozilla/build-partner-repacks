@@ -1,0 +1,122 @@
+/**
+ * Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+/**
+ * Bindings for the eBay Companion
+ */
+gsebaybutton {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayButton.xml#gs-ebay-button");
+}
+
+gsebaydescription {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayDescription.xml#gs-ebay-description");
+}
+
+gsebaydealbox {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayDealBox.xml#gs-ebay-deal-box");
+}
+
+gsebaydeal {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayDeal.xml#gs-ebay-deal");
+}
+
+gsebaydealpopup {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayDealPopup.xml#gs-ebay-deal-popup");
+}
+
+gsebayitembox {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayItemBox.xml#gs-ebay-item-box");
+}
+
+gsebayitem {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayItem.xml#gs-ebay-item");
+}
+
+gsebayitempopup {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayItemPopup.xml#gs-ebay-item-popup");
+}
+
+gsebayfeedbackbox {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayFeedbackBox.xml#gs-ebay-feedback-box");
+}
+
+gsebayalertbox {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayAlertBox.xml#gs-ebay-alert-box");
+}
+
+gsebayalertboxfooter {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayAlertBox.xml#gs-ebay-alert-box-footer");
+}
+
+gsebayfavoritesearch {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayFavoriteSearch.xml#gs-ebay-favorite-search");
+}
+
+gsebayfavoriteseller {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/gsEbayFavoriteSeller.xml#gs-ebay-favorite-seller");
+}
+
+ebaytoolbarbutton {
+  -moz-binding: url("toolbarbutton.xml#toolbar-button");
+}
+
+#ebayCompanionSidebar greetingwidget {
+  -moz-binding: url("greetingwidget.xml#greeting-widget");
+}
+
+#ebayCompanionSidebar sidebartabbox {
+  -moz-binding: url("sidebartabbox.xml#sidebar-tabbox");
+}
+
+#ebayCompanionSidebar sidebartab {
+  -moz-binding: url("sidebartab.xml#sidebar-tab");
+}
+
+#ebayCompanionSidebar refreshbar {
+  -moz-binding: url("refreshbar.xml#refresh-bar");
+}
+
+#ebayCompanionSidebar itemlist {
+  -moz-binding: url("itemlist.xml#item-list");
+}
+
+#ebayCompanionSidebar gsebayaccordion {
+  -moz-binding: url("gsEbayAccordion.xml#gs-ebay-accordion");
+}
+
+#ebayCompanionSidebar gsebayaccordionitem {
+  -moz-binding: url("gsEbayAccordion.xml#gs-ebay-accordion-item");
+}
+
+#ebayCompanionSidebar gsebayaccordionitemsearches {
+  -moz-binding: url("gsEbayAccordion.xml#gs-ebay-accordion-item-searches");
+}
+
+#ebayCompanionSidebar gsebayaccordionitemdeals {
+  -moz-binding: url("gsEbayAccordion.xml#gs-ebay-accordion-item-deals");
+}
+
+#ebayCompanionSidebar gsebayaccordionitemsellers {
+  -moz-binding: url("gsEbayAccordion.xml#gs-ebay-accordion-item-sellers");
+}
+
+#ebayCompanionSidebar notificationbox {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/notification.xml#ebay-notification-box") !important;
+}
+
+#ebayCompanionSidebar notification {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/notification.xml#ebay-notification") !important;
+}
+
+#ebayCompanionSidebar richlistitem[type="gs-ebay-search-result-item"] {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/autocompleteItem.xml#gs-ebay-search-result-item");
+}
+
+#ebayCompanionSidebar menuseparator[type="gs-ebay-search-popup-separator"] {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/autocompleteItem.xml#gs-ebay-search-popup-separator");
+}
+
+#ebayCompanionSidebar #gs-ebay-search-textbox {
+  -moz-binding: url("chrome://ebaycompanion/content/bindings/autocompleteItem.xml#gs-ebay-search-textbox");
+}

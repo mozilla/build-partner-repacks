@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- copied from=newtab/newtab-hookup.xul -->
+<overlay id="united-newtab-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  
+  <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
+  <script type="application/x-javascript">
+    united.phish = {};
+    united.loadJS("chrome://unitedtb/content/phish/tab-listener.js", united.phish);
+  </script>
+</overlay>
+<!-- /copied -->

@@ -1,0 +1,38 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+.gs-ebay-refresh-bar-separator-container {
+  height: 1px !important;
+  background-image: -moz-linear-gradient(left, #FFF, #BBBCC1, #FFF);
+}
+
+.gs-ebay-refresh-bar-box {
+  -moz-box-align: center;
+  margin: 0px;
+  padding: 0px 4px 0px 6px;
+  height: 26px;
+  background-image: -moz-linear-gradient(#FFF, #E9ECF1);
+}
+
+.gs-ebay-refresh-bar-label {
+  color: #4E4E4E;
+  margin: 0px !important;
+}
+
+.gs-ebay-refresh-bar-button {
+  list-style-image: url("chrome://ebaycompanion/skin/images/throbber.png");
+}
+
+.gs-ebay-refresh-bar-button[busy="true"] {
+  list-style-image: url("chrome://global/skin/icons/loading_16.png");
+}
+
+
+.gs-ebay-refresh-bar-button:hover {
+  cursor: pointer;
+}
+
+.gs-ebay-refresh-bar-button[disabled="true"]:hover,
+.gs-ebay-refresh-bar-button[busy="true"]:hover {
+  cursor: default;
+}

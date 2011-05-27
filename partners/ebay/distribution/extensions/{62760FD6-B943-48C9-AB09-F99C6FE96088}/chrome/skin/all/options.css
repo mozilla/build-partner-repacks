@@ -1,0 +1,79 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+/**
+ * CSS for Options Panel
+ */
+prefwindow {
+  min-height: 0px !important;
+  min-width: 35em !important;
+}
+
+.paneSelector radio[pane="alerts-pane"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/alerts.png");
+  -moz-image-region: rect(0px, 32px, 33px, 0px);
+}
+.paneSelector radio[pane="alerts-pane"]:hover {
+  -moz-image-region: rect(33px, 32px, 66px, 0px);
+}
+.paneSelector radio[pane="general-pane"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/settings.png");
+  -moz-image-region: rect(0px, 32px, 33px, 0px);
+}
+.paneSelector radio[pane="general-pane"]:hover {
+  -moz-image-region: rect(33px, 32px, 66px, 0px);
+}
+.paneSelector radio[pane="licence-pane"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/legal.png");
+  -moz-image-region: rect(0px, 32px, 33px, 0px);
+}
+.paneSelector radio[pane="licence-pane"]:hover {
+  -moz-image-region: rect(33px, 32px, 66px, 0px);
+}
+
+/* General Pane */
+#preferredsite-regsitename {
+  font-size: 80%;
+}
+
+/* Licence Pane */
+#licence-pane label {
+  margin: 0px;
+}
+#licence-pane label.link {
+  color: blue;
+  cursor: pointer;
+}
+#licence-pane label.link:hover {
+  text-decoration: underline;
+}
+#licence-frame {
+  background-color: white;
+  min-width: 40em;
+  min-height: 25em;
+}
+
+.alert-name {
+  /* try to get the alert name column the same width in all panels */
+  min-width: 13em;
+}
+
+rows radiogroup {
+  display: -moz-grid-line;
+}
+
+rows radiogroup hbox {
+  /* center radios in column */
+  -moz-box-pack: center;
+}
+
+.menulist-box {
+  /* to center the label before the menulist in the "General" tab */
+  -moz-box-align: center;
+}
+
+#alerts-pane .radio-label-box {
+  /* remove empty label to avoid it becoming highlighted on selection in Windows */
+  display: none;
+}

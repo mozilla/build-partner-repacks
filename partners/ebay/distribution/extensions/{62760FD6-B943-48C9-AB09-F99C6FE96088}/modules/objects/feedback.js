@@ -1,0 +1,3 @@
+/* Copyright (C) 2007-2011 eBay Inc. All Rights Reserved. */const EXPORTED_SYMBOLS=["Feedback"];const Cc=Components.classes;const Ci=Components.interfaces;const Ce=Components.Exception;const Cr=Components.results;const Cu=Components.utils;function Feedback(){this._score=-1;}
+Feedback.MILESTONES=[10,50,100,500,1000,5000,10000,25000,50000,100000];Feedback.prototype={constructor:Feedback,get score(){return this._score;},set score(aValue){this._score=aValue;},getStarIndex:function(){var starIndex=-1;if(Feedback.MILESTONES[0]<=this.score){var listLength=Feedback.MILESTONES.length;for(var i=0;i<listLength;i++){if(Feedback.MILESTONES[i]<=this.score){starIndex=i;}else{break;}}}
+return starIndex;}};

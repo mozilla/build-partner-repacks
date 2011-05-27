@@ -1,0 +1,187 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+/*#ebayCompanionSidebar {
+  font-family: "Trebuchet MS", sans-serif;
+}*/
+
+#gs-ebay-sidebar-content {
+  background-color: white;
+}
+
+#gs-ebay-sidebar-status-deck > * {
+  overflow: auto;
+}
+
+/**
+ * eBay ribbon at the top of the sidebar
+ */
+#gs-ebay-sidebar-ribbon {
+  height: 3px;
+}
+#gs-ebay-sidebar-ribbon .color1 {
+  -moz-box-flex: 22;
+  background-color: #FF0000;
+}
+#gs-ebay-sidebar-ribbon .color2 {
+  -moz-box-flex: 4;
+  background-color: #990033;
+}
+#gs-ebay-sidebar-ribbon .color3 {
+  -moz-box-flex: 22;
+  background-color: #000099;
+}
+#gs-ebay-sidebar-ribbon .color4 {
+  -moz-box-flex: 5;
+  background-color: #CC6600;
+}
+#gs-ebay-sidebar-ribbon .color5 {
+  -moz-box-flex: 22;
+  background-color: #FFCC00;
+}
+#gs-ebay-sidebar-ribbon .color6 {
+  -moz-box-flex: 4;
+  background-color: #999900;
+}
+#gs-ebay-sidebar-ribbon .color7 {
+  -moz-box-flex: 22;
+  background-color: #99CC00;
+}
+
+/**
+ * Content for not-logged-in view
+ */
+#gs-ebay-sidebar-welcome-box {
+  margin: 0px;
+  -moz-box-pack: center;
+  background-image: -moz-linear-gradient(#FFF, #FFF, #EDEDED);
+  border-bottom: 1px solid #DDDDDD;
+}
+
+.gs-ebay-sidebar-welcome-title {
+  font-size: 2.0em;
+  color: #434343;
+  margin: 0px !important;
+  padding: 15px 10px 15px 10px;
+}
+
+#gs-ebay-sidebar-signin-box {
+  margin: 0px;
+  -moz-box-pack: center;
+  background-image: -moz-linear-gradient(#FFF, #FFF, #FFF, #F0F0F0);
+  border-bottom: 1px solid #EEEEEE;
+}
+
+.gs-ebay-sidebar-signin-text {
+  font-family: Arial;
+  padding: 10px;
+  font-size: 1.3em;
+  line-height: 20px;
+  color: #6C6C6C;
+  margin: 0px !important;
+}
+
+#gs-ebay-sidebar-connect-box {
+  padding: 20px 10px 10px 10px;
+  -moz-box-align: start;
+  -moz-box-pack: start;
+}
+
+.gs-ebay-sidebar-signin-throbber-box {
+  max-height: 16px;
+}
+
+.gs-ebay-sidebar-signin-throbber {
+  list-style-image: url("chrome://ebaycompanion/skin/sidebar/signInThrobber.gif");
+}
+
+/**
+ * Content for logged-in view
+ */
+.gs-ebay-tabbox-container {
+  -moz-box-align: end;
+  padding-top: 5px;
+  background-image: -moz-linear-gradient(#FFF, #F4F4F4 90%, #EDEDED);
+}
+
+#gs-ebay-sidebar-tabbox {
+  padding-left: 5px;
+  border-bottom: 1px solid #B9BABC;
+}
+
+sidebartab {
+  margin-bottom: -1px;
+  -moz-user-focus: normal;
+}
+
+#gs-ebay-home-button-container {
+  -moz-box-align: center;
+  -moz-box-pack: center;
+  border-bottom: 1px solid #B9BABC;
+}
+
+#gs-ebay-home-button {
+  list-style-image: url("chrome://ebaycompanion/skin/images/home-button.png");
+  -moz-image-region: rect(0px, 13px, 16px, 1px);
+  margin-right: 4px;
+  padding: 0px;
+  -moz-user-focus: normal;
+}
+#gs-ebay-home-button:hover {
+  -moz-image-region: rect(16px, 13px, 32px, 1px);
+}
+#gs-ebay-home-button:active {
+  -moz-image-region: rect(32px, 13px, 48px, 1px);
+}
+#gs-ebay-home-button:focus {
+  outline: none;
+}
+#gs-ebay-home-button .toolbarbutton-icon {
+  margin: 0px;
+  padding: 0px;
+  border: none;
+}
+
+#gs-ebay-home-button .toolbarbutton-menubutton-dropmarker {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+#gs-ebay-home-button .toolbarbutton-text {
+  display: none;
+}
+
+#gs-ebay-sidebar-item-list {
+  background: white;
+  overflow-y: auto;
+}
+
+#gs-ebay-sidebar-item-list .gs-ebay-item-details-container {
+  padding: 5px;
+}
+
+#gs-ebay-sidebar-more-list {
+  background: white;
+  overflow-y: auto;
+}
+
+gsebayitem {
+  padding: 0px 5px 2px 5px;
+  margin-top: 5px;
+  -moz-user-focus: normal;
+}
+
+gsebaydeal {
+  padding: 0px 5px 2px 5px;
+  margin-top: 5px;
+  -moz-user-focus: normal;
+}
+
+/* Overwrite default text link style */
+.text-link {
+  text-decoration: none !important;
+}
+.text-link:hover {
+  text-decoration: underline !important;
+}

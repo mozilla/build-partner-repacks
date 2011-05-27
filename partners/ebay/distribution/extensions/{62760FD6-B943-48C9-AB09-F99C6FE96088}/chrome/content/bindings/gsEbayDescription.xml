@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- Description with crop -->
+  <binding id="gs-ebay-description">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/description.css" />
+    </resources>
+    <content>
+      <xul:vbox anonid="gs-ebay-description-box" flex="1"
+        class="gs-ebay-description-box">
+        <xul:description anonid="gs-ebay-description-element"
+          xbl:inherits="class=descriptionclass" crop="end" />
+      </xul:vbox>
+    </content>
+
+    <implementation>
+      <!-- Holds the original text. -->
+      <field name="_textContent">null</field>
+
+      <!-- Property to access the text content. -->
+      <property name="textContent">
+        <getter>
+          <![CDATA[
+            return this._textContent;
+          ]]>
+        </getter>
+        <setter>
+          <![CDATA[
+            this._textContent = val;
+
+            let description =
+              document.getAnonymousElementByAttribute(
+                this, "anonid", "gs-ebay-description-element");
+
+            description.textContent = this._textContent;
+          ]]>
+        </setter>
+      </property>
+
+    </implementation>
+  </binding>
+</bindings>

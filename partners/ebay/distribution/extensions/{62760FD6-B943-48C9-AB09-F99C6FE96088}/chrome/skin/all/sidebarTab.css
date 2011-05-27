@@ -1,0 +1,96 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+.gs-ebay-sidebar-container {
+  height: 24px;
+  max-height: 24px;
+  margin-right: 3px;
+}
+
+.gs-ebay-sidebar-stack {
+  -moz-box-align: center;
+  -moz-box-pack: center;
+}
+
+.gs-ebay-sidebar-container:not([selected="true"]) .gs-ebay-sidebar-tab-button {
+  visibility: collapse;
+}
+
+.gs-ebay-sidebar-tab-background {
+  border-top: 1px solid #DDDDDD;
+  border-left: 1px solid #DDDDDD;
+  border-right: 1px solid #DDDDDD;
+  border-bottom: none;
+  -moz-border-radius: 6px 6px 0px 0px;
+  background-color: #F0F0F0;
+  margin-top: 2px;
+}
+
+.gs-ebay-sidebar-container[selected="true"] .gs-ebay-sidebar-tab-background {
+  border: 1px solid #B9BABC;
+  background-color: #FFF;
+  border-bottom: 0px;
+  margin-top: 0px;
+}
+
+.gs-ebay-sidebar-container[focused="true"]:not([selected="true"]) .gs-ebay-sidebar-tab-background,
+.gs-ebay-sidebar-container:not([selected="true"]):hover .gs-ebay-sidebar-tab-background {
+  background-color: #F6F6F6;
+}
+
+.gs-ebay-sidebar-tab-content-box {
+  -moz-box-align: center;
+  -moz-box-pack: center;
+  margin: 0px;
+  padding: 2px 0px 0px 0px;
+}
+
+.gs-ebay-sidebar-tab-label {
+  margin-left: 10px !important;
+  margin-right: 10px !important;
+  color: #100f0f;
+  font-family: "Trebuchet MS";
+}
+
+.gs-ebay-sidebar-container:not([selected="true"]) .gs-ebay-sidebar-tab-label {
+  color: #5b5b5b;
+}
+
+.gs-ebay-sidebar-tab-button {
+  -moz-appearance: none;
+  border-right: 0px;
+  border-bottom: 0px;
+  border-top: 0px;
+  border-left: 1px #CCC solid;
+  height: 12px !important;
+  margin-left: -2px !important;
+}
+
+.gs-ebay-sidebar-tab-button:hover,
+.gs-ebay-sidebar-tab-button:active {
+  border-right: 0px;
+  border-bottom: 0px;
+  border-top: 0px;
+  border-left: 1px #CCC solid;
+}
+
+.gs-ebay-sidebar-tab-button > .toolbarbutton-text {
+  display: none;
+}
+
+.gs-ebay-sidebar-tab-button > .toolbarbutton-menu-dropmarker {
+  padding-left: 0px !important;
+}
+
+.gs-ebay-sidebar-tab-bottom-border {
+  border: 0px;
+  height: 1px;
+  background-color: #B9BABC;
+}
+
+.gs-ebay-sidebar-tab-bottom-border[selected="true"] {
+  background-color: white;
+  margin-left: 1px;
+  margin-right: 1px;
+}

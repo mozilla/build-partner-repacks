@@ -1,0 +1,42 @@
+#long-session-box, #create-account-box, #intro-box {
+  -moz-box-pack: center;
+}
+
+#error-msg {
+  color: red;
+  width: 25em; /* wrapping doesn't work otherwise */
+}
+
+/* nice padding, esp. considering that #error-msg is empty */
+dialog {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+#intro-box {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+row {
+  margin-top: 3px;
+}
+#long-session-box {
+  margin-top: 5px;
+}
+#error-msg {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+/**
+ * Something that looks like a hyperlink, and acts like a button.
+ * <copied from="pref/pref-window.css"/>
+ */
+button[type="link"],
+button[type="united-link"] {
+  border: none;
+  -moz-appearance: none;
+  background-color: inherit;
+  color: -moz-nativehyperlinktext;
+  text-decoration: underline;
+  cursor: pointer;
+}

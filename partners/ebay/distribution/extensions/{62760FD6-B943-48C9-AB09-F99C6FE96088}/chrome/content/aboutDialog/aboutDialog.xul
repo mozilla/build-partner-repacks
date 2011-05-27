@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet
+  href="chrome://ebaycompanion/skin/aboutDialog.css" type="text/css"?>
+
+<!DOCTYPE window [
+  <!ENTITY % ebayDTD SYSTEM "chrome://ebaycompanion/locale/strings.dtd" >
+  %ebayDTD;
+]>
+
+<window xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        id="ec-about-dialog"
+        windowtype="eBay:About"
+        onload="About.init();"
+        title="&ecAbout.label;">
+
+   <script type="application/x-javascript"
+      src="chrome://ebaycompanion/content/aboutDialog/aboutDialog.js"/>
+
+    <vbox id="content-box" flex="1">
+      <hbox id="logo-box">
+          <image id="logo" />
+      </hbox>
+      <vbox flex="1" id="middle-box" >
+        <label id="about" value="&ecAbout.label;" />
+        <separator id="about-separator" />
+        <label id="version" />
+        <description id="useragent" />
+      </vbox>
+      <vbox id="bottom-box">
+         <label id="copyright" value="&ecAbout.copyright.label;" />
+         <label id="trademarks" value="&ecAbout.trademarks.label;" />
+      </vbox>
+    </vbox>
+    <separator class="groove" id="groove" />
+    <hbox id="buttons-box">
+      <button label="&ecAbout.feedback.label;"
+         accesskey="&ecAbout.feedback.key;"
+         oncommand="About.loadFeeback();" />
+      <spacer flex="1" />
+      <button label="&ecAbout.ok.label;"
+         oncommand="window.close();" />
+    </hbox>
+</window>

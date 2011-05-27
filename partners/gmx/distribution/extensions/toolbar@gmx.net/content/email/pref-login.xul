@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/email/login-dialogs.dtd">
+  %thisDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
+<?xml-stylesheet href="chrome://unitedtb/skin/email/pref-login.css" type="text/css"?>
+<overlay id="united-pref-newtab-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <prefwindow id="united-pref-window">
+    <prefpane id="login-pane"
+        label="&pane.title;"
+        insertafter="email-pane,search-pane,home-pane,general-pane"
+        onvalidate="upref.login.verifyEmailAddress(resetOnInvalid);"
+        >
+      <preferences>
+        <preference id="extensions.unitedinternet.login.emailAddress"
+                    name="extensions.unitedinternet.login.emailAddress" type="string"/>
+        <preference id="extensions.unitedinternet.login.longSession"
+                    name="extensions.unitedinternet.login.longSession" type="bool"/>
+      </preferences>
+
+      <script type="application/x-javascript">
+        upref.login = {};
+        united.loadJS("chrome://unitedtb/content/email/login-dialogs.js", upref.login);
+      </script>
+
+      <vbox pack="start">
+        <vbox>
+          <label value="&emailaddress.label;"
+              accesskey="&emailaddress.accesskey;"
+              control="emailaddress"
+              />
+          <textbox id="emailaddress"
+                      preference="extensions.unitedinternet.login.emailAddress"
+                      error-domain="&domain.error;"
+                      error-syntax="&syntax.error;"
+                      />
+        </vbox>
+      </vbox>
+      <checkbox id="long-session"
+            preference="extensions.unitedinternet.login.longSession"
+            label="&long-session.label;"
+            accesskey="&long-session.accesskey;"
+            />
+      <hbox>
+        <button id="create-account"
+              type="link"
+              label="&create-account.label;"
+              accesskey="&create-account.accesskey;"
+              oncommand="upref.login.onCreateAccount();"
+              />
+      </hbox>
+    </prefpane>
+  </prefwindow>
+</overlay>

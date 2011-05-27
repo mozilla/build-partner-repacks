@@ -1,0 +1,760 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- List of Items -->
+  <binding id="item-list">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/itemList.css" />
+    </resources>
+
+    <content orient="vertical">
+      <xul:hbox>
+        <children includes="notificationbox" />
+      </xul:hbox>
+      <xul:deck anonid="list-deck" selectedIndex="1" flex="1">
+        <xul:vbox pack="center">
+          <xul:hbox>
+            <xul:description anonid="empty-list-message"
+              class="empty-list-message" flex="1" />
+          </xul:hbox>
+        </xul:vbox>
+        <xul:vbox >
+          <children />
+        </xul:vbox>
+      </xul:deck>
+      <xul:vbox anonid="gs-ebay-item-details-container" flex="1"
+        class="gs-ebay-item-details-container" collapsed="true">
+        <xul:gsebayitempopup anonid="gs-ebay-item-details" flex="1"/>
+      </xul:vbox>
+    </content>
+
+    <implementation>
+      <field name="reverseSort">false</field>
+      <field name="_listName">"sidebarList"</field>
+      <field name="_itemList">null</field>
+      <field name="_timeLeftUpdateTimer">null</field>
+      <!-- Field for the currently displayed item -->
+      <field name="_itemDisplayed">null</field>
+
+      <!--
+        - Constructor
+        -->
+      <constructor>
+        <![CDATA[
+          let that = this;
+          if (!this._itemList) {
+            if (typeof(EbayCompanion.ItemList) == "undefined") {
+              EbayCompanion._importModule("helpers/itemList.js");
+            }
+            this._itemList = new EbayCompanion.ItemList(this._listName);
+          }
+          this._itemList.addListener(this);
+          // import the module until we actually need it
+          if (typeof(EbayCompanion.Timer) == "undefined") {
+            EbayCompanion._importModule("helpers/timer.js");
+          }
+          this._timeLeftUpdateTimer = new EbayCompanion.Timer(
+            function() { that.updateTimeLeft() },
+            10000, EbayCompanion.Timer.TYPE_REPEATING_PRECISE);
+        ]]>
+      </constructor>
+
+      <!--
+        - Destructor
+        -->
+      <destructor>
+        <![CDATA[
+          this._timeLeftUpdateTimer.cancel();
+          this._itemList.removeListener(this);
+          this._itemList = null;
+        ]]>
+      </destructor>
+
+      <!-- Property get the item list object -->
+      <property name="itemList">
+        <getter>
+          return this._itemList;
+        </getter>
+      </property>
+
+      <!-- Property to know if the details panel is being displayed -->
+      <property name="detailsShown">
+        <getter>
+          let detailsContainer =
+            document.getAnonymousElementByAttribute(
+              this, "anonid", "gs-ebay-item-details-container");
+          return !detailsContainer.hasAttribute("collapsed");
+        </getter>
+      </property>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Sets the accordion list opacity to the given value
+        -->
+      <method name="hideContainer">
+        <body>
+          <![CDATA[
+            let listDeck = this._getElement("list-deck");
+            listDeck.style.opacity = 0;
+            listDeck.setAttribute("collapsed", true);
+          ]]>
+        </body>
+      </method>
+
+      <method name="rebuildList">
+        <body>
+          <![CDATA[
+          // Remove any existing items
+          let child;
+          while (this.childNodes.length > 1) {
+            child = this.childNodes[1];
+          // XXX: remove gsebayitem observers manually since when it is removed
+          // from the DOM tree its observers are not destroyed, and this causes
+          // errors in the console because the binding methods ARE destroyed
+            try {
+              child.removeObservers();
+            } catch(e) {
+            }
+            child.item = null;
+            let deleted = this.removeChild(child);
+
+            delete deleted;
+          }
+
+          // Rebuild item list from model
+          let itemArray = this._itemList.filteredItems;
+          let item;
+          let itemElement;
+          for (let i = 0; i < itemArray.length; i++) {
+            item = itemArray[i];
+            itemElement = document.createElement("gsebayitem");
+            this.appendChild(itemElement);
+            itemElement.item = item;
+            itemElement.id = "gs-ebay-item-" + item.get("itemId");
+          }
+
+          this._itemListChanged();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Called by the ItemList object when an item is added to the list
+        -->
+      <method name="itemAddedEvent">
+        <parameter name="index" />
+        <parameter name="item" />
+        <body>
+          <![CDATA[
+          // XXX: add 1 to the index to take the warning notificationbox into
+          // account
+          index++;
+          let addItem = true;
+          let sidebarTabBox =
+            document.getElementById("gs-ebay-sidebar-tabbox");
+          if (sidebarTabBox.selectedIndex == 0) {
+            // if we are in the active tab, do not add items that have
+            // transactions where the user is the buyer
+            let userId = EbayCompanion.Datasource.activeAccount().get("userId");
+            let itemTransactions =
+              EbayCompanion.Datasource.transactions(item.get("itemId"));
+            if (itemTransactions &&
+                item.get("sellerUserId").toLowerCase() !=
+                  userId.toLowerCase()) {
+              addItem = false;
+            }
+          }
+          if (addItem) {
+            let itemElement = document.createElement("gsebayitem");
+            if (index < this.childNodes.length) {
+              let nextItem = this.childNodes[index];
+              this.insertBefore(itemElement, nextItem);
+            } else {
+              this.appendChild(itemElement);
+            }
+            itemElement.item = item;
+            //itemElement.id = "gs-ebay-item-" + item.get("itemId");
+
+            this._itemListChanged();
+
+            // XXX: sometimes this event is not catched (some racing condition
+            // going on somewhere?) so we force the sidebar list be rebuilt.
+            /*new EbayCompanion.Timer(
+              function() { Sidebar.applyFilter(); },
+              500, EbayCompanion.Timer.TYPE_ONE_SHOT);*/
+          }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Called by the ItemList object when an item is removed from the list
+        -->
+      <method name="itemRemovedEvent">
+        <parameter name="index" />
+        <parameter name="force" />
+        <parameter name="item" />
+        <body>
+          <![CDATA[
+            // XXX: add 1 to the index to take the warning notificationbox into
+            // account
+            index++;
+
+            let itemElement = this.childNodes[index];
+
+            let exhaustiveCheck = false;
+            // XXX: in case the index we receive doesn't match the right item
+            // in the list, we do a exhaustive search. Lists won't be long
+            // anyway so there is no significant performance impact.
+            // make sure this is a gsebayitem element
+            if (null != itemElement && itemElement.nodeName != "gsebayitem" ||
+                null != itemElement && itemElement.nodeName == "gsebayitem" &&
+                itemElement.item.get("itemId") != item.get("itemId")) {
+              exhaustiveCheck = true;
+            }
+            // just confirm the item id
+            if (exhaustiveCheck) {
+              itemElement = null;
+              // iterate the list of items to see if we can get the right one
+              for (var i = 1; i < this.childNodes.length; i++) {
+                let itemTemp = this.childNodes[i];
+                if (itemTemp.item.get("itemId") == item.get("itemId")) {
+                  if ((itemTemp.transaction == null && item.transaction == null)
+                      || (itemTemp.transaction != null &&
+                        item.transaction != null &&
+                        itemTemp.transaction.get("transactionId") ==
+                        item.transaction.get("transactionId"))) {
+                    itemElement = itemTemp;
+                    break;
+                  }
+                }
+              }
+            }
+            if (itemElement) {
+              // XXX: remove gsebayitem observers manually since when it is removed
+              // from the DOM tree its observers are not destroyed, and this causes
+              // errors in the console because the binding methods ARE destroyed
+              itemElement.removeObservers();
+              this.removeChild(itemElement);
+
+              this._itemListChanged();
+              let sidebarTabBox =
+                document.getElementById("gs-ebay-sidebar-tabbox");
+              if (sidebarTabBox.selectedIndex == 0 && !force) {
+                // we create the sidebar notification to let the user know
+                // their ended items have been moved to the ended tab
+                this._showItemMovedNotification();
+              }
+            }
+
+            // XXX: sometimes this event is not catched (some racing condition
+            // going on somewhere?) so we force the sidebar list be rebuilt.
+            /*new EbayCompanion.Timer(
+              function() { Sidebar.applyFilter(); },
+              500, EbayCompanion.Timer.TYPE_ONE_SHOT);*/
+
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Applies the given filter function to the list
+        -->
+      <method name="applyFilter">
+        <parameter name="filter" />
+        <parameter name="aSkipAnimation" />
+        <body>
+          <![CDATA[
+          if (!this._itemList) {
+            this._itemList = new EbayCompanion.ItemList(this._listName);
+            this._itemList.addListener(this);
+          }
+
+          this._itemList.filter(filter);
+
+          let sortFunction;
+          if (this.reverseSort) {
+            sortFunction =
+              function(a, b) {
+                let aEnd = a.get("endTime");
+                if (a.transaction) {
+                  aEnd = a.transaction.get("creationTime");
+                }
+                let bEnd = b.get("endTime");
+                if (b.transaction) {
+                  bEnd = b.transaction.get("creationTime");
+                }
+                return aEnd > bEnd;
+              }
+          } else {
+            sortFunction =
+              function(a, b) {
+                let aEnd = a.get("endTime");
+                if (a.transaction) {
+                  aEnd = a.transaction.get("creationTime");
+                }
+                let bEnd = b.get("endTime");
+                if (b.transaction) {
+                  bEnd = b.transaction.get("creationTime");
+                }
+                return aEnd < bEnd;
+              }
+          }
+          this._itemList.sort(sortFunction);
+
+          this.rebuildList();
+          this.hideItemDetails(null, null, aSkipAnimation);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the "time left" field on all the items displayed in the
+        - sidebar
+        -->
+      <method name="updateTimeLeft">
+        <body>
+          <![CDATA[
+          try {
+            for (let i = 1; i < this.childNodes.length; i++) {
+              let node = this.childNodes[i];
+              // we can check if the items have are active and have time left.
+              // If they do, update their time. Remove them if they are active
+              // but don't have time left. Ignore them if they are ended
+              let endTime = node.item.get("endTime");
+              let isEnded = node.item.get("isEnded");
+              let ebayTime = EbayCompanion.Datasource.getEbayTime().getTime();
+              let timeLeft = Math.max(0, endTime - ebayTime);
+              if (!isEnded) {
+                node.updateTimeLeft();
+                let sidebarTabBox =
+                  document.getElementById("gs-ebay-sidebar-tabbox");
+                // remove the item from the list only if we are in the active
+                // list and the item has no time left
+                if (sidebarTabBox.selectedIndex == 0 &&
+                    timeLeft < 1000 && timeLeft >= 0) {
+                  this._itemList._removeItem(node.item, false, true);
+                }
+              }
+            }
+          } catch (e) {
+            EbayCompanion.Logger.exception(e);
+          }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Sets the text that is visible in the sidebar when there are no items.
+        - @param text The text to display. Must be in markup format; HTML tags
+        - are allowed
+        - @param callbacks The callback functions associated with each markup
+        - link
+        -->
+      <method name="setEmptyListText">
+        <parameter name="text" />
+        <parameter name="callbacks" />
+        <body>
+          <![CDATA[
+          let displayElement = this._getElement("empty-list-message");
+          const HTMLNS = "http://www.w3.org/1999/xhtml";
+          let p = document.createElementNS(HTMLNS, "p");
+          p.innerHTML = EbayCompanion.Constants.parseMarkupString(text);
+
+          let anchors = p.getElementsByTagName("a");
+          for (let i = 0; i < anchors.length; i++) {
+            let anchor = anchors[i];
+            let order = anchor.getAttribute("order");
+            // XXX: for some reason click event does not catch middle clicks,
+            // so we have to use mouseup
+            anchor.addEventListener(
+              "mouseup",
+              callbacks[order - 1],
+              false);
+          }
+
+          if (displayElement.childNodes.length > 0) {
+            displayElement.removeChild(displayElement.firstChild);
+          }
+          displayElement.appendChild(p);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Called when the item list has changed; switches to the empty-list deck
+        - item if the list is empty and displays the items if not
+        -->
+      <method name="_itemListChanged">
+        <body>
+          <![CDATA[
+          let deck = this._getElement("list-deck");
+          if (this._itemList.filteredItems.length == 0) {
+            deck.selectedIndex = 0;
+          } else {
+            deck.selectedIndex = 1;
+          }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Displays the item moved notification on the sidebar
+        -->
+      <method name="_showItemMovedNotification">
+        <body>
+          <![CDATA[
+          if (typeof(EbayCompanion.Notification) == "undefined") {
+            EbayCompanion._importModule("objects/notification.js");
+          }
+          let notification =
+            new EbayCompanion.Notification(
+              EbayCompanion.WarningNotificationHelper.
+                ITEM_MOVED_TO_ENDED_TAB_WARNING);
+          notification.addLinkCallback(0, function(aEvent){
+              Sidebar.switchToTab(1);
+            });
+          notification.set(
+            "content", EbayCompanion.Constants.stringBundle.getString(
+              "ecSidebar.notification.info.ended"));
+          notification.set("priority", 1);
+          EbayCompanion.WarningNotificationHelper.queueNotification(
+            notification);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Calls to show the item details
+        - @param aItemNode the itemNode to see its details, null to hide the
+        - details panel
+        - @param aSkipAnimation true if skips animation.
+        -->
+      <method name="showItemDetails">
+        <parameter name="aItemNode" />
+        <parameter name="aSkipAnimation" />
+        <body>
+          <![CDATA[
+            EbayCompanion.Observers.notify(
+              aItemNode, "ebay-show-item-details", aSkipAnimation);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Shows the item details
+        - @param aItemNode the itemNode to see its details, null to hide the
+        - details panel
+        - @param aSkipAnimation true if skips animation.
+        -->
+      <method name="doShowItemDetails">
+        <parameter name="aItemNode" />
+        <parameter name="aSkipAnimation" />
+        <body>
+          <![CDATA[
+            let that = this;
+            let listContainer = this._getElement("list-deck");
+            let itemDetails = this._getElement("gs-ebay-item-details");
+            let detailsContainer =
+              this._getElement("gs-ebay-item-details-container");
+            let item = aItemNode.item;
+
+            itemDetails.item = item;
+            if (listContainer.hasAttribute("collapsed") || aSkipAnimation) {
+              listContainer.setAttribute("collapsed", true);
+              listContainer.style.opacity = 0;
+              detailsContainer.removeAttribute("collapsed");
+              detailsContainer.style.opacity = 100;
+            } else {
+              this.animateList(listContainer, false,
+                function() { that.animateList(detailsContainer, true, null) });
+            }
+
+            this._itemDisplayed = aItemNode;
+            this._updateNavigationControls();
+            EbayCompanion.StateHelper.setItemDetails(item);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Calls to hide the item details
+        - @param aCallback the callback to be called after the item is shown (or
+        - the user goes back to the full list)
+        - @param aAnimateListDisplay whether to animate the list display or not
+        -->
+      <method name="hideItemDetails">
+        <parameter name="aCallback" />
+        <parameter name="aAnimateListDisplay" />
+        <parameter name="aSkipAnimation" />
+        <body>
+          <![CDATA[
+            let params = {
+              callback : aCallback,
+              animateListDisplay : aAnimateListDisplay,
+              skipAnimation : aSkipAnimation
+            };
+
+            EbayCompanion.Observers.notify(
+              params, "ebay-hide-item-details", null);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Hides the item details
+        - @param aCallback the callback to be called after the item is shown (or
+        - the user goes back to the full list)
+        - @param aAnimateListDisplay whether to animate the list display or not
+        -->
+      <method name="doHideItemDetails">
+        <parameter name="aCallback" />
+        <parameter name="aAnimateListDisplay" />
+        <parameter name="aSkipAnimation" />
+        <body>
+          <![CDATA[
+            let that = this;
+            let listContainer = this._getElement("list-deck");
+            let itemDetails = this._getElement("gs-ebay-item-details");
+            let detailsContainer =
+              this._getElement("gs-ebay-item-details-container");
+
+            if (detailsContainer.hasAttribute("collapsed") || aSkipAnimation) {
+              detailsContainer.setAttribute("collapsed", true);
+              detailsContainer.style.opacity = 0;
+              listContainer.removeAttribute("collapsed");
+              listContainer.style.opacity = 100;
+              if (aCallback) {
+                aCallback();
+              }
+              if (aAnimateListDisplay) {
+                that.animateList(listContainer, true, null);
+              }
+            } else {
+              if (aCallback) {
+                // this internal callback hides de details panel, calls the
+                // callback and also changes the item list properties so it
+                // doesn't remain hidden
+                let internalCallback = function() {
+                  aCallback();
+                  listContainer.removeAttribute("collapsed");
+                  listContainer.style.opacity = 100;
+                };
+                this.animateList(detailsContainer, false, internalCallback);
+              } else {
+                this.animateList(detailsContainer, false,
+                  function() { that.animateList(listContainer, true, null) });
+              }
+            }
+
+            this._itemDisplayed = null;
+            this._updateNavigationControls();
+            EbayCompanion.StateHelper.setItemDetails(null);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Animates the element with a fade in and out effect.
+        - @param aElement the element
+        - @param aShow true if showing, false otherwise
+        - @param aCallback the callback method
+        -->
+      <method name="animateList">
+        <parameter name="aElement" />
+        <parameter name="aShow" />
+        <parameter name="aCallback" />
+        <body>
+          <![CDATA[
+            if (aShow) {
+              opacity = 0;
+              increment = (100 / 5);
+              limit = 100;
+              aElement.removeAttribute("collapsed");
+            } else {
+              opacity = 100;
+              increment = -(100 / 5);
+              limit = 0;
+            }
+
+            animationFunction = function() {
+              opacity += increment;
+              aElement.style.opacity = (opacity / 100);
+
+              if (aShow) {
+                if (opacity < limit) {
+                  window.setTimeout(animationFunction, 50);
+                } else {
+                  aElement.style.opacity = 100;
+                  if (aCallback) {
+                    aCallback();
+                  }
+                }
+              } else {
+                if (opacity > limit) {
+                  window.setTimeout(animationFunction, 50);
+                } else {
+                  if (0 == opacity) {
+                    aElement.setAttribute("collapsed", true);
+                  }
+                  if (aCallback) {
+                    aCallback();
+                  }
+                }
+              }
+            };
+
+            animationFunction();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Scrolls the next or previous item in the details panel, based on the
+        - aForward attribute passed by parameter
+        - @param aForward whether to show next or previous item
+        - @param aEvent the event that triggered this call
+        -->
+      <method name="scrollItem">
+        <parameter name="aForward" />
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            let itemToShow = null;
+
+            if (aForward) {
+              itemToShow = this._nextItem();
+            } else {
+              itemToShow = this._previousItem();
+            }
+
+            if (itemToShow) {
+              this.showItemDetails(itemToShow);
+            }
+
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the navigation controls accordingly
+        -->
+      <method name="_updateNavigationControls">
+        <body>
+          <![CDATA[
+          try {
+            let nextItem = this._nextItem();
+            let previousItem = this._previousItem();
+
+            let detailsPanel = this._getElement("gs-ebay-item-details");
+
+            if (nextItem) {
+              //enable next button
+              detailsPanel.setAttribute("nextButtonDisabled", "false");
+            } else {
+              //disable next button
+              detailsPanel.setAttribute("nextButtonDisabled", "true");
+            }
+
+            if (previousItem) {
+              //enable previous button
+              detailsPanel.setAttribute("previousButtonDisabled", "false");
+            } else {
+              //disable previous button
+              detailsPanel.setAttribute("previousButtonDisabled", "true");
+            }
+
+          } catch(e) {
+            EbayCompanion.logger.error(e);
+          }
+
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Called to return the next item to be displayed in the item details
+        - panel
+        -->
+      <method name="_nextItem">
+        <body>
+          <![CDATA[
+            let nextItem = null;
+            if (this._itemDisplayed) {
+              nextItem = this._itemDisplayed.nextSibling;
+            }
+            return nextItem;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Called to return the previous item to be displayed in the item details
+        - panel
+        -->
+      <method name="_previousItem">
+        <body>
+          <![CDATA[
+            let previousItem = null;
+            if (this._itemDisplayed) {
+              previousItem = this._itemDisplayed.previousSibling;
+              if (previousItem.localName.toLowerCase() == "notificationbox") {
+                previousItem = null;
+              }
+            }
+            return previousItem;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Finds an item.
+        - @para aItem the item
+        - @return the item or null
+        -->
+      <method name="findItem">
+        <parameter name="aItem" />
+        <body>
+          <![CDATA[
+            let node = null;
+            let itemNode = null;
+
+            for (let i = 1; i < this.childNodes.length; i++) {
+              node = this.childNodes[i];
+
+              if (node.item.get("itemId") == aItem.get("itemId")) {
+                itemNode = node;
+              }
+            }
+
+            return itemNode;
+          ]]>
+        </body>
+      </method>
+
+    </implementation>
+  </binding>
+</bindings>

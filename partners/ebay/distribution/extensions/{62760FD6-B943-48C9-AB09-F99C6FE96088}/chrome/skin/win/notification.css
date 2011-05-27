@@ -1,0 +1,26 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+/* sidebar notifications */
+#gs-ebay-warning-notificationbox[xpFF3=true] notification .messageCloseButton,
+#gs-ebay-signed-out-warning-notificationbox[xpFF3=true] notification .messageCloseButton,
+#gs-ebay-information-notificationbox[xpFF3=true] notification .messageCloseButton,
+#gs-ebay-signed-out-information-notificationbox[xpFF3=true] notification .messageCloseButton {
+  -moz-image-region: rect(0px, 56px, 14px, 42px);
+  margin: 1px;
+}
+
+#gs-ebay-warning-notificationbox[xpFF3=true] notification .messageCloseButton:hover,
+#gs-ebay-signed-out-warning-notificationbox[xpFF3=true] notification .messageCloseButton:hover,
+#gs-ebay-information-notificationbox[xpFF3=true] notification .messageCloseButton:hover,
+#gs-ebay-signed-out-information-notificationbox[xpFF3=true] notification .messageCloseButton:hover {
+  -moz-image-region: rect(0px, 28px, 14px, 14px);
+}
+
+#gs-ebay-warning-notificationbox[xpFF3=true] notification .messageCloseButton:hover:active,
+#gs-ebay-signed-out-warning-notificationbox[xpFF3=true] notification .messageCloseButton:hover:active,
+#gs-ebay-information-notificationbox[xpFF3=true] notification .messageCloseButton:hover:active,
+#gs-ebay-signed-out-information-notificationbox[xpFF3=true] notification .messageCloseButton:hover:active{
+  -moz-image-region: rect(0px, 42px, 14px, 28px);
+}

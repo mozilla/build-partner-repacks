@@ -1,0 +1,249 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <binding id="ebay-notification-box"
+    extends="chrome://global/content/bindings/notification.xml#notificationbox">
+
+    <content>
+      <xul:stack xbl:inherits="hidden=notificationshidden">
+        <xul:spacer/>
+        <children includes="notification"/>
+      </xul:stack>
+      <children/>
+    </content>
+
+    <implementation>
+      <field name="_queueHelper">null</field>
+
+      <property name="queueHelper"
+        onget="return this._queueHelper;"
+        onset="this._queueHelper = val; return val;"/>
+
+      <destructor>
+        <![CDATA[
+          // let the helpers know that the notification binding is being
+          // destroyed, so that a non-persistant notification won't appear again
+          // when the sidebar is opened.
+          this._queueHelper.clearCurrentNotification();
+        ]]>
+      </destructor>
+
+      <!--
+        Append a eBay notification to the notification box.
+        -->
+      <method name="appendCustomNotification">
+        <parameter name="aNotification"/>
+        <body>
+          <![CDATA[
+            // priority order is managed by the notification helper class,
+            // so, at any point, the notification box will only have one
+            // notification queued.
+
+            // create the notification node
+            const XULNS =
+              "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+            const HTMLNS = "http://www.w3.org/1999/xhtml";
+            let newitem = document.createElementNS(XULNS, "notification");
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+
+            // create and append the notification object contents to the
+            // notification.
+            let content =
+              EbayCompanion.Constants.parseMarkupString(
+                aNotification.get("content"));
+            let container = document.createElementNS(XULNS, "vbox");
+            container.setAttribute("flex", "1");
+            let paragraph = document.createElementNS(HTMLNS, "p");
+
+            if (content.length > 0) {
+              paragraph.innerHTML = content;
+              // we set the link callbacks once we have the DOM created.
+              // This is the only way we can define functions and send them as
+              // parameter when building a new notification. The other
+              // alternative was to send callback code as a string and that is
+              // neither stylish or maintainable.
+              this._setContentCallbacks(
+                paragraph, aNotification.get("callbacksArray"));
+              container.appendChild(paragraph);
+              newitem.appendChild(container);
+
+              newitem.setAttribute("ebay", "true");
+              newitem.setAttribute("value", aNotification.get("type"));
+              // ended items moved to endlist notifications shouldn't display
+              // any image
+              if (aNotification.get("type") !=
+                    EbayCompanion.WarningNotificationHelper.
+                        ITEM_MOVED_TO_ENDED_TAB_WARNING) {
+                newitem.setAttribute("image", aNotification.get("imageURL"));
+              }
+              if (null != aNotification.get("bgColor") &&
+                  "" != aNotification.get("bgColor")) {
+                //newitem.style.background = "-moz-linear-gradient(right, " + aNotification.get("bgColor") + ", white)";
+                newitem.style.backgroundColor = aNotification.get("bgColor");
+              }
+              // this is the notification helper definition of level
+              // (warn or info)
+              newitem.setAttribute(
+                "notificationType", aNotification.get("type"));
+              newitem.setAttribute(
+                "isPersistent", aNotification.get("isPersistent"));
+
+              newitem.style.position = "fixed";
+              newitem.style.top = "100%";
+
+              this.insertBefore(newitem, null);
+
+              newitem.priority = aNotification.get("priority");
+
+              let filterNotification =
+                (aNotification.get("type") >=
+                  EbayCompanion.WarningNotificationHelper.BIDDING_FILTER_WARNING
+                && aNotification.get("type") <=
+                  EbayCompanion.WarningNotificationHelper.UNSOLD_FILTER_WARNING)
+                ? true : false;
+              let closeTooltipKey;
+              if (filterNotification) {
+                closeTooltipKey = "ecSidebar.filter.close.tooltip";
+              } else {
+                closeTooltipKey = "ecSidebar.notification.close.tooltip";
+              }
+              newitem.closeTooltipText =
+                stringBundle.getString(closeTooltipKey);
+
+              // we are all set, then show the notification
+              this._showNotification(newitem, true);
+
+              // Fire event for accessibility APIs
+              var event = document.createEvent("Events");
+              event.initEvent("AlertActive", true, true);
+              newitem.dispatchEvent(event);
+            }
+
+            return newitem;
+          ]]>
+        </body>
+      </method>
+
+      <method name="removeCurrentNotification">
+        <parameter name="aSkipAnimation"/>
+        <body>
+          <![CDATA[
+            this._showNotification(this.currentNotification, false, aSkipAnimation);
+            this.queueHelper.dismissNotification(
+              this._closedNotification.notificationType);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Sets the callbacks for the links in the aContent sent as parameter.
+        - The source content should have as many <a> tags as links you want to
+        - display. We take the callbacks from the provided "callbacks" array
+        - and use the "order" attribute to access it.
+        - The retrieved element is assigned as onclick handler. This makes it
+        - possible to reorder the text during localisation without changing the
+        - order of elements in the "callbacks" array.
+        -->
+      <method name="_setContentCallbacks">
+        <parameter name="aContent"/>
+        <parameter name="aCallbacksArray"/>
+        <body>
+          <![CDATA[
+            // XXX: we have to clone the orignal node, do our job
+            // append the cloned node, and remove the original so the
+            // notification is displayed in all windows properly. If we
+            // don't do this, the notification is displayed in the first
+            // window, but in the rest all you see is the notification box
+            // without any contents.
+            let linkNodes = aContent.getElementsByTagName("a");
+            let link;
+            let order;
+            let callback;
+
+            if (linkNodes) {
+              for (var i = 0; i < linkNodes.length; i++) {
+                link = linkNodes[i];
+                order = link.getAttribute("order");
+                if (order) {
+                  callback = aCallbacksArray[order - 1];
+                  if (callback) {
+                    // XXX: for some reason click event does not catch middle
+                    // clicks, so we have to use mouseup.
+                    link.addEventListener("click", callback, false);
+                  }
+                }
+              }
+            }
+
+          ]]>
+        </body>
+      </method>
+
+    </implementation>
+  </binding>
+
+  <binding id="ebay-notification"
+    extends="chrome://global/content/bindings/notification.xml#notification">
+
+    <content>
+      <xul:vbox flex="1">
+        <xul:hbox class="notification-inner outset" xbl:inherits="type">
+          <xul:vbox align="start" class="messageImageContainer">
+             <xul:image anonid="messageImage" class="messageImage"
+                xbl:inherits="src=image"/>
+          </xul:vbox>
+          <xul:hbox anonid="details" align="center" flex="1"
+            oncommand="this.parentNode.parentNode._doButtonCommand(event);">
+            <children />
+            <xul:spacer flex="1" />
+            <children includes="button" />
+          </xul:hbox>
+          <xul:vbox class="closeButtonContainer">
+            <xul:toolbarbutton anonid="close-button"
+              class="messageCloseButton" xbl:inherits="hidden=hideclose"
+              ondblclick="event.stopPropagation();"
+              oncommand="document.getBindingParent(this).close();"/>
+          </xul:vbox>
+        </xul:hbox>
+      </xul:vbox>
+    </content>
+
+    <implementation>
+       <field name="mCloseButton">
+         document.getAnonymousElementByAttribute(
+            this, "anonid", "close-button");
+       </field>
+
+      <property name="isPersistent"
+        onget="return this.getAttribute('isPersistent');"
+        onset="this.setAttribute('isPersistent', val); return val;"/>
+
+      <property name="notificationType"
+        onget="return parseInt(this.getAttribute('notificationType'));"
+        onset="this.setAttribute('notificationType', val); return val;"/>
+
+      <property name="closeTooltipText">
+        <getter>
+          return this.mCloseButton.getAttribute("tooltiptext");
+        </getter>
+        <setter>
+         <![CDATA[
+          this.mCloseButton.setAttribute("tooltiptext", val);
+         ]]>
+        </setter>
+      </property>
+
+    </implementation>
+  </binding>
+
+</bindings>

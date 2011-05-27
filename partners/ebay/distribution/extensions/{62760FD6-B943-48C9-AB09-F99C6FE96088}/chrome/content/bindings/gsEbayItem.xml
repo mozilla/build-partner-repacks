@@ -1,0 +1,643 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- eBay Item for the Sidebar -->
+  <binding id="gs-ebay-item">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/item.css" />
+    </resources>
+
+    <content>
+      <!-- Item box context menu -->
+      <xul:menupopup anonid="ec-item-context-menu"
+        onpopupshowing="_setContextMenuShowFlag(true);"
+        onpopuphidden="_setContextMenuShowFlag(false);">
+        <xul:menuitem anonid="ec-item-context-selling-reviewOffers"
+          label="&ecItem.menu.selling.review.offers;"
+          accesskey="&ecItem.menu.selling.review.offers.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'reviewOffers');" />
+        <xul:menuitem anonid="ec-item-context-buying-reviewOffer"
+          label="&ecItem.menu.buying.review.offer;"
+          accesskey="&ecItem.menu.buying.review.offer.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'reviewOffer');" />
+        <xul:menuitem anonid="ec-item-context-makeOffer"
+          label="&ecItem.menu.buying.make.offer;"
+          accesskey="&ecItem.menu.buying.make.offer.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'makeOffer');" />
+        <xul:menuitem anonid="ec-item-context-sellSimilar"
+          label="&ecItem.menu.selling.sell;"
+          accesskey="&ecItem.menu.selling.sell.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'similar');" />
+        <xul:menuitem anonid="ec-item-context-findSimilar"
+          label="&ecItem.menu.buying.find;"
+          accesskey="&ecItem.menu.buying.find.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'find');" />
+        <xul:menuseparator anonid="ec-item-context-sell-similar-separator"
+          hidden="true"/>
+        <xul:menuitem anonid="ec-item-context-revise"
+          label="&ecItem.menu.selling.revise;"
+          accesskey="&ecItem.menu.selling.revise.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'revise');" />
+        <!--<xul:menuitem anonid="ec-item-context-promote"
+          label="&ecItem.menu.selling.promote;"
+          accesskey="&ecItem.menu.selling.promote.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'promote');" />-->
+        <xul:menuitem anonid="ec-item-context-order-details"
+          label="&ecItem.menu.global.order;"
+          accesskey="&ecItem.menu.global.order.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'orderDetails');" />
+        <xul:menuseparator anonid="ec-item-context-user-feedback-separator"
+          hidden="true"/>
+        <xul:menuitem anonid="ec-item-context-bidder-feedback"
+          label="&ecItem.menu.selling.feedback;"
+          accesskey="&ecItem.menu.selling.feedback.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'userFeedback');" />
+        <xul:menuitem anonid="ec-item-context-seller-feedback"
+          label="&ecItem.menu.buying.feedback;"
+          accesskey="&ecItem.menu.buying.feedback.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'userFeedback');" />
+        <xul:menuitem anonid="ec-item-context-seller-other-items"
+          label="&ecItem.menu.buying.items;"
+          accesskey="&ecItem.menu.buying.items.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'viewOther');" />
+        <xul:menuitem anonid="ec-item-context-askQuestion"
+          label="&ecItem.menu.buying.contact;"
+          accesskey="&ecItem.menu.buying.contact.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'askQuestion');" />
+        <xul:menuitem anonid="ec-item-context-contact-buyer"
+          label="&ecItem.menu.selling.contact;"
+          accesskey="&ecItem.menu.selling.contact.key;"
+          onclick="checkForMiddleClick(this, event);" hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'contactBuyer');" />
+        <xul:menuseparator />
+        <xul:menuitem anonid="ec-item-context-view-in-tab"
+          label="&ecItem.menu.global.open;"
+          accesskey="&ecItem.menu.global.open.key;"
+          onclick="checkForMiddleClick(this, event);"
+          oncommand="Sidebar.itemContextClick(event, 'listing');" />
+        <xul:menuseparator anonid="ec-item-context-stop-watching-separator"
+          hidden="true"/>
+        <xul:menuitem anonid="ec-item-context-remove"
+          label="&ecItem.menu.global.remove;"
+          accesskey="&ecItem.menu.global.remove.key;"
+          onclick="checkForMiddleClick(this, event);"  hidden="true"
+          oncommand="Sidebar.itemContextClick(event, 'removeItem');" />
+      </xul:menupopup>
+
+      <xul:gsebayitembox anonid="gs-ebay-item-box" flex="1"
+        closebuttonhidden="true" actionbuttonhidden="false"
+        gsebayalert="false" />
+
+    </content>
+
+    <handlers>
+      <handler event="focus" action="_focusItem(event, true);" />
+      <handler event="blur" action="_focusItem(event, false);" />
+      <handler event="keypress" keycode="VK_RETURN"
+        action="_selectItem(event);" />
+      <!--<handler event="keypress" keycode="VK_DOWN" modifiers="alt"
+        action="_showItemPopup(event);" />-->
+
+      <handler event="mouseover">
+        <![CDATA[
+          let itemBox = this._getElement("gs-ebay-item-box");
+          let that = this;
+
+          itemBox.setContainerHover(true);
+          that.setAttribute("ebaymouseover", true);
+          clearTimeout(that._mouseOutTimer);
+
+          this._mouseOverTimer = setTimeout(function() {
+            if (that.hasAttribute("ebaymouseover") &&
+                !that.hasAttribute("ebayhover")) {
+              that.setAttribute("ebayhover", true);
+              itemBox.onMouseOver();
+            }
+          }, 300);
+        ]]>
+      </handler>
+
+      <handler event="mouseout">
+        <![CDATA[
+          let itemBox = this._getElement("gs-ebay-item-box");
+          let that = this;
+
+          this.removeAttribute("ebaymouseover", true);
+          clearTimeout(that._mouseOverTimer);
+
+          this._mouseOutTimer = setTimeout(function() {
+            if (!that.hasAttribute("ebaymouseover") &&
+                that.hasAttribute("ebayhover")) {
+              that.removeAttribute("ebayhover");
+              itemBox.onMouseOut();
+            } else {
+              itemBox.setContainerHover(false);
+            }
+          }, 100);
+        ]]>
+      </handler>
+
+      <handler event="click" phase="capturing">
+        <![CDATA[
+          // avoid right click, it shows the context menu.
+          if (event.button != 2) {
+            let target = event.originalTarget;
+            let bindingTarget = document.getBindingParent(target);
+
+            if ("menuitem" == target.localName) {
+              if (event.button == 1) {
+                target.parentNode.hidePopup();
+              }
+            } else if ("gsebaybutton" == bindingTarget.localName) {
+              EbayCompanion.itemButtonClick(
+                event, "itemButton", this.buttonAction, this.item);
+            } else if("image" == target.localName &&
+                      target.getAttribute("anonid") ==
+                        "gs-ebay-item-details-open-image" ||
+                      "vbox" == target.localName &&
+                      target.getAttribute("anonid") ==
+                        "gs-ebay-item-details-open") {
+              // display the item details
+              let itemBoxBinding = document.getBindingParent(target);
+              let itemBinding = document.getBindingParent(itemBoxBinding);
+              let itemListBinding = itemBinding.parentNode;
+              itemListBinding.showItemDetails(itemBinding);
+            } else {
+              EbayCompanion.openPage(event, 'itemClick', 'listing',
+                {itemid: event.target.item.get('itemId')});
+            }
+          }
+        ]]>
+      </handler>
+    </handlers>
+
+    <implementation>
+      <!-- Hover timer -->
+      <field name="_mouseOutTimer">null</field>
+      <field name="_mouseOverTimer">null</field>
+      <!-- Associated item. -->
+      <field name="_item">null</field>
+      <!-- Observers. -->
+      <field name="_observers">new EbayCompanion.Observers</field>
+      <!-- Flag to know it the context menu is open. -->
+      <field name="_contextMenuOpened">false</field>
+
+      <!-- Property to accessed the item. -->
+      <property name="item">
+        <getter>
+          return this._item;
+        </getter>
+        <setter>
+         <![CDATA[
+          this._item = val;
+          if (null != this._item) {
+            this.updateUI();
+          }
+         ]]>
+        </setter>
+      </property>
+
+      <!-- Property to accessed the button action. -->
+      <property name="buttonAction">
+        <getter>
+          return this.getAttribute('buttonAction');
+        </getter>
+        <setter>
+         <![CDATA[
+          this.setAttribute('buttonAction', val);
+         ]]>
+        </setter>
+      </property>
+
+      <!--
+        - Constructor.
+        -->
+      <constructor>
+        <![CDATA[
+          let that = this;
+
+          // set the context menu.
+          this.contextMenu = "_child";
+
+          // add observers.
+          this._observers.add(
+            function(aInfo) {
+              let item = aInfo.object;
+              let originalItem = aInfo.originalObject;
+
+              // make sure this is the same item, and copy the related
+              // transaction of this binding instance (if any).
+              if (item.get("itemId") == that.item.get("itemId")) {
+                // do not update the UI or do anything else if the current item
+                // is ended and the new one is not, since items are not supposed
+                // to "come back from the death". This prevents ended items list
+                // showing wrong item status for items with transactions
+                if (!that._item.get("isEnded") || item.get("isEnded")) {
+                  if (that.item.transaction) {
+                    item.transaction = that.item.transaction;
+                  }
+                  that.item = item;
+                  that.updateUI(item, originalItem);
+                }
+              }
+            }, "ebay-item-changed");
+
+          this._observers.add(
+            function(aInfo) {
+              let transaction = aInfo.object;
+              let currentTransaction = that.item.transaction;
+
+              // make sure the transaction is the same and it is related to
+              // the same item.
+              if (currentTransaction &&
+                  currentTransaction.get("transactionId") ==
+                    transaction.get("transactionId") &&
+                  transaction.get("itemId") == that.item.get("itemId")) {
+                that.item.transaction = transaction;
+                that.updateUI();
+              }
+            }, "ebay-transaction-changed");
+
+          // listen to new secondary alerts, so we can highlight the
+          // related item.
+          this._observers.add(
+            function(aItem) {
+              let itemBox = that._getElement("gs-ebay-item-box");
+
+              itemBox.highlightItem(aItem);
+            }, "ebay-hightlight-item");
+
+          let updateItemTime = function(aItem, aTopic, aTimeLeft) {
+            if (aItem.get("itemId") == that.item.get("itemId")) {
+              let itemBox = that._getElement("gs-ebay-item-box");
+
+              itemBox.updateItemTime();
+            }
+          };
+          // listen to primary alert item time update notifications and
+          // item updates made by other windows
+          this._observers.add(updateItemTime, "ebay-item-time-adjusted");
+
+        ]]>
+      </constructor>
+
+      <!--
+        - Destructor.
+        -->
+      <destructor>
+        <![CDATA[
+          this.removeObservers();
+        ]]>
+      </destructor>
+
+      <!--
+        - Clears item observers. Used because when we remove an item using
+        - removeChild method, the destructor is not called, so we have to make
+        - sure we get rid of the observers.
+       -->
+      <method name="removeObservers">
+        <body>
+          <![CDATA[
+            this._observers.removeAll();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the item UI.
+        - @param aItem the item element.
+        - @param aOriginalItem the previous item element.
+        -->
+      <method name="updateUI">
+        <parameter name="aItem" />
+        <parameter name="aOriginalItem" />
+        <body>
+          <![CDATA[
+            let itemBox = this._getElement("gs-ebay-item-box");
+
+            if (!aItem) {
+              aItem = this.item;
+            }
+            if (!aOriginalItem) {
+              aOriginalItem = this.item;
+            }
+
+            itemBox.previousItem = aOriginalItem;
+            itemBox.item = aItem;
+            this._updateContextMenu();
+            this.updateTimeLeft();
+
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the time left in the item element.
+        - Notifies the alert box if open.
+        -->
+      <method name="updateTimeLeft">
+        <body>
+          <![CDATA[
+            let itemBox = this._getElement("gs-ebay-item-box");
+            let timeLabel = itemBox.updateItemTime();
+
+            EbayCompanion.Observers.notify(
+              itemBox.item, "ebay-item-time-adjusted", timeLabel);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the item's context menu to display the right options
+        - depending on item status.
+        -->
+      <method name="_updateContextMenu">
+        <body>
+          <![CDATA[
+            let itemBox = this._getElement("gs-ebay-item-box");
+            let makeOffer = this._getElement("ec-item-context-makeOffer");
+            let reviewOffers =
+              this._getElement("ec-item-context-selling-reviewOffers");
+            let reviewCounterOffer =
+              this._getElement("ec-item-context-buying-reviewOffer");
+            let sellSimilar = this._getElement("ec-item-context-sellSimilar");
+            let findSimilar = this._getElement("ec-item-context-findSimilar");
+            let similarSeparator =
+              this._getElement("ec-item-context-sell-similar-separator");
+            let revise = this._getElement("ec-item-context-revise");
+            //let promote = this._getElement("ec-item-context-promote");
+            let orderDetails =
+              this._getElement("ec-item-context-order-details");
+            let feedbackSeparator =
+              this._getElement("ec-item-context-user-feedback-separator");
+            let bidderFeedback =
+              this._getElement("ec-item-context-bidder-feedback");
+            let sellerFeedback =
+              this._getElement("ec-item-context-seller-feedback");
+            let sellerOther =
+              this._getElement("ec-item-context-seller-other-items");
+            let askQuestion = this._getElement("ec-item-context-askQuestion");
+            let contactBuyer =
+              this._getElement("ec-item-context-contact-buyer");
+            let stopWatchingSeparator =
+              this._getElement("ec-item-context-stop-watching-separator");
+            let remove = this._getElement("ec-item-context-remove");
+
+            // make sure they are all hidden
+            makeOffer.hidden = true;
+            reviewOffers.hidden = true;
+            reviewCounterOffer.hidden = true;
+            sellSimilar.hidden = true;
+            findSimilar.hidden = true;
+            similarSeparator.hidden = true;
+            revise.hidden = true;
+            //promote.hidden = true;
+            orderDetails.hidden = true;
+            feedbackSeparator.hidden = true;
+            bidderFeedback.hidden = true;
+            sellerFeedback.hidden = true;
+            sellerOther.hidden = true;
+            askQuestion.hidden = true;
+            contactBuyer.hidden = true;
+            stopWatchingSeparator.hidden = true;
+            remove.hidden = true;
+
+            // now, show only the right ones depending on item status.
+            switch (itemBox.currentState) {
+              case EbayCompanion.Item.ITEM_STATE_SELLING_ITEM_SOLD:
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_ITEM_SOLD:
+                sellSimilar.hidden = false;
+                similarSeparator.hidden = false;
+                orderDetails.hidden = false;
+                bidderFeedback.hidden = false;
+                contactBuyer.hidden= false;
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_ITEM_UNSOLD:
+              case EbayCompanion.Item.
+                ITEM_STATE_SELLING_ITEM_UNSOLD_RESERVE_NOT_MET:
+                sellSimilar.hidden = false;
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_WITH_OFFERS:
+                reviewOffers.hidden = false;
+                sellSimilar.hidden = false;
+                similarSeparator.hidden = false;
+                revise.hidden = false;
+                //promote.hidden = false;
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_CLASSIFIED_AD:
+              case EbayCompanion.Item.ITEM_STATE_SELLING:
+              case EbayCompanion.Item.ITEM_STATE_SELLING_BEST_OFFER:
+              case EbayCompanion.Item.ITEM_STATE_SELLING_SUCCESS:
+              case EbayCompanion.Item.ITEM_STATE_SELLING_RESERVE_NOT_MET:
+                sellSimilar.hidden = false;
+                similarSeparator.hidden = false;
+                revise.hidden = false;
+                //promote.hidden = false;
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_ITEM_WON:
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_ITEM_WON:
+                findSimilar.hidden = false;
+                similarSeparator.hidden = false;
+                orderDetails.hidden = false;
+                sellerFeedback.hidden = false;
+                sellerOther.hidden = false;
+                askQuestion.hidden = false;
+                let transaction = this.item.transaction;
+                if (transaction && transaction.get("isPaidFor")) {
+                  stopWatchingSeparator.hidden = false;
+                  remove.hidden = false;
+                }
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_ITEM_LOST:
+                findSimilar.hidden = false;
+                similarSeparator.hidden = false;
+                sellerFeedback.hidden = false;
+                sellerOther.hidden = false;
+                askQuestion.hidden = false;
+                stopWatchingSeparator.hidden = false;
+                remove.hidden = false;
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_SUCCESS:
+              case EbayCompanion.Item.ITEM_STATE_BUYING_RESERVE_NOT_MET:
+              case EbayCompanion.Item.ITEM_STATE_BUYING_OUTBID:
+              case EbayCompanion.Item.
+                ITEM_STATE_BUYING_ITEM_LOST_RESERVE_NOT_MET:
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_PENDING:
+                findSimilar.hidden = false;
+                similarSeparator.hidden = false;
+                sellerFeedback.hidden = false;
+                sellerOther.hidden = false;
+                askQuestion.hidden = false;
+                break;
+              case EbayCompanion.Item.ITEM_STATE_WATCHING_CLASSIFIED_AD:
+              case EbayCompanion.Item.ITEM_STATE_WATCHING:
+                findSimilar.hidden = false;
+                similarSeparator.hidden = false;
+                sellerFeedback.hidden = false;
+                sellerOther.hidden = false;
+                askQuestion.hidden = false;
+                stopWatchingSeparator.hidden = false;
+                remove.hidden = false;
+                break;
+              case EbayCompanion.Item.ITEM_STATE_WATCHING_BEST_OFFER:
+                makeOffer.hidden = false;
+                findSimilar.hidden = false;
+                similarSeparator.hidden = false;
+                sellerFeedback.hidden = false;
+                sellerOther.hidden = false;
+                askQuestion.hidden = false;
+                stopWatchingSeparator.hidden = false;
+                remove.hidden = false;
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_DECLINED:
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_EXPIRED:
+                if (this.item.get("bestOfferEnabled")) {
+                  makeOffer.hidden = false;
+                }
+                findSimilar.hidden = false;
+                similarSeparator.hidden = false;
+                sellerFeedback.hidden = false;
+                sellerOther.hidden = false;
+                askQuestion.hidden = false;
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_COUNTERED:
+                reviewCounterOffer.hidden = false;
+                findSimilar.hidden = false;
+                similarSeparator.hidden = false;
+                sellerFeedback.hidden = false;
+                sellerOther.hidden = false;
+                askQuestion.hidden = false;
+                break;
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Selects the item by hitting enter key.
+        - @param aEvent the event object.
+        -->
+      <method name="_selectItem">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            EbayCompanion.openPage(aEvent, 'itemClick', 'listing',
+              {itemid: aEvent.target.item.get('itemId')});
+
+            aEvent.stopPropagation();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Focus the item.
+        - @param aEvent the event object.
+        -->
+      <method name="_focusItem">
+        <parameter name="aEvent" />
+        <parameter name="aFocus" />
+        <body>
+          <![CDATA[
+            let itemBox = this._getElement("gs-ebay-item-box");
+
+            if (aFocus) {
+              itemBox.setAttribute("gsebayfocused", true);
+            } else {
+              itemBox.removeAttribute("gsebayfocused");
+            }
+
+            aEvent.stopPropagation();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Shows the item popup.
+        - @param aEvent the event object.
+        -->
+      <method name="_showItemPopup">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            let menuPopup = this._getElement("ec-item-context-menu");
+
+            menuPopup.openPopup(this, "after_end", 0, 0, false, true);
+
+            aEvent.stopPropagation();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Shows the item flyout.
+        - @param aEvent the event object.
+        -->
+      <method name="_showItemFlyout">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            if (true == this._contextMenuOpened) {
+              aEvent.preventDefault();
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Sets the context menu opened flag.
+        - @param aValue true if opened, false otherwise.
+        -->
+      <method name="_setContextMenuShowFlag">
+        <parameter name="aValue" />
+        <body>
+          <![CDATA[
+            this._contextMenuOpened = aValue;
+
+            // XXX: Workaround to remove the hover focus when closing the
+            // context menu of the item.
+            if (!aValue) {
+              this.parentNode.focus();
+            }
+          ]]>
+        </body>
+      </method>
+    </implementation>
+
+  </binding>
+</bindings>

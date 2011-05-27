@@ -1,0 +1,5 @@
+<!ENTITY pane.title "Land">
+<!ENTITY module.general.label "Toolbar">
+<!ENTITY module.search.label "Suche">
+<!ENTITY module.weather.label "Wetter">
+<!ENTITY module.ticker.label "Nachrichten">

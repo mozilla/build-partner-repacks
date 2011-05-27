@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2010 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- ebay favorite search -->
+  <binding id="gs-ebay-favorite-search">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/favoriteSearch.css" />
+    </resources>
+
+    <content>
+      <xul:hbox class="gs-ebay-favorite-search-container" flex="1">
+        <xul:stack flex="1">
+          <xul:hbox class="gs-ebay-favorite-search-background" flex="1" />
+          <xul:hbox flex="1">
+            <xul:vbox class="gs-ebay-favorite-search-content-box" flex="1">
+              <xul:hbox class="gs-ebay-favorite-search-content">
+                <xul:label anonid="gs-ebay-favorite-search-label"
+                  class="gs-ebay-favorite-search-label" crop="end" flex="1"
+                  onclick="document.getBindingParent(this).openFavoriteSearch(event);"/>
+              </xul:hbox>
+            </xul:vbox>
+          </xul:hbox>
+        </xul:stack>
+      </xul:hbox>
+    </content>
+
+    <implementation>
+      <!-- Associated favorite search. -->
+      <field name="_favoriteSearch">null</field>
+
+      <!-- Property to access the favorite search. -->
+      <property name="favoriteSearch">
+        <getter>
+          return this._favoriteSearch;
+        </getter>
+        <setter>
+          <![CDATA[
+            this._favoriteSearch = val;
+            this._updateFavoriteSearch();
+          ]]>
+        </setter>
+      </property>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the favorite search info in the binding.
+        -->
+      <method name="_updateFavoriteSearch">
+        <body>
+          <![CDATA[
+            let searchNameLabel = this._getElement("gs-ebay-favorite-search-label");
+
+            let favoriteSearch = this.favoriteSearch;
+            searchNameLabel.value =
+              EbayCompanion.Constants.getUTF8(favoriteSearch.get("searchName"));
+
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Opens the favorite search in a new tab
+        -->
+      <method name="openFavoriteSearch">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            let searchQuery = this.favoriteSearch.get("searchQuery");
+            searchQuery =
+              searchQuery.substring(
+                searchQuery.lastIndexOf("/") + 1, searchQuery.length);
+            EbayCompanion.openPage(
+              aEvent, 'favoriteSearchClick', 'savedSearch',
+              {searchquery: searchQuery});
+          ]]>
+        </body>
+      </method>
+
+    </implementation>
+
+  </binding>
+</bindings>

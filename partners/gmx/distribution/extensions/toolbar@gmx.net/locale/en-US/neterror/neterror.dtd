@@ -1,0 +1,6 @@
+<!ENTITY neterror.title.label "Server not found. Could not load the page.">
+<!ENTITY alternatives.header "Suggestions">
+<!ENTITY search.intro "Search on &brand.website.name;">
+<!ENTITY search.button.label "Search">
+<!ENTITY last-searches.label "Personal Search History">
+<!ENTITY no-last-searches.label "No search terms stored">

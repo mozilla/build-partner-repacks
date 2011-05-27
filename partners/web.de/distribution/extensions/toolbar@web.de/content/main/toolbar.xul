@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://unitedtb/skin/toolbar.css" type="text/css"?>
+<?xml-stylesheet href="chrome://unitedtb/skin/homebutton/homebutton.css" type="text/css"?>
+
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/main/toolbar.dtd">
+  %thisDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
+
+<overlay id="united-toolbar-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
+  <script type="application/x-javascript">
+    united.toolbar = {};
+    united.loadJS("chrome://unitedtb/content/main/toolbar.js", united.toolbar);
+    united.loadJS("chrome://unitedtb/content/main/toolbar-resize.js", united.toolbar);
+    united.homebutton = {};
+    united.loadJS("chrome://unitedtb/content/main/home-toolbaritem.js", united.homebutton);
+  </script>
+
+  <!-- Overlay for Firefox browser/content/browser.xul -->
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarbutton id="united-homebutton-button"
+        label="&brand.name;"
+        oncommand="united.homebutton.home(event);"
+        type="menu-button"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        removable="false"
+        tooltiptext="&brand.name;&homebutton.tooltip.suffix;"
+        contextmenu="united-homebutton-button-context"
+        >
+      <menupopup id="united-homebutton-button-dropdown" />
+    </toolbarbutton>
+  </toolbarpalette>
+
+  <popupset>
+    <menupopup id="united-homebutton-button-context">
+      <menuitem label="&homebutton.context.settings.label;" oncommand="united.openPrefWindow();"/>
+    </menupopup>
+  </popupset>
+
+  <toolbox id="navigator-toolbox">
+    <toolbar id="united-toolbar"
+        toolbarname="&brand.name;&toolbar-name.label.suffix;"
+        class="chromeclass-toolbar"
+        customizable="true"
+        fullscreentoolbar="false"
+        mode="full"
+        iconsize="small"
+        context="toolbar-context-menu"
+        defaultset="united-homebutton-button,united-email-button,united-search-box,united-highlight-button,united-shopping-button,united-ebay-button,united-horoscope-button,united-weather-button,united-ticker-button,spring,united-help-button,united-pref-button,united-login-box"
+        align="center"
+        crop="end"
+        />
+  </toolbox>
+
+</overlay>

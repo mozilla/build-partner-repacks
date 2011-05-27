@@ -1,0 +1,11 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/">
+<os:ShortName>GMX Suche</os:ShortName>
+<os:Description>GMX Suche</os:Description>
+<os:InputEncoding>ISO-8859-1</os:InputEncoding>
+<os:Image width="16" height="16">data:image/x-icon;base64,R0lGODlhEAAQALMAAJubm4uLi7u7u7S0tNnZ2a2trVNTU2FhYRMTE2trayIiIjQ0NAAAAAAAAAAAAAAAACH5BAEAAA0ALAAAAAAQABAAAARMsMlJq704683nQcpAMEADMMliLgmzKMnJCAwTKAeMqMAQMLpZyjBAGAig1OcTyBkaBkbBuaAVGIdFNtFQIBApQUN1OxpUnbR6zaZEAAA7</os:Image>
+<SearchForm>http://suche.gmx.net/search/web/</SearchForm>
+<os:Url type="text/html" method="GET" template="http://go.gmx.net/br/moz4_search_web/?su={searchTerms}">
+</os:Url>
+<os:Url type="application/x-suggestions+json" method="GET" template="http://suggestplugin.ui-portal.de/suggest_json/?su={searchTerms}&amp;brand=gmx&amp;origin=moz_splugin_ff">
+</os:Url>
+</SearchPlugin>

@@ -1,0 +1,262 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<?xml-stylesheet href="chrome://global/skin/"?>
+<?xml-stylesheet type="text/css"
+  href="chrome://ebaycompanion/content/bindings/bindings.css" ?>
+<?xml-stylesheet type="text/css"
+  href="chrome://ebaycompanion/skin/sidebar.css" ?>
+<?xml-stylesheet type="text/css"
+  href="chrome://ebaycompanion-os/skin/sidebar.css" ?>
+<?xml-stylesheet type="text/css"
+  href="chrome://ebaycompanion/skin/notification.css" ?>
+<?xml-stylesheet type="text/css"
+  href="chrome://ebaycompanion-os/skin/notification.css" ?>
+<?xml-stylesheet type="text/css"
+  href="chrome://ebaycompanion/skin/searchBox.css" ?>
+<?xml-stylesheet type="text/css"
+  href="chrome://ebaycompanion-os/skin/searchBox.css" ?>
+
+<!DOCTYPE page SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<page id="ebayCompanionSidebar"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  onload="Sidebar.init();"
+  onunload="Sidebar.uninit();">
+
+  <script type="application/x-javascript"
+    src="chrome://ebaycompanion/content/sidebar/sidebar.js" />
+  <script type="application/x-javascript"
+    src="chrome://ebaycompanion/content/sidebar/searchManager.js" />
+  <script type="application/x-javascript"
+    src="chrome://ebaycompanion/content/sidebar/dndManager.js" />
+  <script type="application/javascript"
+    src="chrome://global/content/nsDragAndDrop.js" />
+  <script type="application/javascript"
+    src="chrome://browser/content/utilityOverlay.js" />
+
+  <commandset id="commandset">
+    <command id="apply-filter" oncommand="Sidebar.applyFilter()" />
+    <command id="refresh"
+      oncommand="EbayCompanion.ApiCoordinator.hardUpdate()" />
+  </commandset>
+
+  <broadcasterset id="broadcasterset">
+    <broadcaster id="greeting-broadcaster"
+      username="username" feedbackscore="0" />
+  </broadcasterset>
+
+  <!-- Search box autocomplete panel -->
+  <popupset id="sidebarPopupSet">
+    <panel id="gs-ebay-search-panel" noautofocus="true" level="parent">
+      <richlistbox id="gs-ebay-search-panel-box" flex="1"
+        onkeypress="if (13 == event.keyCode) {
+          Sidebar.SearchManager.handleResultSelected(event); }"
+        onmouseup="Sidebar.SearchManager.handleResultSelected(event);"
+        onmouseover="Sidebar.SearchManager.handleResultMouseOver(event);">
+      </richlistbox>
+    </panel>
+  </popupset>
+
+  <vbox id="gs-ebay-sidebar-content" flex="1">
+    <!-- Ribbon -->
+    <hbox id="gs-ebay-sidebar-ribbon">
+      <hbox class="color1" />
+      <hbox class="color2" />
+      <hbox class="color3"/>
+      <hbox class="color4"/>
+      <hbox class="color5"/>
+      <hbox class="color6"/>
+      <hbox class="color7"/>
+    </hbox>
+
+    <!-- Search box -->
+    <hbox id="gs-ebay-search-container" align="center">
+      <textbox id="gs-ebay-search-textbox" flex="1"
+        empty="true" emptytext="&ecSidebar.search;"
+        tooltiptext="&ecSidebar.search.tooltip;"
+        clickSelectsAll="true" maxrows="10" timeout="250"
+        onfocus="if (this.value.length) { this.select(); }"
+        oninput="Sidebar.SearchManager.handleSearchTextInput(event);"
+        onkeypress="Sidebar.SearchManager.handleSearchTextKeyPress(event);" />
+      <button id="gs-ebay-search-button"
+        tooltiptext="&ecSidebar.search.tooltip;"
+        onclick="checkForMiddleClick(this, event);"
+        oncommand="Sidebar.SearchManager.loadSearchPage(event);" />
+    </hbox>
+
+    <deck id="gs-ebay-sidebar-status-deck" selectedIndex="0" flex="1">
+      <!-- shown when the user is not logged in -->
+      <vbox id="gs-ebay-sidebar-signout-content">
+        <vbox id="gs-ebay-sidebar-welcome-box">
+          <description class="gs-ebay-sidebar-welcome-title">
+            &ecSidebar.label.welcome;
+          </description>
+        </vbox>
+        <notificationbox id="gs-ebay-signed-out-warning-notificationbox" />
+        <vbox id="gs-ebay-sidebar-signin-box">
+          <description class="gs-ebay-sidebar-signin-text">
+            &ecSidebar.label.instructions;
+          </description>
+        </vbox>
+        <spacer height="20" />
+        <hbox id="gs-ebay-sidebar-connect-box" pack="center">
+          <gsebaybutton id="gs-ebay-connect-button"
+            label="&ecSidebar.button.signin;" gsebaysize="big"
+            onclick="Sidebar.connectCommand(event);" />
+        </hbox>
+        <spacer flex="1" />
+        <notificationbox id="gs-ebay-signed-out-information-notificationbox" />
+      </vbox>
+
+      <!-- shown when the user is logged in -->
+      <vbox id="gs-ebay-sidebar-signin-content">
+
+        <hbox class="gs-ebay-tabbox-container">
+          <sidebartabbox id="gs-ebay-sidebar-tabbox" flex="1"
+            command="apply-filter">
+            <sidebartab id="gs-ebay-sidebar-active-tab"
+              label="&ecSidebar.tab.active.label;" selected="true">
+              <menupopup id="active-filter-menupopup">
+                <menuitem value="all" type="radio"
+                  label="&ecSidebar.tab.active.filter.all;"
+                  accesskey="&ecSidebar.tab.active.filter.all.key;"
+                  command="apply-filter" checked="true" />
+                <menuitem value="buying" type="radio"
+                  label="&ecSidebar.tab.active.filter.buying;"
+                  accesskey="&ecSidebar.tab.active.filter.buying.key;"
+                  command="apply-filter" />
+                <menuitem value="watching" type="radio"
+                  label="&ecSidebar.tab.active.filter.watching;"
+                  accesskey="&ecSidebar.tab.active.filter.watching.key;"
+                  command="apply-filter" />
+                <menuitem value="selling" type="radio"
+                  label="&ecSidebar.tab.active.filter.selling;"
+                  accesskey="&ecSidebar.tab.active.filter.selling.key;"
+                  command="apply-filter" />
+              </menupopup>
+            </sidebartab>
+            <sidebartab id="gs-ebay-sidebar-ended-tab"
+              label="&ecSidebar.tab.ended.label;"
+              filter="ended-filter-menupopup">
+              <menupopup id="ended-filter-menupopup">
+                <menuitem value="all" type="radio"
+                  label="&ecSidebar.tab.ended.filter.all;"
+                  accesskey="&ecSidebar.tab.ended.filter.all.key;"
+                  command="apply-filter" checked="true" />
+                <menuitem value="watching" type="radio"
+                  label="&ecSidebar.tab.ended.filter.watching;"
+                  accesskey="&ecSidebar.tab.ended.filter.watching.key;"
+                  command="apply-filter" />
+                <menuitem value="won" type="radio"
+                  label="&ecSidebar.tab.ended.filter.won;"
+                  accesskey="&ecSidebar.tab.ended.filter.won.key;"
+                  command="apply-filter" />
+                <menuitem value="lost" type="radio"
+                  label="&ecSidebar.tab.ended.filter.lost;"
+                  accesskey="&ecSidebar.tab.ended.filter.lost.key;"
+                  command="apply-filter" />
+                <menuitem value="sold" type="radio"
+                  label="&ecSidebar.tab.ended.filter.sold;"
+                  accesskey="&ecSidebar.tab.ended.filter.sold.key;"
+                  command="apply-filter" />
+                <menuitem value="unsold" type="radio"
+                  label="&ecSidebar.tab.ended.filter.unsold;"
+                  accesskey="&ecSidebar.tab.ended.filter.unsold.key;"
+                  command="apply-filter" />
+              </menupopup>
+            </sidebartab>
+            <sidebartab id="gs-ebay-sidebar-more-tab"
+              label="&ecSidebar.tab.more.label;" hideDropDown="true">
+            </sidebartab>
+          </sidebartabbox>
+
+          <vbox id="gs-ebay-home-button-container">
+            <toolbarbutton id="gs-ebay-home-button" type="menu-button"
+              tooltiptext="&ecSidebar.navigation.tooltip;"
+              onclick="checkForMiddleClick(this, event);"
+              oncommand=
+                "EbayCompanion.openPage(
+                  event, 'sidebarButton', 'homePage', {});">
+              <menupopup>
+                <menuitem id="menu-homepage"
+                  label="&ecSidebar.navigation.menu.home;"
+                  accesskey="&ecSidebar.navigation.menu.home.key;"
+                  tooltiptext="&ecSidebar.navigation.menu.home;"
+                  onclick="checkForMiddleClick(this, event);"
+                  oncommand=
+                    "EbayCompanion.openPage(
+                      event, 'sidebarButton', 'homePage', {});" />
+                <menuitem id="menu-buy"
+                  label="&ecSidebar.navigation.menu.buy;"
+                  accesskey="&ecSidebar.navigation.menu.buy.key;"
+                  tooltiptext="&ecSidebar.navigation.menu.buy;"
+                  onclick="checkForMiddleClick(this, event);"
+                  oncommand=
+                    "EbayCompanion.openPage(
+                      event, 'sidebarButton', 'buy', {});" />
+                <menuitem id="menu-sell"
+                  label="&ecSidebar.navigation.menu.sell;"
+                  accesskey="&ecSidebar.navigation.menu.sell.key;"
+                  tooltiptext="&ecSidebar.navigation.menu.sell;"
+                  onclick="checkForMiddleClick(this, event);"
+                  oncommand=
+                    "EbayCompanion.openPage(
+                      event, 'sidebarButton', 'sell', {});" />
+                <menuitem id="menu-myebay"
+                  label="&ecSidebar.navigation.menu.myebay;"
+                  accesskey="&ecSidebar.navigation.menu.myebay.key;"
+                  tooltiptext="&ecSidebar.navigation.menu.myebay;"
+                  onclick="checkForMiddleClick(this, event);"
+                  oncommand=
+                    "EbayCompanion.openPage(
+                      event, 'sidebarButton', 'myEbay', {});" />
+                <menuitem id="menu-community"
+                  label="&ecSidebar.navigation.menu.community;"
+                  accesskey="&ecSidebar.navigation.menu.community.key;"
+                  tooltiptext="&ecSidebar.navigation.menu.community;"
+                  onclick="checkForMiddleClick(this, event);"
+                  oncommand=
+                    "EbayCompanion.openPage(
+                      event, 'sidebarButton', 'community', {});" />
+              </menupopup>
+            </toolbarbutton>
+          </vbox>
+        </hbox>
+
+        <deck id="gs-ebay-sidebar-list-deck" selectedIndex="0" flex="1">
+          <!-- Items list -->
+          <itemlist id="gs-ebay-sidebar-item-list" flex="1"
+            ondragover="Sidebar.DragNDropManager.onDragOver(event);"
+            ondrop="Sidebar.DragNDropManager.onDrop(event);"
+            ondragdrop="Sidebar.DragNDropManager.onDragDrop(event);" >
+            <notificationbox id="gs-ebay-warning-notificationbox" flex="1" />
+          </itemlist>
+          <!-- More list -->
+          <gsebayaccordion id="gs-ebay-sidebar-more-list" flex="1"
+            ondragover="Sidebar.DragNDropManager.onDragOver(event);"
+            ondrop="Sidebar.DragNDropManager.onDrop(event);"
+            ondragdrop="Sidebar.DragNDropManager.onDragDrop(event);">
+            <gsebayaccordionitemdeals id="gs-ebay-sidebar-deals-list"
+              title="&ecSidebar.daily.deals.label;" />
+            <gsebayaccordionitemsearches id="gs-ebay-sidebar-searches-list"
+              title="&ecSidebar.search.saved.label;" />
+            <gsebayaccordionitemsellers id="gs-ebay-sidebar-sellers-list"
+              title="&ecBrowser.toolbarbutton.menu.sellers;" />
+          </gsebayaccordion>
+        </deck>
+
+        <vbox pack="end">
+          <notificationbox id="gs-ebay-information-notificationbox" />
+        </vbox>
+      </vbox>
+    </deck>
+    <refreshbar id="refresh-bar" command="refresh">
+      <greetingwidget id="greeting-widget" flex="1"
+        observes="greeting-broadcaster" />
+    </refreshbar>
+  </vbox>
+</page>

@@ -1,5 +1,0 @@
-content	fontsetter		content/
-skin	fontsetter classic/1.0 skin/
-overlay	chrome://browser/content/browser.xul	chrome://fontsetter/content/fontsetter.xul
-locale fontsetter zh-CN locale/zh-CN/
-locale fontsetter en-US locale/en-US/

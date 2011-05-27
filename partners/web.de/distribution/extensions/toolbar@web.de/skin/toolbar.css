@@ -1,0 +1,24 @@
+/* deal with too small window */
+#united-toolbar[mode="full"]
+{
+  /* Needed so that the overflow event fires */
+  overflow: hidden;
+}
+toolbar[mode="full"] toolbarbutton[id^="united-"][type="menu-button"] > toolbarbutton
+{
+  min-width: 15px; /* override 57px in browser.css */
+}
+#united-toolbar[mode="full"] toolbarbutton[crowded="true"] label.toolbarbutton-text
+{
+  display: none;
+}
+
+#united-toolbar {
+  -moz-box-ordinal-group: 99 !important;
+}
+
+toolbar[mode="full"] toolbarbutton[id^="united-"] > label.toolbarbutton-text
+{
+  margin-left: 3px !important;
+  margin-right: 3px !important;
+}

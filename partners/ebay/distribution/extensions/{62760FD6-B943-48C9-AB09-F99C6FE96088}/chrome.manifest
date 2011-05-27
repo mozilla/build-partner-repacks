@@ -1,0 +1,39 @@
+##
+# Copyright (C) 2007-2010 eBay Inc. All Rights Reserved.
+##
+
+content     ebaycompanion          chrome/content/
+
+# Locales
+locale      ebaycompanion en-US    chrome/locale/en-US/
+locale      ebaycompanion en-GB    chrome/locale/en-GB/
+locale      ebaycompanion es-ES    chrome/locale/es-ES/
+locale      ebaycompanion fr       chrome/locale/fr/
+locale      ebaycompanion de       chrome/locale/de/
+locale      ebaycompanion it       chrome/locale/it/
+locale      ebaycompanion pl       chrome/locale/pl/
+locale      ebaycompanion nl-NL    chrome/locale/nl-NL/
+
+# OS-specific
+skin        ebaycompanion          classic/1.0 chrome/skin/all/
+skin        ebaycompanion-os       classic/1.0 chrome/skin/unix/
+skin        ebaycompanion-os       classic/1.0 chrome/skin/win/     os=WINNT
+skin        ebaycompanion-os       classic/1.0 chrome/skin/mac/     os=Darwin
+
+# Resources
+resource    ebaycompanion          modules/
+resource    glaxebay               modules/common/glaxstar/
+
+overlay     chrome://browser/content/browser.xul          chrome://ebaycompanion/content/browser.xul
+style       chrome://global/content/customizeToolbar.xul  chrome://ebaycompanion/content/bindings/bindings.css
+style       chrome://global/content/customizeToolbar.xul  chrome://ebaycompanion/skin/eBay.css
+
+# Interfaces
+interfaces components/ecIEbayApiCallback.xpt
+interfaces components/ecIEbayApiRequest.xpt
+interfaces components/ecIEbayArgumentsHandler.xpt
+
+# EbayArgumentHandler
+component {D51773EF-96FF-4FCB-A8A0-F0589BF8B32D} components/ebayArgumentHandler.js
+contract @mozilla.org/commandlinehandler/general-startup;1?type=ebayarghandler {D51773EF-96FF-4FCB-A8A0-F0589BF8B32D}
+category command-line-handler m-ebayarghandler @mozilla.org/commandlinehandler/general-startup;1?type=ebayarghandler

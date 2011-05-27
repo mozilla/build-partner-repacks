@@ -1,0 +1,26 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+.content {
+  color: #686868;
+}
+label {
+  margin: 0px !important;
+}
+.feedbackscore {
+  margin-left: 0.5em !important;
+  color: #939393;
+}
+.link:hover {
+  color: blue;
+  cursor: pointer !important;
+}
+
+.gs-ebay-user-menu {
+  padding: 2px 4px 2px 4px;
+  list-style-image: url(chrome://global/skin/arrow/arrow-up-dis.gif);
+}
+
+.gs-ebay-user-menu:hover {
+  list-style-image: url(chrome://global/skin/arrow/arrow-up.gif);
+}

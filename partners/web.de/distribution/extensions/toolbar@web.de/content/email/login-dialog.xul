@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dialog [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/email/login-dialogs.dtd">
+  %thisDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://unitedtb/skin/email/login-dialog.css" type="text/css"?>
+<dialog id="united-login-dialog"
+    title="&window.title;"
+    onload="onLoad();"
+    ondialogaccept="return onOK();"
+    ondialogcancel="return onCancel();"
+    buttonlabelaccept="&ok.button.label;"
+    buttonaccesskeyaccept="&ok.button.accesskey;"
+    buttonpack="center"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <script type="application/x-javascript">
+      var united = window.opener.united;
+      united.loadJS("chrome://unitedtb/content/email/login-dialog.js", this);
+      united.loadJS("chrome://unitedtb/content/email/login-dialogs.js", this);
+    </script>
+
+    <hbox id="intro-box">
+      <description id="intro">&login.intro;</description>
+    </hbox>
+    <vbox pack="start">
+      <grid>
+        <columns>
+          <column />
+          <column flex="1"/>
+        </columns>
+        <rows>
+          <row align="baseline">
+            <label value="&emailaddress-dialog.label;"
+                accesskey="&emailaddress.accesskey;"
+                control="emailaddress"
+                />
+            <textbox id="emailaddress"
+                onblur="onLeaveEmailaddress();"
+                error-domain="&domain.error;"
+                error-syntax="&syntax.error;"
+                />
+          </row>
+          <row align="baseline">
+            <label value="&password.label;"
+                accesskey="&password.accesskey;"
+                control="password"
+                />
+            <textbox id="password" type="password" />
+          </row>
+        </rows>
+      </grid>
+    </vbox>
+    <hbox id="long-session-box">
+      <checkbox id="long-session"
+          label="&long-session.label;"
+          accesskey="&long-session.accesskey;"
+          />
+    </hbox>
+    <hbox id="create-account-box">
+      <button id="create-account"
+          type="link"
+          label="&create-account.label;"
+          accesskey="&create-account.accesskey;"
+          oncommand="onCreateAccount();"
+          />
+    </hbox>
+    <hbox id="error-box">
+      <description id="error-msg" />
+    </hbox>
+</dialog>

@@ -1,0 +1,9 @@
+/**
+ *  Copyright (C) 2007-2011 eBay Inc. All Rights Reserved.
+ */
+
+.gs-ebay-deal-tooltip {
+  -moz-appearance: none !important;
+  background: transparent !important;
+  border: none !important;
+}

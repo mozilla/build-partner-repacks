@@ -1,0 +1,164 @@
+/**
+ *  Copyright (C) 2007-2011 eBay Inc. All Rights Reserved.
+ */
+
+.gs-ebay-deal-container {
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  border: none;
+  height: 82px !important;
+  color: black;
+  cursor: pointer !important;
+  background-color: #FFF;
+  padding: 2px 2px 2px 2px;
+}
+
+.gs-ebay-deal-container[ebayhover] {
+  background-color: #ffec9b;
+}
+
+.gs-ebay-deal-container:not([gsebayalert="true"]) .gs-ebay-deal-details-open {
+  cursor: pointer;
+}
+
+.gs-ebay-deal-details-open-image {
+  list-style-image: url("chrome://ebaycompanion/skin/images/item-details-view.png");
+  border: 1px solid #919191;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  margin-left: 4px;
+  margin-right: 4px;
+  width: 11px;
+  height: 11px;
+}
+
+.gs-ebay-deal-details-open:hover
+.gs-ebay-deal-details-open-image {
+  border-color: #32445c;
+}
+
+.gs-ebay-deal-container[gsebayfocused="true"]:not([gsebayalert="true"]) .gs-ebay-deal-background,
+.gs-ebay-deal-container:not([gsebayalert="true"]):hover .gs-ebay-deal-background {
+  background-image: -moz-linear-gradient(#FFFDF1, #FFFBE8, #FFF9DF, #FEF8C3, #FEF7BC);
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+}
+
+.gs-ebay-deal-background {
+  background-image: -moz-linear-gradient(#FFFFFF, #FFFDF1, #FFFBE8, #FFF9DF, #FEF8C3);
+  border-left: 1px solid #FFEA80;
+  border-bottom: 1px solid #FFEA80;
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+}
+
+.gs-ebay-deal-state-box { /* Deal */
+  -moz-border-radius: 6px 0px 0px 6px;
+  border-radius: 6px 0px 0px 6px;
+  border: none;
+  margin-top: 0px;
+  margin-right: 0px;
+  padding: 0px;
+  width: 4px;
+  background-color: #FA8E10;
+}
+
+.gs-ebay-deal-content-box {
+  padding: 0px 2px 0px 4px;
+}
+
+.gs-ebay-deal-top-box {
+  -moz-box-align: start;
+  height: 18px !important;
+}
+
+.gs-ebay-deal-main-box {
+  -moz-box-align: start;
+  height: 64px !important;
+}
+
+.gs-ebay-deal-state-label { /* Deal */
+  margin-left: 0px !important;
+  margin-top: 2px;
+  font-weight: bold;
+  font-size: 1em;
+  color: #FA8E10;
+  cursor: pointer !important;
+}
+
+.gs-ebay-deal-image-container {
+  background-image: url("chrome://ebaycompanion/skin/images/empty-image.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  -moz-box-align: center;
+  -moz-box-pack: center;
+  height: 58px;
+  width: 58px;
+  background-color: #FFF;
+  border: 1px solid #E0E0E0;
+}
+
+.gs-ebay-deal-image {
+  height: 58px;
+  width: 58px;
+  min-height: 58px;
+  min-width: 58px;
+}
+
+.gs-ebay-deal-content-right {
+  padding-left: 4px;
+  margin-top: -1px;
+}
+
+.gs-ebay-deal-description {
+  margin: 0px !important;
+  font-size: 1em;
+  color: #373737;
+  line-height: 15px;
+  height: 30px;
+  overflow: hidden !important;
+}
+
+.gs-ebay-deal-description-internal {
+  cursor: pointer !important;
+  margin: 0px !important;
+}
+
+.gs-ebay-deal-price-box {
+  -moz-box-align: start;
+  -moz-box-pack: start;
+  margin-top: -1px;
+}
+
+.gs-ebay-deal-price-label {
+  margin-left: 0px !important;
+  font-weight: bold;
+  font-size: 1em;
+  color: #333;
+  cursor: pointer !important;
+}
+
+.gs-ebay-deal-savings-label {
+  margin-left: 0px !important;
+  font-weight: bold;
+  font-size: 1em;
+  color: #FA8E10;
+  cursor: pointer !important;
+}
+
+.gs-ebay-deal-shipping-box {
+  -moz-box-align: start;
+  -moz-box-pack: start;
+}
+
+.gs-ebay-deal-shipping-label {
+  margin-left: 0px !important;
+  font-weight: bold;
+  font-size: 0.9em;
+  color: #666;
+  cursor: pointer !important;
+}
+
+.gs-ebay-deal-action-button {
+  margin: 0px 2px 0px 2px;
+}

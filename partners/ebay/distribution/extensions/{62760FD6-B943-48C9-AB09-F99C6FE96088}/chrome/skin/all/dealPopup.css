@@ -1,0 +1,261 @@
+/**
+ *  Copyright (C) 2007-2011 eBay Inc. All Rights Reserved.
+ */
+.gs-ebay-deal-popup-body {
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+  background-color: #ffec9b;
+}
+
+.gs-ebay-deal-popup-top {
+  padding: 4px 4px 5px 4px;
+}
+
+.gs-ebay-deal-popup-back-image {
+  list-style-image: url("chrome://ebaycompanion/skin/images/item-details-back.png");
+  border: 1px solid #919191;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  margin-left: 3px;
+  height: 11px;
+  width: 11px;
+  cursor: pointer;
+  color: #86b1e7;
+}
+
+.gs-ebay-deal-popup-top:hover
+.gs-ebay-deal-popup-back-image {
+  border-color: #32445c;
+}
+
+.gs-ebay-deal-popup-back-label {
+  color: #2a2a2a;
+  padding: 0px;
+  margin: 0px;
+  cursor: pointer !important;
+}
+
+.gs-ebay-deal-popup-back-label:hover {
+  text-decoration: underline;
+}
+
+.gs-ebay-popup-navigation-previous-image {
+  list-style-image: url("chrome://ebaycompanion/skin/images/item-details-previous.png");
+  border: 1px solid #919191;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  margin: 0px 3px;
+  height: 11px;
+  width: 11px;
+  cursor: pointer;
+  color: #86b1e7;
+}
+
+.gs-ebay-popup-navigation-next-image {
+  list-style-image: url("chrome://ebaycompanion/skin/images/item-details-next.png");
+  border: 1px solid #919191;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  margin: 0px 3px;
+  height: 11px;
+  width: 11px;
+  cursor: pointer;
+  color: #86b1e7;
+}
+
+.gs-ebay-popup-navigation-next-image:hover:not([disabled="true"]),
+.gs-ebay-popup-navigation-previous-image:hover:not([disabled="true"]) {
+  border-color: #32445c;
+}
+
+.gs-ebay-popup-navigation-next-image[disabled="true"],
+.gs-ebay-popup-navigation-previous-image[disabled="true"] {
+  opacity: 0.2;
+  cursor: default;
+}
+
+.gs-ebay-deal-popup-main-container {
+  background: white;
+  margin: 2px;
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+}
+
+.gs-ebay-deal-popup-state-box { /* Deal */
+  -moz-border-radius: 6px 0px 0px 6px;
+  border-radius: 6px 0px 0px 6px;
+  margin: 0px;
+  padding: 0px;
+  width: 4px;
+  background-color: #FA8E10;
+}
+
+.gs-ebay-deal-popup-state-container {
+  padding-top: 2px;
+}
+
+.gs-ebay-deal-popup-details-box {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.gs-ebay-deal-popup-state-label {
+  font-weight: bold;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  color: #FA8E10;
+}
+
+.gs-ebay-deal-popup-image-container {
+  min-height: 58px;
+  min-width: 58px;
+  border: none;
+  margin: 0px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.gs-ebay-deal-popup-image {
+  min-height: 40px;
+  min-width: 40px;
+  max-height: 140px;
+  max-width: 140px;
+}
+
+.gs-ebay-deal-popup-info-container {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.gs-ebay-deal-popup-description {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-left: 0px !important;
+}
+
+.gs-ebay-deal-popup-inner-description {
+  margin-left: 0px !important;
+}
+
+.gs-ebay-deal-popup-grid {
+  color: #333;
+}
+
+.gs-ebay-deal-popup-grid row > hbox,
+.gs-ebay-deal-popup-grid row > vbox {
+  margin-left: 8px !important;
+}
+.gs-ebay-deal-popup-grid row > hbox:first-child,
+.gs-ebay-deal-popup-grid row > vbox:first-child {
+  margin-left: 0px !important;
+}
+
+.gs-ebay-deal-popup-grid row > hbox > label:first-child,
+.gs-ebay-deal-popup-grid row > vbox > label:first-child {
+  margin-left: 0px !important;
+}
+
+.gs-ebay-deal-popup-grid row > hbox:first-child > label,
+.gs-ebay-deal-popup-grid row > vbox:first-child > label {
+  color: #666;
+}
+
+.gs-ebay-deal-popup-grid row > hbox,
+.gs-ebay-deal-popup-grid row > vbox {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  border-top: 1px solid #E8E8E8;
+}
+
+.gs-ebay-deal-popup-grid row:first-child > hbox,
+.gs-ebay-deal-popup-grid row:first-child > vbox {
+  border-top: none;
+}
+
+.gs-ebay-deal-popup-current-price {
+  color: #000;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.gs-ebay-deal-popup-listed-price {
+  text-decoration: line-through;
+  color: #666;
+}
+
+.gs-ebay-deal-popup-savings-disclosure {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  border-top: 1px solid #E8E8E8;
+}
+
+.gs-ebay-deal-popup-savings-disclosure-label {
+  color: #949494;
+  margin-left: 0px !important;
+  padding-left: 0px !important;
+}
+
+p {
+  margin: 0px !important;
+}
+
+.gs-ebay-deal-popup-seller-positive,
+.gs-ebay-deal-popup-seller-score,
+.gs-ebay-deal-popup-seller-open,
+.gs-ebay-deal-popup-seller-close {
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+
+.gs-ebay-deal-popup-seller-star {
+  height: 11px;
+  width: 10px;
+  max-height: 11px;
+  max-width: 10px;
+  padding: 0px !important;
+  margin: 0px !important;
+  border: none;
+}
+
+.gs-ebay-deal-popup-seller-star[gsebaystar="0"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/stars/10.png");
+}
+.gs-ebay-deal-popup-seller-star[gsebaystar="1"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/stars/50.png");
+}
+.gs-ebay-deal-popup-seller-star[gsebaystar="2"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/stars/100.png");
+}
+.gs-ebay-deal-popup-seller-star[gsebaystar="3"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/stars/500.png");
+}
+.gs-ebay-deal-popup-seller-star[gsebaystar="4"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/stars/1000.png");
+}
+.gs-ebay-deal-popup-seller-star[gsebaystar="5"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/stars/5000.png");
+}
+.gs-ebay-deal-popup-seller-star[gsebaystar="6"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/stars/10000.png");
+}
+.gs-ebay-deal-popup-seller-star[gsebaystar="7"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/stars/25000.png");
+}
+.gs-ebay-deal-popup-seller-star[gsebaystar="8"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/stars/50000.png");
+}
+.gs-ebay-deal-popup-seller-star[gsebaystar="9"] {
+  list-style-image: url("chrome://ebaycompanion/skin/images/stars/100000.png");
+}
+
+.gs-ebay-deal-popup-seller {
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+
+.gs-ebay-deal-popup-page-views,
+.gs-ebay-deal-popup-watches,
+.gs-ebay-deal-popup-bids {
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}

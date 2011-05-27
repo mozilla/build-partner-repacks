@@ -1,0 +1,43 @@
+/* Hack so that bottom is not cut off
+  https://bugzilla.mozilla.org/show_bug.cgi?id=394793
+  Not working, so we will add padding instead
+*/
+
+/*
+prefpane > .content-box {
+  overflow: -moz-hidden-unscrollable;
+}
+*/
+
+prefpane {
+  padding-bottom: 5px;
+}
+
+
+/**
+ * Something that looks like a hyperlink, and acts like a button.
+ * <copied to="email/login-dialog.css"/>
+ */
+button[type="link"],
+button[type="united-link"] {
+  border: none;
+  -moz-appearance: none;
+  background-color: inherit;
+  color: -moz-nativehyperlinktext;
+  text-decoration: underline;
+  cursor: pointer;
+}
+ /* TODO doesn't work, is still centered.
+  Using <hbox> wrapper as workaround.
+button[type="link"] > hbox {
+  -moz-box-pack: start;
+}
+button[type="link"] .button-text {
+  text-align: start;
+}
+*/
+
+#united-pref-window {
+  min-width: 350px;
+  min-height: 200px;
+}

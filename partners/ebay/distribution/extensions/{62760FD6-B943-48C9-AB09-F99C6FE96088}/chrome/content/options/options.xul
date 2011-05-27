@@ -1,0 +1,551 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet
+  href="chrome://browser/skin/preferences/preferences.css" type="text/css"?>
+<?xml-stylesheet
+  href="chrome://ebaycompanion/skin/options.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<prefwindow xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+            id="ebayOptions" windowtype="ebayComp:options"
+            title="&ecOptions.window.title;">
+
+  <prefpane id="general-pane" label="&ecOptions.tab.general;" flex="1">
+    <preferences>
+      <!-- name attributes for these are generated programmatically -->
+      <preference id="useRegistrationSite" type="bool" />
+      <preference id="chosenSite" type="string" />
+      <preference id="openPagesInNewTab" type="bool" />
+      <preference id="notifyNewMessages" type="bool" />
+      <preference id="notifyFeedback" type="bool" />
+      <preference id="connectAutomatically" type="bool" />
+    </preferences>
+
+    <groupbox>
+      <caption label="&ecOptions.general.ebayPages;" />
+      <label value="&ecOptions.general.whenOpeningPages;"/>
+      <vbox class="indent">
+        <radiogroup id="preferredsite-radiogroup"
+                    preference="useRegistrationSite">
+          <radio id="preferredsite-usedefault"
+                 label="&ecOptions.general.useRegistrationSite;"
+                 accesskey="&ecOptions.general.useRegistrationSite.key;"
+                 value="true" />
+          <hbox class="indent">
+            <label id="preferredsite-regsitename"
+                   value="&ecOptions.general.regSiteName;"
+                   onclick="document.getElementById('useRegistrationSite').
+                              value=true" />
+          </hbox>
+          <hbox>
+            <radio id="preferredsite-usespecified"
+                   label="&ecOptions.general.useThisSite;"
+                   accesskey="&ecOptions.general.useThisSite.key;"
+                   value="false" />
+            <menulist id="preferredsite-menulist" preference="chosenSite"
+                      oncommand="document.getElementById('useRegistrationSite').
+                                   value=false" />
+          </hbox>
+        </radiogroup>
+      </vbox>
+      <separator class="thin" />
+      <hbox>
+        <checkbox label="&ecOptions.general.openPagesInNewTab;"
+                  accesskey="&ecOptions.general.openPagesInNewTab.key;"
+                  preference="openPagesInNewTab" />
+      </hbox>
+      <separator class="thin" />
+    </groupbox>
+
+    <groupbox>
+      <caption label="&ecOptions.general.notifications;" />
+      <label value="&ecOptions.general.notifyWhen;" />
+      <vbox class="indent">
+        <checkbox label="&ecOptions.general.messageNotification;"
+                  accesskey="&ecOptions.general.messageNotification.key;"
+                  preference="notifyNewMessages" />
+        <checkbox label="&ecOptions.general.feedbackNotification;"
+                  accesskey="&ecOptions.general.feedbackNotification.key;"
+                  preference="notifyFeedback" />
+      </vbox>
+    </groupbox>
+
+    <groupbox>
+      <caption label="&ecOptions.general.security;" />
+      <checkbox label="&ecOptions.general.connectAutomatically;"
+                accesskey="&ecOptions.general.connectAutomatically.key;"
+                preference="connectAutomatically" />
+    </groupbox>
+  </prefpane>
+
+  <!--
+   - IMPORTANT: The naming of these preferences and bindings follow a set
+   - pattern.  The code relies on this, so be careful when adding new ones.
+   -->
+  <prefpane id="alerts-pane" label="&ecOptions.tab.alerts;" flex="1">
+    <preferences id="alert-preferences">
+      <preference id="alerts.enableSound" type="bool" />
+      <preference id="alerts.watching.endingSoon.isEnabled" type="bool" />
+      <preference id="alerts.watching.endingSoon.isPrimary" type="bool" />
+      <preference id="alerts.watching.endingSoon.isEnabled" type="bool" />
+      <preference id="alerts.watching.endingSoon.isPrimary" type="bool" />
+      <preference id="alerts.bidding.endingSoon.isEnabled" type="bool" />
+      <preference id="alerts.bidding.endingSoon.isPrimary" type="bool" />
+      <preference id="alerts.bidding.outbid.isEnabled" type="bool" />
+      <preference id="alerts.bidding.outbid.isPrimary" type="bool" />
+      <preference id="alerts.bidding.highBidder.isEnabled" type="bool" />
+      <preference id="alerts.bidding.highBidder.isPrimary" type="bool" />
+      <preference id="alerts.bidding.raisedBid.isEnabled" type="bool" />
+      <preference id="alerts.bidding.raisedBid.isPrimary" type="bool" />
+      <preference id="alerts.bidding.itemWon.isEnabled" type="bool" />
+      <preference id="alerts.bidding.itemWon.isPrimary" type="bool" />
+      <preference id="alerts.bidding.itemLost.isEnabled" type="bool" />
+      <preference id="alerts.bidding.itemLost.isPrimary" type="bool" />
+      <preference id="alerts.bidding.bestOffer.declined.isEnabled" type="bool" />
+      <preference id="alerts.bidding.bestOffer.declined.isPrimary" type="bool" />
+      <preference id="alerts.bidding.bestOffer.expired.isEnabled" type="bool" />
+      <preference id="alerts.bidding.bestOffer.expired.isPrimary" type="bool" />
+      <preference id="alerts.bidding.bestOffer.countered.isEnabled" type="bool" />
+      <preference id="alerts.bidding.bestOffer.countered.isPrimary" type="bool" />
+      <preference id="alerts.bidding.bestOffer.itemWon.isEnabled" type="bool" />
+      <preference id="alerts.bidding.bestOffer.itemWon.isPrimary" type="bool" />
+      <preference id="alerts.selling.endingSoon.isEnabled" type="bool" />
+      <preference id="alerts.selling.endingSoon.isPrimary" type="bool" />
+      <preference id="alerts.selling.itemSold.isEnabled" type="bool" />
+      <preference id="alerts.selling.itemSold.isPrimary" type="bool" />
+      <preference id="alerts.selling.itemUnsold.isEnabled" type="bool" />
+      <preference id="alerts.selling.itemUnsold.isPrimary" type="bool" />
+      <preference id="alerts.selling.bidPlaced.isEnabled" type="bool" />
+      <preference id="alerts.selling.bidPlaced.isPrimary" type="bool" />
+      <preference id="alerts.selling.bestOffer.itemSold.isEnabled" type="bool" />
+      <preference id="alerts.selling.bestOffer.itemSold.isPrimary" type="bool" />
+      <preference id="alerts.selling.bestOffer.newOffer.isEnabled" type="bool" />
+      <preference id="alerts.selling.bestOffer.newOffer.isPrimary" type="bool" />
+    </preferences>
+    <broadcasterset>
+      <broadcaster id="watching-endingSoon-broadcaster" />
+      <broadcaster id="bidding-endingSoon-broadcaster" />
+      <broadcaster id="bidding-outbid-broadcaster" />
+      <broadcaster id="bidding-highBidder-broadcaster" />
+      <broadcaster id="bidding-raisedBid-broadcaster" />
+      <broadcaster id="bidding-itemWon-broadcaster" />
+      <broadcaster id="bidding-itemLost-broadcaster" />
+      <broadcaster id="bidding-bestOffer.declined-broadcaster" />
+      <broadcaster id="bidding-bestOffer.expired-broadcaster" />
+      <broadcaster id="bidding-bestOffer.countered-broadcaster" />
+      <broadcaster id="bidding-bestOffer.itemWon-broadcaster" />
+      <broadcaster id="selling-endingSoon-broadcaster" />
+      <broadcaster id="selling-itemSold-broadcaster" />
+      <broadcaster id="selling-itemUnsold-broadcaster" />
+      <broadcaster id="selling-bidPlaced-broadcaster" />
+      <broadcaster id="selling-bestOffer.itemSold-broadcaster" />
+      <broadcaster id="selling-bestOffer.newOffer-broadcaster" />
+    </broadcasterset>
+
+    <tabbox>
+      <tabs>
+        <tab label="&ecOptions.alerts.tab.buying;" />
+        <tab label="&ecOptions.alerts.tab.watching;" />
+        <tab label="&ecOptions.alerts.tab.selling;" />
+        <tab label="&ecOptions.alerts.tab.sound;" />
+      </tabs>
+      <tabpanels>
+        <tabpanel id="alerts-group-bidding" orient="vertical">
+          <hbox>
+            <groupbox>
+              <caption label="&ecOptions.alerts.alertOptions;" />
+              <grid>
+                 <columns>
+                    <column class="alert-name" />
+                    <column />
+                    <column />
+                 </columns>
+                 <rows>
+                    <row>
+                       <hbox />
+                       <label value="&ecOptions.alerts.desktop;" />
+                       <label value="&ecOptions.alerts.sidebar;" />
+                    </row>
+                    <radiogroup tabindex="2"
+                                preference="alerts.bidding.endingSoon.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.bidding.endingSoon.key;">
+                      <checkbox tabindex="1"
+                                preference="alerts.bidding.endingSoon.isEnabled"
+                                label="&ecOptions.alerts.bidding.endingSoon;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                        <radio value="true"
+                               observes="bidding-endingSoon-broadcaster" />
+                      </hbox>
+                      <hbox>
+                        <radio value="false"
+                               observes="bidding-endingSoon-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="4"
+                                preference="alerts.bidding.outbid.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.bidding.outbid.key;">
+                      <checkbox tabindex="3"
+                                preference="alerts.bidding.outbid.isEnabled"
+                                label="&ecOptions.alerts.bidding.outbid;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                        <radio value="true"
+                               observes="bidding-outbid-broadcaster" />
+                       </hbox>
+                       <hbox>
+                          <radio value="false"
+                                 observes="bidding-outbid-broadcaster" />
+                       </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="6"
+                                preference="alerts.bidding.highBidder.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.bidding.highBidder.key;">
+                      <checkbox tabindex="5"
+                                preference="alerts.bidding.highBidder.isEnabled"
+                                label="&ecOptions.alerts.bidding.highBidder;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true"
+                            observes="bidding-highBidder-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false"
+                            observes="bidding-highBidder-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="8"
+                                preference="alerts.bidding.raisedBid.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.bidding.raisedBid.key;">
+                      <checkbox tabindex="7"
+                                preference="alerts.bidding.raisedBid.isEnabled"
+                                label="&ecOptions.alerts.bidding.raisedBid;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true"
+                            observes="bidding-raisedBid-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false"
+                            observes="bidding-raisedBid-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="10"
+                                preference="alerts.bidding.itemWon.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.bidding.itemWon.key;">
+                      <checkbox tabindex="9"
+                                preference="alerts.bidding.itemWon.isEnabled"
+                                label="&ecOptions.alerts.bidding.itemWon;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true"
+                                observes="bidding-itemWon-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false"
+                                observes="bidding-itemWon-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="12"
+                                preference="alerts.bidding.itemLost.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.bidding.itemLost.key;">
+                      <checkbox tabindex="11"
+                                preference="alerts.bidding.itemLost.isEnabled"
+                                label="&ecOptions.alerts.bidding.itemLost;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true" observes="bidding-itemLost-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false" observes="bidding-itemLost-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="14"
+                                preference="alerts.bidding.bestOffer.declined.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.bidding.bestOffer.declined.key;">
+                      <checkbox tabindex="13"
+                                preference="alerts.bidding.bestOffer.declined.isEnabled"
+                                label="&ecOptions.alerts.bidding.bestOffer.declined;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true" observes="bidding-bestOffer.declined-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false" observes="bidding-bestOffer.declined-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="16"
+                                preference="alerts.bidding.bestOffer.expired.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.bidding.bestOffer.expired.key;">
+                      <checkbox tabindex="15"
+                                preference="alerts.bidding.bestOffer.expired.isEnabled"
+                                label="&ecOptions.alerts.bidding.bestOffer.expired;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true" observes="bidding-bestOffer.expired-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false" observes="bidding-bestOffer.expired-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="18"
+                                preference="alerts.bidding.bestOffer.countered.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.bidding.bestOffer.countered.key;">
+                      <checkbox tabindex="17"
+                                preference="alerts.bidding.bestOffer.countered.isEnabled"
+                                label="&ecOptions.alerts.bidding.bestOffer.countered;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true" observes="bidding-bestOffer.countered-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false" observes="bidding-bestOffer.countered-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="20"
+                                preference="alerts.bidding.bestOffer.itemWon.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.bidding.bestOffer.itemWon.key;">
+                      <checkbox tabindex="19"
+                                preference="alerts.bidding.bestOffer.itemWon.isEnabled"
+                                label="&ecOptions.alerts.bidding.bestOffer.itemWon;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true" observes="bidding-bestOffer.itemWon-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false" observes="bidding-bestOffer.itemWon-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                 </rows>
+              </grid>
+              <separator class="thin" />
+            </groupbox>
+          </hbox>
+        </tabpanel>
+        <tabpanel id="alerts-group-watching" orient="vertical">
+          <hbox>
+            <groupbox>
+              <caption label="&ecOptions.alerts.alertOptions;" />
+              <grid>
+                <columns>
+                  <column class="alert-name" />
+                  <column />
+                  <column />
+                </columns>
+                <rows>
+                  <row>
+                    <hbox />
+                    <label value="&ecOptions.alerts.desktop;" />
+                    <label value="&ecOptions.alerts.sidebar;" />
+                  </row>
+                  <radiogroup tabindex="2"
+                              preference="alerts.watching.endingSoon.isPrimary"
+                              orient="horizontal"
+                              accesskey="&ecOptions.alerts.watching.endingSoon.key;">
+                    <checkbox tabindex="1"
+                              preference="alerts.watching.endingSoon.isEnabled"
+                              label="&ecOptions.alerts.watching.endingSoon;"
+                              oncommand="Options.alertEnabledClick(event);" />
+                    <hbox>
+                      <radio value="true"
+                         observes="watching-endingSoon-broadcaster" />
+                    </hbox>
+                    <hbox>
+                      <radio value="false"
+                         observes="watching-endingSoon-broadcaster" />
+                    </hbox>
+                  </radiogroup>
+                </rows>
+              </grid>
+              <separator class="thin" />
+            </groupbox>
+          </hbox>
+        </tabpanel>
+        <tabpanel id="alerts-group-selling" orient="vertical">
+          <hbox>
+            <groupbox>
+              <caption label="&ecOptions.alerts.alertOptions;" />
+              <grid>
+                 <columns>
+                    <column class="alert-name" />
+                    <column />
+                    <column />
+                 </columns>
+                 <rows>
+                    <row>
+                       <hbox />
+                       <label value="&ecOptions.alerts.desktop;" />
+                       <label value="&ecOptions.alerts.sidebar;" />
+                    </row>
+                    <radiogroup tabindex="2"
+                                preference="alerts.selling.endingSoon.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.selling.endingSoon.key;">
+                      <checkbox tabindex="1"
+                                preference="alerts.selling.endingSoon.isEnabled"
+                                label="&ecOptions.alerts.selling.endingSoon;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true"
+                            observes="selling-endingSoon-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false"
+                            observes="selling-endingSoon-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="4"
+                                preference="alerts.selling.itemSold.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.selling.itemSold.key;">
+                      <checkbox tabindex="3"
+                                preference="alerts.selling.itemSold.isEnabled"
+                                label="&ecOptions.alerts.selling.itemSold;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true" observes="selling-itemSold-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false" observes="selling-itemSold-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup id="selling-itemUnsold-isPrimary-raadio"
+                                tabindex="6"
+                                preference="alerts.selling.itemUnsold.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.selling.itemUnsold.key;">
+                      <checkbox tabindex="5"
+                                preference="alerts.selling.itemUnsold.isEnabled"
+                                label="&ecOptions.alerts.selling.itemUnsold;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true" observes="selling-itemUnsold-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false" observes="selling-itemUnsold-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="8"
+                                preference="alerts.selling.bidPlaced.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.selling.bidPlaced.key;">
+                      <checkbox tabindex="7"
+                                preference="alerts.selling.bidPlaced.isEnabled"
+                                label="&ecOptions.alerts.selling.bidPlaced;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true" observes="selling-bidPlaced-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false" observes="selling-bidPlaced-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="10"
+                                preference="alerts.selling.bestOffer.newOffer.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.selling.bestOffer.newOffer.key;">
+                      <checkbox tabindex="9"
+                                preference="alerts.selling.bestOffer.newOffer.isEnabled"
+                                label="&ecOptions.alerts.selling.bestOffer.newOffer;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true" observes="selling-bestOffer.newOffer-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false" observes="selling-bestOffer.newOffer-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                    <radiogroup tabindex="12"
+                                preference="alerts.selling.bestOffer.itemSold.isPrimary"
+                                orient="horizontal"
+                                accesskey="&ecOptions.alerts.selling.bestOffer.itemSold.key;">
+                      <checkbox tabindex="11"
+                                preference="alerts.selling.bestOffer.itemSold.isEnabled"
+                                label="&ecOptions.alerts.selling.bestOffer.itemSold;"
+                                oncommand="Options.alertEnabledClick(event);" />
+                      <hbox>
+                         <radio value="true" observes="selling-bestOffer.itemSold-broadcaster" />
+                      </hbox>
+                      <hbox>
+                         <radio value="false" observes="selling-bestOffer.itemSold-broadcaster" />
+                      </hbox>
+                    </radiogroup>
+                 </rows>
+              </grid>
+              <separator class="thin" />
+            </groupbox>
+          </hbox>
+        </tabpanel>
+        <tabpanel id="sounds" orient="vertical">
+          <groupbox>
+            <caption label="&ecOptions.alerts.soundOptions;" />
+            <hbox>
+              <checkbox preference="alerts.enableSound" tabindex="1"
+                        label="&ecOptions.alerts.sound.enable;"
+                        accesskey="&ecOptions.alerts.sound.enable.key;" />
+            </hbox>
+            <separator class="thin" />
+          </groupbox>
+        </tabpanel>
+      </tabpanels>
+    </tabbox>
+    <separator class="thin" />
+    <hbox>
+      <button id="alerts-reset-button" tabindex="20"
+              label="&ecOptions.alerts.resetToDefaults;"
+              accesskey="&ecOptions.alerts.resetToDefaults.key;"
+              oncommand="Options.resetAlerts();" />
+    </hbox>
+    <separator class="thin" />
+  </prefpane>
+
+  <prefpane id="licence-pane" label="&ecOptions.tab.legal;" flex="1">
+    <hbox id="licence-info-box">
+      <label id="licence-info-label" value="&ecOptions.legal.info;" />
+    </hbox>
+    <separator class="thin" />
+    <groupbox id="licence-box">
+      <vbox flex="1">
+        <iframe id="licence-frame" flex="1"
+                src="chrome://ebaycompanion/locale/licence.xhtml"
+                context="licence-frame-contextmenu" />
+        <menupopup id="licence-frame-contextmenu">
+          <menuitem label="&ecLicence.menu.copy;"
+                    oncommand="Options.copySelectedLicenceText()" />
+        </menupopup>
+      </vbox>
+      <separator class="thin" />
+      <hbox pack="end">
+        <button label="&ecLicence.button.print;"
+                oncommand="Options.printLicence()" />
+      </hbox>
+      <vbox id="licence-newTerms-box" hidden="true">
+        <separator class="thin" />
+        <hbox pack="center">
+          <label id="licence-newTerms-label"
+                 value="&ecOptions.legal.disagree;" />
+        </hbox>
+      </vbox>
+    </groupbox>
+  </prefpane>
+
+  <script src="chrome://ebaycompanion/content/options/options.js"
+          type="application/javascript;version=1.8" />
+
+</prefwindow>

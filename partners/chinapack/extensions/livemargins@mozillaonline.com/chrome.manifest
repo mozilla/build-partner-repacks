@@ -1,8 +1,0 @@
-content juice jar:chrome/juice.jar!/chrome/content/
-locale juice en-US jar:chrome/juice.jar!/chrome/locale/en-US/
-locale juice zh-CN jar:chrome/juice.jar!/chrome/locale/zh-CN/
-skin juice classic/1.0 jar:chrome/juice.jar!/chrome/skin/
-style	chrome://global/content/customizeToolbar.xul chrome://juice/skin/browser.css
-overlay chrome://browser/content/browser.xul chrome://juice/content/overlay/ilinkoolbarOverlay.xul
-overlay chrome://browser/content/preferences/sanitize.xul chrome://juice/content/overlay/ilinkoolbarSanitizeOverlay.xul
-overlay chrome://browser/content/sanitize.xul chrome://juice/content/overlay/ilinkoolbarSanitizeOverlay.xul

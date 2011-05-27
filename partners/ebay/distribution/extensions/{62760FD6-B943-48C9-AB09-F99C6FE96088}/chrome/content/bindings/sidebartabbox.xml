@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+          xmlns:xbl="http://www.mozilla.org/xbl"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- Tab box containing eBay tabs in the sidebar -->
+  <binding id="sidebar-tabbox">
+    <implementation>
+      <field name="_selectedIndex">0</field>
+      <field name="_tabs">this.getElementsByTagName("sidebartab")</field>
+      <field name="_selectedTab">null</field>
+
+      <property name="selectedTab">
+        <getter><![CDATA[
+          return this._tabs[this._selectedIndex];
+        ]]></getter>
+        <setter><![CDATA[
+          if (this.selectedTab == val) {
+            return;
+          }
+
+          this.selectedTab.removeAttribute("selected");
+          this._selectedTab = val;
+          this._selectedTab.setAttribute("selected", true);
+          // used to update the selected index
+          for (let i = 0; i < this._tabs.length; i++) {
+            sidebartab = this._tabs[i];
+            if (this._selectedTab == sidebartab) {
+              this._selectedIndex = i;
+              break;
+            }
+          }
+
+          /*let aEvent = document.createEvent("Event");
+          aEvent.initEvent("command", true, true);
+          this.dispatchEvent(aEvent);*/
+        ]]></setter>
+      </property>
+
+      <!-- Controls the currently selected tab -->
+      <property name="selectedIndex">
+        <getter><![CDATA[
+          return this._selectedIndex;
+        ]]></getter>
+        <setter><![CDATA[
+          if (this._selectedIndex == val) {
+            return;
+          }
+          this._selectedIndex = val;
+          let sidebartab;
+          for (let i = 0; i < this._tabs.length; i++) {
+            sidebartab = this._tabs[i];
+            if (this._selectedIndex == i) {
+              sidebartab.setAttribute("selected", true);
+              this._selectedTab = sidebartab;
+            } else {
+              sidebartab.removeAttribute("selected");
+            }
+          }
+          /*let aEvent = document.createEvent("Event");
+          aEvent.initEvent("command", true, true);
+          this.dispatchEvent(aEvent);*/
+        ]]></setter>
+      </property>
+    </implementation>
+  </binding>
+</bindings>

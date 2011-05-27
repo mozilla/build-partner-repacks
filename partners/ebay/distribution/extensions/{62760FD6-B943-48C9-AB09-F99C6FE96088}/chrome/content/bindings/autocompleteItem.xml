@@ -1,0 +1,278 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+    xmlns:xbl="http://www.mozilla.org/xbl"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <!-- Search texbox -->
+  <binding id="gs-ebay-search-textbox"
+    extends="chrome://global/content/bindings/textbox.xml#textbox">
+    <implementation implements="nsIDOMXULMenuListElement">
+      <!-- Suggest menu item. -->
+      <field name="_suggestMenuitem" />
+      <!-- Preference listener. -->
+      <field name="_prefListener" />
+
+      <!--
+        - Constructor.
+        -->
+      <constructor>
+        <![CDATA[
+          setTimeout(function(that) { that._addCustomItems(); }, 0, this);
+        ]]>
+      </constructor>
+
+      <!--
+        - Adds the custom items to the menu context.
+        -->
+      <method name="_addCustomItems">
+        <body>
+          <![CDATA[
+            const XUL_NS =
+              "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+            let textBox =
+              document.getAnonymousElementByAttribute(
+                this, "class", "textbox-input-box");
+            let contextMenu =
+              document.getAnonymousElementByAttribute(
+                textBox, "class", "textbox-contextmenu");
+            let that = this;
+            let menuitem = null;
+            let label = null;
+
+            // add items to context menu
+            menuitem = document.createElementNS(XUL_NS, "xul:menuseparator");
+            contextMenu.appendChild(menuitem);
+
+            // entry: Clear Search History
+            menuitem = document.createElementNS(XUL_NS, "xul:menuitem");
+            label =
+              EbayCompanion.Constants.stringBundle.getString(
+                "ecSidebar.search.menu.clear");
+            menuitem.setAttribute("label", label);
+            menuitem.addEventListener("command",function(event) {
+              that.clearSearchHistory();
+              event.stopPropagation();
+            }, false);
+            contextMenu.appendChild(menuitem);
+
+            // entry: Show Suggestions
+            menuitem = document.createElementNS(XUL_NS, "xul:menuitem");
+            label =
+              EbayCompanion.Constants.stringBundle.getString(
+                "ecSidebar.search.menu.suggest");
+            menuitem.setAttribute("anonid", "toggle-suggest");
+            menuitem.setAttribute("label", label);
+            menuitem.setAttribute("type", "checkbox");
+            menuitem.setAttribute("autocheck", "false");
+            menuitem.addEventListener("command", function(event) {
+              that.toggleSuggestEnabled();
+              event.stopPropagation();
+            }, false);
+            contextMenu.appendChild(menuitem);
+
+            this._suggestMenuitem = menuitem;
+
+            this._syncSuggestMenuitem();
+            this._prefListener = function() { that._syncSuggestMenuitem(); }
+            EbayCompanion.Constants.prefBranch.addObserver(
+              this._prefListener, "searchbox.showSuggestions");
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Keeps synchronized the preferences with the menuitems.
+        -->
+      <method name="_syncSuggestMenuitem">
+        <body>
+          <![CDATA[
+            let preferenceValue =
+              EbayCompanion.Constants.prefBranch.get(
+                "searchbox.showSuggestions");
+
+            this._suggestMenuitem.setAttribute("checked", preferenceValue);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Clears the search history.
+        -->
+      <method name="clearSearchHistory">
+        <body>
+          <![CDATA[
+            Sidebar.SearchManager.clearSearchHistory();
+            this.value = "";
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Toggles the suggestions enable value.
+        -->
+      <method name="toggleSuggestEnabled">
+        <body>
+          <![CDATA[
+            let showSuggestions =
+              EbayCompanion.Constants.prefBranch.get(
+                "searchbox.showSuggestions");
+
+            EbayCompanion.Constants.prefBranch.set(
+              "searchbox.showSuggestions", !showSuggestions);
+          ]]>
+        </body>
+      </method>
+
+    </implementation>
+  </binding>
+
+  <!-- Search result item. -->
+  <binding id="gs-ebay-search-result-item"
+    extends="chrome://global/content/bindings/richlistbox.xml#richlistitem">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/searchbox/searchbox.css" />
+      <stylesheet
+        src="chrome://ebaycompanion-os/skin/searchbox/searchbox.css" />
+    </resources>
+
+    <content>
+      <xul:image xbl:inherits="src=image,collapsed=hideProducts"
+        class="gs-ebay-search-panel-image"/>
+      <xul:vbox flex="1">
+        <xul:hbox flex="1">
+          <xul:hbox class="gs-ebay-search-panel-title-box" flex="1"
+            onunderflow="_showEllipsis(false);"
+            onoverflow="_showEllipsis(true);">
+            <xul:description anonid="title"
+              class="gs-ebay-search-panel-title" />
+          </xul:hbox>
+          <xul:label anonid="title-ellipsis" hidden="true" value="..."
+            class="gs-ebay-search-panel-title-ellipsis" />
+        </xul:hbox>
+      </xul:vbox>
+    </content>
+
+    <implementation>
+      <!--
+        - Constructor.
+        -->
+      <constructor>
+        <![CDATA[
+          let title = this.getAttribute("title");
+          let query = this.getAttribute("query");
+
+          this._setDescription(title, query);
+        ]]>
+      </constructor>
+
+      <!--
+        - Sets the description.
+        - @param aTitle the title.
+        - @param aQuery the query.
+        -->
+      <method name="_setDescription">
+        <parameter name="aTitle" />
+        <parameter name="aQuery" />
+        <body>
+          <![CDATA[
+            const HTML_NS = "http://www.w3.org/1999/xhtml";
+            let description =
+              document.getAnonymousElementByAttribute(this, "anonid", "title");
+            let span = null;
+            let index = null;
+            let indexArray = new Array();
+            let indexPosition = 0;
+            let startIndex = 0;
+
+            while (-1 != indexPosition) {
+              indexPosition =
+                aTitle.toLowerCase().indexOf(aQuery.toLowerCase(), startIndex);
+              if (-1 != indexPosition) {
+                indexArray.push({
+                  start : startIndex,
+                  end : indexPosition,
+                  type: "normal"
+                });
+                indexArray.push({
+                  start : indexPosition,
+                  end : indexPosition + aQuery.length,
+                  type: "query"
+                });
+              } else {
+                indexArray.push({
+                  start : startIndex,
+                  end : aTitle.length,
+                  type: "normal"
+                });
+              }
+              startIndex = indexPosition + aQuery.length;
+            }
+
+            for (let i = 0; i < indexArray.length; i++) {
+              index = indexArray[i];
+
+              if (0 < index.end && index.start < aTitle.length) {
+                span = document.createElementNS(HTML_NS, "span");
+                span.textContent = aTitle.substring(index.start, index.end);
+                if ("query" == index.type) {
+                  span.setAttribute(
+                    "class", "gs-ebay-search-panel-title-emphasize");
+                }
+
+                description.appendChild(span);
+              }
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Shows the ellipisis.
+        - @param aValue true to show, false to hide.
+        -->
+      <method name="_showEllipsis">
+        <parameter name="aValue" />
+        <body>
+          <![CDATA[
+            let ellipsis =
+              document.getAnonymousElementByAttribute(
+                this, "anonid", "title-ellipsis");
+
+            ellipsis.hidden = !aValue;
+          ]]>
+        </body>
+      </method>
+    </implementation>
+  </binding>
+
+  <!-- Search result popup separator. -->
+  <binding id="gs-ebay-search-popup-separator"
+    extends="chrome://global/content/bindings/menu.xml#menuseparator">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/searchbox/searchbox.css" />
+      <stylesheet
+        src="chrome://ebaycompanion-os/skin/searchbox/searchbox.css" />
+    </resources>
+
+    <content>
+      <xul:stack flex="1">
+        <xul:hbox class="gs-ebay-separator-background" flex="1" align="center">
+          <xul:hbox class="gs-ebay-separator-line" flex="1"/>
+        </xul:hbox>
+        <xul:vbox class="gs-ebay-search-separator-label-container"
+          align="center" pack="center">
+          <xul:label anonid="gs-ebay-search-separator-label"
+            xbl:inherits="value"
+          class="gs-ebay-search-separator-label" />
+        </xul:vbox>
+      </xul:stack>
+    </content>
+  </binding>
+</bindings>

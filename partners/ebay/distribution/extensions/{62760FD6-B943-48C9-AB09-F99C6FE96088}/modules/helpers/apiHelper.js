@@ -1,0 +1,16 @@
+/* Copyright (C) 2007-2011 eBay Inc. All Rights Reserved. */const EXPORTED_SYMBOLS=["ApiHelper"];const Cc=Components.classes;const Ci=Components.interfaces;const Ce=Components.Exception;const Cr=Components.results;const Cu=Components.utils;var ApiHelper={_init:function(){try{Cu.import("resource://ebaycompanion/helpers/logger.js");Cu.import("resource://ebaycompanion/helpers/observers.js");Cu.import("resource://ebaycompanion/helpers/timer.js");Cu.import("resource://ebaycompanion/helpers/warningNotificationHelper.js");Cu.import("resource://ebaycompanion/objects/notification.js");Cu.import("resource://ebaycompanion/constants.js");this._observers=new Observers;this._observers.add(let(that=this)function()that._uninit(),"quit-application-granted");}
+catch(e){Logger.exception(e);}},_uninit:function(){try{this.abortPendingRequests();this._observers.removeAll();}
+catch(e){Logger.exception(e);}},generateApiCallback:function(callDescription,callback){let callSendStack=Components.stack.caller;let apiCallback={trigger:function(err,response){if(err!=0){if(err!=Cr.NS_BINDING_ABORTED){let errorString=err;for(let[name,code]in Iterator(Cr)){if(code==err){errorString=name;}}
+Logger.error(callDescription+" resulted in error: "+
+errorString);Logger.error("The call was sent from the following stack:",Logger.DUMP_STACK,callSendStack)
+let notification=new Notification(WarningNotificationHelper.API_CONNECTION_WARNING);notification.set("content",Constants.stringBundle.getString("ecSidebar.notification.error.connection"));notification.set("priority",1);WarningNotificationHelper.queueNotification(notification);}
+return;}
+try{if(callback)callback(response);WarningNotificationHelper.dismissNotification(WarningNotificationHelper.API_CONNECTION_WARNING);}
+catch(e){Logger.exception(e);}}}
+return apiCallback;},addPendingRequest:function(request,requestDescription){const CALL_TIMEOUT=3*60*1000;const TIMEOUT_ERROR_MSG="Call timed out after "+CALL_TIMEOUT/1000+
+" seconds";const that=this;if(!this._lastRequestIndex||!this._pendingRequests){this._lastRequestIndex=1;this._pendingRequests={};}
+let requestIndex=this._lastRequestIndex++;let timeout=new Timer(function(){Logger.error(requestDescription+": "+TIMEOUT_ERROR_MSG);request.cancel();},CALL_TIMEOUT);this._pendingRequests[requestIndex]={request:request,timeout:timeout};request.addCallback({trigger:function(err,response){that.removePendingRequest(requestIndex);}});return requestIndex;},removePendingRequest:function(requestId){if(!this._pendingRequests[requestId]){Logger.error("Attempt to remove a request that isn't in the list of "+
+"pending requests!",Logger.DUMP_STACK);return;}
+this._pendingRequests[requestId].timeout.cancel();delete this._pendingRequests[requestId];},get numPendingRequests(){let num=0;if(this._pendingRequests){for each(let[index,requestObject]in Iterator(this._pendingRequests)){num++;}}
+return num;},abortPendingRequests:function(){if(!this._pendingRequests){return;}
+for each(let[index,requestObject]in Iterator(this._pendingRequests)){requestObject.request.cancel();requestObject.timeout.cancel();}}};ApiHelper._init();

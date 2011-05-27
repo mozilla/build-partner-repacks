@@ -1,0 +1,443 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+          xmlns:xbl="http://www.mozilla.org/xbl"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <binding id="toolbar-button">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/toolbarButton.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/toolbarButton.css" />
+    </resources>
+
+    <content>
+      <xul:toolbarbutton anonid="ec-toolbar-button"
+                         xbl:inherits="connected, glowing, command"
+                         type="menu-button"
+                         class="toolbarbutton-1"
+                         label="&ecBrowser.toolbarbutton.title;">
+        <xul:menupopup anonid="ec-button-menu"
+          onpopupshowing="document.getBindingParent(this)._filterButtonMenu();">
+          <xul:menuitem anonid="ec-menu-home"
+            label="&ecBrowser.toolbarbutton.menu.home;"
+            accesskey="&ecBrowser.toolbarbutton.menu.home.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.home;"
+            oncommand="
+              EbayCompanion.openPage(event, 'ebayButton', 'homePage', {});
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <xul:menuitem anonid="ec-menu-buy"
+            label="&ecBrowser.toolbarbutton.menu.buy;"
+            accesskey="&ecBrowser.toolbarbutton.menu.buy.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.buy;"
+            oncommand="
+              EbayCompanion.openPage(event, 'ebayButton', 'buy', {});
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <xul:menuitem anonid="ec-menu-sell"
+            label="&ecBrowser.toolbarbutton.menu.sell;"
+            accesskey="&ecBrowser.toolbarbutton.menu.sell.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.sell;"
+            oncommand="
+              EbayCompanion.openPage(event, 'ebayButton', 'sell', {});
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <xul:menuitem anonid="ec-menu-my-ebay"
+            label="&ecBrowser.toolbarbutton.menu.myebay;"
+            accesskey="&ecBrowser.toolbarbutton.menu.myebay.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.myebay;"
+            oncommand="
+              EbayCompanion.openPage(event, 'ebayButton', 'myEbay', {});
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <xul:menuitem anonid="ec-menu-community"
+            label="&ecBrowser.toolbarbutton.menu.community;"
+            accesskey="&ecBrowser.toolbarbutton.menu.community.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.community;"
+            oncommand="
+              EbayCompanion.openPage(event, 'ebayButton', 'community', {});
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <!--<xul:menu anonid="ec-menu-sellers"
+            label="&ecBrowser.toolbarbutton.menu.sellers;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.sellers;">
+            <xul:menupopup anonid="ec-sellers-menu"
+              onpopupshowing="document.getBindingParent(this)._populateSellersMenu()">
+              <xul:menuitem anonid="ec-sellers-menu-signed-out"
+                label="&ecBrowser.toolbarbutton.menu.sellers.signedout;"
+                tooltiptext="&ecBrowser.toolbarbutton.menu.sellers.signedout;"
+                disabled="true" hidden="true"/>
+              <xul:menuitem anonid="ec-sellers-menu-sellers-null"
+                label="&ecBrowser.toolbarbutton.menu.sellers.null;"
+                tooltiptext="&ecBrowser.toolbarbutton.menu.sellers.null;"
+                disabled="true" hidden="true"/>
+              <xul:menuitem anonid="ec-sellers-menu-more"
+                label="&ecBrowser.toolbarbutton.menu.sellers.more;"
+                tooltiptext="&ecBrowser.toolbarbutton.menu.sellers.more;"
+                oncommand="
+                  EbayCompanion.openPage(event, 'ebayButton', 'savedSellers', {});
+                  event.stopPropagation();"
+                onclick="checkForMiddleClick(this, event);"
+                hidden="true"/>
+              <xul:menuseparator />
+              <xul:menuitem anonid="ec-sellers-menu-manage"
+                label="&ecBrowser.toolbarbutton.menu.sellers.manage;"
+                tooltiptext="&ecBrowser.toolbarbutton.menu.sellers.manage;"
+                oncommand="
+                  EbayCompanion.openPage(event, 'ebayButton', 'savedSellers', {});
+                  event.stopPropagation();"
+                onclick="checkForMiddleClick(this, event);" />
+            </xul:menupopup>
+          </xul:menu>-->
+          <xul:menuitem anonid="ec-menu-paypal"
+            label="&ecBrowser.toolbarbutton.menu.paypal;"
+            accesskey="&ecBrowser.toolbarbutton.menu.paypal.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.paypal;"
+            oncommand="
+              EbayCompanion.openPage(event, 'unwrappedLink', 'paypal', {});
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <xul:menuseparator />
+          <xul:menuitem anonid="ec-menu-feedback"
+            label="&ecBrowser.toolbarbutton.menu.feedback;"
+            accesskey="&ecBrowser.toolbarbutton.menu.feedback.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.feedback;"
+            oncommand=
+              "EbayCompanion.openFeedbackPage(event);
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <xul:menuseparator />
+          <xul:menuitem anonid="ec-menu-openSidebar"
+            label="&ecBrowser.toolbarbutton.menu.openSidebar;"
+            accesskey="&ecBrowser.toolbarbutton.menu.openSidebar.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.openSidebar;"
+            oncommand="
+              EbayCompanion.openCloseSidebar();
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <xul:menuitem anonid="ec-menu-closeSidebar"
+            label="&ecBrowser.toolbarbutton.menu.closeSidebar;"
+            accesskey="&ecBrowser.toolbarbutton.menu.closeSidebar.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.closeSidebar;"
+            oncommand="
+              EbayCompanion.openCloseSidebar();
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <xul:menuitem anonid="ec-menu-connect"
+            label="&ecBrowser.toolbarbutton.menu.signin;"
+            accesskey="&ecBrowser.toolbarbutton.menu.signin.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.signin;"
+            oncommand="
+              EbayCompanion.openPage(event, 'ebayButton', 'loginPage', {});
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <xul:menuitem anonid="ec-menu-disconnect"
+            label="&ecBrowser.toolbarbutton.menu.signout;"
+            accesskey="&ecBrowser.toolbarbutton.menu.signout.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.signout;"
+            oncommand="
+              EbayCompanion.Datasource.logoutUser();
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <xul:menuseparator />
+          <xul:menuitem anonid="ec-menu-options"
+            label="&ecBrowser.toolbarbutton.menu.options;"
+            accesskey="&ecBrowser.toolbarbutton.menu.options.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.options;"
+            oncommand="
+              EbayCompanion.showOptionsPanel();
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+          <xul:menuseparator anonid="ec-menu-moveButton-separator" hidden="true" />
+          <xul:menuitem anonid="ec-menu-moveButton" hidden="true"
+            label="&ecBrowser.toolbarbutton.menu.switchToButton;"
+            accesskey="&ecBrowser.toolbarbutton.menu.switchToButton.key;"
+            tooltiptext="&ecBrowser.toolbarbutton.menu.switchToButton;"
+            oncommand="
+              EbayCompanion.removeAddonBarButton();
+              EbayCompanion.showToolbarButton();
+              event.stopPropagation();"
+            onclick="checkForMiddleClick(this, event);" />
+        </xul:menupopup>
+      </xul:toolbarbutton>
+    </content>
+
+    <handlers>
+      <handler event="click" phase="capturing">
+        <![CDATA[
+          // avoid right click, it shows the context menu.
+          if (event.button != 2) {
+            let target = event.originalTarget;
+            let bindingTarget = document.getBindingParent(target);
+
+            if ("menuitem" == target.localName) {
+              if (event.button == 1) {
+                target.parentNode.hidePopup();
+              }
+            }
+          }
+        ]]>
+      </handler>
+    </handlers>
+
+    <implementation>
+      <field name="_stopAnimating" />
+      <field name="_stopAnimationTimer" />
+      <field name="_animationTimerId" />
+
+      <!-- Controls button glowing -->
+      <property name="glowing">
+        <getter><![CDATA[
+          return this.getAttribute("glowing");
+        ]]></getter>
+        <setter><![CDATA[
+          let buttonBroadcaster =
+            document.getElementById("ec-ebaybutton-broadcaster");
+          if (!val) {
+            buttonBroadcaster.setAttribute("glowing", false);
+            this.setGlowAnimated(false);
+          } else {
+            // 30 secs.
+            const STOP_GLOW_ANIMATION_TIMEOUT = 30 * 1000;
+            buttonBroadcaster.setAttribute("glowing", true);
+            this.setGlowAnimated(true);
+            let that = this;
+            // in case several secondary alerts are triggered, keep the
+            // timer 30secs after the last one
+            if (this._stopAnimationTimer) {
+              this._stopAnimationTimer.cancel();
+            }
+            this._stopAnimationTimer = new EbayCompanion.Timer(
+              function() {
+                if (EbayCompanion.isSidebarOpen()) {
+                  buttonBroadcaster.setAttribute("glowing", false);
+                }
+                that.setGlowAnimated(false);
+              },
+              STOP_GLOW_ANIMATION_TIMEOUT);
+          }
+        ]]></setter>
+      </property>
+
+      <method name="setGlowAnimated">
+        <parameter name="glow" />
+        <body><![CDATA[
+          let that = this;
+          let buttonParent =
+            document.getAnonymousElementByAttribute(
+              this, "anonid", "ec-toolbar-button");
+          let button =
+            document.getAnonymousElementByAttribute(
+              buttonParent, "anonid", "button");
+          if (glow) {
+            if (button) {
+              if (button.getAttribute("animating") == "true") {
+                // already animating; no need to start
+                return;
+              }
+
+              button.setAttribute("animating", true);
+              this._stopAnimating = false;
+
+              // run this code only if we are on FF3, as FF4 button does not
+              // have toolbar button glow animation
+              if (!EbayCompanion.Constants.isFirefox4) {
+                let numFrames = 11;
+                // We extract the frame dimentions from CSS (hacky, but DRY)
+                let imageRegionArray =
+                  window.getComputedStyle(button, "").MozImageRegion.split(",");
+                let frameWidth = parseInt(imageRegionArray[1]);
+                let frameHeight = parseInt(imageRegionArray[2]) / numFrames;
+
+                let currentFrame = 0;
+                let goingUp = true;
+                let stop = false;
+                let iterate = function() {
+                  try {
+                    let isGlowing = that.getAttribute("glowing") == "true";
+                    let top = currentFrame * frameHeight;
+                    let right = frameWidth;
+                    let bottom = top + frameHeight;
+                    let left = 0;
+                    let newStyle =
+                      "-moz-image-region: rect(" + top + "px, " + right +
+                                                "px, " + bottom + "px, " +
+                                                left + "px)";
+                    button.setAttribute("style", newStyle);
+                    goingUp ? currentFrame++ : currentFrame--;
+                    if (currentFrame == numFrames - 1) {
+                      // high frame
+                      goingUp = false;
+                      // stop on high frame when in "glowing" state
+                      if (that._stopAnimating && isGlowing) {
+                        stop = true;
+                      }
+                    } else if (currentFrame == 0) {
+                      // low frame
+                      goingUp = true;
+                      // stop on low frame when not in "glowing" state
+                      if (that._stopAnimating && !isGlowing) {
+                        stop = true;
+                      }
+                    }
+                    if (stop) {
+                      button.removeAttribute("style");
+                      button.removeAttribute("animating");
+                    } else {
+                      that._animationTimerId =  window.setTimeout(iterate, 200);
+                    }
+                  }
+                  catch (e) {
+                    EbayCompanion.Logger.exception(e);
+                  }
+                }
+                iterate();
+              }
+
+            }
+
+          } else {
+            if (this._animationTimerId != undefined) {
+              window.clearTimeout(this._animationTimerId);
+              button.removeAttribute("style");
+              button.removeAttribute("animating");
+            }
+            this._stopAnimating = true;
+          }
+        ]]></body>
+      </method>
+
+      <method name="_populateSellersMenu">
+        <body><![CDATA[
+          let menu = this._getElement("ec-sellers-menu");
+          let connected = EbayCompanion.Datasource.activeAccount() != null;
+          let signedOutItem = this._getElement("ec-sellers-menu-signed-out");
+          let noSellersItem = this._getElement("ec-sellers-menu-sellers-null");
+          let moreItem = this._getElement("ec-sellers-menu-more");
+
+          // clear the list in case there are favorite sellers
+          while (menu.firstChild != signedOutItem) {
+            menu.removeChild(menu.firstChild);
+          }
+
+          if (!connected) {
+            signedOutItem.removeAttribute("hidden");
+            noSellersItem.setAttribute("hidden", true);
+            moreItem.setAttribute("hidden", true);
+          } else {
+            signedOutItem.setAttribute("hidden", true);
+            let favoriteSellers = EbayCompanion.Datasource.favoriteSellers();
+            if (favoriteSellers.length == 0) {
+              noSellersItem.removeAttribute("hidden");
+            } else {
+              noSellersItem.setAttribute("hidden", true);
+              if (favoriteSellers.length < 7) {
+                moreItem.setAttribute("hidden", true);
+              } else {
+                moreItem.removeAttribute("hidden");
+              }
+
+              let seller;
+              let sellerItem;
+              let label;
+              let sellerId;
+              let storeName;
+              for (let i = 0; i < 6 && i < favoriteSellers.length; i++) {
+                seller = favoriteSellers[i];
+                sellerId = seller.get("sellerId");
+                sellerItem = document.createElement("menuitem");
+                sellerItem.setAttribute("sellerId", sellerId);
+                let sellerCommand = function(event) {
+                  EbayCompanion.openPage(
+                    event,
+                    'ebayButton',
+                    'merchant',
+                    { userid: event.target.getAttribute("sellerId") });
+                };
+                sellerItem.addEventListener("command", sellerCommand, false);
+                sellerItem.addEventListener("click", function(event) {
+                  if (event.button == 1) {
+                    sellerCommand(event);
+                    closeMenus(sellerItem);
+                  }
+                }, false);
+
+                label = sellerId
+                storeName =
+                  EbayCompanion.Constants.getUTF8(seller.get("storeName"));
+                if (storeName && storeName.length > 0) {
+                  label += " (" + storeName + ")";
+                }
+                sellerItem.setAttribute("label", label );
+                menu.insertBefore(sellerItem, signedOutItem);
+              }
+            }
+          }
+
+        ]]></body>
+      </method>
+
+      <!--
+        - Ensures that the button menu contains the correct menu items
+        -->
+      <method name="_filterButtonMenu">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            try {
+              // Open and Close menu items
+              let sidebarIsOpen = EbayCompanion.isSidebarOpen();
+              let openSidebar = this._getElement("ec-menu-openSidebar");
+              let closeSidebar = this._getElement("ec-menu-closeSidebar");
+              openSidebar.hidden = sidebarIsOpen;
+              closeSidebar.hidden = !sidebarIsOpen;
+
+              // Connect and Disconnect menu items
+              let connect = this._getElement("ec-menu-connect");
+              let disconnect = this._getElement("ec-menu-disconnect");
+              let connectedState =
+                document.getElementById("ec-ebaybutton-broadcaster").
+                  getAttribute("connected") == "true";
+              connect.hidden = connectedState;
+              disconnect.hidden = !connectedState;
+
+              // Show "Move" entry for the statusbar button
+              let buttonInToolbar =
+                EbayCompanion.Constants.prefBranch.get("buttonInToolbar");
+              let separator = this._getElement("ec-menu-moveButton-separator");
+              let moveButton = this._getElement("ec-menu-moveButton");
+              separator.hidden = buttonInToolbar;
+              moveButton.hidden = buttonInToolbar;
+            }
+            catch (e) {
+              EbayCompanion.Logger.exception(e);
+            }
+            return true;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+    </implementation>
+  </binding>
+</bindings>

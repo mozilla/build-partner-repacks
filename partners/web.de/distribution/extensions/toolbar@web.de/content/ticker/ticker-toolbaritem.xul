@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://unitedtb/skin/ticker/ticker.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/ticker/ticker.dtd">
+
+<overlay id="united-ticker-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
+  <script type="application/x-javascript">
+    united.ticker = {};
+    united.loadJS("chrome://unitedtb/content/ticker/ticker.js", united.ticker);
+  </script>
+
+  <!-- Overlay for Firefox browser/content/browser.xul -->
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarbutton id="united-ticker-button"
+        label="&united.ticker.button.label;"
+        tooltiptext="&united.ticker.button.tooltip;"
+        oncommand="united.ticker.onButton(event);"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        type="menu-button"
+        container="true">
+          <menupopup id="united-ticker-popup"/>
+    </toolbarbutton>
+  </toolbarpalette>
+</overlay>

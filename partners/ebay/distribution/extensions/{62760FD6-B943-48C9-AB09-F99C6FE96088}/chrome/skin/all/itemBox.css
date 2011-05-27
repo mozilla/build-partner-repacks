@@ -1,0 +1,235 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+.gs-ebay-item-container {
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  border: none;
+  height: 86px !important;
+  color: black;
+  cursor: pointer !important;
+  background-color: #FFF;
+  padding: 2px 2px 1px 2px;
+}
+
+.gs-ebay-item-container[ebayhover] {
+  background-image: -moz-linear-gradient(#EFEEEE, #D2D2D2);
+}
+
+.gs-ebay-item-container[gsebayalert="true"] {
+  width: 220px;
+  border: 1px solid #9A9A9A;
+}
+
+.gs-ebay-item-container:not([gsebayalert="true"]) .gs-ebay-item-details-open {
+  cursor: pointer;
+}
+
+.gs-ebay-item-details-open-image {
+  list-style-image: url("chrome://ebaycompanion/skin/images/item-details-view.png");
+  border: 1px solid #919191;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  margin-left: 4px;
+  margin-right: 4px;
+  width: 11px;
+  height: 11px;
+}
+
+.gs-ebay-item-details-open:hover
+.gs-ebay-item-details-open-image {
+  border-color: #32445c;
+}
+
+.gs-ebay-item-background {
+  background-image: -moz-linear-gradient(#FEFEFE 82%, #F9F9F9 86%, #F4F4F4 91%, #EAEAEA 98%, #E5E5E5);
+  border-left: 1px solid #D3D3D3;
+  border-bottom: 1px solid #D3D3D3;
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+}
+.gs-ebay-item-container[gsebayfocused="true"]:not([gsebayalert="true"]) .gs-ebay-item-background,
+.gs-ebay-item-container:not([gsebayalert="true"]):hover .gs-ebay-item-background {
+  /*background-image: -moz-linear-gradient(#F8F8F8 81%, #F7F7F7 84%, #EFEFEF 88%, #EEEEEE 90%, #E6E6E6 94%, #E2E2E2 96%, #DFDFDF 97%, #E0E0E0 98%, #D8D8D8);*/
+  border-bottom: 1px solid #858585;
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+}
+
+.gs-ebay-item-highlighted {
+  background-image: -moz-linear-gradient(#FFFDF6 85%, #FFF9D6 91%, #FFF7CB 95%, #FFF6C0);
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+}
+
+.gs-ebay-item-state-box { /* Watching and Selling */
+  -moz-border-radius: 6px 0px 0px 6px;
+  border-radius: 6px 0px 0px 6px;
+  border: none;
+  margin: 0px;
+  padding: 0px;
+  width: 4px;
+  background-color: transparent;
+}
+
+.gs-ebay-item-state-box[gsebaystate="8"],    /* Selling success */
+.gs-ebay-item-state-box[gsebaystate="10"],   /* Selling item sold */
+.gs-ebay-item-state-box[gsebaystate="4"],    /* Bidding success */
+.gs-ebay-item-state-box[gsebaystate="1"],    /* Bidding item won */
+.gs-ebay-item-state-box[gsebaystate="15"],   /* Best Offer pending */
+.gs-ebay-item-state-box[gsebaystate="18"],   /* Counter offer received */
+.gs-ebay-item-state-box[gsebaystate="19"],   /* Selling with offers */
+.gs-ebay-item-state-box[gsebaystate="20"],   /* Best offer item sold */
+.gs-ebay-item-state-box[gsebaystate="21"] {  /* Best offer item won */
+  background-color: #669933;
+}
+.gs-ebay-item-state-box[gsebaystate="9"],    /* Selling reserve not met */
+.gs-ebay-item-state-box[gsebaystate="11"],   /* Selling item unsold */
+.gs-ebay-item-state-box[gsebaystate="12"],   /* Selling item unsold reserve not met */
+.gs-ebay-item-state-box[gsebaystate="5"],    /* Bidding outbid */
+.gs-ebay-item-state-box[gsebaystate="2"],    /* Bidding item lost */
+.gs-ebay-item-state-box[gsebaystate="3"],    /* Bidding item lost reserve not met */
+.gs-ebay-item-state-box[gsebaystate="6"],    /* Bidding reserve not met */
+.gs-ebay-item-state-box[gsebaystate="16"],   /* Best Offer declined */
+.gs-ebay-item-state-box[gsebaystate="17"] {  /* Best Offer expired */
+  background-color: #F20C0C;
+}
+
+.gs-ebay-item-content-box {
+  padding: 0px 2px 0px 4px;
+}
+
+.gs-ebay-item-top-box {
+  -moz-box-align: start;
+  height: 18px !important;
+}
+
+.gs-ebay-item-main-box {
+  -moz-box-align: start;
+  height: 64px !important;
+}
+
+.gs-ebay-item-state-label { /* Watching and Selling */
+  margin-left: 0px !important;
+  margin-top: 2px;
+  font-weight: bold;
+  font-size: 1em;
+  color: #333;
+  cursor: pointer !important;
+}
+
+.gs-ebay-item-state-label[gsebaystate="8"],   /* Selling success */
+.gs-ebay-item-state-label[gsebaystate="10"],  /* Selling item sold */
+.gs-ebay-item-state-label[gsebaystate="4"],   /* Bidding success */
+.gs-ebay-item-state-label[gsebaystate="1"],   /* Bidding item won */
+.gs-ebay-item-state-label[gsebaystate="15"],  /* Best Offer pending */
+.gs-ebay-item-state-label[gsebaystate="18"],  /* Counter offer received */
+.gs-ebay-item-state-label[gsebaystate="19"],  /* Selling with offers */
+.gs-ebay-item-state-label[gsebaystate="20"],  /* Best offer item sold */
+.gs-ebay-item-state-label[gsebaystate="21"] { /* Best offer item won */
+  color: #669933;
+}
+.gs-ebay-item-state-label[gsebaystate="9"],    /* Selling reserve not met */
+.gs-ebay-item-state-label[gsebaystate="11"],   /* Selling item unsold */
+.gs-ebay-item-state-label[gsebaystate="12"],   /* Selling item unsold reserve not met */
+.gs-ebay-item-state-label[gsebaystate="5"],    /* Bidding outbid */
+.gs-ebay-item-state-label[gsebaystate="2"],    /* Bidding item lost */
+.gs-ebay-item-state-label[gsebaystate="3"],    /* Bidding item lost reserve not met */
+.gs-ebay-item-state-label[gsebaystate="6"],    /* Bidding reserve not met */
+.gs-ebay-item-state-label[gsebaystate="16"],   /* Best Offer declined */
+.gs-ebay-item-state-label[gsebaystate="17"] {  /* Best Offer expired */
+  color: #F20C0C;
+}
+
+.gs-ebay-item-close-button-box {
+  -moz-box-align: start;
+  -moz-box-pack: end;
+}
+
+.gs-ebay-item-close-button {
+  -moz-appearance: none;
+  list-style-image: url("chrome://ebaycompanion-os/skin/images/button-close.png");
+  border: none;
+  padding: 0px !important;
+  cursor: default !important;
+}
+
+.gs-ebay-item-image-container {
+  background-image: url("chrome://ebaycompanion/skin/images/empty-image.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  -moz-box-align: center;
+  -moz-box-pack: center;
+  height: 58px;
+  width: 58px;
+  background-color: #FFF;
+  border: 1px solid #E0E0E0;
+}
+
+.gs-ebay-item-image {
+  height: 58px;
+  width: 58px;
+  min-height: 58px;
+  min-width: 58px;
+}
+
+.gs-ebay-item-content-right {
+  padding-left: 4px;
+  margin-top: -1px;
+}
+
+.gs-ebay-item-description {
+  margin: 0px !important;
+  font-size: 1em;
+  color: #373737;
+  line-height: 15px;
+  height: 30px;
+  overflow: hidden !important;
+}
+
+.gs-ebay-item-description-internal {
+  cursor: pointer !important;
+  margin: 0px !important;
+}
+
+.gs-ebay-item-price-box {
+  -moz-box-align: start;
+  -moz-box-pack: start;
+  margin-top: -1px;
+}
+
+.gs-ebay-item-price-label {
+  margin-left: 0px !important;
+  font-weight: bold;
+  font-size: 1em;
+  color: #333;
+  cursor: pointer !important;
+}
+
+.gs-ebay-item-bids-label {
+  margin-left: 0px !important;
+  font-size: 0.9em;
+  color: #6D6D6D;
+  cursor: pointer !important;
+}
+
+.gs-ebay-item-time-box {
+  -moz-box-align: start;
+  -moz-box-pack: start;
+}
+
+.gs-ebay-item-time-label {
+  margin-left: 0px !important;
+  font-weight: bold;
+  font-size: 0.9em;
+  color: #666;
+  cursor: pointer !important;
+}
+.gs-ebay-item-time-label[gsebayendingsoon="true"]{
+  color: #D90004;
+}
+
+.gs-ebay-item-action-button {
+  margin: 0px 2px 0px 2px;
+}

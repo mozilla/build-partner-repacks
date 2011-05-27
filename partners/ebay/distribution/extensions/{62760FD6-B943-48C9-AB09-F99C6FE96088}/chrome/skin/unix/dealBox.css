@@ -1,0 +1,18 @@
+/**
+ *  Copyright (C) 2007-2011 eBay Inc. All Rights Reserved.
+ */
+
+.gs-ebay-deal-state-label,
+.gs-ebay-deal-description,
+.gs-ebay-deal-price-label,
+.gs-ebay-deal-savings-label {
+  font-size: 11px !important;
+}
+
+.gs-ebay-deal-shipping-label {
+  font-size: 10px;
+}
+
+.gs-ebay-item-price-box {
+  margin-top: 0px;
+}

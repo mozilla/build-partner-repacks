@@ -1,0 +1,936 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2011 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- Ebay deal popup -->
+  <binding id="gs-ebay-deal-popup">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/dealPopup.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/dealPopup.css" />
+    </resources>
+
+    <content>
+      <xul:vbox class="gs-ebay-deal-popup-body" flex="1">
+        <xul:hbox class="gs-ebay-deal-popup-top" align="center" >
+          <xul:image anonid="gs-ebay-deal-popup-back-image"
+            class="gs-ebay-deal-popup-back-image"
+            onclick="document.getBindingParent(this).hideDetails(event);" />
+          <xul:label value="&ecFlyout.back.to.items.label;"
+            class="gs-ebay-deal-popup-back-label"
+            onclick="document.getBindingParent(this).hideDetails(event);" />
+          <xul:spacer flex="1"/>
+          <xul:hbox class="gs-ebay-popup-navigation-container">
+            <xul:image class="gs-ebay-popup-navigation-previous-image"
+              xbl:inherits="disabled=previousButtonDisabled"
+              onclick="document.getBindingParent(this)._scrollDeal(false, event);" />
+            <xul:image class="gs-ebay-popup-navigation-next-image"
+              xbl:inherits="disabled=nextButtonDisabled"
+              onclick="document.getBindingParent(this)._scrollDeal(true, event);" />
+          </xul:hbox>
+        </xul:hbox>
+        <xul:hbox class="gs-ebay-deal-popup-main-container" flex="1">
+          <xul:vbox anonid="gs-ebay-deal-popup-state-box"
+              class="gs-ebay-deal-popup-state-box" />
+          <xul:vbox flex="1" class="gs-ebay-deal-popup-details-box">
+            <xul:hbox class="gs-ebay-deal-popup-state-container" align="center">
+              <xul:label anonid="gs-ebay-deal-popup-state-label"
+                class="gs-ebay-deal-popup-state-label"
+                value="&ecSidebar.daily.deals.label;" flex="1" crop="end" />
+              <xul:hbox class="gs-ebay-deal-popup-action-button-container">
+                <xul:gsebaybutton anonid="gs-ebay-deal-popup-action-button"
+                  class="gs-ebay-deal-popup-action-button" gsebaysize="small"
+                  tooltiptext=""
+                  onclick="document.getBindingParent(this).executeCommand(event)"/>
+              </xul:hbox>
+            </xul:hbox>
+            <xul:hbox class="gs-ebay-deal-popup-image-container">
+              <html:canvas anonid="gs-ebay-deal-popup-canvas"
+                class="gs-ebay-deal-popup-image">
+              </html:canvas>
+            </xul:hbox>
+            <xul:vbox class="gs-ebay-deal-popup-info-container" flex="1">
+              <xul:gsebaydescription anonid="gs-ebay-deal-popup-description"
+                class="gs-ebay-deal-popup-description"
+                descriptionclass="text-link gs-ebay-deal-popup-inner-description"
+                onclick="document.getBindingParent(this).viewDeal(event);"/>
+              <xul:grid class="gs-ebay-deal-popup-grid" flex="1">
+                <xul:columns>
+                  <xul:column />
+                  <xul:column flex="1" />
+                </xul:columns>
+                <xul:rows>
+                  <xul:row>
+                    <xul:hbox>
+                      <xul:label anonid="gs-ebay-deal-popup-current-price-label" />
+                    </xul:hbox>
+                    <xul:vbox>
+                      <xul:label anonid="gs-ebay-deal-popup-current-price"
+                        class="gs-ebay-deal-popup-current-price" />
+                    </xul:vbox>
+                  </xul:row>
+                  <xul:row anonid="gs-ebay-deal-popup-savings-row">
+                    <xul:hbox>
+                      <xul:label value="&ecFlyout.savings;"/>
+                    </xul:hbox>
+                    <xul:vbox>
+                      <xul:label anonid="gs-ebay-deal-popup-savings"
+                        class="gs-ebay-deal-popup-savings" />
+                    </xul:vbox>
+                  </xul:row>
+                  <xul:row>
+                    <xul:hbox>
+                      <xul:label anonid="gs-ebay-deal-popup-listed-price-label" />
+                    </xul:hbox>
+                    <xul:vbox>
+                      <xul:label anonid="gs-ebay-deal-popup-listed-price"
+                        class="gs-ebay-deal-popup-listed-price" />
+                    </xul:vbox>
+                  </xul:row>
+                  <xul:row>
+                    <xul:hbox>
+                      <xul:label value="&ecFlyout.shipping;" />
+                    </xul:hbox>
+                    <xul:vbox>
+                      <xul:label anonid="gs-ebay-deal-popup-shipping" />
+                    </xul:vbox>
+                  </xul:row>
+                  <xul:row>
+                    <xul:hbox>
+                      <xul:label value="&ecFlyout.quantity.title;" />
+                    </xul:hbox>
+                    <xul:vbox>
+                      <xul:label anonid="gs-ebay-deal-popup-quantity" />
+                    </xul:vbox>
+                  </xul:row>
+                  <xul:row>
+                    <xul:hbox>
+                      <xul:label anonid="gs-ebay-deal-popup-end-date-title" />
+                    </xul:hbox>
+                    <xul:vbox>
+                      <xul:label anonid="gs-ebay-deal-popup-end-date" />
+                    </xul:vbox>
+                  </xul:row>
+                  <xul:row anonid="gs-ebay-deal-popup-seller-row"
+                    collapsed="true">
+                    <xul:hbox>
+                      <xul:label anonid="gs-ebay-deal-seller-title" />
+                    </xul:hbox>
+                    <xul:hbox align="center">
+                      <xul:vbox>
+                        <xul:label anonid="gs-ebay-deal-popup-seller"
+                          disabled="false"
+                          class="text-link gs-ebay-deal-popup-seller" crop="end"
+                          onclick="if (this.getAttribute('disabled') != 'true') {
+                            document.getBindingParent(this).viewSeller(event);
+                            } "/>
+                        <xul:hbox align="baseline">
+                          <xul:label class="gs-ebay-deal-popup-seller-open"
+                            anonid="gs-ebay-deal-popup-seller-open"
+                            value="&ecFlyout.seller.openParenthesis.label;" />
+                          <xul:label anonid="gs-ebay-deal-popup-seller-score"
+                            class="text-link gs-ebay-deal-popup-seller-score" crop="end"
+                            onclick="document.getBindingParent(this).viewSellerFeedback(event);"/>
+                          <xul:image anonid="gs-ebay-deal-popup-seller-star"
+                            class="gs-ebay-deal-popup-seller-star" />
+                          <xul:label class="gs-ebay-deal-popup-seller-close"
+                            anonid="gs-ebay-deal-popup-seller-close"
+                            value="&ecFlyout.seller.closeParenthesis.label;" />
+                        </xul:hbox>
+                        <xul:label anonid="gs-ebay-deal-popup-seller-positive"
+                          class="gs-ebay-deal-popup-seller-positive"
+                          crop="end" />
+                      </xul:vbox>
+                    </xul:hbox>
+                  </xul:row>
+                  <xul:row anonid="gs-ebay-deal-popup-history-row"
+                    collapsed="true">
+                    <xul:hbox>
+                      <xul:label value="&ecFlyout.history.title;" />
+                    </xul:hbox>
+                    <xul:vbox>
+                      <xul:label anonid="gs-ebay-deal-popup-page-views"
+                        class="gs-ebay-deal-popup-page-views" crop="end" />
+                    </xul:vbox>
+                  </xul:row>
+                  <xul:hbox class="gs-ebay-deal-popup-savings-disclosure"
+                    anonid="gs-ebay-deal-popup-savings-disclosure-container" >
+                    <xul:label anonid="gs-ebay-deal-popup-savings-disclosure"
+                      class="gs-ebay-deal-popup-savings-disclosure-label"/>
+                  </xul:hbox>
+                </xul:rows>
+              </xul:grid>
+            </xul:vbox>
+          </xul:vbox>
+        </xul:hbox>
+      </xul:vbox>
+    </content>
+
+    <implementation>
+      <!-- Associated deal. -->
+      <field name="_deal">null</field>
+      <field name="_observers">null</field>
+
+      <!-- Property to accessed the deal. -->
+      <property name="deal">
+        <getter>
+          return this._deal;
+        </getter>
+        <setter>
+         <![CDATA[
+          this._deal = val;
+          this._updateUI();
+         ]]>
+        </setter>
+      </property>
+
+      <!-- Property to accessed the button action. -->
+      <property name="buttonAction">
+        <getter>
+          return this.getAttribute('buttonAction');
+        </getter>
+        <setter>
+         <![CDATA[
+          this.setAttribute('buttonAction', val);
+         ]]>
+        </setter>
+      </property>
+
+      <!--
+        - Constructor
+        -->
+      <constructor>
+        <![CDATA[
+          let that = this;
+
+          this._observers = new EbayCompanion.Observers;
+          // observer to update the deal info displayed when it is updated by
+          // getMultipleItems call
+          this._observers.add(function(subject, topic, data) {
+              if (that.deal.get("itemId") == subject.get("itemId")) {
+                that.deal = subject;
+              }
+            }, "ebay-daily-deal-updated");
+        ]]>
+      </constructor>
+
+      <!--
+        - Destructor.
+        -->
+      <destructor>
+        <![CDATA[
+          this.deal = null;
+        ]]>
+      </destructor>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the action button label.
+        - @param aItemState the item state.
+        - @return the button label.
+        -->
+      <method name="_getActionButtonLabel">
+        <body>
+          <![CDATA[
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let buttonCommand = "view";
+            let buttonLabel = "";
+
+            if (buttonCommand) {
+              buttonLabel =
+                stringBundle.getString("ecItem.button." + buttonCommand);
+              this.buttonAction = buttonCommand;
+            }
+
+             return buttonLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the price label of the deal element with currency symbol.
+        - @param aListedPrice whether to return the listed price or the
+        - current price
+        - @return the price label.
+        -->
+      <method name="_getDealPrice">
+        <parameter name="aListedPrice"/>
+        <body>
+          <![CDATA[
+            let deal = this.deal
+
+            let priceLabel = "";
+            let currency = deal.get("currency");
+            let price = deal.get("currentPrice");
+
+            if (!aListedPrice) {
+              currency = deal.get("currency");
+              price = deal.get("currentPrice");
+            } else {
+              currency = deal.get("rrpCurrency");
+              price = deal.get("rrp");
+            }
+
+            if (currency && price && currency.length > 0 && price > 0) {
+              priceLabel = EbayCompanion.Constants.formatNumber(price, 2);
+              priceLabel =
+                EbayCompanion.Constants.addCurrencySymbol(
+                  priceLabel, currency);
+              let siteId =
+                EbayCompanion.Constants.siteIdForSite(
+                  EbayCompanion.Datasource.homeSite());
+              if (siteId == 77 && !aListedPrice) {
+                priceLabel += "*";
+              }
+            } else {
+              priceLabel = "N/A";
+            }
+
+            return EbayCompanion.Constants.getUTF8(priceLabel);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the savings rate label.
+        - @return the savings rate label.
+        -->
+      <method name="_getSavingsRateLabel">
+        <body>
+          <![CDATA[
+            let deal = this.deal;
+            let dealSavingsDisclosureContainer =
+              this._getElement("gs-ebay-deal-popup-savings-disclosure-container");
+            let dealSavingsDisclosure =
+              this._getElement("gs-ebay-deal-popup-savings-disclosure");
+
+            let disclosureLabel = "";
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let savingsRateLabel = "";
+            let savingsRate = deal.get("savingsRate");
+            if (null == savingsRate || savingsRate == 0) {
+              savingsRate = deal.get("savingsRateText");
+            }
+
+            let prefService = EbayCompanion.Constants.rootPrefService;
+            let language =
+              prefService.getCharPref("general.useragent.locale").toUpperCase();
+            let languageArray = language.split("-");
+            let siteId =
+              EbayCompanion.Constants.siteIdForSite(
+                EbayCompanion.Datasource.homeSite());
+            switch(languageArray[0]) {
+              case "DE":
+              case "FR":
+              case "EN":
+                if (!isNaN(savingsRate)) {
+                  if (siteId == 0 || siteId == 3 ||
+                      siteId == 210 || siteId == 77) {
+                    savingsRateLabel =
+                      stringBundle.getString(
+                        "ecDeal.label.savings.rate", [savingsRate]);
+                    if (siteId == 3) {
+                      savingsRateLabel += "*";
+                      disclosureLabel =
+                        "* RRP as at " + this._getDealDate("startTime", true);
+                    } else if (siteId == 77) {
+                      disclosureLabel = "* Ersparnis ggü. UVP";
+                    }
+                  } else if (siteId == 15) {
+                    savingsRateLabel =
+                      "Save " + savingsRate + "%";
+                  } else if (siteId == 2) {
+                    savingsRateLabel =
+                      "Save %" + savingsRate;
+                  }
+                } else {
+                  disclosureLabel = "* Ersparnis ggü. " + savingsRate;
+                  savingsRateLabel = savingsRate;
+                }
+                break;
+            }
+            if (disclosureLabel.length > 0) {
+              dealSavingsDisclosure.value = disclosureLabel;
+              dealSavingsDisclosure.removeAttribute("collapsed");
+              dealSavingsDisclosureContainer.removeAttribute("collapsed");
+            } else {
+              dealSavingsDisclosure.setAttribute("collapsed", true);
+              dealSavingsDisclosureContainer.setAttribute("collapsed", true);
+            }
+
+            return savingsRateLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the shipping label of the deal element with currency symbol.
+        - @return the shipping label.
+        -->
+      <method name="_getDealShipping">
+        <body>
+          <![CDATA[
+            let deal = this.deal;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let dealShipping;
+            let shippingCost = deal.get("shippingCost");
+            if (shippingCost != null && shippingCost == 0) {
+              dealShipping = stringBundle.getString(
+                "ecFlyout.shippingType.free");
+            } else {
+
+            }
+
+            return EbayCompanion.Constants.getUTF8(dealShipping);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the deal seller title label.
+        - @return the deal seller title label.
+        -->
+      <method name="_getDealSellerTitle">
+        <body>
+          <![CDATA[
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+
+            let sellerTitleLabel =
+              stringBundle.getString("ecFlyout.seller.title");
+
+            return sellerTitleLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the deal seller label.
+        - @return the deal seller label.
+        -->
+      <method name="_getDealSeller">
+        <body>
+          <![CDATA[
+            let deal = this.deal;
+            let sellerLabel = "";
+            let userId = EbayCompanion.Datasource.activeAccount().get("userId");
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let dealSellerRow =
+              this._getElement("gs-ebay-deal-popup-seller-row");
+            let dealSellerOpen =
+              this._getElement("gs-ebay-deal-popup-seller-open");
+            let dealSellerClose =
+              this._getElement("gs-ebay-deal-popup-seller-close");
+            let dealSellerPositive =
+              this._getElement("gs-ebay-deal-popup-seller-positive");
+            if (deal.get("sellerUserId")) {
+              dealSellerRow.removeAttribute("collapsed");
+
+              let dealSeller =
+                this._getElement("gs-ebay-deal-popup-seller");
+              let dealSellerScore =
+                this._getElement("gs-ebay-deal-popup-seller-score");
+              let dealSellerStar =
+                this._getElement("gs-ebay-deal-popup-seller-star");
+
+              let sellerFeedbackRating =
+                EbayCompanion.Constants.formatNumber(
+                  deal.get("sellerFeedbackRating"), 0);
+
+              sellerLabel = deal.get("sellerUserId");
+              dealSellerScore.textContent = sellerFeedbackRating;
+              dealSellerScore.removeAttribute("collapsed");
+
+              let starIndex =
+                this._getDealSellerStarIndex(deal.get("sellerFeedbackRating"));
+              if (starIndex > -1) {
+                dealSellerStar.removeAttribute("collapsed");
+                dealSellerStar.setAttribute(
+                  "gsebaystar",
+                  starIndex);
+              } else {
+                dealSellerStar.setAttribute("collapsed", true);
+              }
+
+              dealSellerOpen.removeAttribute("collapsed");
+              dealSellerClose.removeAttribute("collapsed");
+              dealSellerPositive.removeAttribute("collapsed");
+              dealSellerPositive.value = this._getDealSellerPositive();
+              dealSeller.setAttribute("class", "text-link gs-ebay-deal-popup-seller");
+              dealSeller.setAttribute("disabled", false);
+
+              return sellerLabel;
+            } else {
+              dealSellerRow.setAttribute("collapsed", true);
+              dealSellerOpen.setAttribute("collapsed", true);
+              dealSellerClose.setAttribute("collapsed", true);
+              dealSellerPositive.setAttribute("collapsed", true);
+              return;
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the deal seller positive label.
+        - @return the deal seller positive label.
+        -->
+      <method name="_getDealSellerPositive">
+        <body>
+          <![CDATA[
+            let deal = this.deal;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let sellerFeedbackPercent = deal.get("sellerFeedbackPercent");
+            let sellerPositiveLabel =
+              stringBundle.getString("ecFlyout.seller.positive",
+                [sellerFeedbackPercent]);
+
+            return sellerPositiveLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the deal seller star index.
+        - @param aFeedbackScore the feedback score to get its star
+        - @return the deal seller star index.
+        -->
+      <method name="_getDealSellerStarIndex">
+        <parameter name="aFeedbackScore" />
+        <body>
+          <![CDATA[
+            let STAR_MILESTONES =
+              [10, 50, 100, 500, 1000, 5000, 10000, 25000, 50000, 100000];
+            let starMilestonesCount = STAR_MILESTONES.length;
+            let starIndex = -1;
+
+            for (let i = 0; i < starMilestonesCount; i++) {
+              if (STAR_MILESTONES[i] <= aFeedbackScore) {
+                starIndex = i;
+              } else {
+                break;
+              }
+            }
+
+            return starIndex;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the deal end date.
+        - @return the deal end date.
+        -->
+      <method name="_getDealDate">
+        <parameter name="date" />
+        <parameter name="isRRP" />
+        <body>
+          <![CDATA[
+            let deal = this.deal;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let date = deal.get(date);
+            let dateFormat = stringBundle.getString("ecFlyout.date.active");
+            if (isRRP) {
+              dateFormat = "$MM/$DD/$YYYY";
+            }
+            let dateLabel =
+              EbayCompanion.Constants.formatDate(date, dateFormat);
+
+            return dateLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the quantitty of the deal.
+        - @return the quantitty label.
+        -->
+      <method name="_setDealQuantity">
+        <body>
+          <![CDATA[
+            let deal = this.deal;
+            let itemQuantity = this._getElement("gs-ebay-deal-popup-quantity");
+            let quantityContainer = itemQuantity.parentNode;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let quantity = deal.get("quantity");
+            let quantityLabel;
+
+            let sold = deal.get("quantitySold");
+            if (!sold) {
+              sold = 0;
+            }
+            if (quantity > 10) {
+              sold =
+                EbayCompanion.Constants.getUTF8(
+                  EbayCompanion.Constants.formatNumber(sold, 0));
+              quantityLabel =
+                stringBundle.getString("ecFlyout.item.more.available", [sold]);
+
+              const HTMLNS = "http://www.w3.org/1999/xhtml";
+              let p = document.createElementNS(HTMLNS, "p");
+              p.innerHTML =
+                EbayCompanion.Constants.parseMarkupString(quantityLabel);
+
+              let anchors = p.getElementsByTagName("a");
+              for (let i = 0; i < anchors.length; i++) {
+                let anchor = anchors[i];
+                // XXX: for some reason click event does not catch middle clicks,
+                // so we have to use mouseup
+                anchor.addEventListener(
+                  "mouseup",
+                  function(event) {
+                    EbayCompanion.openPage(
+                      event, "dealClick",
+                      "purchaseHistory", { itemid: deal.get("itemId") });
+                  },
+                  false);
+              }
+
+              while (quantityContainer.childNodes.length > 1) {
+                quantityContainer.removeChild(quantityContainer.childNodes[1]);
+              }
+
+              quantityContainer.appendChild(p);
+              itemQuantity.setAttribute("collapsed", true);
+            } else {
+              quantity =
+                EbayCompanion.Constants.getUTF8(
+                  EbayCompanion.Constants.formatNumber(quantity, 0));
+              quantityLabel =
+                stringBundle.getString("ecFlyout.item.available", [quantity]);
+              while (quantityContainer.childNodes.length > 1) {
+                quantityContainer.removeChild(quantityContainer.childNodes[1]);
+              }
+              itemQuantity.textContent = quantityLabel;
+              itemQuantity.removeAttribute("collapsed");
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the deal information.
+        -->
+      <method name="_updateUI">
+        <body>
+          <![CDATA[
+            const IMAGE_SIZE = 140;
+            let deal = this.deal;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+
+            let dealSellerTitle = this._getElement("gs-ebay-deal-seller-title");
+            let dealSeller = this._getElement("gs-ebay-deal-popup-seller");
+            let listedPriceTitle =
+              this._getElement("gs-ebay-deal-popup-listed-price-label");
+            listedPriceTitle.value =
+              stringBundle.getString("ecFlyout.deal.rrp");
+            // user with en-us locale and uk default page
+            let siteId =
+              EbayCompanion.Constants.siteIdForSite(
+                EbayCompanion.Datasource.homeSite());
+            if (listedPriceTitle.value.indexOf("MSRP") != -1 && siteId == 3) {
+              listedPriceTitle.value = "RRP";
+            }
+
+            let currentPriceTitle =
+              this._getElement("gs-ebay-deal-popup-current-price-label");
+            currentPriceTitle.value =
+              stringBundle.getString("ecFlyout.item.bin");
+
+            let endDateTitle =
+              this._getElement("gs-ebay-deal-popup-end-date-title");
+            endDateTitle.value =
+              stringBundle.getString("ecFlyout.date.context.ends");
+
+            let dealCanvas = this._getElement("gs-ebay-deal-popup-canvas");
+            let dealEndDate = this._getElement("gs-ebay-deal-popup-end-date");
+            let dealShipping = this._getElement("gs-ebay-deal-popup-shipping");
+            let dealDescription =
+              this._getElement("gs-ebay-deal-popup-description");
+            let dealSavings = this._getElement("gs-ebay-deal-popup-savings");
+            let dealCurrentPrice =
+              this._getElement("gs-ebay-deal-popup-current-price");
+            let dealListedPrice =
+              this._getElement("gs-ebay-deal-popup-listed-price");
+
+            let actionButton =
+              this._getElement("gs-ebay-deal-popup-action-button");
+            actionButton.setAttribute(
+              "label", this._getActionButtonLabel());
+
+            let ctx = dealCanvas.getContext('2d');
+            ctx.clearRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+
+            if (deal) {
+              // in this case we don't have to process the image if we are using
+              // the thumbnail and its max dimensions are expected to be 140X140
+              let processImage = false;
+              let imageSrc = deal.get("thumbnailUrl");
+              if (imageSrc == null || imageSrc.length == 0) {
+                imageSrc = deal.get("imageUrl");
+                if (imageSrc != null && imageSrc.length > 0) {
+                  // we scale and crop only if we have to use the full size image
+                  processImage = true;
+                }
+              }
+              // we are using the thumbnail, so we try to use the 140X140 version
+              // of the thumbnail
+              if (!processImage) {
+                imageSrc = imageSrc.replace("8080_", "4040_");
+              }
+
+              let img = new Image();
+              let height, width;
+              img.onload = function() {
+                if (img) {
+                  height = img.height;
+                  width = img.width;
+                  // we process the image if we are using the full size image or
+                  // if the thumbnail is bigger than the 140px limit in any of its
+                  // dimensions
+                  if (processImage || width > IMAGE_SIZE || height > IMAGE_SIZE) {
+                    let sX = 0;
+                    let sY = 0;
+                    let sHeight = height;
+                    let sWidth = width;
+
+                    let ratio = height / width;
+                    let diffH = 0, diffW = 0;
+
+                    // image is bigger or smaller than 140px in its smallest
+                    // dimension, so we have to scale the image so its smallest
+                    // size is 140px, and then crop a 140X140 section from it
+                    if (ratio > 1) { // height > width
+                      // image is bigger/smaller than 140px in its smallest dimension
+                      // (width) so we have to crop a square the size of that
+                      // dimension and scale it down/up to 140X140
+                      diffH = height - width;
+                      sX = 0;
+                      sY = Math.floor(diffH / 2);
+                      sHeight = width;
+                      sWidth = width;
+                    } else {
+                      // image is bigger/smaller than 140px in its smallest dimension
+                      // (height) so we have to crop a square the size of that
+                      // dimension and scale it down/up to 140X140
+                      diffW = width - height;
+                      sX = Math.floor(diffW / 2);
+                      sY = 0;
+                      sHeight = height;
+                      sWidth = height;
+                    }
+
+                    //dump("height: " + height + "/width: " + width +
+                    // "/sX: " + sX + "/sY: " + sY +
+                    // "/sHeight: " + sHeight + "/sWidth: " + sWidth + "\n");
+
+                    dealCanvas.setAttribute(
+                      "width", sWidth > IMAGE_SIZE ? IMAGE_SIZE : sWidth);
+                    dealCanvas.setAttribute(
+                      "height", sHeight > IMAGE_SIZE ? IMAGE_SIZE : sHeight);
+                    try {
+                      ctx.drawImage(
+                        img, sX, sY, sWidth, sHeight, 0, 0,
+                        sWidth > IMAGE_SIZE ? IMAGE_SIZE : sWidth,
+                        sHeight > IMAGE_SIZE ? IMAGE_SIZE : sHeight);
+                    } catch (e) {
+                      // for some reason this method throws an exception on Firefox
+                      // 3.6, but still works, so we just prevent it from generating
+                      // the error console entry
+                    }
+                  } else {
+                    try {
+                      dealCanvas.setAttribute("width", width);
+                      dealCanvas.setAttribute("height", height);
+                      ctx.drawImage(img, 0, 0);
+                    } catch(e) {
+                      // for some reason this method throws an exception on Firefox
+                      // 3.6, but still works, so we just prevent it from generating
+                      // the error console entry
+                    }
+                  }
+
+                }
+                img = null;
+              }
+
+              // if the deal has no image, we have to clear the canvas so the
+              // default background is shown correctly and not the image of
+              // another deal (specially for desktop alerts)
+              if (imageSrc == null || imageSrc.length == 0) {
+                dealCanvas.setAttribute("width", 0);
+                dealCanvas.setAttribute("height", 0);
+                ctx.clearRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+                // set the default image
+                imageSrc = "chrome://ebaycompanion/skin/images/empty-image.png"
+              }
+
+              img.src = imageSrc;
+
+              dealSellerTitle.textContent = this._getDealSellerTitle();
+              dealSeller.textContent = this._getDealSeller();
+              dealDescription.textContent =
+                EbayCompanion.Constants.getUTF8(deal.get("title"));
+              dealShipping.textContent = this._getDealShipping();
+              // set deal quantity
+              this._setDealQuantity();
+              dealEndDate.textContent = this._getDealDate("endTime");
+              dealSavings.textContent = this._getSavingsRateLabel();
+              dealCurrentPrice.textContent = this._getDealPrice(false);
+              dealListedPrice.textContent = this._getDealPrice(true);
+              // update deal history
+              this._updateDealHistory();
+
+            } else {
+              ctx.clearRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+            }
+
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the item history (page views, bids and watches)
+        - @return the page views label.
+        -->
+      <method name="_updateDealHistory">
+        <body>
+          <![CDATA[
+            let deal = this.deal;
+            let historyRow = this._getElement("gs-ebay-deal-popup-history-row");
+            let historyLabel =
+              this._getElement("gs-ebay-deal-popup-page-views");
+            let pageViews = deal.get("pageViews");
+            if (pageViews != null) {
+              if (pageViews > 0) {
+                let stringBundle = EbayCompanion.Constants.stringBundle;
+                historyRow.removeAttribute("collapsed");
+                let pageViewsKey =
+                  (pageViews == 1 ? "ecFlyout.history.pageview" :
+                    "ecFlyout.history.pageview.plural");
+                let pageViewsLabel =
+                  stringBundle.getString(
+                    pageViewsKey,
+                    [EbayCompanion.Constants.formatNumber(pageViews, 0)]);
+                historyLabel.textContent = pageViewsLabel;
+              } else {
+                historyLabel.textContent = "-";
+              }
+            } else {
+              historyRow.setAttribute("collapsed", true);
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Executes the button command
+        -->
+      <method name="executeCommand">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            EbayCompanion.itemButtonClick(
+              aEvent, "itemButton", this.buttonAction, this.deal);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Hides the item popup
+        -->
+      <method name="hideDetails">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            let target = aEvent.target;
+            let popup = document.getBindingParent(target);
+            let dealList = document.getBindingParent(popup);
+            dealList.hideDealDetails();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Scrolls the next or previous deal in the details panel, based on the
+        - aForward attribute passed by parameter
+        - @param aForward whether to show next or previous deal
+        - @param aEvent the event that triggered this call
+        -->
+      <method name="_scrollDeal">
+        <parameter name="aForward" />
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            aEvent.stopPropagation();
+            aEvent.preventDefault();
+            let target = aEvent.target;
+            let popup = document.getBindingParent(target);
+            let dealList = document.getBindingParent(popup);
+            dealList.scrollDeal(aForward, aEvent);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Opens the deal page
+        -->
+      <method name="viewDeal">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            EbayCompanion.openPage(aEvent, 'itemClick', 'listing',
+                {itemid: this.deal.get('itemId')});
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Opens the seller page
+        -->
+      <method name="viewSeller">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            EbayCompanion.openPage(
+              aEvent, "itemClick", "myWorld", {userid: this.deal.get('sellerUserId')});
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Opens the seller feedback page
+        -->
+      <method name="viewSellerFeedback">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            EbayCompanion.openPage(
+              aEvent, "itemClick", "userFeedback", {userid: this.deal.get('sellerUserId')});
+          ]]>
+        </body>
+      </method>
+
+    </implementation>
+  </binding>
+</bindings>

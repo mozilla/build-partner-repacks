@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+  <!ENTITY % newtabDTD SYSTEM "chrome://unitedtb/locale/newtab/store-management.dtd">
+  %newtabDTD;
+]>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+    <title>&store.management.title;</title>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css"
+      href="chrome://unitedtb/skin/newtab/store-management.css"/>
+</head>
+<body>
+    <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/util/uiutil.js"></script>
+    <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/newtab/store-management.js"></script>
+    <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/newtab/psh-provider.js"></script>
+
+<div id="container">
+    <div id="header">
+        <h1><a id="logo" href=""><span class="img-alt">&brand.name;</span></a></h1>
+    </div>
+    <div id="main">
+        <div id="contentheader">
+            <h2>Management</h2>
+            <div id="buttonlist">
+            </div>
+        </div>
+        <div id="toolkit">
+          <button id="edit-button" onclick="onToggleEdit();" 
+            exit-string="&store.management.exit;" 
+            edit-string="&store.management.edit;">
+            &store.management.edit;</button>
+          <button onclick="onDeleteSelection();" class="edit-mode">
+            &store.management.delete.selection;</button>
+          <button onclick="onDeleteAll();" class="edit-mode">
+            &store.management.delete.all;</button>
+        </div>
+        <div id="content">
+          <div id="items-list"/>
+        </div>
+    </div>
+</div>
+</body>
+</html>

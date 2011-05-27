@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- Greeting Widget showing clickable username and feedback score -->
+  <binding id="greeting-widget">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/greetingWidget.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/greetingWidget.css" />
+    </resources>
+    <content>
+      <xul:menupopup anonid="gs-ebay-user-context-menu">
+        <xul:menuitem anonid="gs-ebay-user-context-sign-out"
+          label="&ecSidebar.user.menu.sign.out;"
+          onclick="checkForMiddleClick(this, event);"
+          oncommand="
+            EbayCompanion.Datasource.logoutUser();
+              event.stopPropagation();"/>
+        <xul:menuitem anonid="gs-ebay-user-context-my-ebay"
+          label="&ecBrowser.toolbarbutton.menu.myebay;"
+          oncommand="
+            EbayCompanion.openPage(event, 'ebayButton', 'myEbay', {});
+              event.stopPropagation();"/>
+        <xul:menuseparator anonid="gs-ebay-user-context-options-separator" />
+        <xul:menuitem anonid="gs-ebay-user-context-options"
+          label="&ecBrowser.toolbarbutton.menu.options;"
+          oncommand="
+            EbayCompanion.showOptionsPanel();
+              event.stopPropagation();"/>
+      </xul:menupopup>
+      <xul:hbox class="content" flex="1">
+        <xul:label class="greeting" value="&ecSidebar.user.hello;" crop="none" />
+        <xul:label anonid="username" class="username link" crop="end" flex="1"
+          tooltiptext="&ecSidebar.user.username.tooltip;"
+          onclick="_openMyWorldPage(event);" xbl:inherits="value=username" />
+        <xul:label anonid="feedbackscore" class="feedbackscore link"
+          tooltiptext="&ecSidebar.user.feedback.tooltip;"
+          onclick="_openFeedbackPage(event);" crop="none" />
+        <xul:vbox align="center" pack="center">
+          <xul:image anonid="gs-ebay-user-menu" class="gs-ebay-user-menu" onclick="_showItemPopup(event)" />
+        </xul:vbox>
+        <xul:spacer flex="1000"/>
+      </xul:hbox>
+    </content>
+
+    <handlers>
+      <!--
+        - Used to update the feedback score label when the attribute is
+        - changed on this binding
+        -->
+      <handler event="DOMAttrModified">
+        <![CDATA[
+          if (event.originalTarget == this &&
+              event.attrName == "feedbackscore") {
+            this._setFeedbackScore(event.newValue);
+          }
+        ]]>
+      </handler>
+    </handlers>
+
+    <implementation>
+      <constructor>
+        <![CDATA[
+          this._setFeedbackScore(this.getAttribute("feedbackscore"));
+        ]]>
+      </constructor>
+
+
+      <!--
+        - Shows the item popup.
+        - @param aEvent the event object.
+        -->
+      <method name="_showItemPopup">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            let menuButton =
+              document.getAnonymousElementByAttribute(
+                this, "anonid", "gs-ebay-user-menu");
+            let menuPopup =
+              document.getAnonymousElementByAttribute(
+                this, "anonid", "gs-ebay-user-context-menu");
+
+            menuPopup.openPopup(menuButton, "before_start", 0, 0, false, true);
+
+            aEvent.stopPropagation();
+          ]]>
+        </body>
+      </method>
+
+      <method name="_setFeedbackScore">
+        <parameter name="feedbackScore" />
+        <body>
+          <![CDATA[
+            let feedbackElement =
+              document.getAnonymousElementByAttribute(
+                this, "anonid", "feedbackscore");
+            feedbackElement.value =
+              EbayCompanion.Constants.stringBundle.getString(
+                "ecSidebar.user.feedback", [feedbackScore]);
+          ]]>
+        </body>
+      </method>
+
+      <method name="_openFeedbackPage">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            if (2 != aEvent.button) {
+              let userId =
+                EbayCompanion.Datasource.activeAccount().get("userId");
+
+              EbayCompanion.openPage(
+                aEvent, "sidebarButton", "userFeedback", {userid: userId});
+            }
+          ]]>
+        </body>
+      </method>
+
+      <method name="_openMyWorldPage">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            let userId =
+                EbayCompanion.Datasource.activeAccount().get("userId");
+            if (2 != aEvent.button) {
+              EbayCompanion.openPage(
+                aEvent, "sidebarButton", "myWorld", {userid: userId});
+            }
+          ]]>
+        </body>
+      </method>
+    </implementation>
+
+  </binding>
+</bindings>

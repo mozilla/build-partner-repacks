@@ -1,0 +1,20 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+.gs-ebay-feedback-container {
+  margin: -1px -1px 0px -1px;
+}
+
+.gs-ebay-feedback-close-button {
+  -moz-image-region: rect(0px, 31px, 17px, 0px);
+  margin-top: 0px;
+  margin-right: -1px;
+  width: 17px;
+}
+.gs-ebay-feedback-close-button:hover {
+  -moz-image-region: rect(17px, 31px, 34px, 0px);
+}
+.gs-ebay-feedback-close-button:active {
+  -moz-image-region: rect(34px, 31px, 51px, 0px);
+}

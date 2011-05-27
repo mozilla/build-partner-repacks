@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- Button for eBay Item -->
+  <binding id="gs-ebay-button">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/button.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/button.css" />
+    </resources>
+    <content>
+      <xul:stack class="gs-ebay-button-content" xbl:inherits="gsebaysize">
+        <xul:hbox class="gs-ebay-button-background" />
+        <xul:vbox class="gs-ebay-button-text-box" flex="1">
+          <xul:label class="gs-ebay-button-text" xbl:inherits="value=label" />
+        </xul:vbox>
+      </xul:stack>
+    </content>
+
+    <handlers>
+      <handler event="click" phase="capturing">
+        <![CDATA[
+          this.doCommand();
+        ]]>
+      </handler>
+    </handlers>
+  </binding>
+</bindings>

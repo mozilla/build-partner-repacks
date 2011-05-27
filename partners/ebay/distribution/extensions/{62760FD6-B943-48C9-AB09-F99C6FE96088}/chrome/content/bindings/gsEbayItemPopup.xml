@@ -1,0 +1,1589 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- Ebay item popup -->
+  <binding id="gs-ebay-item-popup">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/itemPopup.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/itemPopup.css" />
+    </resources>
+
+    <content>
+      <xul:vbox class="gs-ebay-item-popup-body" flex="1">
+        <xul:hbox class="gs-ebay-item-popup-top" align="center" >
+          <xul:image anonid="gs-ebay-item-popup-back-image"
+            class="gs-ebay-item-popup-back-image"
+            onclick="document.getBindingParent(this).hideDetails(event);" />
+          <xul:label value="&ecFlyout.back.to.items.label;"
+            class="gs-ebay-item-popup-back-label"
+            onclick="document.getBindingParent(this).hideDetails(event);" />
+          <xul:spacer flex="1"/>
+          <xul:hbox class="gs-ebay-popup-navigation-container">
+            <xul:image class="gs-ebay-popup-navigation-previous-image"
+              xbl:inherits="disabled=previousButtonDisabled"
+              onclick="document.getBindingParent(this)._scrollItem(false, event);" />
+            <xul:image class="gs-ebay-popup-navigation-next-image"
+              xbl:inherits="disabled=nextButtonDisabled"
+              onclick="document.getBindingParent(this)._scrollItem(true, event);" />
+          </xul:hbox>
+        </xul:hbox>
+        <xul:hbox class="gs-ebay-item-popup-main-container" flex="1">
+          <xul:vbox anonid="gs-ebay-item-popup-state-box"
+              class="gs-ebay-item-popup-state-box" />
+          <xul:vbox flex="1" class="gs-ebay-item-popup-details-box">
+            <xul:hbox class="gs-ebay-item-popup-state-container" align="center">
+              <xul:label anonid="gs-ebay-item-popup-state-label"
+                class="gs-ebay-item-popup-state-label" flex="1" crop="end" />
+              <xul:hbox class="gs-ebay-item-popup-action-button-container">
+                <xul:gsebaybutton anonid="gs-ebay-item-popup-action-button"
+                  class="gs-ebay-item-popup-action-button" gsebaysize="small"
+                  tooltiptext=""
+                  onclick="document.getBindingParent(this).executeCommand(event)"/>
+              </xul:hbox>
+            </xul:hbox>
+            <xul:hbox class="gs-ebay-item-popup-image-container">
+              <html:canvas anonid="gs-ebay-item-popup-canvas"
+                class="gs-ebay-item-popup-image">
+              </html:canvas>
+            </xul:hbox>
+            <xul:vbox class="gs-ebay-item-popup-info-container" flex="1">
+              <xul:gsebaydescription anonid="gs-ebay-item-popup-description"
+                class="gs-ebay-item-popup-description"
+                descriptionclass="text-link gs-ebay-item-popup-inner-description"
+                onclick="document.getBindingParent(this).viewItem(event);"/>
+              <xul:grid class="gs-ebay-item-popup-grid" flex="1">
+                <xul:columns>
+                  <xul:column />
+                  <xul:column flex="1" />
+                </xul:columns>
+                <xul:rows>
+                  <xul:row>
+                    <xul:hbox>
+                      <xul:label anonid="gs-ebay-item-popup-bids-label" />
+                    </xul:hbox>
+                    <xul:hbox>
+                      <xul:label anonid="gs-ebay-item-popup-current-bid"
+                        class="gs-ebay-item-popup-current-bid" />
+                      <xul:label anonid="gs-ebay-item-popup-converted-current-bid"
+                        class="gs-ebay-item-popup-converted-current-bid"
+                        collapsed="true" />
+                    </xul:hbox>
+                  </xul:row>
+                  <xul:row anonid="gs-ebay-item-popup-maxbid-row"
+                    collapsed="true">
+                    <xul:hbox>
+                      <xul:label value="&ecFlyout.item.bids.maxBid;" />
+                    </xul:hbox>
+                    <xul:hbox>
+                      <xul:label anonid="gs-ebay-item-popup-max-bid"
+                        class="gs-ebay-item-popup-max-bid" />
+                      <xul:label anonid="gs-ebay-item-popup-converted-max-bid"
+                        class="gs-ebay-item-popup-converted-max-bid"
+                        collapsed="true" />
+                    </xul:hbox>
+                  </xul:row>
+                  <xul:row anonid="gs-ebay-item-popup-bestoffer-row"
+                    collapsed="true">
+                    <xul:hbox>
+                      <xul:label anonid="gs-ebay-item-popup-best-offer-label"/>
+                    </xul:hbox>
+                    <xul:hbox>
+                      <xul:label anonid="gs-ebay-item-popup-best-offer"
+                        class="gs-ebay-item-popup-best-offer" crop="end" />
+                      <xul:label anonid="gs-ebay-item-popup-converted-best-offer"
+                        class="gs-ebay-item-popup-converted-best-offer"
+                         collapsed="true" crop="end" />
+                    </xul:hbox>
+                  </xul:row>
+                  <xul:row>
+                    <xul:hbox>
+                      <xul:label value="&ecFlyout.shipping;" />
+                    </xul:hbox>
+                    <xul:vbox>
+                      <xul:label anonid="gs-ebay-item-popup-shipping" />
+                    </xul:vbox>
+                  </xul:row>
+                  <xul:row>
+                    <xul:hbox>
+                      <xul:label value="&ecFlyout.quantity.title;" />
+                    </xul:hbox>
+                    <xul:vbox>
+                      <xul:label anonid="gs-ebay-item-popup-quantity" />
+                    </xul:vbox>
+                  </xul:row>
+                  <xul:row>
+                    <xul:hbox>
+                      <xul:label anonid="gs-ebay-item-popup-end-date-title" />
+                    </xul:hbox>
+                    <xul:vbox>
+                      <xul:label anonid="gs-ebay-item-popup-end-date" />
+                    </xul:vbox>
+                  </xul:row>
+                  <xul:row>
+                    <xul:hbox>
+                      <xul:label anonid="gs-ebay-item-seller-title" />
+                    </xul:hbox>
+                    <xul:hbox align="center">
+                      <xul:vbox>
+                        <xul:label anonid="gs-ebay-item-popup-seller"
+                          disabled="false"
+                          class="text-link gs-ebay-item-popup-seller" crop="end"
+                          onclick="if (this.getAttribute('disabled') != 'true') {
+                            document.getBindingParent(this).viewSeller(event);
+                            } "/>
+                        <xul:hbox align="baseline">
+                          <xul:label class="gs-ebay-item-popup-seller-open"
+                            anonid="gs-ebay-item-popup-seller-open"
+                            value="&ecFlyout.seller.openParenthesis.label;" />
+                          <xul:label anonid="gs-ebay-item-popup-seller-score"
+                            class="text-link gs-ebay-item-popup-seller-score" crop="end"
+                            onclick="document.getBindingParent(this).viewSellerFeedback(event);"/>
+                          <xul:image anonid="gs-ebay-item-popup-seller-star"
+                            class="gs-ebay-item-popup-seller-star" />
+                          <xul:label class="gs-ebay-item-popup-seller-close"
+                            anonid="gs-ebay-item-popup-seller-close"
+                            value="&ecFlyout.seller.closeParenthesis.label;" />
+                        </xul:hbox>
+                        <xul:label anonid="gs-ebay-item-popup-seller-positive"
+                          class="gs-ebay-item-popup-seller-positive"
+                          crop="end" />
+                      </xul:vbox>
+                    </xul:hbox>
+                  </xul:row>
+                  <xul:row anonid="gs-ebay-item-popup-history-row"
+                    collapsed="true">
+                    <xul:hbox>
+                      <xul:label value="&ecFlyout.history.title;" />
+                    </xul:hbox>
+                    <xul:vbox>
+                      <xul:label anonid="gs-ebay-item-popup-page-views"
+                        class="gs-ebay-item-popup-page-views" crop="end" />
+                      <xul:label anonid="gs-ebay-item-popup-watches"
+                        class="gs-ebay-item-popup-watches" crop="end" />
+                      <xul:label anonid="gs-ebay-item-popup-bids"
+                        class="gs-ebay-item-popup-bids" crop="end" />
+                    </xul:vbox>
+                  </xul:row>
+                </xul:rows>
+              </xul:grid>
+            </xul:vbox>
+          </xul:vbox>
+        </xul:hbox>
+      </xul:vbox>
+    </content>
+
+    <implementation>
+      <!-- Associated item. -->
+      <field name="_item">null</field>
+
+      <!-- Property to accessed the item. -->
+      <property name="item">
+        <getter>
+          return this._item;
+        </getter>
+        <setter>
+         <![CDATA[
+          this._item = val;
+          this._updateUI();
+         ]]>
+        </setter>
+      </property>
+
+      <!-- Property to accessed the button action. -->
+      <property name="buttonAction">
+        <getter>
+          return this.getAttribute('buttonAction');
+        </getter>
+        <setter>
+         <![CDATA[
+          this.setAttribute('buttonAction', val);
+         ]]>
+        </setter>
+      </property>
+
+      <!--
+        - Destructor.
+        -->
+      <destructor>
+        <![CDATA[
+          this.item = null;
+        ]]>
+      </destructor>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the price label of the item element with currency symbol.
+        - @return the price label.
+        -->
+      <method name="_getItemPrice">
+        <body>
+          <![CDATA[
+            let item = this.item
+            let bestOfferTitle =
+              this._getElement("gs-ebay-item-popup-best-offer-label");
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let priceLabel = "";
+            let EC_LISTING_TYPE_CLASSIFIED = "AdType";
+            let EC_LISTING_TYPE_LEAD_GENERATION = "LeadGeneration";
+            let bestOfferEnabled = item.get("bestOfferEnabled");
+            let listingFormat = item.get("listingFormat");
+            let currency = item.get("currency");
+            let price = item.get("currentPrice");
+            let isBestOfferSale = false;
+            let transactionPrice;
+            let transactionPriceCurrency;
+            if (item.transaction) {
+              transactionPrice = item.transaction.get("transactionPrice");
+              transactionPriceCurrency =
+                item.transaction.get("transactionPriceCurrency");
+            }
+            // if the item has a transaction, we use the final sale price, but
+            // only if we have it
+            if (!bestOfferEnabled && item.transaction && transactionPrice > 0) {
+              // the item might have bestOfferEnabled flag set to false, but
+              // if the final transaction price is different thant he listing
+              // price, we are dealing with a best offer
+              if (price != transactionPrice) {
+                isBestOfferSale = true;
+              } else {
+                currency = transactionPriceCurrency;
+                price = transactionPrice;
+              }
+            }
+
+            let bestOfferTitleValue =
+              stringBundle.getString("ecFlyout.item.bids.bestOffer");
+
+            if ((EC_LISTING_TYPE_CLASSIFIED == listingFormat ||
+                 EC_LISTING_TYPE_LEAD_GENERATION == listingFormat) &&
+                price == 0) {
+              priceLabel = stringBundle.getString("ecFlyout.shippingType.view");
+            } else {
+              if (currency.length > 0 && price > 0) {
+                priceLabel = EbayCompanion.Constants.formatNumber(price, 2);
+                priceLabel =
+                  EbayCompanion.Constants.addCurrencySymbol(
+                    priceLabel, currency);
+                let itemConvertedCurrentBid =
+                  this._getElement("gs-ebay-item-popup-converted-current-bid");
+                let convertedPrice = item.get("convertedCurrentPrice");
+                let convertedPriceCurrency =
+                  item.get("convertedCurrentPriceCurrency");
+                // if the item has a transaction, we use the final converted
+                // sale price
+                if (item.transaction) {
+                  let convertedPrice =
+                    item.transaction.get("convertedTransactionPrice");
+                  let convertedPriceCurrency =
+                    item.get("convertedTransactionPriceCurrency");
+                }
+                // show converted current price only if we have it
+                if (convertedPrice > 0 &&
+                    convertedPriceCurrency.length > 0 &&
+                    currency != convertedPriceCurrency) {
+                  itemConvertedCurrentBid.removeAttribute("collapsed");
+                  let formattedConvertedCurrentBid = convertedPrice;
+                  formattedConvertedCurrentBid =
+                    EbayCompanion.Constants.formatNumber(
+                      formattedConvertedCurrentBid, 2);
+                  formattedConvertedCurrentBid =
+                    EbayCompanion.Constants.addCurrencySymbol(
+                      formattedConvertedCurrentBid, convertedPriceCurrency);
+                  itemConvertedCurrentBid.value = "(" +
+                    EbayCompanion.Constants.getUTF8(formattedConvertedCurrentBid)
+                    + ")";
+                } else {
+                  itemConvertedCurrentBid.setAttribute("collapsed", true);
+                }
+              }
+            }
+
+            let bestOfferRow =
+              this._getElement("gs-ebay-item-popup-bestoffer-row");
+            let bestOfferLabel =
+              this._getElement("gs-ebay-item-popup-best-offer");
+            let convertedBestOfferLabel =
+              this._getElement("gs-ebay-item-popup-converted-best-offer");
+
+            // display the best offer row if necessary
+            if (bestOfferEnabled || isBestOfferSale) {
+              let bestOffer = item.get("bestOffer");
+              let bestOfferCurrency = item.get("bestOfferCurrency");
+              let convertedBestOffer = item.get("convertedBestOffer");
+              let convertedBestOfferCurrency =
+                item.get("convertedBestOfferCurrency");
+
+              if (item.transaction != null) {
+                bestOffer = transactionPrice;
+                bestOfferCurrency = transactionPriceCurrency;
+                convertedBestOffer = item.get("convertedTransactionPrice");
+                convertedBestOfferCurrency =
+                  item.get("convertedTransactionPriceCurrency");
+                bestOfferTitleValue =
+                  stringBundle.getString("ecFlyout.item.bids.ended.sold");
+              }
+              if (bestOffer > 0 && bestOfferCurrency.length > 0) {
+                bestOfferRow.removeAttribute("collapsed");
+                let formattedBestOffer =
+                  EbayCompanion.Constants.formatNumber(bestOffer, 2);
+                formattedBestOffer =
+                  EbayCompanion.Constants.addCurrencySymbol(
+                    formattedBestOffer, bestOfferCurrency);
+                bestOfferLabel.value =
+                  EbayCompanion.Constants.getUTF8(formattedBestOffer);
+                // show converted best offer only if we have it
+                if (convertedBestOffer > 0 &&
+                    convertedBestOfferCurrency.length > 0 &&
+                    bestOfferCurrency !=
+                      convertedBestOfferCurrency) {
+                  convertedBestOfferLabel.removeAttribute("collapsed");
+                  let formattedConvertedBestOffer =
+                    EbayCompanion.Constants.formatNumber(
+                      convertedBestOffer, 2);
+                  formattedConvertedBestOffer =
+                    EbayCompanion.Constants.addCurrencySymbol(
+                      formattedConvertedBestOffer,
+                      convertedBestOfferCurrency);
+                  convertedBestOfferLabel.value = "(" +
+                    EbayCompanion.Constants.getUTF8(formattedConvertedBestOffer)
+                    + ")";
+                } else {
+                  convertedBestOfferLabel.setAttribute("collapsed", true);
+                }
+              } else {
+                bestOfferRow.setAttribute("collapsed", true);
+              }
+            } else {
+              bestOfferRow.setAttribute("collapsed", true);
+            }
+
+            bestOfferTitle.value = bestOfferTitleValue;
+
+            return EbayCompanion.Constants.getUTF8(priceLabel);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the shipping label of the item element with currency symbol.
+        - @return the shipping label.
+        -->
+      <method name="_getItemShipping">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let itemShipping;
+            const SHIPPING_COST_TYPE_FLAT = "Flat";
+            const SHIP_TO_LOCATIONS_NONE = "None";
+            const SHIPPING_TYPE_FLAT = "Flat";
+            const SHIPPING_TYPE_UNSPECIFIED = "NotSpecified";
+            let seeDescription = item.get("shippingTermsInDescription");
+            let accountRegSite =
+              EbayCompanion.Datasource.activeAccount().get("registrationSite");
+            let shippingType = item.get("shippingType");
+            let shipToLocations = item.get("shipToLocations");
+
+            if (shipToLocations == SHIP_TO_LOCATIONS_NONE) {
+              // pick up only
+              itemShipping = stringBundle.getString(
+                "ecFlyout.shippingType.pickup");
+            } else if (seeDescription) {
+              // see description
+              itemShipping = stringBundle.getString(
+                "ecFlyout.shippingType.seeDescription");
+            } else if (shippingType == SHIPPING_TYPE_FLAT) {
+              let shippingCost = item.get("shippingCost");
+              if (shippingCost != null && shippingCost == 0) {
+                itemShipping = stringBundle.getString(
+                  "ecFlyout.shippingType.free");
+              } else if (shippingCost && shippingCost > 0) {
+                let currency = item.get("currency");
+                let shippingCost = item.get("shippingCost");
+                itemShipping =
+                  EbayCompanion.Constants.formatNumber(shippingCost, 2);
+                itemShipping =
+                  EbayCompanion.Constants.addCurrencySymbol(
+                    itemShipping, currency);
+              } else {
+                itemShipping = stringBundle.getString(
+                "ecFlyout.shippingType.view");
+              }
+            } else if (shipToLocations.indexOf(accountRegSite) == -1) {
+              itemShipping = stringBundle.getString(
+                "ecFlyout.shippingType.view");
+            } else if (!shippingType ||
+                       shippingType == "" ||
+                       shippingType == SHIPPING_TYPE_UNSPECIFIED) {
+              itemShipping = stringBundle.getString(
+                "ecFlyout.shippingType.unspecified");
+            } else {
+              itemShipping = stringBundle.getString(
+                "ecFlyout.shippingType.calculated");
+            }
+
+            return EbayCompanion.Constants.getUTF8(itemShipping);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the item end date.
+        - @return the item end date.
+        -->
+      <method name="_getItemEndDate">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let endDate = item.get("endTime");
+            // if the item has a transaction, use the creation time of the
+            // transaction to reflect the moment the item was won or sold
+            if (item.transaction) {
+              endDate = item.transaction.get("creationTime");
+            }
+            let itemEnded = this._getItemEnded();
+            let endDateProperty =
+              (itemEnded ? "ecFlyout.date.ended" : "ecFlyout.date.active");
+            let endDateFormat = stringBundle.getString(endDateProperty);
+            let endDateLabel =
+              EbayCompanion.Constants.formatDate(endDate, endDateFormat);
+
+            return endDateLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the item seller title label.
+        - @return the item seller title label.
+        -->
+      <method name="_getItemSellerTitle">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let userId = EbayCompanion.Datasource.activeAccount().get("userId");
+            let userIsSeller =
+              (item.get("sellerUserId").toLowerCase() == userId.toLowerCase());
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+
+            let sellerTitleLabel;
+            if (userIsSeller) {
+              sellerTitleLabel =
+                stringBundle.getString("ecFlyout.buyer.title");
+            } else {
+              sellerTitleLabel =
+                stringBundle.getString("ecFlyout.seller.title");
+            }
+
+            return sellerTitleLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the item seller label.
+        - @return the item seller label.
+        -->
+      <method name="_getItemSeller">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let sellerLabel = "";
+            let userId = EbayCompanion.Datasource.activeAccount().get("userId");
+            let userIsSeller =
+              (item.get("sellerUserId").toLowerCase() == userId.toLowerCase());
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let itemSeller = this._getElement("gs-ebay-item-popup-seller");
+            let itemSellerScore =
+              this._getElement("gs-ebay-item-popup-seller-score");
+            let itemSellerStar =
+              this._getElement("gs-ebay-item-popup-seller-star");
+            let itemSellerOpen =
+              this._getElement("gs-ebay-item-popup-seller-open");
+            let itemSellerClose =
+              this._getElement("gs-ebay-item-popup-seller-close");
+            let itemSellerPositive =
+              this._getElement("gs-ebay-item-popup-seller-positive");
+            let EC_LISTING_TYPE_FIXED = "FixedPriceItem";
+            let EC_LISTING_TYPE_STORE_FIXED = "StoresFixedPrice";
+            let listingFormat = item.get("listingFormat");
+
+            if (userIsSeller) {
+              // when I'm the seller we don't display the star and positive
+              // feedback for BIN items
+              let highBidderId = item.get("highBidderId");
+
+              // the item has a transaction, this means it is ended
+              if (item.transaction) {
+                sellerLabel = item.transaction.get("buyerUserId");
+                itemSellerScore.setAttribute("collapsed", true);
+                itemSellerStar.setAttribute("collapsed", true);
+                itemSellerOpen.setAttribute("collapsed", true);
+                itemSellerClose.setAttribute("collapsed", true);
+                itemSellerPositive.setAttribute("collapsed", true);
+                itemSeller.setAttribute("class", "text-link gs-ebay-item-popup-seller");
+                itemSeller.setAttribute("disabled", false);
+              } else if (highBidderId && highBidderId.length > 0 &&
+                  EC_LISTING_TYPE_STORE_FIXED != listingFormat &&
+                  EC_LISTING_TYPE_FIXED != listingFormat) {
+                // if the item has a high bidder, display it
+                let highBidderFeedbackScore =
+                  EbayCompanion.Constants.formatNumber(
+                    item.get("highBidderFeedbackScore"), 0);
+
+                sellerLabel = highBidderId;
+                itemSellerScore.textContent = highBidderFeedbackScore;
+                itemSellerScore.removeAttribute("collapsed");
+                itemSellerOpen.removeAttribute("collapsed");
+                itemSellerClose.removeAttribute("collapsed");
+                itemSeller.setAttribute("class", "text-link gs-ebay-item-popup-seller");
+                itemSeller.setAttribute("disabled", false);
+
+                let starIndex =
+                  this._getItemSellerStarIndex(
+                    item.get("highBidderFeedbackScore"));
+
+                if (starIndex > -1) {
+                  itemSellerStar.removeAttribute("collapsed");
+                  itemSellerStar.setAttribute(
+                    "gsebaystar",
+                    starIndex);
+                } else {
+                  itemSellerStar.setAttribute("collapsed", true);
+                }
+              } else {
+                sellerLabel = "-";
+                itemSellerScore.setAttribute("collapsed", true);
+                itemSellerStar.setAttribute("collapsed", true);
+                itemSellerOpen.setAttribute("collapsed", true);
+                itemSellerClose.setAttribute("collapsed", true);
+                itemSellerPositive.setAttribute("collapsed", true);
+                itemSeller.setAttribute("class", "gs-ebay-item-popup-seller");
+                itemSeller.setAttribute("disabled", true);
+              }
+            } else {
+              let sellerFeedbackRating =
+                EbayCompanion.Constants.formatNumber(
+                  item.get("sellerFeedbackRating"), 0);
+
+              sellerLabel = item.get("sellerUserId");
+              itemSellerScore.textContent = sellerFeedbackRating;
+              itemSellerScore.removeAttribute("collapsed");
+
+              let starIndex =
+                this._getItemSellerStarIndex(item.get("sellerFeedbackRating"));
+              if (starIndex > -1) {
+                itemSellerStar.removeAttribute("collapsed");
+                itemSellerStar.setAttribute(
+                  "gsebaystar",
+                  starIndex);
+              } else {
+                itemSellerStar.setAttribute("collapsed", true);
+              }
+
+              itemSellerOpen.removeAttribute("collapsed");
+              itemSellerClose.removeAttribute("collapsed");
+              itemSellerPositive.removeAttribute("collapsed");
+              itemSellerPositive.value = this._getItemSellerPositive();
+              itemSeller.setAttribute("class", "text-link gs-ebay-item-popup-seller");
+              itemSeller.setAttribute("disabled", false);
+            }
+
+            return sellerLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the item seller positive label.
+        - @return the item seller positive label.
+        -->
+      <method name="_getItemSellerPositive">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let sellerFeedbackPercent = item.get("sellerFeedbackPercent");
+            let sellerPositiveLabel =
+              stringBundle.getString("ecFlyout.seller.positive",
+                [sellerFeedbackPercent]);
+
+            return sellerPositiveLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the item seller star index.
+        - @param aFeedbackScore the feedback score to get its star
+        - @return the item seller star index.
+        -->
+      <method name="_getItemSellerStarIndex">
+        <parameter name="aFeedbackScore" />
+        <body>
+          <![CDATA[
+            let STAR_MILESTONES =
+              [10, 50, 100, 500, 1000, 5000, 10000, 25000, 50000, 100000];
+            let starMilestonesCount = STAR_MILESTONES.length;
+            let starIndex = -1;
+
+            for (let i = 0; i < starMilestonesCount; i++) {
+              if (STAR_MILESTONES[i] <= aFeedbackScore) {
+                starIndex = i;
+              } else {
+                break;
+              }
+            }
+
+            return starIndex;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the number of bids label of the item.
+        - @return the bids label.
+        -->
+      <method name="_getItemBids">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let bids = item.get("numBids");
+            let bidsProperty =
+              (bids == 1 ?
+                "ecFlyout.history.bid" : "ecFlyout.history.bid.plural");
+            let bidsLabel = stringBundle.getString(bidsProperty, [bids]);
+
+            return bidsLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the number of users watching the item.
+        - @return the users watching label.
+        -->
+      <method name="_getItemWatches">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let watchCount = item.get("numWatching");
+            let watchStringKey =
+              (watchCount == 1 ? "ecFlyout.history.watcher" :
+                "ecFlyout.history.watcher.plural");
+            let watchLabel =
+              stringBundle.getString(watchStringKey, [watchCount]);
+
+            return watchLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Sets the quantity of the item.
+        - @return the quantity label.
+        -->
+      <method name="_setItemQuantity">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let itemQuantity = this._getElement("gs-ebay-item-popup-quantity");
+            let quantityContainer = itemQuantity.parentNode;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let quantity = item.get("quantityRemaining");
+            let useRemainingString = true;
+            if (item.transaction) {
+              quantity = item.transaction.get("quantityPurchased");
+              useRemainingString = false;
+            }
+            let quantityLabel;
+            if (useRemainingString) {
+              let sold = item.get("quantitySold");
+              if (!sold) {
+                sold = 0;
+              }
+              if (quantity > 10) {
+                sold =
+                  EbayCompanion.Constants.getUTF8(
+                    EbayCompanion.Constants.formatNumber(sold, 0));
+                quantityLabel =
+                  stringBundle.getString("ecFlyout.item.more.available", [sold]);
+
+                const HTMLNS = "http://www.w3.org/1999/xhtml";
+                let p = document.createElementNS(HTMLNS, "p");
+                p.innerHTML =
+                  EbayCompanion.Constants.parseMarkupString(quantityLabel);
+
+                let anchors = p.getElementsByTagName("a");
+                for (let i = 0; i < anchors.length; i++) {
+                  let anchor = anchors[i];
+                  // XXX: for some reason click event does not catch middle clicks,
+                  // so we have to use mouseup
+                  anchor.addEventListener(
+                    "mouseup",
+                    function(event) {
+                      EbayCompanion.openPage(
+                        event, "itemClick",
+                        "purchaseHistory", { itemid: item.get("itemId") });
+                    },
+                    false);
+                }
+
+                while (quantityContainer.childNodes.length > 1) {
+                  quantityContainer.removeChild(quantityContainer.childNodes[1]);
+                }
+
+                quantityContainer.appendChild(p);
+                itemQuantity.setAttribute("collapsed", true);
+              } else {
+                quantity =
+                  EbayCompanion.Constants.getUTF8(
+                    EbayCompanion.Constants.formatNumber(quantity, 0));
+                quantityLabel =
+                  stringBundle.getString("ecFlyout.item.available", [quantity]);
+                while (quantityContainer.childNodes.length > 1) {
+                  quantityContainer.removeChild(quantityContainer.childNodes[1]);
+                }
+                itemQuantity.textContent = quantityLabel;
+                itemQuantity.removeAttribute("collapsed");
+              }
+            } else {
+              itemQuantity.textContent = quantity;
+              itemQuantity.removeAttribute("collapsed");
+              while (quantityContainer.childNodes.length > 1) {
+                quantityContainer.removeChild(quantityContainer.childNodes[1]);
+              }
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the appropiate bids title.
+        - @return the bids title.
+        -->
+      <method name="_getBidsTitle">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let maxBidRow = this._getElement("gs-ebay-item-popup-maxbid-row");
+            let maxBidLabel = this._getElement("gs-ebay-item-popup-max-bid");
+            let convertedMaxBidLabel =
+              this._getElement("gs-ebay-item-popup-converted-max-bid");
+            let EC_LISTING_TYPE_FIXED = "FixedPriceItem";
+            let EC_LISTING_TYPE_STORE_FIXED = "StoresFixedPrice";
+            let EC_LISTING_TYPE_CLASSIFIED = "AdType";
+            let EC_LISTING_TYPE_LEAD_GENERATION = "LeadGeneration";
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let userId = EbayCompanion.Datasource.activeAccount().get("userId");
+            let userIsSeller =
+              (item.get("sellerUserId").toLowerCase() == userId.toLowerCase());
+            let bids = item.get("numBids");
+            let listingFormat = item.get("listingFormat");
+            let userHasBid = (item.get("userMaxBid") > 0);
+            let reserveMet = item.get("isReserveMet");
+            let itemEnded = this._getItemEnded();
+            let hasBuyItNow = item.get("hasBuyItNow");
+            let bidsLabel = null;
+
+            if ((EC_LISTING_TYPE_FIXED == listingFormat ||
+                 EC_LISTING_TYPE_STORE_FIXED == listingFormat) && hasBuyItNow) {
+              if (itemEnded && null != item.transaction) {
+                bidsLabel =
+                  stringBundle.getString("ecFlyout.item.bids.ended.sold");
+              } else {
+                bidsLabel = stringBundle.getString("ecFlyout.item.bin");
+              }
+              if (item.get("bestOfferEnabled") ||
+                  (!item.get("bestOfferEnabled") && null != item.transaction &&
+                   item.get("currentPrice") != item.transaction.get("transactionPrice"))) {
+                bidsLabel =
+                  stringBundle.getString("ecFlyout.item.bin.listed.for");
+              }
+            } else if ((EC_LISTING_TYPE_CLASSIFIED == listingFormat ||
+                        EC_LISTING_TYPE_LEAD_GENERATION == listingFormat)) {
+              bidsLabel = stringBundle.getString("ecFlyout.item.bids.none");
+            } else {
+              if (itemEnded) {
+                if (null != item.transaction) {
+                  bidsLabel =
+                    stringBundle.getString("ecFlyout.item.bids.ended.sold");
+                } else {
+                  bidsLabel =
+                    stringBundle.getString(
+                      "ecFlyout.item.bids.ended.reservenotmet");
+                }
+              } else {
+                if (!userIsSeller && userHasBid) {
+                  bidsLabel =
+                    stringBundle.getString("ecFlyout.item.bids.active");
+                  maxBidRow.removeAttribute("collapsed");
+                  let formattedMaxBid = item.get("userMaxBid");
+                  formattedMaxBid =
+                    EbayCompanion.Constants.formatNumber(formattedMaxBid, 2);
+                  formattedMaxBid =
+                    EbayCompanion.Constants.addCurrencySymbol(
+                      formattedMaxBid, item.get("currency"));
+                  maxBidLabel.value =
+                    EbayCompanion.Constants.getUTF8(formattedMaxBid);
+                  // show converted max bid only if we have it
+                  if (item.get("convertedMaxBid") > 0 &&
+                      item.get("convertedMaxBidCurrency").length > 0 &&
+                      item.get("currency") !=
+                        item.get("convertedCurrentPriceCurrency")) {
+                    convertedMaxBidLabel.removeAttribute("collapsed");
+                    let formattedConvertedMaxBid = item.get("convertedMaxBid");
+                    formattedConvertedMaxBid =
+                      EbayCompanion.Constants.formatNumber(
+                        formattedConvertedMaxBid, 2);
+                    formattedConvertedMaxBid =
+                      EbayCompanion.Constants.addCurrencySymbol(
+                        formattedConvertedMaxBid,
+                        item.get("convertedMaxBidCurrency"));
+                    convertedMaxBidLabel.value = "(" +
+                      EbayCompanion.Constants.getUTF8(formattedConvertedMaxBid)
+                      + ")";
+                  } else {
+                    convertedMaxBidLabel.setAttribute("collapsed", true);
+                  }
+                } else {
+                  maxBidRow.setAttribute("collapsed", true);
+                  convertedMaxBidLabel.setAttribute("collapsed", true);
+                  if (0 == bids) {
+                    bidsLabel =
+                      stringBundle.getString("ecFlyout.item.bids.none");
+                  } else if (0 < bids) {
+                    bidsLabel =
+                      stringBundle.getString("ecFlyout.item.bids.active");
+                  }
+                }
+              }
+            }
+
+            return bidsLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the appropiate end date title.
+        - @return the end date title.
+        -->
+      <method name="_getEndDateTitle">
+        <body>
+          <![CDATA[
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let itemEnded = this._getItemEnded();
+            let endDateLabel = null;
+
+            if (itemEnded) {
+              endDateLabel =
+                stringBundle.getString("ecFlyout.date.context.ended");
+            } else {
+              endDateLabel =
+                stringBundle.getString("ecFlyout.date.context.ends");
+            }
+
+            return endDateLabel;
+          ]]>
+        </body>
+      </method>
+
+     <!--
+        - Gets the value of the item if is ended or active. Double checks the
+        - time left for the item.
+        - @return true if the item is ended false if active.
+        -->
+      <method name="_getItemEnded">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let itemEnded = item.get("isEnded");
+
+            if (!itemEnded) {
+              let endTime = item.get("endTime");
+              let ebayTime = EbayCompanion.Datasource.getEbayTime().getTime();
+              let timeLeft = Math.max(0, endTime - ebayTime);
+              if (0 >= timeLeft) {
+                itemEnded = true;
+              }
+            }
+
+            return itemEnded;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the item state.
+        - @return the item state.
+        -->
+      <method name="getItemState">
+        <body>
+          <![CDATA[
+            // watching will be default
+            let itemState = this.item.ITEM_STATE_WATCHING;
+            let activeAccount = EbayCompanion.Datasource.activeAccount();
+            if (activeAccount) {
+              let userId = activeAccount.get("userId");
+              itemState = this.item.getCurrentState(userId);
+            }
+
+            return itemState;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the item information.
+        -->
+      <method name="_updateUI">
+        <body>
+          <![CDATA[
+            const IMAGE_SIZE = 140;
+            let item = this.item;
+            let bidsTitle = this._getElement("gs-ebay-item-popup-bids-label");
+            let endDateTitle =
+              this._getElement("gs-ebay-item-popup-end-date-title");
+            let itemCanvas = this._getElement("gs-ebay-item-popup-canvas");
+            let itemSellerTitle = this._getElement("gs-ebay-item-seller-title");
+            let itemSeller = this._getElement("gs-ebay-item-popup-seller");
+            let itemEndDate = this._getElement("gs-ebay-item-popup-end-date");
+            let itemShipping = this._getElement("gs-ebay-item-popup-shipping");
+            let itemSellerPositive =
+              this._getElement("gs-ebay-item-popup-seller-positive");
+            let itemDescription =
+              this._getElement("gs-ebay-item-popup-description");
+            let itemCurrentBid =
+              this._getElement("gs-ebay-item-popup-current-bid");
+            let ctx = itemCanvas.getContext('2d');
+            ctx.clearRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+
+            if (item) {
+              bidsTitle.textContent = this._getBidsTitle();
+              endDateTitle.textContent = this._getEndDateTitle();
+
+              // in this case we don't have to process the image if we are using
+              // the thumbnail and its max dimensions are expected to be 140X140
+              let processImage = false;
+              let imageSrc = item.get("thumbnailUrl");
+              if (imageSrc == null || imageSrc.length == 0) {
+                imageSrc = item.get("imageUrl");
+                if (imageSrc != null && imageSrc.length > 0) {
+                  // we scale and crop only if we have to use the full size image
+                  processImage = true;
+                }
+              }
+              // we are using the thumbnail, so we try to use the 140X140 version
+              // of the thumbnail
+              if (!processImage) {
+                imageSrc = imageSrc.replace("8080_", "4040_");
+              }
+
+              let img = new Image();
+              let height, width;
+              img.onload = function() {
+                if (img) {
+                  height = img.height;
+                  width = img.width;
+                  // we process the image if we are using the full size image or
+                  // if the thumbnail is bigger than the 140px limit in any of its
+                  // dimensions
+                  if (processImage || width > IMAGE_SIZE || height > IMAGE_SIZE) {
+                    let sX = 0;
+                    let sY = 0;
+                    let sHeight = height;
+                    let sWidth = width;
+
+                    let ratio = height / width;
+                    let diffH = 0, diffW = 0;
+
+                    // image is bigger or smaller than 140px in its smallest
+                    // dimension, so we have to scale the image so its smallest
+                    // size is 140px, and then crop a 140X140 section from it
+                    if (ratio > 1) { // height > width
+                      // image is bigger/smaller than 140px in its smallest dimension
+                      // (width) so we have to crop a square the size of that
+                      // dimension and scale it down/up to 140X140
+                      diffH = height - width;
+                      sX = 0;
+                      sY = Math.floor(diffH / 2);
+                      sHeight = width;
+                      sWidth = width;
+                    } else {
+                      // image is bigger/smaller than 140px in its smallest dimension
+                      // (height) so we have to crop a square the size of that
+                      // dimension and scale it down/up to 140X140
+                      diffW = width - height;
+                      sX = Math.floor(diffW / 2);
+                      sY = 0;
+                      sHeight = height;
+                      sWidth = height;
+                    }
+
+                    /*dump("height: " + height + "/width: " + width +
+                     "/sX: " + sX + "/sY: " + sY +
+                     "/sHeight: " + sHeight + "/sWidth: " + sWidth + "\n");*/
+
+                    itemCanvas.setAttribute(
+                      "width", sWidth > IMAGE_SIZE ? IMAGE_SIZE : sWidth);
+                    itemCanvas.setAttribute(
+                      "height", sHeight > IMAGE_SIZE ? IMAGE_SIZE : sHeight);
+                    try {
+                      ctx.drawImage(
+                        img, sX, sY, sWidth, sHeight, 0, 0,
+                        sWidth > IMAGE_SIZE ? IMAGE_SIZE : sWidth,
+                        sHeight > IMAGE_SIZE ? IMAGE_SIZE : sHeight);
+                    } catch (e) {
+                      // for some reason this method throws an exception on Firefox
+                      // 3.6, but still works, so we just prevent it from generating
+                      // the error console entry
+                    }
+                  } else {
+                    try {
+                      itemCanvas.setAttribute("width", width);
+                      itemCanvas.setAttribute("height", height);
+                      ctx.drawImage(img, 0, 0);
+                    } catch(e) {
+                      // for some reason this method throws an exception on Firefox
+                      // 3.6, but still works, so we just prevent it from generating
+                      // the error console entry
+                    }
+                  }
+
+                }
+                img = null;
+              }
+
+              // if the item has no image, we have to clear the canvas so the
+              // default background is shown correctly and not the image of
+              // another item (specially for desktop alerts)
+              if (imageSrc == null || imageSrc.length == 0) {
+                itemCanvas.setAttribute("width", 0);
+                itemCanvas.setAttribute("height", 0);
+                ctx.clearRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+                // set the default image
+                imageSrc = "chrome://ebaycompanion/skin/images/empty-image.png"
+              }
+
+              img.src = imageSrc;
+
+              itemDescription.textContent =
+                EbayCompanion.Constants.getUTF8(item.get("title"));
+              itemCurrentBid.textContent = this._getItemPrice();
+              itemShipping.textContent = this._getItemShipping();
+              // set item quantity
+              this._setItemQuantity();
+              itemEndDate.textContent = this._getItemEndDate();
+
+              // update item history
+              this._updateItemHistory();
+
+              itemSellerTitle.textContent = this._getItemSellerTitle();
+              itemSeller.textContent = this._getItemSeller();
+              this.updateItemState();
+            } else {
+              ctx.clearRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the item state info in the binding.
+        -->
+      <method name="updateItemState">
+        <body>
+          <![CDATA[
+            let stateBox = this._getElement("gs-ebay-item-popup-state-box");
+            let stateLabel = this._getElement("gs-ebay-item-popup-state-label");
+            let actionButton = this._getElement("gs-ebay-item-popup-action-button");
+            let itemState = this.getItemState();
+
+            actionButton.setAttribute(
+              "label", this._getActionButtonLabel(itemState));
+            stateLabel.value = this._getItemStateLabel(itemState);
+            stateLabel.setAttribute("gsebaystate", itemState);
+            stateBox.setAttribute("gsebaystate", itemState);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the item history (page views, bids and watches)
+        - @return the page views label.
+        -->
+      <method name="_updateItemHistory">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let historyRow = this._getElement("gs-ebay-item-popup-history-row");
+            let itemEnded = this._getItemEnded();
+            if (!itemEnded) {
+              historyRow.removeAttribute("collapsed");
+              let stringBundle = EbayCompanion.Constants.stringBundle;
+              let NO_HIT_COUNTER_TYPE = "NoHitCounter";
+              let HIDDEN_COUNTER_TYPE = "Hidden";
+              let HIDDEN_STYLE_COUNTER_TYPE = "HiddenStyle";
+              let EC_LISTING_TYPE_FIXED = "FixedPriceItem";
+              let EC_LISTING_TYPE_STORE_FIXED = "StoresFixedPrice";
+              let EC_LISTING_TYPE_CLASSIFIED = "AdType";
+              let EC_LISTING_TYPE_LEAD_GENERATION = "LeadGeneration";
+
+              let listingFormat = item.get("listingFormat");
+
+              let userId = EbayCompanion.Datasource.activeAccount().get("userId");
+              let userIsSeller =
+                (item.get("sellerUserId").toLowerCase() == userId.toLowerCase());
+
+              let itemPageViews =
+                this._getElement("gs-ebay-item-popup-page-views");
+              let itemWatches = this._getElement("gs-ebay-item-popup-watches");
+              let itemBids = this._getElement("gs-ebay-item-popup-bids");
+
+              let hitCounterType = item.get("hitCounterType");
+              let pageViews = item.get("pageViews");
+              let pageViewsKey;
+              let pageViewsLabel;
+
+              switch (hitCounterType) {
+                case NO_HIT_COUNTER_TYPE:
+                case HIDDEN_STYLE_COUNTER_TYPE:
+                case HIDDEN_COUNTER_TYPE:
+                case '':
+                default:
+                  if (!userIsSeller) {
+                    if (pageViews <= 0) {
+                      pageViewsLabel = "-";
+                    }
+                  }
+                  break;
+              }
+
+              if (!pageViewsLabel) {
+                // if page views is less than 0, make it 0
+                if (pageViews < 0) {
+                  pageViews = 0;
+                }
+                pageViewsKey =
+                  (pageViews == 1 ? "ecFlyout.history.pageview" :
+                    "ecFlyout.history.pageview.plural");
+                pageViewsLabel =
+                  stringBundle.getString(
+                    pageViewsKey,
+                    [EbayCompanion.Constants.formatNumber(pageViews, 0)]);
+              }
+
+              itemPageViews.value = pageViewsLabel;
+              // display watches only if the user is the seller
+              if (userIsSeller) {
+                itemWatches.removeAttribute("collapsed");
+                itemWatches.value = this._getItemWatches();
+              } else {
+                itemWatches.setAttribute("collapsed", true);
+              }
+              // display bids history only for BID items (NOT BIN OR AD ITEMS)
+              if ((EC_LISTING_TYPE_FIXED != listingFormat &&
+                   EC_LISTING_TYPE_STORE_FIXED != listingFormat &&
+                   EC_LISTING_TYPE_CLASSIFIED != listingFormat &&
+                   EC_LISTING_TYPE_LEAD_GENERATION != listingFormat)) {
+                itemBids.removeAttribute("collapsed");
+                itemBids.value = this._getItemBids();
+                if (pageViewsLabel == "-") {
+                  itemPageViews.setAttribute("collapsed", true);
+                } else {
+                  itemPageViews.removeAttribute("collapsed");
+                }
+              } else {
+                itemBids.setAttribute("collapsed", true);
+              }
+            } else {
+              historyRow.setAttribute("collapsed", true);
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the item state label.
+        - @param aItemState the item state.
+        - @return the item state label.
+        -->
+      <method name="_getItemStateLabel">
+        <parameter name="aItemState" />
+        <body>
+          <![CDATA[
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let stateLabel = "";
+            let stateProperty = null;
+
+            switch (aItemState) {
+              case EbayCompanion.Item.ITEM_STATE_WATCHING:
+                stateProperty = "buying.watching";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_WATCHING_BEST_OFFER:
+                stateProperty = "buying.watching.bestOffer";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_ITEM_WON:
+                stateProperty = "buying.won";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_ITEM_LOST:
+                stateProperty = "buying.lost";
+                break;
+              case EbayCompanion.Item.
+                ITEM_STATE_BUYING_ITEM_LOST_RESERVE_NOT_MET:
+                stateProperty = "buying.lost.reserve";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_SUCCESS:
+                stateProperty = "buying.success";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_OUTBID:
+                stateProperty = "buying.outbid";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_RESERVE_NOT_MET:
+                stateProperty = "buying.noReserve";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING:
+                stateProperty = "selling";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_BEST_OFFER:
+                stateProperty = "selling.bestOffer";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_SUCCESS:
+                stateProperty = "selling.success";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_ITEM_SOLD:
+                stateProperty = "selling.sold";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_ITEM_UNSOLD:
+                stateProperty = "selling.unsold";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_WITH_OFFERS:
+                stateProperty = "selling.with.offers";
+                break;
+              case EbayCompanion.Item.
+                ITEM_STATE_SELLING_ITEM_UNSOLD_RESERVE_NOT_MET:
+                stateProperty = "selling.unsold.reserve";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_RESERVE_NOT_MET:
+                stateProperty = "selling.noReserve";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_WATCHING_CLASSIFIED_AD:
+                stateProperty = "buying.watching.classified";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_CLASSIFIED_AD:
+                stateProperty = "selling.classified";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_PENDING:
+                stateProperty = "buying.bestOffer.pending";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_DECLINED:
+                stateProperty = "buying.bestOffer.declined";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_EXPIRED:
+                stateProperty = "buying.bestOffer.expired";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_COUNTERED:
+                stateProperty = "buying.bestOffer.countered";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_ITEM_WON:
+                stateProperty = "buying.bestOffer.itemWon";
+              break;
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_ITEM_SOLD:
+                stateProperty = "selling.bestOffer.itemSold";
+              break;
+            }
+
+            if (stateProperty) {
+              stateLabel =
+                stringBundle.getString("ecItem.title." + stateProperty);
+            }
+            return stateLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the action button label.
+        - @param aItemState the item state.
+        - @return the button label.
+        -->
+      <method name="_getActionButtonLabel">
+        <parameter name="aItemState" />
+        <body>
+          <![CDATA[
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let buttonCommand =
+              this.getActionButtonCommand(aItemState, false);
+            let buttonLabel = "";
+
+            if (buttonCommand) {
+              buttonLabel =
+                stringBundle.getString("ecItem.button." + buttonCommand);
+              this.buttonAction = buttonCommand;
+            }
+
+             return buttonLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the action button command.
+        - @param aState the item state, or the alert type if aAlert is true
+        - @return the button command.
+        -->
+      <method name="getActionButtonCommand">
+        <parameter name="aState" />
+        <body>
+          <![CDATA[
+            // types of listing.
+            let EC_LISTING_TYPE_CHINESE = "Chinese";
+            let EC_LISTING_TYPE_DUTCH = "Dutch";
+            let EC_LISTING_TYPE_LIVE = "Live";
+            let EC_LISTING_TYPE_FIXED = "FixedPriceItem";
+            let EC_LISTING_TYPE_STORE_FIXED = "StoresFixedPrice";
+            let EC_LISTING_TYPE_CLASSIFIED = "AdType";
+            let EC_LISTING_TYPE_LEAD_GENERATION = "LeadGeneration";
+
+            let item = this.item;
+
+            let buttonProperty = null;
+            let endTime = item.get("endTime");
+            let ebayTime =
+              EbayCompanion.Datasource.getEbayTime().getTime();
+            let timeLeft = Math.max(0, endTime - ebayTime);
+            let itemEnded = (item.get("isEnded") || timeLeft == 0);
+            let itemHasBuyItNow = item.get("hasBuyItNow");
+            let listingFormat = item.get("listingFormat");
+            let itemTransaction = item.transaction;
+            let hasToPay = true;
+            let hasLeftFeedback = false;
+            let hasShipped = false;
+
+            if (itemTransaction) {
+              if (itemTransaction.get("isPaidFor")) {
+                hasToPay = false;
+              }
+              if (itemTransaction.get("userHasSentFeedback")) {
+                hasLeftFeedback = true;
+              }
+              if (itemTransaction.get("isShipped")) {
+                hasShipped = true;
+              }
+            }
+
+            // import the module only when we actually need it
+            if (typeof(EbayCompanion.Item) == "undefined") {
+              EbayCompanion._importModule("objects/item.js");
+            }
+            switch (aState) {
+              case EbayCompanion.Item.ITEM_STATE_WATCHING:
+              case EbayCompanion.Item.ITEM_STATE_WATCHING_BEST_OFFER:
+                if (itemEnded) {
+                  buttonProperty = "find";
+                } else {
+                  if (EC_LISTING_TYPE_CHINESE == listingFormat ||
+                      EC_LISTING_TYPE_DUTCH == listingFormat ||
+                      EC_LISTING_TYPE_LIVE == listingFormat) {
+                    // the user can bid.
+                    buttonProperty = "bid";
+                  } else if (itemHasBuyItNow) {
+                    // the user can buy it now.
+                    buttonProperty = "bin";
+                  }
+                }
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_WITH_OFFERS:
+                buttonProperty = "reviewOffers";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_WATCHING_CLASSIFIED_AD:
+              case EbayCompanion.Item.ITEM_STATE_SELLING_CLASSIFIED_AD:
+              case EbayCompanion.Item.ITEM_STATE_SELLING:
+              case EbayCompanion.Item.ITEM_STATE_SELLING_BEST_OFFER:
+              case EbayCompanion.Item.ITEM_STATE_SELLING_SUCCESS:
+              case EbayCompanion.Item.ITEM_STATE_SELLING_RESERVE_NOT_MET:
+                buttonProperty = "view";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_ITEM_SOLD:
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_ITEM_SOLD:
+                if (hasToPay) {
+                  // the user can mark the item as paid.
+                  buttonProperty = "paid";
+                } else if (!hasShipped) {
+                  // the user can mark the item as shipped.
+                  buttonProperty = "sent";
+                } else if (!hasLeftFeedback) {
+                  // the user can mark the item as shipped.
+                  buttonProperty = "feedback";
+                } else {
+                  // let the user sell similar items.
+                  buttonProperty = "similar";
+                }
+                break;
+              case EbayCompanion.Item.ITEM_STATE_SELLING_ITEM_UNSOLD:
+              case EbayCompanion.Item.
+                ITEM_STATE_SELLING_ITEM_UNSOLD_RESERVE_NOT_MET:
+                buttonProperty = "relist";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_RESERVE_NOT_MET:
+              case EbayCompanion.Item.ITEM_STATE_BUYING_OUTBID:
+                buttonProperty = "raise";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_SUCCESS:
+                buttonProperty = "view";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_ITEM_WON:
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_ITEM_WON:
+                // the user is the buyer (the user won the item).
+                if (hasToPay) {
+                  // the user has won the item, but haven't paid for it yet.
+                  buttonProperty = "pay";
+                } else if (!hasLeftFeedback) {
+                  // the use hasn't left feedback yet
+                  buttonProperty = "feedback";
+                } else {
+                  // let the user find similar items (the user lost or he
+                  // already sent feedback).
+                  buttonProperty = "find";
+                }
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BUYING_ITEM_LOST:
+              case EbayCompanion.Item.
+                ITEM_STATE_BUYING_ITEM_LOST_RESERVE_NOT_MET:
+                buttonProperty = "find";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_PENDING:
+                buttonProperty = "view";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_DECLINED:
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_EXPIRED:
+                buttonProperty = "bin";
+                break;
+              case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_COUNTERED:
+                buttonProperty = "reviewOffer";
+                break;
+            }
+
+            return buttonProperty;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Executes the button command
+        -->
+      <method name="executeCommand">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            EbayCompanion.itemButtonClick(
+              aEvent, "itemButton", this.buttonAction, this.item);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Hides the item popup
+        -->
+      <method name="hideDetails">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            let target = aEvent.target;
+            let popup = document.getBindingParent(target);
+            let itemList = document.getBindingParent(popup);
+            itemList.hideItemDetails();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Scrolls the next or previous item in the details panel, based on the
+        - aForward attribute passed by parameter
+        - @param aForward whether to show next or previous item
+        - @param aEvent the event that triggered this call
+        -->
+      <method name="_scrollItem">
+        <parameter name="aForward" />
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            aEvent.stopPropagation();
+            aEvent.preventDefault();
+            let target = aEvent.target;
+            let popup = document.getBindingParent(target);
+            let itemList = document.getBindingParent(popup);
+            itemList.scrollItem(aForward, aEvent);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Opens the item page
+        -->
+      <method name="viewItem">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            EbayCompanion.openPage(aEvent, 'itemClick', 'listing',
+                {itemid: this.item.get('itemId')});
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Opens the seller page
+        -->
+      <method name="viewSeller">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            EbayCompanion.openPage(
+              aEvent, "itemClick", "myWorld", {userid: this.item.get('sellerUserId')});
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Opens the seller feedback page
+        -->
+      <method name="viewSellerFeedback">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            EbayCompanion.openPage(
+              aEvent, "itemClick", "userFeedback", {userid: this.item.get('sellerUserId')});
+          ]]>
+        </body>
+      </method>
+
+    </implementation>
+  </binding>
+</bindings>

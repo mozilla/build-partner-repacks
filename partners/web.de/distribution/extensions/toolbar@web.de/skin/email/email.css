@@ -1,0 +1,28 @@
+#united-email-button[status="disconnected"],
+#united-email-button[status="disconnected"] > #united-email-button-dropdown > #united-email-unread-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/email/email-disconnect-small.png");
+}
+#united-email-button[status="no-new"],
+#united-email-button[status="no-new"] > #united-email-button-dropdown > #united-email-unread-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/email/email-nonew-small.png");
+}
+#united-email-button[status="new"],
+#united-email-button[status="new"] > #united-email-button-dropdown > #united-email-unread-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/email/email-new-small.png");
+}
+#united-email-demail-register-button
+{
+  list-style-image: url("chrome://unitedtb/skin/email/demail-small.png");
+}
+
+#united-logged-in-button
+{
+  list-style-image: url("chrome://unitedtb/skin/email/logged-in-small.png");
+}
+#united-logged-out-button
+{
+  list-style-image: url("chrome://unitedtb/skin/email/logged-out-small.png");
+}

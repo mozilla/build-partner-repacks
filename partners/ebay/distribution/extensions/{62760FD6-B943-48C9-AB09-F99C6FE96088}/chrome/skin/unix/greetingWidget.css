@@ -1,0 +1,9 @@
+/**
+ *  Copyright (C) 2007-2011 eBay Inc. All Rights Reserved.
+ */
+
+.greeting,
+.username,
+.feedbackscore {
+  font-size: 0.9em;
+}

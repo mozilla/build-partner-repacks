@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/pref/pref-region.dtd">
+<?xml-stylesheet href="chrome://unitedtb/skin/pref/pref-region.css" type="text/css"?>
+<overlay id="united-pref-region-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <prefwindow id="united-pref-window">
+    <prefpane id="region-pane"
+        label="&pane.title;"
+        insertafter="general-pane"
+        >
+
+        <script type="application/x-javascript">
+          upref.region = {};
+          united.loadJS("chrome://unitedtb/content/pref/pref-region.js", upref.region);
+        </script>
+
+        <grid>
+          <columns>
+            <column/>
+            <column/>
+          </columns>
+          <rows>
+            <row align="baseline">
+              <label value="&module.general.label;" control="region-general" />
+              <pref-region id="region-general" module="general" />
+            </row>
+            <row align="baseline">
+              <label value="&module.search.label;" control="region-search" />
+              <pref-region id="region-search" module="search" />
+            </row>
+            <row align="baseline">
+              <label value="&module.weather.label;" control="region-weather" />
+              <pref-region id="region-weather" module="weather" />
+            </row>
+            <row align="baseline">
+              <label value="&module.ticker.label;" control="region-ticker" />
+              <pref-region id="region-ticker" module="ticker" />
+            </row>
+          </rows>
+        </grid>
+
+    </prefpane>
+  </prefwindow>
+</overlay>

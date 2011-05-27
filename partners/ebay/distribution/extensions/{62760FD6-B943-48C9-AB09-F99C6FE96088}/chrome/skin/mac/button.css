@@ -1,0 +1,63 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+/* Button */
+.gs-ebay-button-content {
+  height: 20px;
+  max-height: 20px;
+}
+.gs-ebay-button-content[gsebaysize="small"] {
+  height: 15px !important;
+  max-height: 15px !important;
+}
+.gs-ebay-button-content[gsebaysize="big"] {
+  height: 28px !important;
+  max-height: 28px !important;
+}
+
+/* Button background */
+.gs-ebay-button-content .gs-ebay-button-background {
+  background-image: -moz-linear-gradient(#FFFFFF 16%, #F7F7F7 33%, #F0F0F0 50%, #E5E5E5 66%, #DEDEDE 77%, #D6D6D6 88%, #CCCCCC);
+  border: 1px solid #797979;
+  border-radius: 15px;
+  -moz-border-radius: 15px;
+}
+.gs-ebay-button-content:hover .gs-ebay-button-background {
+  background-image: -moz-linear-gradient(#FFFFFF 11%, #F7F7F7 22%, #F0F0F0 33%, #E5E5E5 44%, #DEDEDE 55%, #D6D6D6 61%, #CCCCCC 66%, #C7C7C7 72%, #C0C0C0 83%, #B2B2B2 88%, #ADADAD 94%, #A8A8A8);
+  border: 1px solid #3D3D3D;
+}
+.gs-ebay-button-content:active .gs-ebay-button-background {
+  background-image: -moz-linear-gradient(#FFFFFF 05%, #C7C7C7 16%, #CCCCCC 27%, #D6D6D6 38%, #DEDEDE 55%, #E5E5E5 66%, #F0F0F0 77%, #F7F7F7 94%, #FFFFFF);
+  border: 1px solid #959595;
+}
+
+.gs-ebay-button-content[gsebaysize="small"] .gs-ebay-button-background {
+  background-image: -moz-linear-gradient(#FFFFFF 16%, #F7F7F7 41%, #EFEFEF 66%, #E6E6E6 91%, #DFDFDF);
+  border: 1px solid #9AA0AA;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+}
+.gs-ebay-button-content[gsebaysize="small"]:hover .gs-ebay-button-background {
+  background-image: -moz-linear-gradient(#FFFFFF 33%, #F7F7F7 41%, #EFEFEF 58%, #E6E6E6 75%, #DFDFDF 83%, #D5D5D5 91%, #CCCCCC);
+  border: 1px solid #666666;
+}
+.gs-ebay-button-content[gsebaysize="small"]:active .gs-ebay-button-background {
+  background-image: -moz-linear-gradient(#DFDFDF 25%, #D5D5D5 58%, #CCCCCC 83%, #C5C5C5);
+  border: 1px solid #878C94;
+}
+
+.gs-ebay-button-content[gsebaysize="big"] .gs-ebay-button-background {
+  background-image: -moz-linear-gradient(#FFFFFF 23%, #F7F7F7 42%, #EFEFEF 65%, #E6E6E6 88%, #DFDFDF);
+  border: 1px solid #AAAAAA;
+  border-radius: 20px;
+  -moz-border-radius: 20px;
+}
+.gs-ebay-button-content[gsebaysize="big"]:hover .gs-ebay-button-background {
+  background-image: -moz-linear-gradient(#FFFFFF 15%, #F7F7F7 30%, #EFEFEF 46%, #E6E6E6 57%, #DFDFDF 65%, #D6D6D6 77%, #CCCCCC 84%, #C5C5C5 92%, #C1C1C1);
+  border: 1px solid #404040;
+}
+.gs-ebay-button-content[gsebaysize="big"]:active .gs-ebay-button-background {
+  background-image: -moz-linear-gradient(#FFFFFF 03%, #CCCCCC 19%, #D6D6D6 30%, #DFDFDF 38%, #E6E6E6 53%, #EFEFEF 73%, #F7F7F7 88%, #FFFFFF);
+  border: 1px solid #959595;
+}

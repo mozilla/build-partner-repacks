@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<?xml-stylesheet type="text/css"
+  href="chrome://ebaycompanion/content/bindings/bindings.css" ?>
+<?xml-stylesheet type="text/css"
+  href="chrome://ebaycompanion/skin/eBay.css" ?>
+<?xml-stylesheet type="text/css"
+  href="chrome://ebaycompanion-os/skin/eBay.css" ?>
+
+<!DOCTYPE overlay SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<overlay id="ebayCompanion"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script src="chrome://ebaycompanion/content/browser.js"
+    type="application/javascript;version=1.8" />
+  <script src="chrome://ebaycompanion/content/alerts.js"
+    type="application/javascript;version=1.8" />
+  <script src="chrome://ebaycompanion/content/browserContextMenu.js"
+    type="application/javascript;version=1.8" />
+
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="ebayCompanionBundle"
+      src="chrome://ebaycompanion/locale/strings.properties" />
+  </stringbundleset>
+
+  <commandset id="mainCommandSet">
+    <command id="ec-button-command"
+      oncommand="EbayCompanion.openCloseSidebar();"
+      onclick="
+        if (event.button == 1) {
+          EbayCompanion.openPage(event, 'ebayButton', 'homePage', {});
+        }" />
+    <command id="ec-alerts-close-command"
+      oncommand="EbayCompanion.Alerts.closeCurrentAlert();" />
+    <command id="ec-alerts-previous-command"
+      oncommand="EbayCompanion.AlertsService.moveToPreviousAlert();"/>
+    <command id="ec-alerts-next-command"
+      oncommand="EbayCompanion.AlertsService.moveToNextAlert();"/>
+  </commandset>
+  <broadcasterset id="mainBroadcasterSet">
+    <broadcaster id="ec-toggleSidebar-broadcaster" label="&ecGlobal.title;"
+                 type="checkbox" autoCheck="false" group="sidebar"
+                 sidebarurl="chrome://ebaycompanion/content/sidebar/sidebar.xul"
+                 oncommand="EbayCompanion.openCloseSidebar();" />
+    <broadcaster id="ec-ebaybutton-broadcaster"
+                 connected="false" glowing="false" />
+  </broadcasterset>
+
+  <keyset id="mainKeyset">
+    <key id="keyToggleECSidebar" command="ec-toggleSidebar-broadcaster"
+         key="&ecOverlay.toggleSidebar.key;"
+         modifiers="&ecOverlay.toggleSidebar.keyModifiers;" />
+  </keyset>
+
+  <menupopup id="viewSidebarMenu">
+    <menuitem key="keyToggleECSidebar" observes="ec-toggleSidebar-broadcaster"
+      accesskey="&ecOverlay.toggleSidebar.menuKey;"/>
+  </menupopup>
+
+  <popup id="contentAreaContextMenu">
+    <menuitem id="ebayCompanionContextSearch"
+      image="chrome://ebaycompanion/skin/images/menu-icon.png"
+      class="menuitem-iconic" hidden="true"
+      insertafter="context-searchselect"
+      onclick="checkForMiddleClick(this, event);"
+      oncommand="EbayCompanion.openSearchQuery(event);"/>
+  </popup>
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbaritem id="ebayCompanionToolbarItem"
+      class="chromeclass-toolbar-additional"
+      label="&ecBrowser.toolbarbutton.title;">
+      <ebaytoolbarbutton id="ec-toolbar-button"
+        command="ec-button-command" observes="ec-ebaybutton-broadcaster"
+        class="ec-toolbar-button">
+      </ebaytoolbarbutton>
+    </toolbaritem>
+  </toolbarpalette>
+
+  <popupset id="mainPopupSet">
+    <panel id="gs-ebay-alert-panel" noautofocus="true" noautohide="true">
+      <gsebayalertbox id="ec-alert-box" />
+    </panel>
+  </popupset>
+
+  <!-- Status bar button -->
+  <statusbar id="status-bar">
+    <statusbarpanel id="gs-ebay-statusbar-panel" hidden="true">
+      <ebaytoolbarbutton id="gs-ebay-statusbar-button"
+        command="ec-button-command" observes="ec-ebaybutton-broadcaster"
+        class="ec-statusbar-button">
+      </ebaytoolbarbutton>
+    </statusbarpanel>
+  </statusbar>
+
+</overlay>

@@ -1,0 +1,17 @@
+/**
+ *  Copyright (C) 2007-2011 eBay Inc. All Rights Reserved.
+ */
+
+label {
+  font-size: 0.8em;
+}
+
+description {
+  font-size: 0.8em;
+}
+
+.gs-ebay-deal-popup-listed-price,
+.gs-ebay-deal-popup-current-price,
+.gs-ebay-deal-popup-savings {
+  font-size: 0.9em;
+}

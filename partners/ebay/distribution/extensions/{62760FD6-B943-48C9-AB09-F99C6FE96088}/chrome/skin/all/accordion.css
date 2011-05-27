@@ -1,0 +1,64 @@
+/**
+ *  Copyright (C) 2007-2010 eBay Inc. All Rights Reserved.
+ */
+
+/**
+ * CSS for Sidebar favorite searches list
+ */
+.empty-list-message {
+  text-align: center;
+}
+
+.gs-ebay-accordion-item-title-box {
+  -moz-box-align: center;
+  min-height: 30px !important;
+  max-height: 30px !important;
+  border-bottom: 1px solid #E5E5E5;
+  background-image: -moz-linear-gradient(#FFF, #DDD);
+  color: black;
+}
+.gs-ebay-accordion-item-title-box[selected="true"] {
+  background-image: -moz-linear-gradient(#FFF, #FFF, #EDEDED);
+}
+
+.gs-ebay-accordion-item-container {
+  background-color: #FFF;
+}
+
+.gs-ebay-accordion-item-title-box .gs-ebay-accordion-item-marker {
+  list-style-image: url("chrome://ebaycompanion/skin/images/accordion-item-closed.png");
+  margin-left: 5px;
+}
+
+.gs-ebay-accordion-item-title-box[selected=true] .gs-ebay-accordion-item-marker {
+  list-style-image: url("chrome://ebaycompanion/skin/images/accordion-item-opened.png");
+  margin-left: 5px;
+}
+
+.gs-ebay-accordion-item-title {
+  margin-left: 5px;
+}
+
+.gs-ebay-deal-details-container {
+  padding: 5px;
+}
+
+.gs-ebay-accordion-item-link-container {
+  -moz-box-align: center;
+  height: 25px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-bottom: 1px solid #E2E2E2;
+  margin-bottom: 10px;
+}
+
+.gs-ebay-accordion-item-link-label {
+  font-family: Arial;
+  font-size: 1.1em;
+  color: #FA8E10;
+}
+
+.gs-ebay-accordion-item-link-label:hover {
+  cursor: pointer !important;
+  text-decoration: underline;
+}

@@ -1,0 +1,25 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+.gs-ebay-item-close-button {
+  -moz-image-region: rect(0px, 12px, 12px, 0px);
+  width: 12px;
+  margin-top: 2px;
+  margin-right: -10px;
+}
+.gs-ebay-item-close-button:hover {
+  -moz-image-region: rect(12px, 12px, 24px, 0px);
+}
+.gs-ebay-item-close-button:active {
+  -moz-image-region: rect(24px, 12px, 36px, 0px);
+}
+
+.gs-ebay-item-container[gsebayalert="true"] .gs-ebay-item-background {
+  background: none;
+  background-color: #FFF;
+}
+
+.gs-ebay-item-action-button {
+  margin-top: -1px;
+}

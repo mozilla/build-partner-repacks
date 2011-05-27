@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/pref/pref-general.dtd">
+  %thisDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
+<?xml-stylesheet href="chrome://unitedtb/skin/pref/pref-general.css" type="text/css"?>
+<overlay id="united-pref-general-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <prefwindow id="united-pref-window">
+    <prefpane id="general-pane"
+        label="&pane.title;"
+        position="1"
+        >
+      <preferences id="general-preferences">
+      </preferences>
+
+      <script type="application/x-javascript">
+        upref.general = {};
+        united.loadJS("chrome://unitedtb/content/pref/pref-general.js", upref.general);
+      </script>
+
+      <grid>
+        <columns>
+          <column/>
+          <column/>
+        </columns>
+        <rows>
+          <row align="baseline">
+            <label value="&toolbarmode.label;" control="general-toolbarmode"/>
+            <menulist id="general-toolbarmode"
+                        oncommand="upref.general.onChangedToolbarMode(this.value);"
+                        >
+              <menupopup>
+                <menuitem value="full" label="&all.full.label;"/>
+                <menuitem value="icons" label="&all.icons.label;"/>
+                <menuitem value="text" label="&all.text-only.label;"/>
+              </menupopup>
+            </menulist>
+          </row>
+          <row align="baseline">
+            <label value="&locale.general.label;" control="general-region" />
+            <pref-region id="general-region" module="general" />
+          </row>
+        </rows>
+      </grid>
+
+      <vbox id="general-checkbox-box" align="start">
+          <checkbox id="general-search-checkbox"
+              label="&search.checkbox.label;"
+              oncommand="upref.general.onSearchChanged(this.checked);"
+              />
+          <checkbox id="general-homepage-checkbox"
+              label="&homepage.checkbox.label;"
+              oncommand="upref.general.onHomepageChanged(this.checked);"
+              />
+      </vbox>
+
+    </prefpane>
+  </prefwindow>
+</overlay>

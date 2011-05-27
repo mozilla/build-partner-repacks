@@ -1,0 +1,533 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <!-- eBay Alert box -->
+  <binding id="gs-ebay-alert-box">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/alertBox.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/alertBox.css" />
+    </resources>
+    <content>
+      <xul:vbox class="gs-ebay-alert-container">
+        <xul:deck anonid="gs-ebay-alert-deck" selectedIndex="0">
+          <xul:gsebayitembox anonid="gs-ebay-item-box" flex="1"
+            closebuttonhidden="false" actionbuttonhidden="true"
+            gsebayalert="true" />
+          <xul:gsebayfeedbackbox anonid="gs-ebay-feedback-box" flex="1" />
+        </xul:deck>
+
+        <xul:gsebayalertboxfooter anonid="gs-ebay-alert-box-footer" />
+      </xul:vbox>
+    </content>
+
+    <handlers>
+      <!-- Handles the click on the alert content -->
+      <handler event="click">
+        <![CDATA[
+          // avoid right click, it shows the context menu.
+          if (event.button != 2) {
+            let target = event.originalTarget;
+            let bindingTarget = document.getBindingParent(target);
+
+            // prevent close button clicks from opening the alert content link.
+            if ("toolbarbutton" != target.localName &&
+                ("gsebayitembox" == bindingTarget.localName ||
+                  "gsebaydescription" == bindingTarget.localName)) {
+              let alertType = this.alert.type;
+              let alertItemId = this.alert.object.get('itemId');
+              let userId =
+                EbayCompanion.Datasource.activeAccount().get('userId');
+
+              if (alertType == EbayCompanion.Alert.ALERT_TYPE_FEEDBACK_SCORE) {
+                EbayCompanion.openPage(
+                  event, 'alertContents', 'userFeedback', {userid: userId});
+              } else {
+                EbayCompanion.openPage(
+                  event, 'alertContents', 'listing', {itemid: alertItemId});
+              }
+            }
+          }
+        ]]>
+      </handler>
+    </handlers>
+
+    <implementation>
+      <!-- Associated alert. -->
+      <field name="_alert"/>
+      <!-- Current alert index. -->
+      <field name="_currentAlertIndex">-1</field>
+      <!-- Alert queue length. -->
+      <field name="_alertsQueueLength">0</field>
+      <!-- Observers. -->
+      <field name="_observers">new EbayCompanion.Observers</field>
+      <field name="_timeLeftUpdateTimer">null</field>
+
+      <!-- Property to accessed the alert. -->
+      <property name="alert">
+        <getter>
+          return this._alert;
+        </getter>
+        <setter>
+         <![CDATA[
+          this._alert = val;
+          this._updateUI();
+         ]]>
+        </setter>
+      </property>
+
+      <!-- Property to accessed the current alert index. -->
+      <property name="currentAlertIndex"
+        onget="return this._currentAlertIndex"
+        onset="this._currentAlertIndex = val;" />
+
+      <!-- Property to accessed the alerts queue length. -->
+      <property name="alertsQueueLength"
+        onget="return this._alertsQueueLength"
+        onset="this._alertsQueueLength = val;" />
+
+      <!--
+        - Constructor.
+        -->
+      <constructor>
+        <![CDATA[
+          let that = this;
+
+          if (this.alert) {
+            this._updateUI();
+          }
+
+          let updateItemTime = function(aItem, aTopic, aTimeLeft) {
+            if (that.alert &&
+                that.alert.object instanceof EbayCompanion.Item &&
+                aItem.get("itemId") == that.alert.object.get("itemId")) {
+              let itemBox = that._getElement("gs-ebay-item-box");
+
+              itemBox.updateItemTime();
+              // this hides the remind me later link when items have less than
+              // 5 mins left
+              that._updateFooter();
+            }
+          };
+
+          // listen to item adjustments in case we are currenly displaying an
+          // alert for the adjusted item, we sync its time left
+          this._observers.add(updateItemTime, "ebay-item-time-adjusted");
+
+          // observers to update the status of the alert
+          this._observers.add(
+            function(aInfo) {
+              let item = aInfo.object;
+              let originalItem = aInfo.originalObject;
+
+              // make sure this is the same item
+              if (that.alert &&
+                  that.alert.object instanceof EbayCompanion.Item &&
+                  item.get("itemId") == that.alert.object.get("itemId")) {
+                let alertItem = that.alert.object;
+
+                let itemCopy = item.copy();
+                if (alertItem.transaction) {
+                  //itemCopy.transaction = alertItem.transaction;
+                  // here we can get the transaction from the datasource
+                  // to make sure we are using the most current version of it
+                  let transactions =
+                      EbayCompanion.Datasource.
+                        transactions(alertItem.get("itemId"));
+                  let transaction =
+                    transactions[alertItem.transaction.get("transactionId")];
+                  //itemCopy.transaction = alertItem.transaction;
+                  itemCopy.transaction = transaction;
+                  // we update the item info, but we keep the item type
+                  itemCopy.type = alertItem.type;
+                }
+                that.alert =
+                  new EbayCompanion.Alert(that.alert.type, itemCopy);
+
+              }
+            }, "ebay-item-changed");
+
+          this._observers.add(
+            function(aInfo) {
+              let transaction = aInfo.object;
+              if (that.alert) {
+                let currentObject = that.alert.object;
+
+                // import the module only when we actually need it
+                if (typeof(EbayCompanion.Item) == "undefined") {
+                  EbayCompanion._importModule("objects/item.js");
+                }
+                if (currentObject instanceof EbayCompanion.Item &&
+                    transaction.get("itemId") ==
+                      currentObject.get("itemId") &&
+                    currentObject.transaction &&
+                    transaction.get("transactionId") ==
+                      currentObject.transaction.get("transactionId")) {
+
+
+                  let alertItem = currentObject;
+                  let updatedObject = alertItem.copy();
+                  updatedObject.transaction = transaction.copy();
+                  that.alert =
+                    new EbayCompanion.Alert(that.alert.type, updatedObject);
+                }
+              }
+            }, "ebay-transaction-changed");
+          // sync the time left from the 2 fronts, sidebar and alerts box
+          if (typeof(EbayCompanion.Timer) == "undefined") {
+            EbayCompanion._importModule("helpers/timer.js");
+          }
+          this._timeLeftUpdateTimer = new EbayCompanion.Timer(
+            function() { that.updateTimeLeft() },
+            10000, EbayCompanion.Timer.TYPE_REPEATING_PRECISE);
+        ]]>
+      </constructor>
+
+      <!--
+        - Destructor.
+        -->
+      <destructor>
+        <![CDATA[
+          this._observers.removeAll();
+          this._timeLeftUpdateTimer.cancel();
+        ]]>
+      </destructor>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the UI, using the Alert associated with this element.
+        -->
+      <method name="_updateUI">
+        <body>
+          <![CDATA[
+            let alertType = this.alert.type;
+            let alertItem = this.alert.object;
+            let alertDeck = this._getElement("gs-ebay-alert-deck");
+
+            if (typeof(EbayCompanion.Alert) == "undefined") {
+              EbayCompanion._importModule("objects/alert.js");
+            }
+
+            if (alertType == EbayCompanion.Alert.ALERT_TYPE_FEEDBACK_SCORE) {
+              let feedbackBox = this._getElement("gs-ebay-feedback-box");
+
+              feedbackBox.item = alertItem;
+
+              alertDeck.setAttribute("selectedIndex", 1);
+            } else {
+              let itemBox = this._getElement("gs-ebay-item-box");
+
+              itemBox.previousItem = alertItem;
+              itemBox.item = alertItem;
+              itemBox.setAttribute("itemId", alertItem.get("itemId"));
+
+              alertDeck.setAttribute("selectedIndex", 0);
+              this.updateTimeLeft();
+            }
+
+            this._updateFooter();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the time left if this is an item alert.
+        - Notifies the sidebar items and other alert boxes in other windows so
+        - they are all in sync.
+        -->
+      <method name="updateTimeLeft">
+        <body>
+          <![CDATA[
+            if (this.alert) {
+              let alertType = this.alert.type;
+
+              if (alertType != EbayCompanion.Alert.ALERT_TYPE_FEEDBACK_SCORE) {
+                let itemBox = this._getElement("gs-ebay-item-box");
+
+                let timeLabel = itemBox.updateItemTime();
+
+                EbayCompanion.Observers.notify(
+                  itemBox.item, "ebay-item-time-adjusted", timeLabel);
+
+              }
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the alert footer accordingly.
+        -->
+      <method name="_updateFooter">
+      <body>
+        <![CDATA[
+          let footer = this._getElement("gs-ebay-alert-box-footer");
+          let itemBox = this._getElement("gs-ebay-item-box");
+          let alert = this.alert;
+          let buttonCommand = null;
+
+          if (alert.type == EbayCompanion.Alert.ALERT_TYPE_FEEDBACK_SCORE) {
+            buttonCommand = "viewFeedback";
+          } else {
+            buttonCommand =
+              itemBox.getActionButtonCommand(alert.type, true);
+          }
+
+          footer.updateUI(
+            alert, this.currentAlertIndex, this.alertsQueueLength,
+            buttonCommand);
+        ]]>
+      </body>
+      </method>
+    </implementation>
+  </binding>
+
+  <!-- The primary alert box footer -->
+  <binding id="gs-ebay-alert-box-footer">
+    <content>
+      <xul:hbox class="gs-ebay-alert-footer-container" flex="1">
+        <xul:spacer class="gs-ebay-alert-footer-left-spacer" />
+          <xul:hbox class="gs-ebay-alert-footer-button-container" >
+            <xul:toolbarbutton anonid="gs-ebay-alert-footer-button-previous"
+              class="gs-ebay-alert-footer-button-previous"
+              tooltiptext="&ecGlobal.paginate.previous.tooltip;"
+              command="ec-alerts-previous-command" />
+          </xul:hbox>
+          <xul:label anonid="gs-ebay-alert-footer-position"
+            class="gs-ebay-alert-footer-position"/>
+          <xul:hbox class="gs-ebay-alert-footer-button-container" >
+            <xul:toolbarbutton anonid="gs-ebay-alert-footer-button-next"
+              class="gs-ebay-alert-footer-button-next"
+              tooltiptext="&ecGlobal.paginate.next.tooltip;"
+              command="ec-alerts-next-command" />
+          </xul:hbox>
+        <xul:spacer flex="1" />
+        <xul:label anonid="gs-ebay-alert-footer-link"
+          class="gs-ebay-alert-footer-link"
+          value="&ecAlert.remindMeLater;"
+          tooltiptext="&ecAlert.remindMeLater;" />
+        <xul:vbox>
+          <xul:gsebaybutton anonid="gs-ebay-alert-footer-action-button"
+            class="gs-ebay-alert-footer-action-button" />
+        </xul:vbox>
+      </xul:hbox>
+    </content>
+
+    <handlers>
+      <handler event="click" phase="capturing">
+        <![CDATA[
+          if (event.button != 2) {
+            let target = event.originalTarget;
+            let bindingTarget = document.getBindingParent(target);
+            let userId = EbayCompanion.Datasource.activeAccount().get('userId');
+            let alertType = this.alert.type;
+
+            // dispatch the respective command for the remind me later link
+            // and alert button.
+            if ("gs-ebay-alert-footer-link" == target.getAttribute("anonid")) {
+              EbayCompanion.AlertsService.remindLater();
+            } else if ("gsebaybutton" == bindingTarget.localName) {
+              if (alertType ==  EbayCompanion.Alert.ALERT_TYPE_FEEDBACK_SCORE) {
+                EbayCompanion.openPage(
+                  event, 'alertContents', 'userFeedback', {userid: userId});
+              } else {
+                EbayCompanion.itemButtonClick(
+                  event, "alertButton", this.buttonAction, this.alert.object);
+              }
+            }
+          }
+        ]]>
+      </handler>
+    </handlers>
+
+    <implementation>
+      <!-- Associated alert. -->
+      <field name="_alert">null</field>
+
+      <!-- Property to accessed the alert. -->
+      <property name="alert">
+        <getter>
+          return this._alert;
+        </getter>
+        <setter>
+         <![CDATA[
+          this._alert = val;
+         ]]>
+        </setter>
+      </property>
+
+      <!-- Property to accessed the button action. -->
+      <property name="buttonAction">
+        <getter>
+          return this.getAttribute('buttonAction');
+        </getter>
+        <setter>
+         <![CDATA[
+          this.setAttribute('buttonAction', val);
+         ]]>
+        </setter>
+      </property>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the alert footer navigation.
+        - @param aCurrentIndex the current index to be shown in the navigation.
+        - @param aAlertsQueueLength the length of the alerts queue to be shown.
+        -->
+      <method name="_updateFooterNavigation">
+        <parameter name="aCurrentIndex"/>
+        <parameter name="aAlertsQueueLength" />
+        <body>
+          <![CDATA[
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let prevButton =
+              this._getElement("gs-ebay-alert-footer-button-previous");
+            let nextButton =
+              this._getElement("gs-ebay-alert-footer-button-next");
+            let positionLabel =
+              this._getElement("gs-ebay-alert-footer-position");
+
+            // if only one element in the list, hide the navigation
+            if (aAlertsQueueLength == 1) {
+              prevButton.setAttribute("collapsed", true);
+              nextButton.setAttribute("collapsed", true);
+              positionLabel.setAttribute("collapsed", true);
+            } else {
+              let positionString =
+                stringBundle.getString("ecAlert.navigation.items",
+                  [aCurrentIndex + 1, aAlertsQueueLength]);
+
+              positionLabel.setAttribute("value", positionString);
+              positionLabel.removeAttribute("collapsed");
+              prevButton.removeAttribute("collapsed");
+              nextButton.removeAttribute("collapsed");
+
+              if (aCurrentIndex == 0) {
+                prevButton.setAttribute("collapsed", true);
+              } else if (aCurrentIndex == aAlertsQueueLength - 1) {
+                nextButton.setAttribute("collapsed", true);
+              }
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Hides or shows the remind me later link (only for ending soon alerts
+        - with more than 5 minutes left).
+        - @param aAlert used to show or hide remind me later link.
+        -->
+      <method name="_updateRemindMeLaterLink">
+        <parameter name="aAlert"/>
+        <body>
+          <![CDATA[
+            let alertType = aAlert.type;
+            let remindLaterLink = this._getElement("gs-ebay-alert-footer-link");
+
+            if (alertType ==
+                  EbayCompanion.Alert.ALERT_TYPE_BIDDING_ENDING_SOON ||
+                alertType ==
+                  EbayCompanion.Alert.ALERT_TYPE_SELLING_ENDING_SOON ||
+                alertType ==
+                  EbayCompanion.Alert.ALERT_TYPE_WATCHING_ENDING_SOON) {
+              let ebayTime = EbayCompanion.Datasource.getEbayTime().getTime();
+              let timeLeft = aAlert.object.get("endTime") - ebayTime;
+              let minutesLeft = timeLeft / 1000 / 60;
+
+              if (minutesLeft < 5) {
+                remindLaterLink.setAttribute("collapsed", true);
+              } else {
+                remindLaterLink.removeAttribute("collapsed");
+              }
+            } else {
+              remindLaterLink.setAttribute("collapsed", true);
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the alert button label and command.
+        - @param aAlert the alert to be used to calculate the right button
+        - label and command.
+        - @param aButtonCommand the command of the button.
+        -->
+      <method name="_updateActionButton">
+        <parameter name="aAlert" />
+        <parameter name="aButtonCommand" />
+        <body>
+          <![CDATA[
+            if (aButtonCommand) {
+              let stringBundle = EbayCompanion.Constants.stringBundle;
+              let buttonLabel =
+                stringBundle.getString("ecItem.button." + aButtonCommand);
+              let actionButton =
+                this._getElement("gs-ebay-alert-footer-action-button");
+
+              actionButton.setAttribute("label", buttonLabel);
+
+              this.buttonAction = aButtonCommand;
+              this.alert = aAlert;
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the navigation, remind me later and action buttons.
+        - @param aAlert used to show or hide remind me later link.
+        - @param aCurrentIndex the current index to be shown in the navigation.
+        - @param aAlertsQueueLength the length of the alerts queue to be shown.
+        - @param aButtonCommand the command of the button.
+        -->
+      <method name="updateUI">
+        <parameter name="aAlert"/>
+        <parameter name="aCurrentIndex"/>
+        <parameter name="aAlertsQueueLength" />
+        <parameter name="aButtonCommand" />
+        <body>
+          <![CDATA[
+            this._updateFooterNavigation(aCurrentIndex, aAlertsQueueLength);
+            this._updateRemindMeLaterLink(aAlert);
+            this._updateActionButton(aAlert, aButtonCommand);
+          ]]>
+        </body>
+      </method>
+    </implementation>
+  </binding>
+</bindings>

@@ -1,0 +1,11 @@
+<!ENTITY newtab.title.label "Neuer Tab">
+<!ENTITY search.form.label "Suche">
+<!ENTITY search.button.label "Suche">
+<!ENTITY last-searches.label "Letzte Suchanfragen">
+<!ENTITY marketed-searches.label "Top-Suchbegriffe">
+<!ENTITY no-last-searches.label "Es wurden keine Anfragen gespeichert.">
+<!ENTITY no-marketed-searches.label "Zur Zeit liegen keine Top-Suchebegriffe vor.">
+<!ENTITY most-visited.label "Am häufigsten besucht">
+<!ENTITY as-text.button.label "Liste">
+<!ENTITY as-pics.button.label "Galerie">
+<!ENTITY newtab.manage "Verwalten">

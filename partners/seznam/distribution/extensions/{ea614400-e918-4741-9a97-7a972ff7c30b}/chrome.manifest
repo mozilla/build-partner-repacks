@@ -1,0 +1,6 @@
+content   foxcub              jar:chrome/foxcub.jar!/content/
+skin      foxcub  classic/1.0 jar:chrome/foxcub.jar!/skin/
+locale    foxcub  cs-CZ       jar:chrome/foxcub.jar!/locale/cs-CZ/
+resource  foxcub     		  modules/
+
+overlay   chrome://browser/content/browser.xul   chrome://foxcub/content/foxcubOverlay.xul

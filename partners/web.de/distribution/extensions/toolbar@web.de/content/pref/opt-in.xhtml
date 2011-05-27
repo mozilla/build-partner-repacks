@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+  <!ENTITY % optinDTD SYSTEM "chrome://unitedtb/locale/pref/opt-in.dtd">
+  %optinDTD;
+]>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>&page.title;</title>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
+
+    <link rel="stylesheet" type="text/css"
+      href="chrome://unitedtb/skin/pref/opt-in.css"/>
+    <link rel="stylesheet" type="text/css"
+      href="chrome://unitedtb/skin/pref/opt-in-brand.css"/>
+    <link rel="stylesheet" type="text/css"
+      href="chrome://unitedtb/content/pref/pref-region-xbl.css"/>
+</head>
+<body onload="onLoad();">
+    <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/util/uiutil.js"></script>
+    <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/pref/opt-in.js"></script>
+
+    <div id="container">
+        <h1><span id="logo"></span>&page.heading;</h1>
+
+        <div class="intro">
+          &intro.descr;
+        </div>
+        <form id="searchform" onsubmit="onCloseButton(); return false;">
+          <div class="widget-box">
+              <pref-region id="region" module="general" label="&region.label;" />
+          </div>
+          <div class="checkbox-box">
+              <input type="checkbox" id="searchengine"
+                  />
+              <label for="searchengine">&searchengine.checkbox.label;</label>
+          </div>
+          <div class="checkbox-box">
+              <input type="checkbox" id="startpage"
+                  />
+              <label for="startpage">&startpage.checkbox.label;</label>
+          </div>
+          <div class="checkbox-box">
+              <input type="checkbox" id="newtab"
+                 checked="checked"
+                  />
+              <label for="newtab">&newtab.checkbox.label;</label>
+          </div>
+          <div class="button-box">
+              <input type="submit" class="button" value="&close.button.label;"/>
+          </div>
+        </form>
+    </div>
+</body>
+</html>

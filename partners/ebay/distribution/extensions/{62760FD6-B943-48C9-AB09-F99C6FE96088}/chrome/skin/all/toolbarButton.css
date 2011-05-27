@@ -1,0 +1,151 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+/**
+ * CSS for toolbar button
+ */
+.ec-toolbar-button-ff4 toolbarbutton {
+  list-style-image: url("chrome://ebaycompanion/skin/images/normal.png");
+  -moz-image-region: rect(0px, 18px, 18px, 0px);
+}
+.ec-toolbar-button-ff4[connected="false"] toolbarbutton {
+  list-style-image: url("chrome://ebaycompanion/skin/images/signed_off.png");
+  -moz-image-region: rect(0px, 18px, 18px, 0px);
+}
+
+.ec-toolbar-button-ff4 .toolbarbutton-icon {
+  margin: 0px !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+#addon-bar .ec-toolbar-button-ff4 .toolbarbutton-menubutton-button {
+  min-width: 22px !important;
+  padding: 0px !important;
+}
+
+#addon-bar .ec-toolbar-button-ff4 .toolbarbutton-menubutton-dropmarker {
+  width: 11px !important;
+}
+
+.ec-toolbar-button toolbarbutton {
+  list-style-image: url("chrome://ebaycompanion/skin/images/button.png");
+  -moz-image-region: rect(0px, 50px, 26px, 0px);
+}
+.ec-toolbar-button:hover:not(:active) toolbarbutton {
+  -moz-image-region: rect(26px, 50px, 52px, 0px);
+}
+.ec-toolbar-button[connected="false"] toolbarbutton {
+  -moz-image-region: rect(0px, 100px, 26px, 50px);
+}
+.ec-toolbar-button[connected="false"]:hover:not(:active) toolbarbutton {
+  -moz-image-region: rect(26px, 100px, 52px, 50px);
+}
+
+#nav-bar[iconsize="small"] .ec-toolbar-button toolbarbutton {
+  list-style-image: url("chrome://ebaycompanion/skin/images/button_small.png");
+  -moz-image-region: rect(0px, 31px, 16px, 0px);
+}
+#nav-bar[iconsize="small"] .ec-toolbar-button:hover:not(:active) toolbarbutton {
+  -moz-image-region: rect(16px, 31px, 32px, 0px);
+}
+#nav-bar[iconsize="small"] .ec-toolbar-button[connected="false"] toolbarbutton {
+  -moz-image-region: rect(0px, 62px, 16px, 31px);
+}
+#nav-bar[iconsize="small"] .ec-toolbar-button[connected="false"]:hover:not(:active) toolbarbutton {
+  -moz-image-region: rect(16px, 62px, 32px, 31px);
+}
+
+/* Glowing */
+.ec-toolbar-button-ff4[glowing="true"] toolbarbutton,
+.ec-toolbar-button-ff4[animating="true"] toolbarbutton {
+  list-style-image: url("chrome://ebaycompanion/skin/images/normal_alert_badge.png");
+  -moz-image-region: rect(0px, 18px, 18px, 0px);
+}
+.ec-toolbar-button-ff4[glowing="true"]:hover toolbarbutton {
+  /* override default hover behaviour when glowing */
+  -moz-image-region: rect(0px, 18px, 18px, 0px) !important;
+}
+#nav-bar[iconsize="small"] .ec-toolbar-button-ff4[glowing="true"] toolbarbutton,
+#nav-bar[iconsize="small"] .ec-toolbar-button-ff4[animating="true"] toolbarbutton {
+  list-style-image: url("chrome://ebaycompanion/skin/images/normal_alert_badge.png");
+  -moz-image-region: rect(0px, 18px, 18px, 0px);
+}
+#nav-bar[iconsize="small"] .ec-toolbar-button-ff4[glowing="true"]:hover toolbarbutton {
+  /* override default hover behaviour when glowing */
+  -moz-image-region: rect(0px, 18px, 18px, 0px) !important;
+}
+
+/* Glowing */
+.ec-toolbar-button[glowing="true"] toolbarbutton,
+.ec-toolbar-button[animating="true"] toolbarbutton {
+  list-style-image: url("chrome://ebaycompanion/skin/images/animation.png");
+  -moz-image-region: rect(260px, 50px, 286px, 0px);
+}
+.ec-toolbar-button[glowing="true"]:hover toolbarbutton {
+  /* override default hover behaviour when glowing */
+  -moz-image-region: rect(260px, 50px, 286px, 0px) !important;
+}
+#nav-bar[iconsize="small"] .ec-toolbar-button[glowing="true"] toolbarbutton,
+#nav-bar[iconsize="small"] .ec-toolbar-button[animating="true"] toolbarbutton {
+  list-style-image: url("chrome://ebaycompanion/skin/images/animation_small.png");
+  -moz-image-region: rect(160px, 31px, 176px, 0px);
+}
+#nav-bar[iconsize="small"] .ec-toolbar-button[glowing="true"]:hover toolbarbutton {
+  /* override default hover behaviour when glowing */
+  -moz-image-region: rect(160px, 31px, 176px, 0px) !important;
+}
+
+/* General toolbar button*/
+.ec-toolbar-button {
+  padding: 0px;
+}
+.ec-toolbar-button toolbarbutton {
+  padding: 0px;
+}
+.ec-toolbar-button image {
+  padding: 0px;
+}
+.ec-toolbar-button .toolbarbutton-menubutton-button {
+  padding-left: 2px !important;
+  padding-right: 1px !important;
+}
+.ec-toolbar-button .toolbarbutton-icon {
+  margin: 0px !important;
+}
+
+/* General statusbar button */
+.ec-statusbar-button {
+  list-style-image: url("chrome://ebaycompanion/skin/images/button_status_bar.png");
+  -moz-image-region: rect(0px, 18px, 16px, 0px);
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}
+.ec-statusbar-button[connected="false"] {
+  -moz-image-region: rect(16px, 18px, 32px, 0px);
+}
+.ec-statusbar-button[glowing="true"] {
+  -moz-image-region: rect(32px, 18px, 48px, 0px);
+}
+
+.ec-statusbar-button toolbarbutton {
+  list-style-image: url("chrome://ebaycompanion/skin/images/button_status_bar.png");
+  -moz-image-region: rect(0px, 18px, 16px, 0px);
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}
+.ec-statusbar-button[connected="false"] toolbarbutton {
+  -moz-image-region: rect(16px, 18px, 32px, 0px);
+}
+.ec-statusbar-button[glowing="true"] toolbarbutton {
+  -moz-image-region: rect(32px, 18px, 48px, 0px);
+}
+
+.ec-statusbar-button .toolbarbutton-text {
+  display: none;
+}

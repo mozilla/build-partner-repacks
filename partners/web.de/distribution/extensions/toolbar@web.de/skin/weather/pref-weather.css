@@ -1,0 +1,4 @@
+radio[pane="weather-pane"]
+{
+  list-style-image: url("chrome://unitedtb/skin/weather/weather-32.png");
+}

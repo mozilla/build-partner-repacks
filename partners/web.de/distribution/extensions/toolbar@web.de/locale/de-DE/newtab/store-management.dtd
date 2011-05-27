@@ -1,0 +1,5 @@
+<!ENTITY store.management.title "Verwalten">
+<!ENTITY store.management.edit "Verlauf bearbeiten">
+<!ENTITY store.management.delete.selection "Auswahl löschen">
+<!ENTITY store.management.delete.all "Alle löschen">
+<!ENTITY store.management.exit "Beenden">

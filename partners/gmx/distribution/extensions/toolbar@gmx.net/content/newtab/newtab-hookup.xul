@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- copied to=phish/tab-listener.js -->
+<overlay id="united-newtab-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript"
+      src="chrome://unitedtb/content/newtab/newtab-hookup.js"/>
+  <script type="application/x-javascript">
+    united.newtab = {};
+    united.loadJS("chrome://unitedtb/content/newtab/thumbnail-capture.js", united.newtab);
+    Components.utils.import("resource://unitedtb/newtab/marketed-searchterms.js",
+         united.newtab);
+  </script>
+</overlay>
+<!-- /copied -->

@@ -1,0 +1,209 @@
+<!ENTITY ecAbout.copyright.label      "© 2009 eBay Inc. Alle rechten voorbehouden.">
+<!ENTITY ecAbout.feedback.key      "F">
+<!ENTITY ecAbout.feedback.label      "Feedback">
+<!ENTITY ecAbout.label      "Over de eBay-Sidebar voor Firefox">
+<!ENTITY ecAbout.ok.label      "OK">
+<!ENTITY ecAbout.trademarks.label      "eBay-logo's zijn handelsmerken van eBay Inc.">
+<!ENTITY ecAlert.dismiss.tooltip      "Sluiten">
+<!ENTITY ecAlert.feedback.title      "Gefeliciteerd!">
+<!ENTITY ecAlert.remindMeLater      "Help mij herinneren">
+<!ENTITY ecBrowser.toolbarbutton.menu.buy      "Kopen">
+<!ENTITY ecBrowser.toolbarbutton.menu.buy.key      "U">
+<!ENTITY ecBrowser.toolbarbutton.menu.closeSidebar      "Ebay-Sidebar sluiten">
+<!ENTITY ecBrowser.toolbarbutton.menu.closeSidebar.key      "C">
+<!ENTITY ecBrowser.toolbarbutton.menu.community      "Community">
+<!ENTITY ecBrowser.toolbarbutton.menu.community.key      "T">
+<!ENTITY ecBrowser.toolbarbutton.menu.feedback      "Feedback voor eBay-Sidebar">
+<!ENTITY ecBrowser.toolbarbutton.menu.feedback.key      "F">
+<!ENTITY ecBrowser.toolbarbutton.menu.home      "Homepage van eBay">
+<!ENTITY ecBrowser.toolbarbutton.menu.home.key      "H">
+<!ENTITY ecBrowser.toolbarbutton.menu.myebay      "Mijn eBay">
+<!ENTITY ecBrowser.toolbarbutton.menu.myebay.key      "M">
+<!ENTITY ecBrowser.toolbarbutton.menu.openSidebar      "Ebay-Sidebar openen">
+<!ENTITY ecBrowser.toolbarbutton.menu.openSidebar.key      "O">
+<!ENTITY ecBrowser.toolbarbutton.menu.options      "Opties...">
+<!ENTITY ecBrowser.toolbarbutton.menu.options.key      "P">
+<!ENTITY ecBrowser.toolbarbutton.menu.paypal      "Homepage van PayPal">
+<!ENTITY ecBrowser.toolbarbutton.menu.paypal.key      "A">
+<!ENTITY ecBrowser.toolbarbutton.menu.sell      "Verkopen">
+<!ENTITY ecBrowser.toolbarbutton.menu.sell.key      "E">
+<!ENTITY ecBrowser.toolbarbutton.menu.sellers      "Opgeslagen verkopers">
+<!ENTITY ecBrowser.toolbarbutton.menu.sellers.manage      "Opgeslagen verkopers beheren">
+<!ENTITY ecBrowser.toolbarbutton.menu.sellers.more      "Meer…">
+<!ENTITY ecBrowser.toolbarbutton.menu.sellers.null      "Geen opgeslagen verkopers">
+<!ENTITY ecBrowser.toolbarbutton.menu.sellers.signedout      "Log in om te bekijken">
+<!ENTITY ecBrowser.toolbarbutton.menu.signin      "Inloggen bij eBay-Sidebar">
+<!ENTITY ecBrowser.toolbarbutton.menu.signin.key      "S">
+<!ENTITY ecBrowser.toolbarbutton.menu.signout      "Uitloggen bij eBay-Sidebar">
+<!ENTITY ecBrowser.toolbarbutton.menu.signout.key      "D">
+<!ENTITY ecBrowser.toolbarbutton.menu.switchToButton      "Overschakelen naar knop">
+<!ENTITY ecBrowser.toolbarbutton.menu.switchToButton.key      "B">
+<!ENTITY ecBrowser.toolbarbutton.title      "eBay">
+<!ENTITY ecFlyout.back.to.items.label      "Terug naar objecten">
+<!ENTITY ecFlyout.history.title      "Geschiedenis">
+<!ENTITY ecFlyout.item.bids.maxBid      "Je maximumbod">
+<!ENTITY ecFlyout.quantity.title      "Aantal">
+<!ENTITY ecFlyout.savings      "Savings">
+<!ENTITY ecFlyout.seller.openParenthesis.label       "(">
+<!ENTITY ecFlyout.seller.closeParenthesis.label      ")">
+<!ENTITY ecFlyout.shipping      "Verzendkosten">
+<!ENTITY ecGlobal.paginate.next.tooltip      "Volgende">
+<!ENTITY ecGlobal.paginate.previous.tooltip      "Vorige">
+<!ENTITY ecGlobal.title      "eBay Sidebar voor Firefox">
+<!ENTITY ecItem.menu.buying.contact      "Vraag het de verkoper">
+<!ENTITY ecItem.menu.buying.contact.key      "Q">
+<!ENTITY ecItem.menu.buying.feedback      "Verkopersfeedback bekijken">
+<!ENTITY ecItem.menu.buying.feedback.key      "V">
+<!ENTITY ecItem.menu.buying.find      "Zoeken naar vergelijkbare objecten">
+<!ENTITY ecItem.menu.buying.find.key      "F">
+<!ENTITY ecItem.menu.buying.items      "Andere objecten van verkoper bekijken">
+<!ENTITY ecItem.menu.buying.items.key      "T">
+<!ENTITY ecItem.menu.buying.make.offer      "Bod bekijken">
+<!ENTITY ecItem.menu.buying.make.offer.key      "A">
+<!ENTITY ecItem.menu.buying.review.offer      "Object herzien">
+<!ENTITY ecItem.menu.buying.review.offer.key      "E">
+<!ENTITY ecItem.menu.global.open      "Object openen in nieuw tabblad">
+<!ENTITY ecItem.menu.global.open.key      "O">
+<!ENTITY ecItem.menu.global.order      "Bestellingsgegevens bekijken">
+<!ENTITY ecItem.menu.global.order.key      "D">
+<!ENTITY ecItem.menu.global.remove      "Verwijderen uit mijn eBay">
+<!ENTITY ecItem.menu.global.remove.key      "M">
+<!ENTITY ecItem.menu.selling.contact      "Contact opnemen met koper">
+<!ENTITY ecItem.menu.selling.contact.key      "C">
+<!ENTITY ecItem.menu.selling.feedback      "Kopersfeedback bekijken">
+<!ENTITY ecItem.menu.selling.feedback.key      "B">
+<!ENTITY ecItem.menu.selling.promote      "Object promoten">
+<!ENTITY ecItem.menu.selling.promote.key      "P">
+<!ENTITY ecItem.menu.selling.review.offers      "Biedingen bekijken">
+<!ENTITY ecItem.menu.selling.review.offers.key      "O">
+<!ENTITY ecItem.menu.selling.revise      "Object herzien">
+<!ENTITY ecItem.menu.selling.revise.key      "R">
+<!ENTITY ecItem.menu.selling.sell      "Vergelijkbaar object verkopen">
+<!ENTITY ecItem.menu.selling.sell.key      "S">
+<!ENTITY ecLicence.button.continue      "Doorgaan">
+<!ENTITY ecLicence.button.print      "Afdrukken">
+<!ENTITY ecLicence.header.title      "eBay Sidebar voor Firefox">
+<!ENTITY ecLicence.menu.copy      "Kopiëren">
+<!ENTITY ecLicence.radio.agree      "Ik ga akkoord met de [1 voorwaarden] en het [2 privacybeleid]">
+<!ENTITY ecLicence.radio.disagree      "Ik ga niet akkoord">
+<!ENTITY ecLicence.window.title      "Licentieovereenkomst voor eBay-Sidebar">
+<!ENTITY ecOptions.alerts.alertOptions      "Weergaveopties waarschuwingen">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.countered      "Tegenbod ontvangen">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.countered.key      "C">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.declined      "Geweigerd bod">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.declined.key      "D">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.expired      "Vervallen bod">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.expired.key      "E">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.itemWon      "Beste bod aanvaard">
+<!ENTITY ecOptions.alerts.bidding.bestOffer.itemWon.key      "A">
+<!ENTITY ecOptions.alerts.bidding.endingSoon      "Binnenkort afgelopen">
+<!ENTITY ecOptions.alerts.bidding.endingSoon.key      "N">
+<!ENTITY ecOptions.alerts.bidding.highBidder      "Hoogste bieder">
+<!ENTITY ecOptions.alerts.bidding.highBidder.key      "H">
+<!ENTITY ecOptions.alerts.bidding.itemLost      "Niet-gewonnen object">
+<!ENTITY ecOptions.alerts.bidding.itemLost.key      "L">
+<!ENTITY ecOptions.alerts.bidding.itemWon      "Gewonnen object">
+<!ENTITY ecOptions.alerts.bidding.itemWon.key      "W">
+<!ENTITY ecOptions.alerts.bidding.outbid      "Overboden">
+<!ENTITY ecOptions.alerts.bidding.outbid.key      "U">
+<!ENTITY ecOptions.alerts.bidding.raisedBid      "Verhoogd bod">
+<!ENTITY ecOptions.alerts.bidding.raisedBid.key      "R">
+<!ENTITY ecOptions.alerts.desktop      "Waarschuwing op bureaublad">
+<!ENTITY ecOptions.alerts.resetToDefaults      "Standaardinstellingen">
+<!ENTITY ecOptions.alerts.resetToDefaults.key      "D">
+<!ENTITY ecOptions.alerts.selling.bestOffer.itemSold      "Beste bod aanvaard">
+<!ENTITY ecOptions.alerts.selling.bestOffer.itemSold.key      "C">
+<!ENTITY ecOptions.alerts.selling.bestOffer.newOffer      "Beste bod ontvangen">
+<!ENTITY ecOptions.alerts.selling.bestOffer.newOffer.key      "F">
+<!ENTITY ecOptions.alerts.selling.bidPlaced      "Uitgebracht bod">
+<!ENTITY ecOptions.alerts.selling.bidPlaced.key      "B">
+<!ENTITY ecOptions.alerts.selling.endingSoon      "Binnenkort afgelopen">
+<!ENTITY ecOptions.alerts.selling.endingSoon.key      "O">
+<!ENTITY ecOptions.alerts.selling.itemSold      "Verkocht object">
+<!ENTITY ecOptions.alerts.selling.itemSold.key      "S">
+<!ENTITY ecOptions.alerts.selling.itemUnsold      "Onverkocht object">
+<!ENTITY ecOptions.alerts.selling.itemUnsold.key      "N">
+<!ENTITY ecOptions.alerts.sidebar      "Waarschuwing in zijbalk">
+<!ENTITY ecOptions.alerts.sound.enable      "Geluid inschakelen voor alle waarschuwingen">
+<!ENTITY ecOptions.alerts.sound.enable.key      "E">
+<!ENTITY ecOptions.alerts.soundOptions      "Geluiden bij waarschuwingen">
+<!ENTITY ecOptions.alerts.tab.buying      "Gekocht">
+<!ENTITY ecOptions.alerts.tab.selling      "Aangeboden">
+<!ENTITY ecOptions.alerts.tab.sound      "Geluid">
+<!ENTITY ecOptions.alerts.tab.watching      "Gevolgd">
+<!ENTITY ecOptions.alerts.watching.endingSoon      "Binnenkort afgelopen">
+<!ENTITY ecOptions.alerts.watching.endingSoon.key      "I">
+<!ENTITY ecOptions.general.connectAutomatically      "Maak automatisch verbinding als Firefox opstart">
+<!ENTITY ecOptions.general.connectAutomatically.key      "C">
+<!ENTITY ecOptions.general.ebayPages      "eBay-pagina's">
+<!ENTITY ecOptions.general.feedbackNotification      "Als mijn feedbackscore is veranderd">
+<!ENTITY ecOptions.general.feedbackNotification.key      "F">
+<!ENTITY ecOptions.general.messageNotification      "Als ik nieuwe berichten heb ontvangen">
+<!ENTITY ecOptions.general.messageNotification.key      "M">
+<!ENTITY ecOptions.general.notifications      "Berichten in zijbalk">
+<!ENTITY ecOptions.general.notifyWhen      "Informeer me in de zijbalk:">
+<!ENTITY ecOptions.general.openPagesInNewTab      "Open elke pagina in een nieuw tabblad">
+<!ENTITY ecOptions.general.openPagesInNewTab.key      "O">
+<!ENTITY ecOptions.general.regSiteName      "(voor #1 is dit #2)">
+<!ENTITY ecOptions.general.security      "Beveiliging">
+<!ENTITY ecOptions.general.useRegistrationSite      "Gebruik de website waarop mijn gebruikersnaam is ingeschreven">
+<!ENTITY ecOptions.general.useRegistrationSite.key      "R">
+<!ENTITY ecOptions.general.useThisSite      "Gebruik altijd deze website">
+<!ENTITY ecOptions.general.useThisSite.key      "T">
+<!ENTITY ecOptions.general.whenOpeningPages      "Ga als volgt te werk bij het openen van eBay-webpagina's:">
+<!ENTITY ecOptions.legal.disagree      "Als je niet akkoord gaat met deze voorwaarden, [1 verwijder] dan deze add-on">
+<!ENTITY ecOptions.legal.info      "Lees hieronder onze [1 gebruiksvoorwaarden] en ons [2 privacybeleid]">
+<!ENTITY ecOptions.legal.print.button      "Afdrukken">
+<!ENTITY ecOptions.tab.alerts      "Waarschuwingen">
+<!ENTITY ecOptions.tab.general      "Algemeen">
+<!ENTITY ecOptions.tab.legal      "Juridisch">
+<!ENTITY ecOptions.window.title      "Opties voor eBay-Sidebar">
+<!ENTITY ecOverlay.toggleSidebar.key      "e">
+<!ENTITY ecOverlay.toggleSidebar.keyModifiers      "accel,shift">
+<!ENTITY ecOverlay.toggleSidebar.menuKey      "e">
+<!ENTITY ecSidebar.button.signin      "Verbinding maken met eBay">
+<!ENTITY ecSidebar.daily.deals.label      "Daily Deals">
+<!ENTITY ecSidebar.label.instructions      "Log in om de objecten te bekijken die je volgt of verkoopt of waarop je biedt.">
+<!ENTITY ecSidebar.label.welcome      "Welkom bij de eBay-Sidebar voor Firefox">
+<!ENTITY ecSidebar.navigation.menu.buy      "Kopen">
+<!ENTITY ecSidebar.navigation.menu.buy.key      "U">
+<!ENTITY ecSidebar.navigation.menu.community      "Community">
+<!ENTITY ecSidebar.navigation.menu.community.key      "T">
+<!ENTITY ecSidebar.navigation.menu.home      "Homepage van eBay">
+<!ENTITY ecSidebar.navigation.menu.home.key      "H">
+<!ENTITY ecSidebar.navigation.menu.myebay      "Mijn eBay">
+<!ENTITY ecSidebar.navigation.menu.myebay.key      "M">
+<!ENTITY ecSidebar.navigation.menu.sell      "Verkopen">
+<!ENTITY ecSidebar.navigation.menu.sell.key      "E">
+<!ENTITY ecSidebar.navigation.tooltip      "Homepage van eBay">
+<!ENTITY ecSidebar.search      "Zoeken op eBay">
+<!ENTITY ecSidebar.search.saved.label      "Opgeslagen zoekopdrachten">
+<!ENTITY ecSidebar.search.tooltip      "Zoeken">
+<!ENTITY ecSidebar.status.refresh.tooltip      "Update forceren">
+<!ENTITY ecSidebar.tab.active.filter.all      "Alles">
+<!ENTITY ecSidebar.tab.active.filter.all.key      "L">
+<!ENTITY ecSidebar.tab.active.filter.buying      "Gekocht">
+<!ENTITY ecSidebar.tab.active.filter.buying.key      "B">
+<!ENTITY ecSidebar.tab.active.filter.selling      "Aangeboden">
+<!ENTITY ecSidebar.tab.active.filter.selling.key      "S">
+<!ENTITY ecSidebar.tab.active.filter.watching      "Gevolgd">
+<!ENTITY ecSidebar.tab.active.filter.watching.key      "W">
+<!ENTITY ecSidebar.tab.active.label      "Actief">
+<!ENTITY ecSidebar.tab.ended.filter.all      "Alles">
+<!ENTITY ecSidebar.tab.ended.filter.all.key      "L">
+<!ENTITY ecSidebar.tab.ended.filter.lost      "Niet gewonnen">
+<!ENTITY ecSidebar.tab.ended.filter.lost.key      "T">
+<!ENTITY ecSidebar.tab.ended.filter.sold      "Verkocht">
+<!ENTITY ecSidebar.tab.ended.filter.sold.key      "D">
+<!ENTITY ecSidebar.tab.ended.filter.unsold      "Onverkocht">
+<!ENTITY ecSidebar.tab.ended.filter.unsold.key      "U">
+<!ENTITY ecSidebar.tab.ended.filter.watching      "Gevolgd">
+<!ENTITY ecSidebar.tab.ended.filter.watching.key      "W">
+<!ENTITY ecSidebar.tab.ended.filter.won      "Gewonnen">
+<!ENTITY ecSidebar.tab.ended.filter.won.key      "O">
+<!ENTITY ecSidebar.tab.ended.label      "Afgelopen">
+<!ENTITY ecSidebar.tab.more.label      "Meer">
+<!ENTITY ecSidebar.user.feedback.tooltip      "Feedback bekijken">
+<!ENTITY ecSidebar.user.hello      "Ingelogd als ">
+<!ENTITY ecSidebar.user.menu.sign.out      "Uitloggen">
+<!ENTITY ecSidebar.user.username.tooltip      "Mijn eBay-wereld">

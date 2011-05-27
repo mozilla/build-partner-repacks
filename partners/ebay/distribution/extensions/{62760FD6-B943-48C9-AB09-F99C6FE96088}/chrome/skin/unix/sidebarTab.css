@@ -1,0 +1,19 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+.gs-ebay-sidebar-tab-button {
+  padding: 0px 0px 0px 0px !important;
+  margin-right: 2px;
+}
+
+.gs-ebay-sidebar-tab-label {
+  margin-top: 5px !important;
+  font-size: 1em;
+}
+
+.gs-ebay-sidebar-container:not([selected="true"]) .gs-ebay-sidebar-tab-label {
+  font-size: 0.9em;
+  margin-top: 6px !important;
+  margin-bottom: 3px !important;
+}

@@ -1,0 +1,8 @@
+/* Copyright (C) 2007-2011 eBay Inc. All Rights Reserved. */const Cc=Components.classes;const Ci=Components.interfaces;const Cu=Components.utils;Cu.import("resource://gre/modules/XPCOMUtils.jsm");function EbayArgumentHandler(){}
+EbayArgumentHandler.prototype={_startedUsingShortcut:0,helpInfo:"  -ebayComp            Handle default desktop shortcut\n"+
+"  -ebayInst            Handle installer shortcut\n",classDescription:"EbayArgumentHandler",classID:Components.ID("{D51773EF-96FF-4FCB-A8A0-F0589BF8B32D}"),contractID:"@mozilla.org/commandlinehandler/general-startup;1?type=ebayarghandler",_xpcom_factory:EbayArgumentHandlerFactory,QueryInterface:XPCOMUtils.generateQI([Ci.nsICommandLineHandler,Ci.ecIEbayArgumentsHandler]),_xpcom_categories:[{category:"command-line-handler",entry:"m-ebayarghandler"}],get startedUsingShortcut(){return this._startedUsingShortcut;},handle:function clh_handle(cmdLine){let ebayCompFlagIndex=cmdLine.findFlag("ebayComp",false);let ebayInstFlagIndex=cmdLine.findFlag("ebayInst",false);if(-1!=ebayCompFlagIndex){this._startedUsingShortcut=1;}else if(-1!=ebayInstFlagIndex){this._startedUsingShortcut=2;}
+return;}};var EbayArgumentHandlerFactory={_singletonObj:null,createInstance:function(aOuter,aIID){if(aOuter!=null){throw CR.NS_ERROR_NO_AGGREGATION;}
+if(!this._singletonObj){this._singletonObj=EbayArgumentHandler;}
+return this._singletonObj.QueryInterface(aIID);}};if(XPCOMUtils.generateNSGetFactory)
+var NSGetFactory=XPCOMUtils.generateNSGetFactory([EbayArgumentHandler]);else
+var NSGetModule=XPCOMUtils.generateNSGetModule([EbayArgumentHandler]);

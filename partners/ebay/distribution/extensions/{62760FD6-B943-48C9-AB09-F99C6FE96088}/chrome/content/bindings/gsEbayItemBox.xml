@@ -1,0 +1,1038 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- ebay item box -->
+  <binding id="gs-ebay-item-box">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/itemBox.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/itemBox.css" />
+    </resources>
+
+    <content>
+      <xul:hbox anonid="gs-ebay-item-container"
+        class="gs-ebay-item-container" flex="1"
+        xbl:inherits="gsebayalert,gsebayfocused">
+        <xul:stack flex="1">
+          <xul:hbox anonid="gs-ebay-item-background"
+            class="gs-ebay-item-background" flex="1" />
+          <xul:hbox anonid="gs-ebay-item-highlighted" flex="1"
+            class="gs-ebay-item-highlighted" hidden="true" />
+          <xul:hbox flex="1">
+            <xul:vbox anonid="gs-ebay-item-state-box"
+              class="gs-ebay-item-state-box" />
+            <xul:vbox class="gs-ebay-item-content-box" flex="1">
+              <xul:hbox class="gs-ebay-item-top-box">
+                <xul:label anonid="gs-ebay-item-state-label"
+                  class="gs-ebay-item-state-label" flex="1" />
+                <xul:hbox class="gs-ebay-item-close-button-box"
+                  xbl:inherits="hidden=closebuttonhidden">
+                  <xul:toolbarbutton anonid="gs-ebay-item-close-button"
+                    class="gs-ebay-item-close-button"
+                    tooltiptext="&ecAlert.dismiss.tooltip;"
+                    command="ec-alerts-close-command" />
+                </xul:hbox>
+              </xul:hbox>
+              <xul:hbox class="gs-ebay-item-main-box">
+                <xul:vbox class="gs-ebay-item-image-container">
+                  <html:canvas anonid="gs-ebay-item-canvas"
+                    class="gs-ebay-item-image" width="58" height="58">
+                  </html:canvas>
+                  <xul:image anonid="gs-ebay-item-canvas-image" hidden="true" />
+                </xul:vbox>
+                <xul:vbox class="gs-ebay-item-content-right" flex="1">
+                  <xul:gsebaydescription anonid="gs-ebay-item-description"
+                    class="gs-ebay-item-description"
+                    descriptionclass="gs-ebay-item-description-internal" />
+                  <xul:hbox class="gs-ebay-item-price-box">
+                    <xul:label anonid="gs-ebay-item-price-label"
+                      class="gs-ebay-item-price-label" />
+                    <xul:label anonid="gs-ebay-item-bids-label" flex="1"
+                      class="gs-ebay-item-bids-label" crop="end" />
+                  </xul:hbox>
+                  <xul:hbox flex="1" align="start">
+                    <xul:hbox class="gs-ebay-item-time-box" flex="1">
+                      <xul:label anonid="gs-ebay-item-time-label" flex="1"
+                        class="gs-ebay-item-time-label" crop="end" />
+                    </xul:hbox>
+                    <xul:hbox class="gs-ebay-item-action-box">
+                      <xul:gsebaybutton anonid="gs-ebay-item-action-button"
+                        class="gs-ebay-item-action-button" gsebaysize="small"
+                        tooltiptext=""
+                        xbl:inherits="hidden=actionbuttonhidden" />
+                    </xul:hbox>
+                  </xul:hbox>
+                </xul:vbox>
+              </xul:hbox>
+            </xul:vbox>
+          </xul:hbox>
+        </xul:stack>
+        <xul:vbox anonid="gs-ebay-item-details-open" collapsed="true"
+          class="gs-ebay-item-details-open" pack="center">
+          <xul:image anonid="gs-ebay-item-details-open-image"
+            class="gs-ebay-item-details-open-image"/>
+        </xul:vbox>
+      </xul:hbox>
+    </content>
+
+    <implementation>
+      <!-- Associated item. -->
+      <field name="_item">null</field>
+      <!-- Associated previous item. -->
+      <field name="_previousItem">null</field>
+      <!-- The current item state. -->
+      <field name="_currentState">null</field>
+
+      <!-- Property to accessed the item. -->
+      <property name="item">
+        <getter>
+          return this._item;
+        </getter>
+        <setter>
+          <![CDATA[
+            this._item = val;
+            this._updateItem();
+          ]]>
+        </setter>
+      </property>
+
+      <!-- Property to accessed the previous item. -->
+      <property name="previousItem">
+        <getter>
+          return this._previousItem;
+        </getter>
+        <setter>
+          <![CDATA[
+            this._previousItem = val;
+          ]]>
+        </setter>
+      </property>
+
+      <!-- Property to accessed the current item state. -->
+      <property name="currentState">
+        <getter>
+          return this._currentState;
+        </getter>
+        <setter>
+          <![CDATA[
+            this._currentState = val;
+          ]]>
+        </setter>
+      </property>
+
+      <!--
+        - Destructor.
+        -->
+      <destructor>
+        <![CDATA[
+          this.item = null;
+          this.previousItem = null;
+          this.currentState = null;
+        ]]>
+      </destructor>
+
+      <!--
+        - Gets the element from its id.
+        - @param aId the element id.
+        - @return the element with the id.
+        -->
+      <method name="_getElement">
+        <parameter name="aId" />
+        <body>
+          <![CDATA[
+            return document.getAnonymousElementByAttribute(this, "anonid", aId);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the item state.
+        - @return the item state.
+        -->
+      <method name="getItemState">
+        <body>
+          <![CDATA[
+            // watching will be default
+            let itemState = this.item.ITEM_STATE_WATCHING;
+            let activeAccount = EbayCompanion.Datasource.activeAccount();
+            if (activeAccount) {
+              let userId = activeAccount.get("userId");
+              itemState = this.item.getCurrentState(userId);
+            }
+
+            return itemState;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the price label of the item element with currency symbol.
+        - @return the price label.
+        -->
+      <method name="_getItemPrice">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let priceLabel = "";
+            let currency = item.get("currency");
+            let price = item.get("currentPrice");
+            if (item.transaction != null) {
+              currency = item.transaction.get("transactionPriceCurrency");
+              price = item.transaction.get("transactionPrice");
+            }
+            if (currency.length > 0 && price > 0) {
+              priceLabel = EbayCompanion.Constants.formatNumber(price, 2);
+
+              priceLabel =
+                EbayCompanion.Constants.addCurrencySymbol(priceLabel, currency);
+            }
+
+            return EbayCompanion.Constants.getUTF8(priceLabel);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the number of bids label of the item.
+        - @return the bids label.
+        -->
+      <method name="_getItemBids">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let EC_LISTING_TYPE_FIXED = "FixedPriceItem";
+            let EC_LISTING_TYPE_STORE_FIXED = "StoresFixedPrice";
+            let EC_LISTING_TYPE_CLASSIFIED = "AdType";
+            let EC_LISTING_TYPE_LEAD_GENERATION = "LeadGeneration";
+            let itemHasBuyItNow = item.get("hasBuyItNow");
+            let listingFormat = item.get("listingFormat");
+            let bidsLabel;
+            // this is a BIN item
+            if ((EC_LISTING_TYPE_STORE_FIXED == listingFormat ||
+                EC_LISTING_TYPE_FIXED == listingFormat) && itemHasBuyItNow) {
+              // we don't want to display this "Buy it now" label because
+              // item button does it too!
+              //bidsLabel = stringBundle.getString("ecItem.label.bin");
+              bidsLabel = "";
+            } else if (EC_LISTING_TYPE_CLASSIFIED == listingFormat ||
+                EC_LISTING_TYPE_LEAD_GENERATION == listingFormat) {
+              // this is a classified ad, so we return an empty string
+              bidsLabel = "";
+            } else {
+              // this is a bid item
+              let bids = item.get("numBids");
+              let bidsLabelProperty =
+                (bids == 1 ? "ecItem.label.bid" : "ecItem.label.bid.plural");
+              bidsLabel = stringBundle.getString(bidsLabelProperty, [bids]);
+            }
+
+            return bidsLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the time left label of the item.
+        - @return the time left label.
+        -->
+      <method name="_getItemTime">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let timeLabel = "";
+
+            if (item.get("isEnded")) {
+              timeLabel = stringBundle.getString("ecItem.timeleft.ended");
+            } else {
+              let endTime = item.get("endTime");
+              let ebayTime = EbayCompanion.Datasource.getEbayTime().getTime();
+              let timeLeft = Math.max(0, endTime - ebayTime);
+              if (timeLeft < 1000) {
+                timeLabel = stringBundle.getString("ecItem.timeleft.ended");
+              } else {
+                timeLabel = EbayCompanion.Constants.timeLeftAsString(timeLeft);
+              }
+            }
+
+            return timeLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the value of the item ending soon.
+        - @return true if the item is ending soon, false otherwise.
+        -->
+      <method name="_getIsItemEndingSoon">
+        <body>
+          <![CDATA[
+            let item = this.item;
+            let endingSoon = false;
+
+            if (!item.get("isEnded")) {
+              let endTime = item.get("endTime");
+              let ebayTime = EbayCompanion.Datasource.getEbayTime().getTime();
+              let timeLeft = Math.max(0, endTime - ebayTime);
+              let minutesLeft = timeLeft / 1000 / 60;
+
+              if (0 < minutesLeft && minutesLeft < 60) {
+                endingSoon = true;
+              }
+            }
+
+            return endingSoon;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the item state label.
+        - @param aItemState the item state.
+        - @return the item state label.
+        -->
+      <method name="_getItemStateLabel">
+        <parameter name="aItemState" />
+        <body>
+          <![CDATA[
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let stateLabel = "";
+            let stateProperty = null;
+            let isAlert = (this.getAttribute("gsebayalert") == "true");
+
+            if (isAlert) {
+              let alertType = document.getBindingParent(this).alert.type;
+              switch (alertType) {
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_ENDING_SOON:
+                  stateProperty = "bidding.endingSoon";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_OUTBID:
+                  stateProperty = "bidding.outbid";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_HIGH_BIDDER:
+                  stateProperty = "bidding.highBidder";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_RAISED_BID:
+                  stateProperty = "bidding.raisedBid";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_ITEM_WON:
+                  stateProperty = "bidding.itemWon";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_ITEM_LOST:
+                  stateProperty = "bidding.itemLost";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_WATCHING_ENDING_SOON:
+                  stateProperty = "watching.endingSoon";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_ENDING_SOON:
+                  stateProperty = "selling.endingSoon";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_ITEM_SOLD:
+                  stateProperty = "selling.itemSold";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_ITEM_UNSOLD:
+                  stateProperty = "selling.itemUnsold";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_BID_PLACED:
+                  stateProperty = "selling.bidPlaced";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_RESERVE_MET:
+                  stateProperty = "selling.reserveMet";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_BESTOFFER_DECLINED:
+                  stateProperty = "bidding.bestOffer.declined";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_BESTOFFER_EXPIRED:
+                  stateProperty = "bidding.bestOffer.expired";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_BESTOFFER_COUNTERED:
+                  stateProperty = "bidding.bestOffer.countered";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_BESTOFFER_ITEM_WON:
+                  stateProperty = "bidding.bestOffer.itemWon";
+                break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_BESTOFFER_ITEM_SOLD:
+                  stateProperty = "selling.bestOffer.itemSold";
+                break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_BESTOFFER_NEWOFFER:
+                  stateProperty = "selling.bestOffer.newOffer";
+                break;
+              }
+              if (stateProperty) {
+                stateLabel =
+                  stringBundle.getString("ecAlert." + stateProperty + ".title");
+              }
+            } else {
+              switch (aItemState) {
+                case EbayCompanion.Item.ITEM_STATE_WATCHING:
+                  stateProperty = "buying.watching";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_WATCHING_BEST_OFFER:
+                  stateProperty = "buying.watching.bestOffer";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BUYING_ITEM_WON:
+                  stateProperty = "buying.won";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BUYING_ITEM_LOST:
+                  stateProperty = "buying.lost";
+                  break;
+                case EbayCompanion.Item.
+                  ITEM_STATE_BUYING_ITEM_LOST_RESERVE_NOT_MET:
+                  stateProperty = "buying.lost.reserve";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BUYING_SUCCESS:
+                  stateProperty = "buying.success";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BUYING_OUTBID:
+                  stateProperty = "buying.outbid";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BUYING_RESERVE_NOT_MET:
+                  stateProperty = "buying.noReserve";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_SELLING:
+                  stateProperty = "selling";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_SELLING_BEST_OFFER:
+                  stateProperty = "selling.bestOffer";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_SELLING_SUCCESS:
+                  stateProperty = "selling.success";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_SELLING_ITEM_SOLD:
+                  stateProperty = "selling.sold";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_SELLING_ITEM_UNSOLD:
+                  stateProperty = "selling.unsold";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_SELLING_WITH_OFFERS:
+                  stateProperty = "selling.with.offers";
+                  break;
+                case EbayCompanion.Item.
+                  ITEM_STATE_SELLING_ITEM_UNSOLD_RESERVE_NOT_MET:
+                  stateProperty = "selling.unsold.reserve";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_SELLING_RESERVE_NOT_MET:
+                  stateProperty = "selling.noReserve";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_WATCHING_CLASSIFIED_AD:
+                  stateProperty = "buying.watching.classified";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_SELLING_CLASSIFIED_AD:
+                  stateProperty = "selling.classified";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_PENDING:
+                  stateProperty = "buying.bestOffer.pending";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_DECLINED:
+                  stateProperty = "buying.bestOffer.declined";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_EXPIRED:
+                  stateProperty = "buying.bestOffer.expired";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_COUNTERED:
+                  stateProperty = "buying.bestOffer.countered";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_ITEM_WON:
+                  stateProperty = "buying.bestOffer.itemWon";
+                break;
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_ITEM_SOLD:
+                  stateProperty = "selling.bestOffer.itemSold";
+                break;
+                case EbayCompanion.Item.ITEM_STATE_DAILY_DEAL:
+                  stateProperty = "daily.deal";
+                break;
+              }
+
+              if (stateProperty) {
+                stateLabel =
+                  stringBundle.getString("ecItem.title." + stateProperty);
+              }
+            }
+            return stateLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the action button label.
+        - @param aItemState the item state.
+        - @return the button label.
+        -->
+      <method name="_getActionButtonLabel">
+        <parameter name="aItemState" />
+        <body>
+          <![CDATA[
+            let stringBundle = EbayCompanion.Constants.stringBundle;
+            let buttonCommand =
+              this.getActionButtonCommand(aItemState, false);
+            let buttonLabel = "";
+
+            if (buttonCommand) {
+              buttonLabel =
+                stringBundle.getString("ecItem.button." + buttonCommand);
+              this.parentNode.buttonAction = buttonCommand;
+            }
+
+             return buttonLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Gets the action button command.
+        - @param aState the item state, or the alert type if aAlert is true
+        - @param aAlert true if we want to get the command for an item alert
+        - or false for a sidebar item
+        - @return the button command.
+        -->
+      <method name="getActionButtonCommand">
+        <parameter name="aState" />
+        <parameter name="aAlert" />
+        <body>
+          <![CDATA[
+            // types of listing.
+            let EC_LISTING_TYPE_CHINESE = "Chinese";
+            let EC_LISTING_TYPE_DUTCH = "Dutch";
+            let EC_LISTING_TYPE_LIVE = "Live";
+            let EC_LISTING_TYPE_FIXED = "FixedPriceItem";
+            let EC_LISTING_TYPE_STORE_FIXED = "StoresFixedPrice";
+            let EC_LISTING_TYPE_CLASSIFIED = "AdType";
+            let EC_LISTING_TYPE_LEAD_GENERATION = "LeadGeneration";
+
+            let item = this.item;
+
+            let buttonProperty = null;
+            let endTime = item.get("endTime");
+            let ebayTime =
+              EbayCompanion.Datasource.getEbayTime().getTime();
+            let timeLeft = Math.max(0, endTime - ebayTime);
+            let itemEnded = (item.get("isEnded") || timeLeft == 0);
+            let itemHasBuyItNow = item.get("hasBuyItNow");
+            let listingFormat = item.get("listingFormat");
+            let itemTransaction = item.transaction;
+            let hasToPay = true;
+            let hasLeftFeedback = false;
+            let hasShipped = false;
+
+            if (itemTransaction) {
+              if (itemTransaction.get("isPaidFor")) {
+                hasToPay = false;
+              }
+              if (itemTransaction.get("userHasSentFeedback")) {
+                hasLeftFeedback = true;
+              }
+              if (itemTransaction.get("isShipped")) {
+                hasShipped = true;
+              }
+            }
+
+            if (aAlert) {
+              // import the module only when we actually need it
+              if (typeof(EbayCompanion.Alert) == "undefined") {
+                EbayCompanion._importModule("objects/alert.js");
+              }
+              switch (aState) {
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_ENDING_SOON:
+                  buttonProperty = "view";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_OUTBID:
+                  buttonProperty = "raise";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_HIGH_BIDDER:
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_RAISED_BID:
+                  buttonProperty = "view";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_ITEM_WON:
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_BESTOFFER_ITEM_WON:
+                  // the user is the buyer (the user won the item).
+                  if (hasToPay) {
+                    // the user has won the item, but haven't paid for it yet.
+                    buttonProperty = "pay";
+                  } else if (!hasLeftFeedback) {
+                    // the use hasn't left feedback yet
+                    buttonProperty = "feedback";
+                  } else {
+                    // let the user find similar items (the user lost or he
+                    // already sent feedback).
+                    buttonProperty = "find";
+                  }
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_ITEM_LOST:
+                  buttonProperty = "find";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_WATCHING_ENDING_SOON:
+                  if (EC_LISTING_TYPE_CHINESE == listingFormat ||
+                      EC_LISTING_TYPE_DUTCH == listingFormat ||
+                      EC_LISTING_TYPE_LIVE == listingFormat) {
+                    // the user can bid.
+                    buttonProperty = "bid";
+                  } else if (EC_LISTING_TYPE_CLASSIFIED == listingFormat ||
+                             EC_LISTING_TYPE_LEAD_GENERATION ==
+                               listingFormat) {
+                    // the item is a classified ad.
+                    buttonProperty = "view";
+                  } else if (itemHasBuyItNow) {
+                    // the user can buy it now.
+                    buttonProperty = "bin";
+                  }
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_ENDING_SOON:
+                  buttonProperty = "view";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_ITEM_SOLD:
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_BESTOFFER_ITEM_SOLD:
+                  if (hasToPay) {
+                    // the user can mark the item as paid.
+                    buttonProperty = "paid";
+                  } else if (!hasShipped) {
+                    // the user can mark the item as shipped.
+                    buttonProperty = "sent";
+                  } else if (!hasLeftFeedback) {
+                    // the user can mark the item as shipped.
+                    buttonProperty = "feedback";
+                  } else {
+                    // let the user sell similar items.
+                    buttonProperty = "similar";
+                  }
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_ITEM_UNSOLD:
+                  buttonProperty = "relist";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_BID_PLACED:
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_RESERVE_MET:
+                  buttonProperty = "view";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_BESTOFFER_DECLINED:
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_BESTOFFER_EXPIRED:
+                  buttonProperty = "bin";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_BIDDING_BESTOFFER_COUNTERED:
+                  buttonProperty = "reviewOffer";
+                  break;
+                case EbayCompanion.Alert.ALERT_TYPE_SELLING_BESTOFFER_NEWOFFER:
+                  buttonProperty = "reviewOffers";
+                  break;
+              }
+            } else {
+              // import the module only when we actually need it
+              if (typeof(EbayCompanion.Item) == "undefined") {
+                EbayCompanion._importModule("objects/item.js");
+              }
+              switch (aState) {
+                case EbayCompanion.Item.ITEM_STATE_WATCHING:
+                case EbayCompanion.Item.ITEM_STATE_WATCHING_BEST_OFFER:
+                  if (itemEnded) {
+                    buttonProperty = "find";
+                  } else {
+                    if (EC_LISTING_TYPE_CHINESE == listingFormat ||
+                        EC_LISTING_TYPE_DUTCH == listingFormat ||
+                        EC_LISTING_TYPE_LIVE == listingFormat) {
+                      // the user can bid.
+                      buttonProperty = "bid";
+                    } else if (itemHasBuyItNow) {
+                      // the user can buy it now.
+                      buttonProperty = "bin";
+                    }
+                  }
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_SELLING_WITH_OFFERS:
+                  buttonProperty = "reviewOffers";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_WATCHING_CLASSIFIED_AD:
+                case EbayCompanion.Item.ITEM_STATE_SELLING_CLASSIFIED_AD:
+                case EbayCompanion.Item.ITEM_STATE_SELLING:
+                case EbayCompanion.Item.ITEM_STATE_SELLING_BEST_OFFER:
+                case EbayCompanion.Item.ITEM_STATE_SELLING_SUCCESS:
+                case EbayCompanion.Item.ITEM_STATE_SELLING_RESERVE_NOT_MET:
+                  buttonProperty = "view";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_SELLING_ITEM_SOLD:
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_ITEM_SOLD:
+                  if (hasToPay) {
+                    // the user can mark the item as paid.
+                    buttonProperty = "paid";
+                  } else if (!hasShipped) {
+                    // the user can mark the item as shipped.
+                    buttonProperty = "sent";
+                  } else if (!hasLeftFeedback) {
+                    // the user can mark the item as shipped.
+                    buttonProperty = "feedback";
+                  } else {
+                    // let the user sell similar items.
+                    buttonProperty = "similar";
+                  }
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_SELLING_ITEM_UNSOLD:
+                case EbayCompanion.Item.
+                  ITEM_STATE_SELLING_ITEM_UNSOLD_RESERVE_NOT_MET:
+                  buttonProperty = "relist";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BUYING_RESERVE_NOT_MET:
+                case EbayCompanion.Item.ITEM_STATE_BUYING_OUTBID:
+                  buttonProperty = "raise";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BUYING_SUCCESS:
+                  buttonProperty = "view";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BUYING_ITEM_WON:
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_ITEM_WON:
+                  // the user is the buyer (the user won the item).
+                  if (hasToPay) {
+                    // the user has won the item, but haven't paid for it yet.
+                    buttonProperty = "pay";
+                  } else if (!hasLeftFeedback) {
+                    // the use hasn't left feedback yet
+                    buttonProperty = "feedback";
+                  } else {
+                    // let the user find similar items (the user lost or he
+                    // already sent feedback).
+                    buttonProperty = "find";
+                  }
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BUYING_ITEM_LOST:
+                case EbayCompanion.Item.
+                  ITEM_STATE_BUYING_ITEM_LOST_RESERVE_NOT_MET:
+                  buttonProperty = "find";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_PENDING:
+                  buttonProperty = "view";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_DECLINED:
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_EXPIRED:
+                  buttonProperty = "bin";
+                  break;
+                case EbayCompanion.Item.ITEM_STATE_BEST_OFFER_COUNTERED:
+                  buttonProperty = "reviewOffer";
+                  break;
+              }
+            }
+
+            return buttonProperty;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the item info in the binding.
+        -->
+      <method name="_updateItem">
+        <body>
+          <![CDATA[
+            const IMAGE_SIZE = 58;
+            let itemCanvas = this._getElement("gs-ebay-item-canvas");
+            let itemCanvasCtx = itemCanvas.getContext('2d');
+            let itemCanvasImage = this._getElement("gs-ebay-item-canvas-image");
+            let itemCanvasFile = null;
+            let itemDescription = this._getElement("gs-ebay-item-description");
+            let itemPrice = this._getElement("gs-ebay-item-price-label");
+            let itemBids = this._getElement("gs-ebay-item-bids-label");
+            let item = this.item;
+
+            // because the sidebar item image is max 58X58, then we have to
+            // process the image, no matter if it is the thumbnail or not
+            // note that the thumbnail might be less than 58px in one of its
+            // dimensions, and this will cause image "crispness" because it has
+            // to be scaled up.
+            if (item) {
+              let processImage = true;
+              let imageSrc = item.get("thumbnailUrl");
+              if (imageSrc == null || imageSrc.length == 0) {
+                imageSrc = item.get("imageUrl");
+                if (imageSrc == null || imageSrc.length == 0) {
+                  processImage = false;
+                }
+              }
+
+              // here we scale and crop the image to make it fit the 58X58 box
+              let img = new Image();
+              let height, width;
+              img.onload = function() {
+                if (processImage && img) {
+                  height = img.height;
+                  width = img.width;
+                  let ratio = height / width;
+                  let sX, sY, sHeight, sWidth;
+                  let diffH = 0, diffW = 0;
+
+                  // image is bigger or smaller than 58px in its smallest
+                  // dimension, so we have to scale the image so its smallest
+                  // size is 58px, and then crop a 58X58 section from it
+                  if (ratio > 1) { // height > width
+                    // image is bigger/smaller than 58px in its smallest dimension
+                    // (width) so we have to crop a square the size of that
+                    // dimension and scale it down/up to 58X58
+                    diffH = height - width;
+                    sX = 0;
+                    sY = Math.floor(diffH / 2);
+                    sHeight = width;
+                    sWidth = width;
+                  } else {
+                    // image is bigger/smaller than 58px in its smallest dimension
+                    // (height) so we have to crop a square the size of that
+                    // dimension and scale it down/up to 58X58
+                    diffW = width - height;
+                    sX = Math.floor(diffW / 2);
+                    sY = 0;
+                    sHeight = height;
+                    sWidth = height;
+                  }
+
+                  //dump("height: " + height + "/width: " + width +
+                  // "/sX: " + sX + "/sY: " + sY +
+                  // "/sHeight: " + sHeight + "/sWidth: " + sWidth + "\n");
+                  try {
+                    itemCanvasCtx.drawImage(
+                      img, sX, sY, sWidth, sHeight, 0, 0,
+                      IMAGE_SIZE, IMAGE_SIZE);
+                  } catch (e) {
+                    // for some reason this method throws an exception on
+                    // Firefox 3.6, but still works, so we just prevent it from
+                    // generating the error console entry
+                  }
+                }
+
+                if (itemCanvas.mozGetAsFile) {
+                  itemCanvas.hidden = true;
+                  itemCanvasImage.hidden = false;
+                  itemCanvasFile =
+                    itemCanvas.mozGetAsFile(item.get("itemId") + ".png");
+                  itemCanvasImage.src = itemCanvasFile.getAsDataURL();
+                }
+
+                img = null;
+              }
+
+              // if the item has no image, we have to clear the canvas so the
+              // default background is shown correctly and not the image of
+              // another item (specially for desktop alerts)
+              if (!imageSrc || imageSrc.length == 0) {
+                itemCanvasCtx.clearRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+              }
+              img.src = imageSrc;
+
+              itemDescription.textContent =
+                EbayCompanion.Constants.getUTF8(item.get("title"));
+              itemPrice.value = this._getItemPrice();
+              itemBids.value = this._getItemBids();
+              this.updateItemState();
+            } else {
+              itemCanvasCtx.clearRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the item time info in the binding.
+        - @return the time label.
+        -->
+      <method name="updateItemTime">
+        <body>
+          <![CDATA[
+            let itemTime = this._getElement("gs-ebay-item-time-label");
+            let timeLabel = this._getItemTime();
+
+            itemTime.value = timeLabel;
+            if (this._getIsItemEndingSoon()) {
+              itemTime.setAttribute("gsebayendingsoon", true);
+              this.updateItemState();
+            } else {
+              itemTime.removeAttribute("gsebayendingsoon");
+            }
+
+            return timeLabel;
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Updates the item state info in the binding.
+        -->
+      <method name="updateItemState">
+        <body>
+          <![CDATA[
+            let background = this._getElement("gs-ebay-item-background");
+            let stateBox = this._getElement("gs-ebay-item-state-box");
+            let stateLabel = this._getElement("gs-ebay-item-state-label");
+            let actionButton = this._getElement("gs-ebay-item-action-button");
+            let itemState = this.getItemState();
+
+            this.currentState = itemState;
+
+            actionButton.setAttribute(
+              "label", this._getActionButtonLabel(itemState));
+            stateLabel.value = this._getItemStateLabel(itemState);
+            stateLabel.setAttribute("gsebaystate", itemState);
+            stateBox.setAttribute("gsebaystate", itemState);
+            background.setAttribute("gsebaystate", itemState);
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Highlights the item box.
+        - @param aItem the item to be highlighted.
+        -->
+      <method name="highlightItem">
+        <parameter name="aItem" />
+        <body>
+          <![CDATA[
+            if (aItem.get("itemId") == this.item.get("itemId")) {
+              let that = this;
+
+              window.setTimeout(function() {
+                that._fadeHighlighting(false);
+              }, 5000);
+
+              this._fadeHighlighting(true);
+              // dismiss the alert for this item so it doesn't glow again
+              // when the sidebar is closed and opened again
+              let info = {};
+              info.object = aItem;
+              EbayCompanion.Observers.notify(
+                info, "ebay-secondary-alert-dismissed", null);
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Fades the highlighting in or out.
+        - @param aFadeIn true if is in, false if is out.
+        -->
+      <method name="_fadeHighlighting">
+      <parameter name="aFadeIn" />
+        <body>
+          <![CDATA[
+            let ANIMATION_TIME = 1000;
+            let ANIMATION_STEPS = 20;
+            let highlightElement = this._getElement("gs-ebay-item-highlighted");
+            let startOpacity = null;
+            let opacityStep = null;
+            let frameNumber = 0;
+            let iteration = null;
+
+            if (aFadeIn) {
+              highlightElement.hidden = false;
+              startOpacity = 0;
+              opacityStep = 1 / ANIMATION_STEPS;
+            } else {
+              startOpacity = 1;
+              opacityStep = -1 / ANIMATION_STEPS;
+            }
+
+            let doAnimationFrame = function() {
+              highlightElement.style.opacity =
+                startOpacity + frameNumber * opacityStep;
+              if (frameNumber++ == ANIMATION_STEPS) {
+                if (!aFadeIn) {
+                  highlightElement.hidden = true;
+                }
+              }
+            }
+
+            for (let i = 0; i <= ANIMATION_STEPS; i++) {
+              iteration = i / ANIMATION_STEPS;
+              iteration = iteration * 2 - 1;
+              iteration = Math.asin(iteration) / Math.PI + 0.5;
+              iteration = Math.round(iteration * ANIMATION_TIME);
+              window.setTimeout(doAnimationFrame, iteration);
+            }
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Displays the item details button
+        -->
+      <method name="onMouseOver">
+        <body>
+          <![CDATA[
+            let openBox = this._getElement("gs-ebay-item-details-open");
+
+            if (!openBox.hasAttribute("animated")) {
+              width = 0;
+              INCREMENT = 1;
+              LIMIT = 19;
+              openBox.removeAttribute("collapsed");
+
+              let animationBox = function() {
+                width += INCREMENT;
+                openBox.style.width = width + "px";
+
+                if (width < LIMIT) {
+                  window.setTimeout(animationBox, 0);
+                } else {
+                  openBox.setAttribute("animated", true);
+                }
+              };
+
+              animationBox();
+            }
+         ]]>
+        </body>
+      </method>
+
+      <!--
+        - Hides the item details button
+        -->
+      <method name="onMouseOut">
+        <body>
+          <![CDATA[
+            let openBox = this._getElement("gs-ebay-item-details-open");
+            let that = this;
+
+            openBox.removeAttribute("animated", true);
+            width = 19;
+            INCREMENT = -1;
+            LIMIT = 0;
+
+            let animationBox = function() {
+              width += INCREMENT;
+              openBox.style.width = width + "px";
+
+              if (width > LIMIT) {
+                window.setTimeout(animationBox, 0);
+              } else {
+                that.setContainerHover(false);
+                openBox.setAttribute("collapsed", true);
+              }
+            };
+
+            animationBox();
+          ]]>
+        </body>
+      </method>
+
+      <!--
+        - Set item container hover
+        - @param aValue true or false
+        -->
+      <method name="setContainerHover">
+        <parameter name="aValue" />
+        <body>
+          <![CDATA[
+            let itemContainer = this._getElement("gs-ebay-item-container");
+
+            if (aValue) {
+              itemContainer.setAttribute("ebayhover", true);
+            } else {
+              itemContainer.removeAttribute("ebayhover");
+            }
+          ]]>
+        </body>
+      </method>
+    </implementation>
+
+  </binding>
+</bindings>

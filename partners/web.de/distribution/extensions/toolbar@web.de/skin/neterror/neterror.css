@@ -1,0 +1,57 @@
+html {
+background:#e6e6e6;
+font: 0.75em/1.5 arial, sans-serif;
+}
+
+#page {
+width:98%;
+max-width:900px;
+margin:0 auto;
+}
+
+#content {
+background:#fff;
+border:2px solid #ccc;
+width:auto;
+margin-top:4.332em;
+padding:1.083em 2em 3em;
+}
+
+#logo img {
+float:right;
+border:0;
+}
+
+.snippet {
+color:#77C;
+}
+
+form {
+text-align:center;
+}
+
+input {
+font-family:arial, sans-serif;
+font-size:1em;
+}
+
+label {
+display:block;
+text-align:left;
+padding:0 0 .8em;
+}
+
+#searchterm {
+width:250px;
+}
+
+#searchform .button {
+  border-style: solid; border-color: #47839B #8DA8B3 #8DA8B3 #47839B; border-width: 1px;
+  margin-left: 10px;
+  font-family: Arial, sans-serif; font-size: 14px; font-weight: 700;
+  padding: 1px 2px;
+  width: 82px;
+  color: white;
+  /* <https://developer.mozilla.org/en/CSS/-moz-linear-gradient> */
+  background: -moz-linear-gradient(rgb(110,160,185) 40%, rgb(27,112,153) 60%);
+}

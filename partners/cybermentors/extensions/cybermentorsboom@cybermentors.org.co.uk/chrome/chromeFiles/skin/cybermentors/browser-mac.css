@@ -1,6 +1,0 @@
-#bt-cybermentors-toolbar bttoolbarbutton:not([type="menu"]) button hbox {
-  padding-bottom: 2px !important;
-}
-#bt-cybermentors-toolbar bttoolbarbutton[type="menu"] button hbox {
-  padding-bottom: 1px !important;
-}

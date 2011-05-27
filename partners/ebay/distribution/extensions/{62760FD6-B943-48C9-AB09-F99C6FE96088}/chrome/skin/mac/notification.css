@@ -1,0 +1,24 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+/* sidebar notifications */
+#gs-ebay-information-notificationbox .closeButtonContainer,
+#gs-ebay-warning-notificationbox .closeButtonContainer,
+#gs-ebay-signed-out-information-notificationbox .closeButtonContainer,
+#gs-ebay-signed-out-warning-notificationbox .closeButtonContainer {
+  -moz-box-pack: start !important;
+  padding-top: 3px;
+}
+
+notification {
+  padding-top: 0px !important;
+  padding-bottom: 1px !important;
+}
+
+#gs-ebay-warning-notificationbox[FF4=true] notification .messageCloseButton,
+#gs-ebay-signed-out-warning-notificationbox[FF4=true] notification .messageCloseButton,
+#gs-ebay-information-notificationbox[FF4=true] notification .messageCloseButton,
+#gs-ebay-signed-out-information-notificationbox[FF4=true] notification .messageCloseButton {
+  list-style-image: url("chrome://global/skin/icons/close.png");
+}

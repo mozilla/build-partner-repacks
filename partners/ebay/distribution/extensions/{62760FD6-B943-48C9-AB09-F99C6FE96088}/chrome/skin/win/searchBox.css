@@ -1,0 +1,22 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+/* Search panel */
+#gs-ebay-search-panel {
+  border: none !important;
+  margin-top: -4px;
+}
+
+/* Search textbox */
+#gs-ebay-search-container,
+#gs-ebay-search-textbox {
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+
+
+#gs-ebay-search-textbox .textbox-input {
+  font-style: normal !important;
+  font-size: 1.2em !important;
+}

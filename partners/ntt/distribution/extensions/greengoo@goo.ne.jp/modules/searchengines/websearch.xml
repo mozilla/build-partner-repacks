@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+    <ShortName>検索でエコ</ShortName> 
+    <Description>緑のgoo ウェブ検索</Description>
+    <Url type="text/html" template="http://green.search.goo.ne.jp/search?MT={searchTerms}&amp;IE=UTF-8&amp;OE=EUC-JP&amp;from=eco_pluginc&amp;PT=eco_pluginc"/>
+    <Url type="application/x-suggestions+json" method="GET" template="http://search.goo.ne.jp/sgt.jsp?MT={searchTerms}&amp;CL=green_plugin&amp;FM=json&amp;IE=UTF-8"/>
+    <Image width="16" height="16">http://green.goo.ne.jp/favicon.ico</Image>
+</OpenSearchDescription>

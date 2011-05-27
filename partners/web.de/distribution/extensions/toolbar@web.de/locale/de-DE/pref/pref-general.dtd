@@ -1,0 +1,8 @@
+<!ENTITY pane.title "Allgemein">
+<!ENTITY toolbarmode.label "Toolbar-Anzeige">
+<!ENTITY all.full.label "Text &amp; Icons">
+<!ENTITY all.icons.label "Nur Icons">
+<!ENTITY all.text-only.label "Nur Text">
+<!ENTITY locale.general.label "Region">
+<!ENTITY search.checkbox.label "&brand.name; als Suchmaschine verwenden">
+<!ENTITY homepage.checkbox.label "&brand.name; als Startseite verwenden">

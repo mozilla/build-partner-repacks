@@ -1,0 +1,22 @@
+<!ENTITY pane.title "Horoscope">
+<!ENTITY sign.label "Your sign:">
+<!ENTITY sign.partner.label "Your partner's sign:">
+<!ENTITY none.label "None">
+<!ENTITY widder.label "Aries">
+<!ENTITY stier.label "Taurus">
+<!ENTITY zwillinge.label "Gemini">
+<!ENTITY krebs.label "Cancer">
+<!ENTITY loewe.label "Leo">
+<!ENTITY jungfrau.label "Virgo">
+<!ENTITY waage.label "Libra">
+<!ENTITY scorpion.label "Scorpio">
+<!ENTITY schuetze.label "Sagittarius">
+<!ENTITY steinbock.label "Capricorn">
+<!ENTITY wassermann.label "Aquarius">
+<!ENTITY fische.label "Pisces">
+
+<!ENTITY type.label "Type of horoscope:">
+
+<!ENTITY gender.label "Gender:">
+<!ENTITY male.label "Male">
+<!ENTITY female.label "Female">

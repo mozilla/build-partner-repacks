@@ -1,0 +1,22 @@
+<!ENTITY pane.title "Horoskop">
+<!ENTITY sign.label "Ihr Sternzeichen">
+<!ENTITY sign.partner.label "Partner:">
+<!ENTITY none.label "Keines">
+<!ENTITY widder.label "Widder 21.03. - 20.04">
+<!ENTITY stier.label "Stier 21.04. - 20.05">
+<!ENTITY zwillinge.label "Zwillinge 21.05. - 21.06">
+<!ENTITY krebs.label "Krebs 22.06. - 22.07">
+<!ENTITY loewe.label "Loewe 23.07. 23.08">
+<!ENTITY jungfrau.label "Jungfrau 24.08. 23.09">
+<!ENTITY waage.label "Waage 24.09. - 23.10">
+<!ENTITY scorpion.label "Skorpion 24.10. - 22.11">
+<!ENTITY schuetze.label "Schuetze 23.11. - 21.12">
+<!ENTITY steinbock.label "Steinbock 22.12. - 20.01">
+<!ENTITY wassermann.label "Wassermann 21.01. - 19.02">
+<!ENTITY fische.label "Fische 20.02. - 20.03">
+
+<!ENTITY type.label "Horoskop:">
+
+<!ENTITY gender.label "Geschlecht:">
+<!ENTITY male.label "Mann">
+<!ENTITY female.label "Frau">

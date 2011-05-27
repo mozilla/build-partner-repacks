@@ -1,0 +1,63 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+#ebay-about-dialog {
+  width: 28em;
+  padding: 0px 0px 10px 0px;
+  color: #767676;
+}
+
+#about-separator {
+  border-top: 1px solid #ECECEC;
+  height: 0px;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+#content-box {
+  background-color: #FFFFFF;
+}
+
+#logo-box {
+  margin: 10px 0px 6px 11px;
+}
+
+#logo {
+  list-style-image: url("chrome://ebaycompanion/skin/licenceDialog/top-logo.png");
+}
+
+#middle-box {
+  margin: 0px 15px 8px 15px;
+  padding: 0;
+}
+
+#about {
+  color: #333333;
+  font-weight: bold;
+}
+
+#useragent {
+  margin: 0.5em 0em 0em 0em;
+}
+
+#bottom-box {
+  margin: 3px;
+  padding: 11px;
+  background-color: #F5F5F7;
+}
+
+#buttons-box {
+  margin-top: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+label {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+#groove {
+  margin-top: 0px;
+}

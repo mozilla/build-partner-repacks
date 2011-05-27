@@ -1,0 +1,8 @@
+#united-homebutton-button
+{
+  list-style-image: url("chrome://unitedtb/skin/brand/icon-button-small.png");
+}
+toolbar[mode="full"] #united-homebutton-button label.toolbarbutton-text
+{
+  display: none;
+}

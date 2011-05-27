@@ -1,0 +1,21 @@
+/**
+ *  Copyright (C) 2007-2011 eBay Inc. All Rights Reserved.
+ */
+
+label {
+  font-size: 0.8em;
+}
+
+description {
+  font-size: 0.8em;
+}
+
+.gs-ebay-item-popup-current-bid,
+.gs-ebay-item-popup-max-bid,
+.gs-ebay-item-popup-best-offer {
+  font-size: 0.9em;
+}
+
+p {
+  font-size: 0.8em;
+}

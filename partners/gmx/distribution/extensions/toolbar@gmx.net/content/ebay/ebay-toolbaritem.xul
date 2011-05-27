@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://unitedtb/skin/ebay/ebay.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/ebay/ebay.dtd">
+
+<overlay id="united-ebay-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
+  <script type="application/x-javascript">
+    united.ebay = {};
+    united.loadJS("chrome://unitedtb/content/ebay/ebay.js", united.ebay);
+  </script>
+
+  <!-- Overlay for Firefox browser/content/browser.xul -->
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarbutton id="united-ebay-button"
+        label="&united.ebay.button.label;"
+        tooltiptext="&united.ebay.button.tooltip;"
+        oncommand="united.ebay.onButton(event);"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        />
+  </toolbarpalette>
+</overlay>

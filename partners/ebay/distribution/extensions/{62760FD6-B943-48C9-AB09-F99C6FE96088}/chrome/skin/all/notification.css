@@ -1,0 +1,164 @@
+/**
+ *  Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+ */
+
+/* sidebar notifications */
+#gs-ebay-warning-notificationbox,
+#gs-ebay-signed-out-warning-notificationbox {
+  background-color: white;
+  overflow-y: visible !important;
+}
+
+#gs-ebay-signed-out-warning-notificationbox notification .notification-inner {
+  height: 29px !important;
+}
+
+#gs-ebay-warning-notificationbox notification,
+#gs-ebay-signed-out-warning-notificationbox notification {
+  border: none;
+  background-image: none;
+  background-color: #fffbd7;
+  color: black;
+}
+
+#gs-ebay-warning-notificationbox notification .messageCloseButton,
+#gs-ebay-signed-out-warning-notificationbox notification .messageCloseButton {
+  margin: 1px;
+}
+
+#gs-ebay-warning-notificationbox .messageImageContainer,
+#gs-ebay-signed-out-warning-notificationbox .messageImageContainer {
+  -moz-box-pack: center !important;
+  margin-top: 1px;
+}
+
+#gs-ebay-warning-notificationbox .messageImage,
+#gs-ebay-signed-out-warning-notificationbox .messageImage {
+  width: 16px;
+  height: 14px;
+}
+
+#gs-ebay-warning-notificationbox notification[notificationType="16"],
+#gs-ebay-warning-notificationbox notification[notificationType="17"],
+#gs-ebay-warning-notificationbox notification[notificationType="18"],
+#gs-ebay-warning-notificationbox notification[notificationType="19"],
+#gs-ebay-warning-notificationbox notification[notificationType="20"],
+#gs-ebay-warning-notificationbox notification[notificationType="21"],
+#gs-ebay-warning-notificationbox notification[notificationType="22"],
+#gs-ebay-warning-notificationbox notification[notificationType="23"],
+#gs-ebay-warning-notificationbox notification[notificationType="24"] {
+  border: none;
+  background-image: -moz-linear-gradient(#FEFEFE 20%, #FCFCFE 27%, #FBFBFB 40%, #F7F7FA 60%, #F2F3F8 80%, #F0F0F5 92%, #E5E7Ef);
+  background-color: transparent;
+  color: black;
+}
+
+#gs-ebay-warning-notificationbox notification[notificationType="16"] .messageImageContainer,
+#gs-ebay-warning-notificationbox notification[notificationType="17"] .messageImageContainer,
+#gs-ebay-warning-notificationbox notification[notificationType="18"] .messageImageContainer,
+#gs-ebay-warning-notificationbox notification[notificationType="19"] .messageImageContainer,
+#gs-ebay-warning-notificationbox notification[notificationType="20"] .messageImageContainer,
+#gs-ebay-warning-notificationbox notification[notificationType="21"] .messageImageContainer,
+#gs-ebay-warning-notificationbox notification[notificationType="22"] .messageImageContainer,
+#gs-ebay-warning-notificationbox notification[notificationType="23"] .messageImageContainer,
+#gs-ebay-warning-notificationbox notification[notificationType="24"] .messageImageContainer {
+  margin-left: 0.5em;
+}
+
+#gs-ebay-warning-notificationbox notification[notificationType="16"] .messageImage,
+#gs-ebay-warning-notificationbox notification[notificationType="17"] .messageImage,
+#gs-ebay-warning-notificationbox notification[notificationType="18"] .messageImage,
+#gs-ebay-warning-notificationbox notification[notificationType="19"] .messageImage,
+#gs-ebay-warning-notificationbox notification[notificationType="20"] .messageImage,
+#gs-ebay-warning-notificationbox notification[notificationType="21"] .messageImage,
+#gs-ebay-warning-notificationbox notification[notificationType="22"] .messageImage,
+#gs-ebay-warning-notificationbox notification[notificationType="23"] .messageImage,
+#gs-ebay-warning-notificationbox notification[notificationType="24"] .messageImage {
+  visibility: collapse;
+}
+
+#gs-ebay-warning-notificationbox notification[notificationType="16"] .messageCloseButton,
+#gs-ebay-warning-notificationbox notification[notificationType="17"] .messageCloseButton,
+#gs-ebay-warning-notificationbox notification[notificationType="18"] .messageCloseButton,
+#gs-ebay-warning-notificationbox notification[notificationType="19"] .messageCloseButton,
+#gs-ebay-warning-notificationbox notification[notificationType="20"] .messageCloseButton,
+#gs-ebay-warning-notificationbox notification[notificationType="21"] .messageCloseButton,
+#gs-ebay-warning-notificationbox notification[notificationType="22"] .messageCloseButton,
+#gs-ebay-warning-notificationbox notification[notificationType="23"] .messageCloseButton,
+#gs-ebay-warning-notificationbox notification[notificationType="24"] .messageCloseButton {
+  margin: 1px;
+}
+
+#gs-ebay-information-notificationbox .closeButtonContainer,
+#gs-ebay-warning-notificationbox .closeButtonContainer,
+#gs-ebay-signed-out-warning-notificationbox .closeButtonContainer {
+  -moz-box-pack: start !important;
+}
+
+#gs-ebay-information-notificationbox notification,
+#gs-ebay-signed-out-information-notificationbox notification {
+  border: none;
+  background-image: none;
+  background-color: #e1ecff;
+  color: #01317D;
+}
+
+#gs-ebay-information-notificationbox notification .messageCloseButton,
+#gs-ebay-signed-out-information-notificationbox notification .messageCloseButton {
+  margin: 1px;
+}
+
+#gs-ebay-information-notificationbox .messageImageContainer,
+#gs-ebay-signed-out-information-notificationbox .messageImageContainer {
+  -moz-box-pack: center !important;
+  margin-top: 3px;
+}
+
+#gs-ebay-information-notificationbox .messageImage,
+#gs-ebay-signed-out-information-notificationbox .messageImage {
+  width: auto;
+  height: auto;
+}
+
+#gs-ebay-information-notificationbox,
+#gs-ebay-signed-out-information-notificationbox {
+  overflow-y: visible !important;
+}
+
+notification .toolbarbutton-text {
+  display: none;
+}
+
+notification .toolbarbutton-icon {
+  -moz-margin-end: 0px !important;
+}
+
+notification > hbox {
+  padding-top: 0.3em !important;
+  padding-bottom: 0.3em !important;
+  border: none !important;
+}
+
+notification .messageImage {
+  margin-right: 1em;
+  margin-left: 0.5em;
+}
+
+notification description {
+  margin: 0em;
+}
+
+.notificationLinkText {
+  color: -moz-visitedhyperlinktext;
+  cursor: pointer;
+}
+
+.notificationLinkText:hover {
+  text-decoration: underline;
+}
+
+notification p {
+  color: black;
+  margin: 6px 0px 4px 0px !important;
+  cursor: default;
+}

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://unitedtb/skin/email/email.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/email/email.dtd">
+
+<overlay id="united-email-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
+  <script type="application/x-javascript">
+    united.email = {};
+    //Components.utils.import("resource://unitedtb/email/email-logic.js", united.email);
+    united.loadJS("chrome://unitedtb/content/email/email.js", united.email);
+    united.login = {};
+    //Components.utils.import("resource://unitedtb/email/login-logic.js", united.login);
+    united.loadJS("chrome://unitedtb/content/email/login.js", united.login);
+  </script>
+
+  <!-- Overlay for Firefox browser/content/browser.xul -->
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarbutton id="united-email-button"
+        label="&united.email.button.label;"
+        tooltiptext="&united.email.button.tooltip;"
+        status="disconnected"
+        oncommand="united.email.onCommandMailButton();"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        type="menu-button"
+        >
+      <menupopup id="united-email-button-dropdown">
+        <menuitem id="united-email-unread-menuitem"
+            label="set me (in email.js)"
+            tooltiptext="&united.email.messages.tooltip;"
+            oncommand-do-bubble-up="yes, we want this to bubble up"
+            />
+      </menupopup>
+    </toolbarbutton>
+    <toolbaritem id="united-login-box" align="center"      
+      status="disconnected"
+      >
+      <toolbarbutton id="united-logged-out-button"
+          label="&united.logged-out.label;"
+          tooltiptext="&united.logged-out.tooltip;"
+          oncommand="united.login.onCommandDoLogin();"
+          orient="horizontal"
+          class="chromeclass-toolbar-additional toolbarbutton-1"
+          remove-priority="300"
+          />
+      <toolbarbutton id="united-logged-in-button"
+          label="&united.logged-in.label;"
+          tooltiptext="&united.logged-in.tooltip;"
+          oncommand="united.login.onCommandDoLogout();"
+          hidden="true"
+          orient="horizontal"
+          class="chromeclass-toolbar-additional toolbarbutton-1"
+          remove-priority="2"
+          />
+    </toolbaritem>
+  </toolbarpalette>
+</overlay>

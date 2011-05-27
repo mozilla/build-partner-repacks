@@ -1,0 +1,9 @@
+/* Copyright (C) 2007-2011 eBay Inc. All Rights Reserved. */let EXPORTED_SYMBOLS=["Observers"];const Cc=Components.classes;const Ci=Components.interfaces;const Cr=Components.results;const Cu=Components.utils;Cu.import("resource://gre/modules/XPCOMUtils.jsm");function Observers(){this._observers={};}
+Observers.prototype=Observers;Observers.add=function(callback,topic){let observer=new Observer(callback);if(!(topic in this._observers))
+this._observers[topic]={};this._observers[topic][callback]=observer;this._service.addObserver(observer,topic,true);return observer;};Observers.remove=function(callback,topic){let observer=this._observers[topic][callback];this._service.removeObserver(observer,topic);delete this._observers[topic][callback];};Observers.removeAll=function(){if(this==Observers){throw Components.Exception("removeAll may not be called on global Observers object",Cr.NS_ERROR_FAILURE,Components.stack.caller);}
+for(let[topic,callbacks]in Iterator(this._observers)){for(let[callback,observer]in Iterator(callbacks)){try{this._service.removeObserver(observer,topic);delete observer;}catch(e){}}}};Observers.notify=function(subject,topic,data){Observers._service.notifyObservers(new Subject(subject),topic,data);};Observers._service=Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);Observers._observers={};function Observer(callback){this._callback=callback;}
+Observer.prototype={QueryInterface:XPCOMUtils.generateQI([Ci.nsIObserver,Ci.nsISupportsWeakReference]),observe:function(subject,topic,data){if(subject&&subject.wrappedJSObject)
+this._callback(subject.wrappedJSObject,topic,data);else
+this._callback(subject,topic,data);}}
+function Subject(object){this.wrappedJSObject=object;}
+Subject.prototype={QueryInterface:XPCOMUtils.generateQI([]),getHelperForLanguage:function(){},getInterfaces:function(){}};

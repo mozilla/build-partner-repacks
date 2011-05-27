@@ -1,0 +1,3 @@
+/* Copyright (C) 2007-2011 eBay Inc. All Rights Reserved. */const EXPORTED_SYMBOLS=["StringBundle"];const Cc=Components.classes;const Ci=Components.interfaces;const Ce=Components.Exception;const Cr=Components.results;const Cu=Components.utils;function StringBundle(url){this._stringBundle=Cc["@mozilla.org/intl/stringbundle;1"].getService(Ci.nsIStringBundleService).createBundle(url);}
+StringBundle.prototype={getString:function(stringName,params){let ret;if(!params){ret=this._stringBundle.GetStringFromName(stringName);}else{ret=this._stringBundle.formatStringFromName(stringName,params,params.length);}
+return ret;}};

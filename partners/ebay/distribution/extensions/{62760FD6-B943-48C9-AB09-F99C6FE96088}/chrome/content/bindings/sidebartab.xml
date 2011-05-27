@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+
+<!--
+  - Copyright (C) 2007-2009 eBay Inc. All Rights Reserved.
+  -->
+
+<!DOCTYPE window SYSTEM "chrome://ebaycompanion/locale/strings.dtd">
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!-- Themed tab for sidebar -->
+  <binding id="sidebar-tab">
+    <resources>
+      <stylesheet src="chrome://ebaycompanion/skin/sidebarTab.css" />
+      <stylesheet src="chrome://ebaycompanion-os/skin/sidebarTab.css" />
+    </resources>
+    <content>
+        <xul:vbox anonid="gs-ebay-sidebar-container"
+          class="gs-ebay-sidebar-container" xbl:inherits="selected">
+          <xul:stack class="gs-ebay-sidebar-stack">
+            <xul:hbox class="gs-ebay-sidebar-tab-background" />
+            <xul:hbox class="gs-ebay-sidebar-tab-content-box" flex="1">
+              <xul:label class="gs-ebay-sidebar-tab-label" flex="1"
+                xbl:inherits="value=label,crop,accesskey" />
+              <xul:toolbarbutton anonid="gs-ebay-sidebar-tab-button" type="menu"
+                class="gs-ebay-sidebar-tab-button"
+                tooltiptext="&ecSidebar.tab.active.filter.all;"
+                xbl:inherits="collapsed=hideDropDown">
+                <children/>
+              </xul:toolbarbutton>
+            </xul:hbox>
+          </xul:stack>
+          <xul:hbox class="gs-ebay-sidebar-tab-bottom-border"
+            xbl:inherits="selected">
+          </xul:hbox>
+        </xul:vbox>
+    </content>
+
+    <handlers>
+      <handler event="focus" action="_focusTab(event, true);" />
+      <handler event="blur" action="_focusTab(event, false);" />
+      <handler event="keypress" keycode="VK_RETURN"
+        action="_selectTab(event);" />
+      <handler event="keypress" keycode="VK_DOWN" modifiers="alt"
+        action="_showTabPopup(event);" />
+
+      <handler event="click" phase="capturing">
+        <![CDATA[
+          let target = event.originalTarget;
+
+          if (2 == event.button) {
+            this._showTabPopup(event);
+          } else {
+            switch (target.nodeName) {
+              case "menuitem":
+                // set the toolbarbutton's tooltip to match the label of the
+                // now-active menuitem
+                document.getAnonymousElementByAttribute(
+                  this, "anonid", "gs-ebay-sidebar-tab-button").
+                    setAttribute("tooltiptext", target.label);
+                event.stopPropagation();
+                break;
+              case "xul:toolbarbutton":
+                event.stopPropagation();
+                break;
+              default:
+                if (this.parentNode.selectedTab != this) {
+                  this.parentNode.selectedTab = this;
+                  this.focus();
+                  let aEvent = document.createEvent("Event");
+                  aEvent.initEvent("command", true, true);
+                  this.dispatchEvent(aEvent);
+                }
+                break;
+            }
+          }
+        ]]>
+      </handler>
+    </handlers>
+
+    <implementation>
+      <property name="selectedIndex">
+        <setter>
+          <![CDATA[
+            let menuPopupItems = this.firstChild.childNodes;
+            for (let i = 0; i < menuPopupItems.length; i++) {
+              if (i == val) {
+                menuPopupItems[i].setAttribute("checked", true);
+              } else {
+                menuPopupItems[i].removeAttribute("checked");
+              }
+            }
+          ]]>
+        </setter>
+      </property>
+
+      <method name="_selectTab">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            this.parentNode.selectedTab = this;
+
+            //aEvent.stopPropagation();
+            let aEvent = document.createEvent("Event");
+            aEvent.initEvent("command", true, true);
+            this.dispatchEvent(aEvent);
+          ]]>
+        </body>
+      </method>
+
+      <method name="_focusTab">
+        <parameter name="aEvent" />
+        <parameter name="aFocus" />
+        <body>
+          <![CDATA[
+            let container =
+              document.getAnonymousElementByAttribute(
+                this, "anonid", "gs-ebay-sidebar-container");
+
+            if (aFocus) {
+              container.setAttribute("focused", true);
+            } else {
+              container.removeAttribute("focused");
+            }
+
+            aEvent.stopPropagation();
+          ]]>
+        </body>
+      </method>
+
+      <method name="_showTabPopup">
+        <parameter name="aEvent" />
+        <body>
+          <![CDATA[
+            let container =
+              document.getAnonymousElementByAttribute(
+                this, "anonid", "gs-ebay-sidebar-container");
+
+            if ("true" == container.getAttribute("selected")) {
+              let menuPopup = this.firstChild;
+
+              if (menuPopup) {
+                menuPopup.openPopup(this, "after_start", -1, -1, false, true);
+              }
+
+              aEvent.stopPropagation();
+            }
+          ]]>
+        </body>
+      </method>
+    </implementation>
+  </binding>
+</bindings>

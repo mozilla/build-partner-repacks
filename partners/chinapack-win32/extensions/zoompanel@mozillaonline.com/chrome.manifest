@@ -1,5 +1,0 @@
-content zoompanel content/
-locale  zoompanel en-US locale/en-US/
-locale  zoompanel zh-CN locale/zh-CN/
-overlay chrome://browser/content/browser.xul chrome://zoompanel/content/browser-overlay.xul
-override chrome://global/content/viewZoomOverlay.js chrome://zoompanel/content/viewZoomOverlay.js
