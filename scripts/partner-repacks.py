@@ -314,7 +314,8 @@ def getFileExtension(version, platform):
 #########################################################################
 class RepackBase(object):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 platform_formatted, repack_info, file_mode=0644):
+                 platform_formatted, repack_info, signing_command, file_mode=0644,
+                 signing_formats=None):
         self.base_dir = os.getcwd()
         self.build = build
         self.full_build_path = path.join(self.base_dir, build_dir, build)
@@ -324,6 +325,8 @@ class RepackBase(object):
         self.platform_formatted = platform_formatted
         self.repack_info = repack_info
         self.file_mode = file_mode
+        self.signing_command = signing_command
+        self.signing_formats = signing_formats
         mkdir(self.working_dir)
 
     def announceStart(self):
@@ -363,9 +366,20 @@ class RepackBase(object):
     def repackBuild(self):
         pass
 
+    def signBuild(self):
+        assert isinstance(self.signing_formats, (list, tuple))
+        signing_cmd = self.signing_command
+        for f in self.signing_formats:
+            signing_cmd += ' --formats %s' % f
+        signing_cmd += ' "%s"' % self.build
+        shellCommand(signing_cmd)
+
     def cleanup(self):
         move(self.build, self.final_dir)
         os.chmod(path.join(self.final_dir, path.basename(self.build)), self.file_mode)
+        if self.signing_command and 'gpg' in self.signing_formats:
+            move('%s.asc' % self.build, self.final_dir)
+            os.chmod(path.join(self.final_dir, path.basename('%s.asc' % self.build)), self.file_mode)
 
     def doRepack(self):
         self.announceStart()
@@ -373,6 +387,8 @@ class RepackBase(object):
         self.unpackBuild()
         self.copyFiles()
         self.repackBuild()
+        if self.signing_command:
+            self.signBuild()
         self.announceSuccess()
         self.cleanup()
         os.chdir(self.base_dir)
@@ -380,10 +396,12 @@ class RepackBase(object):
 #########################################################################
 class RepackLinux(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 platform_formatted, repack_info):
+                 platform_formatted, repack_info, signing_command):
         super(RepackLinux, self).__init__(build, partner_dir, build_dir, 
                                           working_dir, final_dir,
-                                          platform_formatted, repack_info)
+                                          platform_formatted, repack_info,
+                                          signing_command,
+                                          signing_formats=['gpg'])
         self.uncompressed_build = build.replace('.bz2','')
 
     def unpackBuild(self):
@@ -410,10 +428,12 @@ class RepackLinux(RepackBase):
 #########################################################################
 class RepackMac(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 platform_formatted, repack_info):
+                 platform_formatted, repack_info, signing_command):
         super(RepackMac, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
-                                        platform_formatted, repack_info)
+                                        platform_formatted, repack_info,
+                                        signing_command,
+                                        signing_formats=['gpg'])
         self.mountpoint = path.join("/tmp", "FirefoxInstaller")
 
     def unpackBuild(self):
@@ -451,10 +471,12 @@ class RepackMac(RepackBase):
 #########################################################################
 class RepackWin(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 platform_formatted, repack_info):
+                 platform_formatted, repack_info, signing_command):
         super(RepackWin, self).__init__(build, partner_dir, build_dir, 
                                         working_dir, final_dir,
-                                        platform_formatted, repack_info)
+                                        platform_formatted, repack_info,
+                                        signing_command,
+                                        signing_formats=['gpg', 'signcode'])
 
     def copyFiles(self):
         super(RepackWin, self).copyFiles(WINDOWS_DEST_DIR)
@@ -473,11 +495,12 @@ class RepackWin(RepackBase):
 #########################################################################
 class RepackMaemo(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 platform_formatted, repack_info, sbox_path=SBOX_PATH, 
+                 platform_formatted, repack_info, signing_command, sbox_path=SBOX_PATH,
                  sbox_home=SBOX_HOME):
         super(RepackMaemo, self).__init__(build, partner_dir, build_dir, 
                                           working_dir, final_dir,
-                                          platform_formatted, repack_info)
+                                          platform_formatted, repack_info,
+                                          signing_command)
 
         self.sbox_path = sbox_path
         self.sbox_home = sbox_home
@@ -629,6 +652,7 @@ if __name__ == '__main__':
                     'maemo4':        RepackMaemo,
                     'maemo5-gtk':    RepackMaemo
     }
+    signing_command = os.environ.get('MOZ_SIGN_CMD')
 
     parser = OptionParser(usage="usage: %prog [options]")
     parser.add_option("-d",
@@ -790,7 +814,9 @@ if __name__ == '__main__':
 
     # Local directories for builds
     original_builds_dir = path.join(os.getcwd(), "original_builds", options.version, "build%s" % str(options.build_number))
-    repacked_builds_dir = path.join(os.getcwd(), "repacked_builds", options.version, "build%s" % str(options.build_number), "unsigned")
+    repacked_builds_dir = path.join(os.getcwd(), "repacked_builds", options.version, "build%s" % str(options.build_number))
+    if not options.use_signed or not signing_command:
+        repacked_builds_dir = path.join(repacked_builds_dir, "unsigned")
     if not options.verify_only:
         mkdir(original_builds_dir)
         mkdir(repacked_builds_dir)
@@ -911,7 +937,8 @@ if __name__ == '__main__':
                                                                  working_dir,
                                                                  final_dir,
                                                                  platform_formatted,
-                                                                 repack_info)
+                                                                 repack_info,
+                                                                 signing_command)
                     repackObj.doRepack()
                     rmdirRecursive(working_dir)
                 else:
@@ -925,7 +952,8 @@ if __name__ == '__main__':
             # Check to see whether we repacked any signed Windows builds. If we
             # did we need to do some scrubbing before we upload them for
             # re-signing.
-            if 'win32' in repack_info['platforms'] and options.use_signed:
+            if 'win32' in repack_info['platforms'] and options.use_signed \
+               and not signing_command:
                 repackSignedBuilds(repacked_builds_dir)
             # Remove our working dir so things are all cleaned up and ready for
             # easy upload.
