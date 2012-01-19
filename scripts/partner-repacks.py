@@ -20,9 +20,6 @@ PKG_DMG = 'pkg-dmg'
 SEVENZIP_BIN = '7za'
 UPX_BIN = 'upx'
 
-SBOX_HOME = '/scratchbox/users/cltbld/home/cltbld/'
-SBOX_PATH = path.join('/scratchbox', 'moz_scratchbox')
-
 SEVENZIP_BUNDLE = 'app.7z'
 SEVENZIP_APPTAG = 'app.tag'
 SEVENZIP_APPTAG_PATH = path.join('browser/installer/windows', SEVENZIP_APPTAG)
@@ -166,18 +163,12 @@ def isWin64(platform):
         return True
     return False
 
-#########################################################################
-def isMaemo(platform):
-    if (platform.find('maemo') != -1):
-        return True
-    return False
 
 #########################################################################
 def isValidPlatform(platform):
     if isLinux64(platform) or isLinux32(platform) or \
        isMac64(platform) or isMac32(platform) or \
-       isWin64(platform) or isWin32(platform) or \
-       isMaemo(platform):
+       isWin64(platform) or isWin32(platform):
         return True
     return False
 
@@ -238,8 +229,6 @@ def getFormattedPlatform(platform):
         return "win64-x86_64"
     if isWin(platform):
         return "win32"
-    if isMaemo(platform):
-        return platform
     return None
 
 #########################################################################
@@ -275,16 +264,6 @@ def getFilename(version, platform, locale, file_ext):
         if isWin(platform):
             return "Firefox Setup %s.%s" % (version_formatted,
                                             file_ext)
-
-        if isMaemo(platform):
-            deb_name_url = "http://%s%s/%s/%s/deb_name.txt" % \
-                           (options.staging_server,
-                            candidates_web_dir,
-                            platform_formatted,
-                            locale)
-            filename = re.sub('\n', '', Popen(['curl', deb_name_url],
-                             stdout=subprocess.PIPE).communicate()[0])
-            return filename
 
     return None
 
@@ -330,11 +309,11 @@ class RepackBase(object):
         mkdir(self.working_dir)
 
     def announceStart(self):
-        print "### Repacking %s build \"%s\"" % (self.platform_formatted, 
+        print "### Repacking %s build \"%s\"" % (self.platform_formatted,
                                                  self.build)
 
     def announceSuccess(self):
-        print "### Done repacking %s build \"%s\"" % (self.platform_formatted, 
+        print "### Done repacking %s build \"%s\"" % (self.platform_formatted,
                                                       self.build)
         print
 
@@ -397,7 +376,7 @@ class RepackBase(object):
 class RepackLinux(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  platform_formatted, repack_info, signing_command):
-        super(RepackLinux, self).__init__(build, partner_dir, build_dir, 
+        super(RepackLinux, self).__init__(build, partner_dir, build_dir,
                                           working_dir, final_dir,
                                           platform_formatted, repack_info,
                                           signing_command,
@@ -419,7 +398,7 @@ class RepackLinux(RepackBase):
         if options.quiet:
             tar_flags = "rf"
         else:
-            tar_flags = "rvf" 
+            tar_flags = "rvf"
         tar_cmd = "tar %s %s firefox" % (tar_flags, self.uncompressed_build)
         shellCommand(tar_cmd)
         bzip2_command = "bzip2 %s" % self.uncompressed_build
@@ -458,7 +437,7 @@ class RepackMac(RepackBase):
         if options.quiet:
             quiet_flag = "--verbosity 0"
         else:
-            quiet_flag = "" 
+            quiet_flag = ""
         pkg_cmd = "%s --source stage/ --target \"%s\" --volname 'Firefox' --icon stage/.VolumeIcon.icns --symlink '/Applications':' ' %s" % (options.pkg_dmg,
                                                               self.build,
                                                               quiet_flag)
@@ -472,7 +451,7 @@ class RepackMac(RepackBase):
 class RepackWin(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  platform_formatted, repack_info, signing_command):
-        super(RepackWin, self).__init__(build, partner_dir, build_dir, 
+        super(RepackWin, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
                                         platform_formatted, repack_info,
                                         signing_command,
@@ -485,79 +464,12 @@ class RepackWin(RepackBase):
         if options.quiet:
             zip_redirect = ">/dev/null"
         else:
-            zip_redirect = "" 
-        zip_cmd = "%s a \"%s\" %s %s" % (SEVENZIP_BIN, 
+            zip_redirect = ""
+        zip_cmd = "%s a \"%s\" %s %s" % (SEVENZIP_BIN,
                                          self.build,
                                          WINDOWS_DEST_DIR,
                                          zip_redirect)
         shellCommand(zip_cmd)
-
-#########################################################################
-class RepackMaemo(RepackBase):
-    def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 platform_formatted, repack_info, signing_command, sbox_path=SBOX_PATH,
-                 sbox_home=SBOX_HOME):
-        super(RepackMaemo, self).__init__(build, partner_dir, build_dir, 
-                                          working_dir, final_dir,
-                                          platform_formatted, repack_info,
-                                          signing_command)
-
-        self.sbox_path = sbox_path
-        self.sbox_home = sbox_home
-        self.tmpdir = path.join(self.base_dir, "tmp_deb")
-
-    def unpackBuild(self):
-        debianDir = path.join(self.tmpdir, "DEBIAN")
-        mkdir(debianDir)
-        super(RepackMaemo, self).unpackBuild()
-        commandList = [
-         'ar -p %s data.tar.gz | tar -zx -C %s' % (self.build, self.tmpdir),
-         'ar -p %s control.tar.gz | tar -zx -C %s' % (self.build, debianDir)
-        ]
-        for command in commandList:
-            status = shellCommand(command)
-            if not status:
-                print "Error while running '%s'." % command
-                sys.exit(status)
-
-    def copyFiles(self):
-        full_path = path.join(self.full_partner_path, "preferences")
-        if os.path.exists(full_path):
-            cp_cmd = "cp %s/* %s/opt/mozilla/[a-z\-\.0-9]*/defaults/pref/" % \
-                (full_path, self.tmpdir)
-            shellCommand(cp_cmd)
-
-    def mungeControl(self):
-        print self.repack_info
-        if 'deb_section' in self.repack_info:
-            munge_cmd="sed -i -e 's/^Section: .*$/Section: %s/' %s/DEBIAN/control" % (self.repack_info['deb_section'], self.tmpdir)
-            print munge_cmd
-            shellCommand(munge_cmd)
-
-    def repackBuild(self):
-        rel_base_dir = re.sub('^.*%s' % self.sbox_home, '', self.base_dir)
-        repack_cmd = '%s -p -d %s "dpkg-deb -b tmp_deb %s"' % (self.sbox_path,
-                                                           rel_base_dir,
-                                                           self.build)
-        print repack_cmd
-        shellCommand(repack_cmd)
-        print self.build
-
-    def cleanup(self):
-        move(path.join(self.base_dir, self.build), path.join("..", self.final_dir))
-        os.chmod(path.join(self.final_dir, path.basename(self.build)), self.file_mode)
-        rmdirRecursive(self.tmpdir)
-
-    def doRepack(self):
-        self.announceStart()
-        os.chdir(self.working_dir)
-        self.unpackBuild()
-        self.copyFiles()
-        self.mungeControl()
-        self.repackBuild()
-        self.announceSuccess()
-        self.cleanup()
-        os.chdir(self.base_dir)
 
 #########################################################################
 def repackSignedBuilds(repack_dir):
@@ -584,7 +496,7 @@ def repackSignedBuilds(repack_dir):
 
     for f in [SEVENZIP_HEADER_COMPRESSED, SEVENZIP_APPTAG, 'repack-signed.sh']:
         copy(f, repack_dir)
-    
+
     os.chdir(repack_dir)
     print "Running repack.sh"
     shellCommand('./repack-signed.sh')
@@ -594,7 +506,7 @@ def repackSignedBuilds(repack_dir):
 
 #########################################################################
 def isValidFile(file_path):
-  # We can do any kind of validation we want here, but for now we keep it 
+  # We can do any kind of validation we want here, but for now we keep it
   # simple by checking to see if our file size is bigger than a 404 page.
   # This is a very coarse estimate of whether we have a real file downloaded.
   size_threshold = 1000
@@ -632,16 +544,16 @@ def retrieveFile(url, file_path):
 #########################################################################
 def getSingleFileFromHg(file):
     file_path = os.path.basename(file)
-    url = os.path.join(options.hgroot, options.repo, 
+    url = os.path.join(options.hgroot, options.repo,
                        'raw-file', options.tag, file)
     return retrieveFile(url, file_path)
-        
+
 #########################################################################
 if __name__ == '__main__':
     error = False
     partner_builds = {}
-    default_platforms = ['linux-i686', 'linux-x86_64', 
-                         'mac', 'mac64', 
+    default_platforms = ['linux-i686', 'linux-x86_64',
+                         'mac', 'mac64',
                          'win32']
     repack_build = {'linux-i686':    RepackLinux,
                     'linux-x86_64':  RepackLinux,
@@ -649,8 +561,6 @@ if __name__ == '__main__':
                     'mac64':         RepackMac,
                     'win32':         RepackWin,
                     'win64-x86_64':  RepackWin,
-                    'maemo4':        RepackMaemo,
-                    'maemo5-gtk':    RepackMaemo
     }
     signing_command = os.environ.get('MOZ_SIGN_CMD')
 
