@@ -1,19 +1,26 @@
 #!/usr/bin/env python
 
-import os, re, sys
+import os
+import re
+import sys
 from os import path
 from shutil import copy, copytree, move
-import subprocess
 from subprocess import Popen
 from optparse import OptionParser
 import urllib
+import logging
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO,
+                    format="%(asctime)-15s - %(message)s")
+log = logging.getLogger(__name__)
+
 
 # Set default values.
 PARTNERS_DIR = path.join(path.dirname(__file__), path.join('..', 'partners'))
 BUILD_NUMBER = '1'
 STAGING_SERVER = 'stage.mozilla.org'
 HGROOT = 'http://hg.mozilla.org'
-REPO = 'releases/mozilla-1.9.2'
+REPO = 'releases/mozilla-release'
 DEFAULT_OUTPUT_DIR = 'partner-repacks/%(partner)s/%(platform)s/%(locale)s'
 
 PKG_DMG = 'pkg-dmg'
@@ -24,50 +31,69 @@ SEVENZIP_BUNDLE = 'app.7z'
 SEVENZIP_APPTAG = 'app.tag'
 SEVENZIP_APPTAG_PATH = path.join('browser/installer/windows', SEVENZIP_APPTAG)
 SEVENZIP_HEADER = '7zSD.sfx'
-SEVENZIP_HEADER_PATH = path.join('other-licenses/7zstub/firefox', SEVENZIP_HEADER)
+SEVENZIP_HEADER_PATH = path.join('other-licenses/7zstub/firefox',
+                                 SEVENZIP_HEADER)
 SEVENZIP_HEADER_COMPRESSED = SEVENZIP_HEADER + '.compressed'
 
 WINDOWS_DEST_DIR = 'core'
 
-#########################################################################
+
+class StrictFancyURLopener(urllib.FancyURLopener):
+    """Unlike FancyURLopener this class raises exceptions for generic HTTP
+    errors, like 404, 500. It reuses URLopener.http_error_default redefined in
+    FancyURLopener"""
+
+    def http_error_default(self, url, fp, errcode, errmsg, headers):
+        urllib.URLopener.http_error_default(self, url, fp, errcode, errmsg,
+                                            headers)
+
+
+def getPrettyVersion(version):
+    version = re.sub(r'a([0-9]+)$', r' Alpha \1', version)
+    version = re.sub(r'b([0-9]+)$', r' Beta \1', version)
+    version = re.sub(r'rc([0-9]+)$', r' RC \1', version)
+    return version
+
+
 # Source:
 # http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
 def which(program):
-    def is_exe(fpath):
-        return os.path.exists(fpath) and os.access(fpath, os.X_OK)
 
-    fpath, fname = os.path.split(program)
+    def is_exe(fpath):
+        return path.exists(fpath) and os.access(fpath, os.X_OK)
+
+    fpath = path.dirname(program)
     if fpath:
         if is_exe(program):
             return program
     else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            exe_file = os.path.join(path, program)
+        for p in os.environ["PATH"].split(os.pathsep):
+            exe_file = path.join(p, program)
             if is_exe(exe_file):
                 return exe_file
 
     return None
 
-#########################################################################
-def rmdirRecursive(dir):
+
+def rmdirRecursive(directory):
     """This is a replacement for shutil.rmtree that works better under
     windows. Thanks to Bear at the OSAF for the code.
     (Borrowed from buildbot.slave.commands)"""
-    if not os.path.exists(dir):
+    if not path.exists(directory):
         # This handles broken links
-        if os.path.islink(dir):
-            os.remove(dir)
+        if path.islink(directory):
+            os.remove(directory)
         return
 
-    if os.path.islink(dir):
-        os.remove(dir)
+    if path.islink(directory):
+        os.remove(directory)
         return
 
     # Verify the directory is read/write/execute for the current user
-    os.chmod(dir, 0700)
+    os.chmod(directory, 0700)
 
-    for name in os.listdir(dir):
-        full_name = os.path.join(dir, name)
+    for name in os.listdir(directory):
+        full_name = path.join(directory, name)
         # on Windows, if we don't have write permission we can't remove
         # the file/directory either, so turn that on
         if os.name == 'nt':
@@ -77,113 +103,96 @@ def rmdirRecursive(dir):
                 # -warner
                 os.chmod(full_name, 0600)
 
-        if os.path.isdir(full_name):
+        if path.isdir(full_name):
             rmdirRecursive(full_name)
         else:
             # Don't try to chmod links
-            if not os.path.islink(full_name):
+            if not path.islink(full_name):
                 os.chmod(full_name, 0700)
             os.remove(full_name)
-    os.rmdir(dir)
+    os.rmdir(directory)
 
-#########################################################################
+
 def printSeparator():
-    print "##################################################"
+    log.info("##################################################")
 
-#########################################################################
+
 def shellCommand(cmd):
+    log.debug('Executing %s' % cmd)
+    log.debug('in %s' % os.getcwd())
     # Shell command output gets dumped immediately to stdout, whereas
     # print statements get buffered unless we flush them explicitly.
     sys.stdout.flush()
     p = Popen(cmd, shell=True)
-    (rpid, ret) = os.waitpid(p.pid, 0)
+    (_, ret) = os.waitpid(p.pid, 0)
     if ret != 0:
         ret_real = (ret & 0xFF00) >> 8
-        print "Error: shellCommand had non-zero exit status: %d" % ret_real
-        print "command was: %s" % cmd
+        log.error('Error: shellCommand had non-zero exit status: %d' %
+                  ret_real)
+        log.error('Command: %s' % cmd, exc_info=True)
         sys.exit(ret_real)
     return True
 
-#########################################################################
-def mkdir(dir, mode=0755):
-    if not os.path.exists(dir):
-        return os.makedirs(dir, mode)
+
+def mkdir(directory, mode=0755):
+    if not path.exists(directory):
+        return os.makedirs(directory, mode)
     return True
 
-#########################################################################
+
 def isLinux(platform):
-    if (platform.find('linux') != -1):
-        return True
-    return False
+    return 'linux' in platform
 
-#########################################################################
+
 def isLinux32(platform):
-    if (platform.find('linux32') != -1 or platform.find('linux-i686') != -1):
-        return True
-    return False
+    return ('linux32' in platform or 'linux-i686' in platform or
+            platform == 'linux')
 
-#########################################################################
+
 def isLinux64(platform):
-    if (platform.find('linux64') != -1 or platform.find('linux-x86_64') != -1):
-        return True
-    return False
+    return ('linux64' in platform or 'linux-x86_64' in platform)
 
-#########################################################################
+
 def isMac(platform):
-    if (platform.find('mac') != -1):
-        return True
-    return False
+    return 'mac' in platform
 
-#########################################################################
+
 def isMac32(platform):
     return isMac(platform)
 
-#########################################################################
+
 def isMac64(platform):
-    if platform.find('macosx64') != -1 or (platform.find('mac64') != -1):
-        return True
-    return False
+    return ('macosx64' in platform or 'mac64' in platform)
 
-#########################################################################
+
 def isWin(platform):
-    if (platform.find('win') != -1):
-        return True
-    return False
+    return 'win' in platform
 
-#########################################################################
+
 def isWin32(platform):
-    if (platform.find('win32') != -1):
-        return True
-    return False
+    return 'win32' in platform
 
-#########################################################################
+
 def isWin64(platform):
-    if (platform.find('win64') != -1 or \
-        platform.find('win64-x86_64') != -1):
-        return True
-    return False
+    return ('win64' in platform or 'win64-x86_64' in platform)
 
 
-#########################################################################
 def isValidPlatform(platform):
-    if isLinux64(platform) or isLinux32(platform) or \
-       isMac64(platform) or isMac32(platform) or \
-       isWin64(platform) or isWin32(platform):
-        return True
-    return False
+    return (isLinux64(platform) or isLinux32(platform) or isMac64(platform)
+            or isMac32(platform) or isWin64(platform) or isWin32(platform))
 
-#########################################################################
+
 def createTagFromVersion(version):
-    return 'FIREFOX_' + str(version).replace('.','_') + '_RELEASE'
+    return 'FIREFOX_' + str(version).replace('.', '_') + '_RELEASE'
 
-#########################################################################
-def parseRepackConfig(file, platforms):
+
+def parseRepackConfig(filename, platforms):
     config = {}
     config['platforms'] = []
-    f= open(file, 'r')
+    f = open(filename, 'r')
     for line in f:
         line = line.rstrip("\n")
-        [key, value] = line.split('=',2)
+        [key, value] = line.split('=', 2)
         value = value.strip('"')
         if key == 'dist_id':
             config['dist_id'] = value
@@ -202,18 +211,20 @@ def parseRepackConfig(file, platforms):
             config['output_dir'] = value
             continue
         if isValidPlatform(key):
-            platform_formatted = getFormattedPlatform(key)
-            if platform_formatted in [getFormattedPlatform(p) for p in platforms] and value.lower() == 'true':
-                config['platforms'].append(platform_formatted)
+            ftp_platform = getFtpPlatform(key)
+            if ftp_platform in [getFtpPlatform(p)
+                                      for p in platforms] \
+               and value.lower() == 'true':
+                config['platforms'].append(ftp_platform)
             continue
     if config['platforms']:
         return config
 
-#########################################################################
-def getFormattedPlatform(platform):
+
+def getFtpPlatform(platform):
     '''Returns the platform in the format used in building package names.
        Note: we rely on this code being idempotent
-       i.e. getFormattedPlatform(getFormattedPlatform(foo)) should work
+       i.e. getFtpPlatform(getFtpPlatform(foo)) should work
     '''
     if isLinux64(platform):
         return "linux-x86_64"
@@ -231,69 +242,38 @@ def getFormattedPlatform(platform):
         return "win32"
     return None
 
-#########################################################################
-def getFilename(version, platform, locale, file_ext):
+
+def getFilename(version, platform, file_ext):
     '''Returns the properly formatted filename based on the version string.
        File location/nomenclature changed starting with 3.5.
     '''
-    version_formatted = version
 
     # Deal with alpha/beta releases.
-    m = re.match('(\d\.\d)(a|b|rc)(\d+)', version)
-    if m:
-        if m.group(2) == 'b':
-            greek = "Beta"
-        elif m.group(2) == 'a':
-            greek = "Alpha"
-        else:
-            greek = "RC"
-        version_formatted = "%s %s %s" % (m.group(1), greek, m.group(3))
+    version_formatted = getPrettyVersion(version)
 
-    if version.startswith('3.0'):
-        return "firefox-%s.%s.%s.%s" % (version,
-                                        locale,
-                                        platform,
-                                        file_ext)
-    else:
-        if isLinux(platform):
-            return "firefox-%s.%s" % (version,
-                                      file_ext)
-        if isMac(platform):
-            return "Firefox %s.%s" % (version_formatted,
-                                      file_ext)
-        if isWin(platform):
-            return "Firefox Setup %s.%s" % (version_formatted,
-                                            file_ext)
+    if isLinux(platform):
+        return "firefox-%s.%s" % (version, file_ext)
+    if isMac(platform):
+        return "Firefox %s.%s" % (version_formatted, file_ext)
+    if isWin(platform):
+        return "Firefox Setup %s.%s" % (version_formatted, file_ext)
 
     return None
 
-#########################################################################
-def getLocalFilePath(version, base_dir, platform, locale):
-    '''Returns the properly formatted filepath based on the version string.
-       File location/nomenclature changed starting with 3.5.
-    '''
-    if version.startswith('3.0'):
-        return "%s" % (base_dir)
 
-    return path.join(base_dir, platform, locale)
-
-#########################################################################
-def getFileExtension(version, platform):
+def getFileExtension(platform):
     if isLinux(platform):
         return "tar.bz2"
     if isMac(platform):
         return "dmg"
     if isWin(platform):
-        if version.startswith('3.0'):
-            return "installer.exe"
-        else:
-            return "exe"
+        return "exe"
     return None
 
-#########################################################################
+
 class RepackBase(object):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 platform_formatted, repack_info, signing_command, file_mode=0644,
+                 ftp_platform, repack_info, signing_command, file_mode=0644,
                  signing_formats=None):
         self.base_dir = os.getcwd()
         self.build = build
@@ -301,7 +281,7 @@ class RepackBase(object):
         self.full_partner_path = path.join(self.base_dir, partner_dir)
         self.working_dir = working_dir
         self.final_dir = final_dir
-        self.platform_formatted = platform_formatted
+        self.ftp_platform = ftp_platform
         self.repack_info = repack_info
         self.file_mode = file_mode
         self.signing_command = signing_command
@@ -309,13 +289,10 @@ class RepackBase(object):
         mkdir(self.working_dir)
 
     def announceStart(self):
-        print "### Repacking %s build \"%s\"" % (self.platform_formatted,
-                                                 self.build)
+        log.info('Repacking %s build %s' % (self.ftp_platform, self.build))
 
     def announceSuccess(self):
-        print "### Done repacking %s build \"%s\"" % (self.platform_formatted,
-                                                      self.build)
-        print
+        log.info('Done repacking %s build %s' % (self.ftp_platform, self.build))
 
     def unpackBuild(self):
         copy(self.full_build_path, '.')
@@ -325,20 +302,20 @@ class RepackBase(object):
             by adding an override.ini file to the base install dir.
         '''
         filename = path.join(partner_path, 'override.ini')
-        if self.repack_info.has_key('migrationWizardDisabled'):
-            if not os.path.isfile(filename):
-                f=open(filename,'w')
+        if 'migrationWizardDisabled' in self.repack_info:
+            if not path.isfile(filename):
+                f = open(filename, 'w')
                 f.write('[XRE]\n')
                 f.write('EnableProfileMigrator=0\n')
                 f.close()
 
     def copyFiles(self, platform_dir):
         # Check whether we've already copied files over for this partner.
-        if not os.path.exists(platform_dir):
+        if not path.exists(platform_dir):
             mkdir(platform_dir)
             for i in ['distribution', 'extensions', 'searchplugins']:
                 full_path = path.join(self.full_partner_path, i)
-                if os.path.exists(full_path):
+                if path.exists(full_path):
                     copytree(full_path, path.join(platform_dir, i))
             self.createOverrideIni(platform_dir)
 
@@ -355,10 +332,13 @@ class RepackBase(object):
 
     def cleanup(self):
         move(self.build, self.final_dir)
-        os.chmod(path.join(self.final_dir, path.basename(self.build)), self.file_mode)
+        os.chmod(path.join(self.final_dir, path.basename(self.build)),
+                 self.file_mode)
         if self.signing_command and 'gpg' in self.signing_formats:
             move('%s.asc' % self.build, self.final_dir)
-            os.chmod(path.join(self.final_dir, path.basename('%s.asc' % self.build)), self.file_mode)
+            os.chmod(path.join(self.final_dir,
+                               path.basename('%s.asc' % self.build)),
+                     self.file_mode)
 
     def doRepack(self):
         self.announceStart()
@@ -372,23 +352,23 @@ class RepackBase(object):
         self.cleanup()
         os.chdir(self.base_dir)
 
-#########################################################################
+
 class RepackLinux(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 platform_formatted, repack_info, signing_command):
+                 ftp_platform, repack_info, signing_command):
         super(RepackLinux, self).__init__(build, partner_dir, build_dir,
                                           working_dir, final_dir,
-                                          platform_formatted, repack_info,
+                                          ftp_platform, repack_info,
                                           signing_command,
                                           signing_formats=['gpg'])
-        self.uncompressed_build = build.replace('.bz2','')
+        self.uncompressed_build = build.replace('.bz2', '')
 
     def unpackBuild(self):
         super(RepackLinux, self).unpackBuild()
         bunzip2_cmd = "bunzip2 %s" % self.build
         shellCommand(bunzip2_cmd)
-        if not os.path.exists(self.uncompressed_build):
-            print "Error: Unable to uncompress build %s" % self.build
+        if not path.exists(self.uncompressed_build):
+            log.error("Error: Unable to uncompress build %s" % self.build)
             sys.exit(1)
 
     def copyFiles(self):
@@ -404,13 +384,13 @@ class RepackLinux(RepackBase):
         bzip2_command = "bzip2 %s" % self.uncompressed_build
         shellCommand(bzip2_command)
 
-#########################################################################
+
 class RepackMac(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 platform_formatted, repack_info, signing_command):
+                 ftp_platform, repack_info, signing_command):
         super(RepackMac, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
-                                        platform_formatted, repack_info,
+                                        ftp_platform, repack_info,
                                         signing_command,
                                         signing_formats=['gpg'])
         self.mountpoint = path.join("/tmp", "FirefoxInstaller")
@@ -426,7 +406,7 @@ class RepackMac(RepackBase):
     def copyFiles(self):
         for i in ['distribution', 'extensions', 'searchplugins']:
             full_path = path.join(self.full_partner_path, i)
-            if os.path.exists(full_path):
+            if path.exists(full_path):
                 cp_cmd = "cp -r %s %s" % (full_path,
                   path.join("stage", "Firefox.app", "Contents", "MacOS"))
                 shellCommand(cp_cmd)
@@ -438,22 +418,22 @@ class RepackMac(RepackBase):
             quiet_flag = "--verbosity 0"
         else:
             quiet_flag = ""
-        pkg_cmd = "%s --source stage/ --target \"%s\" --volname 'Firefox' --icon stage/.VolumeIcon.icns --symlink '/Applications':' ' %s" % (options.pkg_dmg,
-                                                              self.build,
-                                                              quiet_flag)
+        pkg_cmd = "%s --source stage/ --target \"%s\" --volname 'Firefox' " \
+        "--icon stage/.VolumeIcon.icns --symlink '/Applications':' ' %s" \
+        % (options.pkg_dmg, self.build, quiet_flag)
         shellCommand(pkg_cmd)
 
     def cleanup(self):
         super(RepackMac, self).cleanup()
         rmdirRecursive("stage")
 
-#########################################################################
+
 class RepackWin(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 platform_formatted, repack_info, signing_command):
+                 ftp_platform, repack_info, signing_command):
         super(RepackWin, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
-                                        platform_formatted, repack_info,
+                                        ftp_platform, repack_info,
                                         signing_command,
                                         signing_formats=['gpg', 'signcode'])
 
@@ -471,210 +451,171 @@ class RepackWin(RepackBase):
                                          zip_redirect)
         shellCommand(zip_cmd)
 
-#########################################################################
-def repackSignedBuilds(repack_dir):
-    if not os.path.isdir(repack_dir):
-        return False
-    base_dir = os.getcwd()
 
-    if not os.path.exists(SEVENZIP_APPTAG):
+def repackSignedBuilds(repack_dir):
+    log.info('Repacking signed builds in %s' % repack_dir)
+    cwd = os.getcwd()
+    os.chdir(script_directory)
+
+    if not path.exists(SEVENZIP_APPTAG):
         if not getSingleFileFromHg(SEVENZIP_APPTAG_PATH):
-            print "Error: Unable to retrieve %s" % SEVENZIP_APPTAG
+            log.error("Error: Unable to retrieve %s" % SEVENZIP_APPTAG)
             sys.exit(1)
-    if not os.path.exists(SEVENZIP_HEADER_COMPRESSED):
-        if not os.path.exists(SEVENZIP_HEADER) and \
+    if not path.exists(SEVENZIP_HEADER_COMPRESSED):
+        if not path.exists(SEVENZIP_HEADER) and \
            not getSingleFileFromHg(SEVENZIP_HEADER_PATH):
-            print "Error: Unable to retrieve %s" % SEVENZIP_HEADER
+            log.error("Error: Unable to retrieve %s" % SEVENZIP_HEADER)
             sys.exit(1)
         upx_cmd = '%s --best -o \"%s\" \"%s\"' % (UPX_BIN,
                                                   SEVENZIP_HEADER_COMPRESSED,
                                                   SEVENZIP_HEADER)
         shellCommand(upx_cmd)
-        if not os.path.exists(SEVENZIP_HEADER_COMPRESSED):
-            print "Error: Unable to compress %s" % SEVENZIP_HEADER
+        if not path.exists(SEVENZIP_HEADER_COMPRESSED):
+            log.error("Error: Unable to compress %s" % SEVENZIP_HEADER)
             sys.exit(1)
 
     for f in [SEVENZIP_HEADER_COMPRESSED, SEVENZIP_APPTAG, 'repack-signed.sh']:
         copy(f, repack_dir)
 
     os.chdir(repack_dir)
-    print "Running repack.sh"
+    log.info("Running repack.sh")
     shellCommand('./repack-signed.sh')
     for f in [SEVENZIP_HEADER_COMPRESSED, SEVENZIP_APPTAG, 'repack-signed.sh']:
         os.remove(f)
-    os.chdir(base_dir)
+    os.chdir(cwd)
 
-#########################################################################
-def isValidFile(file_path):
-  # We can do any kind of validation we want here, but for now we keep it
-  # simple by checking to see if our file size is bigger than a 404 page.
-  # This is a very coarse estimate of whether we have a real file downloaded.
-  size_threshold = 1000
-  if os.path.getsize(file_path) < size_threshold:
-    return False
-  else:
-    return True
 
-#########################################################################
 def retrieveFile(url, file_path):
-  failedDownload = False
-  try:
-    urllib.urlretrieve(url.replace(' ','%20'), file_path)
-  except:
-    print "exception: n  %s, n  %s, n  %s n  when downloading %s" % \
-          (sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2], url)
-    failedDownload = True
+    success = True
+    url = urllib.quote(url, safe=':/')
+    log.info('Downloading from %s' % url)
+    log.info('To: %s', file_path)
+    log.info('CWD: %s' % os.getcwd())
+    try:
+        # use URLopener, which handles errors properly
+        StrictFancyURLopener().retrieve(url, file_path)
+    except IOError:
+        log.error("Error downloading %s" % url, exc_info=True)
+        success = False
+        try:
+            os.remove(file_path)
+        except OSError:
+            log.info("Cannot remove %s" % file_path, exc_info=True)
 
-  if os.path.exists(file_path):
-    if not isValidFile(file_path):
-      failedDownload = True
-      try:
-        os.remove(file_path)
-      except:
-        print "exception: n  %s, n  %s, n  %s n  when trying to remove file %s" %\
-              (sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2], file_path)
-  else:
-    failedDownload = True
+    return success
 
-  if failedDownload:
-    return False
-  else:
-    return True
 
-#########################################################################
-def getSingleFileFromHg(file):
-    file_path = os.path.basename(file)
-    url = os.path.join(options.hgroot, options.repo,
-                       'raw-file', options.tag, file)
+def getSingleFileFromHg(filename):
+    file_path = path.basename(filename)
+    url = path.join(options.hgroot, options.repo,
+                    'raw-file', options.tag, filename)
     return retrieveFile(url, file_path)
 
-#########################################################################
+
 if __name__ == '__main__':
     error = False
     partner_builds = {}
-    default_platforms = ['linux-i686', 'linux-x86_64',
-                         'mac', 'mac64',
-                         'win32']
+    default_platforms = ['linux-i686', 'linux-x86_64', 'mac', 'win32']
     repack_build = {'linux-i686':    RepackLinux,
                     'linux-x86_64':  RepackLinux,
                     'mac':           RepackMac,
-                    'mac64':         RepackMac,
                     'win32':         RepackWin,
                     'win64-x86_64':  RepackWin,
     }
     signing_command = os.environ.get('MOZ_SIGN_CMD')
 
     parser = OptionParser(usage="usage: %prog [options]")
-    parser.add_option("-d",
-                      "--partners-dir",
-                      action="store",
-                      dest="partners_dir",
-                      default=PARTNERS_DIR,
-                      help="Specify the directory where the partner config files are found.")
-    parser.add_option("-p",
-                      "--partner",
-                      action="store",
-                      dest="partner",
-                      help="Repack for a single partner, specified by name."
-                     )
-    parser.add_option("--platform",
-                     action="append",
-                     dest="platforms",
-                     help="Specify platform (multiples ok, e.g. --platform win32 --platform mac64)."
-                     )
-    parser.add_option("--nightly-dir",
-                     action="store",
-                     dest="nightly_dir",
-                     default="firefox/nightly",
-                     help="Specify the subdirectory where candidates live (default firefox/nightly)."
-                     )
-    parser.add_option("-v",
-                      "--version",
-                      action="store",
-                      dest="version",
-                      help="Set the version number for repacking")
-    parser.add_option("-n",
-                      "--build-number",
-                      action="store",
-                      dest="build_number",
-                      default=BUILD_NUMBER,
-                      help="Set the build number for repacking")
-    parser.add_option("",
-                      "--signed",
-                      action="store_true",
-                      dest="use_signed",
-                      default=False,
-                      help="Use Windows builds that have already been signed")
-    parser.add_option("",
-                      "--hgroot",
-                      action="store",
-                      dest="hgroot",
-                      default=HGROOT,
-                      help="Set the root URL for retrieving files from hg")
-    parser.add_option("-r",
-                      "--repo",
-                      action="store",
-                      dest="repo",
-                      default=REPO,
-                      help="Set the release tag used for retrieving files from hg")
-    parser.add_option("-t",
-                      "--tag",
-                      action="store",
-                      dest="tag",
-                      help="Set the release tag used for retrieving files from hg")
-    parser.add_option("",
-                      "--pkg-dmg",
-                      action="store",
-                      dest="pkg_dmg",
-                      default=PKG_DMG,
-                      help="Set the path to the pkg-dmg for Mac packaging")
-    parser.add_option("",
-                      "--dmg-extract-script",
-                      action="store",
-                      dest="dmg_extract_script",
-                      help="Set the path to the dmg extracting tool")
-    parser.add_option("",
-                      "--staging-server",
-                      action="store",
-                      dest="staging_server",
-                      default=STAGING_SERVER,
-                      help="Set the staging server to use for downloading/uploading.")
-    parser.add_option("--skip-missing",
-                      action="store_true",
-                      dest="skip_missing",
-                      default=False,
-                      help="Skip missing locales/installers and continue processing repacks.")
-    parser.add_option("--use-release-builds",
-                      action="store_true",
-                      dest="use_release_builds",
-                      default=False,
-                      help="Use release builds rather than candidate builds.")
-    parser.add_option("--verify-only",
-                      action="store_true",
-                      dest="verify_only",
-                      default=False,
-                      help="Check for existing partner repacks.")
-    parser.add_option("-q",
-                      "--quiet",
-                      action="store_true",
-                      dest="quiet",
-                      default=False,
-                      help="Suppress standard output from the packaging tools.")
+    parser.add_option(
+        "-d", "--partners-dir", dest="partners_dir", default=PARTNERS_DIR,
+        help="Specify the directory where the partner config files are found"
+    )
+    parser.add_option(
+        "-p", "--partner", dest="partner",
+        help="Repack for a single partner, specified by name"
+    )
+    parser.add_option(
+        "--platform", action="append", dest="platforms",
+        help="Specify platform (multiples ok, e.g. " \
+        "--platform win32 --platform mac64)"
+    )
+    parser.add_option(
+        "--nightly-dir", dest="nightly_dir", default="firefox/nightly",
+        help="Specify the subdirectory where candidates live " \
+        "(default firefox/nightly)"
+    )
+    parser.add_option(
+        "-v", "--version", dest="version",
+        help="Set the version number for repacking"
+    )
+    parser.add_option(
+        "-n", "--build-number", dest="build_number", default=BUILD_NUMBER,
+        help="Set the build number for repacking"
+    )
+    parser.add_option(
+        "--signed", action="store_true", dest="use_signed", default=False,
+        help="Use Windows builds that have already been signed"
+    )
+    parser.add_option(
+        "--hgroot", dest="hgroot", default=HGROOT,
+        help="Set the root URL for retrieving files from hg"
+    )
+    parser.add_option(
+        "-r", "--repo", dest="repo", default=REPO,
+        help="Set the release tag used for retrieving files from hg")
+    parser.add_option(
+        "-t", "--tag", dest="tag",
+        help="Set the release tag used for retrieving files from hg")
+    parser.add_option(
+        "--pkg-dmg", dest="pkg_dmg", default=PKG_DMG,
+        help="Set the path to the pkg-dmg for Mac packaging"
+    )
+    parser.add_option(
+        "--dmg-extract-script", dest="dmg_extract_script",
+        help="Set the path to the dmg extracting tool"
+    )
+    parser.add_option(
+        "--staging-server", dest="staging_server",  default=STAGING_SERVER,
+        help="Set the staging server to use for downloading/uploading"
+    )
+    parser.add_option(
+        "--skip-missing", action="store_true", dest="skip_missing",
+        default=False,
+        help="Skip missing locales/installers and continue processing repacks")
+    parser.add_option(
+        "--use-release-builds", action="store_true", dest="use_release_builds",
+        default=False,
+        help="Use release builds rather than candidate builds"
+    )
+    parser.add_option(
+        "--verify-only", action="store_true", dest="verify_only",
+        default=False,
+        help="Check for existing partner repacks"
+    )
+    parser.add_option(
+        "-q", "--quiet",  action="store_true", dest="quiet",
+        default=False,
+        help="Suppress standard output from the packaging tools"
+    )
     (options, args) = parser.parse_args()
 
+    if not options.quiet:
+        log.setLevel(logging.DEBUG)
+    else:
+        log.setLevel(logging.WARNING)
     # Pre-flight checks
     if not options.version:
-        print "Error: you must specify a version number."
+        log.error("Error: you must specify a version number.")
         error = True
 
     if not options.tag:
         options.tag = createTagFromVersion(options.version)
         if not options.tag:
-          print "Error: you must specify a release tag for hg."
-          error = True
+            log.error("Error: you must specify a release tag for hg.")
+            error = True
 
-    if not os.path.isdir(options.partners_dir):
-        print "Error: partners dir %s is not a directory." % options.partners_dir
+    if not path.isdir(options.partners_dir):
+        log.error("Error: partners dir %s is not a directory." %
+                  options.partners_dir)
         error = True
 
     if not options.platforms:
@@ -684,47 +625,52 @@ if __name__ == '__main__':
     # do some repacking.
     if not options.verify_only:
         if "win32" in options.platforms and not which(SEVENZIP_BIN):
-            print "Error: couldn't find the %s executable in PATH." % SEVENZIP_BIN
+            log.error("Error: couldn't find the %s executable in PATH." %
+                      SEVENZIP_BIN)
             error = True
 
         if "win32" in options.platforms and \
            options.use_signed and \
            not which(UPX_BIN):
-            print "Error: couldn't find the %s executable in PATH." % UPX_BIN
+            log.error("Error: couldn't find the %s executable in PATH." %
+                      UPX_BIN)
             error = True
 
         if "mac" in options.platforms and not which(options.pkg_dmg):
-            print "Error: couldn't find the pkg-dmg executable in PATH."
+            log.error("Error: couldn't find the pkg-dmg executable in PATH.")
             error = True
 
-        if "mac" in options.platforms and not which(options.dmg_extract_script):
-            print "Error: couldn't find the dmg extract script."
+        if "mac" in options.platforms and \
+           not which(options.dmg_extract_script):
+            log.error("Error: couldn't find the dmg extract script.")
             error = True
 
     if error:
         sys.exit(1)
 
-    # Prior to Firefox 4, our distro and extension files went in a
-    # different dir.
-    if options.version.startswith('3.'):
-        WINDOWS_DEST_DIR = 'nonlocalized'
-
-    base_workdir = os.getcwd();
+    base_workdir = os.getcwd()
 
     # Remote dir where we can find builds.
     if options.use_release_builds:
-        candidates_web_dir = "/pub/mozilla.org/firefox/releases/%s" % options.version
+        candidates_web_dir = "/pub/mozilla.org/firefox/releases/%s" % \
+            options.version
         win_candidates_web_dir = candidates_web_dir
     else:
-        candidates_web_dir = "/pub/mozilla.org/%s/%s-candidates/build%s" % (options.nightly_dir, options.version, options.build_number)
+        candidates_web_dir = "/pub/mozilla.org/%s/%s-candidates/build%s" % \
+            (options.nightly_dir, options.version, options.build_number)
         if options.use_signed:
             win_candidates_web_dir = candidates_web_dir
         else:
             win_candidates_web_dir = candidates_web_dir + '/unsigned'
 
     # Local directories for builds
-    original_builds_dir = path.join(os.getcwd(), "original_builds", options.version, "build%s" % str(options.build_number))
-    repacked_builds_dir = path.join(os.getcwd(), "repacked_builds", options.version, "build%s" % str(options.build_number))
+    script_directory = os.getcwd()
+    original_builds_dir = path.join(script_directory, "original_builds",
+                                    options.version,
+                                    "build%s" % options.build_number)
+    repacked_builds_dir = path.join(script_directory, "repacked_builds",
+                                    options.version,
+                                    "build%s" % options.build_number)
     if not options.use_signed or not signing_command:
         repacked_builds_dir = path.join(repacked_builds_dir, "unsigned")
     if not options.verify_only:
@@ -743,22 +689,23 @@ if __name__ == '__main__':
             if options.partner != partner:
                 continue
         full_partner_dir = path.join(options.partners_dir, partner)
-        if not os.path.isdir(full_partner_dir):
+        if not path.isdir(full_partner_dir):
             continue
         repack_cfg = path.join(str(full_partner_dir), "repack.cfg")
         if not options.verify_only:
-            print "### Starting repack process for partner: %s" % partner
+            log.info("Starting repack process for partner: %s" % partner)
         else:
-            print "### Verifying existing repacks for partner: %s" % partner
-        if not os.path.exists(repack_cfg):
-            print "### %s doesn't exist, skipping this partner" % repack_cfg
+            log.info("Verifying existing repacks for partner: %s" % partner)
+        if not path.exists(repack_cfg):
+            log.info("%s doesn't exist, skipping this partner" % repack_cfg)
             continue
         repack_info = parseRepackConfig(repack_cfg, options.platforms)
         if not repack_info:
             continue
 
         partner_repack_dir = path.join(repacked_builds_dir,
-                                       repack_info.get('output_dir', DEFAULT_OUTPUT_DIR))
+                                       repack_info.get('output_dir',
+                                                       DEFAULT_OUTPUT_DIR))
 
         # Figure out which base builds we need to repack.
         for locale in repack_info['locales']:
@@ -767,26 +714,21 @@ if __name__ == '__main__':
                 # platform/locale combos.
                 if (locale == 'ja' and isMac(platform)) or \
                    (locale == 'ja-JP-mac' and not isMac(platform)):
-                   continue
-                platform_formatted = getFormattedPlatform(platform)
+                    continue
+                ftp_platform = getFtpPlatform(platform)
 
-                file_ext = getFileExtension(options.version,
-                                            platform_formatted)
-                filename = getFilename(options.version,
-                                       platform_formatted,
-                                       locale,
+                file_ext = getFileExtension(ftp_platform)
+                filename = getFilename(options.version, ftp_platform,
                                        file_ext)
 
-                local_filepath = getLocalFilePath(options.version,
-                                                  original_builds_dir,
-                                                  platform_formatted,
-                                                  locale)
+                local_filepath = path.join(original_builds_dir, ftp_platform,
+                                           locale)
                 if not options.verify_only:
                     mkdir(local_filepath)
                 local_filename = path.join(local_filepath, filename)
                 final_dir = partner_repack_dir % locals()
                 if not options.verify_only:
-                    if os.path.exists(final_dir):
+                    if path.exists(final_dir):
                         rmdirRecursive(final_dir)
                     mkdir(final_dir)
                     working_dir = path.join(final_dir, "working")
@@ -795,8 +737,9 @@ if __name__ == '__main__':
                 # Check to see if this build is already on disk, i.e.
                 # has already been downloaded.
                 if not options.verify_only:
-                    if os.path.exists(local_filename):
-                        print "### Found %s on disk, not downloading" % local_filename
+                    if path.exists(local_filename):
+                        log.info("Found %s on disk, not downloading" %
+                                 local_filename)
                     else:
                         # Download original build from stage
                         os.chdir(local_filepath)
@@ -804,79 +747,57 @@ if __name__ == '__main__':
                             candidates_dir = win_candidates_web_dir
                         else:
                             candidates_dir = candidates_web_dir
-                        if options.version.startswith('3.0'):
-                            original_build_url = "http://%s%s/%s" % \
-                                                 (options.staging_server,
-                                                  candidates_dir,
-                                                  filename
-                                                 )
-                        else:
-                            original_build_url = "http://%s%s/%s/%s/%s" % \
-                                                 (options.staging_server,
-                                                  candidates_dir,
-                                                  platform_formatted,
-                                                  locale,
-                                                  filename
-                                                 )
+                        original_build_url = "http://%s%s/%s/%s/%s" % \
+                            (options.staging_server, candidates_dir,
+                             ftp_platform, locale, filename)
 
-                        print "### Downloading: %s" % original_build_url
-                        print "###          To: %s" % local_filename
                         retrieveFile(original_build_url, filename)
-                        os.chdir(base_workdir);
+                        if isWin(platform) and options.use_signed:
+                            # The following removes signatures by 
+                            # repacking the source file
+                            repackSignedBuilds(os.getcwd())
+                        os.chdir(base_workdir)
 
                     # Make sure we have the local file now
-                    if not os.path.exists(local_filename):
-                        print "Error: Unable to retrieve %s\n" % filename
+                    if not path.exists(local_filename):
+                        log.info("Error: Unable to retrieve %s\n" % filename)
                         if options.skip_missing:
                             # Add failed download to reporting list for later
                             # display.
-                            if failed_downloads.has_key(locale):
-                                if failed_downloads[locale].has_key(original_build_url):
+                            if locale in failed_downloads:
+                                if original_build_url in failed_downloads[locale]:
                                     failed_downloads[locale][original_build_url].append(partner)
                                 else:
                                     failed_downloads[locale][original_build_url] = [partner]
                             else:
-                                    failed_downloads[locale] = {original_build_url: [partner]}
+                                failed_downloads[locale] = {original_build_url: [partner]}
                             continue
                         else:
                             sys.exit(1)
 
-                    repackObj = repack_build[platform_formatted](filename,
-                                                                 full_partner_dir,
-                                                                 local_filepath,
-                                                                 working_dir,
-                                                                 final_dir,
-                                                                 platform_formatted,
-                                                                 repack_info,
-                                                                 signing_command)
+                    repackObj = repack_build[ftp_platform](
+                        filename, full_partner_dir, local_filepath,
+                        working_dir, final_dir, ftp_platform,
+                        repack_info, signing_command)
                     repackObj.doRepack()
                     rmdirRecursive(working_dir)
                 else:
                     repacked_build = path.join(partner_repack_dir, final_dir,
                                                filename)
-                    if not os.path.exists(repacked_build):
-                        print "Error: missing expected repack for partner %s (%s/%s): %s" % (partner, platform_formatted, locale, filename)
+                    if not path.exists(repacked_build):
+                        log.error("Error: missing expected repack for partner "
+                                  "%s (%s/%s): %s" % (partner,
+                                                      ftp_platform,
+                                                      locale, filename))
                         error = True
 
-        if not options.verify_only:
-            # Check to see whether we repacked any signed Windows builds. If we
-            # did we need to do some scrubbing before we upload them for
-            # re-signing.
-            if 'win32' in repack_info['platforms'] and options.use_signed \
-               and not signing_command:
-                repackSignedBuilds(repacked_builds_dir)
-            # Remove our working dir so things are all cleaned up and ready for
-            # easy upload.
-            printSeparator()
-
     if options.skip_missing and len(failed_downloads) > 0:
-        print "Failed downloads:"
+        log.error("Failed downloads:")
         for locale in failed_downloads:
-            print "Locale: %s" % locale
+            log.error("Locale: %s" % locale)
             for url in failed_downloads[locale]:
-                print "URL: %s" % url
-                print "Which affects the following partners: " + str(failed_downloads[locale][url])
-            print "==="
+                log.error("URL: %s" % url)
+                log.error("Which affects the following partners: %s" %
+                          failed_downloads[locale][url])
     if error:
         sys.exit(1)
-

@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+set -x
 IFS=$'\n'
 rm -rf unpacked app.7z
 for f in `find . -name *.exe`; do
