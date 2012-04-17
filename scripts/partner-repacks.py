@@ -48,13 +48,6 @@ class StrictFancyURLopener(urllib.FancyURLopener):
                                             headers)
 
 
-def getPrettyVersion(version):
-    version = re.sub(r'a([0-9]+)$', r' Alpha \1', version)
-    version = re.sub(r'b([0-9]+)$', r' Beta \1', version)
-    version = re.sub(r'rc([0-9]+)$', r' RC \1', version)
-    return version
-
-
 # Source:
 # http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
 def which(program):
@@ -247,16 +240,12 @@ def getFilename(version, platform, file_ext):
     '''Returns the properly formatted filename based on the version string.
        File location/nomenclature changed starting with 3.5.
     '''
-
-    # Deal with alpha/beta releases.
-    version_formatted = getPrettyVersion(version)
-
     if isLinux(platform):
         return "firefox-%s.%s" % (version, file_ext)
     if isMac(platform):
-        return "Firefox %s.%s" % (version_formatted, file_ext)
+        return "Firefox %s.%s" % (version, file_ext)
     if isWin(platform):
-        return "Firefox Setup %s.%s" % (version_formatted, file_ext)
+        return "Firefox Setup %s.%s" % (version, file_ext)
 
     return None
 
