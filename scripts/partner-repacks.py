@@ -401,6 +401,21 @@ class RepackMac(RepackBase):
                 shellCommand(cp_cmd)
         self.createOverrideIni(path.join("stage", "Firefox.app", "Contents",
                                          "MacOS"))
+        if self.signing_command:
+            self.signMacPackage()
+
+    def signMacPackage(self):
+        # XXX: it would be nice if we could put 'dmg' into self.signing_formats
+        #      but because it has to be done prior to repackBuild(), we can't.
+        signing_cmd = self.signing_command
+        signing_cmd += ' --formats dmg '
+        signing_cmd += 'Firefox.app'
+        old_cwd = os.getcwd()
+        try:
+            os.chdir(path.join(self.working_dir, 'stage'))
+            shellCommand(signing_cmd)
+        finally:
+            os.chdir(old_cwd)
 
     def repackBuild(self):
         if options.quiet:
