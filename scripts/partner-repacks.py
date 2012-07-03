@@ -414,6 +414,8 @@ class RepackMac(RepackBase):
         try:
             os.chdir(path.join(self.working_dir, 'stage'))
             shellCommand(signing_cmd)
+            copy(path.join('Firefox.app', 'Contents', '_CodeSignature', 'CodeResources'),
+                 path.join('Firefox.app', 'Contents', 'CodeResources'))
         finally:
             os.chdir(old_cwd)
 
