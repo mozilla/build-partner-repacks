@@ -20,16 +20,7 @@
 
   <!-- Overlay for Firefox browser/content/browser.xul -->
 
-  <toolbarpalette id="BrowserToolbarPalette">
-    <toolbarbutton id="united-pref-button"
-        type="menu-button"
-        >
-      <menupopup id="united-help-button-dropdown"
-          onpopupshowing="united.help.initMenus();"
-          />
-    </toolbarbutton>
-  </toolbarpalette>
-
+  <!-- add menu item to Firefox Help menu -->
   <menupopup id="menu_HelpPopup">
     <menu label="&brand.name;"
         insertbefore="troubleShooting,releaseNotes,aboutSeparator,aboutName"
@@ -40,5 +31,11 @@
       </menupopup>
     </menu>
   </menupopup>
+
+    <menupopup id="united-pref-button-dropdown"
+        onpopupshowing="united.help.initMenus();"
+        >
+    </menupopup>
+
 
 </overlay>

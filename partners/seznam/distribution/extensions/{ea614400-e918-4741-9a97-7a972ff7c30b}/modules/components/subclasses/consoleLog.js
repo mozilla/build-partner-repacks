@@ -19,6 +19,7 @@ FoxcubService.Logger.ConsoleLog.prototype.$constructor = function(enabled) {
 
 FoxcubService.Logger.ConsoleLog.prototype._format = function(data) {
 	var out;
+	
 	if(typeof data == 'object'){
 		out = '[' + data.type + '] ' + data.date + ' ' + data.name + '::' + data.method + ' ' + data.msg; 
 	} else {
@@ -28,4 +29,5 @@ FoxcubService.Logger.ConsoleLog.prototype._format = function(data) {
 };
 FoxcubService.Logger.ConsoleLog.prototype._log = function(data) {		
 	this.console.logStringMessage(data);
+	
 };

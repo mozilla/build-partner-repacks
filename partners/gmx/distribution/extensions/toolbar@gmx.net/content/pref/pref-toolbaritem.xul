@@ -18,12 +18,21 @@
 
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbarbutton id="united-pref-button"
+        type="menu-button"
         label="&united.pref.button.label;"
         tooltiptext="&united.pref.button.tooltip;"
         oncommand="united.openPrefWindow();"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
-        remove-priority="1"
-        />
+        united-icon-only="true"
+        >
+      <menupopup id="united-pref-button-dropdown">
+        <menuitem id="united-pref-button-menuitem"
+          label="&united.pref.button.label;"
+          tooltiptext="&united.pref.button.tooltip;"
+          oncommand="event.stopPropagation(); united.openPrefWindow();"
+          />
+      </menupopup>
+    </toolbarbutton>
   </toolbarpalette>
 </overlay>

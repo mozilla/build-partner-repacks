@@ -27,13 +27,11 @@ const prefCount = "tracking.count404.count";
 function submit()
 {
   const intervalMS = 7 * 24 * 60 * 60 * 1000; // once a week
-  if (sanitize.integer(ourPref.get(prefSubmit)) * 1000 >
+  if (sanitize.integer(ourPref.get(prefSubmit, 0)) * 1000 >
       (new Date() - intervalMS))
     return;
 
-  var count = ourPref.get(prefCount);
-  if (!count)
-    count = 0;
+  var count = ourPref.get(prefCount, 0);
   new FetchHTTP({ url : brand.tracking.count404URL, method : "POST",
       urlArgs : { count : count }},
   function()
@@ -66,9 +64,7 @@ var Track404 =
       if (subject.responseStatus != 404)
         return;
       //debug("hit a 404 page with server msg: " + subject.responseStatusText);
-      var count = ourPref.get(prefCount);
-      if (!count)
-        count = 0;
+      var count = ourPref.get(prefCount, 0);
       ourPref.set(prefCount, ++count);
       return;
     } catch (e) { errorInBackend(e); }

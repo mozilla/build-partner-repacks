@@ -2,3 +2,8 @@ radio[pane="login-pane"]
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-nonew-32.png");
 }
+
+#growl {
+  -moz-image-region: rect(0 24px 24px 0);
+  list-style-image: url("chrome://global/skin/icons/question-mark.png");
+}

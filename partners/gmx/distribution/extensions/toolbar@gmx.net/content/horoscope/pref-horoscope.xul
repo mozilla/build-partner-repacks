@@ -3,21 +3,23 @@
 <?xml-stylesheet href="chrome://unitedtb/skin/horoscope/pref-horoscope.css" type="text/css"?>
 <overlay id="united-pref-horoscope-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <prefwindow id="united-pref-window">
-    <prefpane id="horoscope-pane"
+  <tabs id="tabs">
+    <tab id="horoscope-tab"
         label="&pane.title;"
-        onpaneload=""
-        insertafter="email-pane,search-pane,home-pane,general-pane"
+        insertafter="search-tab,features-tab"
+        />
+  </tabs>
+  <tabpanels id="tabpanels">
+    <tabpanel id="horoscope-tabpanel"
+        insertafter="search-tabpanel,features-tabpanel"
+        orient="vertical"
         >
-
       <script type="application/x-javascript">
         upref.horoscope = {};
         united.loadJS("chrome://unitedtb/content/horoscope/pref-horoscope.js", upref.horoscope);
       </script>
 
       <preferences>
-        <preference id="extensions.unitedinternet.horoscope.sign"
-                    name="extensions.unitedinternet.horoscope.sign" type="string"/>
         <preference id="extensions.unitedinternet.horoscope.type"
                     name="extensions.unitedinternet.horoscope.type" type="string"/>
         <preference id="extensions.unitedinternet.horoscope.sign.partner"
@@ -27,12 +29,12 @@
       </preferences>
 
       <vbox id="horoscope-settings">
-      <hbox pack="start">
-        <vbox>
-          <label value="&sign.label;" control="sign"/>
-          <menulist id="sign"
-                      preference="extensions.unitedinternet.horoscope.sign"
-                      >
+        <groupbox
+            align="end"
+            pack="start"
+            >
+          <caption label="&sign.label;" />
+          <menulist id="sign">
             <menupopup>
               <menuitem value="none"
                   label="&none.label;"/>
@@ -62,19 +64,23 @@
                   label="&fische.label;"/>
             </menupopup>
           </menulist>
-        </vbox>
-        <vbox>
-          <label value="&type.label;" control="type"/>
+        </groupbox>
+        <groupbox
+            align="end"
+            pack="start"
+            >
+          <caption label="&type.label;"/>
           <menulist id="type"
                       preference="extensions.unitedinternet.horoscope.type"
                       >
             <menupopup id="type-menu"/>
           </menulist>
-        </vbox>
-      </hbox>
-      <hbox pack="start">
-        <vbox>
-          <label value="&gender.label;" control="gender"/>
+        </groupbox>
+        <groupbox
+            align="end"
+            pack="start"
+            >
+          <caption label="&gender.label;"/>
           <menulist id="gender"
                       preference="extensions.unitedinternet.horoscope.gender"
                       >
@@ -85,9 +91,12 @@
                   label="&female.label;"/>
             </menupopup>
           </menulist>
-        </vbox>
-        <vbox>
-          <label value="&sign.partner.label;" control="sign.partner"/>
+        </groupbox>
+        <groupbox
+            align="end"
+            pack="start"
+            >
+          <caption label="&sign.partner.label;"/>
           <menulist id="sign.partner"
                       preference="extensions.unitedinternet.horoscope.sign.partner"
                       >
@@ -106,7 +115,7 @@
                   label="&jungfrau.label;"/>
               <menuitem value="waage"
                   label="&waage.label;"/>
-              <menuitem value="scorpion"
+              <menuitem value="skorpion"
                   label="&scorpion.label;"/>
               <menuitem value="schuetze"
                   label="&schuetze.label;"/>
@@ -118,9 +127,10 @@
                   label="&fische.label;"/>
             </menupopup>
           </menulist>
-        </vbox>
-      </hbox>
+        </groupbox>
       </vbox>
-    </prefpane>
-  </prefwindow>
+    </tabpanel>
+  </tabpanels>
+
+
 </overlay>

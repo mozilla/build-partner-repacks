@@ -7,11 +7,12 @@
  * Callers of the system do not instantiate it, but get it from
  * mSearch.currentResults. Callers do use the API defined here, though.
  */
-function mResult(title, descr, icon)
+function mResult(title, descr, icon, type)
 {
   this.title = title;
   this.description = descr;
   this.icon = icon;
+  this.type = type || "generic";
 }
 mResult.prototype =
 {

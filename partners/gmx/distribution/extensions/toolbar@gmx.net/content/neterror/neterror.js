@@ -18,29 +18,26 @@ function onLoad(unitedFromAbove)
 
 function setSearchTerm()
 {
-   var url = document.documentURI;
+  var url = document.documentURI;
 
-   var desc = url.search(/d\=/);
-   // desc == -1 if not found; if so, return an empty string
-   // instead of what would turn out to be portions of the URI
-   if (desc != -1)
-   {
-     let msg = decodeURIComponent(url.slice(desc + 2));
-     document.getElementById("message").appendChild(document.createTextNode(msg));
-   }
+  var u = url.search(/u\=/);
+  var badurl = decodeURIComponent(url.substr(u).slice(2, url.substr(u).indexOf('&')));
 
-   var u = url.search(/u\=/);
-   // desc == -1 if not found; if so, return an empty string
-   // instead of what would turn out to be portions of the URI
-   if (u != -1)
-   {
-     var badurl = decodeURIComponent(url.substr(u).slice(2, url.substr(u).indexOf('&')));
-     badurl = badurl.slice(badurl.search(/:\/\//)+3);
-     badurl = badurl.replace(/^www\./,'');
-     badurl = badurl.replace(/\/$/,'');
-     badurl = badurl.replace(/\./g,' ').replace(/\//g,' ');
-     document.getElementById("searchterm").value = badurl;
-   }
+  var ioService = Components.classes["@mozilla.org/network/io-service;1"]  
+                  .getService(Components.interfaces.nsIIOService);  
+  var uri = ioService.newURI(badurl, null, null);  
+
+  document.getElementById("badurl").textContent = uri.host;
+
+  // Turn the URL into search parameters
+  if (u != -1)
+  {
+    badurl = badurl.slice(badurl.search(/:\/\//)+3);
+    badurl = badurl.replace(/^www\./,'');
+    badurl = badurl.replace(/\/$/,'');
+    badurl = badurl.replace(/\./g,' ').replace(/\//g,' ');
+    document.getElementById("searchterm").value = badurl;
+  }
 }
 
 // <copied from="newtab-page.xhtml">

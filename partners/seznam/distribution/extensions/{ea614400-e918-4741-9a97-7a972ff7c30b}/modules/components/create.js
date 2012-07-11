@@ -18,4 +18,5 @@ FoxcubService.register = new FoxcubService.Register();
 FoxcubService.install = new FoxcubService.Install();
 FoxcubService.email = new FoxcubService.Email();
 FoxcubService.speedDial = new FoxcubService.SpeedDial();
+
 FoxcubService.baseManager = new FoxcubService.BaseManager();

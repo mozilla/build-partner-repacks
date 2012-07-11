@@ -1,10 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
- xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+<?xml version="1.0" ?><RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>toolbar@gmx.net</em:id>
-    <em:version>1.5.3</em:version>
-    <em:name>GMX Toolbar</em:name>
+    <em:version>2.1.4</em:version>
+    <em:name>GMX MailCheck</em:name>
     <em:description>Der sichere Klick in Dein Postfach.</em:description>
     <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
     <em:homepageURL>http://go.gmx.net/home</em:homepageURL>
@@ -14,14 +12,14 @@
     <em:localized>
         <Description>
             <em:locale>en-US</em:locale>
-            <em:name>GMX Toolbar</em:name>
+            <em:name>GMX MailCheck</em:name>
             <em:description>The safe way to access your personal mail.</em:description>
             <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
             <em:homepageURL>http://go.gmx.net/home</em:homepageURL>
         </Description>
         <Description>
             <em:locale>de-DE</em:locale>
-            <em:name>GMX Toolbar</em:name>
+            <em:name>GMX MailCheck</em:name>
             <em:description>Der sichere Klick in Dein Postfach.</em:description>
             <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
             <em:homepageURL>http://go.gmx.net/home</em:homepageURL>
@@ -33,7 +31,7 @@
         <Description>
             <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
             <em:minVersion>3.6</em:minVersion>
-            <em:maxVersion>4.0</em:maxVersion>
+            <em:maxVersion>10.*</em:maxVersion>
         </Description>
     </em:targetApplication>
   </Description>

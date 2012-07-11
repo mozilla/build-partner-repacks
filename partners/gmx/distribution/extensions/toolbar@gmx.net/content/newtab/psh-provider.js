@@ -88,12 +88,11 @@ PSHModule.prototype =
       var entries = [];
       for each (let result in results)
       {
-        let term = result[0];
-        united.assert(term, "no term found?!");
-        let date = result[1];
-        united.assert(date, "no date found?!")
-        //assert(typeof(date) == "date", "date not of type Date?!");
-        entries.push(new PSHEntry(term, date));
+        united.assert(result.term);
+        result.term = result.term + ""; // sqlite returns Number, if I stored "1" :(
+        united.assert(result.date);
+        //united.assert(result.date instanceof Date, "date not of type Date");
+        entries.push(new PSHEntry(result.term, result.date));
       }
       successCallback(entries);
     }, errorCallback);
@@ -117,7 +116,7 @@ PSHEntry.prototype =
   },
   action : function(event)
   {
-    united.loadPage(united.brand.search.historyNewTabURL + event.target.entry.label);
+    united.loadPage(united.brand.search.historyNewTabURL + event.target.entry.label, "united-psh");
   },
 }
 united.extend(PSHEntry, Entry);

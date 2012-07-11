@@ -9,12 +9,13 @@ style	chrome://global/content/customizeToolbar.xul	chrome://ytoolbar/skin/ytoolb
 interfaces components/nsIYahooEventTipManager.xpt
 interfaces components/nsIYahooUrlProbe.xpt
 interfaces components/nsYLogger.xpt
+interfaces components/nsYLogFileAppender.xpt
 interfaces components/nsYahoo404NavAssist.xpt
 interfaces components/nsYahooAlertManager.xpt
 interfaces components/nsYahooBookmarkManager.xpt
-interfaces components/nsYahooCNAManager.xpt
 interfaces components/nsYahooCache.xpt
 interfaces components/nsYahooConfigManager.xpt
+interfaces components/nsYahooPartnerManager.xpt
 interfaces components/nsYahooDomBuilder.xpt
 interfaces components/nsYahooFeedFetcher.xpt
 interfaces components/nsYahooFeedNode.xpt
@@ -36,6 +37,10 @@ category profile-after-change yEventTipManager @yahoo.com/eventtipmanager;1
 component {f54df254-a8b5-475a-bb8c-5fc439e24d64} components/nsIYahooUrlProbe.js
 contract @yahoo.com/urlprobe;1 {f54df254-a8b5-475a-bb8c-5fc439e24d64}
 category profile-after-change YahooUrlProbe @yahoo.com/urlprobe;1
+
+component {398BF324-4B95-4E04-851C-876468795AD4} components/nsYLogFileAppender.js
+contract @yahoo.com/ylogfileappender;1 {398BF324-4B95-4E04-851C-876468795AD4}
+category profile-after-change YLogFileAppender @yahoo.com/ylogfileappender;1
 
 component {43E76C2E-603D-4bf4-99CC-BAB4C289E4B7} components/nsYLogger.js
 contract @yahoo.com/ytoolbarlogger;1 {43E76C2E-603D-4bf4-99CC-BAB4C289E4B7}
@@ -65,10 +70,6 @@ component {2C8221C5-5EA0-4e4d-BF54-A4014A663052} components/nsYahooBookmarkManag
 contract @yahoo.com/bookmarkmanager;1 {2C8221C5-5EA0-4e4d-BF54-A4014A663052}
 category profile-after-change BookmarkManager @yahoo.com/bookmarkmanager;1
 
-component {5cc52d91-c06c-11dd-ad8b-0800200c9a66} components/nsYahooCNAManager.js
-contract @yahoo.com/cnamanager;1 {5cc52d91-c06c-11dd-ad8b-0800200c9a66}
-category profile-after-change YahooCnaManager @yahoo.com/cnamanager;1
-
 component {E52264DC-F91A-11DD-BAF7-11F655D89593} components/nsYahooCache.js
 contract @yahoo.com/ycache;1 {E52264DC-F91A-11DD-BAF7-11F655D89593}
 category profile-after-change YahooCache @yahoo.com/ycache;1
@@ -76,6 +77,10 @@ category profile-after-change YahooCache @yahoo.com/ycache;1
 component {A199A21C-C5C0-11DD-B9D5-360956D89593} components/nsYahooConfigManager.js
 contract @yahoo.com/configmanager;1 {A199A21C-C5C0-11DD-B9D5-360956D89593}
 category profile-after-change YahooConfigManager @yahoo.com/configmanager;1
+
+component {C163F351-1248-4A36-AD0E-E0B2051928A4} components/nsYahooPartnerManager.js
+contract @yahoo.com/partner/manager;1 {C163F351-1248-4A36-AD0E-E0B2051928A4}
+category profile-after-change YahooPartnerManager @yahoo.com/partner/manager;1
 
 component {15e84d13-9bda-4810-ad02-437d2580c87d} components/nsYahooDomBuilder.js
 contract @yahoo.com/dombuilder;1 {15e84d13-9bda-4810-ad02-437d2580c87d}

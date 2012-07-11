@@ -29,7 +29,8 @@ window.addEventListener("load", onLoadResize, false);
 
 function onWindowResize()
 {
-  for each (let button in getButtonsToShrink())
+  var buttons = getButtonsToShrink();
+  for each (let button in buttons)
     button.removeAttribute("crowded");
   if (tb.hasAttribute("customizeToolbar"))
     return;
@@ -37,7 +38,7 @@ function onWindowResize()
   if (!gWantWidth)
     gWantWidth = tb.scrollWidth;
   //united.debug("on overflow: want width " + gWantWidth + ", now natural (scroll) width " + tb.scrollWidth + ", have (client) width " + tb.clientWidth);
-  for each (let button in getButtonsToShrink())
+  for each (let button in buttons)
   {
     if (tb.scrollWidth <= tb.clientWidth)
       return;
@@ -62,6 +63,7 @@ function getButtonsToShrink()
   for (let i = 0, l = buttons.length; i < l; i++)
     result.push(buttons.item(i));
 
+  result.reverse(); // remove right to left
   result.sort(function(a, b)
   {
     try {

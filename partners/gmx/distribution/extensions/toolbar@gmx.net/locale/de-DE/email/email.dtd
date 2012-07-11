@@ -1,7 +1,12 @@
-<!ENTITY united.email.button.label "E-Mail">
-<!ENTITY united.email.button.tooltip "E-Mail">
+<!ENTITY united.email.button.label "Posteingang">
+<!ENTITY united.email.button.tooltip "&brand.name; Posteingang">
 <!ENTITY united.email.messages.tooltip "Gehe zum Posteingang">
+<!ENTITY united.email.checknow.label "Auf neue E-Mails prüfen">
+<!ENTITY united.email.configure.label "Einstellungen…">
+<!ENTITY united.email.configure.tooltip "Konfigurieren Sie Ihre E-Mail-Adresse…">
 <!ENTITY united.logged-in.label "Abmelden">
 <!ENTITY united.logged-in.tooltip "Abmelden">
 <!ENTITY united.logged-out.label "Anmelden">
 <!ENTITY united.logged-out.tooltip "Anmelden">
+<!ENTITY united.xxltooltip.1.label "Nie wieder Mails löschen!">
+<!ENTITY united.xxltooltip.2.label "Jetzt anmelden und auf neue E-Mails checken">

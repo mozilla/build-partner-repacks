@@ -6,11 +6,11 @@ function onButton(event)
   getPostalCode(
   function(postalcode)
   {
-    united.loadPage(united.brand.weather.regionalURL + postalcode);
+    united.loadPage(united.brand.weather.regionalURL + postalcode, "united-weather");
   },
   function() // got no postal code
   {
-    united.loadPage(united.brand.weather.normalURL);
+    united.loadPage(united.brand.weather.normalURL, "united-weather");
   });
 };
 
@@ -91,7 +91,7 @@ function getPostalCode(successCallback, noValueCallback)
   if (united.ourPref.get("weather.do-not-ask"))
     return noValueCallback();
 
-  united.openPrefWindow("weather");
+  united.openPrefWindow("features");
 
   var postalcode = united.ourPref.get("weather.postalcode");
   if (isValidPostalCode(postalcode))

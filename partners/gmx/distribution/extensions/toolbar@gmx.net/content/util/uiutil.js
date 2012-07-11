@@ -1,14 +1,18 @@
 
 function error(e)
 {
-  dump("ERROR: " + e + "\n");
-  dump("Stack:\n" + (e.stack ? e.stack : "none") + "\n");
+  united.debug("ERROR: " + e);
+  united.debug("Stack:\n" + (e.stack ? e.stack : "none"));
+};
+
+function errorNonCritical(e)
+{
+  error(e);
 };
 
 function errorCritical(e)
 {
-  dump("ERROR: " + e + "\n");
-  dump("Stack:\n" + (e.stack ? e.stack : "none") + "\n");
+  error(e);
   var sb = united.getStringBundle("chrome://unitedtb/locale/util.properties");
   var title = sb.GetStringFromName("errorDialog.title");
   alertPrompt(title, e);
@@ -21,6 +25,44 @@ function alertPrompt(alertTitle, alertMsg)
   Cc["@mozilla.org/embedcomp/prompt-service;1"]
       .getService(Ci.nsIPromptService)
       .alert(window, alertTitle, alertMsg);
+}
+
+/**
+ * For loadPageInSpecificTab() only.
+ * When a button is clicked, the corresponding tab is stored in this array.
+ * Then it is reused (if open) the next time the button is clicked.
+ * {Array of {weak reference to <tab> from <tabbrowser>}}
+ */
+var _gActiveTabs = {};
+
+function loadPageInSpecificTab(url, tabName)
+{
+  url = united.sanitize.url(url); // critical for security
+  // .get retrieves the actual tab object from the weak reference.
+  // If it is null, the tab no longer exists
+  // We also have to check for parentNode, because the tab might
+  // exist, but not be in the DOM anymore
+  var tabRef = _gActiveTabs[tabName];
+  if (tabRef &&
+      tabRef.get() &&
+      tabRef.get().parentNode)
+  {
+    var tabToUse = tabRef.get();
+    var uri = united.ioService.newURI(url, null, null);
+    // Only use the same tab if the hosts are the same
+    if (tabToUse.linkedBrowser.currentURI.host == uri.host)
+    {
+      gBrowser.selectedTab = tabToUse;
+      loadChromePage(url, "current");
+      return;
+    }
+  }
+  var newTab = gBrowser.addTab();
+  gBrowser.selectedTab = newTab;
+  // Because we've added the tab and made it the selected tab, we can
+  // pass to loadChromePage and use openUILink in current
+  loadChromePage(url, "current");
+  _gActiveTabs[tabName] = Components.utils.getWeakReference(newTab);
 }
 
 /**
@@ -38,13 +80,18 @@ function alertPrompt(alertTitle, alertMsg)
  *      to select new tabs, and vice versa.
  *   "window"      new window
  *   "save"        save to disk (with no filename hint!)
+ *   "united-*"    invokes code to reuse a tab that corresponds to the target
  */
 function loadPage(url, target)
 {
+  var gBrowser = top.gBrowser ? top.gBrowser :
+      findSomeBrowserWindow().gBrowser;
   url = united.sanitize.url(url); // critical for security
-  target = united.sanitize.enum(target,
-      ["current", "tab", "tabshifted", "window", "save"], "current");
-  openUILinkIn(url, target);  // from utilityOverlay.js
+  /* If the target begins with united, try to reuse a tab */
+  if (target && target.match(/^united/))
+    loadPageInSpecificTab(url, target);
+  else
+    loadChromePage(url, target);
 }
 
 /**
@@ -59,8 +106,80 @@ function loadChromePage(url, target)
 {
   target = united.sanitize.enum(target,
       ["current", "tab", "tabshifted", "window", "save"], "current");
+  var openUILinkIn = top.openUILinkIn ? top.openUILinkIn :
+      findSomeBrowserWindow().openUILinkIn;
+  united.debug("loading webpage <" + url + "> in " + target);
   openUILinkIn(url, target);  // from utilityOverlay.js
 }
+
+
+/**
+ * Similar to loadPage(), but using HTTP POST.
+ */
+function loadPageWithPOST(url, target, uploadBody, mimetype)
+{
+  url = united.sanitize.url(url); // critical for security
+  target = united.sanitize.enum(target,
+      ["current", "tab", "tabshifted", "window", "save"], "current");
+  var openUILinkIn = top.openUILinkIn ? top.openUILinkIn :
+      findSomeBrowserWindow().openUILinkIn;
+  united.debug("loading webpage with POST <" + url + "> in " + target);
+  openUILinkIn(url, target, false, createPostDataFromString(uploadBody, mimetype));
+}
+
+/**
+ * Takes a JavaScript string and MIME-Type and creates
+ * an nsIInputStream suitable for passing to webnavigation.loadURI().
+ * @param uploadBody {String} what you want to post.
+ *     The HTTP body of the HTTP request you will send.
+ * @param mimetype {String} the format in which you are posting
+ * @returns {nsIInputStream}
+ */
+function createPostDataFromString(uploadBody, mimetype)
+{
+  var stringStream = Cc["@mozilla.org/io/string-input-stream;1"]
+      .createInstance(Ci.nsIStringInputStream);
+  stringStream.data = uploadBody;
+  var postData = Cc["@mozilla.org/network/mime-input-stream;1"]
+      .createInstance(Ci.nsIMIMEInputStream);
+  postData.addHeader("Content-Type", mimetype);
+  postData.addContentLength = true;
+  postData.setData(stringStream);
+  return postData;
+}
+
+  /*
+  var params = {
+    sendingauthdata : 1,
+    jsenabled : true,
+    "login.ValidBrowser" : false,
+    "login.Username" : acc.emailAddress,
+    "login.Password" : acc._password, // tralala
+  };
+  loadPageWithPOSTParams(url, params);
+  */
+/**
+ * loadPageWithPOST(), but passes params like a form submission
+ *
+function loadPageWithPOSTParams(url, target, params)
+{
+  united.assert(typeof(params) == "object");
+  var paramsStr = "";
+  var first = true;
+  for (let paramname in params)
+  {
+    if (first)
+      first = false;
+    else
+      paramsStr += "&";
+    paramsStr += united.sanitize.alphanumdash(paramname) + "=" +
+        encodeURIComponent(params[paramname]);
+  }
+  loadPageWithPOSTParams(url, target, paramsStr, "application/x-www-form-urlencoded");
+}
+*/
+
+
 
 function cleanElement(el)
 {
@@ -68,12 +187,62 @@ function cleanElement(el)
     el.removeChild(el.firstChild);
 }
 
+/**
+ * For a given element, finds the tagname which contains it
+ * @param element {DOMElement}
+ * @return {DOMElement <tagname>} or null
+ */
+function findParentTagForElement(tagname, element)
+{
+  united.assert(element && element instanceof Ci.nsIDOMElement);
+  united.sanitize.nonemptystring(tagname);
+  for (; element && element.tagName != tagname; element = element.parentNode)
+    ;
+  return element;
+}
+
+
+
+/**
+ * Same as waitForPageLoad(), just that you're waiting for a specific
+ * URL to load.
+ *
+ * @param tabbrowser {<tabbrowser>}
+ * @param url {<String-URL}
+ * @param callback {Function(browser)}
+ *    Will be called then any page in the tabbrowser finished loading.
+ *    browser {<browser>}   <browser> element containing the page.
+ *    Unlike waitForPageLoad |callback|, no |url| param, no return value.
+ */
+function waitForURLLoad(tabbrowser, waitForURL, callback)
+{
+  waitForPageLoad(tabbrowser, function(browser, loadedURL)
+  {
+    var hit = waitForURL == loadedURL;
+    if (hit)
+      callback(browser);
+    return hit;
+  });
+}
 
 /**
  * If you load a page, e.g. with loadPage() here, and want to wait until
  * it's loaded.
+ * You decide whether this is the page you are waiting for.
+ * Note that you get calls for all pageloads in all tabs in this browser window,
+ * so you have to filter properly.
+ *
+ * @param tabbrowser {<tabbrowser>}
+ * @param callback {Function(browser)}
+ *    Will be called then any page in the tabbrowser finished loading.
+ *    browser {<browser>}   <browser> element containing the page.
+ *    url {String-URL}   URL of the page that just finished loading.
+ *    You must return either true or false, whether this was the page you
+ *    were waiting for.
+ *      If true, we will stop listening for page loads and calling |callback|.
+ *      If false, you will get further callbacks.
  */
-function waitForPageLoad(tabbrowser, pageURL, callback)
+function waitForPageLoad(tabbrowser, callback)
 {
   var webTabProgressListener =
   {
@@ -96,10 +265,9 @@ function waitForPageLoad(tabbrowser, pageURL, callback)
           return;
         }
         //united.debug("uri requested: " + request.URI.spec);
-        if (request.URI.spec != pageURL)
+        if (! callback(browser, request.URI.spec))
           return;
         tabbrowser.removeTabsProgressListener(webTabProgressListener);
-        callback(browser);
       } catch (e) { united.errorInBackend(e); }
     },
     onLocationChange: function() {},
@@ -165,6 +333,11 @@ function checkDisabledModules(win)
       if (entry.win != win.document.documentElement.id)
         continue;
       let e = win.document.getElementById(entry.el);
+      if (!e)
+      {
+        united.debug("warning: element ID " + entry.el + " (to be disabled) not found");
+        continue;
+      }
       e.hidden = module.disabled;
     }
   }

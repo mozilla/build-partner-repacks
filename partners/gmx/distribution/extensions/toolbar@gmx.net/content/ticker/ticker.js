@@ -79,8 +79,11 @@ function buildMenu(xml)
     }
     united.cleanElement(gMenuE);
 
+    var count = 0;
     for each (let item in items)
     {
+      if (++count > united.brand.ticker.maxItems)
+        break;
       //united.debug("item " + item);
       let url = united.sanitize.url(item.link[0].text());
       let title = united.sanitize.label(item.title[0].text());
@@ -161,5 +164,5 @@ function onDropdownOpened(event)
  */
 function onButton(event)
 {
-  united.loadPage(event.target.url ? event.target.url : united.brand.ticker.portalURL);
+  united.loadPage(event.target.url ? event.target.url : united.brand.ticker.portalURL, "united-ticker");
 };

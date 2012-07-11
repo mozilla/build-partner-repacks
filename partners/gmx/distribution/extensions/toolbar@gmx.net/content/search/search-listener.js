@@ -46,3 +46,11 @@ function onLoad()
 }
 
 window.addEventListener("load", onLoad, false);
+
+/* This is a forwarder. The delete search history function can only send */
+/* a global notification and we need to convert it to a window notification */
+united.autoregisterGlobalObserver("delete-search-history", function()
+{
+  united.notifyWindowObservers("search-started",
+      { searchTerm : null, source : 1 });
+});

@@ -1,7 +1,7 @@
 /**
  * Whether the UI currently is in edit mode.
  */
-var gIsEditing = false;
+var gIsEditing = true;
 
 /**
  * Specifies which module is currently shown to the user.
@@ -36,14 +36,12 @@ var sb;
 function onLoad()
 {
   sb = new united.StringBundle("chrome://unitedtb/locale/newtab/store-management.properties");
-  gWeek = [ sb.get("sunday"), sb.get("monday"), sb.get("tuesday"),
-            sb.get("wednesday"), sb.get("thursday"), sb.get("friday"),
-            sb.get("saturday"), sb.get("sunday") ];
   var mode = document.location.href.match(/\?mode=(.*)/)[1];
   addModule(new PSHModule());
   // may throw
   switchModule(gModules[mode]);
-
+  changeEditMode(gIsEditing);
+  initBrand();
 }
 
 window.addEventListener("load", onLoad, false);
@@ -108,6 +106,17 @@ function discardTime(datetime)
   return date;
 }
 
+function checkOtherBoxes(event) {
+  var entry = event.target.entry;
+  for each (let checkBox in gCheckBoxes)
+  {
+    if (checkBox.entry.label == entry.label && checkBox.entry != entry) {
+      checkBox.checked = event.target.checked;
+      checkBox.duplicate = checkBox.checked;
+    }
+  }
+}
+
 /**
  * Callback for |Module.getEntries|.
  *
@@ -150,9 +159,9 @@ function addEntries(entries)
     else if (dayDistance == 1)
       relativeDate = sb.get("yesterday") + " - ";
     let date = dayEntries[dayDistance][0].date;
-    let weekDay = gWeek[date.getDay()];
-    let dayString = relativeDate + weekDay + ", " + date.toLocaleDateString();
+    let dayString = relativeDate + date.toLocaleDateString();
     let header = document.createElement("h2");
+    header.classList.add("date");
     header.appendChild(document.createTextNode(dayString));
     list.appendChild(header);
 
@@ -171,15 +180,21 @@ function addEntries(entries)
         checkbox.style.visibility = "visible";
       else
         checkbox.style.visibility = "hidden";
+      checkbox.addEventListener("click", checkOtherBoxes, false);
       gCheckBoxes.push(checkbox);
-      let link = document.createElement("a");
-      link.entry = entry;
+      let timeNode = document.createElement("span");
+      timeNode.setAttribute("class", "entry-time");
       let timeString = entry.date.toLocaleTimeString();
       // remove seconds
       timeString = timeString.slice(0, timeString.lastIndexOf(":"));
-      link.appendChild(document.createTextNode(timeString  + " " + entry.label));
+      timeNode.appendChild(document.createTextNode(timeString));
+      let link = document.createElement("a");
+      link.setAttribute("href", "javascript:");
+      link.entry = entry;
+      link.appendChild(document.createTextNode(entry.label));
       link.addEventListener("click", entry.action, false);
       div.appendChild(checkbox);
+      div.appendChild(timeNode);
       div.appendChild(link);
       list.appendChild(div);
     }
@@ -225,29 +240,26 @@ function onSwitchModule(event)
  */
 function onToggleEdit()
 {
+    gIsEditing = ! gIsEditing;
+    changeEditMode(gIsEditing);
+}
+
+/**
+ * Kicks UI in and out of edit mode.
+ */
+function changeEditMode(isEditing)
+{
     var editButton = document.getElementById("edit-button");
     united.cleanElement(editButton);
-    if (gIsEditing)
-    {
-      var text = editButton.getAttribute("edit-string");
-      editButton.appendChild(document.createTextNode(text));
-    }
-    else
-    {
-      var text = editButton.getAttribute("exit-string");
-      editButton.appendChild(document.createTextNode(text));
-    }
-    // if we're editing user toggles button, we want to go back to normal mode
+    var text = editButton.getAttribute(isEditing ? "exit-string" : "edit-string");
+    editButton.appendChild(document.createTextNode(text));
+
     var elementsList = document.getElementsByClassName("edit-mode");
     for (let i = 0, l = elementsList.length; i < l; i++)
     {
       let el = elementsList.item(i);
-      if (!gIsEditing)
-        el.style.visibility = "visible";
-      else
-        el.style.visibility = "hidden";
+      el.style.visibility = isEditing ? "visible" : "hidden";
     }
-    gIsEditing = ! gIsEditing;
 }
 
 
@@ -276,9 +288,19 @@ function onDeleteSelection()
   {
     if (!checkBox.checked)
       continue;
+    if (checkBox.entry.duplicate)
+      continue;
     united.assert(checkBox.entry);
     checkBox.entry.delete(function() {}, united.errorCritical);
   }
   // TODO: do not refresh UI completely, just delete items we deleted from the UI
   refreshUI();
+}
+
+// copied from newtab-page.js
+function initBrand()
+{
+  document.getElementById("logo").setAttribute("href",
+      united.brand.toolbar.homepageURL);
+  document.getElementById("logo").setAttribute("target", "_blank");
 }

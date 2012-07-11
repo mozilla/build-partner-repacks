@@ -23,6 +23,7 @@ mSearch.prototype =
   _results : null, // {Array of mResult}
   _observers : null, // {Array of Function}
   _error : null, // {Exception (or String?)}
+  _cancelled : false, // {Boolean} cancel() has been called
 
   /**
    * Triggers the actual search, via DB, or over the network etc..
@@ -30,6 +31,27 @@ mSearch.prototype =
   startSearch : function()
   {
     throw NotReached("abstract function");
+  },
+
+  /**
+   * Aborts the search that is running at the moment.
+   */
+  cancel : function()
+  {
+    this._cancelled = true;
+  },
+
+  /**
+   * Implementations call this to
+   * add a result
+   * @param result {mResult}
+   */
+  _addResult : function(result)
+  {
+    assert(result);
+    if (this._cancelled)
+      return;
+    this._results.push(result);
   },
 
   /**
@@ -76,11 +98,27 @@ mSearch.prototype =
       } catch (e) { errorInBackend(e); }
     }
   },
-  _haveError : function(e)
+  /**
+   * Implementations call this to
+   * tell about an error that likely means that no results
+   * will come.
+   */
+  _haveFatalError : function(e)
   {
     errorInBackend(e);
-    this._error = e;
+    if (!this._error)
+      this._error = e;
     this._notifyObserversOfResultChanges();
+  },
+  /**
+   * Implementations call this to
+   * tell about an error during processing one of the
+   * results, but other results might be processed properly.
+   */
+  _haveItemError : function(e)
+  {
+    errorInBackend(e);
   },
 
 }
+extend(mSearch, Abortable);

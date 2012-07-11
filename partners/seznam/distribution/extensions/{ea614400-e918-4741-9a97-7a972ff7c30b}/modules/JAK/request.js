@@ -16,6 +16,7 @@ Components.utils.import("resource://foxcub/foxcubService.js");
 FoxcubService.JAK.Request = FoxcubService.JAK.ClassMaker.makeClass({
 	NAME: "FoxcubService.JAK.Request",
 	VERSION: "2.0"
+	
 });
 
 /** @constant */
@@ -219,8 +220,8 @@ FoxcubService.JAK.Request.prototype._sendXHR = function(url, data) {
 	this._xhr.open(this._options.method, u, this._options.async);
 	for (var p in this._headers) { this._xhr.setRequestHeader(p, this._headers[p]); }
 	this._xhr.send(d);
-	
-	if (this._options.timeout) { setTimeout(FoxcubService.JAK.bind(this,this._timeout), this._options.timeout); }
+	var timer = Components.classes["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer);  
+	if (this._options.timeout) { timer.initWithCallback(FoxcubService.JAK.bind(this,this._timeout), this._options.timeout, Components.interfaces.nsITimer.TYPE_ONE_SHOT); }
 	if (!this._options.async) { this._onReadyStateChange(); }
 }
 

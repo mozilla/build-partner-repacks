@@ -1,72 +1,63 @@
-var gToolbar;
-var search;
-
 function onLoad()
 {
-  // toolbar icon mode
-  var iconModeDropdown = document.getElementById("general-toolbarmode");
-  // HACK: Calls our function in Firefox window directly.
-  // Need function calls with return value in messaging system.
-  var firefoxWindow = united.findSomeBrowserWindow();
-  iconModeDropdown.value = firefoxWindow.united.toolbar.getCurrentToolbarMode();
-
-  // search and homepage checkboxen
-  search = united.Cc["@mozilla.org/browser/search-service;1"]
-      .getService(united.Ci.nsIBrowserSearchService);
-  document.getElementById("general-search-checkbox")
-      .checked = isSearchEnabled();
-  document.getElementById("general-homepage-checkbox")
-      .checked = isHomepageEnabled();
+  try {
+    new HomepageSelector(document.getElementById("general-homepage-dropdown"));
+    regionOnLoad();
+  } catch (e) { united.errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
-function onChangedToolbarMode(newMode)
+function regionOnLoad()
 {
-  //gToolbar.setAttribute("mode", newMode);
-  //gToolbar.ownerDocument.persist(gToolbar.id, "mode");
-  united.notifyGlobalObservers("do-customize-toolbar", { mode : newMode });
-}
-
-function isSearchEnabled()
-{
-  return search.currentEngine.name == united.brand.search.engineName;
-}
-
-function isHomepageEnabled()
-{
-  return united.generalPref.get("browser.startup.homepage") ==
-        united.brand.toolbar.startpageURL;
-}
-
-//<copied to="opt-in.js (with modifications">
-function onSearchChanged(newValue)
-{
-  if (newValue) // turned on, set us as search engine
+  if (united.brand.regions.list.length < 2 ||
+      !united.ourPref.get("pref.show.regions"))
   {
-    // sets pref "browser.search.selectedEngine" and notifies app
-    search.currentEngine = search.getEngineByName(
-        united.brand.search.engineName);
-
-    // URLbar search
-    united.generalPref.set("keyword.URL", united.brand.search.keywordURL);
-  }
-  else // turned off, restore default
-  {
-    search.currentEngine = search.defaultEngine;
-    united.generalPref.reset("keyword.URL");
+    var regionPage = document.getElementById("general-region-box");
+    regionPage.hidden = true;
   }
 }
 
-function onHomepageChanged(newValue)
+function HomepageSelector(el)
 {
-  if (newValue) // turned on, set us as homepage
-  {
-    united.generalPref.set("browser.startup.homepage",
-        united.brand.toolbar.startpageURL);
-  }
-  else // turned off, restore default
-  {
-    united.generalPref.reset("browser.startup.homepage");
-  }
+  this._newTabURL = united.ourPref.get("newtab.url");
+  SettingElement.call(this, el);
 }
-//</copied>
+HomepageSelector.prototype =
+{
+  get storeValue()
+  {
+    var homepage = united.generalPref.get("browser.startup.homepage");
+    if (homepage == this._newTabURL)
+      return "newtab";
+    else if (homepage == united.brand.toolbar.startpageHomepageURL)
+      return "our-start-page";
+    else if (homepage == united.brand.toolbar.startpageURL) // searchpage
+      return "our-search-page";
+    else
+      return "browser-homepage";
+  },
+  set storeValue(val)
+  {
+    if (val == this.storeValue)
+      return; // do not overwrite custom value
+    united.generalPref.set("browser.startup.page", 1); // pay attention
+    if (val == "browser-homepage")
+      united.generalPref.reset("browser.startup.homepage"); // pay attention
+    else if (val == "newtab")
+      united.generalPref.set("browser.startup.homepage", this._newTabURL);
+    else if (val == "our-start-page")
+      united.generalPref.set("browser.startup.homepage",
+          united.brand.toolbar.startpageHomepageURL);
+    else if (val == "our-search-page")
+      united.generalPref.set("browser.startup.homepage",
+          united.brand.toolbar.startpageURL);
+    else
+      throw new NotReached("unknow value");
+  },
+
+  get defaultValue()
+  {
+    return "our-search-page";
+  },
+}
+united.extend(HomepageSelector, SettingElement);

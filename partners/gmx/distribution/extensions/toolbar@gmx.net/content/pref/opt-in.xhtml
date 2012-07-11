@@ -34,14 +34,27 @@
               <pref-region id="region" module="general" label="&region.label;" />
           </div>
           <div class="checkbox-box">
-              <input type="checkbox" id="searchengine"
-                  />
-              <label for="searchengine">&searchengine.checkbox.label;</label>
-          </div>
-          <div class="checkbox-box">
               <input type="checkbox" id="startpage"
+                 checked="checked"
                   />
               <label for="startpage">&startpage.checkbox.label;</label>
+              <div>
+                  <input class="indent" type="radio" id="startpage-search" name="startpage"
+                     checked="checked"
+                      />
+                  <label for="startpage-search">&startpage-search.radiobutton.label;</label>
+              </div>
+              <div>
+                  <input class="indent" type="radio" id="startpage-brand" name="startpage"
+                     />
+                  <label for="startpage-brand">&startpage-brand.radiobutton.label;</label>
+              </div>
+          </div>
+          <div class="checkbox-box">
+              <input type="checkbox" id="searchengine"
+                 checked="checked"
+                  />
+              <label for="searchengine">&searchengine.checkbox.label;</label>
           </div>
           <div class="checkbox-box">
               <input type="checkbox" id="newtab"

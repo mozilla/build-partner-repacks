@@ -17,14 +17,17 @@
 
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbarbutton id="united-ticker-button"
+        type="menu-button"
+        container="true"
         label="&united.ticker.button.label;"
         tooltiptext="&united.ticker.button.tooltip;"
         oncommand="united.ticker.onButton(event);"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
-        type="menu-button"
-        container="true">
-          <menupopup id="united-ticker-popup"/>
+        united-removable="true"
+        united-icon-only="true"
+        >
+        <menupopup id="united-ticker-popup"/>
     </toolbarbutton>
   </toolbarpalette>
 </overlay>

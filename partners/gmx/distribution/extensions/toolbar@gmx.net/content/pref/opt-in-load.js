@@ -24,7 +24,7 @@ Cu.import("resource://unitedtb/util/globalobject.js", this);
 function loadIfNecessary(object)
 {
   // See above for conditions. isSet() == prefHasUserValue() == non-default value
-  if (object.isBrandedBrowser &&
+  if (united.ourPref.get("brandedbrowser", false) &&
       !united.generalPref.isSet("browser.search.selectedEngine"))
     return;
   // Ensure that it shows only once, even if several windows are open,
@@ -36,4 +36,4 @@ function loadIfNecessary(object)
   united.loadChromePage("chrome://unitedtb/content/pref/opt-in.xhtml", "tab");
 };
 
-united.autoregisterGlobalObserver("first-run", loadIfNecessary);
+united.autoregisterGlobalObserver("first-run-pageload", loadIfNecessary);

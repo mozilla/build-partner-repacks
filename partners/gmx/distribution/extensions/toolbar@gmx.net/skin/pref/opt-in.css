@@ -41,3 +41,7 @@ pref-region menulist, pref-region *|menulist {
   min-width: 15em;
   font-size: small;
 }
+.indent {
+  margin-left: 20px;
+}
+

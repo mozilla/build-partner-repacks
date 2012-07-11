@@ -45,21 +45,26 @@ function getFeedsList(successCallback)
     successCallback(parseFeedsList(new XML(ourPref.get(kPrefBranch + "XML"))));
     return;
   }
-  var url = brand.ticker.feedsListURL;
-  new FetchHTTP({ url : url },
-  function(xml) // success
-  {
-    assert(typeof(xml) == "xml", "FeedsList URL didn't return XML");
-    ourPref.set(kPrefBranch + "XML", xml.toString());
-    ourPref.set(kPrefBranch + "fromURL", url);
-    ourPref.set(kPrefBranch + "since", Math.round(new Date().getTime() / 1000));
-    successCallback(parseFeedsList(xml));
-  },
-  function(e) // error
-  {
+  try {
+    var url = brand.ticker.feedsListURL;
+    new FetchHTTP({ url : url },
+    function(xml) // success
+    {
+      assert(typeof(xml) == "xml", "FeedsList URL didn't return XML");
+      ourPref.set(kPrefBranch + "XML", xml.toString());
+      ourPref.set(kPrefBranch + "fromURL", url);
+      ourPref.set(kPrefBranch + "since", Math.round(new Date().getTime() / 1000));
+      successCallback(parseFeedsList(xml));
+    },
+    function(e) // error
+    {
+      errorInBackend(e);
+      successCallback(brand.ticker.feedsListFallback);
+    }).start();
+  } catch (e) {
     errorInBackend(e);
     successCallback(brand.ticker.feedsListFallback);
-  }).start();
+  }
 }
 
 /**

@@ -34,22 +34,23 @@ function onLoad(event)
 {
   shoppingButton = document.getElementById("united-shopping-button");
 
-  // Get main item from prefs. index into array in brand.js.
-  setMainButtonFromIndex(united.ourPref.get("shopping.main"));
-  united.ourPref.observeAuto(window, "shopping.main", setMainButtonFromIndex);
-
-  new united.appendBrandedMenuitems("shopping", "shopping", null, onItemClicked);
+  united.ourPref.reset("shopping.main"); // old
+  // If there is only one entry in brand.js, don't show an arrow
+  // or do anything with the menu
+  if (united.brand.shopping.dropdownURLEntries.length == 1)
+  {
+    shoppingButton.removeAttribute("type");
+    setMainButton(united.brand.shopping.dropdownURLEntries[0]);
+  }
+  else
+  {
+    // Get main item from prefs
+    setMainButtonFromID(united.ourPref.get("shopping.mainID"));
+    united.ourPref.observeAuto(window, "shopping.mainID", setMainButtonFromID);
+    new united.appendBrandedMenuitems("shopping", "shopping", null, onMenuItemClicked);
+  }
 };
 window.addEventListener("load", onLoad, false);
-
-/**
- * @param i {Integer}  index of united.brand.shopping.dropdownURLEntries
- */
-function setMainButtonFromIndex(i)
-{
-  setMainButton(united.brand.shopping.dropdownURLEntries[
-      Math.min(i, united.brand.shopping.dropdownURLEntries.length) ]);
-}
 
 /**
  * @param entry {Object}  one element of united.brand.shopping.dropdownURLEntries
@@ -64,22 +65,72 @@ function setMainButton(entry)
 }
 
 /**
- * @param entry {Object}  one element of united.brand.shopping.dropdownURLEntries
+ * @param id {String}  united.brand.shopping.dropdownURLEntries[i].id
  */
-function onItemClicked(entry)
+function setMainButtonFromID(id)
 {
-  var url = currentSearchTerm ?
-    entry.searchURL + currentSearchTerm :
-    entry.url;
-  united.loadPage(url, "tab");
-
-  setMainButton(entry);
-  // save it in prefs. for that, get back index of current entry.
-  for (let i = 0, l = united.brand.shopping.dropdownURLEntries.length; i < l; i++)
-    if (entry == united.brand.shopping.dropdownURLEntries[i])
+  var entries = united.brand.shopping.dropdownURLEntries;
+  for each (let entry in entries)
+  {
+    if (entry.id == id)
     {
-      united.ourPref.set("shopping.main", i);
-      //setMainButtonFromIndex(entry);
+      setMainButton(entry);
+      return;
+    }
+  }
+  // fallback
+  if (entries.length > 0)
+    setMainButton(entries[0]);
+}
+
+/**
+ * @param entry {Object}  one element of
+ *     united.brand.shopping.dropdownURLEntries or
+ *     united.brand.shopping.singleButtons
+ */
+function onClicked(entry)
+{
+  var url = currentSearchTerm
+      ? entry.searchURL + encodeURIComponent(currentSearchTerm)
+      : entry.url;
+  united.loadPage(url, "united-shopping");
+
+  if (currentSearchTerm)
+  {
+    united.notifyWindowObservers("search-started",
+      { searchTerm : currentSearchTerm, source : 1 });
+  }
+}
+
+/**
+ * @param entry {Object}  one element of
+ *     united.brand.shopping.dropdownURLEntries
+ */
+function onMenuItemClicked(entry)
+{
+  onClicked(entry);
+  //setMainButton(entry); -- called by pref observer
+  // save it in prefs
+  united.ourPref.set("shopping.mainID", entry.id);
+}
+
+
+/**
+ * @param id {String}  united.brand.shopping.singleButtons[i].id
+ *
+function onSingleButtonClickedFromID(id)
+{
+  var entry = null;
+  for each (let e in united.brand.shopping.singleButtons)
+  {
+    if (e.id == id)
+    {
+      entry = e;
       break;
     }
+  }
+  united.assert(entry, "Invalid shopping button ID " + id);
+
+  onClicked(entry);
 }
+*/

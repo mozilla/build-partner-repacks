@@ -23,7 +23,8 @@
         oncommand="united.weather.onButton(event);"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
-        disabled-type="menu-button"
+        united-removable="true"
+        united-icon-only="true"
         >
       <!-- Waiting for GMX/Web.de to provide minimal page to show in popup
       <panel id="united-weather-panel"

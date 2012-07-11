@@ -1,5 +1,8 @@
 function onLoad()
 {
+  try {
+    new PostalCode(document.getElementById("postalcode"));
+  } catch (e) { united.debug(e); }
   if (isValidPostalCode(document.getElementById("postalcode").value))
     document.getElementById("no-nag").hidden = true;
   gOldRegionalURL = united.brand.weather.regionalURL;
@@ -7,7 +10,7 @@ function onLoad()
 }
 window.addEventListener("load", onLoad, false);
 
-gOldRegionalURL = null;
+var gOldRegionalURL = null;
 
 /**
  * If the country changes, reset the postal code.
@@ -21,3 +24,14 @@ function regionChanged()
 
   united.ourPref.reset("weather.postalcode");
 }
+
+function PostalCode(el)
+{
+  AutoPrefElement.call(this, el, "weather.postalcode", united.ourPref);
+}
+PostalCode.prototype =
+{
+  reset: function()
+  {},
+}
+united.extend(PostalCode, AutoPrefElement);

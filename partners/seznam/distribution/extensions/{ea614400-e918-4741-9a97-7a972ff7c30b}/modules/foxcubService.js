@@ -28,8 +28,8 @@ FoxcubService.debug = function(msg,convert) {
 };
 
 //definicia konstant
-FoxcubService.SOURCE = "FF_3";
-FoxcubService.VERSION = "2.1.14";
+FoxcubService.SOURCE = "FFListicka_3";
+FoxcubService.VERSION = "2.4.3";
 FoxcubService.FOXCUB_PREF_BRANCH = "extensions.foxcub.";
 FoxcubService.EXTENSION_ID = "{ea614400-e918-4741-9a97-7a972ff7c30b}";
 //cesta k extensnu
@@ -52,7 +52,11 @@ try{
 }catch(e){
 }
 //release
+
 FoxcubService.RELEASE = release;
+if(FoxcubService.RELEASE!=3){
+	FoxcubService.PRODUCT="Quicksearch"	;
+}
 FoxcubService.SOURCE = FoxcubService.PRODUCT + "_" + FoxcubService.RELEASE;
 
 //lokalizacia

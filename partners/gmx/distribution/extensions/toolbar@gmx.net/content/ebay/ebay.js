@@ -12,10 +12,32 @@
 function onButton(event)
 {
   if (currentSearchTerm)
+  {
+    united.notifyWindowObservers("search-started",
+      { searchTerm : currentSearchTerm, source : 1 });
     united.loadPage(united.brand.ebay.searchURL +
-        encodeURIComponent(currentSearchTerm));
+        encodeURIComponent(currentSearchTerm), "united-ebay");
+  }
   else
-    united.loadPage(united.brand.ebay.portalURL);
+    united.loadPage(united.brand.ebay.portalURL, "united-ebay");
+};
+
+/**
+ * User clicked on LastMinute button
+ * HACK
+ */
+function onLastMinuteButton(event)
+{
+  if (currentSearchTerm)
+  {
+    united.notifyWindowObservers("search-started",
+      { searchTerm : currentSearchTerm, source : 1 });
+    // NOTE: not encodeURIComponent() = UTF-(), but escape() = ISO-8859-1
+    united.loadPage(united.brand.ebay.lastminuteSearchURL +
+        window.escape(currentSearchTerm), "tab");
+  }
+  else
+    united.loadPage(united.brand.ebay.lastminutePortalURL, "tab");
 };
 
 // <copied from="amazon.js">

@@ -17,7 +17,11 @@ localButtonsJSON='[ ';else
 localButtonsJSON+=',';localButtonsJSON+=lbJSON;}}}}
 if(localButtonsJSON!=null&&localButtonsJSON.length>0)
 localButtonsJSON+=' ]';}catch(e){yahooError("getLocalButtonsJSON exception "+e);}
-return localButtonsJSON;},this.getButtonProperty=function(buttonID,property){try{var fileContent=getRawFileContent(buttonID);if(fileContent.length>0){fileContent=fileContent.substring(1,fileContent.length-1);fileContent=fileContent.split(",");for(y in fileContent){var x=fileContent[y];x=x.split("\":");if(x[0].indexOf(property)!=-1){x[1]=x[1].substring(1,x[1].length-1);return x[1];}}}}
+return localButtonsJSON;},this.getButtonProperty=function(buttonID,property){try{var fileContent=getRawFileContent(buttonID);if(fileContent.length>0)
+{var hash=yahooUtils.JSON.parse(fileContent);if(hash)
+{for(var key in hash)
+{if(key.indexOf(property)!=-1)
+{var value=hash[key];return value;}}}}}
 catch(e){yahooError("Exception in getButtonProperty "+e);}};this.getLocalButtonProperty=function(buttonID,property){var nodeValue="";try{var fileContent=getRawFileContent(buttonID);if(fileContent.length>0){var parser=CC["@mozilla.org/xmlextras/domparser;1"].createInstance(CI.nsIDOMParser);var xmlDoc=parser.parseFromString(fileContent,"text/xml");var localButtonNode=xmlDoc.getElementsByTagName("localbutton");var topButtonNode=localButtonNode[0].getElementsByTagName("topbutton");var propertyNode=topButtonNode[0].getElementsByTagName(property);nodeValue=propertyNode[0].childNodes[0].nodeValue;}}catch(e){yahooError("Exception in getLocalButtonInfo "+e);}
 return nodeValue;};this.localButtonYBNExists=function(buttonID){var exists=false;try{var buttonStream=getRawFileContent(buttonID);if(buttonStream!=null)
 exists=(buttonStream.length>0);}catch(e){exists=false;yahooError("exception in localButtonYBNExists .. "+e);}finally{return exists;}};};yLocalButton.prototype={classID:Components.ID("{81434886-DE26-4544-84A8-E9D799195203}"),contractID:"@yahoo.com/feed/localbutton;1",QueryInterface:XPCOMUtils.generateQI([Components.interfaces.nsIYahooLocalButtonProcessor])};if(XPCOMUtils.generateNSGetFactory)

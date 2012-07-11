@@ -16,9 +16,9 @@ FoxcubService.Register.prototype.REGISTER_REQUEST = "<?xml version=\"1.0\" encod
 		+ "<param><value><string>${1}</string></value></param>"
 		+ "<param><value><struct>"
 		+ "<member><name>computerHash</name><value><string></string></value></member>"
-		+ "<member><name>release</name><value><string>${2}</string></value></member>"
+		+ "<member><name>release</name><value><int>${2}</int></value></member>"
 		+ "<member><name>version</name><value><string>${3}</string></value></member>"
-		+ "<member><name>product</name><value><string>${4}</string></value></member>"
+		+ "<member><name>product</name><value><int>${4}</int></value></member>"
 		+ "<member><name>os</name><value><string>${5}</string></value></member>"
 		+ "<member><name>browser</name><value><string>${6}</string></value></member>"
 		+ "<member><name>params</name><value><struct><member><name>hp</name><value><int>${7}</int></value></member></struct></value></member>"
@@ -51,7 +51,7 @@ FoxcubService.Register.prototype.$constructor = function() {
 	this.timeActionEvent = { 
 		notify: this.timeAction 
 	};
-
+	
 	this.nvg = Components.classes["@mozilla.org/network/protocol;1?name=http"].getService(Components.interfaces.nsIHttpProtocolHandler); 
 	
 	this.log("constructor end", "info");
@@ -70,6 +70,7 @@ FoxcubService.Register.prototype.init = function(){
 		this.actionName = "update";
 	}
 	this.run();
+	
 }
 
 FoxcubService.Register.prototype.run = function(){
@@ -163,7 +164,7 @@ FoxcubService.Register.prototype._registerRq = function(){
 	var info = this._getInfo();
 	var signature = this._getTicketSignature(this.ticketObj.ticket + this.PWD);
 	var data = [this.ticketObj.ticket, signature, info.release, info.version, info.product, info.os, info.browser,info.hp];
-	this.sendRPC(this._getRegisterUrl(),"_registerAnswer",this.REGISTER_REQUEST,data,false)	
+	this.sendRPC(this._getRegisterUrl(),"_registerAnswer",this.REGISTER_REQUEST,data,false);	
 };
 /**
  * Odpoveď na _registerRq<br>

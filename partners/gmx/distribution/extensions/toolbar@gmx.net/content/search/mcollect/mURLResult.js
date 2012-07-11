@@ -5,8 +5,9 @@
  */
 function mURLResult(title, descr, icon, url)
 {
-  mResult.call(this, title, descr, icon);
-  this.url = url;
+  mResult.call(this, title, descr, icon, "url");
+  this.url = url; // use setter, to sanitize
+  //debug("creating URL result " + this.title + " with URL <" + this.url + ">");
 }
 mURLResult.prototype =
 {
@@ -27,6 +28,7 @@ mURLResult.prototype =
 
   activate : function(firefoxWindow)
   {
+    //debug("activating URL result " + this.title + " with URL <" + this.url + ">");
     firefoxWindow.united.loadPage(this._url); // from util.js
   },
 

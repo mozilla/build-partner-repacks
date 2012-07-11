@@ -10,14 +10,20 @@ Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/util/fetchhttp.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
-Components.utils.import("resource://gre/modules/ISO8601DateUtils.jsm");
 
-// on startup
-function onInit()
-{
-  fetch();
+var obss = Cc["@mozilla.org/observer-service;1"]
+  .getService(Ci.nsIObserverService);
+
+sessionRestoreObserve =  {
+  observe: function(subject, topic, data)
+  {
+    if (!ourPref.get("hotnews.firstrun", true))
+      fetch();
+    else
+      ourPref.set("hotnews.firstrun", false);
+  }
 }
-runAsync(onInit);
+obss.addObserver( sessionRestoreObserve,  "sessionstore-windows-restored" , false);
 
 function fetch()
 {
@@ -47,13 +53,13 @@ function parseRSS(rssXML)
       let validDate = sanitize.alphanumdash(item.uiNS::validDate[0]);
       if (validDate)
       {
-        validDate = ISO8601DateUtils.parse(validDate);
+        validDate = new Date(Date.parse(validDate));
       }
       else
       {
         // default: valid until pubDate + 2 days
         let pubDate = sanitize.alphanumdash(item.pubDate[0]);
-        pubDate = ISO8601DateUtils.parse(pubDate);
+        pubDate = new Date(Date.parse(pubDate));
         validDate = pubDate;
         validDate.setDate(validDate.getDate() + 2);
       }

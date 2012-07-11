@@ -34,7 +34,7 @@ FoxcubService.Email.prototype.$constructor = function() {
 	//docasne hesla uctov
 	this.tmpPasswords = {};
 	//timer na pravidelnu kontrolu mailov
-	this.checkTime = 0;
+	this.checkTime = 500;
 	this.checkTimer = Components.classes["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer);
 	this.check = FoxcubService.JAK.bind(this,this._check);
 	this.checkEvent = { 
@@ -59,11 +59,11 @@ FoxcubService.Email.prototype.$constructor = function() {
 	//pre istotu nastavime informaciu o zmene na false;
 	FoxcubService.pref.get().setPref('mail.optionchanged',false);
 	this.log("constructor end", "info");
-}
+};
 //nastavi docasne hesla (vola sa z optionov pri ukladani mailov)
 FoxcubService.Email.prototype.setTmpPasswords = function(passwords){
 	this.tmpPasswords = passwords;
-}
+};
 
 //zrata pocet novych sprav a ulozi ich do buffru, dalej nastavi cas dalsej kontroly
 FoxcubService.Email.prototype._setResult = function(results){
@@ -103,16 +103,10 @@ FoxcubService.Email.prototype._setResult = function(results){
 	//pridam do statistik count - pocet novych, timestamp - cas posledneho posielania
 	//FoxcubService.debug(count );
 	//FoxcubService.debug(this.timestamp );
-	this.checkCompute.collectStat(count,this.timestamp)
+	this.checkCompute.collectStat(count,this.timestamp);
 	//vyrata nasledujuci cas kontroly
-	var nextCheck = this.checkCompute.calculateNextCheck()
-	var interval = this.checkCompute.calcCheckInterval()
-	this.log('celkem novych zprav = ' + count);
-	//this.log('next check = ' + nextCheck);
-	//this.log('timestamp = ' + new Date(this.timestamp*1000))
-	this.log('next time check = ' + new Date(nextCheck*1000))
-	this.log('ext interval = ' + (nextCheck - this.timestamp)/60)
-	//this.log('interval = ' + interval);
+	var nextCheck = this.checkCompute.calculateNextCheck();
+	var interval = this.checkCompute.calcCheckInterval();	
 	this.checkDelay = interval * 1000;
 	//FoxcubService.debug(this.checkDelay );
 	this.checkTimer.cancel();
@@ -121,7 +115,7 @@ FoxcubService.Email.prototype._setResult = function(results){
 	
 	//var x = FoxcubService.pref.get().getPref("mail.conf.weekIncome").value;
 	//zrata nove hodnoty kedy sa bude kontrolovat
-	FoxcubService.pref.get().setPref("mail.conf.lastCheck",this.timestamp)
+	FoxcubService.pref.get().setPref("mail.conf.lastCheck",this.timestamp);
 	FoxcubService.pref.get().setPref("mail.conf.lastIncome",this.checkCompute.getLastIncome());
 	FoxcubService.pref.get().setPref("mail.conf.weekIncome",this.checkCompute.getWeekIncome());
 	this._showMessagesBubble();
@@ -130,7 +124,7 @@ FoxcubService.Email.prototype._setResult = function(results){
 FoxcubService.Email.prototype.focusedAction = function(obj){
 	
 	this._showMessagesBubble();
-}
+};
 //posle nove spravy aktivnemu oknu ak existuje
 FoxcubService.Email.prototype._showMessagesBubble = function(){
 	if(this.newMessagesFolder.length){
@@ -321,7 +315,7 @@ FoxcubService.Email.prototype.forceCheck = function(){
 skoncila uz kontrola mailov ?
  */
 FoxcubService.Email.prototype._checkFinished = function(subject,topic,data) {
-	this.log("checking...")
+	this.log("checking...");
 	try {
 		var ok = false;
 		var results = [];
@@ -336,6 +330,7 @@ FoxcubService.Email.prototype._checkFinished = function(subject,topic,data) {
 
 		this.checking = ok;
 		this.log("finished:" + !this.checking)
+		
 		//ak skoncila
 		if (!this.checking) {
 			this.timestamp = new Date().getTime()/1000;

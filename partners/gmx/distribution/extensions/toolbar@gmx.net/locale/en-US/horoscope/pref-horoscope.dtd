@@ -1,6 +1,6 @@
 <!ENTITY pane.title "Horoscope">
-<!ENTITY sign.label "Your sign:">
-<!ENTITY sign.partner.label "Your partner's sign:">
+<!ENTITY sign.label "Your sign">
+<!ENTITY sign.partner.label "Your partner's sign">
 <!ENTITY none.label "None">
 <!ENTITY widder.label "Aries">
 <!ENTITY stier.label "Taurus">
@@ -15,8 +15,8 @@
 <!ENTITY wassermann.label "Aquarius">
 <!ENTITY fische.label "Pisces">
 
-<!ENTITY type.label "Type of horoscope:">
+<!ENTITY type.label "Type of horoscope">
 
-<!ENTITY gender.label "Gender:">
+<!ENTITY gender.label "Your gender">
 <!ENTITY male.label "Male">
 <!ENTITY female.label "Female">

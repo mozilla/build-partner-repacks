@@ -1,21 +1,40 @@
-#united-email-button[status="disconnected"],
-#united-email-button[status="disconnected"] > #united-email-button-dropdown > #united-email-unread-menuitem
+#united-email-button[status="disconnected"]
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-disconnect-small.png");
 }
-#united-email-button[status="no-new"],
-#united-email-button[status="no-new"] > #united-email-button-dropdown > #united-email-unread-menuitem
+#united-email-button[status="no-new"]
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-nonew-small.png");
 }
-#united-email-button[status="new"],
-#united-email-button[status="new"] > #united-email-button-dropdown > #united-email-unread-menuitem
+#united-email-button[status="new"]
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-new-small.png");
 }
-#united-email-demail-register-button
+#united-email-button-dropdown > menuitem.united-email-unread-menuitem[status="disconnected"]
 {
-  list-style-image: url("chrome://unitedtb/skin/email/demail-small.png");
+  list-style-image: url("chrome://unitedtb/skin/email/email-disconnect-dropdown.png");
+}
+#united-email-button-dropdown > menuitem.united-email-unread-menuitem[status="no-new"]
+{
+  list-style-image: url("chrome://unitedtb/skin/email/email-nonew-dropdown.png");
+}
+#united-email-button-dropdown > menuitem.united-email-unread-menuitem[status="new"]
+{
+  list-style-image: url("chrome://unitedtb/skin/email/email-new-dropdown.png");
+}
+
+#united-email-button-dropdown > menuitem.united-email-unread-menuitem[status="new"] {
+  font-weight: bold;
+}
+
+#united-email-checknow
+{
+  list-style-image: url("chrome://unitedtb/skin/email/refresh-small.png");
+}
+
+#united-email-configure-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/pref/pref-small.png");
 }
 
 #united-logged-in-button
@@ -25,4 +44,15 @@
 #united-logged-out-button
 {
   list-style-image: url("chrome://unitedtb/skin/email/logged-out-small.png");
+}
+#united-logged-in-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/email/log-out-small.png");
+}
+
+#united-email-popup > hbox {
+   background-color: white;
+}
+#united-email-popup > hbox > image {
+  list-style-image: url("chrome://unitedtb/skin/email/xxltooltip.png");
 }

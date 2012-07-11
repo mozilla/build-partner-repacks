@@ -126,6 +126,8 @@ FoxcubService.Logger.prototype.log = function(msg){
 	this.windowLog.log(msg);
 	this.consoleLog.log(msg);
 	this.fileLog.log(msg);
+
+	
 };
 
 

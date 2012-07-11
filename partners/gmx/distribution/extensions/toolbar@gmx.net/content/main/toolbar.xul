@@ -34,6 +34,7 @@
         removable="false"
         tooltiptext="&brand.name;&homebutton.tooltip.suffix;"
         contextmenu="united-homebutton-button-context"
+        united-icon-only="true"
         >
       <menupopup id="united-homebutton-button-dropdown" />
     </toolbarbutton>
@@ -54,7 +55,8 @@
         mode="full"
         iconsize="small"
         context="toolbar-context-menu"
-        defaultset="united-homebutton-button,united-email-button,united-search-box,united-highlight-button,united-shopping-button,united-ebay-button,united-horoscope-button,united-weather-button,united-ticker-button,spring,united-help-button,united-pref-button,united-login-box"
+        defaultset="united-homebutton-button,united-search-box,united-email-button,united-composeemail-button,united-addressbook-button,united-smartdrive-button,separator,united-shopping-button,united-weather-button,united-ticker-button,spring,united-login-box,united-pref-button"
+        defaultorder="united-homebutton-button,united-search-box,united-start-button,united-email-button,united-composeemail-button,united-addressbook-button,united-smartdrive-button,separator,united-highlight-button,united-shopping-button,united-lastminute-button,united-weather-button,united-ticker-button,united-horoscope-button,spring,united-login-box,united-pref-button"
         align="center"
         crop="end"
         />

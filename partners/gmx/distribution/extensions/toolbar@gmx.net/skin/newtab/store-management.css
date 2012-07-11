@@ -12,6 +12,8 @@ img { border: none; }
 a {
   cursor: pointer;
 }
+input.edit-mode { margin-right: 0.5em; }
+span.entry-time { margin-right: 0.5em; }
 #header { height: 90px; }
 #header h1 {
   position: absolute;
@@ -44,6 +46,12 @@ a {
   margin-left: 20px;
 }
 #content { margin-left: 190px; }
+
+#content h2.date {
+  margin-top: 1em;
+  margin-bottom: 0.25em;
+}
+
 .modulefooter { padding-top: 8px; }
 
 .mode-toggle {

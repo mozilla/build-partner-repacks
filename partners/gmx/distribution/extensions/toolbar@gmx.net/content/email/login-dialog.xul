@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE dialog [
-  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/email/login-dialogs.dtd">
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/email/login-dialog.dtd">
   %thisDTD;
   <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
   %brandDTD;
@@ -8,22 +8,33 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://unitedtb/skin/email/login-dialog.css" type="text/css"?>
 <dialog id="united-login-dialog"
-    title="&window.title;"
+    title="&login.title;"
     onload="onLoad();"
     ondialogaccept="return onOK();"
     ondialogcancel="return onCancel();"
-    buttonlabelaccept="&ok.button.label;"
-    buttonaccesskeyaccept="&ok.button.accesskey;"
+    buttonlabelaccept="&login.ok.button.label;"
+    buttonaccesskeyaccept="&login.ok.button.accesskey;"
     buttonpack="center"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
     <script type="application/x-javascript">
       var united = window.opener.united;
       united.loadJS("chrome://unitedtb/content/email/login-dialog.js", this);
-      united.loadJS("chrome://unitedtb/content/email/login-dialogs.js", this);
+      united.loadJS("chrome://unitedtb/content/email/login-common.js", this);
     </script>
 
-    <hbox id="intro-box">
+    <hbox id="intro-box"
+        loginBrandIntro="&login.brand.intro;"
+        setupIntro="&setup.intro;"
+        setupBrandIntro="&setup.brand.intro;"
+        setupTitle="&setup.title;"
+        setupOKLabel="&save.ok.button.label;"
+        setupOKKey="&save.ok.button.accesskey;"
+        editIntro="&edit.intro;"
+        editTitle="&edit.title;"
+        editOKLabel="&save.ok.button.label;"
+        editOKKey="&save.ok.button.accesskey;"
+        >
       <description id="intro">&login.intro;</description>
     </hbox>
     <vbox pack="start">
@@ -34,14 +45,11 @@
         </columns>
         <rows>
           <row align="baseline">
-            <label value="&emailaddress-dialog.label;"
+            <label value="&emailaddress.label;"
                 accesskey="&emailaddress.accesskey;"
                 control="emailaddress"
                 />
             <textbox id="emailaddress"
-                onblur="onLeaveEmailaddress();"
-                error-domain="&domain.error;"
-                error-syntax="&syntax.error;"
                 />
           </row>
           <row align="baseline">
@@ -49,7 +57,10 @@
                 accesskey="&password.accesskey;"
                 control="password"
                 />
-            <textbox id="password" type="password" />
+            <textbox id="password"
+                type="password"
+                onfocus="onLeaveEmailaddress();"
+                />
           </row>
         </rows>
       </grid>
@@ -60,14 +71,14 @@
           accesskey="&long-session.accesskey;"
           />
     </hbox>
-    <hbox id="create-account-box">
+    <!--hbox id="create-account-box">
       <button id="create-account"
           type="link"
           label="&create-account.label;"
           accesskey="&create-account.accesskey;"
           oncommand="onCreateAccount();"
           />
-    </hbox>
+    </hbox-->
     <hbox id="error-box">
       <description id="error-msg" />
     </hbox>

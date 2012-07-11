@@ -16,12 +16,14 @@
   <!-- Overlay for Firefox browser/content/browser.xul -->
 
   <toolbarpalette id="BrowserToolbarPalette">
-    <toolbarbutton id="united-ebay-button"
-        label="&united.ebay.button.label;"
-        tooltiptext="&united.ebay.button.tooltip;"
-        oncommand="united.ebay.onButton(event);"
+    <toolbarbutton id="united-lastminute-button"
+        label="&united.lastminute.button.label;"
+        tooltiptext="&united.lastminute.button.tooltip;"
+        oncommand="united.ebay.onLastMinuteButton(event);"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-removable="true"
+        united-icon-only="true"
         />
   </toolbarpalette>
 </overlay>

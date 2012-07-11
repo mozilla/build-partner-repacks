@@ -13,12 +13,18 @@ Components.utils.import("resource://foxcub/components/subclasses/bookmarks.js");
 FoxcubService.SpeedDial.prototype.$constructor = function() {
 	this.log("constructor start", "info");
 	this.historyService =  Components.classes["@mozilla.org/browser/nav-history-service;1"].getService(Components.interfaces.nsINavHistoryService);
+	this.bookmarksService = Components.classes["@mozilla.org/browser/nav-bookmarks-service;1"]
+	.getService(Components.interfaces.nsINavBookmarksService);
 	this.nativeJSON = Components.classes["@mozilla.org/dom/json;1"].createInstance(Components.interfaces.nsIJSON);
 	this.bookmarks = new FoxcubService.SpeedDial.Bookmarks();
+	this.UnescapeHTML = Components.classes["@mozilla.org/feed-unescapehtml;1"].getService(Components.interfaces.nsIScriptableUnescapeHTML);
+	//this.SearchHistoryService = Cc["@mozilla.org/browser/nav-history-service;1"].getService(Ci.nsINavHistoryService);
 	this.log("constructor end", "info");
 }
-			
-FoxcubService.SpeedDial.prototype.DEFAULT_STATE = "small";
+
+FoxcubService.SpeedDial.prototype.SUGGEST_IMAGE = "http://www.seznam.cz/st/img";
+FoxcubService.SpeedDial.prototype.SUGGEST_URL="http://www.seznam.cz/suggest";
+FoxcubService.SpeedDial.prototype.DEFAULT_STATE = "big";
 FoxcubService.SpeedDial.prototype.MAX_HISTORY_ITEMS = 30;
 /**
  * inicializuje sa v speedDial.html
@@ -33,6 +39,7 @@ FoxcubService.SpeedDial.prototype.init = function(){
 		//stranky z historie
 		this.pages = this.getPagesFromHistory();
 		this.sourceId = FoxcubService.SOURCE;
+		this.sourceIdNum = FoxcubService.RELEASE;
 		this.folder = this._getFolder();
 		this.state = this.getState();
 		//sinchrinizacia s bookmarkmi
@@ -84,6 +91,70 @@ FoxcubService.SpeedDial.prototype._getState = function(){
 	}
 	return this.DEFAULT_STATE;	
 };
+FoxcubService.SpeedDial.prototype.getRRSState = function(){
+	var pref = FoxcubService.pref.get().getPref("speedDial.RSS");
+	if(pref.success){
+		return pref.value;
+	}
+	return this.DEFAULT_STATE;	
+};
+
+FoxcubService.SpeedDial.prototype.getRSScontent = function(owner,url) {
+	this.owner=owner;
+	var req = new FoxcubService.JAK.Request(FoxcubService.JAK.Request.XML,{async : true, method : 'get'});
+	req.setCallback(this, this.rssAnswer);
+	req.send(this.CustomSettings().rss.url);
+};
+
+FoxcubService.SpeedDial.prototype.rssAnswer = function(data,state) {
+  if(state=="200"){
+	  this.owner.rssParser(data);
+  }
+};
+
+FoxcubService.SpeedDial.prototype._saveSkin = function(Skin){
+	  
+	SkinID=Skin.toString();
+	FoxcubService.pref.get().setPref("speedDial.skin",SkinID);
+
+};
+FoxcubService.SpeedDial.prototype._getSkin = function(){
+	var pref = FoxcubService.pref.get().getPref("speedDial.skin");
+	if(pref.success){
+		return pref.value;
+	}
+	
+};
+FoxcubService.SpeedDial.prototype._saveOldUserSkin = function(path){
+	var savePath=escape(path);
+	FoxcubService.pref.get().setPref("speedDial.UserImage",savePath);
+};
+FoxcubService.SpeedDial.prototype._saveUserSkin = function(path){
+	
+	var file = Components.classes['@mozilla.org/file/local;1']  
+	           .createInstance(Components.interfaces.nsILocalFile);  
+	file.initWithPath(path);  
+	var ioService = Components.classes['@mozilla.org/network/io-service;1']  
+	                .getService(Components.interfaces.nsIIOService);  
+	var url = ioService.newFileURI(file);  
+	var fileURL = url.spec;  
+	var savePath=escape(fileURL);
+	FoxcubService.pref.get().setPref("speedDial.UserImage",savePath);
+	 
+	
+	return fileURL;
+};
+FoxcubService.SpeedDial.prototype._getUserSkin = function(){
+	var pref = FoxcubService.pref.get().getPref("speedDial.UserImage");
+	if(pref.success){		
+		var fileURL=pref.value;		
+		return fileURL;
+	}
+	
+};
+FoxcubService.SpeedDial.prototype.saveRSSState = function(state){
+	FoxcubService.pref.get().setPref("speedDial.RSS",state);
+};
 /**
  * nastavenie statu
  */
@@ -127,8 +198,13 @@ FoxcubService.SpeedDial.prototype.getHistorySize = function(){
 	return this.pages.length;
 };
 
+FoxcubService.SpeedDial.prototype.getSourceIdNum = function(){
+	return this.sourceIdNum;
+};
+
 FoxcubService.SpeedDial.prototype.getSourceId = function(){
-	
+	if(this.sourceIdNum!=3)
+		this.sourceId="Speeddial_"+this.sourceIdNum ;
 	return this.sourceId;
 };
 FoxcubService.SpeedDial.prototype._getActiveWindow = function() {
@@ -257,7 +333,7 @@ FoxcubService.SpeedDial.prototype.findBackgroundImage = function(){
 	var rv = fp.show();
 	if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
 		var iOService =Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
-		var uri = iOService.newFileURI(fp.file)
+		var uri = iOService.newFileURI(fp.file);
 		return uri.prePath + uri.path;
 	}
 	return "";
@@ -275,7 +351,7 @@ FoxcubService.SpeedDial.prototype.setSettings = function(key,obj){
 	FoxcubService.pref.get().setPref("speedDial.settings",settings);
 };
 FoxcubService.SpeedDial.prototype.loadPosition = function(index){
-
+	this.log(index);
 	var data = this.folder[index];
 	if(data){
 		var out = {};
@@ -296,18 +372,23 @@ FoxcubService.SpeedDial.prototype.loadPosition = function(index){
 	}
 	return {url:"",title:""};
 };
-FoxcubService.SpeedDial.prototype.ff_openAction = function(index) {
+FoxcubService.SpeedDial.prototype.openAction = function(index,newtab) {
 	var data = this.folder[index];
 	if (data) {
 		var tbrowser = this._getTabbedBrowser();
 		if (data.type == "simple") {
-			tbrowser.getBrowserForTab(tbrowser.selectedTab).loadURI(data.url);
+			if(newtab){
+			    tbrowser.addTab(data.url);
+			}else{
+				tbrowser.getBrowserForTab(tbrowser.selectedTab).loadURI(data.url);
+			}
+			
 
 		} else {
 			var first = true;
 			for (var i =0;data.childs.length; i++) {
 				
-				if (i == 0) {
+				if (i == 0 && !newtab) {
 					tbrowser.getBrowserForTab(tbrowser.selectedTab)
 							.loadURI(data.childs[i].url);
 				} else {
@@ -364,3 +445,69 @@ FoxcubService.SpeedDial.prototype.getPagesFromHistory = function(){
 		
 		return pages;
 };
+FoxcubService.SpeedDial.prototype.CustomSettings = function(){	
+		var obj={	
+			skin : {
+				name : FoxcubService.config.get("speedDial","skin.name"),
+				preview : FoxcubService.config.get("speedDial","skin.preview"),
+				css : FoxcubService.config.get("speedDial","skin.css")	
+			},
+			rss : {
+				name : this.CustomRSS("rss.name"),
+				url : this.CustomRSS("rss.url")
+			}
+		};
+	
+		return obj;
+};
+
+FoxcubService.SpeedDial.prototype.CustomData = function() {
+	return this.CustomSettings();
+		
+};
+FoxcubService.SpeedDial.prototype.CustomRSS = function(name) {
+	var data =FoxcubService.config.get("speedDial",name);
+	data=data.toString();
+	this.log(data);
+	var url=data.split(',');
+	if(url){		
+		return url[0];
+	}
+	return data;
+		
+	
+	
+};
+FoxcubService.SpeedDial.prototype.firstRun = function() {
+	var pref = FoxcubService.pref.get().getPref("speedDial.firstRun");
+	if(pref.value){
+		return false;
+	}else{
+		var pref = FoxcubService.pref.get().setPref("speedDial.firstRun",true);
+		var data={
+			url : FoxcubService.config.get("speedDial","item.url"),
+			title : FoxcubService.config.get("speedDial","item.title"),
+			type : "simple"
+			};
+		if(data.url){
+			FoxcubService.pref.get().setPref("speedDial.skin","40");
+			this.savePosition("3",data);
+		}		
+	}	
+};
+
+FoxcubService.SpeedDial.prototype.historyApi = function() {
+	return this.historyService;
+
+};
+
+FoxcubService.SpeedDial.prototype.favoritesApi = function() {
+	return this.bookmarksService;
+
+};
+
+FoxcubService.SpeedDial.prototype.unescapeApi = function() {
+	return this.UnescapeHTML;
+
+};
+

@@ -14,81 +14,140 @@
 
 function onLoad()
 {
-  if (window.arguments && typeof(window.arguments[0]) == "object")
-    initWithParams(window.arguments[0]);
+  try {
+    if (window.arguments && typeof(window.arguments[0]) == "object")
+      initWithParams(window.arguments[0]);
 
-  // buttons="accept" doesn't show the button, so do manually
-  var prefWindow = document.getElementById("united-pref-window");
-  prefWindow.instantApply = true;
-  var okButton = prefWindow.getButton("accept");
-  okButton.hidden = false;
-  okButton.disabled = false;
-  okButton.label = prefWindow.getAttribute("closebuttonlabel");
-  okButton.accesskey = prefWindow.getAttribute("closebuttonaccesskey");
-  window.sizeToContent();
+    hookupAllPreferencesElements(document.getElementById("tabpanels"), united.generalPref);
 
-  united.checkDisabledModules(window); // uiuils.js
-  united.autoregisterGlobalObserver("region-changed", function()
-  {
-    united.checkDisabledModules(window);
-  });
+    united.checkDisabledModules(window); // uiuils.js
+    window.sizeToContent();
+    united.autoregisterGlobalObserver("region-changed", function()
+    {
+      united.checkDisabledModules(window);
+      window.sizeToContent();
+    });
+  } catch (e) { united.errorCritical(e); }
 }
-window.addEventListener("load", onLoad, false); // doesn't work as onload="onLoad();" :-(((
+window.addEventListener("load", onLoad, false);
 
 function initWithParams(args)
 {
   if (args.module) // see openPrefWindow() param |module|
   {
-    var prefWindow = document.getElementById("united-pref-window");
-    var pane = document.getElementById(args.module + "-pane");
-    prefWindow.showPane(pane);
+    var tabbox = document.getElementById("tabbox");
+    tabbox.selectedPanel = document.getElementById(args.module + "-panel");
+    tabbox.selectedTab = document.getElementById(args.module + "-tab");
   }
 }
 
 /**
- * Allows <prefpane>s to validate the input.
- * There should be a <prefpane onvalidate="upref.foo.checkPostalCode();">
+ * "Apply" button clicked
+ */
+function save()
+{
+  try {
+    if ( !validate(true))
+      return false;
+    //united.debug("validate all passed");
+
+    united.assert(gPrefElements);
+    for each (let prefElement in gPrefElements)
+    {
+      try {
+        prefElement.save();
+      } catch (e) { united.errorCritical(e); }
+    }
+    return true;
+  } catch (e) { united.errorCritical(e); return true; }
+}
+
+/**
+ * "Cancel" button clicked
+ */
+function cancel()
+{
+  try {
+    united.assert(gPrefElements);
+    for each (let prefElement in gPrefElements)
+    {
+      try {
+        prefElement.cancel();
+      } catch (e) { united.errorCritical(e); }
+    }
+    return true;
+  } catch (e) { united.errorCritical(e); return true; }
+}
+
+/**
+ * "Set defaults" button clicked
+ * Resets *all* panels.
+ */
+function setDefault()
+{
+  try {
+    united.assert(gPrefElements);
+    for each (let prefElement in gPrefElements)
+    {
+      try {
+        prefElement.reset();
+      } catch (e) { united.errorCritical(e); }
+    }
+    return true;
+  } catch (e) { united.errorCritical(e); return true; }
+}
+
+/**
+ * Allows elements to validate the input.
+ * There should be a <textbox onvalidate="upref.foo.checkPostalCode();">
  * (no "return" in the attribute!).
  * That function should return an error message for the user, if there's
  * a problem, otherwise null.
- * This function will call all onvalidate functions successively,
- * and in case of an error, display the error and switch to the pane with
- * the error, and prevent the dialog from closing.
  *
- * All this should be supported by <prefwindow> natively.
- * In fact, we wouldn't need it, if addEventListener("dialogaccept"...
+ * This function will call all onvalidate functions successively,
+ * and in case of the first error,
+ * - display the error
+ * - switch to the pane with the error
+ * - prevent the dialog from closing.
+ *
+ * We wouldn't need all this, if addEventListener("dialogaccept"...
  * (in contrast to ondialogaccept="" attribute) would react to return false
  * and not close the window.
  *
- * @param accepted {Boolean} if true, the OK button was pressed.
- *   If false, the Cancel button or the X in the window title bar was pressed.
+ * @param save {Boolean}   @see SettingElement.validate()
+ * @return {Boolean}   there was no error
  */
-function validateAllPanes(accepted)
+ function validate(save)
 {
   try {
-  var prefWindow = document.getElementById("united-pref-window");
-  var panes = prefWindow.getElementsByTagName("prefpane");
-  for (let i = 0, l = panes.length; i < l; i++)
-  {
-    let pane = panes.item(i);
-    let validator = pane.getAttribute("onvalidate");
-    if (!validator)
-      continue;
-    united.debug("accepted = " + accepted);
-    let resetOnInvalid = !united.sanitize.boolean(accepted);
-    let varstr = "let resetOnInvalid = " + resetOnInvalid + "; ";
-    let errorMsg = eval(varstr + validator); // meh, no other way to run onfoo event handlers
-    if (errorMsg)
+    //united.debug("save = " + save);
+    united.assert(gPrefElements);
+    for each (let prefElement in gPrefElements)
     {
-      united.debug(errorMsg);
-      try {
-        prefWindow.showPane(pane);
-      } catch (e) { united.error("when trying to switch pane to " + pane.id + ": " + e); }
-      united.errorCritical(errorMsg);
-      return !accepted; // if cancel: close. if OK button: stay open and let correct.
+      if ( !validateElementWithUI(prefElement, save))
+        return false;
     }
-  }
-  //united.debug("all panes OK");
-  return true;
+    return true;
   } catch (e) { united.errorCritical(e); return true; }
+}
+
+/**
+ * @param save {Boolean}   @see SettingElement.validate()
+ * @return {Boolean}   there was no error
+ */
+function validateElementWithUI(prefElement, save)
+{
+  try {
+    var errorMsg = prefElement.validate(save);
+  } catch (e) { errorMsg = e.toString(); }
+  if (errorMsg)
+  {
+    try {
+      document.getElementById("tabbox").selectedPanel =
+          united.findParentTagForElement("tabpanel", prefElement.element); // from uiutil.js
+    } catch (e) { united.error("when trying to switch pane to " + pane.id + ": " + e); }
+    united.errorCritical(errorMsg);
+    return false;
+  }
+  return true;
 }

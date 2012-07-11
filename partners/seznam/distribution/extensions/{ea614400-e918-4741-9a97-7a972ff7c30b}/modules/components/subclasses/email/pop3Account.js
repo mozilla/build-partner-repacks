@@ -12,6 +12,7 @@ FoxcubService.Email.Pop3Account = FoxcubService.JAK.ClassMaker.makeClass({
 FoxcubService.Email.Pop3Account.prototype.$constructor = function(data){
 	this.$super(data);
 	this.reader = null;
+	this.i="0";
 }
 
 FoxcubService.Email.Pop3Account.prototype.handleIds = function(allIds){
@@ -139,8 +140,24 @@ FoxcubService.Email.Pop3Account.prototype._getResult = function(){
 					state.states.push(obj)
 				}				
 				this._onSuccess(state);
+				this.i="0";
 			}
+		
 		}
+		else{
+			
+				if(this.i>"6000"){
+					
+					if(!this.reader.finished){
+			
+						this._onError((this.reader.error == this.reader.ERROR_LOGIN)?this.ERROR_PWD:this.ERROR_UNKNOWN);
+						
+					}	
+				}
+				this.i++;
+			
+		}
+	
 	}
 }
 

@@ -13,319 +13,431 @@
  *    Effect: private data is removed from profile
  *
  * Messages sent:
- * "do-login" (observed by login.js)
- *    Parameter: withUI {Boolean} = true
+ * "do-login" (observed by login.js, see there for docs)
  *    Meaning: Request to login.js to start the login process.
  *    When: User clicks on mail button while we're offline.
  */
 
-Components.utils.import("resource://unitedtb/email/email-logic.js", this);
+Components.utils.import("resource://unitedtb/email/account-list.js", this);
+Components.utils.import("resource://unitedtb/email/webapp-start.js", this);
+//Components.utils.import("resource://unitedtb/email/taskbar.js", this);
 Components.utils.import("resource://gre/modules/PluralForm.jsm", this);
-
+Components.utils.import("resource://unitedtb/util/globalobject.js", this);
 var gStringBundle = new united.StringBundle(
     "chrome://unitedtb/locale/email/email.properties");
 
 var gEmailButton = null;
-var gEmailMenuitem = null;
-var gCurMailAcc = null;
+var gEmailButtonDropdown = null;
+var gEmailMenuitems = [];
+// All accounts
+// {Array of Account}
+var gMailAccs = [];
+// Number of unread mail (of all accounts) in last poll intervall
+// Used to calculate new mail notifications
+var gLastUnreadMailCount = -1;
+// Time when the newmail notification was played/shows the last time. As |Date|
+var gLastNotificationTime = 0;
+
+var gMailImage = new Image();
+// Takes a bit to load,
+// but must be finished before updateUI() is called with an unread count > 0.
+// Obviously, do not modify it, but copy it.
+// This avoids repeated loading, async onload(), setTimeout for bug 574330,
+// and the resulting out-of-order problems when several accounts get logged out
+gMailImage.src = "chrome://unitedtb/skin/email/email-nonew-small.png";
 
 function onLoad()
 {
-  united.ourPref.observeAuto(window, "login.emailAddress", prefChangeObserver);
-  gEmailButton = document.getElementById("united-email-button");
-  gEmailMenuitem = document.getElementById("united-email-unread-menuitem");
-  new united.appendBrandedMenuitems("email", "email", null, function(entry)
-  {
-    united.loadPage(entry.url, "tab");
-  });
+  try {
+    gEmailButton = document.getElementById("united-email-button");
+    gEmailButtonDropdown = document.getElementById("united-email-button-dropdown");
+    new united.appendBrandedMenuitems("email", "email", null, function(entry)
+    {
+      united.loadPage(entry.url, "tab");
+    });
 
-  var emailAddress = united.ourPref.get("login.emailAddress");
-  gCurMailAcc = emailAddress ? getMailCheckAccount(emailAddress) : null;
-  updateUI();
+    readAccounts();
+    updateUI();
+
+    // Display XXL Tooltip asking to log in
+    if (united.brand.login.enableXXLTooltip && !gMailAccs.length)
+    {
+      if (!united.ourPref.get("email.shownOffer", false))
+      {
+        united.ourPref.set("email.shownOffer", true);
+        var popup = document.getElementById("united-email-popup");
+        popup.openPopup(gEmailButton, "after_start", 0, 0, false, true);
+      }
+    }
+  } catch (e) { united.errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
+function accountListChange()
+{
+  // logout will be done by login.js prefChangeObserver -> logic-logic.js logout()
+  // -> "logged-out" -> email-logic.js _logout()
+  readAccounts();
+  updateUI();
+}
+united.autoregisterGlobalObserver("account-added", accountListChange);
+united.autoregisterGlobalObserver("account-removed", accountListChange);
+
+function readAccounts()
+{
+  //gMailAccs = getAllExistingAccounts().filter(function(acc) { return acc.kType == "unitedinternet"; });
+  gMailAccs = getAllExistingAccounts();
+}
+
+/**
+ * Returns a fake |Account| object with a summary of all accounts.
+ * @returns {
+ *   isLoggedIn {Boolean}   any of the accounts is logged in
+ *   newMailCount {Integer}   total of new mails in all accounts
+ *   accountCount {Integer}   number of accounts
+ * }
+ */
+function accountsSummary()
+{
+  var result = {
+    isLoggedIn : false,
+    newMailCount : 0,
+    accountCount : 0,
+  };
+  for each (let acc in gMailAccs)
+  {
+    result.accountCount += 1;
+    if (acc.newMailCount > 0)
+      result.newMailCount += acc.newMailCount;
+    if (acc.isLoggedIn)
+      result.isLoggedIn = true;
+  }
+  return result;
+}
+
 function updateUI()
 {
-  gEmailButton.setAttribute("status", gCurMailAcc && gCurMailAcc.isLoggedIn ?
-      (gCurMailAcc.newMailCount > 0 ? "new" : "no-new") : "disconnected");
-  var unreadText = gCurMailAcc
-      ? (gCurMailAcc.isLoggedIn
-        ? (gCurMailAcc.newMailCount > 0
-           ? PluralForm.get(gCurMailAcc.newMailCount,
+  // delete
+  for each (let menuitem in gEmailMenuitems)
+    gEmailButtonDropdown.removeChild(menuitem);
+  var insertBefore = document.getElementById("united-email-separator-after-accounts");
+  var tooltiptext = gEmailButton.getAttribute("tooltiptext-for-item");
+  gEmailMenuitems = [];
+
+  for each (let acc in gMailAccs)
+  {
+    let menuitem = document.createElement("menuitem");
+    menuitem.classList.add("united-email-unread-menuitem");
+    menuitem.classList.add("menuitem-iconic");
+    menuitem.setAttribute("tooltiptext", tooltiptext);
+    menuitem.addEventListener("command", onCommandAccountMenuitem, false);
+    updateMenuitem(menuitem, acc);
+    gEmailMenuitems.push(menuitem);
+    gEmailButtonDropdown.insertBefore(menuitem, insertBefore);
+  }
+  insertBefore.hidden = !gMailAccs.length;
+
+  var summary = accountsSummary();
+  var summaryFakeAcc = summary.accountCount ? summary : null;
+  gEmailButton.setAttribute("status", statusAttr(summaryFakeAcc));
+  gEmailButton.setAttribute("tooltiptext", unreadText(summaryFakeAcc));
+  drawUnreadCount(summary.newMailCount);
+
+  // show new mail alerts
+  // |newMailCount| is actually unread mail, so check whether this increased
+  // to see whether we have really new mail.
+  // We need to know this only momentarily to show the alert.
+  const kMinIntervall = 3000; // Minimum time between 2 notifications. in ms
+  //united.debug("last notification was on " + gLastNotificationTime.toLocaleString() + " = " + gLastNotificationTime.valueOf() + ", that is " + (new Date() - gLastNotificationTime) + " ago");
+  if (gLastUnreadMailCount != -1 && // not at new window, but at browser start / login
+      summary.newMailCount > gLastUnreadMailCount &&
+      new Date() - gLastNotificationTime > kMinIntervall)
+  {
+    gLastNotificationTime = new Date();
+    let count = summary.newMailCount - gLastUnreadMailCount;
+    playSound();
+    showDesktopNotification(count);
+  }
+  gLastUnreadMailCount = summary.newMailCount;
+}
+united.autoregisterGlobalObserver("mail-check", updateUI);
+
+function updateMenuitem(menuitem, acc)
+{
+  menuitem.account = acc;
+  menuitem.setAttribute("status", statusAttr(acc));
+  menuitem.setAttribute("label",
+      gStringBundle.get("button.emailAddressPlacement")
+        .replace("%1", acc.emailAddress)
+        .replace("%2", unreadText(acc)));
+}
+
+function unreadText(acc)
+{
+  return acc
+      ? (acc.isLoggedIn
+        ? (acc.newMailCount > 0
+           ? PluralForm.get(acc.newMailCount,
                gStringBundle.get("button.new.tooltip"))
-               .replace("%S", gCurMailAcc.newMailCount)
+               .replace("%S", acc.newMailCount)
            : gStringBundle.get("button.nonew.tooltip"))
         : gStringBundle.get("button.disconnected.tooltip"))
-      : gStringBundle.get("button.noaddress.tooltip");
-  gEmailButton.setAttribute("tooltiptext", unreadText);
-  gEmailMenuitem.setAttribute("label", unreadText);
+      : document.getElementById("united-email-configure-menuitem")
+          .getAttribute("tooltiptext");
+}
 
-  if (gCurMailAcc && gCurMailAcc.newMailCount > 0)
-  {
-    drawUnreadCount(gCurMailAcc.newMailCount);
-  }
-  else
-  {
-    gEmailButton.style.listStyleImage = "";
+function statusAttr(acc)
+{
+  return acc && acc.isLoggedIn
+      ? (acc.newMailCount > 0 ? "new" : "no-new")
+      : "disconnected";
+}
+
+function playSound()
+{
+  try {
+    if ( !united.ourPref.get("email.notification.sound.enabled"))
+      return;
+    var sound = Cc["@mozilla.org/sound;1"]
+        .createInstance(Ci.nsISound);
+    if (united.getOS() == "mac")
+      sound.beep();
+    else
+      sound.playEventSound(Ci.nsISound.EVENT_NEW_MAIL_RECEIVED);
+    //sound.play(united.makeNSIURI("chrome://unitedtb/skin/email/kongas.wav"));
+    united.debug("beep");
+  } catch (e) { united.errorNonCritical(e); } // unexpected, but non-critical
+}
+
+function showDesktopNotification(newMailCount)
+{
+  try {
+    if ( !united.ourPref.get("email.notification.desktop.enabled"))
+      return;
+    var message = PluralForm.get(newMailCount,
+        gStringBundle.get("alert.message.pluralform"))
+        .replace("%S", newMailCount);
+    var alerts = Cc["@mozilla.org/alerts-service;1"]
+        .getService(Ci.nsIAlertsService);
+    alerts.showAlertNotification(
+        "chrome://unitedtb/skin/email/email-new-small.png", // image
+        gStringBundle.get("alert.title"), // title
+        message, // message text
+        true, // clickable
+        null, // callback ID
+        desktopNotificationClickObserver, // listener
+        gStringBundle.get("alert.name") // name for Growl config
+        );
+    united.debug(message);
+  } catch (e) { // expected, e.g. if Growl is not installed
+    united.errorNonCritical("Could not show desktop notificaton");
+    united.errorNonCritical(e);
   }
 }
+
+var desktopNotificationClickObserver =  
+{
+  observe : function(subject, topic, data)
+  {  
+    if (topic != "alertclickcallback")
+      return;
+    desktopNotificationClicked(null, data);
+  }
+};
+
+function desktopNotificationClicked(dummy, cookie)
+{
+  // HACK: updateUI() doesn't know which account is new,
+  // so just open the first account with new mail
+  for each (let acc in gMailAccs)
+  {
+    if (acc.isLoggedIn && acc.newMailCount > 0)
+    {
+      goToWebmail(acc);
+      break;
+    }
+  }
+}
+
+const minUnreadCountWidth = 16;
+const unreadCountPadding = 1;
+const separatorWidth = 2;
+const iconWidth = 16;
+const iconHeight = 16;
 
 function drawUnreadCount(unreadcount)
 {
-  var img = new Image();
-  img.onload = function()
+  if (unreadcount == 0)
   {
-    if (img.complete)
-      drawUnreadCountStep2(unreadcount, img);
-    else
-    {
-      // HACK workaround for Mozilla bug 574330
-      united.debug("badge base image not complete after onload, Mozilla bug 574330, using workaround");
-      united.runAsync(function() {
-        drawUnreadCountStep2(unreadcount, img);
-      }, 100);
-    }
+    gEmailButton.style.listStyleImage = "";
+    //updateTaskbarIcon(window, null);
+    return;
   }
-  img.src = "chrome://unitedtb/skin/email/email-nonew-small.png";
-}
 
-function drawUnreadCountStep2(unreadcount, img)
-{
   var canvas = document.getElementById("united-email-canvas");
   if (!canvas)
   {
     canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
     canvas.setAttribute("id", "united-email-canvas");
-    canvas.setAttribute("width", 16);
-    canvas.setAttribute("height", 16);
+    canvas.setAttribute("height", iconHeight);
   }
   var ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0);
-  ctx.fillStyle = "red";
-  ctx.beginPath();
-  var xStart = 16;
-  if (unreadcount < 10)
-  {
-    ctx.arc(8, 10.5, 5, 0, Math.PI * 2, true);
+  /* Measure text and adjust canvas accordingly */
+  ctx.strokeStyle = "#C31718";
+  var textMetrics = ctx.measureText(unreadcount);
+  /* If the width of the text plus 2 for padding is over 16, grow the canvas */
+  var unreadCountWidth;
+  if (textMetrics.width + unreadCountPadding > minUnreadCountWidth) {
+    canvas.setAttribute("width", iconWidth + separatorWidth + textMetrics.width + unreadCountPadding*2);
+    unreadCountWidth = textMetrics.width + unreadCountPadding*2;
+  } else {
+    canvas.setAttribute("width", iconWidth + separatorWidth + minUnreadCountWidth);
+    unreadCountWidth = minUnreadCountWidth;
   }
-  else if (unreadcount < 100)
-  {
-    ctx.arc(6, 10.5, 5, 0, Math.PI * 2, true);
-    ctx.arc(10, 10.5, 5, 0, Math.PI * 2, true);
-  }
-  else
-  {
-    xStart = 17;
-    ctx.arc(4, 10.5, 5, 0, Math.PI * 2, true);
-    ctx.arc(8, 10.5, 5, 0, Math.PI * 2, true);
-    ctx.arc(12, 10.5, 5, 0, Math.PI * 2, true);
-  }
-  ctx.fill();
-  ctx.font = "bold 10px Helvetica";
+  ctx.drawImage(gMailImage, 0, 0);
+  ctx.fillStyle = "#C40A0A"; // dark red
+  ctx.strokeStyle = "#C31718";
+  ctx.fillRect(iconWidth + separatorWidth, 0, unreadCountWidth, iconHeight);
+  ctx.font = "bold 10px Helvetica, sans-serif";
   ctx.fillStyle = "white";
-  var dim = ctx.measureText(unreadcount);
-  ctx.fillText(unreadcount, (xStart - dim.width) / 2, 13.5, xStart);
+  var xPos = iconWidth + separatorWidth + unreadCountPadding;
+  /* If we did not grow the canvas, we need to center the text */
+  if (unreadCountWidth == minUnreadCountWidth) {
+    xPos = xPos + (unreadCountWidth - textMetrics.width)/2;
+  }
+  // Math can't be used to compute this value.
+  // It's the position where the 10 pixels font looks best
+  // centered vertocally
+  ctx.fillText(unreadcount, xPos, 12);
   var url = canvas.toDataURL();
   gEmailButton.style.listStyleImage = "url('" + url + "')";
+  //updateTaskbarIcon(window, gMailImage.src);
 }
 
 /**
- * Trigger: email-logic.js has a new mail check result
- */
-function onMailCheck(acc)
-{
-  if (acc != gCurMailAcc)
-    return;
-  updateUI();
-}
-
-united.autoregisterGlobalObserver("mail-check", onMailCheck);
-
-function prefChangeObserver()
-{
-  // logout will be done by login.js prefChangeObserver -> logic-logic.js logout()
-  // -> "logged-out" -> email-logic.js _logout()
-  var emailAddress = united.ourPref.get("login.emailAddress");
-  gCurMailAcc = emailAddress ? getMailCheckAccount(emailAddress) : null;
-  updateUI();
-}
-
-/**
- * Trigger: Mail button clicked.
- * Effect: Go to Webmail webpage in browser.
- * See top of email-logic.js for what's supposed to happen in general.
+ * Mail button clicked.
+ * Effect:
+ * - If no accounts, go to configure
+ * - If exactly 1 account, (login and) go to its webmail.
+ * - If > 1 account, open dropdown.
  */
 function onCommandMailButton()
 {
-  if (!gCurMailAcc || !gCurMailAcc.isLoggedIn)
+  if (gMailAccs.length == 0) // nothing configured
   {
-    united.notifyWindowObservers("do-login", { withUI : true });
-    return;
+    united.notifyWindowObservers("do-login", {
+      withUI : true,
+      account : null,
+      needAccountType : 1,
+      successCallback : goToWebmail,
+      // errorCallback default: show errors
+      // abortCallback default: do nothing
+    });
   }
-  var webmail = gCurMailAcc.getWebmailPage();
-  if (!webmail || !webmail.url)
+  else if (gMailAccs.length == 1)
   {
-    united.errorCritical(gStringBundle.get("error.noWebmailURL"));
-    return;
-  }
-  if (webmail.body.indexOf("&tb=1") > 0 &&
-      united.brand.login.createAccountURLWeb == "http://go.web.de/tb/mff_signup")
-  {
-    injectHack();
-    return;
-  }
-  if (webmail.httpMethod == "GET")
-  {
-    united.debug("using GET webmail URL " + webmail.url);
-    united.loadPage(webmail.url);
-  }
-  else if (webmail.httpMethod == "POST")
-  {
-    united.debug("using POST webmail URL " + webmail.url);
-    // use <browser> nsiwebnavigation
-    try {
-      var webnav = window.gBrowser.webNavigation;
-      united.assert(webnav instanceof Ci.nsIWebNavigation);
-      var flags = Ci.nsIWebNavigation.LOAD_FLAGS_BYPASS_HISTORY;
-      webnav.loadURI(webmail.url, flags, null,
-          createPostDataFromString(webmail.body, webmail.mimetype), null);
-    } catch (e) {
-      united.error(e);
-      united.loadPage(webmail.url); // try best we can
-    }
+    ensureLoginAndDo(gMailAccs[0], goToWebmail);
   }
   else
-    throw new united.NotReached("invalid webmail.httpMethod" + webmail.httpMethod);
+  {
+    gEmailButton.open = true
+    //gEmailButtonDropdown.openPopup(gEmailButton, "after_start");
+  }
 }
 
 /**
- * Temporary hack, to emulate a "logged in" state of the web.de homepage.
- * The goal is to force a page impression of the web.de homepage for each
- * mail login.
- *
- * The web.de website can't do that yet, so we'll modify the webpage to
- * emulate this, by replacing the login box with a link to the logged-in
- * inbox (a URL that we get from the PACS, i.e. gCurMailAcc.getWebmailPage().
- *
- * Actually, the "link" is a HTTP POST, so we'll create a hidden form.
+ * Dropdown menu item for a specific account was clicked.
+ * Effect:
+ * - If logged out, show login dialog.
+ * - Otherwise, go its webmail.
  */
-function injectHack()
+function onCommandAccountMenuitem(event)
 {
-  united.loadPage(gInjectURL);
-  united.waitForPageLoad(gBrowser, gInjectURL, injectHackPageLoaded);
-  united.debug("web.de page added, waiting for load");
+  event.stopPropagation(); // prevent it from bubbling to main <button>
+  var acc = event.target.account;
+  united.assert(acc && acc.emailAddress);
+  ensureLoginAndDo(acc, goToWebmail);
 }
-function injectHackPageLoaded(browser)
+
+function goToWebmail(acc)
 {
-  try {
-    united.debug("web.de seite geladen, injecting");
-    var doc = browser.contentDocument;
-
-    // Replace login fields with our new HTML snipplet
-    var ourParent = doc.getElementById(gInjectFormID).parentNode;
-    united.cleanElement(ourParent);
-    ourParent.innerHTML = gInjectReplacementHTML;
-    var emailE = doc.getElementById("toolbar-emailaddress");
-    emailE.textContent = gCurMailAcc.emailAddress;
-    emailE.setAttribute("title", gCurMailAcc.emailAddress);
-
-    // Create link to inbox, which is a HTTP POST, so
-    // create a <form> with hidden params and a submit button
-    var form = doc.getElementById("toolbar-login-form");
-    var webmail = gCurMailAcc.getWebmailPage();
-    united.debug("URL " + webmail.url);
-    united.debug("method " + webmail.httpMethod);
-    united.debug("params " + webmail.body);
-    form.setAttribute("action", webmail.url);
-    form.setAttribute("method", webmail.httpMethod);
-    for each (let nameValue in united.sanitize.string(webmail.body).split("&"))
-    {
-      //united.debug("param " + nameValue);
-      let sp = nameValue.split("=", 2);
-      let name = united.sanitize.alphanumdash(sp[0]);
-      let value = decodeURIComponent(united.sanitize.label(sp[1]));
-      let input = doc.createElement("input");
-      input.setAttribute("hidden", true);
-      input.setAttribute("type", "hidden");
-      input.setAttribute("name", name);
-      input.setAttribute("value", value);
-      form.appendChild(input);
-      united.debug("param " + name + " = " + value);
-    }
-
-    // make "FreeMail" tab on webpage active
-    var ourTab = doc.getElementById(gInjectTabID);
-    var ourBox = doc.getElementById(gInjectBoxID);
-    var allTabs = doc.getElementById(gInjectAllTabsID);
-    allTabs.classList.add("loggedin");
-    var boxen = ourBox.parentNode.childNodes;
-    for (let i = 0, n = boxen.length; i < n; i++)
-    {
-      let box = boxen.item(i);
-      if (!(box instanceof Ci.nsIDOMElement))
-        continue;
-      if (box == ourBox)
-        box.classList.add("active");
-      else
-        box.classList.remove("active");
-    }
-    // and the same again for the tab (header)
-    var tabs = ourTab.parentNode.childNodes;
-    for (let i = 0, n = tabs.length; i < n; i++)
-    {
-      let tab = tabs.item(i);
-      if (!(tab instanceof Ci.nsIDOMElement))
-        continue;
-      if (tab == ourTab)
-        tab.classList.add("active");
-      else
-        tab.classList.remove("active");
-    }
-  } catch (e) { united.errorInBackend(e); }
+  if (acc.type == "unitedinternet" && acc.providerID == "webde")
+    startUsecase(acc, "openmail", [], window);
+  else
+    goToWebmailOld(acc, window);
 }
-// Hardcoded, because this is a temporary hack to be removed again soon,
-// and only exists for web.de
-
-const gInjectURL = "http://www.web.de/";
-const gInjectTabID = "contentNavFreemail";
-const gInjectBoxID = "contentBoxFreemail";
-const gInjectFormID = "formFreemailLogin";
-const gInjectAllTabsID = "loginbox";
-// should be <http://go.web.de/tb/mff_logout_hp>, but it isn't live yet.
-const gInjectReplacementHTML = '<div class="content"><h3>Hallo,</h3><p><span class="welcome">willkommen bei FreeMail!</span><span class="loggedin">Eingeloggt als: <a id="toolbar-emailaddress" href="javascript:document.getElementById(\'toolbar-login-form\').submit();" title=""></a></span></p></div><div class="hr"><hr/></div><div class="register"><form id="toolbar-login-form"><a class="logout" href="http://logout.webde.uimserv.net/?LogoutAdProxy.service=skinnablelogout&site=webde&section=gm1/mail/logout/ad_dynamisch&region=de"><span>Logout</span></a><a class="upselling" href="javascript:document.getElementById(\'toolbar-login-form\').submit();"><span>Zum Postfach</span></a></form></div>';
-
-
 
 /**
- * Takes a JavaScript string and MIME-Type and creates and nsIInputStream
- * suitable for passing to webnavigation.loadURI().
- * @param uploadBody {String}
- * @param mimetype {String}
+ * User wants to trigger a mail poll right now.
  */
-function createPostDataFromString(uploadBody, mimetype)
+function onCommandCheckMailsNow(event)
 {
-  var stringStream = Cc["@mozilla.org/io/string-input-stream;1"]
-      .createInstance(Ci.nsIStringInputStream);
-  stringStream.data = uploadBody;
-  var postData = Cc["@mozilla.org/network/mime-input-stream;1"]
-      .createInstance(Ci.nsIMIMEInputStream);
-  postData.addHeader("Content-Type", mimetype);
-  postData.addContentLength = true;
-  postData.setData(stringStream);
-  return postData;
-}
+  event.stopPropagation(); // prevent it from bubbling to main <button>
 
+  united.notifyWindowObservers("do-login", {
+    withUI : true,
+    needAccountType : 10, // all accounts
+    successCallback : function(a)
+    {
+      for each (let acc in gMailAccs)
+      {
+        if (acc.isLoggedIn)
+          acc.mailCheck(false, false, function() {}, united.errorCritical);
+      }
+    },
+    // errorCallback default: show errors
+    // abortCallback default: do nothing
+  });
+}
 
 /**
-* Clean up sensitive data on uninstall.
-* Cleans: extensions.unitedinternet.login.emailAddress
-* 
-* @param {String} message (via observer mechanism)
-*/
-function cleanUpOnUnInstall(msg)
+ * Dropdown menu item "Configure..." was clicked
+ * Effect:
+ * - Show dialog to configure an account
+ */
+function onCommandConfigureMenuitem(event)
 {
-  united.ourPref.reset("login.emailAddress");
+  event.stopPropagation(); // prevent it from bubbling to main <button>
+  united.openPrefWindow("email");
 }
 
-united.autoregisterGlobalObserver("uninstall", cleanUpOnUnInstall);
+/**
+ * @param acc {Account}
+ * @param successCallback {Function(acc)}
+ */
+function ensureLoginAndDo(acc, successCallback)
+{
+  if (acc.isLoggedIn)
+  {
+    successCallback(acc);
+  }
+  else
+  {
+    united.notifyWindowObservers("do-login", {
+      withUI : true,
+      account: acc,
+      needAccountType : 9, // specific account
+      successCallback : function(a)
+      {
+        successCallback(acc);
+      },
+      // errorCallback default: show errors
+      // abortCallback default: do nothing
+    });
+  }
+}
+
+
+function onXXLTooltipClicked()
+{
+  // make server ping to measure clicks
+  if (united.brand.login.trackXXLTooltipClickedURL)
+  {
+    new united.FetchHTTP({
+        url : united.brand.login.trackXXLTooltipClickedURL,
+        method : "GET",
+    }, function() {}, united.errorNonCritical).start();
+  }
+
+  onCommandMailButton();
+}

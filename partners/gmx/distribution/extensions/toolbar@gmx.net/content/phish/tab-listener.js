@@ -49,11 +49,11 @@ var webTabProgressListener =
       try {
         request = request.QueryInterface(Ci.nsIChannel);
       } catch (e) {
-        united.debug("request is not a channel");
+        //united.debug("request is not a channel");
         return;
       }
       let uri = request.URI;
-      united.debug("uri requested: " + uri.spec);
+      //united.debug("uri requested: " + uri.spec);
       checkBlacklisted(uri, browser, request);
     } catch (e) { united.errorInBackend(e); }
   },

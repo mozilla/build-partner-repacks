@@ -14,6 +14,7 @@ function onload()
 {
   initBrand();
 }
+window.addEventListener("load", onload, false);
 
 function initBrand()
 {

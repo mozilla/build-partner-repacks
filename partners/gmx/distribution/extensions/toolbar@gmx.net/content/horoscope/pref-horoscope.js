@@ -3,14 +3,13 @@ var gStringBundle;
 function onLoad()
 {
   try {
-  gStringBundle = new united.StringBundle(
+    new HoroscopeSelector(document.getElementById("sign"));
+  } catch (e) { united.debug(e); }
+  try {
+    gStringBundle = new united.StringBundle(
       "chrome://unitedtb/locale/horoscope/horoscope.properties");
-  buildTypeMenu();
+    buildTypeMenu();
   } catch (e) { united.debug(e); } // TODO
-  if (!united.ourPref.isSet("horoscope.sign")) {
-    united.ourPref.set("horoscope.sign", "none");
-  }
-
 }
 window.addEventListener("load", onLoad, false);
 
@@ -33,3 +32,14 @@ function buildTypeMenu()
     }
   }
 }
+
+function HoroscopeSelector(el)
+{
+  AutoPrefElement.call(this, el, "horoscope.sign", united.ourPref);
+}
+HoroscopeSelector.prototype =
+{
+  reset: function()
+  {},
+}
+united.extend(HoroscopeSelector, AutoPrefElement);

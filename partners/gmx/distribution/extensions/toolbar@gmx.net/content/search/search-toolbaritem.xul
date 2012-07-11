@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet href="chrome://unitedtb/skin/search/search.css" type="text/css"?>
+<?xml-stylesheet href="chrome://unitedtb/skin/search/search-brand.css" type="text/css"?>
+<?xml-stylesheet href="chrome://unitedtb/content/util/textbox.css" type="text/css"?>
 
 <!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/search/search.dtd">
 
@@ -23,43 +25,20 @@
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbaritem id="united-search-box"
           align="center"
-          remove-priority="100"
+          remove-priority="201"
           >
+
       <textbox id="united-search-field"
-                   type="autocomplete"
-                   autocompletepopup="PopupAutoCompleteRichResult"
-                   autocompletesearch="mcollect"
-                   autocompletesearchparam="local-united"
-                   timeout="250"
-                   maxrows="20"
-                   completeselectedindex="true"
-                   completedefaultindex="false"
-                   showcommentcolumn="false"
-                   showimagecolumn="false"
-                   showimagecolumn-comment="'false' does not work for RichResult :-("
-                   tabscrolling="true"
-                   newlines=""
-                   onfocus="united.search.onFocus(event);"
-                   oninput="united.search.onTextChanged(event);"
-                   ontextentered="united.search.onTextEntered();"
-                   flex="1"
-                   emptytext="&united.search.button.emptytext;"
-                   placeholder="&united.search.button.emptytext;"
-                   ondrop="united.search.onDragDrop(event);"
-                   >
-        <box orient="horizontal"> <!-- see below -->
-          <!-- tooltiptext is set in search-toolbaritem.js when item is changed -->
-          <toolbarbutton id="united-search-button-select"
-              label="&united.search.dropbown.button.label;"
-              oncommand="united.search.onEngineChanged(event.target);"
-              type="menu"
-              orient="horizontal"
-              class="plain"
-              >
-            <menupopup id="united-search-button-dropdown"/>
-          </toolbarbutton>
-        </box>
-        <image id="united-search-image" hidden="true"/>
+              type="embedded"
+              newlines=""
+              flex="1"
+              emptytext="&united.search.button.emptytext;"
+              placeholder="&united.search.button.emptytext;"
+              no-onfocus="united.search.onFocus(event);"
+              oninput="united.search.onTextChanged(event);"
+              ontextentered="united.search.onTextEntered();"
+              ondrop="united.search.onDragDrop(event);"
+          >
         <hbox> <!-- the silly, "smart" trick they use in autocomplete.xml
              to put things on the right -->
           <toolbarbutton class="plain" id="united-search-clear-button"

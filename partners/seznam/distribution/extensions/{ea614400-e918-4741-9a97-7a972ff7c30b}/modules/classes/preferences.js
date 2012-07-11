@@ -68,7 +68,7 @@ FoxcubService.Preferences.prototype.setPref = function(key,value){
 				this.branch.setBoolPref(key,value);
 				break;
 			case 'string':
-				var str = this.encodePrefStr(value)
+				var str = this.encodePrefStr(value);
 				this.branch.setCharPref(key,str);
 				break;
 			case 'number':

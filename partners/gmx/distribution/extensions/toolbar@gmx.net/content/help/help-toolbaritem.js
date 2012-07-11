@@ -38,7 +38,7 @@ function initMenus()
 {
   if (gMenuInited)
     return;
-  initMenuitems("united-help-button-dropdown");
+  initMenuitems("united-pref-button-dropdown");
   initMenuitems("united-help-submenu");
   gMenuInited = true;
 }

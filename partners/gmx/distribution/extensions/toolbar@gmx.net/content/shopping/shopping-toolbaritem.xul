@@ -16,10 +16,11 @@
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbarbutton id="united-shopping-button"
         label="&united.shopping.button.label;"
-        oncommand="united.shopping.onItemClicked(event.target.entry);"
+        oncommand="united.shopping.onClicked(event.target.entry);"
         type="menu-button"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-icon-only="true"
         >
       <menupopup id="united-shopping-button-dropdown"/>
     </toolbarbutton>

@@ -42,6 +42,15 @@ FoxcubService.Install.PreferenceMerger.prototype.versions = {
 		"mail.username" : "",
 		"mail.password" : "",
 		"mail.updateinterval" : 0,
+		"music.enable": true,
+		"music.installed": false,
+		"music.lasturl": "http://127.0.0.1:50000/?command=",
+		"music.port": "localhost:50000",
+		"music.popup": true,
+		"music.premium": false,
+		"music.runnig": false,
+		"toolbar.enabled":false,
+		
 		"srank.enabled" : true,
 		"suggest.enabled" : false,
 		"people.updateinterval" : 0,
@@ -79,8 +88,10 @@ FoxcubService.Install.PreferenceMerger.prototype.versions = {
 		"translation.language" : "en",
 		"translation.highlight" : true,
 		"speedDial.enabled" : true,
-		"speedDial.pageType" : "small",
-		"speedDial.items" : "[{\"url\":\"http://www.seznam.cz/\",\"title\":\"Seznam \\u2013 Najdu tam, co nezn\\u00e1m\"},{\"url\":\"http://mapy.cz\",\"title\":\"Mapy.cz\"},{\"url\":\"http://zbozi.cz\",\"title\":\"Zbo\\u017e\\u00ed.cz\"}]",
+		"speedDial.pageType" : "big",
+		"speedDial.RSS" : true,	
+		"speedDial.skin" :"3",
+		"speedDial.items" : "[{\"url\":\"http://www.seznam.cz/\",\"title\":\"Seznam \\u2013 Najdu tam, co hled\\u00e1m\"},{\"url\":\"http://mapy.cz\",\"title\":\"Mapy.cz\"},{\"url\":\"http://zbozi.cz\",\"title\":\"Zbo\\u017e\\u00ed.cz\"}]",
 		"logging.toWin" : false,
 		"logging.toFile" : false,
 		"logging.toFFConsole" : false,
@@ -117,6 +128,16 @@ FoxcubService.Install.PreferenceMerger.prototype.versions = {
 		"mail.conf.lastIncome" : 0,
 		"mail.conf.weekIncome" : 0,
 		"mail.optionchanged" : false,
+		"music.enable": true,
+		"music.installed": false,
+		"music.lasturl": "http://127.0.0.1:50000/?command=",
+		"music.port": "localhost:50000",
+		"music.popup": true,
+		"music.premium": false,
+		"music.runnig": false,
+		
+		"toolbar.enabled":false,
+		
 		"srank.enabled" : true,
 		"srank.textEnabled" : false,
 		"instance.upgraded" : false
@@ -170,8 +191,10 @@ FoxcubService.Install.PreferenceMerger.prototype.versions = {
 		"translation.language" : "en",
 		"translation.highlight" : true,
 		"speedDial.enabled" : true,
-		"speedDial.pageType" : "small",
-		"speedDial.items" : "[{\"url\":\"http://www.seznam.cz/\",\"title\":\"Seznam \\u2013 Najdu tam, co nezn\\u00e1m\"},{\"url\":\"http://mapy.cz\",\"title\":\"Mapy.cz\"},{\"url\":\"http://zbozi.cz\",\"title\":\"Zbo\\u017e\\u00ed.cz\"}]",
+		"speedDial.pageType" : "big",
+		"speedDial.RSS" : true,	
+		"speedDial.skin" :"3",	
+		"speedDial.items" : "[{\"url\":\"http://www.seznam.cz/\",\"title\":\"Seznam \\u2013 Najdu tam, co hled\\u00e1m\"},{\"url\":\"http://mapy.cz\",\"title\":\"Mapy.cz\"},{\"url\":\"http://zbozi.cz\",\"title\":\"Zbo\\u017e\\u00ed.cz\"}]",
 		"logging.toWin" : false,
 		"logging.toFile" : false,
 		"logging.toFFConsole" : false,
@@ -182,6 +205,15 @@ FoxcubService.Install.PreferenceMerger.prototype.versions = {
 		"mail.conf.lastIncome" : 0,
 		"mail.conf.weekIncome" : 0,
 		"mail.optionchanged" : false,
+		"music.enable": true,
+		"music.installed": false,
+		"music.lasturl": "http://127.0.0.1:50000/?command=",
+		"music.port": "localhost:50000",
+		"music.popup": true,
+		"music.premium": false,
+		"music.runnig": false,
+		"toolbar.enabled":false,
+		
 		"srank.enabled" : true,
 		"srank.textEnabled" : false,
 		"instance.upgraded" : {
@@ -243,11 +275,13 @@ FoxcubService.Install.PreferenceMerger.prototype.versions = {
 		"translation.direction" : false,
 		"translation.highlight" : true,
 		"speedDial.enabled" : false,
-		"speedDial.pageType" : "small",
+		"speedDial.pageType" : "big",
+		"speedDial.RSS" : true,	
+		"speedDial.skin" :"3",	
 		"speedDial.settings" : "{\"background\":{\"image\":\"bg-grass-dog.png\",\"color\":\"transparent\",\"position\":\"right bottom\"}}",
 		"speedDial.items" : {
 			"def" : function(old) {
-				return (old.success) ? old.value : "[{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://www.seznam.cz/\",\"title\":\"Seznam \\u2013 Najdu tam, co nezn\\u00e1m\"},{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://mapy.cz\",\"title\":\"Mapy.cz\"},{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://zbozi.cz\",\"title\":\"Zbo\\u017e\\u00ed.cz\"}]";
+				return (old.success) ? old.value : "[{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://www.seznam.cz/\",\"title\":\"Seznam \\u2013 Najdu tam, co hled\\u00e1m\"},{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://mapy.cz\",\"title\":\"Mapy.cz\"},{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://zbozi.cz\",\"title\":\"Zbo\\u017e\\u00ed.cz\"}]";
 			},
 			"transform" : function(prev) {
 				var prevItems = prev['speedDial.items'];
@@ -264,6 +298,15 @@ FoxcubService.Install.PreferenceMerger.prototype.versions = {
 		"mail.conf.lastIncome" : 0,
 		"mail.conf.weekIncome" : 0,
 		"mail.optionchanged" : false,
+		"music.enable": true,
+		"music.installed": false,
+		"music.lasturl": "http://127.0.0.1:50000/?command=",
+		"music.port": "localhost:50000",
+		"music.popup": true,
+		"music.premium": false,
+		"music.runnig": false,
+		"toolbar.enabled":false,
+		
 		"srank.enabled" : true,
 		"srank.textEnabled" : false,
 		"instance.upgraded" : {
@@ -328,11 +371,13 @@ FoxcubService.Install.PreferenceMerger.prototype.versions[FoxcubService.VERSION]
 		"translation.highlight" : true,
 		"translation.key" : "",
 		"speedDial.enabled" : false,
-		"speedDial.pageType" : "small",
+		"speedDial.pageType" : "big",
+		"speedDial.RSS" : true,	
+		"speedDial.skin" :"3",		
 		"speedDial.settings" : "{\"background\":{\"image\":\"bg-grass-dog.png\",\"color\":\"transparent\",\"position\":\"right bottom\"}}",
 		"speedDial.items" : {
 			"def" : function(old) {
-				return (old.success) ? old.value : "[{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://www.seznam.cz/\",\"title\":\"Seznam \\u2013 Najdu tam, co nezn\\u00e1m\"},{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://mapy.cz\",\"title\":\"Mapy.cz\"},{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://zbozi.cz\",\"title\":\"Zbo\\u017e\\u00ed.cz\"}]";
+				return (old.success) ? old.value : "[{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://www.seznam.cz/\",\"title\":\"Seznam \\u2013 Najdu tam, co hled\\u00e1m\"},{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://mapy.cz\",\"title\":\"Mapy.cz\"},{\"type\":\"simple\",\"bookmarkId\":-1,\"url\":\"http://zbozi.cz\",\"title\":\"Zbo\\u017e\\u00ed.cz\"}]";
 			},
 			"transform" : function(prev) {
 				var prevItems = prev['speedDial.items'];
@@ -409,6 +454,16 @@ FoxcubService.Install.PreferenceMerger.prototype.versions[FoxcubService.VERSION]
 		"mail.conf.lastIncome" : 0,
 		"mail.conf.weekIncome" : 0,
 		"mail.optionchanged" : false,
+		"music.enable": true,
+		"music.installed": false,
+		"music.lasturl": "http://127.0.0.1:50000/?command=",
+		"music.port": "localhost:50000",
+		"music.popup": true,
+		"music.premium": false,
+		"music.runnig": false,
+		"toolbar.enabled":false,
+		
+
 		"srank.enabled" : true,
 		"srank.textEnabled" : false,
 		"instance.upgraded" : {

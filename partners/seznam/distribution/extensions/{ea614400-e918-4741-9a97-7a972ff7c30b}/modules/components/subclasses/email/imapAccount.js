@@ -12,6 +12,7 @@ FoxcubService.Email.ImapAccount = FoxcubService.JAK.ClassMaker.makeClass({
 FoxcubService.Email.ImapAccount.prototype.$constructor = function(data){
 	this.$super(data);
 	this.reader = null;
+	this.i=0;
 }
 //zisti ktore spravy su nove - podla ulozenych ideciek
 FoxcubService.Email.ImapAccount.prototype.handleIds = function(allIds){
@@ -64,6 +65,7 @@ FoxcubService.Email.ImapAccount.prototype._check = function(){
 //pri volani getResult - kontrola ci uz je hotove vsetko
 FoxcubService.Email.ImapAccount.prototype._getResult = function(){
 	if(this.reader){
+		
 		if(this.reader.finished){
 			if(this.reader.error){
 				this._onError((this.reader.error == this.reader.ERROR_LOGIN)?this.ERROR_PWD:this.ERROR_UNKNOWN);
@@ -91,7 +93,22 @@ FoxcubService.Email.ImapAccount.prototype._getResult = function(){
 					state.states.push(obj)
 				}				
 				this._onSuccess(state);
+				this.i="0";
 			}
+			
+			
+		 }
+		else{
+			
+				if(this.i>"6000"){
+				
+					if(!this.reader.finished){
+			
+						this._onError((this.reader.error == this.reader.ERROR_LOGIN)?this.ERROR_PWD:this.ERROR_UNKNOWN);
+						
+					}	
+				}
+			this.i++;
 		}
 	}
 }

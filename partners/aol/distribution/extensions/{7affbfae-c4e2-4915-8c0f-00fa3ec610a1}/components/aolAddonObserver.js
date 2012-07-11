@@ -18,6 +18,9 @@ aolAddonObserver.prototype =
 	
 	_init : false,
 	_state : "",
+	_enable:true,
+	_chromeDir:'',
+	_hideToolbar:false,
 	
     classDescription : CLASS_NAME,
     contractID : CONTRACT_ID,
@@ -50,6 +53,7 @@ aolAddonObserver.prototype =
 			
 		        // create the addon listener
 			    AddonManager.addAddonListener(this.addonListener.init(this, TOOLBAR_ID));
+				this._chromeDir = "chrome://aoltoolbar/";
 			}
 		    catch(e)
 		    {
@@ -155,11 +159,18 @@ aolAddonObserver.prototype =
         this.getBranch().deleteBranch("");                                 
 	},
 	
-	uninstalling : function()
+	disabling:function(addon)
+	{
+	    this._state = "Disable";	
+	    this.showUninstallPage(addon);
+	},
+	
+	
+	uninstalling : function(addon)
 	{   
 	    this.log('uninstalling');
 	    this._state = "uninstalling";	
-	    this.showUninstallPage();		
+	    this.showUninstallPage(addon);		
 	},
 	
     installing : function()
@@ -200,6 +211,7 @@ aolAddonObserver.prototype =
 	    onDisabling : function(addon, needsRestart)
 	    {
 	        this.observer.log('onDisabling:' + addon.name);
+			if (this.isSelf(addon.id)) this.observer.disabling(addon);  
 	    },
 	    
         onDisabled : function(addon)
@@ -238,7 +250,7 @@ aolAddonObserver.prototype =
         onUninstalling : function(addon, needsRestart)
         {
             this.observer.log('onUninstalling:' + addon.name);
-            if (this.isSelf(addon.id)) this.observer.uninstalling();            
+            if (this.isSelf(addon.id)) this.observer.uninstalling(addon);            
         },
         
         onUninstalled : function(addon)
@@ -325,7 +337,49 @@ aolAddonObserver.prototype =
 		return uninstallUrl;
 	},
 	
-	showUninstallPage : function()
+	sendRequest:function(url) {
+	     try {
+            var req = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+            req.open("GET", url, false); 
+            req.send(null);
+        } catch(e) {
+            this.log("sendRequest ex ["+ e.message +"] "+ url);
+        }
+	},	
+	
+	formatDate: function(val)
+    {
+        var ret = "20000101";
+        var parts = val.split("-");
+        if (parts.length == 3) {
+            ret = parts[2]+parts[1]+parts[0];
+        }
+        return ret;
+    },
+	
+    sendSearch : function(typeName, subTypeName) {
+		var branch = this.getBranch();
+		var strings = this.getStrings();
+		var installId = branch.getCharPref("search.instd");
+		var originalDate = branch.getCharPref("search.oid");
+		var currentDate = branch.getCharPref("search.cid");
+		var langlocale = strings.GetStringFromName("toolbar.langlocale");
+		var installSource = branch.getCharPref("search.source");
+		var  searchUrl = strings.GetStringFromName("search.metrics");
+		
+		searchUrl = searchUrl.replace(/{it}/g, installSource);
+		searchUrl = searchUrl.replace(/{langlocale}/g, langlocale.toLowerCase());
+		searchUrl = searchUrl.replace(/{mrud}/g, this.formatDate(currentDate));
+		searchUrl = searchUrl.replace(/{oid}/g, this.formatDate(originalDate));
+		searchUrl = searchUrl.replace(/{uuid}/g, installId);  
+
+		var evt = typeName + "-" + subTypeName;
+
+		var url = searchUrl.replace(/{event}/g, evt);           
+
+		this.sendRequest(url);
+   },
+	showUninstallPage : function(addon)
 	{
 	    try
 	    {
@@ -334,8 +388,42 @@ aolAddonObserver.prototype =
 		    if (windowMediator) 
 		    {
 			    window = windowMediator.getMostRecentWindow("navigator:browser");
+				var branch = this.getBranch();
+				var strings = this.getStrings();	
+
+				var xul_id = strings.GetStringFromName("toolbar.xul.id");
+				var tb = window.document.getElementById(xul_id);
+
+
 			    if (window)
 			    {
+				    var path= this._chromeDir + "content/enableBox.xul";
+				    window.openDialog(path, "aol", "modal,centerscreen,titlebar=no", this);
+					
+					    if(this._enable){
+					
+							addon.userDisabled = false;
+							//if this is a user uninstall action. cancel uninstall
+							if((addon.pendingOperations & AddonManager.PENDING_UNINSTALL) != 0)  
+								addon.cancelUninstall();
+
+							var branch = this.getBranch();
+							var strings = this.getStrings();	
+
+							var xul_id = strings.GetStringFromName("toolbar.xul.id");
+							var tb = window.document.getElementById(xul_id);
+							if(tb && this._hideToolbar){
+								tb.collapsed = true;
+						
+							this.sendSearch("prompt", "detect_disable-hide-this-session");	
+						}
+						else{
+							this.sendSearch("prompt", "detect_disable-cancel-disable");
+						}
+						
+					}
+                   else{  //if uninstall , show uninstall url  
+					this.sendSearch("prompt", "detect disable-disable toolbar");	
 			        var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                        .getInterface(Components.interfaces.nsIWebNavigation)
                        .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
@@ -345,6 +433,7 @@ aolAddonObserver.prototype =
 
                     var uri = this.getUninstallUrl();
                     mainWindow.gBrowser.addTab(uri);                    
+			    }
 			    }
 		    }		    
         }

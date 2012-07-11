@@ -49,19 +49,20 @@ function unregisterObserverOnList(observerList, observer)
  *
  * @param obs {Array of observers} internal list of observers to notify
  * @param msg {String} the type of notification, e.g. "search-started"
- * @param obj {Object} additional information, depending on type of msg.
+ * @param params {Object} additional information, depending on type of msg.
  *
  * You MUST define the msg and object, see top of file.
  */
-function notifyObserversOnList(observerList, msg, obj)
+function notifyObserversOnList(observerList, msg, params)
 {
   assert(typeof(msg) == "string");
+  assert(typeof(params) == "object"); // null is allowed, but null is object
   debug(msg + " message sent (" + new Date().toLocaleString() + ")");
   //debugObject(obj, "obj", 1);
   for (let i = 0, l = observerList.length; i < l; i++)
   {
     try {
-      observerList[i].notification(msg, obj);
+      observerList[i].notification(msg, params);
     } catch (e) { errorInBackend(e); }
   }
 }
@@ -74,7 +75,7 @@ function unregisterGlobalObserver(observer)
 {
   unregisterObserverOnList(gGlobalObservers, observer);
 }
-function notifyGlobalObservers(msg, obj)
+function notifyGlobalObservers(msg, params)
 {
-  notifyObserversOnList(gGlobalObservers, msg, obj);
+  notifyObserversOnList(gGlobalObservers, msg, params);
 }

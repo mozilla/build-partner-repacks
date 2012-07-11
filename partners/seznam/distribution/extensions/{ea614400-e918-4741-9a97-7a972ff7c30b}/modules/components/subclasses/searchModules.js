@@ -12,7 +12,7 @@ FoxcubService.Install.SearchModules.prototype.MODULES_URL = "http://download.sez
 FoxcubService.Install.SearchModules.prototype.MODULE_FILE_NAMES_SUFFIX = ""; /* "_ff" do budoucna!!! */
 FoxcubService.Install.SearchModules.prototype.MODULES_FILE_NAMES = ["mapy-cz","firmy-cz","zbozi-cz"];
 FoxcubService.Install.SearchModules.prototype.MODULE_HP_NAME = "seznam-cz";
-FoxcubService.Install.SearchModules.prototype.HP_URL = "http://www.seznam.cz";
+FoxcubService.Install.SearchModules.prototype.HP_URL = "http://www.seznam.cz/?clid="+FoxcubService.RELEASE;;
 FoxcubService.Install.SearchModules.prototype.KEYWORD_URL = "http://search.seznam.cz/?sourceid={0}&q=";
 FoxcubService.Install.SearchModules.prototype.INTERVAL_LENGTH =20000;// 180000;
 FoxcubService.Install.SearchModules.prototype.INTERVAL_STEP = 5000;
@@ -111,8 +111,10 @@ FoxcubService.Install.SearchModules.prototype._askUser = function(){
 			return false;
 		}	
 	}	
-	
-	
+	if(!params){
+		return
+	}
+		
 	return params.out;
 };
 

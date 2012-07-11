@@ -34,8 +34,7 @@ function onCloseButton()
     var search = united.Cc["@mozilla.org/browser/search-service;1"]
         .getService(united.Ci.nsIBrowserSearchService);
     // sets pref "browser.search.selectedEngine" and notifies app
-    search.currentEngine = search.getEngineByName(
-        united.brand.search.engineName);
+    search.currentEngine = search.getEngineByName(united.brand.search.engineName);
 
     // URLbar search
     united.generalPref.set("keyword.URL", united.brand.search.keywordURL);
@@ -43,8 +42,14 @@ function onCloseButton()
 
   if (startpage)
   {
-    united.generalPref.set("browser.startup.homepage",
-        united.brand.toolbar.startpageURL);
+    if (document.getElementById("startpage-search").checked)
+    {
+      united.generalPref.set("browser.startup.homepage",
+          united.brand.toolbar.startpageURL);
+    } else {
+      united.generalPref.set("browser.startup.homepage",
+          united.brand.toolbar.startpageHomepageURL);
+    }
   }
   //</copied>
 

@@ -1,7 +1,6 @@
 #united-search-button
 {
   list-style-image: url("chrome://unitedtb/skin/search/search-small.png");
-  min-height: 16px;
 }
 
 #united-search-button-select
@@ -10,60 +9,28 @@
 }
 
 /* 
- * never display label for search-button
+ * never display label, but always icon, for search-button
  */
 #united-search-button label.toolbarbutton-text
 {
   display: none;
 }
-
-/* 
- * Always show label for search button
- */
 #united-search-button image.toolbarbutton-icon
 {
   display: -moz-box;
 }
 
-/* 
- * never display label for search-button dropdown
- */
-#united-search-button-select label.toolbarbutton-text
-{
-  display: none;
-}
-
-/* 
- * Always show icon for search button
- */
-#united-search-button-select image.toolbarbutton-icon
-{
-  display: -moz-box;
-}
-
-
-#united-search-button-select > toolbarbutton
-{
- /*-moz-appearance: none; */
-}
-
 #united-search-box[crowded="true"] #united-search-field
 {
-  max-width: 10em;
+  max-width: 15em;
 }
 
-#united-search-image {
-  list-style-image: url("chrome://unitedtb/skin/brand/icon-small.png");
-  opacity: 0.5;
-  padding-left: 5px;
-  padding-right: 2px;
-  margin: 0px;
-  border: 0px;
+#united-search-field, .ac-popup {
+  width: 250px;
 }
 
 #united-search-field {
-  height: 1.9em;
-  width: 22.5em;
+  height: 2em;
 }
 
 #united-search-clear-button {
@@ -75,80 +42,23 @@
 }
 
 
+/********************************
+ * Autocomplete widget
+ */
 
-richlistitem.autocomplete-richlistitem[type^="united-"] {
-  border-top: none;
-}
-/* section header */
-richlistitem.autocomplete-richlistitem[type^="united-"]
-    .ac-comment {
-  color: GrayText !important;
-  font-size: smaller;
-}
-/* selected section header: avoid letting it (appear to be) selected */
-richlistitem.autocomplete-richlistitem[type^="united-"][selected="true"] {
-  color: inherit;
-  background-color: inherit;
-}
-/* selected item content */
-richlistitem.autocomplete-richlistitem[type^="united-"][selected="true"]
-    > .ac-url-box {
-   background-color: Highlight;
-   color: HighlightText;
-}
-/* hide header, in all items that are not the first of the section */
-/*richlistitem.autocomplete-richlistitem[type^="united-"]:not([type$="-first-of-section"])
-    > .ac-title-box { -- FF4, but FF3.6 is missing the class
-    > hbox:first-child { -- does not work! why?
-  display: none;
-}
-so workaround:
-*/
-richlistitem.autocomplete-richlistitem[type^="united-"]:not([type$="-first-of-section"])
-    > hbox {
-  display: none;
-}
-richlistitem.autocomplete-richlistitem[type^="united-"]:not([type$="-first-of-section"])
-    > hbox.ac-url-box {
-  display: -moz-box;
+.ac-command {
+  color: blue;
+  text-decoration: underline;
+  text-align: right;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /*
-<https://developer.mozilla.org/en/XUL_Tutorial/Styling_a_Tree>
-.autocomplete-treebody::-moz-tree-cell-text(treecolAutoCompleteComment) {
-  color: GrayText;
-  font-size: smaller;
-}
-.autocomplete-treebody::-moz-tree-cell(united-searchterm) {
-  background-color: #d4c3c3;
-}
-.autocomplete-treebody::-moz-tree-cell(united-url) {
-  background-color: #aadca1;
-}
-.autocomplete-treebody::-moz-tree-cell-text(united-searchterm) {
-  color: red;
-}
-.autocomplete-treebody[selected=true]::-moz-tree-cell-text(united-searchterm) {
-  color: black !important;
-}
-.autocomplete-treebody::-moz-tree-cell-text(united-url) {
-  color: green;
-}
-.autocomplete-treebody::-moz-tree-cell-text(united-searchterm treecolAutoCompleteComment) {
-  color: red;
-}
-.autocomplete-treebody::-moz-tree-cell-text(united-url treecolAutoCompleteComment) {
-  color: green;
-}
-*/
-/*
-<http://mxr.mozilla.org/comm-central/source/mozilla/browser/themes/gnomestripe/browser/browser.css#1245>
-.autocomplete-treebody::-moz-tree-cell-text(suggesthint, treecolAutoCompleteComment),
-.autocomplete-treebody::-moz-tree-cell-text(suggestfirst, treecolAutoCompleteComment) {
-  color: GrayText;
-  font-size: smaller;
-}
-.autocomplete-treebody::-moz-tree-cell(suggesthint) {
-  border: none;
+.ac-url {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
 }
 */

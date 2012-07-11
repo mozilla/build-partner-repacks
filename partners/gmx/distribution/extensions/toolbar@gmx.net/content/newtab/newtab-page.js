@@ -1,24 +1,42 @@
-Components.utils.import("resource://unitedtb/newtab/marketed-searchterms.js", this);
 Components.utils.import("resource://unitedtb/search/search-store.js", this);
 
 var united;
 var searchField;
+var gAutocomplete;
+
+const prefCount = "tracking.countnewtab.count";
 
 function onLoad(unitedFromAbove)
 {
   var firefoxWindow = getTopLevelWindowContext();
   united = firefoxWindow.united;
+
+  // Tracking new tab pages
+  var count = united.ourPref.get(prefCount, 0);
+  united.ourPref.set(prefCount, ++count);
+
   searchField = document.getElementById("searchterm");
   if (united.ourPref.get("newtab.setFocus"))
     searchField.focus();
 
+  initAutocomplete();
   initBrand();
   initViewMode();
   fillUserSearchTerms();
-  fillMarketedSearchTerms();
   fillMostVisited();
+  getRecommendedSites(fillRecommendedSites);
 }
 window.addEventListener("load", onLoad, false);
+
+function initAutocomplete()
+{
+  Components.utils.import("resource://unitedtb/search/mcollect/mCollectImport.js", this);
+  united.loadJS("chrome://unitedtb/content/util/AutoComplete.js", this);
+  united.loadJS("chrome://unitedtb/content/search/mcollect/mAutocompleteSource.js", this);
+
+  gAutocomplete = new AutocompleteWidget(searchField, { xul: false });
+  gAutocomplete.addSource(new mCollectAutocompleteSource(gAutocomplete, window));
+}
 
 // <copied to="neterror.js">
 
@@ -30,18 +48,13 @@ function fillUserSearchTerms()
 {
   var manageE = document.getElementById("last-searches-manage");
   manageE.setAttribute("have-results", "false");
-  getLastSearches(10, function(terms) // search-store.js
+  getLastSearches(20, function(terms) // search-store.js
   {
     fillSearchTerms(terms, "last-searches-list", 5);
     if (terms && terms.length)
       manageE.setAttribute("have-results", "true");
   },
   united.error);
-}
-
-function fillMarketedSearchTerms()
-{
-  fillSearchTerms(getMarketedSearchTerms(), "marketed-searches-list", 6);
 }
 
 /*
@@ -59,8 +72,6 @@ function fillSearchTerms(terms, listID, sourceID)
     var url;
     if (sourceID == 5)
       url = united.brand.search.historyNewTabURL;
-    else if (sourceID == 6)
-      url = united.brand.search.marketedNewTabURL;
     else
       throw NotReached("known source value");
     url += encodeURIComponent(term);
@@ -103,6 +114,7 @@ function initBrand()
 
 const maxItems = 9;
 const maxTitleChars = 40;
+const maxRecommendedItems = 9;
 
 function fillMostVisited()
 {
@@ -114,9 +126,9 @@ function fillMostVisited()
   {
     if (++i > maxItems)
       break;
-    let titleText = entry.url;
-    if (entry.title)
-      titleText = entry.title.substr(0, maxTitleChars);
+    let titleText = entry.title || entry.url;
+    if (titleText.length > maxTitleChars)
+      titleText = titleText.substr(0, maxTitleChars);
     let item = document.createElement("div");
     item.setAttribute("class", "mostvisited");
     let link = document.createElement("a");
@@ -124,12 +136,18 @@ function fillMostVisited()
     let title = document.createElement("span");
     title.appendChild(document.createTextNode(titleText));
     title.setAttribute("class", "sitetitle");
+    let imgThumbDiv = document.createElement("div");
+    imgThumbDiv.setAttribute("class", "thumbnail");
     let imgThumb = document.createElement("img");
-    imgThumb.setAttribute("class", "thumbnail");
     var tn = entry.getThumbnailURL();
     if (!tn)
     {
-      tn = "chrome://unitedtb/skin/newtab/genericsite.png";
+      if (entry.faviconURL) {
+        tn = entry.faviconURL;
+      } else {
+        tn = "chrome://mozapps/skin/places/defaultFavicon.png";
+      }
+      imgThumb.setAttribute("class", "smallicon");
       // on-the-fly thumbnail generation, trac bug #160
       //imgThumb.setAttribute("loading", "true");
       //makeThumbnail(entry.url, function(thumbnailURL)
@@ -139,17 +157,89 @@ function fillMostVisited()
       //});
     }
     imgThumb.setAttribute("src", tn);
-    imgThumb.setAttribute("width", united.newtab.thumbnailWidth);
-    imgThumb.setAttribute("height", united.newtab.thumbnailHeight);
+    imgThumbDiv.style.width = united.newtab.thumbnailWidth + "px";
+    imgThumbDiv.style.height = united.newtab.thumbnailHeight + "px";
+//    imgThumb.setAttribute("width", united.newtab.thumbnailWidth);
+//    imgThumb.setAttribute("height", united.newtab.thumbnailHeight);
     let imgFavicon = document.createElement("img");
     imgFavicon.setAttribute("class", "favicon");
     imgFavicon.setAttribute("src", entry.faviconURL);
-    link.appendChild(imgThumb);
+    imgThumbDiv.appendChild(imgThumb);
+    link.appendChild(imgThumbDiv);
     link.appendChild(imgFavicon);
     link.appendChild(title);
     item.appendChild(link);
     listE.appendChild(item);
   }
+}
+
+/**
+ * Fetch the data for fillRecommendedSites() from server XML,
+ * once a day. Cache in prefs.
+ */
+function getRecommendedSites(successCallback)
+{
+  var url = united.brand.newtab.recommendedSitesXMLURL;
+  if (!url)
+    return;
+  const intervalMS = 3 * 24 * 60 * 60 * 1000; // every 3 days
+  if (united.sanitize.integer(
+        united.ourPref.get("newtab.recommended.lastFetched", 0)) * 1000 >
+      (new Date() - intervalMS)) // have current cache
+  {
+    successCallback(
+        new XML(united.ourPref.get("newtab.recommended.cacheXML")));
+  }
+  else
+  {
+    new united.FetchHTTP({ url : url, method : "GET" },
+    function(xml)
+    {
+      united.ourPref.set("newtab.recommended.cacheXML", xml.toString());
+      united.ourPref.set("newtab.recommended.lastFetched",
+          Math.round(new Date().getTime() / 1000));
+      successCallback(xml);
+    },
+    united.errorNonCritical).start();
+  }
+}
+
+/**
+ * This is a small list of partner sites that should be displayed
+ * like the most-visited sites.
+ */
+function fillRecommendedSites(xml)
+{
+  var listE = document.getElementById("recommended-list");
+  united.cleanElement(listE);
+  var i = 0;
+  for each (let entry in xml.launchitem)
+  {
+    if (++i > maxRecommendedItems)
+      break;
+    let url = united.sanitize.label(entry.url);
+    let faviconURL = united.sanitize.label(entry.icon);
+    let title = united.sanitize.label(entry.name);
+    title = title || url;
+    if (title.length > maxTitleChars)
+      title = title.substr(0, maxTitleChars);
+
+    let itemE = document.createElement("div");
+    itemE.setAttribute("class", "recommended-site");
+    let linkE = document.createElement("a");
+    linkE.setAttribute("href", url);
+    let titleE = document.createElement("span");
+    titleE.appendChild(document.createTextNode(title));
+    titleE.setAttribute("class", "sitetitle");
+    let imgFaviconE = document.createElement("img");
+    imgFaviconE.setAttribute("class", "favicon");
+    imgFaviconE.setAttribute("src", faviconURL);
+    linkE.appendChild(imgFaviconE);
+    linkE.appendChild(titleE);
+    itemE.appendChild(linkE);
+    listE.appendChild(itemE);
+  }
+  listE.parentNode.setAttribute("have-results", "true");
 }
 
 // if new profile, fill up list with defined initial entries

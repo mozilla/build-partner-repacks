@@ -1,4 +1,3 @@
-Cu.import("resource://gre/modules/ISO8601DateUtils.jsm", this);
 Cu.import("resource://unitedtb/util/globalobject.js", this);
 
 XPCOMUtils.defineLazyServiceGetter(this, "annotationService",
@@ -115,7 +114,9 @@ function captureThumbnail(browser)
   united.debug("capturing thumbnail for <" + win.location + ">, with size w " + thumbnailHeight + ", h " + thumbnailWidth +
       ", scale " + scale + ", page area w " + visibleWidth + " h " + visibleHeight);
 
-  return storeThumbnail(uri, canvas);
+  var imageDataURL = canvas.toDataURL("image/png")
+  storeThumbnail(uri, imageDataURL);
+  return imageDataURL;
 }
 
 /////////////////////////////////////////////////////
@@ -127,19 +128,17 @@ function captureThumbnail(browser)
  * Currently storing in Places database as Annotation.
  *
  * @param uri {nsIURI}  page URL for which the thumbnail is made
- * @param canvas {DOMElement <canvas>} the thumbnail drawn on <canvas>
- * @returns {String}  URL of the thumbnail image
+ * @param imageURL {URL} URL of the thumbnail image
  */
-function storeThumbnail(uri, canvas)
+function storeThumbnail(uri, imageURL)
 {
   var now = new Date();
-  var dataURL = canvas.toDataURL("image/png");
 
   annotationService.setPageAnnotation(uri,
-      "unitedtb/thumbnail/dataurl", dataURL,
+      "unitedtb/thumbnail/dataurl", imageURL,
       0, expireStorageAfter);
   annotationService.setPageAnnotation(uri,
-      "unitedtb/thumbnail/lastmodtime", ISO8601DateUtils.create(now),
+      "unitedtb/thumbnail/lastmodtime", now.toISOString(),
       0, expireStorageAfter);
 
   /* save as binary:
@@ -149,7 +148,6 @@ function storeThumbnail(uri, canvas)
       binaryArray, binaryArray.length,
       expireStorageAfter);
   */
-  return dataURL;
 }
 
 /**
@@ -204,7 +202,7 @@ function findLastModified()
     let node = container.getChild(i);
     // <http://mdn.beonex.com/en/nsINavHistoryResultNode>
     //united.debug(i + ". " + node.accessCount + "times <" + node.uri + ">, title: " + node.title);
-    if (node.uri.substr(0, 5) != "http:" && node.uri.substr(0, 6) != "https:")
+    if ((node.uri.substr(0, 5) != "http:" && node.uri.substr(0, 6) != "https:") || (!node.title))
       continue;
     let entry = new MostVisitedEntry(node.uri);
     entry.title = node.title;
@@ -300,9 +298,9 @@ MostVisitedEntry.prototype =
   load : function()
   {
     try {
-      this.lastmodtime = ISO8601DateUtils.parse(
+      this.lastmodtime = new Date(Date.parse(
           annotationService.getPageAnnotation(united.makeNSIURI(this.url),
-            "unitedtb/thumbnail/lastmodtime")).getTime();
+            "unitedtb/thumbnail/lastmodtime"))).getTime();
     } catch (e) {} // default = unixtime 0 = 1970
   },
   getThumbnailURL : function()

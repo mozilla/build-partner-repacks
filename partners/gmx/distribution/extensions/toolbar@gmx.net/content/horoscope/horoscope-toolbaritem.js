@@ -9,18 +9,10 @@ var gStringBundle;
 
 function onLoad(event)
 {
-  horoscopeButton = document.getElementById("united-horoscope-button");
-  horoscopeButton.addEventListener("popupshowing", onDropdownOpened, false);
-  // compare appendBrandedMenuitems()
   try {
   gStringBundle = new united.StringBundle(
       "chrome://unitedtb/locale/horoscope/horoscope.properties");
-  buildTypeMenu();
   } catch (e) { united.debug(e); } // TODO
-
-  var entry = {};
-  entry.url = united.brand.horoscope.horoscopeURL;
-  horoscopeButton.entry = entry;
 };
 window.addEventListener("load", onLoad, false);
 
@@ -53,7 +45,9 @@ function onDropdownOpened(event)
   {
     united.openPrefWindow("horoscope");
     event.preventDefault();
+    return;
   }
+  buildTypeMenu();
 }
 
 /**
@@ -88,7 +82,11 @@ function onItemClicked(entry)
 
   var type = united.ourPref.get("horoscope.type");
   var sign = united.ourPref.get("horoscope.sign");
-  var url = entry.url.replace("{TYPE}", type);
+  var url;
+  if (entry)
+    url = entry.url.replace("{TYPE}", type);
+  else
+    url = united.brand.horoscope.horoscopeURL.replace("{TYPE}", type);
   if (sign == "none")
   {
     url = url.replace("{SIGN}", "")
@@ -128,14 +126,15 @@ function onItemClicked(entry)
         z = partnertestMapping[partnersign];
       }
       if (z && rz) {
-        webnav.loadURI(united.brand.horoscope.partnertestURL, flags, null,
-            createPostDataFromString("z=" + z + "&rz=" + rz, "application/x-www-form-urlencoded"), null);
+//        united.loadPageWithPOST(united.brand.horoscope.partnertestURL, "tab", "z=" + z + "&rz=" + rz, "application/x-www-form-urlencoded");
+        openUILinkIn(united.brand.horoscope.partnertestURL, "tab", false, createPostDataFromString("z=" + z + "&rz=" + rz, "application/x-www-form-urlencoded"));
+
       } else {
-        united.loadPage(united.brand.horoscope.horoscopeURL.replace("{SIGN}", "").replace("{TYPE}", "partnertest"), "tab");
+        united.loadPage(united.brand.horoscope.horoscopeURL.replace("{SIGN}", "").replace("{TYPE}", "partnertest"), "united-horoscope");
       }
     } catch (e) {
       united.error(e);
-      united.loadPage(united.brand.horoscope.horoscopeURL.replace("{SIGN}", sign).replace("{TYPE}", "partnertest"), "tab");
+      united.loadPage(united.brand.horoscope.horoscopeURL.replace("{SIGN}", sign).replace("{TYPE}", "partnertest"), "united-horoscope");
     }
   }
   else

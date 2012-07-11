@@ -7,9 +7,12 @@
  * Returns |mURLResult|s.
  *
  * @param searchTerm {String}
+ * @param includeHistory {Boolean} If true, include browser history, i.e. all visited URLs.
+ *     If false, show only bookmarks.
  */
-function mPlacesSearch(searchTerm)
+function mPlacesSearch(searchTerm, includeHistory)
 {
+  this._includeHistory = sanitize.boolean(includeHistory);
   mSearch.call(this, searchTerm);
 }
 mPlacesSearch.prototype =
@@ -60,7 +63,9 @@ mPlacesSearch.prototype =
       */
       var sql = "SELECT url, moz_places.title AS pageTitle, " +
               "moz_bookmarks.title AS bookmarkTitle " +
-          "FROM moz_places LEFT JOIN moz_bookmarks ON " +
+          (this._includeHistory
+              ? "FROM moz_places LEFT JOIN moz_bookmarks ON "
+              : "FROM moz_bookmarks LEFT JOIN moz_places ON ") +
               "(moz_places.id = moz_bookmarks.fk) " +
           "WHERE url LIKE :search OR pageTitle LIKE :search OR bookmarkTitle LIKE :search " +
           "ORDER BY frecency DESC, last_visit_date DESC " +
@@ -81,20 +86,22 @@ mPlacesSearch.prototype =
         for each (let row in rows)
         {
           try {
-            let url = row.getResultByName("url");
-            let title = row.getResultByName("bookmarkTitle");
+            let url = row.getResultByName("url").toString();
+            if (url.substr(0, 5) != "http:" && url.substr(0, 6) != "https:")
+              continue; // would throw in mURLResult
+            let title = row.getResultByName("bookmarkTitle").toString();
             if (!title)
-              title = row.getResultByName("pageTitle");
+              title = row.getResultByName("pageTitle").toString();
             if (!title)
               title = url;
             let icon = faviconServ.getFaviconImageForPage(
                 ioService.newURI(url, null, null)).spec;
-            self._results.push(new mURLResult(title, descr, icon, url));
-          } catch (e) { errorInBackend(e); }
+            self._addResult(new mURLResult(title, descr, icon, url));
+          } catch (e) { self._haveItemError(e); }
         }
         self._notifyObserversOfResultChanges();
-      }, self._haveError));
-    } catch (e) { this._haveError(e); }
+      }, self._haveFatalError));
+    } catch (e) { this._haveFatalError(e); }
   },
 }
 extend(mPlacesSearch, mSearch);

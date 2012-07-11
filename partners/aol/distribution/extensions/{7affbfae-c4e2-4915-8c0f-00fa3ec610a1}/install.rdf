@@ -5,10 +5,10 @@
   
   <em:creator>AOL Inc.</em:creator>
   <em:description>AOL Toolbar for Firefox</em:description>
-  <em:homepageURL>http://www.aol.com/?ncid=toolbar</em:homepageURL>
+  <em:homepageURL>http://toolbar.aol.com/aol/customfirefox</em:homepageURL>
   <em:id>{7affbfae-c4e2-4915-8c0f-00fa3ec610a1}</em:id>
   <em:name>AOL Toolbar</em:name>
-  <em:version>5.74.1.6764</em:version>
+  <em:version>5.74.1.8400</em:version>
   <em:optionsURL>chrome://aoltoolbar/content/settings.xul</em:optionsURL>
   <em:iconURL>chrome://aoltoolbar/locale/images/icon.png</em:iconURL>
   <em:updateURL>https://client.web.aol.com/toolbarfiles/Prod/Content/customfirefox/ffhostfiles/update.rdf</em:updateURL>
@@ -18,7 +18,7 @@
     <Description>
       <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
       <em:minVersion>1.0</em:minVersion>
-      <em:maxVersion>4.*</em:maxVersion>
+      <em:maxVersion>17.0</em:maxVersion>
     </Description>
   </em:targetApplication>
   

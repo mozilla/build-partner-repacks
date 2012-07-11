@@ -1,1 +1,2 @@
-<!ENTITY phish.label "Enable phishing protection">
+﻿<!ENTITY pane.title "Phishing">
+<!ENTITY phish.label "Warn of fraudulent websites (phishing sites)">

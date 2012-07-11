@@ -12,6 +12,8 @@
 
     <link rel="stylesheet" type="text/css"
       href="chrome://unitedtb/skin/newtab/newtab-page.css"/>
+    <link rel="stylesheet" type="text/css"
+      href="chrome://unitedtb/skin/newtab/newtab-page-brand.css"/>
 </head>
 <body viewmode="gallery">
     <script type="text/javascript;version=1.8"
@@ -59,18 +61,13 @@
                       href="store-management.xhtml?mode=psh">&newtab.manage;</a>
                 </div>
             </div>
-            <div class="module">
-                <div class="moduleheader"><h3>&marketed-searches.label;</h3></div>
-                <div class="modulecontent">
-                    <ul id="marketed-searches-list"
-                        no-results-text="&no-marketed-searches.label;">
-                        <li class="no-results">&no-marketed-searches.label;</li>
-                    </ul>
-                </div>
-            </div>
         </div>
         <div id="content">
           <span id="most-visited-list"/>
+        </div>
+        <div id="recommended" have-results="false">
+          <h2 id="recommended-header">&recommended.label;</h2>
+          <span id="recommended-list"/>
         </div>
     </div>
 </div>

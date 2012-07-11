@@ -29,9 +29,7 @@ a:hover { text-decoration: underline; }
 #search-button {
   border-style: solid;
   border-width: 1px;
-  -moz-border-radius: 4px;
-  border-top-radius: 4px;
-  border-top-radius: 4px;
+  border-radius: 4px;
   font-size: 14px; font-weight: 600;
   padding: 4px 15px;
 }

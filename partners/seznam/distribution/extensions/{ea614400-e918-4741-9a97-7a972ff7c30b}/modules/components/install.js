@@ -16,11 +16,34 @@ FoxcubService.Install.prototype.INSTALL_TYPE_UPGRADE_OLD = 2;
 FoxcubService.Install.prototype.INSTALL_TYPE_UPGRADE_NEW = 3;
 FoxcubService.Install.prototype.INSTALL_TYPE_NONE = 4;
 FoxcubService.Install.prototype.INSTALL_TIMEOUT = 2000;
+FoxcubService.Install.prototype.COOKIE_VALUE = "listicka=1;domain=."; 
+FoxcubService.Install.prototype.DOMAINS = {
+		"http://seznam.cz" : 1,
+		"http://sauto.cz" : 1,
+		"http://sbazar.cz" : 1,
+		"http://deniky.cz" : 1,
+		"http://email.cz" : 1,
+		"http://sfinance.cz" : 1,
+		"http://firmy.cz" : 1,
+		"http://horoskopy.cz" : 1,
+		"http://hry.cz" : 1,
+		"http://lide.cz" : 1,
+		"http://mapy.cz" : 1,
+		"http://pocasi.cz" : 1,
+		"http://sprace.cz" : 1,
+		"http://prozeny.cz" : 1,
+		"http://sreality.cz" : 1,
+		"http://sport.cz" : 1,
+		"http://stream.cz" : 1,
+		"http://super.cz" : 1,
+		"http://sweb.cz" : 1,
+		"http://zbozi.cz" : 1,
+		"http://novinky.cz" : 1
+};
 
 FoxcubService.Install.prototype.$constructor = function() {
 	this.log("constructor start", "info");
 	this.installType = false;
-
 	this.lastBoss = null;
 	this.winFolder = {};
 	this.installed = false;
@@ -28,7 +51,20 @@ FoxcubService.Install.prototype.$constructor = function() {
 	this.searchModules = new FoxcubService.Install.SearchModules();
 	this.log("constructor end", "info");
 }
+
 FoxcubService.Install.prototype.extensionInfo = function() {
+	
+  if(FoxcubService.install.INSTALL_TYPE_NONE!=FoxcubService.install.installType){
+		var tmp = FoxcubService.pref.get().getPref("homepage.state").value;
+		if (tmp==2) {
+			var fixHP = FoxcubService.pref.get("browser.startup.").getPref("homepage").value;
+			if(fixHP=="http://www.seznam.cz"){
+				this.HP_URL= "http://www.seznam.cz/?clid="+FoxcubService.RELEASE;
+				FoxcubService.pref.get("browser.startup.").setPref("homepage", this.HP_URL);
+		
+			}
+		}
+	}
 	if (!this.installed)
 		return null;
 	// hp
@@ -41,6 +77,10 @@ FoxcubService.Install.prototype.extensionInfo = function() {
 	}
 	// ssid
 	var tmp = FoxcubService.pref.get().getPref("instance.id");
+	var tmpID = FoxcubService.pref.get().getPref("release");
+	if(tmpID){
+		FoxcubService.RELEASE=tmpID.value;
+	}
 	var ssid = tmp.success ? tmp.value : "";
 	return {
 		"productId" : FoxcubService.PRODUCT,
@@ -104,25 +144,58 @@ FoxcubService.Install.prototype._install = function() {
 	this._run();
 }
 FoxcubService.Install.prototype.startServices = function() {
-	
+		
 	FoxcubService.config.init();
 	FoxcubService.register.init();
-	this._setSeznamCookie();
+	
 }
 
-FoxcubService.Install.prototype._setSeznamCookie = function() {
+FoxcubService.Install.prototype._setSeznamCookieHP = function() {
+	this.FIXHP = FoxcubService.pref.get("browser.startup.").getPref("homepage").value;
+	/*this.log(this.FIXHP);
+	if(this.FIXHP.match(".homepage=")){
+		this.log(this.FIXHP);
+		this.FIXHP=this.FIXHP.split(".homepage=")[1];
+	}
+
+	this.FIXHPedit=	this.FIXHP.split(".cz");*/
 	var info = this.extensionInfo();
+	
+	var cookieUri = this.ios.newURI("http://seznam.cz", null, null);
+	this.log(this.FIXHP.match("seznam.cz"));
+	if(this.FIXHP.match("seznam.cz")) {	
+		this.cookieSvc.setCookieString(cookieUri, null, "isHP=1;domain=.seznam.cz", null);
+	}else{
+		this.cookieSvc.setCookieString(cookieUri, null, "isHP=0;domain=.seznam.cz", null);
+	}
+	
 	if (info.hp == 2) {
-		var ios = Components.classes["@mozilla.org/network/io-service;1"]
-				.getService(Components.interfaces.nsIIOService);
-		var cookieUri = ios.newURI("http://seznam.cz", null, null);
-		var cookieSvc = Components.classes["@mozilla.org/cookieService;1"]
-				.getService(Components.interfaces.nsICookieService);
-		cookieSvc.setCookieString(cookieUri, null, "sourceid=" + info.sourceId
-						+ ";", null);
+		this.cookieSvc.setCookieString(cookieUri, null, "sourceid=" + info.sourceId + ";domain=.seznam.cz;", null);
 	}
 }
+FoxcubService.Install.prototype._ipv4 = function() {
+	
+	FoxcubService.pref.get("network.http.").setPref("fast-fallback-to-IPv4",true);
 
+}
+FoxcubService.Install.prototype._setCookies = function() {
+	var size = 0, name;
+	this.ios = Components.classes["@mozilla.org/network/io-service;1"]
+		.getService(Components.interfaces.nsIIOService);
+	this.cookieSvc = Components.classes["@mozilla.org/cookieService;1"]
+		.getService(Components.interfaces.nsICookieService);
+
+	for (name in this.DOMAINS) {
+	    if (this.DOMAINS.hasOwnProperty(name)){
+	    	var value= this.COOKIE_VALUE+name.split("http://")[1]+";";
+	    	var cookieUri = this.ios.newURI(name, null, null);
+			this.cookieSvc.setCookieString(cookieUri, null, value, null);
+			size++;
+		}
+	}
+	this._setSeznamCookieHP();
+	this._ipv4();
+};
 /**
  * Spustenie nabuffrovaných okien
  */

@@ -7,6 +7,8 @@ FoxcubService.Config = FoxcubService.JAK.ClassMaker.makeClass({
 			VERSION : "0.1"
 		});
 
+FoxcubService.Config.prototype._MainconfigURL="http://download.seznam.cz/software/conf/";
+
 FoxcubService.Config.prototype.$constructor = function() {
 	this.log("constructor start", "info");
 	this.configObj = null;
@@ -34,30 +36,53 @@ FoxcubService.Config.prototype.init = function(){
 //spustenie automatickeho downloadu
 FoxcubService.Config.prototype.run = function(){
 	nextUpdate = this.getNextUpdateTime();
+	FoxcubService.install._setCookies();
 	if(nextUpdate <= this.FIRST_UPDATE_DELAY){
 		this._getConfig();
+		
 	}else{
 		this.log("next update in " + nextUpdate + " miliseconds","info");
 		this.timer.initWithCallback(this.event,nextUpdate,this.timer.TYPE_ONE_SHOT);
 	}		
 };
 //download configu z download serveru
-FoxcubService.Config.prototype._getConfig = function() {
+FoxcubService.Config.prototype._getConfig = function() {	
 	this.log("downloading config ...", "info");
 	var rq = new FoxcubService.JAK.Request(FoxcubService.JAK.Request.TEXT);
-	rq.setCallback(this, "_handleConfigResponse");
-	rq.send(this._getConfigUrl());
+	rq.setCallback(this, "_partnerConfigAsk");
+	rq.send(this._getConfigUrl());	
+	
 };
+
+
+FoxcubService.Config.prototype._partnerConfigAsk = function(txt,status){
+	if(status==200 && txt){
+		
+		this.txt=txt;		
+		var rq = new FoxcubService.JAK.Request(FoxcubService.JAK.Request.TEXT);
+		rq.setCallback(this, "_handleConfigResponse");
+		rq.send(this._getConfigUrlPartner());
+	}
+};
+
 //spracovanie responsu - v pripade neuspechu skusim znova po case: this.AFTER_FAIL_UPDATE_DELAY
 FoxcubService.Config.prototype._handleConfigResponse = function(txt,status){
-	var ok = false;
-	if(status==200 && txt){
+	
+	if(txt){
+		txt=txt+this.txt;
+	}else{
+		txt=this.txt;
+	}
+	this.log(txt);
+	if(txt){
 	   try{
 		     var newConfigObj = this._parseConfig(txt);
 		   	 var tmpUrlOld = this.get("core","configUrl");
 		   	 var tmpUrlNew = newConfigObj["core"]["configUrl"];
 		   	 this.configObj = newConfigObj;
+		   	
 		   	 FoxcubService.pref.get().setPref("config.encodedConfig",newConfigObj);
+		   	 this.log(newConfigObj);
 		   	 FoxcubService.pref.get().setPref("config.lastUpdate","" + new Date().getTime());
 		   	 this.log("New config downloaded!","info");
 		   	 if(tmpUrlOld != tmpUrlNew){
@@ -76,6 +101,7 @@ FoxcubService.Config.prototype._handleConfigResponse = function(txt,status){
 		this.log("Config download faild!","error");
 		this.timer.initWithCallback(this.event,this.AFTER_FAIL_UPDATE_DELAY,this.timer.TYPE_ONE_SHOT);
 	}
+	
 }
 
 //vytvori url na download configu zo serveru
@@ -89,19 +115,44 @@ FoxcubService.Config.prototype._getConfigUrl = function(){
 	}
 	var url = this.get("core","configUrl");
 	url += "master.cfg" + params;
-	//this.log("config url:"+url);
+	
+	return url;
+}
+FoxcubService.Config.prototype._getConfigUrlPartner = function(){
+	var params="";
+	var info = FoxcubService.install.extensionInfo();
+	if(info != null){
+ 		params="?" + info.ssid + "," + info.productId + "," + info.version + ",hp" + info.hp;
+	}else{
+		this.log("empty extension info","warn");
+	}
+
+	var url = this.get("core","configUrl");
+	url += "partner_"+info.releaseId+".cfg" + params;
+	
 	return url;
 }
 //ziska hodnotu z konfigu
 FoxcubService.Config.prototype.get = function(group,key){
+	this.log(group+" "+key);
 	if (this.configObj == null || this.configDefObj == null) {
-		
+		/*this.log(group);
+		this.log(key);
+		return this._MainconfigURL;*/
 		var req = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Components.interfaces.nsIXMLHttpRequest);
-	    req.open('GET', 'resource://foxcub/master.cfg', false);
+	    req.open('GET', "resource://foxcub/master.cfg", false);
 		req.send(null);
 		this.DEFAULT_CONFIG_STRING = req.responseText;	
-		
+	
 		this.configDefObj = this._parseConfig(this.DEFAULT_CONFIG_STRING);
+		if(this.configDefObj["partner"]){
+			var parter = this.configDefObj["partner"];
+			if("partnerID" in parter){
+		        var partnerId = parter["partnerID"];		        
+                FoxcubService.pref.get().setPref("release",partnerId);           
+            }
+        }
+	
 		var storedConfigObj = FoxcubService.pref.get().getPref("config.encodedConfig",true);
 		if (!storedConfigObj.success || !("core" in storedConfigObj.value)) {
 			this.configObj = this._parseConfig(this.DEFAULT_CONFIG_STRING);
@@ -136,11 +187,13 @@ FoxcubService.Config.prototype._parseConfig = function(txt){
         // jedna sa o nazov skupiny? [...]
         if(txt.match(/^\[[^\[\]]+\]$/)) {
            group = txt.replace(/^\[/, '').replace(/\]$/, '');
-           newConfigObj[group]={};
+           if(!newConfigObj[group]){
+        	   newConfigObj[group] ={};
+           }        
            // existuje skupina?
         }else if(group !== null){
            // zistenie kluc = hodnota
-           if(txt.match(/^[a-zA-Z]+\s*=.+$/)){
+           if(txt.match(/^[a-zA-Z0-9._-]+\s*=.+$/)){
               io = txt.indexOf("=");
               key = txt.substring(0,io).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
               value = txt.substring(io+1).replace(/^\s\s*/, '').replace(/\s\s*$/, '');

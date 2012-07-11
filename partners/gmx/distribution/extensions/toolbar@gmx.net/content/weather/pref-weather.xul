@@ -3,47 +3,50 @@
 <?xml-stylesheet href="chrome://unitedtb/skin/weather/pref-weather.css" type="text/css"?>
 <overlay id="united-pref-weather-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <prefwindow id="united-pref-window">
-    <prefpane id="weather-pane"
-        label="&pane.title;"
-        insertafter="newtab-pane,login-pane,email-pane,search-pane,home-pane,general-pane"
+
+  <script type="application/x-javascript">
+    upref.weather = {};
+    united.loadJS("chrome://unitedtb/content/weather/pref-weather.js", upref.weather);
+    united.loadJS("chrome://unitedtb/content/weather/pref-weather-check.js", upref.weather);
+  </script>
+
+  <tabpanel id="features-tabpanel">
+    <groupbox id="weather-box"
+        pack="start"
         >
+      <caption label="&pane.title;" />
 
-      <preferences>
-        <preference id="extensions.unitedinternet.weather.postalcode"
-                    name="extensions.unitedinternet.weather.postalcode" type="string"/>
-        <preference id="extensions.unitedinternet.weather.do-not-ask"
-                    name="extensions.unitedinternet.weather.do-not-ask" type="bool"/>
-      </preferences>
-
-      <script type="application/x-javascript">
-        upref.weather = {};
-        united.loadJS("chrome://unitedtb/content/weather/pref-weather.js", upref.weather);
-        united.loadJS("chrome://unitedtb/content/weather/pref-weather-check.js", upref.weather);
-      </script>
-
-      <vbox pack="start">
-        <pref-region label="&country.label;" module="weather" />
-        <vbox id="weather-settings">
-          <hbox align="center">
+      <grid>
+        <columns>
+          <column />
+          <column />
+        </columns>
+        <rows>
+          <row align="baseline">
+            <label value="&country.label;" control="weather-region"/>
+            <pref-region id="weather-region" module="weather" />
+          </row>
+          <row align="baseline" id="weather-postcode">
             <label value="&postalcode.label;"
                 accesskey="&postalcode.accesskey;"
                 control="postalcode"
                 />
-            <textbox id="postalcode"
-                      preference="extensions.unitedinternet.weather.postalcode"
-                      maxlength="5"
-                      size="5"
-                      defaultValue=""
-                      />
-          </hbox>
-          <checkbox id="no-nag"
-                preference="extensions.unitedinternet.weather.do-not-ask"
-                label="&no-nag.label;"
-                accesskey="&no-nag.accesskey;"
-                />
-        </vbox>
-      </vbox>
-    </prefpane>
-  </prefwindow>
+            <hbox pack="start">
+              <textbox id="postalcode"
+                        maxlength="5"
+                        size="5"
+                        />
+            </hbox>
+          </row>
+        </rows>
+      </grid>
+
+      <checkbox id="weather-no-nag"
+            preference="extensions.unitedinternet.weather.do-not-ask"
+            label="&no-nag.label;"
+            accesskey="&no-nag.accesskey;"
+            />
+
+    </groupbox>
+  </tabpanel>
 </overlay>

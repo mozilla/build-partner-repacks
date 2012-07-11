@@ -16,6 +16,7 @@
     united.search.storeui = {};
     united.loadJS("chrome://unitedtb/content/search/search-store-ui.js",
         united.search.storeui);
+
   </script>
 
 </overlay>

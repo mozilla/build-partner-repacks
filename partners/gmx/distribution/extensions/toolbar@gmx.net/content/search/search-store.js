@@ -14,7 +14,6 @@ const EXPORTED_SYMBOLS = [
 
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/observer.js");
-Components.utils.import("resource://gre/modules/ISO8601DateUtils.jsm");
 
 //////////////////////////////////////////////////////////////////////////
 // Store searches
@@ -43,12 +42,19 @@ function getLastSearches(amount, resultCallback, errorCallback)
     let terms = []
     for each (let row in rows)
     {
-      terms.push(row.getResultByName("searchterm"));
+      terms.push(row.getResultByName("searchterm").toString());
     }
     resultCallback(terms);
   }, errorCallback));
 }
 
+/**
+ * @see getLastSearches(), just that the the time of search is included
+ *
+ * @param amount @see getLastSearches()
+ * @param resultCallback {Function(terms)}
+ *    terms { Array of { term {String}, date {Date} }}
+ */
 function getLastSearchesWithDate(amount, resultCallback, errorCallback)
 {
   var sel = searchHistoryDB().createStatement("SELECT " +
@@ -59,10 +65,12 @@ function getLastSearchesWithDate(amount, resultCallback, errorCallback)
     let terms = [];
     for each (let row in rows)
     {
-      let term = row.getResultByName("searchterm");
-      let date = row.getResultByName("visited");
-      let dateObj = ISO8601DateUtils.parse(date);
-      terms.push([term, dateObj]);
+      let dateStr = row.getResultByName("visited").toString();
+      let dateObj = new Date(Date.parse(dateStr));
+      terms.push({
+        term : row.getResultByName("searchterm").toString(),
+        date : dateObj,
+      });
     }
     resultCallback(terms);
   }, errorCallback));
@@ -75,6 +83,8 @@ function deleteLastSearches(successCallback, errorCallback)
 {
   var sel = searchHistoryDB().createStatement("DELETE FROM searchterms");
   sel.executeAsync(new sqlCallback(successCallback, errorCallback));
+  /* Notify all observers to clear out their stored search term */
+  notifyGlobalObservers("delete-search-history", {});
 }
 
 /**
@@ -102,7 +112,7 @@ function debugShowLastSearches()
 }
 
 var gSearchHistoryDB = null;
-const amountToRememeber = 20;
+const amountToRememeber = 30;
 
 /**
  * Set up sqlite database for storeing search terms
@@ -134,11 +144,14 @@ function saveSearchTerm(searchTerm)
 {
   debug("saving search term " + searchTerm);
 
+  if (!searchTerm) // when user searches without anything in search field
+    return;
+
   // store the search term
   var insert = searchHistoryDB().createStatement("INSERT INTO searchterms " +
       "(searchterm, visited) VALUES (:searchterm, :visited)");
   insert.params["searchterm"] = searchTerm;
-  insert.params["visited"] = ISO8601DateUtils.create(new Date());
+  insert.params["visited"] = new Date().toISOString();
   insert.executeAsync();
 
   // delete all but the last n search terms

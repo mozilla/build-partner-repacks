@@ -26,15 +26,20 @@
     </div>
     <div id="main">
         <div id="contentheader">
-            <h2>Management</h2>
+            <h2>&store.management.title;</h2>
             <div id="buttonlist">
             </div>
         </div>
         <div id="toolkit">
-          <button id="edit-button" onclick="onToggleEdit();" 
-            exit-string="&store.management.exit;" 
-            edit-string="&store.management.edit;">
-            &store.management.edit;</button>
+          <button id="close-button"
+              onclick="window.close();">
+            &store.management.close;</button>
+          <button id="edit-button"
+              style="display: none;"
+              onclick="onToggleEdit();" 
+              exit-string="&store.management.exit;" 
+              edit-string="&store.management.edit;"
+              />
           <button onclick="onDeleteSelection();" class="edit-mode">
             &store.management.delete.selection;</button>
           <button onclick="onDeleteAll();" class="edit-mode">

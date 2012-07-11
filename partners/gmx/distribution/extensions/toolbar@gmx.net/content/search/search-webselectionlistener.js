@@ -13,6 +13,8 @@
 
 function onHandleContentDoubleClick(event)
 {
+  if ( !united.ourPref.get("search.webpageDoubleclick"))
+    return;
   var sel = event.view.getSelection();
   var selText = sel.toString()
   united.debug("selection " + selText);
