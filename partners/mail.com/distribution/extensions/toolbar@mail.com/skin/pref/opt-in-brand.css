@@ -1,0 +1,7 @@
+#container {
+  background-image: url('chrome://unitedtb/skin/pref/opt-in-header.jpg');
+  background-position: top center;
+  /* width of jpg minus 20px padding */
+  width: 642px;
+  padding-top: 125px;
+}

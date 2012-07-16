@@ -1,0 +1,55 @@
+ENDBENUTZER-LIZENZVERTRAG
+
+Dies ist ein Vertrag zwischen Ihnen (Nutzer) und der 1&1 Mail & Media GmbH, Zweigniederlassung München, Frankfurter Ring 129, 80807 München, Deutschland. 
+ 
+DURCH INSTALLIEREN DER SOFTWARE STIMMEN SIE ALLEN BEDINGUNGEN UND KONDITIONEN DIESES VERTRAGES ZU. 
+
+Dieser Vertrag gilt für das Programm GMX MailCheck und dazugehöriges Erläuterungsmaterial (Software). Die Bezeichnung "Software" umfasst auch sämtliche verbesserte und geänderte Fassungen, für die 1&1 eine Lizenz erteilt, die 1&1 zum Download bereithält, oder die im Rahmen der Programmnutzung installiert wird. Sie sind gehalten, diesen Vertrag sorgfältig durchzulesen. 
+
+Dies ist ein Lizenzvertrag und kein Kaufvertrag. 1&1  bzw. deren Geschäftspartner bleiben weiter Eigentümer dieser Kopie der Software und jeder weiteren Kopie, zu deren Anfertigung Sie gemäß diesem Vertrag berechtigt sind. 
+
+1. Lizenzeinräumung
+
+Die Software ist sowohl durch Urheberrechtsgesetze und internationale Urheberrechtsvereinbarungen als auch durch andere Gesetze und Vereinbarungen über gewerbliche Schutzrechte geschützt. Mit Ihrer Annahme dieses Vertrags gewährt 1&1  Ihnen eine nicht ausschließliche Lizenz zur Benutzung der Software, und zwar
+
+- zur Verwendung der Software auf Ihrem Rechner oder mobilem Gerät (z.B Mobiltelefon oder Smartphone);
+- zum Laden der Software in den Arbeitsspeicher (RAM) Ihres Rechners oder mobilen Geräts (z.B. Mobiltelefon oder Smartphone);
+- zum Installieren der Software auf einem permanenten Speichermedium (z.B. Festplatte);
+- zum Anfertigen von Sicherungskopien
+- zum Ausdruck der Ergebnisse und Bildschirmanzeigen der Software für den persönlichen Gebrauch.
+
+Es ist NICHT gestattet:
+
+- das Softwareprodukt abzuändern, zu übersetzen, zurückzuentwickeln, zu dekompilieren, zu disassemblieren oder ähnliche Produkte, die auf der Software basieren, zu erstellen;
+
+- die Software auf andere Art und Weise zu vervielfältigen als oben beschrieben, sie zu vermieten, zu verleasen, zu verleihen, ein Sicherungsrecht daran zu bestellen oder anderweitig Rechte an der Software zu übertragen;
+
+-  die Hinweise oder Kennzeichnung der Rechtsinhaberschaft der Software wie Urhebervermerke bei erlaubtem Kopieren der Software oder bei erlaubtem Ausdrucken der Ergebnisse und der Bildschirmanzeigen der Software zu entfernen oder abzuändern;
+
+Der Nutzer verpflichtet sich sicherzustellen, dass jeder, der dieses Programm auf dem Rechner oder dem mobilen Gerät (z.B. Mobiltelefon oder Smartphone) des Nutzers nutzt, dies nur im Rahmen dieser Lizenzvereinbarung durchführt und diese Lizenzvereinbarung einhält.
+
+2. Vertragsbeginn und Ende der Lizenz
+
+2.1. Der Vertrag entfaltet mit der Installation des Programmes oder der anderweitigen Nutzung der Software rechtliche Wirkung. 
+
+2.2. Die Software ist unentgeltlich. 1&1  behält sich das Recht vor, jederzeit ohne Ankündigung die Unterstützung der Software zu beenden und den Zugriff auf die Software zu verweigern. Damit gilt die eingeräumte Lizenz als von 1&1  mit sofortiger Wirkung gekündigt. 
+
+2.3. Die Lizenz erlischt automatisch mit sofortiger Wirkung, wenn der Nutzer gegen die in diesem Vertrag festgesetzten Nutzungsbedingungen verstößt. 
+
+3. Softwarebeschreibungen
+
+Sämtliche Leistungsdaten und sonstige Softwarebeschreibungen stellen keine Zusicherung irgendwelcher Eigenschaften dar.
+
+4. Haftung
+
+4.1. Die Software wurde unter Beachtung wissenschaftlicher Sorgfalt und anerkannter Regeln der Technik, insbesondere anerkannter Programmierregeln, entwickelt.
+
+4.2. 1&1  leistet Schadensersatz, gleich aus welchem Rechtsgrund, bei Vorsatz in voller Höhe; bei grober Fahrlässigkeit und bei Fehlen einer zugesicherten Eigenschaft: in Höhe des vorhersehbaren Schadens, der durch die Sorgfaltspflicht oder die Eigenschaftszusicherung verhindert werden sollte; in anderen Fällen nur wegen Verletzung einer wesentlichen Pflicht, bei Datenverlust auf den typischen Wiederherstellungsaufwand beschränkt, der bei regelmäßiger und gefahrentsprechender Anfertigung von Sicherungskopien eingetreten wäre. Als Minimum einer gefahrentsprechenden Anfertigung von Sicherungskopien gilt einmal täglich. Der Einwand des Mitverschuldens des Nutzers bleibt 1&1  unbenommen. Die gesetzliche Haftung von 1&1  bei Personenschäden und nach dem Produkthaftungsgesetz bleibt unberührt.
+
+5. Links
+
+Falls die Software Links zu anderen Seiten des Internets herstellt, um dem Nutzer erleichterten Zugang zu relevanten Informationen oder Dienstleistungen zu verschaffen, gilt: Die verlinkten Seiten werden von Dritten betrieben; 1&1  hat keinen Einfluss auf den Inhalt dieser Seiten, die darauf enthaltenen Informationen und die Qualität der dort beworbenen oder angebotenen Produkte oder Dienstleistungen. 1&1  hat diese Seiten nicht überprüft. 1&1  übernimmt keinerlei Haftung in Bezug auf die verlinkten Seiten.
+
+6. Sonstiges
+
+Ausschließlicher Gerichtsstand für alle Streitigkeiten aus diesem Vertrag ist  Montabaur, wenn der Nutzer seinen ständigen Wohn- oder Geschäftssitz in Staaten der Europäischen Union außerhalb Deutschlands hat. Es gilt ausschließlich das Recht der Bundesrepublik Deutschland unter Ausschluss der Bestimmungen zum einheitlichen UN-Kaufrecht über den Kauf beweglicher Sachen und unter Ausschluss des deutschen internationalen Privatrechts. Sollten Bestimmungen dieser Lizenzvereinbarung unwirksam sein oder werden, so berührt dies die Wirksamkeit der übrigen Bestimmungen nicht. Vielmehr gilt anstelle jeder unwirksamen Bestimmung eine dem Zweck der Vereinbarung entsprechende oder zumindest nahekommende Ersatzbestimmung, wie sie die Parteien zur Erreichung des gleichen wirtschaftlichen Ergebnisses vereinbart hätten, wenn sie die Unwirksamkeit der Bestimmung gekannt hätten. Entsprechendes gilt für Unvollständigkeiten.

@@ -1,0 +1,12 @@
+<!ENTITY newtab.title.label "New Tab">
+<!ENTITY search.form.label "Search">
+<!ENTITY search.button.label "Search">
+<!ENTITY last-searches.label "Last search terms">
+<!ENTITY marketed-searches.label "Popular search terms">
+<!ENTITY no-last-searches.label "No search terms stored">
+<!ENTITY no-marketed-searches.label "No search terms available">
+<!ENTITY most-visited.label "Most visited">
+<!ENTITY recommended.label "Recommended sites">
+<!ENTITY as-text.button.label "List">
+<!ENTITY as-pics.button.label "Gallery">
+<!ENTITY newtab.manage "Manage">

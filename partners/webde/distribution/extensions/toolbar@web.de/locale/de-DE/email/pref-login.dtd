@@ -1,0 +1,23 @@
+<!ENTITY pane.title "E-Mail">
+
+<!ENTITY accountsList.pane.title "E-Mail-Konten">
+<!ENTITY emailAddress.header "E-Mail-Adresse">
+<!ENTITY storedLogin.header "Angemeldet bleiben">
+
+<!ENTITY setup-account.label "Vorhandenes Konto hinzufügen…">
+<!ENTITY setup-account.accesskey "V">
+<!ENTITY create-account.label "Jetzt bei &brand.name; registrieren…">
+<!ENTITY create-account.accesskey "r">
+<!ENTITY edit-account.label "Konto bearbeiten…">
+<!ENTITY edit-account.accesskey "b">
+<!ENTITY remove-account.label "Konto entfernen">
+<!ENTITY remove-account.accesskey "f">
+
+<!ENTITY notifyHeader.label "Bei neuen Nachrichten:">
+<!ENTITY notifySound.label "Spiele Klang ab">
+<!ENTITY notifySound.accesskey "K">
+<!ENTITY notifyAlert.label "Zeige Bildschirm-Popup">
+<!ENTITY notifyAlert.accesskey "P">
+
+<!ENTITY growl.tooltip "Install Growl to display desktop notifications.
+Click for more information.">

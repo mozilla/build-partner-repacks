@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/ticker/pref-ticker.dtd">
+
+<?xml-stylesheet href="chrome://unitedtb/skin/ticker/pref-ticker.css" type="text/css"?>
+
+<overlay id="united-pref-ticker-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript">
+    upref.ticker = {};
+    united.loadJS("chrome://unitedtb/content/ticker/pref-ticker.js", upref.ticker);
+  </script>
+
+  <tabpanel id="features-tabpanel">
+    <groupbox id="ticker-box"
+        pack="start"
+        >
+      <caption label="&pane.title;" />
+
+      <grid>
+        <columns>
+          <column />
+          <column flex="1" />
+        </columns>
+        <rows>
+          <row align="baseline">
+            <label value="&country.label;" control="ticker-pane-region"/>
+            <pref-region id="ticker-pane-region" module="ticker"/>
+          </row>
+          <row align="baseline"> 
+            <label value="&channel.label;" control="channel"/>
+            <menulist id="channel"
+                      preference="extensions.unitedinternet.ticker.channel"
+                      >
+              <menupopup id="channel-menu">
+              </menupopup>
+            </menulist>
+          </row>
+        </rows>
+      </grid>
+
+    </groupbox>
+  </tabpanel>
+</overlay>

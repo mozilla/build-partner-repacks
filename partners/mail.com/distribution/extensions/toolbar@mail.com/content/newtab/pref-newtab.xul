@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/newtab/pref-newtab.dtd">
+  %thisDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
+<?xml-stylesheet href="chrome://unitedtb/skin/newtab/pref-newtab.css" type="text/css"?>
+<overlay id="united-pref-newtab-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <tabpanel id="general-tabpanel">
+    <groupbox id="newtab-box"
+        insertafter="general-start-box"
+        >
+      <caption label="&pane.title;" />
+
+      <hbox align="baseline">
+        <label value="&viewmode.label;" control="viewmode"/>
+        <menulist id="viewmode"
+                    preference="extensions.unitedinternet.newtab.viewmode"
+                    >
+          <menupopup>
+            <menuitem value="1"
+                label="&as-pics.label;" accesskey="&as-pics.accesskey;"/>
+            <menuitem value="2"
+                label="&as-text.label;" accesskey="&as-text.accesskey;"/>
+          </menupopup>
+        </menulist>
+      </hbox>
+      <checkbox preference="extensions.unitedinternet.newtab.setFocus"
+          label="&focus.label;"/>
+      <checkbox preference="extensions.unitedinternet.newtab.enabled"
+          label="&enabled.label;"/>
+
+    </groupbox>
+  </tabpanel>
+  
+  <menuitem id="general-newtab-item" hidden="false"/>
+
+</overlay>

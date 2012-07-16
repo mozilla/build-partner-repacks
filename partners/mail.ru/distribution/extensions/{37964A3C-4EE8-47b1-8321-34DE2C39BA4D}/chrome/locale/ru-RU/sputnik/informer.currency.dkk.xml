@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<spudata>
+<brick id="currency-dkk" status="" href="http://news.mail.ru/currency.html?charcode=DKK" valid="10" refetch="9">
+	<image>chrome://mail.ru.toolbar/skin/currencies/dkk_na.png</image>
+    <textover></textover>
+    <textafter></textafter>
+    <tooltip>
+		<![CDATA[<a msg="http://news.mail.ru/currency.html?charcode=DKK&sputnik=1">10 Датских крон</a> -- курсы валют.]]>
+	</tooltip>
+</brick>
+</spudata>

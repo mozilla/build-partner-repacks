@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://unitedtb/skin/pref/pref.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/pref/pref-toolbaritem.dtd">
+
+<overlay id="united-pref-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
+  <script type="application/x-javascript">
+    united.loadJS("chrome://unitedtb/content/pref/pref-toolbaritem.js", united);
+    united.optinload = {};
+    united.loadJS("chrome://unitedtb/content/pref/opt-in-load.js", united.optinload);
+  </script>
+
+  <!-- Overlay for Firefox browser/content/browser.xul -->
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarbutton id="united-pref-button"
+        type="menu-button"
+        label="&united.pref.button.label;"
+        tooltiptext="&united.pref.button.tooltip;"
+        oncommand="united.openPrefWindow();"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-icon-only="true"
+        >
+      <menupopup id="united-pref-button-dropdown">
+        <menuitem id="united-pref-button-menuitem"
+          label="&united.pref.button.label;"
+          tooltiptext="&united.pref.button.tooltip;"
+          oncommand="event.stopPropagation(); united.openPrefWindow();"
+          />
+      </menupopup>
+    </toolbarbutton>
+  </toolbarpalette>
+</overlay>

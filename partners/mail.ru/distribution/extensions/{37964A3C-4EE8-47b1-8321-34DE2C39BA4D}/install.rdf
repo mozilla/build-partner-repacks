@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+    <Description about="urn:mozilla:install-manifest">
+        <em:id>{37964A3C-4EE8-47b1-8321-34DE2C39BA4D}</em:id>
+        <em:name>Спутник @Mail.Ru</em:name>
+        <em:type>2</em:type>
+        <em:unpack>true</em:unpack>
+        <em:version>2.5.3.12</em:version>
+        <em:description>Mail.ru Toolbar for FireFox</em:description>
+        <em:creator>Mail.Ru</em:creator>
+
+	      <em:optionsURL>chrome://mail.ru.toolbar/content/settings.xul</em:optionsURL>        
+        <em:homepageURL>http://sputnik.mail.ru/</em:homepageURL>
+	      <em:iconURL>chrome://mail.ru.toolbar/skin/toolbar-logo.png</em:iconURL>
+	      <em:updateURL>https://binsputnik.mail.ru/firefox/update.rdf</em:updateURL>
+
+	
+        <em:targetApplication>
+            <Description>
+  	        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+                <em:minVersion>3.0</em:minVersion>
+                <em:maxVersion>13.*</em:maxVersion>
+            </Description>
+        </em:targetApplication>
+
+        <!-- This is not needed for Firefox 1.1 and later. -->
+        <em:file>
+           <Description about="urn:mozilla:extension:file:mail.ru.jar">
+             <em:package>content/</em:package>
+             <em:skin>skin/</em:skin>
+             <em:locale>locale/en-US/</em:locale>
+             <em:locale>locale/ru-RU/</em:locale>
+           </Description>
+        </em:file>
+    </Description>
+</RDF>

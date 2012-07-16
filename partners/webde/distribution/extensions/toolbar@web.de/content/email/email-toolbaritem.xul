@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://unitedtb/skin/email/email.css" type="text/css"?>
+
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/email/email.dtd">
+  %thisDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
+
+<overlay id="united-email-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
+  <script type="application/x-javascript">
+    united.email = {};
+    united.loadJS("chrome://unitedtb/content/email/email.js", united.email);
+    united.login = {};
+    united.loadJS("chrome://unitedtb/content/email/login.js", united.login);
+    united.login.common = {};
+    united.loadJS("chrome://unitedtb/content/email/login-common.js", united.login.common);
+  </script>
+
+  <!-- Overlay for Firefox browser/content/browser.xul -->
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarbutton id="united-email-button"
+        label="&united.email.button.label;"
+        tooltiptext="&united.email.button.tooltip;"
+        tooltiptext-for-item="&united.email.messages.tooltip;"
+        status="disconnected"
+        oncommand="united.email.onCommandMailButton();"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        type="menu-button"
+        >
+      <menupopup id="united-email-button-dropdown">
+          <menuitem id="united-email-checknow"
+              class="menuitem-iconic"
+              label="&united.email.checknow.label;"
+              oncommand="united.email.onCommandCheckMailsNow(event);"/>
+          <menuseparator id="united-email-separator-before-accounts"/>
+          <menuseparator id="united-email-separator-after-accounts"/>
+          <menuitem id="united-email-configure-menuitem"
+              class="menuitem-iconic"
+              label="&united.email.configure.label;"
+              tooltiptext="&united.email.configure.tooltip;"
+              oncommand="united.email.onCommandConfigureMenuitem(event);"/>
+      </menupopup>
+    </toolbarbutton>
+
+
+    <toolbaritem id="united-login-box" align="center"      
+      status="disconnected"
+      >
+      <toolbarbutton id="united-logged-out-button"
+          label="&united.logged-out.label;"
+          tooltiptext="&united.logged-out.tooltip;"
+          oncommand="united.login.onCommandDoLogin();"
+          orient="horizontal"
+          class="chromeclass-toolbar-additional toolbarbutton-1"
+          remove-priority="300"
+          />
+      <toolbarbutton id="united-logged-in-button"
+          label="&united.logged-in.label;"
+          tooltiptext="&united.logged-in.tooltip;"
+          hidden="true"
+          orient="horizontal"
+          class="chromeclass-toolbar-additional toolbarbutton-1"
+          remove-priority="300"
+          type="menu">
+        <menupopup>
+          <menuitem id="united-logged-in-menuitem"
+              class="menuitem-iconic"
+              label="&united.logged-in.label;"
+              oncommand="united.login.onCommandDoLogout();"/>
+        </menupopup>
+      </toolbarbutton>
+    </toolbaritem>
+  </toolbarpalette>
+
+  <popupset>
+    <panel id="united-email-popup"
+        position="after_start"
+        noautohide="true"
+        onclick="this.hidePopup(); united.email.onXXLTooltipClicked();"
+        >
+      <hbox align="center" pack="center">
+        <image />
+<!--        <vbox>
+          <description>&united.xxltooltip.1.label;</description>
+          <description>&united.xxltooltip.2.label;</description>
+        </vbox> -->
+      </hbox>
+    </panel>
+  </popupset>
+</overlay>

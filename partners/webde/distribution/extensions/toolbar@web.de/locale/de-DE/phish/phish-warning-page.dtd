@@ -1,0 +1,16 @@
+<!ENTITY page.title "&brand.name; Sicherheitswarnung: Sie sind auf eine Phishing-Seite geleitet worden!">
+<!ENTITY header1 "Sicherheitshinweis">
+<!ENTITY header2.warn "Warnung:">
+<!ENTITY header2 "Sie sind auf eine betrügerische Phishing-Seite geleitet worden!">
+<!ENTITY descr "Sie haben eine Seite aufgerufen, die dazu dient Zugangsdaten zu betrügerischen Zwecken auszuspionieren. &brand.name; hat sie zur Verhinderung von Straftaten abgestellt">
+<!ENTITY phish.img "Internet-Betrüger wollen sich ihre Passwörter angeln">
+<!ENTITY faq1.header "Was ist Phishing?">
+<!ENTITY faq1.text "Phishing-Seiten gaukeln den Besuchern vor, die offizielle Webseite eines vertrauenswürdigen Unternehmens oder einer staatlichen Einrichtung zu sein. Die Besucher werden aufgefordert, vertrauliche Daten wie Passwörter, Kreditkartennummern, Zugangsdaten für Online-Banking oder Ähnliches einzugeben. Die so erschlichenen Daten werden anschließend für kriminelle Handlungen missbraucht.">
+<!ENTITY faq2.header "Wie funktioniert Phishing?">
+<!ENTITY faq2.text "Der Link, der auf die Phishing-Seite führt, wird per E-Mail an eine sehr große Anzahl von Menschen geschickt. Oftmals glaubwürdige Lügengeschichten verleiten die Empfänger dieser E-Mails dazu, auf den enthaltenen Link zu klicken. Viele Empfänger werden dabei schon von dem Link selbst getäuscht. Aber Achtung: Der Text im Link zeigt nicht notwendigerweise die tatsächliche Adresse, auf die man geführt wird!">
+<!ENTITY faq3.header "Wer steckt hinter dem Phishing?">
+<!ENTITY faq3.text "Phisher sind Kriminelle, die sich auf die weltweite Ausspähung der jeweiligen Daten spezialisiert haben. Sie infizieren eine große Menge von Rechnern mit Software, welche die Phishing E-Mails automatisch an eine Vielzahl von Empfängern versendet. Die betrügerischen Webseiten werden unerkannt auf Unterverzeichnissen ahnungsloser Nutzer abgelegt.">
+<!ENTITY faq4.header "Wie kann ich mich vor Phishing schützen?">
+<!ENTITY faq4.text "Folgen Sie niemals einem Link in einer E-Mail, der Sie zur Eingabe vertraulicher Daten auffordert. Phishing E-Mails beginnen selten mit einer persönliche Anrede. Meist werden allgemeine Anreden benutzt, wie 'Sehr geehrter Kunde' oder 'Liebes Mitglied'. Eine solche Anrede deutet darauf hin, dass die E-Mail unverändert an eine Vielzahl von Empfängern gegangen ist. Seien Sie in diesen Fällen daher stets besonders wachsam! Haben Sie Zweifel an der Echtheit einer E-Mail, schreiben Sie dem angebenen Absender (Bank, Behörde, Firma), der die E-Mail versendet hat. Bitten Sie sie um Bestätigung, dass die E-Mail tatsächlich von diesem Absender geschickt wurde. Kontrollieren Sie regelmäßig Ihre Kreditkarten- und Bankauszüge.">
+<!ENTITY search.button "Zur &brand.name; Suche">
+<!ENTITY ignore.button "Gehe zur blockierten Seite">

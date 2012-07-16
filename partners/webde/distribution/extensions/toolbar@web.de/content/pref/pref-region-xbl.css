@@ -1,0 +1,5 @@
+pref-region
+{
+  display: -moz-box;
+  -moz-binding: url("chrome://unitedtb/content/pref/pref-region.xbl#region");
+}

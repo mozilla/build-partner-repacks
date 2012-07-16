@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/weather/pref-weather.dtd">
+<?xml-stylesheet href="chrome://unitedtb/skin/weather/pref-weather.css" type="text/css"?>
+<overlay id="united-pref-weather-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript">
+    upref.weather = {};
+    united.loadJS("chrome://unitedtb/content/weather/pref-weather.js", upref.weather);
+    united.loadJS("chrome://unitedtb/content/weather/pref-weather-check.js", upref.weather);
+  </script>
+
+  <tabpanel id="features-tabpanel">
+    <groupbox id="weather-box"
+        pack="start"
+        >
+      <caption label="&pane.title;" />
+
+      <grid>
+        <columns>
+          <column />
+          <column />
+        </columns>
+        <rows>
+          <row align="baseline">
+            <label value="&country.label;" control="weather-region"/>
+            <pref-region id="weather-region" module="weather" />
+          </row>
+          <row align="baseline" id="weather-postcode">
+            <label value="&postalcode.label;"
+                accesskey="&postalcode.accesskey;"
+                control="postalcode"
+                />
+            <hbox pack="start">
+              <textbox id="postalcode"
+                        maxlength="5"
+                        size="5"
+                        />
+            </hbox>
+          </row>
+        </rows>
+      </grid>
+
+      <checkbox id="weather-no-nag"
+            preference="extensions.unitedinternet.weather.do-not-ask"
+            label="&no-nag.label;"
+            accesskey="&no-nag.accesskey;"
+            />
+
+    </groupbox>
+  </tabpanel>
+</overlay>

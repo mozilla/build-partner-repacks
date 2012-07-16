@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://unitedtb/skin/webapps/webapps.css" type="text/css"?>
+
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/webapps/webapps.dtd">
+  %thisDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
+
+<overlay id="united-webapps-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
+  <script type="application/x-javascript">
+    united.webapps = {};
+    united.loadJS("chrome://unitedtb/content/webapps/webapps-toolbaritem.js", united.webapps);
+  </script>
+
+  <!-- Overlay for Firefox browser/content/browser.xul -->
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarbutton id="united-composeemail-button"
+        label="&united.compose.label;"
+        tooltiptext="&united.compose.tooltip;"
+        oncommand="united.webapps.startUsecase('new_mail');"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-removable="true"
+        />
+    <toolbarbutton id="united-addressbook-button"
+        label="&united.addressbook.label;"
+        tooltiptext="&united.addressbook.tooltip;"
+        oncommand="united.webapps.startUsecase('open_addressbook');"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-removable="true"
+        />
+    <toolbarbutton id="united-smartdrive-button"
+        label="&united.smartdrive.button.label;"
+        tooltiptext="&united.smartdrive.button.tooltip;"
+        oncommand="united.webapps.startUsecase('open_smartdrive');"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-removable="true"
+        />
+    <toolbarbutton id="united-notes-button"
+        label="&united.notes.button.label;"
+        tooltiptext="&united.notes.button.tooltip;"
+        oncommand="united.webapps.startUsecase('open_notes');"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-removable="true"
+        />
+    <!--
+    <toolbarbutton id="united-bookmark-button"
+        label="&united.bookmark.button.label;"
+        tooltiptext="&united.bookmark.button.tooltip;"
+        oncommand="united.webapps.startUsecase('open_bookmark');"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-removable="true"
+        />
+    <toolbarbutton id="united-logincenter-button"
+        label="&united.logincenter.button.label;"
+        tooltiptext="&united.logincenter.button.tooltip;"
+        oncommand="united.webapps.startUsecase('open_loginzentrale');"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-removable="true"
+        />
+    -->
+    <toolbarbutton id="united-start-button"
+        label="&united.start.button.label;"
+        tooltiptext="&united.start.button.tooltip;"
+        oncommand="united.webapps.startUsecase('open_home');"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-removable="true"
+        />
+  </toolbarpalette>
+
+  <!-- Overlay for Firefox unitedtb/content/email/email-toolbaritem.xul -->
+  <menupopup id="united-email-button-dropdown">
+    <menuitem id="united-compose-email-menuitem"
+        class="menuitem-iconic"
+        insertafter="united-email-checknow"
+        label="&united.compose.label;"
+        tooltiptext="&united.compose.tooltip;"
+        oncommand="event.stopPropagation(); united.webapps.startUsecase('new_mail');"
+        />
+    <menuitem id="united-addressbook-email-menuitem"
+        class="menuitem-iconic"
+        insertbefore="united-email-separator-before-accounts"
+        label="&united.addressbook.label;"
+        tooltiptext="&united.addressbook.tooltip;"
+        oncommand="event.stopPropagation(); united.webapps.startUsecase('open_addressbook');"
+        />
+  </menupopup>
+
+  <menupopup id="united-homebutton-button-dropdown">
+    <menuitem id="united-smartdrive-menuitem"
+        label="&united.smartdrive.button.label;"
+        class="menuitem-iconic"
+        oncommand="event.stopPropagation(); united.webapps.startUsecase('open_smartdrive');"
+        />
+  </menupopup>
+
+</overlay>

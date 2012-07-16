@@ -1,0 +1,126 @@
+<!-- Overlay locales -->
+<!ENTITY overlay.toolbar.title					"Спутник @Mail.Ru">
+<!ENTITY overlay.toolbar.info.title				"Информеры @Mail.Ru">
+
+
+<!ENTITY overlay.toolbar.search_menu					"Искать в Интернете">
+<!ENTITY overlay.toolbar.search_menu_dict					"Искать в Словарях">
+
+<!ENTITY overlay.toolbar.main_menu.toolbar_item			"Главная кнопка Mail.ru">
+<!ENTITY overlay.toolbar.main_menu.btn				"Mail.ru">
+<!ENTITY overlay.toolbar.main_menu.btn.hint			"Начните работу в интернете с этой кнопки...">
+
+<!ENTITY overlay.toolbar.search_item				"Поле поиска Mail.ru">
+<!ENTITY overlay.toolbar.search_label				"Поиск">
+<!ENTITY overlay.toolbar.search.hint				"Найти в mail.ru">
+<!ENTITY overlay.toolbar.search.image.hint			"Режимы поиска">
+<!ENTITY overlay.toolbar.search.btn				"Найти!">
+<!ENTITY overlay.toolbar.search.btn.hint			"Начать поиск">
+<!ENTITY overlay.toolbar.search.splitter			"Изменить размер строки поиска">
+
+<!ENTITY overlay.toolbar.zoom.verysmall				"Совсем мелкий">
+<!ENTITY overlay.toolbar.zoom.small				"Мелкий">
+<!ENTITY overlay.toolbar.zoom.normal			"Обычный">
+<!ENTITY overlay.toolbar.zoom.big				"Крупнее">
+<!ENTITY overlay.toolbar.zoom.verybig			"Крупный">
+<!ENTITY overlay.toolbar.zoom.giant				"Огромный">
+<!ENTITY overlay.toolbar.zoom.btn			"Масштаб">
+<!ENTITY overlay.toolbar.zoom.btn.hint			"Масштаб страницы">
+
+<!ENTITY overlay.toolbar.hilight.btn				"Выделить">
+<!ENTITY overlay.toolbar.hilight.btn.hint			"Выделить искомые слова">
+
+<!ENTITY overlay.toolbar.entry.btn				"Найти в тексте">
+<!ENTITY overlay.toolbar.entry.btn.hint				"Найти следующее вхождение слова в тексте">
+
+<!ENTITY overlay.toolbar.currency.hint.current			"Текущий курс:">
+<!ENTITY overlay.toolbar.currency.hint.delta			"Изменение:">
+<!ENTITY overlay.toolbar.currency.hint.data			"Дата:">
+
+<!ENTITY overlay.toolbar.weather.btn				"Определяю погоду">
+<!ENTITY overlay.toolbar.weather.btn.hint			"Погода в вашем городе">
+
+<!ENTITY overlay.toolbar.weather.tooltip.sky			"Небо:">
+<!ENTITY overlay.toolbar.weather.tooltip.temperature		"Температура:">
+<!ENTITY overlay.toolbar.weather.tooltip.humidity		"Влажность:">
+<!ENTITY overlay.toolbar.weather.tooltip.pressure		"Давление:">
+<!ENTITY overlay.toolbar.weather.tooltip.wind			"Ветер:">
+
+<!ENTITY overlay.toolbar.settings.btn				"Настройки...">
+<!ENTITY overlay.toolbar.settings.btn.hint			"Настройки Спутника">
+
+<!ENTITY overlay.toolbar.mail.btn				"Почта">
+<!ENTITY overlay.toolbar.my.btn 				"Мой Мир">
+<!ENTITY overlay.toolbar.odkl.btn 				"Одноклассники">
+<!ENTITY overlay.toolbar.maps.btn				"Пробки">
+<!ENTITY overlay.toolbar.music.btn				"Музыка">
+<!ENTITY overlay.toolbar.2gis.btn				"">
+<!ENTITY overlay_music_window_title				"Музыкальный плеер 'Мой Мир'">
+<!ENTITY overlay.toolbar.money.btn				"Деньги">
+
+<!ENTITY sputnik.suggestpopup.clearHist.label "Очистить историю поиска">
+<!ENTITY sputnik.suggestpopup.clearHist.tooltip "Очищает список предыдущих запросов в окне поиска панели инструментов">
+
+
+<!ENTITY dialog.settings.title					"Настройки">
+<!ENTITY dialog.settings.page.main.title			"Основные">
+<!ENTITY dialog.settings.page.weather.title			"Погода">
+<!ENTITY dialog.settings.page.city.title			"Мой город">
+<!ENTITY dialog.settings.page.currency.title			"Валюты">
+<!ENTITY dialog.settings.page.services.title			"Быстрый доступ">
+<!ENTITY dialog.settings.page.behavior.title			"Поведение">
+<!ENTITY dialog.settings.page.informers.title			"Информеры">
+
+<!ENTITY dialog.settings.page.weather.city.choose		"Выберите ваш город:">
+<!ENTITY dialog.settings.page.weather.city.choose.other		"Другой">
+
+<!ENTITY dialog.settings.page.weather.city.search.enter		"Введите первые символы названия вашего города:">
+<!ENTITY dialog.settings.page.weather.city.search.choose	"Выберите ваш город из списка:">
+<!ENTITY dialog.settings.page.weather.city.search.choose.auto	"Автоматически определять мой город">
+
+<!ENTITY dialog.settings.page.weather.temperature		"Отображать температуру в градусах:">
+<!ENTITY dialog.settings.page.weather.temperature.celsius	"Цельсия">
+<!ENTITY dialog.settings.page.weather.temperature.fahrenheit	"Фаренгейта">
+<!ENTITY dialog.settings.page.weather.temperature.kelvin	"Кельвина">
+
+<!ENTITY dialog.settings.page.currency.label			"Выберите курсы валют, которые необходимо отображать:">
+<!ENTITY dialog.settings.page.currency.tree.display		"Показать">
+<!ENTITY dialog.settings.page.currency.tree.name		"Название">
+<!ENTITY dialog.settings.page.currency.tree.description		"Описание">
+
+<!ENTITY dialog.settings.page.services.label			"Выберите сервисы, кнопки которых необходимо отображать:">
+<!ENTITY dialog.settings.page.services.tree.display		"Показать">
+<!ENTITY dialog.settings.page.services.tree.name		"Название">
+<!ENTITY dialog.settings.page.services.tree.description		"Описание">
+<!ENTITY dialog.settings.page.services.display.label		"Отображать название у кнопок сервисов на тулбаре">
+
+<!ENTITY dialog.settings.page.behavior.label		"Обработка ссылок">
+<!ENTITY dialog.settings.page.behavior.mailto		"Открывать ссылки «mailto:» в Почте@Mail.ru">
+
+<!ENTITY dialog.settings.page.main.disable.pop			"Отображать популярные запросы пользователей в поиске (требуется перезапуск)">
+<!ENTITY dialog.settings.page.main.select.engine		"Выбрать режим поиска после запуска браузера:">
+<!ENTITY dialog.settings.page.main.zoombtn.display		"Отображать кнопку 'Увеличить' на панели тулбара">
+<!ENTITY dialog.settings.page.main.hilightbtn.display		"Отображать кнопку 'Выделить' на панели тулбара">
+<!ENTITY dialog.settings.page.main.search.display		"Отображать кнопку 'Найти в тексте' на панели тулбара">
+<!ENTITY dialog.settings.page.main.search.url		"Искать фразу, введенную в адресную строку">
+<!ENTITY dialog_settings_weather_group			"Погода">
+<!ENTITY dialog_settings_maps_group			"Пробки">
+<!ENTITY dialog.settings.maps_show			"Показывать ситуацию на дорогах моего города">
+<!ENTITY dialog_settings_mail_group			"Почта">
+<!ENTITY dialog.settings.mail_show			"Показывать количество писем">
+<!ENTITY dialog_settings_odkl_group			"Одноклассники">
+<!ENTITY dialog.settings.odkl_show			"Показать количество сообщений в одноклассники">
+<!ENTITY dialog_settings_my_group			"Мой мир">
+<!ENTITY dialog.settings.my_show			"Показать количество сообщений в моем мире">
+<!ENTITY dialog_settings_money_group			"Деньги">
+<!ENTITY dialog.settings.money_show			"Показывать количество денег в кошельке Деньги@Mail.Ru">
+<!ENTITY dialog_settings_vote_group			"Нравится">
+<!ENTITY dialog.settings.vote_show			"Показывать мнения пользователей Моего Мира о текущей странице">
+<!ENTITY dialog.settings.currency_acc			"Показывать две цифры после запятой">
+<!ENTITY dialog.settings.page.main.html.block	"Добавлять блок помощи при ошибках в навигации">
+<!ENTITY dialog.settings.show_music	"Показывать музыкальный плеер 'Мой мир'">
+<!ENTITY dialog.settings.shortmode	"Минималистичный режим">
+<!ENTITY dialog.settings.visualbookmarks	"Визуальные закладки">
+<!ENTITY overlay.toolbar.vote.btn "">
+<!ENTITY dialog_settings_vote_group "Мнения">
+<!ENTITY dialog.settings.vote_show "Показывать мнения пользователей Моего Мира о текущей странице">

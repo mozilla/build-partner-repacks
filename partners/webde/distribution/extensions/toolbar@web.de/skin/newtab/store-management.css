@@ -1,0 +1,69 @@
+body { 
+  background: #FFFFFF;
+  color: #000000;
+  font: 11px Verdana, Arial, Helvetica, sans-serif;
+}
+* { 
+  margin: 0;
+  padding: 0;
+}
+ul { list-style: none; }
+img { border: none; }
+a {
+  cursor: pointer;
+}
+input.edit-mode { margin-right: 0.5em; }
+span.entry-time { margin-right: 0.5em; }
+#header { height: 90px; }
+#header h1 {
+  position: absolute;
+  left: 36px; top: 30px;
+}
+#logo {
+  background-image: url("chrome://unitedtb/skin/brand/icon-big.png");
+  background-repeat: no-repeat;
+  display: block;
+  width: 150px;
+  height: 64px;
+}
+.img-alt { display: none; }
+#main { margin-left: 10px; }
+#contentheader {
+  height: 20px;
+  padding-top: 10px;
+  border-bottom: 1px solid #E7E7E7;
+  margin-bottom: 10px;
+  text-align: right;
+}
+#contentheader h2 {
+  float: left;
+  font-size: 12px;
+  color: #55AB01;
+  margin-left: 190px;
+}
+#contentheader > span {
+  display: inline;
+  margin-left: 20px;
+}
+#content { margin-left: 190px; }
+
+#content h2.date {
+  margin-top: 1em;
+  margin-bottom: 0.25em;
+}
+
+.modulefooter { padding-top: 8px; }
+
+.mode-toggle {
+  line-height: 16px;
+  font-size: 10px;
+  height: 12px;
+  /* top right bottom left  */
+  padding: 1px 20px 5px 0;
+  cursor: pointer;
+}
+.edit-mode { visibility: hidden; }
+.unselectable {
+   -moz-user-select: none;
+}
+

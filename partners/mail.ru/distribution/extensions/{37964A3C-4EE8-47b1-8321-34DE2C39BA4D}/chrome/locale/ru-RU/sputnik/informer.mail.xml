@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<spudata>
+<brick id="mail" status="" href="http://mail.ru/" valid="10" refetch="60">
+	<image>chrome://mail.ru.toolbar/skin/mail.png</image>
+    <textover></textover>
+    <textafter s="">Почта</textafter>
+    <tooltip><![CDATA[Бесплатная почта]]></tooltip>
+</brick>
+</spudata>

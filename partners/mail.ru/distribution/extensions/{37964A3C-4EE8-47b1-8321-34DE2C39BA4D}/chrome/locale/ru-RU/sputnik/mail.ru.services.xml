@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services title="mail.ru">
+	<services title="Общение" id="menu_talks">
+		<service id="mail" url="http://mail.ru/" hint="Национальная почтовая служба." img="chrome://mail.ru.toolbar/skin/services/email.png">Почта</service>
+		<service id="messanger" url="http://agent.mail.ru/" hint="Обмен мгновенными сообщениями." img="chrome://mail.ru.toolbar/skin/services/mail_agent.png">Mail.ru Агент</service>
+                <service id="odkl" url="http://www.odnoklassniki.ru/" hint="Сообщество пользователей." img="chrome://mail.ru.toolbar/skin/services/ok.png">Одноклассники</service>
+		<service id="my_world" url="http://my.mail.ru/" hint="Сообщество пользователей." img="chrome://mail.ru.toolbar/skin/services/my_world.png">Мой мир</service>
+		<service id="cards" url="http://cards.mail.ru/" hint="Виртуальные открытки на все случаи жизни." img="chrome://mail.ru.toolbar/skin/services/cards.png">Открытки</service>
+		<service id="files" url="http://files.mail.ru/" hint="Сервис пересылки больших файлов." img="chrome://mail.ru.toolbar/skin/services/files.png">Файлы</service>
+		<service id="spam" url="http://content.mail.ru/" hint="E-mail рассылки на любые темы." img="chrome://mail.ru.toolbar/skin/services/content.png">Рассылки</service>
+		<service id="love" url="http://love.mail.ru/" hint="Поиск друзей и спутников жизни." img="chrome://mail.ru.toolbar/skin/services/love.png">Знакомства</service>
+		<service id="foto" url="http://foto.mail.ru/" hint="Персональные архивы цифровых фотографий." img="chrome://mail.ru.toolbar/skin/services/foto.png">Фото</service>
+		<service id="video" url="http://video.mail.ru/" hint="Тысячи видеороликов обо всем на свете." img="chrome://mail.ru.toolbar/skin/services/video.png">Видео</service>
+		<service id="blogs" url="http://blogs.mail.ru/" hint="Общение без границ." img="chrome://mail.ru.toolbar/skin/services/blogs.png">Блоги</service>
+		<service id="answers" url="http://otvet.mail.ru/" hint="Коллективный разум." img="chrome://mail.ru.toolbar/skin/services/answers.png">Ответы</service>
+	</services>
+	<services title="Поиск" id="menu_search">
+		<service id="search" url="http://go.mail.ru/?fr=ffsptM" hint="Поиск документов по ключевым словам." img="chrome://mail.ru.toolbar/skin/services/search.png">Поиск</service>
+		<service id="images" url="http://go.mail.ru/?tab=images&amp;fr=ffsptM" hint="Поиск фотографий, картинок, иконок по ключевым словам." img="chrome://mail.ru.toolbar/skin/services/pics.png">Картинки</service>
+		<service id="searchvideo" url="http://go.mail.ru/?tab=video&amp;fr=ffsptM" hint="Поиск видеороликов по ключевым словам." img="chrome://mail.ru.toolbar/skin/services/video.png">Видео</service>
+		<service id="sputnik" url="http://sputnik.mail.ru/" hint="Удобный инструмент для работы с поиском." img="chrome://mail.ru.toolbar/skin/services/sputnik.png">Спутник</service>
+		<service id="catalog" url="http://list.mail.ru/" hint="Каталог сайтов Рунета, отобранных и описанных гидами." img="chrome://mail.ru.toolbar/skin/services/catalog.png">Каталог</service>
+		<service id="maps" url="http://maps.mail.ru/" hint="Детальные карты Москвы, Санкт-Петербурга, России." img="chrome://mail.ru.toolbar/skin/services/maps.png">Карты</service>
+		<service id="soft" url="http://soft.mail.ru/" hint="Широкий спектр программ. Новости ПО, интервью с разработчиками." img="chrome://mail.ru.toolbar/skin/services/soft.png">Софт</service>
+		<service id="job" url="http://rabota.mail.ru/" hint="Крупнейший банк вакансий." img="chrome://mail.ru.toolbar/skin/services/rabota.png">Работа</service>
+		<service id="dictionary" url="http://multilex.mail.ru/" hint="Подробные и точные словари - пять языков." img="chrome://mail.ru.toolbar/skin/services/dictionaries.png">Словари</service>
+	</services>
+	<services title="Товары и услуги" id="menu_tovars">
+		<service id="tovar" url="http://torg.mail.ru/" hint="Система подбора товаров в интернет-магазинах." img="chrome://mail.ru.toolbar/skin/services/torg.png">Товары</service>
+		<service id="travel" url="http://travel.mail.ru/" hint="Большой выбор предложений туристических агентств." img="chrome://mail.ru.toolbar/skin/services/travel.png">Путешествия</service>
+		<service id="realty" url="http://realty.mail.ru/" hint="Сдать, снять, продать, купить." img="chrome://mail.ru.toolbar/skin/services/realty.png">Недвижимость</service>
+		<service id="money" url="http://money.mail.ru/" hint="Оплата товаров и услуг без комиссии. Быстрые переводы по электронной почте." img="chrome://mail.ru.toolbar/skin/services/money.png">Деньги</service>
+	</services>
+	<services title="Развлечения" id="menu_razvlecheniya">
+		<service id="afisha" url="http://afisha.mail.ru/" hint="Расписание кинотеатров, театров, клубов, отзывы, тв-программа." img="chrome://mail.ru.toolbar/skin/services/afisha.png">Афиша + ТВ</service>
+		<service id="showbiz" url="http://showbiz.mail.ru/" hint="Прямая связь со «звездой»." img="chrome://mail.ru.toolbar/skin/services/showbiz.png">Шоубиз</service>
+		<service id="horoscope" url="http://horo.mail.ru/" hint="Гороскопы и прогнозы на каждый день." img="chrome://mail.ru.toolbar/skin/services/horo.png">Гороскопы</service>
+	</services>
+	<services title="Информация" id="menu_information">
+		<service id="news" url="http://news.mail.ru/" hint="Важнейшие новости России и мира. Оперативно и круглосуточно." img="chrome://mail.ru.toolbar/skin/services/news.png">Новости</service>
+		<service id="weather" url="http://pogoda.mail.ru/" hint="Прогноз погоды в городах России и на мировых курортах." img="chrome://mail.ru.toolbar/skin/services/weather.png">Погода</service>
+		<service id="tv" url="http://tv.mail.ru/" hint="Программа телепередач всех телеканалов для каждого региона." img="chrome://mail.ru.toolbar/skin/services/tv.png">ТВ (в рамках Афиши)</service>
+		<service id="auto" url="http://auto.mail.ru/" hint="Энциклопедия автомобилей, новости и новинки авторынка." img="chrome://mail.ru.toolbar/skin/services/auto.png">Авто</service>
+		<service id="lady" url="http://lady.mail.ru/" hint="Все для женщин и о женщинах." img="chrome://mail.ru.toolbar/skin/services/lady.png">Леди</service>
+		<service id="raiting" url="http://top.mail.ru/" hint="Счетчик и система рейтинга сайтов." img="chrome://mail.ru.toolbar/skin/services/top.png">Рейтинг</service>
+		<service id="hitech" url="http://hi-tech.mail.ru/" hint="Все о высоких технологиях: новости, каталог продуктов, обзоры." img="chrome://mail.ru.toolbar/skin/services/hi_tech.png">Hi-Tech</service>
+		<service id="deti" url="http://deti.mail.ru/" hint="Всё для семьи. Родителям и детям." img="chrome://mail.ru.toolbar/skin/services/deti.png">Дети</service>
+	</services>
+	<services title="Мобильные проекты" id="menu_mobile">
+		<service id="mobile" url="http://mobile.mail.ru/" hint="Проекты, адаптированные под КПК и мобильные телефоны." img="chrome://mail.ru.toolbar/skin/services/wap.png">Mobile</service>
+	</services>
+  <services title="Игры" id="games">
+    <service id="2kindom" url="http://1link.mail.ru/c.php?site_id=60628&amp;p=109&amp;sub_id=0" hint="Троецарствие" img="chrome://mail.ru.toolbar/skin/services/troecarstvie.png">Троецарствие</service>
+    <service id="legend" url="http://1link.mail.ru/c.php?site_id=60629&amp;p=119&amp;sub_id=0" hint="Легенда: наследие драконов" img="chrome://mail.ru.toolbar/skin/services/legenda.png">Легенда: наследие драконов</service>
+    <service id="prefect_world" url="http://1link.mail.ru/c.php?site_id=60630&amp;p=344&amp;sub_id=0" hint="Perfect World" img="chrome://mail.ru.toolbar/skin/services/perfect_world.png">Perfect World</service>
+    <service id="allods" url="http://1link.mail.ru/c.php?site_id=60631&amp;p=407&amp;sub_id=0" hint="Аллоды" img="chrome://mail.ru.toolbar/skin/services/allods.png">Аллоды</service>
+    <service id="jugger" url="http://1link.mail.ru/c.php?site_id=60632&amp;p=303&amp;sub_id=0" hint="Джаггернаут" img="chrome://mail.ru.toolbar/skin/services/jagger.png">Джаггернаут</service>
+    <service id="cross_fire" url="http://1link.mail.ru/c.php?site_id=60633&amp;p=431&amp;sub_id=0" hint="Cross Fire" img="chrome://mail.ru.toolbar/skin/services/crossfire.png">Cross Fire</service>
+    <service id="booms" url="http://1link.mail.ru/c.php?site_id=60634&amp;p=612&amp;sub_id=0" hint="Бумз" img="chrome://mail.ru.toolbar/skin/services/boomz.png">Бумз</service>
+    <service id="business_tycoon" url="http://1link.mail.ru/c.php?site_id=60635&amp;p=605&amp;sub_id=0" hint="Business Tycoon" img="chrome://mail.ru.toolbar/skin/services/business_tycoon.png">Business Tycoon</service>
+    <service id="loong" url="http://1link.mail.ru/c.php?site_id=60636&amp;p=437&amp;sub_id=0" hint="Лунг" img="chrome://mail.ru.toolbar/skin/services/loong.png">Лунг</service>
+  </services>
+</services>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<spudata>
+ <brick id="url-rank" status="" href="http://connect.mail.ru/share?share_url=$$URL$$&amp;from=sputnik-ff" valid="10" refetch="9" delay="3000">
+  <image>chrome://mail.ru.toolbar/skin/req_vote.png</image>
+  <textover></textover>
+  <textafter s="">Нравится</textafter>
+  <tooltip><![CDATA[Поделиться этой страницей с друзьями в Моем Мире]]></tooltip>
+ </brick>
+</spudata>

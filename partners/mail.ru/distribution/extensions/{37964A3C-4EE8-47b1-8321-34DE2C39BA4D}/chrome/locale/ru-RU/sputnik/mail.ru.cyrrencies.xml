@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<currencies>
+	<currency name="usd" sign="$">Доллар США</currency>
+	<currency name="eur" sign="&#8364;">Евро</currency>
+	<currency name="jpy" sign="&#0165;">Японские йены (за 100 шт)</currency>
+	<currency name="gbp" sign="&#0163;">Фунт стерлингов Соединенного Королевства</currency>
+	<currency name="aud">Австралийский доллар</currency>
+	<currency name="byr">Белорусские рубли (за 1000 шт)</currency>
+	<currency name="dkk">Датские кроны (за 10 шт)</currency>
+	<currency name="isk">Исландские кроны (за 100 шт)</currency>
+	<currency name="kzt">Казахские тенге (за 100 шт)</currency>
+	<currency name="cad">Канадский доллар</currency>
+	<currency name="cny">Китайские юани Жэньминьби (за 10 шт)</currency>
+	<currency name="try">Новая турецкая лира</currency>
+	<currency name="nok">Норвежские кроны (за 10 шт)</currency>
+	<currency name="xdr">СДР</currency>
+	<currency name="sgd">Сингапурский доллар</currency>
+	<currency name="uah">Украинские гривны (за 10 шт)</currency>
+	<currency name="sek">Шведские кроны (за 10 шт)</currency>
+	<currency name="chf">Швейцарский франк</currency>
+</currencies>

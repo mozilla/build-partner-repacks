@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<!DOCTYPE bindings [
+  <!ENTITY % globalDTD SYSTEM "chrome://global/locale/global.dtd"> %globalDTD;
+]>
+
+<bindings id="mailru-bindings-informer-panel"
+	xmlns="http://www.mozilla.org/xbl"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:xbl="http://www.mozilla.org/xbl">
+
+ 	<binding id="informer_panel" extends="chrome://global/content/bindings/popup.xml#panel">
+    <implementation>
+      <field name="debugZone">"informer_panel"</field>
+      <constructor>
+        <![CDATA[
+			]]>
+      </constructor>
+      <destructor>
+        <![CDATA[
+			]]>
+      </destructor>
+       <method name="init">
+         <parameter name="toolbarObject"/>
+         <parameter name="informers"/>
+         <body>
+           <![CDATA[
+            this.toolbarObject = toolbarObject;
+            G_Debug(this, "init:" + this.toolbarObject);
+            for (var i = 0; i < informers.length; ++i) {
+              this.attach(informers[i]);
+            }
+            if(this.mDiv)
+            {
+              return;
+            }
+            var elDiv = document.createElementNS("http://www.w3.org/1999/xhtml", "div"); //document.createElement("div"); 
+            elDiv.setAttribute("style", "color:black");
+				    this.mDiv = this.appendChild(elDiv);
+				]]>
+         </body>
+       </method>
+      <method name="attach">
+        <parameter name="elButton"/>
+        <body>
+          <![CDATA[
+            if(!elButton)
+            {
+              return;
+            }
+            G_Debug(this, "attach")
+			      var localObject = this;
+			      var eventShow = function handlerFunc(evt){ localObject.onShow(evt); }
+			      var eventHide = function handlerFunc(evt){ localObject.onHide(evt); }
+            elButton.addEventListener('mouseover', eventShow, false);
+            elButton.addEventListener('mouseout', eventHide, false);
+				]]>
+        </body>
+      </method>
+      <method name="attach">
+        <parameter name="elButton"/>
+        <body>
+          <![CDATA[
+            if(!elButton)
+            {
+              return;
+            }
+			      var localObject = this;
+			      var eventOnShow = function handlerFunc(evt){ localObject.onShow(evt); }
+			      var eventOnHide = function handlerFunc(evt){ localObject.onHide(evt); }
+            elButton.addEventListener('mouseover', eventOnShow, false);
+            elButton.addEventListener('mouseout', eventOnHide, false);
+				]]>
+        </body>
+      </method>
+      <method name="onShow">
+        <parameter name="evt"/>
+        <body>
+          <![CDATA[
+            G_Debug(this, "onShow")
+            if(this.showTimer)
+            {
+              clearTimeout(this.showTimer);
+            }
+ 			      var localObject = this;
+			      var eventShow = function handlerFunc(evt){ localObject.show(evt); }
+            this.showTimer = window.setTimeout(eventShow, 1000, evt);
+				]]>
+        </body>
+      </method>
+      <method name="onHide">
+        <parameter name="evt"/>
+        <body>
+          <![CDATA[
+            this.hide(evt);
+				]]>
+        </body>
+      </method>
+      <method name="show">
+        <parameter name="evt"/>
+        <body>
+          <![CDATA[
+            var key = evt.target.informer_id;
+            if(!evt.target.mInfo)
+            {
+              return;
+            }
+            G_Debug(this, "show:" + evt.target.mInfo.tooltip);
+            this.setHTML(evt.target.mInfo.tooltip);
+            this.openPopup(evt.target, "after_start", 0, 0, false, false);
+
+				]]>
+        </body>
+      </method>
+      <method name="hide">
+        <parameter name="evt"/>
+        <body>
+          <![CDATA[
+            if (this.showTimer) {
+                clearTimeout(this.showTimer);
+            }
+            var x = evt.screenX;
+            var y = evt.screenY;
+            var rel = evt.relatedTarget;
+            if (!(this.isEntering(x, y, this)) && !(this.isEntering(x, y, evt.target))) {
+                this.hidePopup();
+            }
+				]]>
+        </body>
+      </method>
+      <method name="setHTML">
+        <parameter name="sHTML"/>
+        <body>
+          <![CDATA[
+            this.mDiv.innerHTML = sHTML.replace(/<br>/gi, '<br/>').replace(/&/gi, '&amp;');
+            var anchors = this.mDiv.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "a");
+            while (anchors.length) {
+                var anchor = anchors[0];
+                var msg = anchor.getAttribute("msg");
+                var url = anchor.getAttribute("href");
+                var linkNode = document.createElement('label');
+                if (msg && msg.length) {
+                    linkNode.setAttribute("id", msg);
+                }
+                else {
+                    linkNode.setAttribute("id", url);
+                }
+                linkNode.setAttribute("style", "color: rgb(0,0,255); text-decoration:underline;");
+                linkNode.addEventListener('mouseover', this.toolbarObject.appContext.BindToObject(this.setCursorPointer, this), false);
+                linkNode.addEventListener('mouseout', this.toolbarObject.appContext.BindToObject(this.setCursorDefault, this), false);
+                linkNode.addEventListener('click', this.toolbarObject.appContext.BindToObject(this.onLink, this), false);
+                linkNode.setAttribute("value", anchor.textContent);
+                var parent = anchor.parentNode;
+                parent.insertBefore(linkNode, anchor);
+                parent.removeChild(anchor);
+            }
+				]]>
+        </body>
+      </method>
+      <method name="isEntering">
+        <parameter name="screenX"/>
+        <parameter name="screenY"/>
+        <parameter name="element"/>
+        <body>
+          <![CDATA[
+            if(!element.boxObject)
+            {
+              return false;
+            }
+            var x = element.boxObject.screenX;
+            var y = element.boxObject.screenY;
+            var c = 1;
+            if (
+                x < screenX - c 
+                && screenX < x + element.boxObject.width + c
+                && y < screenY - c 
+                && screenY < y + element.boxObject.height + c
+            ) 
+            {
+               return true;
+            }
+            return false;
+
+				]]>
+        </body>
+      </method>
+      <method name="setCursorPointer">
+        <parameter name="evt"/>
+        <body>
+          <![CDATA[
+            evt.target.style.cursor = 'pointer'; 
+				]]>
+        </body>
+      </method>
+      <method name="setCursorDefault">
+        <parameter name="evt"/>
+        <body>
+          <![CDATA[
+            evt.target.style.cursor = 'default';
+				]]>
+        </body>
+      </method>
+      <method name="onLink">
+        <parameter name="evt"/>
+        <body>
+          <![CDATA[
+            var link=evt.target.id;
+            if(link.search('mrsputnik:')!=-1)
+            {
+                var rg=/mrsputnik:\/\/(.*)/;
+                rg.exec(link);
+                var type=RegExp.$1;
+                if(type){
+                    if(type=="settings_currency")
+                    {
+                        write_reg_string("settings_selected_tab", "settings_tab_currency");
+                    }
+                    if(type=="settings_jams")
+                    {
+                        write_reg_string("settings_selected_tab", "settings_tab_informers");
+                    }
+                    if(type=="settings_mail")
+                    {
+                        write_reg_string("settings_selected_tab", "settings_tab_informers");
+                    }
+                }
+                this.toolbarObject.settings_dialog(evt);
+            }
+            else{
+                this.toolbarObject.navigate_site(evt.target.id, evt);
+            }
+				]]>
+        </body>
+      </method>
+
+      </implementation>
+      <handlers>
+        <handler event="mouseout">
+          <![CDATA[
+            this.onHide(event);
+    			]]>
+        </handler>
+      </handlers>
+  </binding>
+</bindings>

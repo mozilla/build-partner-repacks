@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1"
+      http-equiv="Content-Type">
+  </head>
+  <body text="#000000" bgcolor="#ffffff">
+    <h1> Basic format </h1>
+    The basic format is plaintext. Charset is UTF-8 (without BOM).
+    Line-endings are CRLF as in RFC 822.<br>
+    <br>
+    Each entry is exactly one line. (Entry values containing newlines
+    are forbidden.)<br>
+    <h1> Entry format </h1>
+    The line starts with an single character denoting entry type, then a
+    space, then the entry value.<br>
+    <br>
+    The following entry types exist:<br>
+    <h2> Exact URL match </h2>
+    If a line starts with the character E, the entry value contains a
+    full URL. We have a phishing hit only if the visited URL matches the
+    blacklisted URL exactly.<br>
+    <br>
+    <h2> URL prefix </h2>
+    If a line starts with the character P, the entry value contains a
+    URL prefix.<br>
+    <br>
+    We have a phishing hit, if the blacklisted URL prefix matches the
+    beginning characters of the visited URL. If the visited URL is
+    longer than the blacklisted URL prefix, the remaining characters of
+    the visited URL are ignored.<br>
+    <br>
+    hit = visitedURL.substr(0, prefix.length) == prefix<br>
+    <br>
+    For example,<br>
+    prefix = <a href="http://www.battle.net/view.php">http://www.battle.net/view.php</a><br>
+    matches <a href="http://www.battle.net/view.php">http://www.battle.net/view.php</a><br>
+    matches <a href="http://www.battle.net/view.php?id=5">http://www.battle.net/view.php?id=5</a><br>
+    matches <a href="http://www.battle.net/view.php5">http://www.battle.net/view.php5</a><br>
+    does not match <a href="http://www.battle.net/">http://www.battle.net/</a><br>
+    does not match <a href="https://www.battle.net/view.php">https://www.battle.net/view.php</a>
+    (!)<br>
+    <br>
+    prefix = <a href="http://www.battle.net/">http://www.battle.net/</a><br>
+    matches <a href="http://www.battle.net/view.php">http://www.battle.net/view.php</a><br>
+    matches <a href="http://www.battle.net">http://www.battle.net</a>
+    (!)<br>
+    does not match <a href="https://www.battle.net">https://www.battle.net</a>
+    (!)<br>
+    does not match <a href="ftp://www.battle.net/">ftp://www.battle.net/</a>
+    <br>
+    does not match <a href="http://w3.battle.net/">http://w3.battle.net/</a><br>
+    <br>
+    prefix = <a href="http://www.battle.de">http://www.battle.de</a><br>
+    matches <a href="http://www.battle.de">http://www.battle.de</a><br>
+    matches <a href="http://www.battle.de/">http://www.battle.de/</a><br>
+    matches <a href="http://www.battle.de/view.php">http://www.battle.de/view.php</a><br>
+    matches <a href="http://www.battle.demo">http://www.battle.demo</a>
+    (!)<br>
+    does not match <a href="http://w3.battle.de">http://w3.battle.de</a><br>
+    does not match <a href="https://www.battle.de">https://www.battle.de</a>
+    (!)<br>
+    does not match <a href="ftp://www.battle.de">ftp://www.battle.de</a><br>
+    <br>
+    <h2> Domain </h2>
+    If a line starts with the character D, the entry value contains a
+    domain name.<br>
+    <br>
+    We have a phishing hit, if the host part of the visited URL is in
+    the blacklisted domain. All hosts and subdomains of the blacklisted
+    domain are also blocked, and all URL paths on these hosts.<br>
+    <br>
+    For example,<br>
+    domain = battle.net<br>
+    matches <a href="http://www.battle.net">http://www.battle.net</a><br>
+    matches <a href="http://www.battle.net/view.php">http://www.battle.net/view.php</a><br>
+    matches <a href="http://battle.net">http://battle.net</a><br>
+    matches <a href="http://abc.battle.net">http://abc.battle.net</a><br>
+    matches <a href="http://abc.forum.battle.net">http://abc.forum.battle.net</a><br>
+    matches <a href="https://www.battle.net">https://www.battle.net</a><br>
+    matches <a href="ftp://www.battle.net">ftp://www.battle.net</a><br>
+    does not match <a href="http://www.ourbattle.net">http://www.ourbattle.net</a>
+    (!)<br>
+    <h1>Encoding</h1>
+    URLs are added exactly as they appear in the email and would be
+    loaded by the browser when the user clicks on them.<br>
+    That means, there is no encoding nor decoding added.<br>
+    <br>
+    With one exception: Decoding of the email format must happen. If the
+    email is in HTML format, of course HTML entities like &amp;amp; must
+    be decoded to &amp;. If the plaintext or HTML part is encoded with
+    quoted-printable (e.g. =3A), this must be decoded before the URL is
+    extracted. Basically all email decoding that a normal email reader
+    does must also happen.<br>
+    <br>
+    After the document is decoded, the URL itself is not further decoded
+    or encoded, though. The decoding must also happen specifically and
+    not for all URLs. It is *not* sufficient to run qp- and
+    HTML-decoding on all URLs unconditionally, but only on those URLs
+    which are in documents which are HTML and/or quoted-printable.<br>
+    <h2>Why encoding matters<br>
+    </h2>
+    Encoding is needed, because for example in URL query parameters are
+    separated by &amp;, e.g.
+    "?origin=newtab&amp;brand=webde&amp;searchterm=fred". If a value
+    contains a &amp; itself, it would normally create a new parameter:
+    "?searchterm=Burkle&amp;Randals" - here, the search term is "Burkle"
+    and there is a second parameter called "Randals", which is of course
+    not what's meant. That's why the URL spec RFC2396 defines an
+    encoding for URL characters which allows to use &amp; without having
+    a special meaning, we write %26, e.g.
+    "?searchterm=Burkle%26Randals", so now the search term is
+    "Burkle&amp;Randals" as we want.<br>
+    <br>
+    But that means that we cannot just decode all URLs, because it would
+    result in the wrong "?searchterm=Burkle&amp;Randals". Similarly, we
+    cannot just encode all URLs, because that would result in the wrong
+    "origin=newtab%26brand=webde". The encoding needs to be preserved
+    exactly as-is. The right URL components must be en/decoded at the
+    right time.<br>
+    <br>
+    The same is true for HTML encoding. Some URLs, esp. those that are
+    using XSS exploits on victim websites, may *intentionally* use
+    &amp;amp; (HTML) or =26 (qp) or %26 (URL) in the URL. (I don't know
+    whether this is actually the case, but very possible.) The user
+    would load the URL *including* the &amp;amp;. In this case, we must
+    have the &amp;amp; in the URL, as that's what the user loads. If
+    OTOH the &amp;amp; is part of the HTML document encoding, it must be
+    decoded to get the real URL. That's why you will need a real email
+    interpreter (usually a MIME+qp decoder and a simple HTML parser)
+    when gathering the URLs from emails.
+  </body>
+
+</html>

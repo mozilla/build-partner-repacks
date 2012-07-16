@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://mail.ru.toolbar/skin/mail.ru.toolbar.css" type="text/css"?>
+
+<!DOCTYPE overlay [
+	  <!ENTITY % mail.ru.toolbarDTD SYSTEM "chrome://mail.ru.toolbar/locale/sputnik/mail.ru.toolbar.dtd">
+	  %mail.ru.toolbarDTD;
+	 <!ENTITY % globalDTD SYSTEM "chrome://global/locale/global.dtd"> %globalDTD;
+]>
+
+
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<overlay id="Mail.RU-Overlay"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+>
+
+
+  <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/tools.js" />
+  <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/save_controls.js" />
+  <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/newtabhomepage.js" />
+  <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/sputnik/sputnik.js" />
+  <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/music_window.js" />
+  <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/sputnik/mailruObservers.js" />
+  <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/sputnik/mailruInformers.js" />
+
+
+  <popup id="contentAreaContextMenu">
+		<menuitem id="mailru-search-menu" class="menuitem-iconic"            
+			  label="&overlay.toolbar.search_menu;"
+              tooltiptext="&overlay.toolbar.search_menu;"
+              oncommand="gMRRefToolbar.mMRObject.search_internet(event);"	
+              insertbefore="context-keywordfield,context-searchselect,frame-sep"/>
+		<menuitem id="mailru-search-menu-dict" class="menuitem-iconic"            
+			  label="&overlay.toolbar.search_menu_dict;"
+              tooltiptext="&overlay.toolbar.search_menu_dict;"
+              oncommand="gMRRefToolbar.mMRObject.search_dict(event);"
+              insertbefore="context-keywordfield,context-searchselect,frame-sep"/>			  
+	</popup>
+
+	<tabbrowser id="content"
+				flex="1"
+				autocompletepopup="PopupAutoComplete"
+				disablehistory="true"
+				contenttooltip="aHTMLTooltip"
+				contentcontextmenu="contentAreaContextMenu"
+				onnewtab="BrowserOpenTab();"
+				ondragdrop="nsDragAndDrop.drop(event, contentAreaDNDObserver);"
+				onclick="return gMRRefToolbar.mMRObject.link_click(event);" />
+
+	<popupset id="mainPopupSet">
+    <panel id="infopanel" noautohide="false" noautofocus="true" class="informer_panel" module="mail.ru"/>
+    <panel id="SputnikSuggestPopup" type="autocomplete" noautofocus="true" chromedir="&locale.dir;" clearlabel="&sputnik.suggestpopup.clearHist.label;" cleartooltiptext="&sputnik.suggestpopup.clearHist.tooltip;"/>
+  </popupset>
+
+	<stringbundleset id="stringbundleset">
+		<stringbundle id="mailru_bundle" src="chrome://mail.ru.toolbar/locale/mail.ru.toolbar.properties" />
+		<stringbundle id="http_form_strings" src="chrome://mail.ru.toolbar/locale/http_form_strings.properties"/>
+	</stringbundleset>
+
+	<toolbox id="navigator-toolbox" crop="end">
+	  <toolbar id="mailru_main_toolbar"
+		  class="chromeclass-toolbar-additional" 
+		  context="toolbar-context-menu"
+		  customizable = "false"
+		  toolbarname="&overlay.toolbar.title;" 
+		  hidden="false"
+		  mode="full" iconsize="large"
+		  persist="collapsed mode"
+		  collapsed="false"
+	  >
+		  <toolbarbutton id="mailru_main_menu_btn" class="mailru_no_label_button" type="menu-button" align="center" minwidth="100" flex="0" label="&overlay.toolbar.main_menu.btn;" oncommand="gMRRefToolbar.mMRObject.navigate_site('http://www.mail.ru/', event)" context="mailru_main_menu_menu">
+			  <menupopup id="mailru_main_menu_menu" allowevents="false" />
+		  </toolbarbutton>
+	
+		  <toolbaritem id="mailru_search_item" title="&overlay.toolbar.search_item;" label="&overlay.toolbar.search_label;">
+			  <textbox id="mailru_search_bar"
+	                  editable="true"
+	                  flex="1"
+	                  minwidth="200" 
+	                  enablehistory="true"
+	                  type="autocomplete"
+	                  autocompletesearch="sputnik-search-suggest"
+	                  autocompletepopup="SputnikSuggestPopup"
+	                  timeout="250"
+	                  completeselectedindex="true"
+	                  tabscrolling="true"
+	                  showcommentcolumn="false"
+	                  onsearchcomplete="this.selectMatchingResult();"
+			              onkeypress="gMRRefToolbar.mMRObject.search_key_press(event);"
+	          >
+	      </textbox>
+			  <toolbarbutton id="mailru_search_button" class="mailru_no_icon_button" flex="0" label="&overlay.toolbar.search.btn;" tooltiptext="&overlay.toolbar.search.btn.hint;" oncommand="gMRRefToolbar.mMRObject.mSearchCtrl.mSearchBox.doSearch(event,false);"/>
+        <vbox id="mailru_resizesplitter" tooltiptext="&overlay.toolbar.search.splitter;"/>
+		  </toolbaritem>
+
+      <hbox id="mailru_search_tools_box">
+        <toolbarbutton id="mailru_zoom_btn" type="menu" class="mailru_no_label_button" label="&overlay.toolbar.zoom.btn;" tooltiptext="&overlay.toolbar.zoom.btn.hint;" onclick="gMRRefToolbar.mMRObject.zoom_btn_press(event)">
+          <menupopup>
+            <menuitem oncommand="gMRRefToolbar.mMRObject.zoomPage(0.50)">
+              <label class="mailru_zoom_verysmall">&overlay.toolbar.zoom.verysmall;</label>
+            </menuitem>
+            <menuitem oncommand="gMRRefToolbar.mMRObject.zoomPage(0.75)">
+              <label class="mailru_zoom_small">&overlay.toolbar.zoom.small;</label>
+            </menuitem>
+            <menuseparator/>
+            <menuitem oncommand="gMRRefToolbar.mMRObject.zoomPage(1)">
+              <label class="mailru_zoom_normal">&overlay.toolbar.zoom.normal;</label>
+            </menuitem>
+            <menuseparator/>
+            <menuitem oncommand="gMRRefToolbar.mMRObject.zoomPage(1.25)">
+              <label class="mailru_zoom_big">&overlay.toolbar.zoom.big;</label>
+            </menuitem>
+            <menuitem oncommand="gMRRefToolbar.mMRObject.zoomPage(1.5)">    
+              <label class="mailru_zoom_verybig">&overlay.toolbar.zoom.verybig;</label>
+            </menuitem>
+            <menuitem oncommand="gMRRefToolbar.mMRObject.zoomPage(2)">
+              <label class="mailru_zoom_giant">&overlay.toolbar.zoom.giant;</label>
+            </menuitem>
+          </menupopup>
+        </toolbarbutton>
+        <toolbarbutton id="mailru_hilight_btn" class="mailru_no_label_button" module="mail.ru" label="&overlay.toolbar.hilight.btn;" tooltiptext="&overlay.toolbar.hilight.btn.hint;" onclick="gMRRefToolbar.mMRObject.hilight_btn_press(event)" />
+        <toolbarbutton id="mailru_entry_btn" class="mailru_no_label_button" module="mail.ru" label="&overlay.toolbar.entry.btn;" tooltiptext="&overlay.toolbar.entry.btn.hint;" onclick="gMRRefToolbar.mMRObject.entry_btn_press(event)" />
+        <toolbarseparator id="mailru_search_tools_sep"/>
+        <toolbaritem id="mailru_mail_btn" class="informer_button" module="mail.ru" flex="0"  label="&overlay.toolbar.mail.btn;" oncommand="gMRRefToolbar.mMRObject.informer_navigate_site(event)" />
+        <toolbaritem id="mailru_odkl_btn" class="informer_button" module="mail.ru" flex="0"  label="&overlay.toolbar.odkl.btn;" oncommand="gMRRefToolbar.mMRObject.informer_navigate_site(event)" />
+        <toolbaritem id="mailru_my_btn" class="informer_button" module="mail.ru" flex="0"  label="&overlay.toolbar.my.btn;" oncommand="gMRRefToolbar.mMRObject.informer_navigate_site(event)" />
+        <toolbarseparator id="mailru_inforemers_sep"/>
+      </hbox>
+      <hbox id="chevron_box" module="mail.ru" flex="1" class="chevron_box">
+        <hbox id="mailru_fastlink_box"/>
+      </hbox>
+		
+      <toolbaritem id="mailru_vote_btn" class="informer_button" module="mail.ru" flex="0" label="&overlay.toolbar.vote.btn;" oncommand="gMRRefToolbar.mMRObject.ajaxVote.pressButtonVote(event)" />
+      <toolbaritem id="mailru_music_btn" class="informer_button" module="mail.ru" flex="0"  label="&overlay.toolbar.music.btn;" image="chrome://mail.ru.toolbar/skin/stop.gif" onclick="gMRRefToolbar.mMRObject.mail_show_music(event)" />
+      <toolbaritem id="mailru_money_btn" class="informer_button" module="mail.ru" flex="0"  label="&overlay.toolbar.money.btn;" oncommand="gMRRefToolbar.mMRObject.informer_navigate_site(event)" />
+      <hbox id="mailru_currency_box"/>
+		  <toolbaritem id="mailru_weather_btn" class="informer_button" module="mail.ru" flex="0"  label="&overlay.toolbar.weather.btn;" oncommand="gMRRefToolbar.mMRObject.informer_navigate_site(event)" />
+      <toolbaritem id="mailru_maps_btn" class="informer_button" module="mail.ru" flex="0"  label="&overlay.toolbar.maps.btn;" oncommand="gMRRefToolbar.mMRObject.informer_navigate_site(event)" />
+      <toolbaritem id="mailru_2gis_btn" class="informer_button" module="mail.ru" flex="0"  label="&overlay.toolbar.2gis.btn;" oncommand="gMRRefToolbar.mMRObject.informer_navigate_site(event)" />
+      <toolbarseparator id="sep3"/>
+		  <toolbarbutton id="mailru_settings_btn" class="mailru_no_label_button" flex="0" label="&overlay.toolbar.settings.btn;" tooltiptext="&overlay.toolbar.settings.btn.hint;" oncommand="gMRRefToolbar.mMRObject.settings_dialog(event)" />
+	  </toolbar>
+	</toolbox>
+</overlay>

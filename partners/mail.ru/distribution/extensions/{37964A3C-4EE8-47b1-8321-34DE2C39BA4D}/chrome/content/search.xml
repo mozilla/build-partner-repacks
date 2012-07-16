@@ -1,0 +1,757 @@
+<?xml version="1.0"?>
+<!DOCTYPE bindings [
+  <!ENTITY % globalDTD SYSTEM "chrome://global/locale/global.dtd"> %globalDTD;
+]>
+
+<bindings id="mailru_bindings_search"
+	xmlns="http://www.mozilla.org/xbl"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:xbl="http://www.mozilla.org/xbl">
+
+ 	<binding id="mailru-search-box" extends="chrome://global/content/bindings/autocomplete.xml#autocomplete">
+    <content>
+      <xul:hbox class="autocomplete-textbox-container" flex="1" xbl:inherits="focused">
+        <children includes="image|deck|stack|box">
+          <xul:image class="autocomplete-icon" allowevents="true"/>
+        </children>
+
+        <xul:hbox anonid="textbox-input-box" class="textbox-input-box" flex="1" xbl:inherits="tooltiptext=inputtooltiptext">
+          <xul:button
+            class="mailru-search-engine-btn"
+            anonid="search-engine"
+    			/>
+          <children/>
+          <html:input 
+            anonid="input"
+            class="autocomplete-textbox textbox-input"
+            flex="1"
+            allowevents="true"
+            xbl:inherits="tooltiptext=inputtooltiptext,onfocus,onblur,value,type,maxlength,disabled,size,readonly"
+           />
+        </xul:hbox>
+        <children includes="hbox"/>
+      </xul:hbox>
+
+      <xul:dropmarker anonid="historydropmarker" class="autocomplete-history-dropmarker"
+                      allowevents="true"
+                      xbl:inherits="open,enablehistory,parentfocused=focused"/>
+
+      <xul:popupset anonid="popupset" class="autocomplete-result-popupset">
+        <xul:menupopup anonid="mailru-search-engines-popup" position="after_start" />
+      </xul:popupset>
+    </content>
+    <implementation>
+			<field name="mSearchBox">null</field>
+			<field name="mIgnoreClick">false</field>
+			<field name="mAltKey">false</field>
+			<field name="mDragDrop">null</field>
+			<field name="mSuggest">null</field>
+
+			<property name="value">
+				<getter><![CDATA[
+					  return this.inputField.value;
+				]]></getter>
+				<setter>
+              <![CDATA[
+					  this.inputField.value = val;
+					  this.mSearchBox.onTextChanged();
+					  this.toolbarObject.eventRegistrar.fire("searchbox-textchange", val);
+					  return val;
+				]]></setter>
+			</property>
+			<property name="textBox">
+				<getter><![CDATA[
+					  return this;
+				]]></getter>
+			</property>
+			<constructor>
+          <![CDATA[
+
+			]]></constructor>
+			<destructor><![CDATA[
+				this.mSearchBox.shutdown();
+				this.mSearchBox = null;
+
+
+				this.mDragDrop = null;
+				this.mSuggest = null;
+
+				this.mController = null;
+				this.mSearchNames = null;
+				this.popup = null;
+				this.mInput = null;
+			]]></destructor>
+
+			<method name="selectMatchingResult">
+				<body><![CDATA[
+					G_Debug("selectMatchingResult", "enter");
+					  var textBox = this.textBox;
+					  var controller = textBox.mController;
+					  var searchString = textBox.textValue;
+					  for (var index = 0; index != controller.matchCount; index++) 
+					  {
+						  if (searchString == controller.getValueAt(index)) 
+						  {
+						    this.mSearchBox.lockSearchParam = true;
+						    textBox.popup.selectedIndex = index;
+						    return;
+						  }
+					  }
+				]]></body>
+			</method>
+			<method name="onTextEntered">
+				<body>
+          <![CDATA[
+					  this.mSuggest.onTextEntered(this.mAltKey, this.mouseButton);
+					  this.mAltKey = false;
+				]]></body>
+			</method>
+			<method name="onTextReverted">
+				<body><![CDATA[
+					  this.mSuggest.onTextReverted();
+				]]></body>
+			</method>
+			<method name="openPopup">
+				<body><![CDATA[
+					  //var searchBox = this.parentNode;
+					  var searchBox = this;
+
+					  var x = searchBox.boxObject.screenX;
+					  var y = searchBox.boxObject.screenY + searchBox.boxObject.height;
+					this.mSearchBox.getSearchText_();
+				  this.maxRows = 10;
+					  // make sure the popup is not too narrow
+					  var w = Math.max(searchBox.boxObject.width,
+									   searchBox.boxObject.height * 10);
+					  this.popup.showCommentColumn = true;
+					  // store searchBox for rtl size calculations
+					  this.popup.searchBox = searchBox;
+					  this.popup.openPopup(this, x, y, w);
+					  return true;
+				]]></body>
+			</method>
+			<method name="closePopup">
+				<body><![CDATA[
+					  this.popup.closePopup();
+					  this.popup.showCommentColumn = false;
+				]]></body>
+			</method>
+			<method name="build_recursive_menu">
+				<parameter name="xml_node"/>
+				<parameter name="popup_menu"/>
+				<body><![CDATA[
+					const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+					for (var i = xml_node.firstChild; i != null; i = i.nextSibling)
+					{
+						if (i.nodeType != i.ELEMENT_NODE) 
+						{
+							continue;
+						}
+						if (i.nodeName.toLowerCase() == "engines")
+						{
+							var new_menu = document.createElementNS(XUL_NS, "menu");
+							if (i.hasAttribute("label"))
+							{ 
+								new_menu.setAttribute("label", i.getAttribute("label"));
+							}
+							if (i.hasAttribute("hint"))
+							{
+								new_menu.setAttribute("tooltiptext", i.getAttribute("hint"));
+							}
+							if (i.hasAttribute("cue"))
+							{
+								new_menu.setAttribute("cue", i.getAttribute("cue"));
+							}
+							if (i.hasAttribute("img"))
+							{
+								new_menu.setAttribute("class", "menu-iconic");
+								new_menu.setAttribute("image", i.getAttribute("img"));
+							}
+							var new_popup = document.createElementNS(XUL_NS, "menupopup");
+							new_menu.appendChild(new_popup);
+							
+							this.build_recursive_menu(i, new_popup);
+							popup_menu.appendChild(new_menu);
+	
+						}
+						else if (i.nodeName.toLowerCase() == "engine" && /^http:\/\/.*\.mail\.ru\//.test(i.getAttribute("url")))
+						{
+							var menu_item = document.createElementNS(XUL_NS, "menuitem");
+							menu_item.setAttribute("label", i.textContent);
+							if (i.hasAttribute("id")) menu_item.setAttribute("engine_id", i.getAttribute("id"));
+							if (i.hasAttribute("hint")) menu_item.setAttribute("tooltiptext", i.getAttribute("hint"));
+							if (i.hasAttribute("cue")) menu_item.setAttribute("cue", i.getAttribute("cue"));
+							if (i.hasAttribute("img"))
+							{
+								menu_item.setAttribute("class", "menuitem-iconic");
+								menu_item.setAttribute("image", i.getAttribute("img"));
+							}
+	
+							if (i.hasAttribute("url")) menu_item.setAttribute("url", i.getAttribute("url"));
+							if (i.hasAttribute("url_suggest")) menu_item.setAttribute("url_suggest", i.getAttribute("url_suggest"));
+							if (i.hasAttribute("query")) menu_item.setAttribute("query", i.getAttribute("query"));
+							if (i.hasAttribute("charset")) menu_item.setAttribute("charset", i.getAttribute("charset"));
+							if (i.hasAttribute("onsite")) menu_item.setAttribute("onsite", i.getAttribute("onsite"));
+	
+							var localThis = this;
+							menu_item.setAttribute("oncommand", "var parent = this.parentNode; while (parent.getAttribute('id') != 'mailru_search_bar') {parent = parent.parentNode}; parent.change_search_mode(event);");
+							popup_menu.appendChild(menu_item);
+	
+						}
+						else if (i.nodeName.toLowerCase() == 'separator')
+						{
+							var menu_separator = document.createElementNS(XUL_NS, "menuseparator");
+							popup_menu.appendChild(menu_separator);
+						}
+					}
+	
+				]]></body>
+			</method>
+			<method name="change_search_mode">
+				<parameter name="event"/>
+				<body><![CDATA[
+					var menu_item = event.currentTarget;
+					this.apply_search_mode(menu_item);
+				]]></body>
+			</method>
+			<method name="apply_search_mode">
+				<parameter name="menu_item"/>
+				<body>
+    <![CDATA[
+    G_Debug("search mode", menu_item.getAttribute('image'));
+					this.mSearchBox.searchService_.setSearchEngine(
+						menu_item.getAttribute("engine_id"),
+						menu_item.getAttribute("url"),
+						menu_item.getAttribute("url_suggest"),
+						menu_item.getAttribute("query"),
+						menu_item.getAttribute("charset"),
+						menu_item.getAttribute("cue")
+					);
+					this.mSearchBox.updateCue();
+		
+					var localeService = Components.classes["@mozilla.org/intl/nslocaleservice;1"].getService(Components.interfaces.nsILocaleService);
+					var stringBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
+					var bundleURL = this.mChromeBase + ".toolbar/locale/mail.ru.toolbar.properties";
+					var bundle = stringBundleService.createBundle(bundleURL, localeService.getApplicationLocale());
+	
+					var new_search_edit_hint = bundle.GetStringFromName("overlay.toolbar.search.edit.hint") + ' ' + menu_item.getAttribute("tooltiptext");
+	
+					var search_field = document.getAnonymousElementByAttribute(this, "id", "mailru-search-field");
+					if (search_field != null)
+					{
+						search_field.setAttribute("tooltiptext", new_search_edit_hint);
+					}
+	
+					var select_engine_button = document.getAnonymousElementByAttribute(this, "anonid", "search-engine");
+					if (select_engine_button != null)
+					{
+						select_engine_button.setAttribute('tooltiptext', new_search_edit_hint);
+					}
+					var select_engine = document.getAnonymousElementByAttribute(this, "anonid", "search-engine");
+					if (select_engine != null)
+					{
+						select_engine.image = menu_item.getAttribute('image');
+					}
+
+//					this.mSearchBox.searchService_.nID = menu_item.getAttribute("engine_id");
+//					if (this.mSearchBox.searchService_.nID != '11')
+//					{
+//						this.apply_browser_load((window.getBrowser().webNavigation.currentURI != null) ? window.getBrowser().webNavigation.currentURI.spec : '');
+//					}
+	
+					var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+					try 
+					{
+						prefs.setCharPref("mail.ru.toolbar.search.engine", this.mSearchBox.searchService_.nID);
+					}
+					catch (e) {}
+	
+				]]></body>
+			</method>
+			<method name="display_search_engines_menu">
+				<body><![CDATA[
+					var button = document.getAnonymousElementByAttribute(this, "anonid", "search-engine");
+					if (button)
+					{
+						button.click();
+					}
+					//TODO: check
+					document.getAnonymousElementByAttribute(this, "id", "mailru-search-field").focus();
+				]]></body>
+			</method>
+      <method name="initParent">
+        <parameter name="toolbarObject"/>
+        <parameter name="popupID"/>
+        <body>
+          <![CDATA[
+            this.toolbarObject = toolbarObject;
+
+            this.mChromeBase = this.toolbarObject.appContext.MRChromeBase;
+				    this.mSearchBox = new this.toolbarObject.appContext.MRSearchCtrlOverlay(this,window);
+
+				    this.maxLength = 256;
+            this.mouseButton = 0;
+				    // Add drag-and-drop event observer.
+    /*				var flavours = new FlavourSet();
+				    // Support text/html first because text/unicode is a little broken.
+				    // For example, if the dragged/dropped text contains a link, text/
+				    // unicode will only return the url of the link.  text/html will
+				    // return all of the dragged text, including the html.
+				    if (this.toolbarObject.languageCode != 'ru') {
+				      // html drag/drop is broken in ru, it sends escaped chars
+				      flavours.appendFlavour("text/html");
+				    }
+				    flavours.appendFlavour("text/unicode");
+
+				    this.mDragDrop = new this.toolbarObject.appContext.MRSearchObserver(this, flavours);
+    */
+            this.mSuggest = new this.toolbarObject.appContext.MRSuggest(this);
+				    try
+				    {
+					    if (!prefs.getBoolPref("mail.ru.toolbar.search.engine.popular_queries"))
+					    {
+						    this.disablepopular = true;
+					    } else
+					    {
+						    this.disablepopular = false;
+					    }
+    	
+				    } catch (e)
+				    {
+					    this.disablepopular = false;
+				    }
+
+				    // load engines menu
+            G_Debug(this.toolbarObject, "init search_popup_menu ++++++++++++++++++++++++:" + popupID);
+				    var engineButton = document.getAnonymousElementByAttribute(this, "anonid", "search-engine");
+				    var search_popup_menu = document.getAnonymousElementByAttribute(this, "anonid", "mailru-search-engines-popup");
+            engineButton.setAttribute("popup", popupID);
+            search_popup_menu.id = popupID;
+            
+    	
+				    // fill search button menu
+				    var search_menu_xml = new XMLHttpRequest();
+				    search_menu_xml.open("GET", this.toolbarObject.informersURL + "mail.ru.search.xml", false);
+				    search_menu_xml.send(null);
+    	
+				    if (search_menu_xml.responseXML != null){
+                                        this.build_recursive_menu(search_menu_xml.responseXML.firstChild, search_popup_menu);
+                                    }
+					    
+    	
+				    var items = search_popup_menu.getElementsByTagName("menuitem");
+				    for (var i = 0; i < items.length; i++)
+				    {
+					    if (
+						    items[i].hasAttribute("engine_id") 
+						    && (
+							    items[i].getAttribute("engine_id") == this.mSearchBox.searchService_.nID
+						    )
+					    )
+					    {
+						    this.apply_search_mode(items[i]);
+						    break;
+					    }
+				    }
+			    ]]>
+        </body>
+      </method>
+
+    </implementation>
+
+		<handlers>
+			<handler event="mousedown" phase="capturing"><![CDATA[
+				this.mSearchBox.onUserAction(true);
+				var id = event.originalTarget.getAttribute("anonid");
+				//if ("historydropmarker" == id) { <-- doesn't work on Mac and Linux
+				//but on all platforms anonid is null when clicked in the text box:
+				if (
+					id != null
+					&& id!="search-engine"
+					&& event.originalTarget.nodeName!="menuitem"
+				) 
+				{
+					this.textBox.toggleHistoryPopup();
+					event.preventDefault();
+				}
+			]]></handler>
+
+			<handler event="dragdrop" phase="capturing"><![CDATA[
+				nsDragAndDrop.drop(event, this.mDragDrop);
+			]]></handler>
+			<handler event="input">
+          <![CDATA[
+				this.mSearchBox.onTextChanged();
+				this.mSuggest.onInput(this);
+				this.toolbarObject.eventRegistrar.fire("searchbox-textchange",
+													 this.inputField.value);
+			]]></handler>
+			<handler event="mousedown"><![CDATA[
+				if (this.hasAttribute("focused")) {
+				  this.mIgnoreClick = true;
+				} else {
+				  this.mIgnoreClick = false;
+				  // Select the text in the search box.
+				  this.inputField.setSelectionRange(0, 0);
+				}
+			]]></handler>
+			<handler event="keydown"><![CDATA[
+				if (event.keyCode == Components.interfaces.nsIDOMKeyEvent.DOM_VK_ALT) {
+				  this.mAltKey = true;
+				}
+				this.mouseButton = 0;
+			]]></handler>
+			<handler event="keyup"><![CDATA[
+				if (event.keyCode == Components.interfaces.nsIDOMKeyEvent.DOM_VK_ALT) {
+				  this.mAltKey = false;
+				}
+			]]></handler>
+			<handler event="click"><![CDATA[
+				var field = this.inputField;
+				if (!this.mIgnoreClick &&
+					(!field.selectionStart || !field.selectionEnd ||
+					 field.selectionStart == field.selectionEnd)) {
+				  this.select();
+				}
+			]]></handler>
+      
+		</handlers>
+
+	</binding>
+	<binding id="sputnik-suggest-popup" extends="chrome://global/content/bindings/autocomplete.xml#autocomplete-result-popup">
+		<content>
+			<xul:tree anonid="tree"
+				class="autocomplete-tree plain"
+				style="direction: &locale.dir;"
+				hidecolumnpicker="true"
+				flex="1">
+				<xul:treecols anonid="treecols">
+					<xul:treecol id="treecolAutoCompleteValue" class="autocomplete-treecol" flex="1"/>
+				</xul:treecols>
+				<xul:treechildren class="autocomplete-treebody"/>
+			</xul:tree>
+			<xul:hbox anonid="clearline"
+				class="SputnikClearHistoryLine"
+				align="end"
+				style="direction: &locale.dir;"
+				allowevents="true">
+				<xul:spacer flex="1" />
+				<xul:label anonid="clear-hist-link"
+					class="SputnikClearHistoryText text-link"
+					xbl:inherits="value=clearlabel,tooltiptext=cleartooltiptext"
+					onmousedown="return parentNode.parentNode.onClearHistory()" />
+				<xul:image class="SputnikSuggestResizer"
+					onmousedown="return parentNode.parentNode.onResizerMouseDown(event)"/>
+			</xul:hbox>
+		</content>
+
+		<implementation>
+			<field name="lastSelectedIndex">-1</field>
+
+			<field name="clearLine">
+        document.getAnonymousElementByAttribute(this, "anonid", "clearline");
+			</field>
+			<field name="clearLink">
+        document.getAnonymousElementByAttribute(this, "anonid", "clear-hist-link");
+			</field>
+			<property name="maxRows">
+				<getter><![CDATA[
+					  return this.mMaxRows || (this.mInput && this.mInput.maxRows) || 6;
+				]]></getter>
+				<setter><![CDATA[
+					  this.mMaxRows = val;
+				]]></setter>
+			</property>
+			<property name="selectedIndex"
+				onget="return this.tree.currentIndex;">
+				<setter>
+              <![CDATA[
+					// Cache the last selected value (used by suggest)
+					if (this.tree.currentIndex != -1)
+					{
+						this.lastSelectedIndex = this.tree.currentIndex;
+						if(!this.mSearchBox.lockSearchParam)
+						{
+					 		this.mSearchBox.searchService_.sParam = "fr=ffspt1";
+					 	}
+					  	this.mSearchBox.lockSearchParam = false;
+					
+					}
+
+					  // Stuff copied from parent binding.
+					  if (this.tree.view) 
+					  { //it's sometimes null on FF3
+						this.tree.view.selection.select(val);
+					  }
+					  if (this.tree.treeBoxObject.height > 0)
+						this.tree.treeBoxObject.ensureRowIsVisible(val < 0 ? 0 : val);
+					  // Fire select event on xul:tree so that accessibility API
+					  // support layer can fire appropriate accessibility events.
+					  var event = document.createEvent('Events');
+					  event.initEvent("select", true, true);
+					  this.tree.dispatchEvent(event);
+					  return val;
+				]]></setter>
+			</property>
+
+			<property name="showCommentColumn"
+				onget="return this.mShowCommentColumn;">
+				<setter><![CDATA[
+					  // add or remove the comment column
+					  if (!val && this.mShowCommentColumn) {
+						this.removeColumn("treecolAutoCompleteComment");
+					  } else if (val && !this.mShowCommentColumn) {
+						var col = this.addColumn({
+						  id: "treecolAutoCompleteComment",
+						  flex: 0,
+						  style: 'text-align: right; width: 9em;'
+						});
+					  }
+					  this.mShowCommentColumn = val;
+					  return val;
+				]]></setter> 
+			</property>
+
+			<constructor>
+        <![CDATA[
+				// For popup resizing
+				this.dragging = false;
+				var self = this;
+				this.mouseUpClosure = function(e) { return self.globalMouseUp(e); };
+				window.addEventListener("mouseup", this.mouseUpClosure, true);
+				this.mouseMoveClosure = function(e) { return self.globalMouseMove(e); };
+				window.addEventListener("mousemove", this.mouseMoveClosure, true);
+
+				// from parent
+				this.setAttribute("ignorekeys", "true");
+			]]></constructor>
+			<destructor><![CDATA[
+				window.removeEventListener("mouseup", this.mouseUpClosure, true);
+				window.removeEventListener("mousemove", this.mouseMoveClosure, true);
+				this.mSearchHistory = null;
+				this.mPrefs = null;
+			]]></destructor>
+			<method name="removeColumn">
+				<parameter name="aColId"/>
+				<body><![CDATA[
+					  var i, node;
+					  for (i = 0, node = null; node = this.treecols.childNodes[i]; ++i) {
+						if (node.id == aColId) {
+						  this.treecols.removeChild(node);
+						  return true;
+						}
+					  }
+					  return false;
+				]]></body>
+			</method>
+			<method name="openPopup">
+				<parameter name="aInput"/>
+				<parameter name="aX"/>
+				<parameter name="aY"/>
+				<parameter name="aWidth"/>
+				<body><![CDATA[
+					  // We hide the "Clear Search History" link if there's no history.
+					  this.showLink(!this.mSearchHistory.isEmpty());
+
+					  // Stuff below is mostly copied from parent binding.
+					  if (!this.mPopupOpen)
+					  {
+						this.mInput = aInput;
+						var treeView = aInput.controller.QueryInterface(Components.interfaces.nsITreeView)
+						this.view = treeView;
+						// Grab height/width from last session.
+						if (!this.width) 
+						{
+						  this.width = this.mPrefs.getPref("width", null);
+						}
+						if (!this.height) 
+						{
+						  this.height = this.mPrefs.getPref("height", null);
+						  if (this.height) {
+							// Adjust the height of the nsTree (scrollbar, etc)
+							// based on the height.
+							var treeAvailSpace = this.boxObject.height -
+												 this.clearLine.boxObject.height;
+							this.maxRows = Math.floor(treeAvailSpace /
+													  this.tree.treeBoxObject.rowHeight);
+						  }
+						}
+
+						this.invalidate();
+
+						this.showCommentColumn = this.mInput.showCommentColumn;
+
+						this.removeAttribute("hidden");
+
+						document.popupNode = null;
+						dump('deug: showPopup\n');
+						this.showPopup(document.documentElement, aX, aY, "popup", null, null);
+					  }
+				]]></body>
+			</method>
+			<method name="closePopup">
+				<body><![CDATA[
+					  if (this.mPopupOpen) 
+					  {
+//						this.setAttribute("hidden", "true");
+						this.hidePopup();
+						if (document.popupNode) 
+						{
+						  document.popupNode = null;
+						}
+
+						this.view = null;
+					  }
+				]]></body>
+			</method>
+			<method name="onPopupClick">
+				<parameter name="aEvent"/>
+				<body>
+              <![CDATA[
+					  if (! this.view) {
+						return;
+					  }
+					  this.mSearchBox.lockSearchParam = true;
+					  this.mSearchBox.searchService_.sParam = "fr=ffspt1";
+						var controller = this.view.QueryInterface(Ci.nsIAutoCompleteController);
+						controller.handleEnter(true);
+					  this.mSearchBox.lockSearchParam = false;
+				]]></body>
+			</method>
+
+			<method name="showLink">
+				<parameter name="aShow" />
+				<body><![CDATA[
+					if (!this.clearLink)
+					  return;
+
+					if (aShow) {
+					  this.clearLink.style.visibility = "visible";
+					  this.clearLink.style.cursor = "pointer";
+					} else {
+					  this.clearLink.style.visibility = "hidden";
+					  this.clearLink.style.cursor = "default";
+					}
+				]]></body>
+			</method>
+			<method name="onClearHistory">
+				<body><![CDATA[
+					  var obsSrv = Components.classes["@mozilla.org/observer-service;1"]
+								   .getService(Components.interfaces.nsIObserverService);
+					  obsSrv.notifyObservers(null, "MAILRU_SPUTNIK_CLEAR_HISTORY", null);
+
+					  this.showLink(false);
+
+					  // IE behavior: don't close popup, but clear history entries.  If
+					  // we return false, we don't close popup, but we need to clear the
+					  // autocomplete items also.
+					  this.closePopup();
+					  return true;
+				]]></body>
+			</method>
+
+			<method name="onResizerMouseDown">
+				<parameter name="event"/>
+				<body><![CDATA[
+					  this.dragging = true;
+					  this.downX = event.screenX;
+					  this.downY = event.screenY;
+					  this.origWidth = this.boxObject.width;
+					  this.origHeight = this.boxObject.height;
+					  return false;
+				]]></body>
+			</method>
+			<method name="globalMouseMove">
+				<parameter name="event"/>
+				<body><![CDATA[
+					  if (!this.dragging)
+						return;
+					  var diffX = event.screenX - this.downX;
+					  var diffY = event.screenY - this.downY;
+
+					  if ('rtl' != this.getAttribute("chromedir")) {
+						this.width = this.origWidth + diffX;
+					  } else {
+						this.width = this.origWidth - diffX;
+						// if width is less than min popup width, use min
+						this.width = Math.max(this.width, this.popupBoxObject.width);
+
+						// show popup on new location to move it, moveTo() seems
+						// to not work here
+						var box = this.searchBox.boxObject;
+						var x = box.screenX + box.width - this.width;
+						var y = box.screenY + box.height;
+						this.showPopup(document.documentElement,
+							x, y, "popup", null, null);
+					  }
+
+					  this.height = this.origHeight + diffY;
+
+					  // Adjust the tree control
+					  var treeAvailSpace = this.boxObject.height -
+										   this.clearLine.boxObject.height;
+					  this.maxRows = Math.floor(treeAvailSpace /
+												this.tree.treeBoxObject.rowHeight);
+//					  this.adjustHeight();
+				]]></body>
+			</method>
+			<method name="globalMouseUp">
+				<parameter name="event"/>
+				<body><![CDATA[
+					  if (this.dragging) {
+						// We could move back to document.persist now that the grey bar
+						// bug is fixed.
+						this.mPrefs.setPref("width", this.width);
+						this.mPrefs.setPref("height", this.height);
+					  }
+					  this.dragging = false;
+				]]></body>
+			</method>
+      <method name="initParent">
+        <parameter name="toolbarObject"/>
+        <body>
+          <![CDATA[
+            this.toolbarObject = toolbarObject;
+            this.mSearchBox = this.toolbarObject.mSearchCtrl.mSearchBox;
+				    this.mSearchHistory = this.toolbarObject.appContext.historyService;
+            this.mSearchHistory.loadHistory_();
+            
+				    this.isFirefox2 = this.toolbarObject.appContext.MRGeckoVersionRef.isFirefox2();
+				    this.mPrefs = new this.toolbarObject.appContext.G_Preferences("mail.ru.toolbar.suggest.");
+				]]>
+        </body>
+      </method>
+
+    </implementation>
+		<handlers>
+			<handler event="popupshowing"><![CDATA[
+			]]></handler>
+		</handlers>
+	</binding>
+	
+	<binding id="mailru-engines-btn">
+		<content>
+			<xul:image class="mailru-search-engine-img"/>
+			<xul:image class="mailru-search-engine-img-arrow" />
+		</content>
+    <implementation>
+      <property name="image">
+        <getter>
+          <![CDATA[
+            var img = document.getAnonymousElementByAttribute(this, "class", "mailru-search-engine-img");
+            return img;
+				]]>
+        </getter>
+        <setter>
+          <![CDATA[
+            var img = document.getAnonymousElementByAttribute(this, "class", "mailru-search-engine-img");
+            img.src = val;
+  				  return val;
+				]]>
+        </setter>
+      </property>
+    </implementation>
+	</binding>
+
+</bindings>

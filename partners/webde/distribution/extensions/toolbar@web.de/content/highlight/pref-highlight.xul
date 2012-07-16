@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/highlight/pref-highlight.dtd">
+  %thisDTD;
+]>
+<overlay id="united-pref-highlight-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript">
+    upref.highlight = {};
+    united.loadJS("chrome://unitedtb/content/highlight/pref-highlight.js", upref.highlight);
+  </script>
+
+  <tabpanel id="features-tabpanel">
+    <groupbox id="highlight-box"
+        pack="start"
+        >
+      <caption label="&pane.title;" />
+
+    <checkbox id="highlight-enableOnNewWindow"
+        preference="extensions.unitedinternet.highlight.enableOnNewWindow"
+        label="&enableOnNewWindow.checkbox.label;"
+        tooltiptext="&enableOnNewWindow.checkbox.tooltip;"
+        insertafter="search-webpageDoubleclick"
+        />
+    <hbox>
+      <label value="&color.label;"/>
+        <colorpicker preference="extensions.unitedinternet.highlight.color"
+                     id="highlight-color"
+                     onchange="this.value = this.color"
+                     type="button"/>
+      </hbox>
+    </groupbox>
+  </tabpanel>
+</overlay>

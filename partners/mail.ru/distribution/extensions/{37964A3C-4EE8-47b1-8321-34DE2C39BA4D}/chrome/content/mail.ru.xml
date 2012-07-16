@@ -1,0 +1,384 @@
+<?xml version="1.0"?>
+<!DOCTYPE bindings [
+  <!ENTITY % globalDTD SYSTEM "chrome://global/locale/global.dtd"> %globalDTD;
+]>
+
+<bindings id="mailru_bindings"
+	xmlns="http://www.mozilla.org/xbl"
+	xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:xbl="http://www.mozilla.org/xbl">
+
+	<binding id="mailru-search-resize">
+	<content>
+		<xul:vbox inherits="tooltiptext" />
+	</content>
+	<implementation>
+		<field name="dragging"/>
+		<field name="lastX"/>
+		<method name="initialize">
+      <parameter name="toolbarObject"/>
+			<body><![CDATA[
+        this.toolbarObject = toolbarObject;
+
+				var isResizeable = {'urlbar-container' : 1, 'personal-bookmarks' : 1};
+
+				var currentItem = this.parentNode;
+				var itemToResize = null;
+	
+				while (currentItem)
+				{
+					if (isResizeable[currentItem.id])
+					{
+						itemToResize = currentItem;
+						break;
+					}
+					currentItem = currentItem.nextSibling;
+				}
+
+	        	]]></body>
+		</method>
+		<method name="WindowMouseUp">
+			<parameter name="event"/>
+			<body>
+        <![CDATA[
+				if (!this.dragging)
+        {
+          return;
+        }
+				this.dragging = false;
+				if(this.parentNode && this.parentNode.parentNode)
+				{
+					if (this.parentNode.parentNode.id == 'mailru_main_toolbar') 
+					{
+					}
+				}
+   		  ]]>
+      </body>
+		</method>
+    <method name="WindowMouseMove">
+			<parameter name="event"/>
+			<body>
+          <![CDATA[
+				if (!this.dragging) return;
+				var xDiff = this.lastX - event.screenX;
+	
+				var computedStyle = document.defaultView.getComputedStyle(this.parentNode, '');
+				var computedWidth = parseInt(computedStyle["width"].replace('px', ''));
+				computedWidth -= xDiff;
+
+				this.parentNode.setAttribute('width', computedWidth);
+        this.toolbarObject.chevron.update();
+				this.lastX = event.screenX;
+			]]></body>
+		</method>
+		<constructor>
+		<![CDATA[
+			this.dragging = false;
+
+			var localThis = this;
+			var eventHandlerFunc = function handlerFunc(evt){ localThis.WindowMouseUp(evt); }
+			window.addEventListener('mouseup', eventHandlerFunc, true);
+			var eventHandlerFunc2 = function handlerFunc2(evt){ localThis.WindowMouseMove(evt); }
+			window.addEventListener('mousemove', eventHandlerFunc2, true);
+         
+		]]>
+		</constructor>
+	</implementation>
+	<handlers>
+		<handler event="mousedown" button="0">
+			<![CDATA[
+				this.dragging = true;
+				this.lastX = event.screenX;
+        event.stopPropagation();
+		        ]]>
+		</handler>
+	</handlers>
+	</binding>
+
+
+  <binding id="mailru-toolbarbutton" display="xul:button"
+           extends="chrome://global/content/bindings/button.xml#button-base">
+    <resources>
+      <stylesheet src="chrome://global/skin/toolbarbutton.css"/>
+    </resources>
+
+    <content>
+      <xul:image class="toolbarbutton-icon" xbl:inherits="validate,src=image,label" buttonPart="icon"/>
+      <children includes="observes|template|menupopup|panel|tooltip|label"/>
+    </content>
+
+    <implementation implements="nsIAccessibleProvider">
+      <property name="accessibleType" readonly="true">
+        <getter>
+          return Components.interfaces.nsIAccessibleProvider.XULToolbarButton;
+        </getter>
+      </property>
+      <property name="label">
+        <getter>
+          <![CDATA[
+					  return this.getAttribute("label");
+				]]>
+        </getter>
+        <setter>
+          <![CDATA[
+				  this.clearLabels();
+          if(val)
+          {
+				    this.addLabel(val);
+          }
+				  return val;
+				]]>
+        </setter>
+      </property>
+      <method name="clearLabels">
+        <body>
+          <![CDATA[
+          for( var nodeCurrent=this.firstChild; nodeCurrent; )
+          {
+            if(nodeCurrent.nodeName == "label")
+            {
+              var nodeRemove = nodeCurrent;
+              nodeCurrent = nodeCurrent.nextSibling;
+              this.removeChild(nodeRemove);
+            }
+            else
+            {
+              nodeCurrent = nodeCurrent.nextSibling;
+            }
+          }
+				]]>
+        </body>
+      </method>
+      <method name="addLabel">
+        <parameter name="text"/>
+        <body>
+          <![CDATA[
+					var elLabel=document.createElement("label");
+          elLabel.setAttribute("value", text.replace(/[\r\n\t]/gi, ""));
+          var result = this.appendChild(elLabel);
+          this.updateMargins();
+
+					return result;
+				]]>
+        </body>
+      </method>
+      <method name="updateMargins">
+        <body>
+          <![CDATA[
+          var elIcon = document.getAnonymousElementByAttribute(this, "buttonPart", "icon");
+          var marginLeft = "1px";
+          var marginRight = "1px";
+          elIcon.style.marginLeft = marginLeft;
+          elIcon.style.marginRight = marginRight;
+          var nLabelsCount=0;
+          var nodeLast = null;
+          for( var nodeCurrent=this.firstChild; nodeCurrent; nodeCurrent = nodeCurrent.nextSibling)
+          {
+            if(nodeCurrent.nodeName == "label")
+            {
+              if(nLabelsCount)
+              {
+                nodeCurrent.style.marginLeft = 0;              
+              }
+              else
+              {
+                nodeCurrent.style.marginLeft = marginLeft;              
+              }
+              nodeCurrent.style.marginRight = 0;
+              nodeLast = nodeCurrent;
+              ++nLabelsCount;
+            }
+          }
+          if(nodeLast)
+          {
+            nodeLast.style.marginRight = marginRight;
+          }
+				]]>
+        </body>
+      </method>
+      <method name="setNumber">
+        <parameter name="number"/>
+        <body>
+          <![CDATA[
+            if(!this.lastChild)
+            {
+              return;
+            }
+            G_Debug(this, "setNumber:" + number);
+            this.lastChild.setAttribute("value", number);
+				]]>
+        </body>
+      </method>
+    </implementation>
+  </binding>
+  <binding id="mailru-informer-button" etxtends="chrome://global/content/bindings/general.xml#basetext">
+    <content>
+      <xul:toolbarbutton class="mailru-button" xbl:inherits="accesskey,crop,toolbarmode,buttonstyle,module" informerPart="short"/>
+      <xul:toolbarbutton class="mailru-button" xbl:inherits="accesskey,crop,toolbarmode,buttonstyle,module" informerPart="full"/>
+    </content>
+    <implementation>
+      <field name="mShortButton">null</field>
+      <field name="mFullButton">null</field>
+      <field name="mShortWidth">null</field>
+      <field name="mFullWidth">null</field>
+      <field name="mURL">null</field>
+      <field name="mInfo">null</field>
+      <field name="informer_id">null</field>
+      <field name="display">1</field>
+      <constructor>
+        <![CDATA[
+		    ]]>
+      </constructor>
+      <property name="shortButton" readonly="true">
+        <getter>
+          <![CDATA[
+            if (!this.mShortButton)
+              this.mShortButton = document.getAnonymousElementByAttribute(this, "informerPart", "short");
+            return this.mShortButton;
+				]]>
+        </getter>
+      </property>
+      <property name="fullButton" readonly="true">
+        <getter>
+          <![CDATA[
+            if (!this.mFullButton)
+              this.mFullButton = document.getAnonymousElementByAttribute(this, "informerPart", "full");
+            return this.mFullButton;
+				]]>
+        </getter>
+      </property>
+      <property name="brickInfo">
+        <getter>
+          <![CDATA[
+					  return this.mInfo;
+				]]>
+        </getter>
+        <setter>
+          <![CDATA[
+					  this.mInfo = val;
+            this.informer_id = this.mInfo.id;
+            this.display = parseInt(this.mInfo.display);
+					  this.shortButton.image = this.mInfo.imageURL;
+ 					  this.fullButton.image = this.mInfo.imageURL
+            this.shortButton.clearLabels();
+            this.fullButton.clearLabels();
+            for(var i=0; i<this.mInfo.textAfter.length; ++i)
+            {
+              var textAfter = this.mInfo.textAfter[i];
+              var elLabel = this.fullButton.addLabel(textAfter.textFull);
+              if(textAfter.color && textAfter.color.length && textAfter.color!=0)
+              {
+                elLabel.style.color = "#" + textAfter.color;
+              }
+              if(textAfter.bold && (textAfter.bold == "1" || textAfter.bold == "true"))
+              {
+                elLabel.style.fontWeight = "bold";
+              }
+              
+              if(textAfter.textShort)
+              {
+                elLabel = this.shortButton.addLabel(textAfter.textShort);
+                if(textAfter.color && textAfter.color.length && textAfter.color!=0)
+                {
+                  elLabel.style.color = "#" + textAfter.color;
+                }
+                if(textAfter.bold && (textAfter.bold == "1" || textAfter.bold == "true"))
+                {
+                  elLabel.style.fontWeight = "bold";
+                }
+              }
+            }
+
+            if(this.toolbarObject)
+            {
+              this.toolbarObject.chevron.updateDelayed();
+            }
+				  return val;
+				]]>
+        </setter>
+      </property>
+      <property name="image">
+        <getter>
+          <![CDATA[
+					  return this.fullButton.image;
+				]]>
+        </getter>
+        <setter>
+          <![CDATA[
+				  this.shortButton.image = val;
+				  this.fullButton.image = val;
+				  return val;
+				]]>
+        </setter>
+      </property>
+      <property name="shortWidth" readonly="true">
+        <getter>
+          <![CDATA[
+            if(!this.display)
+            {
+              return 0;
+            }
+            return this.mShortWidth;
+				]]>
+        </getter>
+      </property>
+      <property name="fullWidth" readonly="true">
+        <getter>
+          <![CDATA[
+            if(!this.display)
+            {
+              return 0;
+            }
+            return this.mFullWidth;
+				]]>
+        </getter>
+      </property>
+
+      <method name="shortMode">
+        <parameter name="enable"/>
+        <body>
+          <![CDATA[
+           if(!this.shortButton.collapsed)
+           {
+            var width = element_width(this.mShortButton);
+            if(Math.abs(this.mShortWidth - width) > 5)
+            {
+              this.toolbarObject.chevron.updateDelayed();
+            }
+            this.mShortWidth= width;
+           }
+           if(!this.fullButton.collapsed)
+           {
+            var width = element_width(this.mFullButton);
+            if(Math.abs(this.mFullWidth - width) > 5)
+            {
+              this.toolbarObject.chevron.updateDelayed();
+            }
+            this.mFullWidth= element_width(this.mFullButton)
+           }
+           this.shortButton.collapsed = !enable || !this.display;
+           this.fullButton.collapsed = enable || !this.display;
+				]]>
+        </body>
+      </method>
+      <method name="initParent">
+        <parameter name="toolbarObject"/>
+        <body>
+          <![CDATA[
+            this.toolbarObject = toolbarObject;
+				]]>
+        </body>
+      </method>
+      <method name="setNumber">
+        <parameter name="number"/>
+        <body>
+          <![CDATA[
+            this.fullButton.setNumber(number)
+            this.shortButton.setNumber(number)
+				]]>
+        </body>
+      </method>
+
+    </implementation>
+  </binding>
+</bindings>

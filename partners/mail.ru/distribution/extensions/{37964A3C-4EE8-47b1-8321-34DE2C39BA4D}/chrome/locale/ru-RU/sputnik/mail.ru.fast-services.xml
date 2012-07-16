@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services title="mail.ru">
+	<!--<service id="my_world" url="http://my.mail.ru/" hint="Сообщество пользователей." img="chrome://mail.ru.toolbar/skin/services/my_world.png">Мой мир</service>-->
+	<service id="files" url="http://files.mail.ru/" hint="Сервис пересылки больших файлов." img="chrome://mail.ru.toolbar/skin/services/files.png">Файлы</service>
+  <service id="games" url="http://games.mail.ru/" hint="Счастье геймера." img="chrome://mail.ru.toolbar/skin/services/games.png">Игры</service>
+  <service id="blogs" url="http://blogs.mail.ru/" hint="Общение без границ." img="chrome://mail.ru.toolbar/skin/services/blogs.png">Блоги</service>
+	<service id="foto" url="http://foto.mail.ru/" hint="Персональные архивы цифровых фотографий." img="chrome://mail.ru.toolbar/skin/services/foto.png">Фото</service>
+	<service id="video" url="http://video.mail.ru/" hint="Тысячи видеороликов обо всем на свете." img="chrome://mail.ru.toolbar/skin/services/video.png">Видео</service>
+	<service id="answers" url="http://otvet.mail.ru/" hint="Коллективный разум." img="chrome://mail.ru.toolbar/skin/services/answers.png">Ответы</service>
+	<service id="love" url="http://love.mail.ru/" hint="Поиск друзей и спутников жизни." img="chrome://mail.ru.toolbar/skin/services/love.png">Знакомства</service>
+	<service id="afisha" url="http://afisha.mail.ru/" hint="Расписание кинотеатров, театров, клубов, отзывы, тв-программа." img="chrome://mail.ru.toolbar/skin/services/afisha.png">Афиша</service>
+	<service id="showbiz" url="http://showbiz.mail.ru/" hint="Прямая связь со «звездой»." img="chrome://mail.ru.toolbar/skin/services/showbiz.png">Шоубиз</service>
+	<service id="auto" url="http://auto.mail.ru/" hint="Энциклопедия автомобилей, новости и новинки авторынка." img="chrome://mail.ru.toolbar/skin/services/auto.png">Авто</service>
+	<service id="cards" url="http://cards.mail.ru/" hint="Виртуальные открытки на все случаи жизни." img="chrome://mail.ru.toolbar/skin/services/cards.png">Открытки</service>
+	<service id="weather" url="http://pogoda.mail.ru/" hint="Прогноз погоды в городах России и на мировых курортах." img="chrome://mail.ru.toolbar/skin/services/weather.png">Погода</service>
+	<service id="horoscope" url="http://horo.mail.ru/" hint="Гороскопы и прогнозы на каждый день." img="chrome://mail.ru.toolbar/skin/services/horo.png">Гороскопы</service>
+	<service id="travel" url="http://travel.mail.ru/" hint="Большой выбор предложений туристических агентств." img="chrome://mail.ru.toolbar/skin/services/travel.png">Путешествия</service>
+	<service id="tovar" url="http://torg.mail.ru/" hint="Система подбора товаров в интернет-магазинах." img="chrome://mail.ru.toolbar/skin/services/torg.png">Товары</service>
+	<service id="news" url="http://news.mail.ru/" hint="Важнейшие новости России и мира. Оперативно и круглосуточно." img="chrome://mail.ru.toolbar/skin/services/news.png">Новости</service>
+	<service id="soft" url="http://soft.mail.ru/" hint="Широкий спектр программ. Новости ПО, интервью с разработчиками." img="chrome://mail.ru.toolbar/skin/services/soft.png">Софт</service>
+	<service id="job" url="http://rabota.mail.ru/" hint="Крупнейший банк вакансий." img="chrome://mail.ru.toolbar/skin/services/rabota.png">Работа</service>
+	<service id="spam" url="http://content.mail.ru/" hint="E-mail рассылки на любые темы." img="chrome://mail.ru.toolbar/skin/services/content.png">Рассылки</service>
+	<service id="lady" url="http://lady.mail.ru/" hint="Все для женщин и о женщинах." img="chrome://mail.ru.toolbar/skin/services/lady.png">Леди</service>
+	<service id="hitech" url="http://hi-tech.mail.ru/" hint="Все о высоких технологиях: новости, каталог продуктов, обзоры." img="chrome://mail.ru.toolbar/skin/services/hi_tech.png">Hi-Tech</service>
+	<service id="deti" url="http://deti.mail.ru/" hint="Всё для семьи. Родителям и детям." img="chrome://mail.ru.toolbar/skin/services/deti.png">Дети</service>
+</services>

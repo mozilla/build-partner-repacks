@@ -1,0 +1,11 @@
+<!ENTITY pane.title "Allgemein">
+<!ENTITY region.title "Land">
+<!ENTITY features.title "Funktionen">
+
+<!-- Start -->
+<!ENTITY start.title "Start">
+<!ENTITY homepage.dropdown.label "Startseite">
+<!ENTITY newtab.label "&brand.name; Neuer Tab">
+<!ENTITY our-start-page.label "&brand.name; Homepage">
+<!ENTITY our-search-page.label "&brand.name; Suche">
+<!ENTITY browser-homepage.label "Browser-Einstellungen">

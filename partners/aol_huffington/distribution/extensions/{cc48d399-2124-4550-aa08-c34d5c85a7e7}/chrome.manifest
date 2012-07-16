@@ -1,0 +1,15 @@
+overlay  chrome://browser/content/browser.xul    chrome://huffposttoolbar/content/aoltoolbar.xul
+content    huffposttoolbar    jar:chrome/huffposttoolbar.jar!/content/
+skin    huffposttoolbar    classic/1.0    jar:chrome/huffposttoolbar.jar!/skin/
+locale    huffposttoolbar    en-US   jar:chrome/huffposttoolbar.jar!/locale/en-US/
+
+# new Firefox 4.0 binary XPCOM registration
+interfaces components/IMailUtil.xpt  
+binary-component components/MailUtil.dll 
+
+
+# new Firefox 4.0 javascript component registration
+# The {classID} here must match the classID in huffpostAddonObserver.js
+component {6ad09da4-f7ed-4ba2-80ff-7caad475f755} components/huffpostAddonObserver.js
+contract @toolbar.aol.com/huffpostaddonobserver;1 {6ad09da4-f7ed-4ba2-80ff-7caad475f755}
+category profile-after-change huffpostAddonObserver @toolbar.aol.com/huffpostaddonobserver;1

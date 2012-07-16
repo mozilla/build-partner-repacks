@@ -1,0 +1,22 @@
+<!ENTITY login.title "Anmeldung">
+<!ENTITY login.intro "Melden Sie sich mit Ihrer E-Mail-Adresse an">
+<!ENTITY login.brand.intro "Melden Sie sich mit Ihrer &brand.name; E-Mail-Adresse an">
+<!ENTITY setup.title "Konto hinzufügen">
+<!ENTITY setup.intro "Fügen Sie eine E-Mail-Adresse hinzu">
+<!ENTITY setup.brand.intro "Fügen Sie eine &brand.name; E-Mail-Adresse hinzu">
+<!ENTITY edit.title "Konto bearbeiten">
+<!ENTITY edit.intro "Bearbeiten Sie Ihre E-Mail-Adresse">
+
+<!ENTITY emailaddress.label "E-Mail-Adresse">
+<!ENTITY emailaddress.accesskey "E">
+<!ENTITY password.label "Passwort">
+<!ENTITY password.accesskey "P">
+<!ENTITY long-session.label "Angemeldet bleiben">
+<!ENTITY long-session.accesskey "b">
+
+<!ENTITY create-account.label "Jetzt bei &brand.name; registrieren!">
+<!ENTITY create-account.accesskey "r">
+<!ENTITY login.ok.button.label "Anmelden">
+<!ENTITY login.ok.button.accesskey "A">
+<!ENTITY save.ok.button.label "Speichern">
+<!ENTITY save.ok.button.accesskey "S">

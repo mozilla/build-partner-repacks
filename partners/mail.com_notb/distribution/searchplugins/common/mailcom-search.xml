@@ -1,0 +1,35 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/">
+<os:ShortName>mail.com search</os:ShortName>
+<os:Description>mail.com search</os:Description>
+<os:InputEncoding>ISO-8859-1</os:InputEncoding>
+<os:Image width="16" height="16">data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACiXCYh
+p2IpXahiKaWoYynhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACiXCYhp2IpXahiKaWo
+YynhqWQr/6lkK/+pZCv/qWQr/wAAAAAAAAAAAAAAAAAAAACiXCYhp2IpXahiKaWoYynhqWQr/6lk
+K/+pZCv/qWQr/6lkK/+pZCv/qWQr/6lkK/9/VSoGp2MpV6hiKaWoYynhqWQr/6lkK/+pZCv/qWQr
+/6lkK/+pZCv/qWQr/6lkK/+pZCv/qWQr/6lkK/+pZCv/qGMqoqlkK/+pZCv/qWQr/6lkK/+pZCv/
+qWQr/6lkK/+pZCv/qWQr/6lkK/+pZCv/qWQr/6lkK/+pZCv/qWQr/6hjKfmpZCv/y6J+/8uifv+p
+ZCv/qWQr/6lkK//Lon7/y6J+/6lkK/+pZCv/qWQr/8uifv/Lon7/qWQr/6lkK/+pZCv/qWQr////
+////////qWQr/6lkK/+pZCv///////////+pZCv/qWQr/6lkK////////////6lkK/+pZCv/qWQr
+/6lkK////////////6lkK/+pZCv/qWQr////////////qWQr/6lkK/+pZCv///////////+pZCv/
+qWQr/6lkK/+pZCv///////////+pZCv/qWQr/6lkK////////////6lkK/+pZCv/qWQr////////
+////qWQr/6lkK/+pZCv/qWQr////////////qWQr/6lkK/+pZCv///////////+pZCv/qWQr/6lk
+K////////////6lkK/+pZCv/qWQr/6lkK////////////7FzPv+pZCv/r285////////////sXM+
+/6lkK/+vbzn///////z59/+pZCv/qWQr/6lkK/+pZCv////////////u4db/z6mJ/+nWx///////
+/////+7h1v/PqYn/6dbH///////o1cX/qWQr/6lkK/+pZCv/qWQr////////////////////////
+////8OXb/+3g1P/////////////////48u3/uH9P/6lkK/+oYynzqWQr/6lkK//cwar/3MGq/9zB
+qv/bv6f/yZ55/6xqM/+raDD/yJx3/9q+pf/MpIH/sHE8/6lkK/+pZCv/qGMqrqlkK/+pZCv/qWQr
+/6lkK/+pZCv/qWQr/6lkK/+pZCv/qWQr/6lkK/+pZCv/qWQr/6lkK/+pZCv/qGIp7aNhKiqpZCv/
+qWQr/6lkK/+pZCv/qWQr/6lkK/+pZCv/qWQr/6lkK/+pZCv/qWQr/6lkK/+oYyrkqGIqqKBeJRsA
+AAAA//AAAP8AAADwAJQcAAAAAAAAdCAAAHRtAAAuLgAAAAAAAJUcAAAAAAAAlRwAAAAAAACVHAAA
+AAAAAJUcAAEAAA==</os:Image>
+<SearchForm>http://search.mail.com/search/webhp/</SearchForm>
+<os:Url type="text/html" method="GET" template="http://go.mail.com/br/moz_search_web/?su={searchTerms}">
+</os:Url>
+<os:Url type="application/x-suggestions+json" method="GET" template="http://search.mail.com/SuggestSearch/suggest_json/">
+    <Param name="su" value="{searchTerms}" />
+    <Param name="brand" value="mailcom" />
+    <Param name="mc" value="moz_splugin_ff@suche@ffox.suche@web"/>
+    <Param name="origin" value="moz_splugin_ff"/>
+</os:Url>
+</SearchPlugin>

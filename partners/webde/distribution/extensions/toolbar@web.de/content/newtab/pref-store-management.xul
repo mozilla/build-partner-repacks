@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/newtab/pref-store-management.dtd">
+  %thisDTD;
+]>
+<overlay id="united-pref-store-management-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript">
+    upref.storeman = {};
+    upref.storeman.editPSH = function()
+    {
+      const url = "chrome://unitedtb/content/newtab/store-management.xhtml?mode=psh";
+      //united.loadChromePage(url, "window");
+      window.open(url);
+    }
+  </script>
+
+  <groupbox id="search-box">
+
+    <hbox>
+      <button id="edit-psh"
+            type="link"
+            label="&edit-psh.label;"
+            accesskey="&edit-psh.accesskey;"
+            oncommand="upref.storeman.editPSH();"
+            />
+    </hbox>
+
+  </groupbox>
+</overlay>

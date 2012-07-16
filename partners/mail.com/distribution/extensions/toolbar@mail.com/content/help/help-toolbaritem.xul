@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://unitedtb/skin/help/help.css" type="text/css"?>
+
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/help/help.dtd">
+  %thisDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
+
+<overlay id="united-help-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
+  <script type="application/x-javascript">
+    united.help = {};
+    united.loadJS("chrome://unitedtb/content/help/help-toolbaritem.js", united.help);
+  </script>
+
+  <!-- Overlay for Firefox browser/content/browser.xul -->
+
+  <!-- add menu item to Firefox Help menu -->
+  <menupopup id="menu_HelpPopup">
+    <menu label="&brand.name;"
+        insertbefore="troubleShooting,releaseNotes,aboutSeparator,aboutName"
+        >
+      <menupopup id="united-help-submenu"
+          onpopupshowing="united.help.initMenus();"
+          >
+      </menupopup>
+    </menu>
+  </menupopup>
+
+    <menupopup id="united-pref-button-dropdown"
+        onpopupshowing="united.help.initMenus();"
+        >
+    </menupopup>
+
+
+</overlay>

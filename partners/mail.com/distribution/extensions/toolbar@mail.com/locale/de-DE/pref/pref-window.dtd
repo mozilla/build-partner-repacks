@@ -1,0 +1,5 @@
+<!ENTITY window.title "Einstellungen">
+<!ENTITY ok.label "Speichern">
+<!ENTITY ok.accesskey "s">
+<!ENTITY setdefault.label "Standard wiederherstellen">
+<!ENTITY setdefault.accesskey "w">

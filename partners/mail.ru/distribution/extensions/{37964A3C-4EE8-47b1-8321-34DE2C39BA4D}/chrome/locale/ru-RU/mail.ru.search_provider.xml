@@ -1,0 +1,12 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+<ShortName>mail.ru: Поиск в Интернете</ShortName>
+<Description>Найти в Интернете.</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16">data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9kFGgknIODbdu4AAAHiSURBVDjLpZI/aFNRFMZ/9yYxjUmbKP5LwYAgDgoOUpAgLrUg2EnB1cVVEBcxCI4uDqKLoyA6CTqJuOjkoIQqogWltaAYQ7WlSfvy3kveu59D2tCYqhTPer7vd79z7jH8pcJ3J6RgEQAFITa3m/SRF2a9xmxsPCmtfEdRBIAd2YdbqaPmIopibC5HZnzabAgI30xI/jwmVyR9+NlA339+UFH9BzafIjtZM/Z3gVbqmMyunrn96YzCqTGFU2MCyIxPG5tPEX9rDo4Qvp1QXJtl66k5A7BmkhfgWj7yAkiL7GTNNG6nldiZoC9BXJ9DTqy9rCjG5EoMHX9vbGEPruHh5lurSxXR16gfoKCNgjYAbmEGNT22HHhkAIaOvjSu6RPVvK7WF/L1ZwB2GNf0CF4dE4D3ZFRuyeGW1EugQP07aD0tKaotMXK+aQCW7xbkPB95wi0LeQ6A5F5L9MWRLNrBb2zcSgsgfzFchWTU+dghsd2Qv9wxAD8vJJQqQv5qbDYEyO/GLFxpG/5RfYJypapzpw9x9n4OO9xtJXYYbNbiFiLas11wqmQoXIv7L3HNfO/xB6oPH9CZuWkaN1LqfI57W0+OGrZdd4OpypWq7rz2Va5Uldp/SWym/ssM3TtYH3uzgF/OpgkgwyHx2gAAAABJRU5ErkJggg==</Image>
+<Url type="application/x-suggestions+json" method="GET" template="http://suggests.go.mail.ru/ff3?q={searchTerms}"/>
+<Url type="text/html" method="GET" template="http://go.mail.ru/search">
+  <Param name="q" value="{searchTerms}"/>
+  <Param name="fr" value="fftb"/>
+</Url>
+<SearchForm>http://www.mail.ru/</SearchForm>
+</SearchPlugin>

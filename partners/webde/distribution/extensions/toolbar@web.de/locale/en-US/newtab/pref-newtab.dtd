@@ -1,0 +1,8 @@
+<!ENTITY pane.title "New Tab">
+<!ENTITY viewmode.label "Show most visited pages as:">
+<!ENTITY as-text.label "List">
+<!ENTITY as-pics.label "Gallery">
+<!ENTITY as-text.accesskey "l">
+<!ENTITY as-pics.accesskey "g">
+<!ENTITY enabled.label "Activate &brand.name; 'New Tab' page">
+<!ENTITY focus.label "Set focus to search field">

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<spudata>
+<brick id="currency-chf" status="" href="http://news.mail.ru/currency.html?charcode=CHF" valid="10" refetch="9">
+	<image>chrome://mail.ru.toolbar/skin/currencies/chf_na.png</image>
+    <textover></textover>
+    <textafter></textafter>
+    <tooltip>
+		<![CDATA[<a msg="http://news.mail.ru/currency.html?charcode=CHF&sputnik=1">1 Швейцарский франк</a> -- курсы валют.]]>
+	</tooltip>
+</brick>
+</spudata>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<spudata>
+<brick id="probki" status="have-probki" href="http://maps.mail.ru/" valid="10" refetch="60">
+	<image>chrome://mail.ru.toolbar/skin/map.png</image>
+    <textover></textover>
+    <textafter>Пробки</textafter>
+    <tooltip><![CDATA[<a msg="http://maps.mail.ru">Карты@Mail.ru</a> -- карты России и всего мира,
+информация о пробках.]]></tooltip>
+</brick>
+</spudata>

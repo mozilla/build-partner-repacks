@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ * Not any newer versions of these licenses
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is the Beonex Mail Notifier
+ *
+ * The Initial Developer of the Original Code is
+ *  Ben Bucksch <ben.bucksch beonex.com>
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+-->
+
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/email/pref-login.dtd">
+  %thisDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
+<?xml-stylesheet href="chrome://unitedtb/skin/email/pref-login.css" type="text/css"?>
+<overlay id="united-pref-email-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <tabs id="tabs">
+    <tab id="email-tab"
+         label="&pane.title;"
+         position="1"
+         />
+  </tabs>
+  <tabpanels id="tabpanels">
+    <tabpanel id="email-tabpanel"
+        position="1"
+        orient="vertical"
+        >
+
+      <script type="application/x-javascript">
+        upref.login = {};
+        united.loadJS("chrome://unitedtb/content/email/pref-login.js",
+             upref.login);
+        upref.login.common = {};
+        united.loadJS("chrome://unitedtb/content/email/login-common.js",
+            upref.login.common);
+      </script>
+
+      <richlistbox id="accounts-list" flex="1">
+        <!-- https://bugzilla.mozilla.org/show_bug.cgi?id=118312#c41 -->
+        <listheader style="border: 0; padding: 0; -moz-appearance: none;">
+           <treecol label="&emailAddress.header;" flex="1" />
+           <treecol label="&storedLogin.header;" />
+        </listheader>
+      </richlistbox>
+      <hbox>
+        <button id="setup-account"
+              label="&setup-account.label;"
+              accesskey="&setup-account.accesskey;"
+              oncommand="upref.login.setup();"
+              />
+        <button id="remove-account"
+              label="&remove-account.label;"
+              accesskey="&remove-account.accesskey;"
+              oncommand="upref.login.remove();"
+              />
+      </hbox>
+      <!--hbox>
+        <button id="create-account"
+              label="&create-account.label;"
+              accesskey="&create-account.accesskey;"
+              oncommand="upref.login.common.onCreateAccount();"
+              type="link"
+              />
+      </hbox-->
+      <separator/>
+      <label value="&notifyHeader.label;"/>
+      <hbox>
+        <checkbox preference="extensions.unitedinternet.email.notification.sound.enabled"
+            label="&notifySound.label;"/>
+        <checkbox id="desktop-notification" preference="extensions.unitedinternet.email.notification.desktop.enabled"
+            label="&notifyAlert.label;"/>
+        <image id="growl" tooltiptext="&growl.tooltip;" hidden="true"/>
+      </hbox>
+
+    </tabpanel>
+  </tabpanels>
+</overlay>

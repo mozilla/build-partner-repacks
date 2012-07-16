@@ -1,0 +1,8 @@
+<!ENTITY pane.title "Neuer Tab">
+<!ENTITY viewmode.label "Zeige meistbesuchte Seiten als:">
+<!ENTITY as-text.label "Liste">
+<!ENTITY as-pics.label "Galerie">
+<!ENTITY as-text.accesskey "l">
+<!ENTITY as-pics.accesskey "g">
+<!ENTITY enabled.label "Seite 'Neuer Tab' von &brand.name; aktivieren">
+<!ENTITY focus.label "Setze Eingabe automatisch auf Suchfeld">

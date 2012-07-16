@@ -1,0 +1,10 @@
+.mailru-search-engine-btn
+{
+	-moz-binding: url("chrome://mail.ru.toolbar/content/search.xml#mailru-engines-btn") !important;
+}
+
+.mailrusearch
+{
+	min-width: 50px;
+	-moz-box-align: stretch;
+}

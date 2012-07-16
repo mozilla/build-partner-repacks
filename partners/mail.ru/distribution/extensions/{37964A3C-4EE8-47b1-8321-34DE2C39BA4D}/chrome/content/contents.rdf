@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:chrome="http://www.mozilla.org/rdf/chrome#">
+
+  <RDF:Seq about="urn:mozilla:package:root">
+    <RDF:li resource="urn:mozilla:package:mail.ru.toolbar"/>
+  </RDF:Seq>
+  
+  <RDF:Description about="urn:mozilla:package:mail.ru.toolbar"
+    chrome:extension="true" chrome:name="mail.ru.toolbar"/>
+  
+  <RDF:Seq about="urn:mozilla:overlays">
+    <RDF:li resource="chrome://browser/content/browser.xul"/>
+  </RDF:Seq>
+  
+  <RDF:Seq about="chrome://browser/content/browser.xul">
+    <RDF:li>chrome://mail.ru.toolbar/content/sputnik.toolbar.xul</RDF:li>
+  </RDF:Seq>
+  
+  <RDF:Description RDF:about="chrome://mozapps/content/extensions/extensions.xul#plugins-view"
+                   last-selected="urn:mozilla:item:DefaultPlugin.plugin" />
+
+</RDF:RDF>

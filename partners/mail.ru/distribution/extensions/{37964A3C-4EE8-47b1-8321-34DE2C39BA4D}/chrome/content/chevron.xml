@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE bindings [
+  <!ENTITY % globalDTD SYSTEM "chrome://global/locale/global.dtd"> %globalDTD;
+]>
+
+<bindings id="mailru-bindings-chevron"
+	xmlns="http://www.mozilla.org/xbl"
+	xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:xbl="http://www.mozilla.org/xbl">
+
+ 	<binding id="mailru-chevron">
+    <content>
+      <children/>
+    </content>
+    <implementation>
+			<field name="mSpring">null</field>
+			<field name="mChevronButton">null</field>
+      <field name="mMenu">null</field>
+
+      <constructor>
+        <![CDATA[
+			]]>
+      </constructor>
+      <destructor>
+        <![CDATA[
+        this.mSpring = null;
+        this.mChevronButton = null;
+        this.mMenu = null;
+			]]>
+      </destructor>
+      <method name="init">
+        <parameter name="toolbarObject"/>
+        <body>
+          <![CDATA[
+            this.toolbarObject = toolbarObject;
+            this.mMRObject = new this.toolbarObject.appContext.MRChevron(this);
+				    var elSpring=document.createElement('toolbarspring');
+				    this.mSpring = this.appendChild(elSpring);
+				    var elNewButton=document.createElement('toolbarbutton');
+				    elNewButton.setAttribute('class',"chevron");
+				    elNewButton.setAttribute('mousethrough','never');
+				    elNewButton.setAttribute('type','menu');
+				    elNewButton.setAttribute('pack','end');
+				    this.mChevronButton = this.appendChild(elNewButton);
+ 				    var elMenu = document.createElement('menupopup');
+				    this.mMenu = this.mChevronButton.appendChild(elMenu);
+          
+            this.mMRObject.rebuild_chevron();
+			      var localObject = this.mMRObject;
+			      var eventHandlerFunc = function handlerFunc(evt){ localObject.onMenuShow(evt); }
+            this.mMenu.addEventListener(
+              'popupshowing',
+              eventHandlerFunc,
+              false
+            );
+				]]>
+        </body>
+      </method>
+
+		</implementation>
+  </binding>
+</bindings>

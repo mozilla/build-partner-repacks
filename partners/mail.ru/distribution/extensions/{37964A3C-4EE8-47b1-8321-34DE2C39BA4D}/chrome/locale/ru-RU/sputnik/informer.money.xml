@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<spudata>
+<brick id="money" status="" href="http://mail.ru/" valid="10" refetch="60">
+	<image>chrome://mail.ru.toolbar/skin/money.gif</image>
+    <textover></textover>
+    <textafter>Деньги</textafter>
+    <tooltip><![CDATA[Деньги@Mail.Ru]]></tooltip>
+</brick>
+</spudata>

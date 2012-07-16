@@ -1,0 +1,7 @@
+<!ENTITY pane.title "Schaltflächen">
+<!ENTITY toolbarmode.label "MailCheck-Anzeige">
+<!ENTITY all.full.label "Text &amp; Icons">
+<!ENTITY all.icons.label "Nur Icons">
+<!ENTITY all.text-only.label "Nur Text">
+<!ENTITY list.title "Benutzerdefinierte Schaltflächen">
+<!ENTITY list.descr "Die ausgewählten Elemente werden in MailCheck angezeigt">

@@ -1,0 +1,2 @@
+function G_Debug() {
+}

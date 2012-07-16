@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<spudata>
+<brick id="currency-uah" status="" href="http://news.mail.ru/currency.html?charcode=UAH" valid="10" refetch="9">
+	<image>chrome://mail.ru.toolbar/skin/currencies/uah_na.png</image>
+    <textover></textover>
+    <textafter></textafter>
+    <tooltip>
+		<![CDATA[<a msg="http://news.mail.ru/currency.html?charcode=UAH&sputnik=1">10 Украинских гривен</a> -- курсы валют.]]>
+	</tooltip>
+</brick>
+</spudata>

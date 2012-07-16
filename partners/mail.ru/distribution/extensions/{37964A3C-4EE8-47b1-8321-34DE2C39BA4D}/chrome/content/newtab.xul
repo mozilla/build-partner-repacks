@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://browser/skin" type="text/css"?>
+<?xml-stylesheet href="chrome://browser/content/browser.css" type="text/css"?>
+<?xml-stylesheet href="chrome://navigator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://mail.ru.toolbar/skin/mail.ru.tabs.css" type="text/css"?>
+<!DOCTYPE window [
+<!ENTITY % windowDTD SYSTEM "chrome://speeddial/locale/window.dtd" >
+%windowDTD;
+<!ENTITY % globalDTD SYSTEM "chrome://global/locale/global.dtd">
+%globalDTD;  
+<!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd">
+%browserDTD;
+]>
+<xul:window xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	id="mailTabWindow"
+	disablefastfind="true"
+	style="-moz-appearance: none !important; display: block; background: #fff !important; height: 100%; width:100%;"
+	onload="thumbnail.init()" onclick="disabledSuggest(event)">
+
+
+	<xul:script type="application/x-javascript" src="chrome://global/content/nsDragAndDrop.js" defer="true"/>
+        <xul:script type="application/x-javascript" src="chrome://global/content/nsTransferable.js" defer="true"/>
+        <script type="application/x-javascript" src="chrome://mail.ru.lib/content/resizeImage.js"/>
+        <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/defaultValue.js"/>
+        <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/tabs_storage.js"/>
+        <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/tabs.js"/>
+        <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/search.js"/>
+        
+        <div class="visual-newtab">
+            <div class="header_line">
+                <div class="sputnik_c">
+                    <div class="bg_header">
+                        <div class="my">
+                            <img src="chrome://mail.ru.toolbar/skin/tabs/logoback155.png" alt="Поиск в интернете" />
+                            <a href="http://go.mail.ru" class="gogo" title="Перейти на go.mail.ru"></a>
+                        </div>
+                        <div class="search_sputnik">
+                            <table>
+                                <tr><td>
+                                    <input style="border:none; background:none" type="hidden" name="sgsig" id="sgsig" value=""/>
+                                    <input style="border:none; background:none" type="hidden" name="query" id="query" value=""/>
+                                        <div class="input">
+                                            <div class="input_l"></div>
+                                            <div class="input_c">
+                                                <input type="text" onkeyup="search_key_press(this,event)" value="" id="formQuery" autocomplete="off" />
+                                            </div>
+                                            <div class="input_r"></div>
+                                            <a id="queryClear" style="display:none;"></a>
+                                            <div id="fadeIn_txt" style="display: none;">Введите запрос</div>
+                                            <div class="go-form__sugg" id="suggest">
+                                                <div class="go-form__sugg__brd-overlay"></div>
+                                                    <div class="go-form__sugg__wrap">
+                                                        <div class="go-form__sugg__helpwrap" id="suggest_items">
+                                                        </div>
+                                                    </div>
+                                            </div>
+<!--                                            <div class="suggest" id="suggest"></div>-->
+                                        </div>
+                                    </td>
+                                    <td class="td_button"><div class="bg_but"><input type="submit" value="Найти" class="img_button" onclick="search()"/></div></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div><!--/sputnik_c-->
+            </div>
+            
+            <div class="bookmarks" id="bookmarks"></div>
+        </div>
+        
+        <div class="overlay" id="overlay" onclick="removeModal()"></div>
+        <div class="wrap" id="wrap"></div> 
+        <div id="mess"></div>
+        
+        <!--
+	<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+            <vbox hidden="false" height="0" id="mailTabLoaderSubBox">
+                    <iframe type="content" src="about:blank" name="donkey-browser" hidden="false" id="donkey-browser" height="0"/>
+            </vbox>
+        </overlay>
+        <window id="mailTabLoaderWin" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml"/>
+        -->
+        
+</xul:window>

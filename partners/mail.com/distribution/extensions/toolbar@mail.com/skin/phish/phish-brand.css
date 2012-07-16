@@ -1,0 +1,16 @@
+body { background: #E3EDFA; }
+#header { height: 90px; background: -moz-linear-gradient(#1c449b, #6b9ad6); }
+#header a { background: url(chrome://unitedtb/skin/brand/icon-big-white.png) no-repeat 0 0; width: 120px; height: 39px; margin: 23px 0 9px 23px; }
+#header .header-text{
+  margin-bottom: 15px;  margin-top: 15px;
+  color: white;
+  font-size: 40px;
+  font-stretch: condensed;
+}
+#main h2 { color: #1C449B; font-stretch: condensed; }
+#search-button {
+  border-color: #7d9259;
+  color: white;
+  /* <https://developer.mozilla.org/en/CSS/-moz-linear-gradient> */
+  background: -moz-linear-gradient(#a9c44f 10%, #558827 90%);
+}

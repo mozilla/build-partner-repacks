@@ -1,0 +1,11 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/">
+<os:ShortName>1&amp;1 Suche</os:ShortName>
+<os:Description>1&amp;1 Suche</os:Description>
+<os:InputEncoding>ISO-8859-1</os:InputEncoding>
+<os:Image width="16" height="16">data:image/x-icon;base64,R0lGODlhEAAQALMAAAoyjP///46hyr7I4HySwo2fyc7W6Etpq2yEup2t0StNmwAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAAQABAAAARMMMhJqwQ4a323x923XRNwSAdQXoIQAENRDED7di6QGAaB5biXImDIAF+1WyFA8B1/TNoggEiqkK6TYll9WqeBBM0r4iDLmRD6amlLIgA7</os:Image>
+<SearchForm>http://search.1und1.de/search/web/</SearchForm>
+<os:Url type="text/html" method="GET" template="http://go.1und1.de/br/moz_search_web/?su={searchTerms}">
+</os:Url>
+<os:Url type="application/x-suggestions+json" method="GET" template="http://suggestplugin.ui-portal.de/suggest_json/?su={searchTerms}&amp;brand=1und1&amp;origin=moz_splugin_ff">
+</os:Url>
+</SearchPlugin>

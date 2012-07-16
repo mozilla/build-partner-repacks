@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<bindings id="textboxEmbeddedBindings"
+          xmlns="http://www.mozilla.org/xbl"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:xbl="http://www.mozilla.org/xbl">
+
+  <!-- This textbox allows to place other XUL elements inside the box,
+         left and right of the text that the user enters.
+         This is similar to the toolkit autocomplete widget,
+         and uses a similar hack:
+         Elements before the text must be in a <box orientation="">,
+         elements after the text must be in a <hbox>. Yes, very "smart" (not).
+  -->
+  <binding id="embedded"
+           extends="chrome://global/content/bindings/textbox.xml#textbox">
+    <content>
+      <xul:hbox flex="1">
+        <children includes="box"/>
+
+        <xul:hbox class="textbox-input-box" flex="1" xbl:inherits="context,spellcheck">
+          <html:input class="textbox-input" flex="1" anonid="input"
+                      xbl:inherits="onfocus,onblur,value,type,maxlength,disabled,size,readonly,placeholder,tabindex,accesskey,noinitialfocus,mozactionhint"/>
+        </xul:hbox>
+        <children includes="hbox"/>
+      </xul:hbox>
+
+      <xul:popupset anonid="popupset" />
+
+      <children includes="toolbarbutton"/>
+    </content>
+
+    <implementation>
+      <field name="_inputField">null</field>
+
+      <property name="inputField" readonly="true">
+        <getter><![CDATA[
+          if (!this._inputField)
+            this._inputField = this.ownerDocument.getAnonymousElementByAttribute(this, "anonid", "input");
+          return this._inputField;
+        ]]></getter>
+      </property>
+    </implementation>
+
+  </binding>
+
+</bindings>

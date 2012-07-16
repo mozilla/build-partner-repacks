@@ -1,0 +1,40 @@
+#united-bookmark-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/bookmark-16.png");
+}
+#united-smartdrive-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/smartdrive-16.png");
+}
+#united-smartdrive-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/smartdrive-dropdown.png");
+}
+#united-notes-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/notes-16.png");
+}
+#united-logincenter-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/logincenter-16.png");
+}
+#united-addressbook-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/addressbook-16.png");
+}
+#united-addressbook-email-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/addressbook-dropdown.png");
+}
+#united-composeemail-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/compose-16.png");
+}
+#united-compose-email-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/compose-dropdown.png");
+}
+#united-start-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/start-16.png");
+}

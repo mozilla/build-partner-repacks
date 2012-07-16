@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- copied from="newtab/newtab-hookup.xul" -->
+<overlay id="united-tracking-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  
+  <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
+  <script type="application/x-javascript">
+    Components.utils.import("resource://unitedtb/tracking/aib.js", this);
+    Components.utils.import("resource://unitedtb/tracking/count404.js", this);
+    Components.utils.import("resource://unitedtb/tracking/countnewtab.js", this);
+    Components.utils.import("resource://unitedtb/tracking/modifyheader.js", this);
+    united.identifyMyselfToSite = {};
+    united.loadJS("chrome://unitedtb/content/tracking/identifyMyselfToSite.js",
+        united.identifyMyselfToSite);
+    united.sslErrorExit = {};
+    united.loadJS("chrome://unitedtb/content/tracking/sslErrorExit.js",
+        united.sslErrorExit);
+  </script>
+</overlay>
+<!-- /copied -->

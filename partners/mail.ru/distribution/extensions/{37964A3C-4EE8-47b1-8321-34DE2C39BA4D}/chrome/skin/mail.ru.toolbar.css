@@ -1,0 +1,362 @@
+#mailru_main_menu_btn { 
+	list-style-image: url("chrome://mail.ru.toolbar/skin/mailru_logo.gif"); 
+}
+toolbar[iconsize="small"] #mailru_main_menu_btn {
+	list-style-image: url("chrome://mail.ru.toolbar/skin/mailru_logo.gif");
+}
+
+.toolbar_highlighted_bright
+{
+    background-image: url("chrome://mail.ru.toolbar/skin/back.png");   
+    -moz-background-size: cover;   
+}
+
+.toolbar_highlighted_dark
+{
+    background-image: url("chrome://mail.ru.toolbar/skin/back_dark.png");   
+    -moz-background-size: cover;   
+}
+
+.toolbar_standart
+{
+    background-image: none;   
+    -moz-background-size: cover;   
+}
+
+#mailru_main_menu_btn
+{
+	min-width: 80px;
+}
+
+#mailru_weather_tooltip_city
+{
+	font-weight: bold;
+}
+
+#mailru_currency_tooltip_name
+{
+	font-weight: bold;
+}
+
+#mailru_currency_tooltip_image
+{
+	margin: 0px;
+	padding: 0px;
+}
+
+#mailru_currency_tooltip_sign
+{
+	margin: 2px 0px 0px 6px;
+}
+
+.icontext_button { -moz-box-orient: horizontal !important; }
+.icontext_button .toolbarbutton-text { margin-left: 1px !important; margin-right: 1px !important }
+.icontext_button .toolbarbutton-icon { margin-left: 1px !important; margin-right: 1px !important }
+
+toolbar[mode="text"] .icontext_button { display: -moz-box !important }
+toolbar[mode="text"] .icontext_button .toolbarbutton-text { display: -moz-box !important }
+toolbar[mode="text"] .icontext_button .toolbarbutton-icon { display: -moz-box !important }
+
+toolbar[mode="icons"] .icontext_button { display: -moz-box !important }
+toolbar[mode="icons"] .icontext_button .toolbarbutton-text { display: -moz-box !important }
+toolbar[mode="icons"] .icontext_button .toolbarbutton-icon { display: -moz-box !important }
+
+
+
+.currency_button { -moz-box-orient: horizontal !important; }
+.currency_button .toolbarbutton-text { margin-left: 1px !important; margin-right: 0px !important }
+.currency_button .toolbarbutton-icon { margin-left: 1px !important; margin-right: 1px !important }
+
+toolbar[mode="text"] .currency_button { display: -moz-box !important }
+toolbar[mode="text"] .currency_button .toolbarbutton-text { display: -moz-box !important }
+toolbar[mode="text"] .currency_button .toolbarbutton-icon { display: -moz-box !important }
+
+toolbar[mode="icons"] .currency_button { display: -moz-box !important }
+toolbar[mode="icons"] .currency_button .toolbarbutton-text { display: -moz-box !important }
+toolbar[mode="icons"] .currency_button .toolbarbutton-icon { display: -moz-box !important }
+
+
+#mailru_zoom_btn { 
+  list-style-image: url("chrome://mail.ru.toolbar/skin/zoom.png"); 
+}
+#mailru_hilight_btn { 
+  list-style-image: url("chrome://mail.ru.toolbar/skin/hilite_text.png"); 
+}
+#mailru_entry_btn { 
+  list-style-image: url("chrome://mail.ru.toolbar/skin/search_text.png"); 
+}
+
+#mailru_settings_btn { 
+  list-style-image: url("chrome://mail.ru.toolbar/skin/preferences.png"); 
+}
+#mailru_settings_btn:hover {
+  list-style-image: url("chrome://mail.ru.toolbar/skin/preferences.png"); 
+}
+toolbar[iconsize="small"] #mailru_settings_btn {
+  list-style-image: url("chrome://mail.ru.toolbar/skin/preferences.png");
+}
+toolbar[iconsize="small"] #mailru_settings_btn:hover {
+  list-style-image: url("chrome://mail.ru.toolbar/skin/preferences.png");
+}
+
+.currency_button_up {
+	list-style-image: url("chrome://mail.ru.toolbar/skin/currency_arrow_up.png");
+}
+
+.currency_button_down {
+	list-style-image: url("chrome://mail.ru.toolbar/skin/currency_arrow_down.png");
+}
+
+
+#mailru_chevron_btn > .toolbarbutton-icon {
+  display: -moz-box;
+}
+
+.mrchevron .toolbarbutton-icon {
+  display: -moz-box;
+}
+
+#mailru_search_bar
+{
+	-moz-binding: url("chrome://mail.ru.toolbar/content/search.xml#mailru-search-box") !important;
+}
+
+#mailru_resizesplitter 
+{
+	-moz-binding: url("chrome://mail.ru.toolbar/content/mail.ru.xml#mailru-search-resize") !important;
+	background: transparent;
+
+	border-left: 1px solid threedshadow;
+	border-right: 1px solid threedhighlight;
+	border-top: 0;
+	border-bottom: 0;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	margin-right: 0.2em;
+	margin-left: 0.2em;
+	width: 2px;
+	cursor: e-resize;
+}
+
+treechildren::-moz-tree-checkbox
+{
+	/* unchecked checkbox treecells */
+	list-style-image: url("chrome://mail.ru.toolbar/skin/checkbox-unchecked.png");
+}
+treechildren::-moz-tree-checkbox(checked)
+{
+	/* checked checkbox treecells*/
+	list-style-image: url("chrome://mail.ru.toolbar/skin/checkbox-checked.png");
+}
+treechildren::-moz-tree-checkbox(disabled)
+{
+	/* disabled checkbox treecells */
+	list-style-image: url("chrome://mail.ru.toolbar/skin/checkbox-disabled.png");
+}
+
+treechildren::-moz-tree-checkbox(cat_node_check)
+{
+	list-style-image: none !important;
+
+}
+
+treechildren::-moz-tree-cell-text(cat_node_title)
+{
+	font-weight: bold;
+}
+
+treechildren::-moz-tree-cell-text(child_node_title)
+{
+	margin-left: 4px;
+}
+
+.mailru_no_label_button { margin-top: 0px; margin-bottom: 0px; }
+.mailru_no_label_button .toolbarbutton-text { display: none !important }
+.mailru_no_label_button .toolbarbutton-icon { margin-left: 1px; margin-right: 1px; height: 16px }
+
+toolbar[mode="text"] .mailru_no_label_button { display: -moz-box !important }
+toolbar[mode="text"] .mailru_no_label_button .toolbarbutton-text { display: none !important }
+toolbar[mode="text"] .mailru_no_label_button .toolbarbutton-icon { display: -moz-box !important }
+
+.mailru_no_icon_button { margin-top: 0px; margin-bottom: 0px; }
+.mailru_no_icon_button .toolbarbutton-text { margin-left: 1px; margin-right: 1px; height: 16px }
+.mailru_no_icon_button .toolbarbutton-icon { display: none !important }
+
+toolbar[mode="text"] .mailru_no_icon_button { display: -moz-box !important }
+toolbar[mode="text"] .mailru_no_icon_button .toolbarbutton-text { display: -moz-box !important }
+toolbar[mode="text"] .mailru_no_icon_button .toolbarbutton-icon { display: none !important }
+
+.mailru_no_icon_button { -moz-box-align: center; min-height: 24px }
+.mailru_no_icon_button .toolbarbutton-text { display: -moz-box !important }
+.mailru_no_icon_button .toolbarbutton-icon { display: none !important }
+
+toolbar[mode="icons"] .mailru_no_icon_button { display: -moz-box !important }
+toolbar[mode="icons"] .mailru_no_icon_button .toolbarbutton-text { display: -moz-box !important }
+toolbar[mode="icons"] .mailru_no_icon_button .toolbarbutton-icon { display: none !important }
+
+.mailru-search-engine-btn
+{
+	-moz-binding: url("chrome://mail.ru.toolbar/content/search.xml#mailru-engines-btn") !important;
+}
+
+.mailru-search-engine-img-arrow
+{
+	width: 11px;
+	min-width: 11px;
+	background: url("chrome://mail.ru.toolbar/skin/arrow.png") no-repeat center bottom;
+}
+
+.mailru-search-engine-img
+{
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
+	margin: 1px;
+	padding: 0px;
+}
+
+.mailrusearch
+{
+	min-width: 50px;
+	-moz-box-align: stretch;
+}
+
+#SputnikSuggestPopup {
+
+  min-width: 20em !important;
+
+  min-height: 6em !important;
+
+  -moz-binding: url('chrome://mail.ru.toolbar/content/search.xml#sputnik-suggest-popup') !important;
+
+}
+
+
+#SputnikSuggestPopup .autocomplete-treebody 
+{
+
+  background-color: -moz-field !important;
+
+}
+
+
+#SputnikSuggestPopup .autocomplete-treebody::-moz-tree-cell-text {
+
+  -moz-padding-start: 2px;
+
+}
+
+
+#SputnikSuggestPopup .autocomplete-treebody::-moz-tree-cell(gtbAutoCompleteSeparator),
+
+#SputnikSuggestPopup .autocomplete-treebody::-moz-tree-cell(gtbAutoCompleteSeparatorIcons) 
+{
+
+  border-top: 1px solid GrayText;
+}
+
+
+#SputnikSuggestPopup .autocomplete-treebody::-moz-tree-image(gtbAutoCompleteRowIcons),
+
+#SputnikSuggestPopup .autocomplete-treebody::-moz-tree-image(gtbAutoCompleteSeparatorIcons) 
+{
+
+  width: 16px;
+
+  height: 16px;
+
+}
+
+
+#SputnikSuggestPopup .autocomplete-treebody::-moz-tree-cell-text(treecolAutoCompleteComment) 
+{
+
+  color: GrayText;
+
+  font-size: 90%;
+
+}
+
+.SputnikSuggestResizer 
+{
+  list-style-image: url('chrome://mail.ru.toolbar/skin/gripper.png');
+  width: 12px;
+  height: 12px;
+  cursor: se-resize;
+}
+
+.SputnikClearHistoryLine 
+{
+  padding: 8px 0 0 0;
+  background-color: -moz-field !important;
+}
+
+.SputnikClearHistoryText 
+{
+  font-size: 80%;
+}
+
+.mailru_zoom_verysmall
+{
+	font-size: 50%;
+    margin-left: 30px;
+}
+
+.mailru_zoom_small
+{
+	font-size: 75%;
+    margin-left: 30px;
+}
+
+.mailru_zoom_normal
+{
+    margin-left: 30px;
+}
+
+.mailru_zoom_big
+{
+  font-size: 125%;
+  margin-left: 30px;
+}
+.mailru_zoom_verybig
+{
+  font-size: 150%;
+  margin-left: 30px;
+}
+.mailru_zoom_giant
+{
+  font-size: 200%;
+  margin-left: 30px;
+}
+
+.informer_button[ module="mail.ru" ] {
+
+  -moz-binding: url('chrome://mail.ru.toolbar/content/mail.ru.xml#mailru-informer-button') !important;
+
+}
+.mailru-button[ module="mail.ru" ] {
+
+  -moz-binding: url('chrome://mail.ru.toolbar/content/mail.ru.xml#mailru-toolbarbutton') !important;
+
+}
+
+.chevron_box[ module="mail.ru" ] {
+
+  -moz-binding: url('chrome://mail.ru.toolbar/content/chevron.xml#mailru-chevron') !important;
+
+}
+.informer_panel[ module="mail.ru" ] {
+
+    -moz-binding: url('chrome://mail.ru.toolbar/content/informerPanel.xml#informer_panel') !important;
+    background: rgb(240, 240, 240);
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    -moz-border-left-colors: rgb(227, 227, 227) rgb(255, 255, 255) rgb(240, 240, 240);
+    -moz-border-right-colors: rgb(105, 105, 105) rgb(160, 160, 160) rgb(240, 240, 240);
+    -moz-border-top-colors: rgb(227, 227, 227) rgb(255, 255, 255) rgb(240, 240, 240);
+    -moz-border-bottom-colors: rgb(105, 105, 105) rgb(160, 160, 160) rgb(240, 240, 240);
+
+}

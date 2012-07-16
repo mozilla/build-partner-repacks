@@ -1,0 +1,88 @@
+<link rel="stylesheet" type="text/css" href="chrome://mail.ru.form/content/search404.css" />
+<!-- some wierd stuff for comatibility -->
+
+<div class="case" align="center">
+    <div class="content" id="spblock">	
+        <!--        <div style="height:1px; padding-left:1px; padding-right:1px">
+                    <div style="font-size:1px; background:#00468c"> </div>
+                </div>-->
+        <div class="header_line">
+            <a href="http://go.mail.ru" class="gogo" title="Перейти на go.mail.ru">
+                <img src="chrome://mail.ru.form/content/logoback155.png" width="155" height="25" />
+            </a>
+        </div>
+        <div class="mess">
+            <h3>__REASON__</h3>
+            <ul>
+                <li>__SUGGEST1__</li>
+                <li>__SUGGEST2__</li>
+                <li>__SUGGEST3__ <span id="link_cont"><!--<a href="__URL__">__DESCR__</a>--></span></li>
+                <li>__SUGGEST4__</li>
+                <!--                    <li style="margin-left:2em; list-style-image:none; background-image: none; padding:0px">__SUGGEST2__</li>-->
+            </ul>			
+<!--            <form class="search404" action="http://go.mail.ru/search" id="mrq_form">-->
+                <div class="search404">
+                <input style="border:none; background:none" type="hidden" name="fr" id="fr" value="__REF_DATA__"/>
+                <input style="border:none; background:none" type="hidden" name="sgsig" id="sgsig" value=""/>
+                <input style="border:none; background:none" type="hidden" name="query" id="query" value=""/>
+                <table>
+                    <tr>
+                        <td>
+                            <div class="input">
+                                <div class="input_l"></div>
+                                <input type="text" autofocus="" id="formQuery" name="q" value="__SEARCH_VALUE__" autocomplete="off" autocapitalize="off" autocorrect="off"/>
+                                <div class="input_r"></div>
+                                <a id="queryClear" style="display: none; "></a>
+                                <div id="fadeIn_txt" style="display: none;">Введите запрос</div>
+                            </div>
+                            <div class="go-form__sugg" id="suggest">
+                                <div class="go-form__sugg__brd-overlay"></div>
+                                <div class="go-form__sugg__wrap">
+                                    <div class="go-form__sugg__helpwrap" id="suggest_items">
+                                    </div>
+                                </div>
+                            </div>
+                            <!--                                    <div class="strin">
+                                                                    <input type="text" onkeyup="search_key_press(this,event)" name="q" value="__SEARCH_VALUE__" style="border: none; width:98%; background:#FFFFFF; color:#000000; font-size:12px; font-family:Arial, Helvetica, sans-serif" id='q'/>
+                                                                </div>-->
+                        </td>
+                        <!-- <td style="padding: 0px; margin: 0px;  font-family: Arial, Helvetica, sans-serif; width:18px; font-size:1px; height:50%; background:#FFFFFF url(chrome://mail.ru.toolbar/skin/c_t.gif) no-repeat top left"></td>-->
+                        <td class="td_button">
+                            <div class="bg_but">
+                                <input type="submit" id="submit_button" value="" class="img_button"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <!--<tr>
+                            <td style="padding: 0px; margin: 0px;  font-family: Arial, Helvetica, sans-serif; width:18px; font-size:1px; height:50%; background:#FFFFFF url(chrome://mail.ru.toolbar/skin/c_b.gif) no-repeat bottom left"></td>
+                    </tr>-->
+                </table>
+                <!--                        <table style="padding: 0px; margin: 0px; border-collapse:collapse;">
+                                            <tr>
+                                                <td style="padding: 0px; margin: 0px;  font-family: Arial, Helvetica, sans-serif;">
+                                                    <input type="radio" name="site" value="" checked="checked" id="q_nourl" />
+                                                </td>
+                                                <td style="font-size:12px;padding: 0px; margin: 0px;  font-family: Arial, Helvetica, sans-serif;">
+                                                    <label for="q_nourl">2222в Интернете</label>
+                                                </td>
+                                                <td style="padding-left: 30px;padding: 0px; margin: 0px;  font-family: Arial, Helvetica, sans-serif;">
+                                                    <input style="border:none; background:none" type="radio" name="site" value="__URL__" id="q_url" />
+                                                </td>
+                                                <td style="font-size:12px;padding: 0px; margin: 0px;  font-family: Arial, Helvetica, sans-serif;">
+                                                    <label for="q_url">на сайте <span id="link_cont">__DESCR__</span></label>
+                                                </td>
+                                            </tr>
+                                        </table>-->
+            </div>
+<!--            </form>-->
+            <div class="footer">
+                Блок помощи сформирован программой Спутник@Mail.ru. <a href="chrome://mail.ru.toolbar/open_settings">Настроить</a> 
+            </div>
+        </div>
+        <!--        <div style="height:1px; padding-left:1px; padding-right:1px">
+                    <div style="font-size:1px; background:#00468c">
+                      <img src="http://suggests.go.mail.ru/sp404.gif?st=__STATE_ID__&evt=__EVENT_ID__&userid=__USER_GUID__&url=__CURRENT_URL__&ref=__REFERER_URL__" border="0" width="1" height="1" alt="" />
+                    </div>
+                </div>-->
+    </div>
+</div>

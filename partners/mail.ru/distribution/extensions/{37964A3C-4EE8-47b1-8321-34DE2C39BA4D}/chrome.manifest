@@ -1,0 +1,16 @@
+overlay	chrome://browser/content/browser.xul	chrome://mail.ru.toolbar/content/sputnik/sputnik.toolbar.xul
+
+content	mail.ru.toolbar	chrome/content/
+content	mail.ru.form	chrome/form/ contentaccessible=yes
+content	mail.ru.lib	lib/
+skin	mail.ru.toolbar	classic/1.0	chrome/skin/
+
+locale	mail.ru.toolbar	ru-RU	chrome/locale/ru-RU/
+style	chrome://global/content/customizeToolbar.xul	chrome://mail.ru.toolbar/skin/mail.ru.toolbar.css
+
+
+component {83CEAEC1-8FAD-48CD-A4FE-B323881B5693} components/sputnik.xcom.js
+contract @mail.ru/toolbar/application;1 {83CEAEC1-8FAD-48CD-A4FE-B323881B5693}
+category profile-after-change SputnikMailRu @mail.ru/toolbar/application;1
+component {ADDE6E79-5963-444d-B27B-7407B485463C} components/sputnik.xcom.js
+contract @mozilla.org/autocomplete/search;1?name=sputnik-search-suggest {ADDE6E79-5963-444d-B27B-7407B485463C}

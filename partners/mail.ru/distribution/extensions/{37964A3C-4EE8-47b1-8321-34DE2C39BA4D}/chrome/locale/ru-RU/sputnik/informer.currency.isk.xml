@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<spudata>
+<brick id="currency-isk" status="" href="http://news.mail.ru/currency.html?charcode=ISK" valid="10" refetch="9">
+	<image>chrome://mail.ru.toolbar/skin/currencies/isk_na.png</image>
+    <textover></textover>
+    <textafter></textafter>
+    <tooltip>
+		<![CDATA[<a msg="http://news.mail.ru/currency.html?charcode=ISK&sputnik=1">100 Исландских крон</a> -- курсы валют.]]>
+	</tooltip>
+</brick>
+</spudata>

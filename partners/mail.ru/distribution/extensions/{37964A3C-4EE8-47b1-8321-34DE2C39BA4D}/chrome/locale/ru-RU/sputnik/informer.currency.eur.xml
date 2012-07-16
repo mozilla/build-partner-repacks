@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<spudata>
+<brick id="currency-eur" status="" href="http://news.mail.ru/currency.html?charcode=EUR" valid="10" refetch="9">
+	<image>chrome://mail.ru.toolbar/skin/currencies/eur_na.png</image>
+    <textover></textover>
+    <textafter></textafter>
+    <tooltip>
+		<![CDATA[<a msg="http://news.mail.ru/currency.html?charcode=EUR&sputnik=1">1 Евро</a> -- курсы валют.]]>
+	</tooltip>
+</brick>
+</spudata>

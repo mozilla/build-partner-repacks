@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://mail.ru.toolbar/skin/mail.ru.toolbar.css" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://mail.ru.toolbar/locale/sputnik/mail.ru.toolbar.dtd" >
+
+
+<dialog id="mailru_settings_dialog"
+	buttons="accept, cancel"
+	title="&dialog.settings.title;"
+	ondialogaccept="MAIL_Settings.accept()"
+	onload="MAIL_Settings.init()"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/save_controls.js" />
+  <script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/tools.js" />
+	<script type="application/x-javascript" src="chrome://mail.ru.toolbar/content/settings.js" />
+
+	<preferences>
+		<preference id="mailru_settings_start_default_engine_pref" name="mail.ru.toolbar.search.engine.start.default" type="bool" />
+		<preference id="mailru_settings_disable_popular_queries_pref" name="mail.ru.toolbar.search.engine.popular_queries" type="bool" />
+		<preference id="mailru_weather_temperature_mode_pref" name="mail.ru.toolbar.weather.temperature.format" type="string" />
+
+	</preferences>
+
+	<stringbundleset id="stringbundleset"> 
+		<stringbundle id="mailru_bundle" src="chrome://mail.ru.toolbar/locale/mail.ru.toolbar.properties" />
+	</stringbundleset>
+
+	<tabbox id="settings_tabbox" flex="1">
+		<tabs>
+			<tab id="settings_tab_main" label="&dialog.settings.page.main.title;" />
+			<tab id="settings_tab_informers" label="&dialog.settings.page.informers.title;"/>
+			<tab id="settings_tab_services" label="&dialog.settings.page.services.title;" />
+			<tab id="settings_tab_city" label="&dialog.settings.page.city.title;"/>
+			<tab id="settings_tab_currency" label="&dialog.settings.page.currency.title;" />
+		</tabs>
+
+		<tabpanels flex="1">
+			<tabpanel id="mailru_settings_main_tab" orient="vertical">
+        <hbox>
+          <checkbox id="mailru_settings_display_zoom_btn_check" label="&dialog.settings.page.main.zoombtn.display;" />
+          <spacer flex="1" />
+        </hbox>
+        <hbox>
+          <checkbox id="mailru_settings_display_hilight_btn_check" label="&dialog.settings.page.main.hilightbtn.display;" />
+          <spacer flex="1" />
+        </hbox>
+        <hbox>
+					<checkbox id="mailru_settings_display_search_btn_check" label="&dialog.settings.page.main.search.display;" /><spacer flex="1" />
+				</hbox>
+				<hbox>
+					<checkbox id="mailru_settings_url_search_btn_check" label="&dialog.settings.page.main.search.url;" /><spacer flex="1" />
+				</hbox>
+				<hbox>
+					<checkbox id="mailru_settings_html_block_btn_check" label="&dialog.settings.page.main.html.block;" /><spacer flex="1" />
+				</hbox>
+				
+				<hbox>
+					<checkbox id="mailru_settings_hook_mailto_check" label="&dialog.settings.page.behavior.mailto;" preference="mailru_settings_hook_mailto_pref" oncommand="MAIL_Settings.hook_mailto_check()" /><spacer flex="1" />
+				
+				</hbox>	
+				
+				<hbox>
+					<checkbox id="mailru_settings_music_btn_check" label="&dialog.settings.show_music;" /><spacer flex="1" />
+				</hbox>
+        <hbox>
+          <checkbox id="mailru_settings_shortmode_check" label="&dialog.settings.shortmode;" oncommand="MAIL_Settings.shortmode()"/><spacer flex="1" />
+        </hbox>
+        <hbox>
+          <checkbox id="mailru_settings_visualbookmarks_check" label="&dialog.settings.visualbookmarks;"/><spacer flex="1" />
+        </hbox>
+
+
+      </tabpanel>	
+			
+			<tabpanel id="mairu_settings_informers_tab" orient="vertical">
+				<groupbox flex="1">
+  				<caption label="&dialog_settings_weather_group;"/>
+				<hbox>
+  					<checkbox id="mailru_settings_show_weather" label="&dialog.settings.page.weather.temperature;"/>
+					<menulist id="mailru_weather_temperature_mode_list" flex="1" style="min-width: 100px" preference="mailru_weather_temperature_mode_pref">
+								<menupopup id="mailru_weather_temperature_mode_menu">
+									<menuitem label="&dialog.settings.page.weather.temperature.celsius;" value="c" />
+									<menuitem label="&dialog.settings.page.weather.temperature.fahrenheit;" value="f" />
+								</menupopup>
+					</menulist>
+				</hbox>
+				</groupbox>
+
+				<groupbox flex="1">
+					<caption label="&dialog_settings_maps_group;"/>
+					<checkbox id="mailru_settings_show_maps" label="&dialog.settings.maps_show;"/>
+				</groupbox>
+
+				<groupbox flex="1">
+					<caption label="&dialog_settings_mail_group;"/>
+					<checkbox id="mailru_settings_show_mail" label="&dialog.settings.mail_show;"/>
+				</groupbox>
+                                <groupbox flex="1">
+					<caption label="&dialog_settings_odkl_group;"/>
+					<checkbox id="mailru_settings_show_odkl" label="&dialog.settings.odkl_show;"/>
+				</groupbox>
+                                <groupbox flex="1">
+					<caption label="&dialog_settings_my_group;"/>
+					<checkbox id="mailru_settings_show_my" label="&dialog.settings.my_show;"/>
+				</groupbox>
+				<groupbox flex="1">
+					<caption label="&dialog_settings_money_group;"/>
+					<checkbox id="mailru_settings_show_money" label="&dialog.settings.money_show;"/>
+				</groupbox>
+        <groupbox flex="1">
+          <caption label="&dialog_settings_vote_group;"/>
+          <checkbox id="mailru_settings_show_vote" label="&dialog.settings.vote_show;"/>
+        </groupbox>
+      </tabpanel>
+
+
+			<tabpanel id="mailru_settings_services_tab" orient="vertical">
+				<label value="&dialog.settings.page.services.label;" />
+				<tree id="mailru_settings_services_tree" editable="true" flex="1" hidecolumnpicker="true" seltype="single" onkeyup="MAIL_Settings.services_tree_keyboard_select(event)">
+					<treecols>
+						<treecol label="&dialog.settings.page.services.tree.display;" type="checkbox" ignoreincolumnpicker="true" fixed="true" editable="true" persist="width ordinal hidden" />
+						<splitter class="tree-splitter" />
+						<treecol label="&dialog.settings.page.services.tree.name;" primary="true" flex="1" persist="width ordinal hidden" />
+						<splitter class="tree-splitter" />
+						<treecol label="&dialog.settings.page.services.tree.description;" flex="2" persist="width ordinal hidden" />
+					</treecols>
+
+					<treechildren id="mailru_settings_services_children" />
+				</tree>
+				<hbox>
+					<checkbox id="mailru_settings_display_services_labels" label="&dialog.settings.page.services.display.label;" /><spacer flex="1" />
+				</hbox>
+			</tabpanel>	
+			<tabpanel id="mailru_settings_weather_tab" orient="vertical">
+				<vbox flex="1">
+					<vbox>
+						<label value="&dialog.settings.page.weather.city.choose;" />
+						<radiogroup id="mailru_settings_weather_cities_radios" oncommand="MAIL_Settings.city_radio_select(event)" orient="horizontal" equalsize="always">
+						</radiogroup>
+					</vbox>
+					<vbox flex="1" style="margin-top: 2em">
+						<label value="&dialog.settings.page.weather.city.search.enter;" />
+						<textbox id="mailru_settings_weather_search_city" seltype="single" onkeypress="MAIL_Settings.city_text_enter(event)" />
+						<label value="&dialog.settings.page.weather.city.search.choose;" />
+						<listbox id="mailru_settings_weather_search_select" flex="1">
+							<listitem label="&dialog.settings.page.weather.city.search.choose.auto;" value="0" />
+                                                </listbox>
+					</vbox>
+
+				</vbox>
+			</tabpanel>
+			<tabpanel id="mailru_settings_currency_tab" orient="vertical">
+				<label value="&dialog.settings.page.currency.label;" />
+				<tree id="mailru_settings_currency_tree" editable="true" flex="1" hidecolumnpicker="true" seltype="single" onkeyup="MAIL_Settings.currency_tree_keyboard_select(event);">
+					<treecols>
+						<treecol fiex="true" type="checkbox" fixed="true" editable="true" class="sortDirectionIndicator" label="&dialog.settings.page.currency.tree.display;" />
+       						<splitter class="tree-splitter" />
+						<treecol fiex="true" class="sortDirectionIndicator" label="&dialog.settings.page.currency.tree.name;" />
+       						<splitter class="tree-splitter" />
+						<treecol flex="1" class="sortDirectionIndicator" label="&dialog.settings.page.currency.tree.description;" />
+					</treecols>
+					<treechildren id="mailru_settings_currency_tree_children" />
+				</tree>
+				<checkbox id="mailru_settings_currency_acc" label="&dialog.settings.currency_acc;"/>
+			</tabpanel>
+		</tabpanels>
+	</tabbox>
+</dialog>

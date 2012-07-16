@@ -1,0 +1,12 @@
+<!ENTITY united.email.button.label "Email">
+<!ENTITY united.email.button.tooltip "&brand.name; Email">
+<!ENTITY united.email.messages.tooltip "Go to the Inbox">
+<!ENTITY united.email.checknow.label "Check for new emails">
+<!ENTITY united.email.configure.label "Settings…">
+<!ENTITY united.email.configure.tooltip "Configure your email address…">
+<!ENTITY united.logged-in.label "Logout">
+<!ENTITY united.logged-in.tooltip "Logout">
+<!ENTITY united.logged-out.label "Login">
+<!ENTITY united.logged-out.tooltip "Login">
+<!ENTITY united.xxltooltip.1.label "Never again delete mail!">
+<!ENTITY united.xxltooltip.2.label "Join now and go directly to the mailbox">

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<spudata>
+  <brick id="2gis" href="http://www.2gis.ru" valid="900000" refetch="3000">
+		<image>chrome://mail.ru.toolbar/skin/2gis.png</image>
+		<tooltip>
+			<![CDATA[2ГИС — это полная и всегда актуальная информация о городе:<br>адреса, телефоны организаций и время их работы;<br>наглядная карта города;<br>поиск проезда на городском и личном транспорте;<br>Бесплатно на <a msg="http://www.2gis.ru">www.2GIS.ru</a>;<br>Онлайн-версия 2ГИС - <a msg="http://maps.2gis.ru">maps.2gis.ru</a>]]>
+		</tooltip>
+	</brick>
+</spudata>
