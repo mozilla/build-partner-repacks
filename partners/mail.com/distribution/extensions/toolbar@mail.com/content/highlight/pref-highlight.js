@@ -7,6 +7,6 @@ window.addEventListener("load", onLoad, false);
 function HighlightColor(el)
 {
   this.elementValueProperty = "color";
-  AutoPrefElement.call(this, el, "highlight.color", united.ourPref);
+  AutoPrefElement.call(this, el, "highlight.color", ourPref);
 }
-united.extend(HighlightColor, AutoPrefElement);
+extend(HighlightColor, AutoPrefElement);

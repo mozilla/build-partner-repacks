@@ -1,0 +1,7 @@
+content   blackbird                 chrome/content/
+skin      blackbird   classic/1.0   chrome/skin/
+locale    blackbird   en-US         chrome/locale/en-US/
+resource  blackbird                 modules/
+
+overlay   chrome://browser/content/browser.xul   chrome://blackbird/content/blackbird.xul
+style chrome://global/content/customizeToolbar.xul chrome://blackbird/skin/blackbird.css

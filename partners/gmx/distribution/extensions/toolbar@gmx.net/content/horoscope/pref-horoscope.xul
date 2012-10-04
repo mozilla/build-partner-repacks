@@ -15,8 +15,8 @@
         orient="vertical"
         >
       <script type="application/x-javascript">
-        upref.horoscope = {};
-        united.loadJS("chrome://unitedtb/content/horoscope/pref-horoscope.js", upref.horoscope);
+        unitedinternet.initModule(unitedinternet, "horoscope");
+        unitedinternet.loadJS("chrome://unitedtb/content/horoscope/pref-horoscope.js", unitedinternet.horoscope);
       </script>
 
       <preferences>

@@ -18,7 +18,7 @@ XPCOMUtils.defineLazyServiceGetter(this, "historyService",
 
 function onLoad()
 {
-  united.autoregisterGlobalObserver("uninstall", cleanUpOnUnInstall);
+  autoregisterGlobalObserver("uninstall", cleanUpOnUnInstall);
   gBrowser.addTabsProgressListener(webProgressListener);
   findLastModified();
 }
@@ -58,17 +58,17 @@ function onPageLoad(browser)
   {
     return;
   }
-  //united.debug("lastmodtime (cached): " + entry.lastmodtime + ", earliest allowed: " + (new Date() - expireCurrentAfter) + ", diff: " + new Date(new Date() - entry.lastmodtime).toUTCString());
+  //debug("lastmodtime (cached): " + entry.lastmodtime + ", earliest allowed: " + (new Date() - expireCurrentAfter) + ", diff: " + new Date(new Date() - entry.lastmodtime).toUTCString());
   if (entry.lastmodtime > (new Date() - expireCurrentAfter))
   {
-    //united.debug("have current thumbnail");
+    //debug("have current thumbnail");
     return;
   }
   // update cache, in case new snapshot was just made, possibly in other window
   entry.load();
   if (entry.lastmodtime > (new Date() - expireCurrentAfter))
   {
-    //united.debug("have just made new thumbnail");
+    //debug("have just made new thumbnail");
     return;
   }
   captureThumbnail(browser);
@@ -90,13 +90,13 @@ const visibleWidthMax = 1024;
  */
 function captureThumbnail(browser)
 {
-  if (united.privateBrowsing.privateBrowsingEnabled)
+  if (privateBrowsing.privateBrowsingEnabled)
     return null;
   var win = browser.contentWindow;
   if (!win)
     return null;
   var uri = browser.currentURI ? browser.currentURI :
-      united.ioService.newURI(browser.contentDocument.location.href, null, null);
+      ioService.newURI(browser.contentDocument.location.href, null, null);
   if (uri.scheme != "http" && uri.scheme != "https")
     return null;
 
@@ -111,7 +111,7 @@ function captureThumbnail(browser)
   var scale = thumbnailWidth / visibleWidth;
   ctx.scale(scale, scale);
   ctx.drawWindow(win, 0, 0, visibleWidth, visibleHeight, "white");
-  united.debug("capturing thumbnail for <" + win.location + ">, with size w " + thumbnailHeight + ", h " + thumbnailWidth +
+  debug("capturing thumbnail for <" + win.location + ">, with size w " + thumbnailHeight + ", h " + thumbnailWidth +
       ", scale " + scale + ", page area w " + visibleWidth + " h " + visibleHeight);
 
   var imageDataURL = canvas.toDataURL("image/png")
@@ -159,14 +159,14 @@ function storeThumbnail(uri, imageURL)
 function getThumbnailURL(pageURL)
 {
   try {
-    //return annotationService.getPageAnnotation(united.makeNSIURI(pageURL),
+    //return annotationService.getPageAnnotation(makeNSIURI(pageURL),
     //  "unitedtb/thumbnail/dataurl");
-    var imgurl = annotationService.getPageAnnotation(united.makeNSIURI(pageURL),
+    var imgurl = annotationService.getPageAnnotation(makeNSIURI(pageURL),
       "unitedtb/thumbnail/dataurl");
-    //united.debug("returning thumbnail URL for <" + pageURL + ">: <" + imgurl.substr(0,30) + "...>");
+    //debug("returning thumbnail URL for <" + pageURL + ">: <" + imgurl.substr(0,30) + "...>");
     return imgurl;
   } catch (e) {
-    //united.debug("have no thumbnail for <" + pageURL + ">");
+    //debug("have no thumbnail for <" + pageURL + ">");
     return null;
   }
 }
@@ -192,16 +192,20 @@ function findLastModified()
   options.resultType = O.RESULT_AS_URI;
   options.sortingMode = O.SORT_BY_VISITCOUNT_DESCENDING;
   options.maxResults = kMostVisitedEntryCount;
-  options.redirectsMode = O.REDIRECTS_MODE_TARGET;
+  try {
+    options.redirectsMode = O.REDIRECTS_MODE_TARGET;
+  } catch (ex) {
+    // This doesn't work on FF14
+  }
   var result = historyService.executeQuery(query, options); // TODO should be async
   var container = result.root;
   container.containerOpen = true;
-  //united.debug("have " + container.childCount + " entries in history");
+  //debug("have " + container.childCount + " entries in history");
   for (let i = 0; i < container.childCount; i ++)
   {
     let node = container.getChild(i);
     // <http://mdn.beonex.com/en/nsINavHistoryResultNode>
-    //united.debug(i + ". " + node.accessCount + "times <" + node.uri + ">, title: " + node.title);
+    //debug(i + ". " + node.accessCount + "times <" + node.uri + ">, title: " + node.title);
     if ((node.uri.substr(0, 5) != "http:" && node.uri.substr(0, 6) != "https:") || (!node.title))
       continue;
     let entry = new MostVisitedEntry(node.uri);
@@ -241,7 +245,7 @@ function initialPopulateHack(url, browser)
 {
   if (gMostVisited.length < kMostVisitedEntryCount)
   {
-    //united.debug("have only " + gMostVisited.length + " entries in gMostVisited");
+    //debug("have only " + gMostVisited.length + " entries in gMostVisited");
     findLastModified(); // flushes gMostVisited, and searches history
 
     // HACK just add current URL
@@ -252,10 +256,10 @@ function initialPopulateHack(url, browser)
       entry.title = browser.contentTitle;
       entry.faviconURL = faviconService.getFaviconForPage(browser.currentURI);
     } catch (e if e.result == Components.results.NS_ERROR_NOT_AVAILABLE) {} // no favicon
-      catch (e) { united.errorInBackend(e) };
+      catch (e) { errorInBackend(e) };
     gMostVisited.push(entry);
 
-    //united.debug("now have " + gMostVisited.length + " entries in gMostVisited");
+    //debug("now have " + gMostVisited.length + " entries in gMostVisited");
   }
 }
 
@@ -272,7 +276,7 @@ function getMostVisitedEntryForURL(url, browser)
     if (e.url == url)
       entry = e;
   });
-  //united.debug("found URL in gMostVisited? " + entry);
+  //debug("found URL in gMostVisited? " + entry);
   return entry;
 }
 
@@ -281,7 +285,7 @@ function getMostVisitedEntryForURL(url, browser)
  */
 function MostVisitedEntry(url)
 {
-  united.assert(typeof(url) == "string" && url);
+  assert(typeof(url) == "string" && url);
   this.url = url;
   this.load();
 }
@@ -299,7 +303,7 @@ MostVisitedEntry.prototype =
   {
     try {
       this.lastmodtime = new Date(Date.parse(
-          annotationService.getPageAnnotation(united.makeNSIURI(this.url),
+          annotationService.getPageAnnotation(makeNSIURI(this.url),
             "unitedtb/thumbnail/lastmodtime"))).getTime();
     } catch (e) {} // default = unixtime 0 = 1970
   },

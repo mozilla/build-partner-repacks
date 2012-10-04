@@ -14,6 +14,7 @@ loadJS("chrome://unitedtb/content/search/mcollect/mSearch.js", this);
 loadJS("chrome://unitedtb/content/search/mcollect/mResult.js", this);
 loadJS("chrome://unitedtb/content/search/mcollect/mURLResult.js", this);
 loadJS("chrome://unitedtb/content/search/mcollect/mSearchTermResult.js", this);
+loadJS("chrome://unitedtb/content/search/mcollect/mPSHSearchTermResult.js", this);
 
 loadJS("chrome://unitedtb/content/search/mcollect/mPSHSearch.js", this);
 loadJS("chrome://unitedtb/content/search/mcollect/mPlacesSearch.js", this);

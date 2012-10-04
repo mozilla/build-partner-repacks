@@ -82,7 +82,7 @@ Account.prototype =
   /**
    * @param acc {Account}
    * @returns The providerID for that account, i.e.
-   *     the corresponding field united.brand.login.configs....providerID
+   *     the corresponding field brand.login.configs....providerID
    *     May be null, if the config is not found or
    *     the config has no providerID.
    */

@@ -3,7 +3,7 @@ function onLoad()
   try {
     new ToolbarMode(document.getElementById("buttons-toolbarmode"));
     new ButtonEnable(document.getElementById("buttons-list-list"));
-  } catch (e) { united.errorCritical(e); }
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -11,9 +11,11 @@ window.addEventListener("load", onLoad, false);
 
 function ButtonEnable(el)
 {
-  united.assert(el.tagName == "richlistbox");
-  this._firefoxWindow = united.findSomeBrowserWindow();
+  assert(el.tagName == "richlistbox");
+  this._firefoxWindow = findSomeBrowserWindow();
   this._addButtonsToList(el, this._getAvailableButtons());
+  // Need to check disabled modules again to remove buttons from listbox
+  checkDisabledModules(window);
   SettingElement.call(this, el);
 }
 ButtonEnable.prototype =
@@ -29,10 +31,12 @@ ButtonEnable.prototype =
   {
     for each (let button in availableButtons)
     {
-      //united.debug("found button ID " + button.id + ", label " + button.label + ", icon <" + button.icon + ">");
+      //debug("found button ID " + button.id + ", label " + button.label + ", icon <" + button.icon + ">");
 
       // build UI elements
       let listitem = document.createElement("richlistitem");
+      // Set the ID of the item the same as the button so it can be removed
+      listitem.setAttribute("id", button.id);
       let checkboxCell = document.createElement("listcell");
       let iconCell = document.createElement("listcell");
       let labelCell = document.createElement("listcell");
@@ -76,32 +80,13 @@ ButtonEnable.prototype =
   _getAvailableButtons : function()
   {
     // find our buttons that are removable
-    var unsortedButtons = [];
-    var toolbarButtons = this._firefoxWindow.document.getElementsByAttribute("united-removable", "true");
-    for (let i = 0; i < toolbarButtons.length; i++) {
-      unsortedButtons.push(toolbarButtons[i]);
-    }
-    // @see mozilla/toolkit/content/customizeToolbar.js buildPalette()
-    var toolbox = this._firefoxWindow.document.getElementById("navigator-toolbox");
-    var paletteButtons = toolbox.palette.getElementsByAttribute("united-removable", "true");
-    for (let i = 0; i < paletteButtons.length; i++) {
-      unsortedButtons.push(paletteButtons[i]);
-    }
-
-    var buttons = [];
-    for (let i = 0; i < this.defaultOrder.length; i++) {
-      for (let j = 0; j < unsortedButtons.length; j++) {
-        if (unsortedButtons[j].id == this.defaultOrder[i]) {
-          buttons.push(unsortedButtons[j]);
-          break;
-        }
-      }
-    }
+    var buttons = this._firefoxWindow.document.getElementsByAttribute("united-removable", "true");
 
     // get icon and label for each button
     var result = [];
-    for each (let button in buttons)
+    for (let i=0; i<  buttons.length; i++)
     {
+      let button = buttons[i];
       var icon = this._firefoxWindow.getComputedStyle(button, null).listStyleImage;
       if (icon.substr(0, 4) == "url(") // strip url()
         icon = icon.substr(4, icon.length - 5);
@@ -128,14 +113,13 @@ ButtonEnable.prototype =
   {
     if (enable)
     {
-      if (united.arrayContains(this._currentValue, id))
-        return;
-      this._currentValue.push(id);
-      sortElement(this._currentValue, this.defaultOrder, id);
+      arrayRemove(this._currentValue, id, true);
     }
     else
     {
-      united.arrayRemove(this._currentValue, id, true);
+      if (arrayContains(this._currentValue, id))
+        return;
+      this._currentValue.push(id);
     }
   },
 
@@ -144,15 +128,15 @@ ButtonEnable.prototype =
    */
   get storeValue()
   {
-    return this._firefoxWindow.united.toolbar.getEnabledToolbarButtons().split(",");
+    return ourPref.get("hiddenButtons", "").split(",");
   },
   /**
    * @param val {Ordered Array of id {String}}
    */
   set storeValue(val)
   {
-    united.assert(typeof(val) == "object", "must be a sorted array of element IDs");
-    this._firefoxWindow.united.toolbar.setEnabledToolbarButtons(val.join(","));
+    assert(typeof(val) == "object", "must be a sorted array of element IDs");
+    ourPref.set("hiddenButtons", val.join(","));
   },
 
   /**
@@ -172,7 +156,7 @@ ButtonEnable.prototype =
    */
   set elementValue(val)
   {
-    united.assert(typeof(val) == "object", "must be a sorted array of element IDs");
+    assert(typeof(val) == "object", "must be a sorted array of element IDs");
     this._currentValue = val;
 
     // Update UI
@@ -180,23 +164,21 @@ ButtonEnable.prototype =
     for (let i = 0; i < checkboxNodes.length; i++)
     {
       let checkbox = checkboxNodes.item(i);
-      checkbox.checked = united.arrayContains(val, checkbox.buttonID);
+      checkbox.checked = !arrayContains(val, checkbox.buttonID);
     }
   },
 
   get defaultValue()
   {
-    var tb = this._firefoxWindow.document.getElementById("united-toolbar");
-    return tb.getAttribute("defaultset").split(",");
-  },
-
-  get defaultOrder()
-  {
-    var tb = this._firefoxWindow.document.getElementById("united-toolbar");
-    return tb.getAttribute("defaultorder").split(",");
+    var hiddenButtons = [];
+    // Read hidden buttons from brand.js
+    for (let i in brand.toolbar.items)
+      if (!brand.toolbar.items[i])
+        hiddenButtons.push("united-" + i);
+    return hiddenButtons;
   },
 }
-united.extend(ButtonEnable, SettingElement);
+extend(ButtonEnable, SettingElement);
 
 /**
  * Put |element| content of |targetArray| in a
@@ -204,9 +186,9 @@ united.extend(ButtonEnable, SettingElement);
  */
 function sortElement(targetArray, exampleArray, element)
 {
-  united.arrayRemove(targetArray, element, true);
+  arrayRemove(targetArray, element, true);
   var elIndex = exampleArray.indexOf(element);
-  united.assert(elIndex != -1, "sortElement: element " + element + " must be in exampleArray");
+  assert(elIndex != -1, "sortElement: element " + element + " must be in exampleArray");
   if (elIndex == 0)
   {
     // add at beginning
@@ -236,15 +218,15 @@ ToolbarMode.prototype =
   {
     // HACK: Calls our function in Firefox window directly.
     // Need function calls with return value in messaging system.
-    var firefoxWindow = united.findSomeBrowserWindow();
-    var mode = firefoxWindow.united.toolbar.getCurrentToolbarMode();
+    var firefoxWindow = findSomeBrowserWindow();
+    var mode = firefoxWindow.unitedinternet.toolbar.getCurrentToolbarMode();
     if (mode == "text")
       mode = "full";
     return mode;
   },
   set storeValue(val)
   {
-    united.notifyGlobalObservers("do-customize-toolbar", { mode : val });
+    notifyGlobalObservers("do-customize-toolbar", { mode : val });
   },
 
   get defaultValue()
@@ -252,4 +234,4 @@ ToolbarMode.prototype =
     return "full";
   },
 }
-united.extend(ToolbarMode, SettingElement);
+extend(ToolbarMode, SettingElement);

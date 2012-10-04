@@ -21,6 +21,7 @@
  */
 
 Components.utils.import("resource://unitedtb/ticker/tickerList.js", this);
+Components.utils.import("resource://unitedtb/util/JXON.js", this);
 
 const kRefreshInterval = 15*60*1000; // news feed is polled in a 15min interval, per spec
 const kLazyLoad = true; // false = load on startup
@@ -28,7 +29,7 @@ const kLazyRefresh = true; // don't refresh automatically in inttervals, only re
 
 var gLastLoad = 0; // Unixtime
 var gMenuE = null;
-var gStringBundle = new united.StringBundle(
+var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/ticker/ticker.properties");
 
 function onLoad()
@@ -43,9 +44,9 @@ function onLoad()
     if (!kLazyRefresh)
       setInterval(fetchFeed, kRefreshInterval);
 
-    united.autoregisterGlobalObserver("region-changed", reset);
-    united.ourPref.observeAuto(window, "ticker.channel", fetchFeed);
-  } catch(e) { united.error(e); }
+    autoregisterGlobalObserver("region-changed", reset);
+    ourPref.observeAuto(window, "ticker.channel", fetchFeed);
+  } catch(e) { error(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -58,7 +59,7 @@ function fetchFeed()
   gLastLoad = new Date().getTime();
   getFeedURL(function(url)
   {
-    new united.FetchHTTP({ url : url }, buildMenu, buildEmptyMenu).start();
+    new FetchHTTP({ url : url }, buildMenu, buildEmptyMenu).start();
   });
 };
 
@@ -69,25 +70,58 @@ function fetchFeed()
 function buildMenu(xml)
 {
   try {
-    //united.debug(xml.toString());
-    var items = xml.channel.item;
+    //debug(xml.toString());
+    var feed = JXON.build(xml);
+    var atom = false;
+    var channel;
+    if (feed.rss) {
+      channel = feed.rss.channel;
+    } else if (feed["rdf:RDF"]) {
+      channel = feed["rdf:RDF"];
+    } else if (feed.feed &&
+        feed.feed["@xmlns"] == "http://www.w3.org/2005/Atom") {
+      atom = true;
+      channel = feed.feed;
+    }
+    var items = atom ? channel.$entry : channel.$item;
 
-    if (!items || !items.length())
+    if (!items || !items.length)
     {
       buildEmptyMenu(gStringBundle.get("feed.empty.message"));
       return;
     }
-    united.cleanElement(gMenuE);
+    cleanElement(gMenuE);
 
     var count = 0;
     for each (let item in items)
     {
-      if (++count > united.brand.ticker.maxItems)
+      if (++count > brand.ticker.maxItems)
         break;
-      //united.debug("item " + item);
-      let url = united.sanitize.url(item.link[0].text());
-      let title = united.sanitize.label(item.title[0].text());
-      let descr = united.sanitize.label(item.description[0].text());
+      //debug("item " + item);
+      var url;
+      var title;
+      var descr;
+      if ( ! atom)
+      {
+        url = sanitize.url(item.link);
+        title = sanitize.label(item.title);
+        descr = sanitize.label(item.description);
+      }
+      else // Atom
+      {
+        url = sanitize.url(item.link["@href"]);
+        // title can have an attribute, and if it does, the value
+        // is stored separately
+        if (item.title.value)
+          title = sanitize.label(item.title.value);
+        else
+          title = sanitize.label(item.title);
+        // atom feeds can have summary as xhtml. If they do, JXON
+        // incorrectly parses it all (which makes sense, since it's raw
+        // HTML mixed in XML. Just ignore it.
+        if (item.summary && item.summary["@type"] != "xhtml")
+          descr = sanitize.label(item.summary);
+      }
 
       let menuitem = document.createElement("menuitem");
       gMenuE.appendChild(menuitem);
@@ -98,7 +132,7 @@ function buildMenu(xml)
     }
     appendStaticEntries();
   } catch (e) {
-    united.error(e);
+    error(e);
     buildEmptyMenu(gStringBundle.get("feed.error.message"), e);
   }
 }
@@ -109,7 +143,7 @@ function buildMenu(xml)
  */
 function buildEmptyMenu(errorMsg, errorDetail)
 {
-  united.cleanElement(gMenuE);
+  cleanElement(gMenuE);
   var menuitem = document.createElement("menuitem");
   gMenuE.appendChild(menuitem);
   menuitem.setAttribute("label", errorMsg);
@@ -124,7 +158,7 @@ function buildEmptyMenu(errorMsg, errorDetail)
  */
 function appendStaticEntries()
 {
-  for each (let entry in united.brand.ticker.dropdownURLEntries)
+  for each (let entry in brand.ticker.dropdownURLEntries)
   {
     let menuitem = document.createElement("menuitem");
     gMenuE.appendChild(menuitem);
@@ -164,5 +198,5 @@ function onDropdownOpened(event)
  */
 function onButton(event)
 {
-  united.loadPage(event.target.url ? event.target.url : united.brand.ticker.portalURL, "united-ticker");
+  loadPage(event.target.url ? event.target.url : brand.ticker.portalURL, "united-ticker");
 };

@@ -7,13 +7,20 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript">
-    upref.storeman = {};
-    upref.storeman.editPSH = function()
+  <![CDATA[
+    unitedinternet.storeman = {};
+    unitedinternet.storeman.editPSH = function()
     {
       const url = "chrome://unitedtb/content/newtab/store-management.xhtml?mode=psh";
-      //united.loadChromePage(url, "window");
-      window.open(url);
+      //loadChromePage(url, "window");
+      var win = window;
+      if (window instanceof Components.interfaces.nsIDOMChromeWindow) {
+        while (win.opener && !win.opener.closed)
+          win = win.opener;
+      }
+      win.open(url);
     }
+  ]]>
   </script>
 
   <groupbox id="search-box">
@@ -23,7 +30,7 @@
             type="link"
             label="&edit-psh.label;"
             accesskey="&edit-psh.accesskey;"
-            oncommand="upref.storeman.editPSH();"
+            oncommand="unitedinternet.storeman.editPSH();"
             />
     </hbox>
 

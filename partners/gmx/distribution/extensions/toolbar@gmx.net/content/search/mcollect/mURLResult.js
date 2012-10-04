@@ -29,7 +29,7 @@ mURLResult.prototype =
   activate : function(firefoxWindow)
   {
     //debug("activating URL result " + this.title + " with URL <" + this.url + ">");
-    firefoxWindow.united.loadPage(this._url); // from util.js
+    firefoxWindow.unitedinternet.common.loadPage(this._url); // from util.js
   },
 
 }

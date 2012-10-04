@@ -44,6 +44,7 @@ const EXPORTED_SYMBOLS = [ "Cc", "Ci", "Cu", "extend", "mixInto", "assert",
   "makeCallback", "sqlCallback", "loadJS", "runAsync", "runPeriodically",
   "makeNSIURI", "readURLasUTF8", "readFile", "writeFile", "splitLines",
   "ioService", "promptService", "ourPref", "generalPref", "privateBrowsing",
+  "DOMParser", "XMLSerializer",
   "getStringBundle", "StringBundle", "getExtensionFullVersion", "findSomeBrowserWindow",
   "Exception", "NotReached", "Abortable", "TimeoutAbortable", "IntervalAbortable",
   "SuccessiveAbortable", "XPCOMUtils",  "getProfileDir", "getSpecialDir", "getOS",
@@ -71,6 +72,11 @@ XPCOMUtils.defineLazyServiceGetter(this, "privateBrowsing",
 XPCOMUtils.defineLazyServiceGetter(this, "scriptLoader",
     "@mozilla.org/moz/jssubscript-loader;1", "mozIJSSubScriptLoader");
 
+const DOMParser = new Components.Constructor(
+  "@mozilla.org/xmlextras/domparser;1", Ci.nsIDOMParser);
+const XMLSerializer = new Components.Constructor(
+  "@mozilla.org/xmlextras/xmlserializer;1", Ci.nsIDOMSerializer);
+
 XPCOMUtils.defineLazyGetter(this, "ourPref", function()
 {
   return new Preferences("extensions.unitedinternet.");
@@ -80,19 +86,26 @@ XPCOMUtils.defineLazyGetter(this, "generalPref", function()
   return Preferences;
 });
 
+/**
+ * @returns {nsIFile} the current profile directory
+ */
 function getProfileDir()
 {
   return getSpecialDir("ProfD");
 }
+/**
+ * Convenience for nsIDirectoryService
+ * @returns {nsIFile}
+ */
 function getSpecialDir(key)
 {
   return Cc["@mozilla.org/file/directory_service;1"]
       .getService(Ci.nsIProperties)
-      .get(key, Ci.nsILocalFile);
+      .get(key, Ci.nsIFile);
 }
 
 /**
- * Create a subtype
+ * Create a subtype.
  */
 function extend(child, supertype)
 {
@@ -100,7 +113,8 @@ function extend(child, supertype)
 }
 
 /**
- * Copy properties of |source| into |target|
+ * Copy properties of |source| into |target|.
+ * This is an alternative to extend().
  */
 function mixInto(source, target)
 {
@@ -695,6 +709,16 @@ ObserveTopic.prototype =
 }
 
 
+/**
+ * Removes |element| from |array|.
+ * @param array {Array} to be modified. Will be modified in-place.
+ * @param element {Object} If |array| has a member that equals |element|,
+ *    the array member will be removed.
+ * @param all {boolean}
+ *     if true: remove all occurences of |element| in |array.
+ *     if false: remove only the first hit
+ * @returns {Integer} number of hits removed (0, 1 or more)
+ */
 function arrayRemove(array, element, all)
 {
   var found = 0;
@@ -709,12 +733,38 @@ function arrayRemove(array, element, all)
   return found;
 }
 
+/**
+ * Check whether |element| is in |array|
+ * @param array {Array}
+ * @param element {Object}
+ * @returns {boolean} true, if |array| has a member that equals |element|
+ */
 function arrayContains(array, element)
 {
   return array.indexOf(element) != -1;
 }
 
-
+/**
+ * Normally, var b = a; (with a being an Object) copies only the pointer,
+ * and does not copy the whole object.
+ * E.g. when you do
+ * var a = { foo: 1 };
+ * var b = a;
+ * b.foo = 2;
+ * then a.foo == 2, not 1.
+ * This is what you normally expect, but sometimes you really need a copy.
+ *
+ * This function tries to copy the whole object, recursively.
+ * E.g. you can do:
+ * var a = { foo: 1 };
+ * var b = deepCopy(a);
+ * b.foo = 2;
+ * then a.foo == 1.
+ * 
+ * The function can only deal with simple objects, though, not with classes.
+ * I.e. you can use it for JSON-like objects, but
+ * not objects from class hierarchies.
+ */
 function deepCopy(org)
 {
   if (typeof(org) == "undefined")
@@ -748,6 +798,10 @@ var kDebugAlsoOnErrorConsole = true;
 XPCOMUtils.defineLazyServiceGetter(this, "gConsoleService",
     "@mozilla.org/consoleservice;1", "nsIConsoleService");
 
+/**
+ * Output some text on the console which helps in debugging,
+ * but not for end-users.
+ */
 function debug(text)
 {
   if (!kDebug)
@@ -759,11 +813,23 @@ function debug(text)
   gConsoleService.logStringMessage(text);
 }
 
+/**
+ * Output contents of object on console.
+ * @see dumpObject()
+ */
 function debugObject(obj, name, maxDepth, curDepth)
 {
   debug(dumpObject(obj, name, maxDepth, curDepth));
 }
 
+/**
+ * Return the contents of an object as multi-line string, for debugging.
+ * @param obj {Object} What you want to show
+ * @param name {String} What this object is. Used as prefix in output.
+ * @param maxDepth {Integer} How many levels of properties to access.
+ *    1 = just the properties directly on |obj|
+ * @param curDepth {Integer} internal, ignore
+ */
 function dumpObject(obj, name, maxDepth, curDepth)
 {
   if (curDepth == undefined)

@@ -16,7 +16,7 @@ function mPSHSearch(searchTerm)
 mPSHSearch.prototype =
 {
   /**
-   * Triggers the actual search, via DB, or over the network etc..
+   * Triggers the actual search in the search term DB
    */
   startSearch : function()
   {
@@ -35,7 +35,7 @@ mPSHSearch.prototype =
           if (pos == -1)
             continue;
           //debug("PSH hit for " + self._searchTerm + " in " + term + " at pos " + pos);
-          let result = new mSearchTermResult(term, descr, icon);
+          let result = new mPSHSearchTermResult(term, descr, icon);
           result.hitPos = pos;
           result.hitLengthRatio = term.length / self._searchTerm.length;
           self._addResult(result);
@@ -53,9 +53,6 @@ mPSHSearch.prototype =
           return 0;
         });
 
-        if (self._results.length > 0)
-          self._addResult(new mClearCommandResult());
-
         self._notifyObserversOfResultChanges();
       },
       function(e) { self._haveFatalError(e); });
@@ -63,6 +60,31 @@ mPSHSearch.prototype =
   },
 }
 extend(mPSHSearch, mSearch);
+
+/**
+ * This adds the clear history item
+ *
+ * Returns |mResult|s.
+ */
+function mClearPSH()
+{
+  mSearch.call(this);
+}
+mClearPSH.prototype =
+{
+  /**
+   * Adds exactly one static item
+   */
+  startSearch : function()
+  {
+    try {
+      this._addResult(new mClearCommandResult());
+      this._notifyObserversOfResultChanges();
+    } catch (e) { this._haveFatalError(e); }
+  },
+}
+extend(mClearPSH, mSearch);
+
 
 /**
  * An result item that allows the user to clear the search history.
@@ -79,7 +101,7 @@ mClearCommandResult.prototype =
   activate : function(firefoxWindow)
   {
     Components.utils.import("resource://unitedtb/search/search-store.js", this);
-    deleteLastSearches(function() {}, firefoxWindow.united.errorCritical);
+    deleteLastSearches(function() {}, firefoxWindow.unitedinternet.common.errorCritical);
   },
 }
 extend(mClearCommandResult, mResult);

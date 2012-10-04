@@ -94,6 +94,8 @@ AutocompleteWidget.prototype =
     if (this._xul)
     {
       this._popup = this._document.createElementNS(XUL, "panel");
+      this._popup._onPopupShown = this._onPopupShown;
+      this._popup.addEventListener("popupshown", this._onPopupShown, false);
       this._popup.addEventListener("popupshowing", function(event)
       {
         event.target.popupBoxObject.setConsumeRollupEvent(
@@ -132,6 +134,24 @@ AutocompleteWidget.prototype =
   },
 
   /**
+   * Event handler for |popupshown| on |_popup|.
+   * On Windows, panels have a border of 3 pixels. So even though we
+   * set the width of the panel to be the same as the textfield, it actually
+   * ends up 6 pixels narrower. In order to have the items display correctly,
+   * we need to set the max width of the ac_items to the real width of the
+   * panel which we can get by getting the computed style of the panel.
+   */
+  _onPopupShown : function(event) {
+    const kAutocompleteCSSMaxWidth = ".ac-popup:not(.ac-popup-html) .ac-item {max-width: %WIDTH%px;}"
+    event.target.removeEventListener("popupshown", event.target._onPopupShown, false);
+    var style = window.getComputedStyle(event.target, null);
+    var width = parseInt(style.getPropertyValue("width"));
+    var css = event.target.ownerDocument.createElementNS(HTML, "style");
+    css.appendChild(event.target.ownerDocument.createTextNode(kAutocompleteCSSMaxWidth.replace("%WIDTH%", width)));
+    this.parentNode.appendChild(css);
+  },
+
+  /**
    * Event handler for |focus| on |_textfield|.
    * Will show popup once |_textfield| gains |focus|.
    */
@@ -158,7 +178,7 @@ AutocompleteWidget.prototype =
       cur = cur.parentNode;
       if (!cur)
         return false;
-      else if (cur == parent);
+      else if (cur == parent)
         return true;
     }
   },
@@ -1032,7 +1052,6 @@ ReplacedTextLayoutAutocompleteItem.prototype =
 }
 ac_extend(ReplacedTextLayoutAutocompleteItem, AutocompleteItem);
 
-
 const kAutocompleteCSS = "\n\
 .ac-popup:not(.ac-popup-html) {\n\
   height : 1px;\n\
@@ -1054,8 +1073,7 @@ const kAutocompleteCSS = "\n\
   display : none;\n\
 }\n\
 .ac-popup div.ac-item {\n\
-   margin: 0px 2px;\n\
-   padding: 0px 2px;\n\
+   padding: 0px 4px;\n\
    overflow: hidden;\n\
 }\n\
 \n\
@@ -1069,8 +1087,9 @@ const kAutocompleteCSS = "\n\
   position : relative;\n\
   overflow: hidden;\n\
   text-overflow: ellipsis;\n\
+  margin-top: 2px;\n\
+  margin-bottom: 2px;\n\
   white-space: nowrap;\n\
-  margin: 2px;\n\
 }\n\
 \n\
 /* These show up under each search result */\n\

@@ -9,18 +9,18 @@
 
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    united.horoscope = {};
-    united.loadJS("chrome://unitedtb/content/horoscope/horoscope-toolbaritem.js", united.horoscope);
+    unitedinternet.initModule(unitedinternet, "horoscope");
+    unitedinternet.loadJS("chrome://unitedtb/content/horoscope/horoscope-toolbaritem.js", unitedinternet.horoscope);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->
 
-  <toolbarpalette id="BrowserToolbarPalette">
+  <toolbar id="united-toolbar">
     <toolbarbutton id="united-horoscope-button"
         label="&united.horoscope.button.label;"
         tooltiptext="&united.horoscope.button.tooltip;"
-        oncommand="united.horoscope.onItemClicked(event.target.entry);"
-        onpopupshowing="united.horoscope.onDropdownOpened(event);"
+        oncommand="unitedinternet.horoscope.onItemClicked(event.target.entry);"
+        onpopupshowing="unitedinternet.horoscope.onDropdownOpened(event);"
         type="menu-button"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
@@ -29,5 +29,5 @@
         >
       <menupopup id="united-horoscope-button-dropdown"/>
     </toolbarbutton>
-  </toolbarpalette>
+  </toolbar>
 </overlay>

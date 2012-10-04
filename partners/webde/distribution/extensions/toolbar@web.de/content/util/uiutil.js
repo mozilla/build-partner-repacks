@@ -1,8 +1,7 @@
-
 function error(e)
 {
-  united.debug("ERROR: " + e);
-  united.debug("Stack:\n" + (e.stack ? e.stack : "none"));
+  debug("ERROR: " + e);
+  debug("Stack:\n" + (e.stack ? e.stack : "none"));
 };
 
 function errorNonCritical(e)
@@ -13,7 +12,7 @@ function errorNonCritical(e)
 function errorCritical(e)
 {
   error(e);
-  var sb = united.getStringBundle("chrome://unitedtb/locale/util.properties");
+  var sb = getStringBundle("chrome://unitedtb/locale/util.properties");
   var title = sb.GetStringFromName("errorDialog.title");
   alertPrompt(title, e);
 };
@@ -37,7 +36,7 @@ var _gActiveTabs = {};
 
 function loadPageInSpecificTab(url, tabName)
 {
-  url = united.sanitize.url(url); // critical for security
+  url = sanitize.url(url); // critical for security
   // .get retrieves the actual tab object from the weak reference.
   // If it is null, the tab no longer exists
   // We also have to check for parentNode, because the tab might
@@ -48,7 +47,7 @@ function loadPageInSpecificTab(url, tabName)
       tabRef.get().parentNode)
   {
     var tabToUse = tabRef.get();
-    var uri = united.ioService.newURI(url, null, null);
+    var uri = ioService.newURI(url, null, null);
     // Only use the same tab if the hosts are the same
     if (tabToUse.linkedBrowser.currentURI.host == uri.host)
     {
@@ -86,7 +85,7 @@ function loadPage(url, target)
 {
   var gBrowser = top.gBrowser ? top.gBrowser :
       findSomeBrowserWindow().gBrowser;
-  url = united.sanitize.url(url); // critical for security
+  url = sanitize.url(url); // critical for security
   /* If the target begins with united, try to reuse a tab */
   if (target && target.match(/^united/))
     loadPageInSpecificTab(url, target);
@@ -104,11 +103,11 @@ function loadPage(url, target)
  */
 function loadChromePage(url, target)
 {
-  target = united.sanitize.enum(target,
+  target = sanitize.enum(target,
       ["current", "tab", "tabshifted", "window", "save"], "current");
   var openUILinkIn = top.openUILinkIn ? top.openUILinkIn :
       findSomeBrowserWindow().openUILinkIn;
-  united.debug("loading webpage <" + url + "> in " + target);
+  debug("loading webpage <" + url + "> in " + target);
   openUILinkIn(url, target);  // from utilityOverlay.js
 }
 
@@ -118,12 +117,12 @@ function loadChromePage(url, target)
  */
 function loadPageWithPOST(url, target, uploadBody, mimetype)
 {
-  url = united.sanitize.url(url); // critical for security
-  target = united.sanitize.enum(target,
+  url = sanitize.url(url); // critical for security
+  target = sanitize.enum(target,
       ["current", "tab", "tabshifted", "window", "save"], "current");
   var openUILinkIn = top.openUILinkIn ? top.openUILinkIn :
       findSomeBrowserWindow().openUILinkIn;
-  united.debug("loading webpage with POST <" + url + "> in " + target);
+  debug("loading webpage with POST <" + url + "> in " + target);
   openUILinkIn(url, target, false, createPostDataFromString(uploadBody, mimetype));
 }
 
@@ -163,7 +162,7 @@ function createPostDataFromString(uploadBody, mimetype)
  *
 function loadPageWithPOSTParams(url, target, params)
 {
-  united.assert(typeof(params) == "object");
+  assert(typeof(params) == "object");
   var paramsStr = "";
   var first = true;
   for (let paramname in params)
@@ -172,7 +171,7 @@ function loadPageWithPOSTParams(url, target, params)
       first = false;
     else
       paramsStr += "&";
-    paramsStr += united.sanitize.alphanumdash(paramname) + "=" +
+    paramsStr += sanitize.alphanumdash(paramname) + "=" +
         encodeURIComponent(params[paramname]);
   }
   loadPageWithPOSTParams(url, target, paramsStr, "application/x-www-form-urlencoded");
@@ -194,8 +193,8 @@ function cleanElement(el)
  */
 function findParentTagForElement(tagname, element)
 {
-  united.assert(element && element instanceof Ci.nsIDOMElement);
-  united.sanitize.nonemptystring(tagname);
+  assert(element && element instanceof Ci.nsIDOMElement);
+  sanitize.nonemptystring(tagname);
   for (; element && element.tagName != tagname; element = element.parentNode)
     ;
   return element;
@@ -253,7 +252,7 @@ function waitForPageLoad(tabbrowser, callback)
     onStateChange : function(browser, webProgress, request, stateFlags, status)
     {
       try {
-        //united.debug("onStateChange");
+        //debug("onStateChange");
         if (! (stateFlags & Ci.nsIWebProgressListener.STATE_STOP ||
               stateFlags & Ci.nsIWebProgressListener.STATE_REDIRECTING))
           return;
@@ -261,14 +260,14 @@ function waitForPageLoad(tabbrowser, callback)
         try {
           request = request.QueryInterface(Ci.nsIChannel);
         } catch (e) {
-          //united.debug("request is not a channel");
+          //debug("request is not a channel");
           return;
         }
-        //united.debug("uri requested: " + request.URI.spec);
+        //debug("uri requested: " + request.URI.spec);
         if (! callback(browser, request.URI.spec))
           return;
         tabbrowser.removeTabsProgressListener(webTabProgressListener);
-      } catch (e) { united.errorInBackend(e); }
+      } catch (e) { errorInBackend(e); }
     },
     onLocationChange: function() {},
     onProgressChange: function() {},
@@ -324,7 +323,7 @@ function getTopLevelWindowContext()
  */
 function checkDisabledModules(win)
 {
-  for each (let module in united.brand)
+  for each (let module in brand)
   {
     if (typeof(module.disabled) == "undefined")
       continue;
@@ -335,7 +334,7 @@ function checkDisabledModules(win)
       let e = win.document.getElementById(entry.el);
       if (!e)
       {
-        united.debug("warning: element ID " + entry.el + " (to be disabled) not found");
+        debug("warning: element ID " + entry.el + " (to be disabled) not found");
         continue;
       }
       e.hidden = module.disabled;
@@ -349,7 +348,7 @@ function checkDisabledModules(win)
  * The entries are coming from brand.js. They will be reloaded when the region changes.
  * Assumptions:
  * - The URL entries are at the end of the menu.
- * - The entries are defined in united.brand.<modulename>.dropdownURLEntries
+ * - The entries are defined in brand.<modulename>.dropdownURLEntries
  * - The <menupopup> has the ID "united-<modulename>-button-dropdown"
  * - The icons are at URL chrome://unitedtb/skin/<iconpath>/<entry.icon>
  * You call this function on window onLoad and then not again for this window.
@@ -362,21 +361,21 @@ function checkDisabledModules(win)
  *     May be null.
  * @param itemClickedCallback {Function(entry, item)}
  *     entry {Object with label, icon} the entry in
- *        united.brand.<modulename>.dropdownURLEntries
+ *        brand.<modulename>.dropdownURLEntries
  *     item {<menuitem>} The clicked menuitem
  *     event   The click event
  *     event.target == item and event.target.entry == item.entry == entry
  */
 function appendBrandedMenuitems(modulename, iconpath, initedCallback, itemClickedCallback)
 {
-  // I can't save (or get passed) united.brand[modulename] here,
+  // I can't save (or get passed) brand[modulename] here,
   // because it gets re-created by brand-var-loader.js on region change.
-  this.modulename = united.sanitize.nonemptystring(modulename);
-  this.iconpath = united.sanitize.nonemptystring(iconpath);
+  this.modulename = sanitize.nonemptystring(modulename);
+  this.iconpath = sanitize.nonemptystring(iconpath);
   this.container = document.getElementById(
       "united-" + modulename + "-button-dropdown");
-  united.assert(!initedCallback || typeof(initedCallback) == "function");
-  united.assert(typeof(itemClickedCallback) == "function", "need an itemClickedCallback");
+  assert(!initedCallback || typeof(initedCallback) == "function");
+  assert(typeof(itemClickedCallback) == "function", "need an itemClickedCallback");
   this.itemClickedCallback = itemClickedCallback;
   this.initedCallback = initedCallback;
 
@@ -385,7 +384,7 @@ function appendBrandedMenuitems(modulename, iconpath, initedCallback, itemClicke
   {
     self.populate();
   }, false);
-  united.autoregisterGlobalObserver("region-changed", function()
+  autoregisterGlobalObserver("region-changed", function()
   {
     self.resetMenuitems();
   });
@@ -409,7 +408,7 @@ appendBrandedMenuitems.prototype =
     if (this.inited)
       return;
     // create <menuitem label="Foobar" url="..."/>, url property used above
-    for each (let entry in united.brand[this.modulename].dropdownURLEntries)
+    for each (let entry in brand[this.modulename].dropdownURLEntries)
     {
       let item = this.container.ownerDocument.createElement("menuitem");
       item.setAttribute("label", entry.label);
@@ -479,7 +478,7 @@ BlockContentListener.prototype =
   },
   onStartURIOpen: function(uri)
   {
-    united.debug("Shall I load <" + uri.spec + ">?");
+    debug("Shall I load <" + uri.spec + ">?");
     var allow = this.allowFunc(uri.spec, uri)
     if (!allow && this.blockedCallback)
       this.blockedCallback(uri.spec);
@@ -537,6 +536,6 @@ function loadBlockedInBrowser(panel)
   return function(uri) // blockedCallback
   {
     panel.hidePopup();
-    united.loadPage(uri);
+    loadPage(uri);
   };
 }

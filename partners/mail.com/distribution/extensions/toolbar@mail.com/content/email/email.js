@@ -23,8 +23,11 @@ Components.utils.import("resource://unitedtb/email/webapp-start.js", this);
 //Components.utils.import("resource://unitedtb/email/taskbar.js", this);
 Components.utils.import("resource://gre/modules/PluralForm.jsm", this);
 Components.utils.import("resource://unitedtb/util/globalobject.js", this);
-var gStringBundle = new united.StringBundle(
+Components.utils.import("resource://unitedtb/email/badge.js", this);
+var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/email/email.properties");
+var gBrandBundle = new StringBundle(
+    "chrome://unitedtb/locale/email/email-brand.properties");
 
 var gEmailButton = null;
 var gEmailButtonDropdown = null;
@@ -51,25 +54,25 @@ function onLoad()
   try {
     gEmailButton = document.getElementById("united-email-button");
     gEmailButtonDropdown = document.getElementById("united-email-button-dropdown");
-    new united.appendBrandedMenuitems("email", "email", null, function(entry)
+    new appendBrandedMenuitems("email", "email", null, function(entry)
     {
-      united.loadPage(entry.url, "tab");
+      loadPage(entry.url, "tab");
     });
 
     readAccounts();
     updateUI();
 
     // Display XXL Tooltip asking to log in
-    if (united.brand.login.enableXXLTooltip && !gMailAccs.length)
+    if (brand.login.enableXXLTooltip && !gMailAccs.length)
     {
-      if (!united.ourPref.get("email.shownOffer", false))
+      if (!ourPref.get("email.shownOffer", false))
       {
-        united.ourPref.set("email.shownOffer", true);
+        ourPref.set("email.shownOffer", true);
         var popup = document.getElementById("united-email-popup");
         popup.openPopup(gEmailButton, "after_start", 0, 0, false, true);
       }
     }
-  } catch (e) { united.errorCritical(e); }
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -80,8 +83,8 @@ function accountListChange()
   readAccounts();
   updateUI();
 }
-united.autoregisterGlobalObserver("account-added", accountListChange);
-united.autoregisterGlobalObserver("account-removed", accountListChange);
+autoregisterGlobalObserver("account-added", accountListChange);
+autoregisterGlobalObserver("account-removed", accountListChange);
 
 function readAccounts()
 {
@@ -120,35 +123,51 @@ function updateUI()
   // delete
   for each (let menuitem in gEmailMenuitems)
     gEmailButtonDropdown.removeChild(menuitem);
-  var insertBefore = document.getElementById("united-email-separator-after-accounts");
+  var insertBeforeE = document.getElementById("united-email-separator-after-accounts");
   var tooltiptext = gEmailButton.getAttribute("tooltiptext-for-item");
   gEmailMenuitems = [];
 
   for each (let acc in gMailAccs)
   {
+    let menuseparator = document.createElement("menuseparator");
+    gEmailMenuitems.push(menuseparator);
+    gEmailButtonDropdown.insertBefore(menuseparator, insertBeforeE);
     let menuitem = document.createElement("menuitem");
     menuitem.classList.add("united-email-unread-menuitem");
     menuitem.classList.add("menuitem-iconic");
     menuitem.setAttribute("tooltiptext", tooltiptext);
     menuitem.addEventListener("command", onCommandAccountMenuitem, false);
-    updateMenuitem(menuitem, acc);
+    updateMenuitem(menuitem, acc, 2);
     gEmailMenuitems.push(menuitem);
-    gEmailButtonDropdown.insertBefore(menuitem, insertBefore);
+    gEmailButtonDropdown.insertBefore(menuitem, insertBeforeE);
+    if (acc.unknownNewMailCount > 0) {
+      let menuitem = document.createElement("menuitem");
+      menuitem.classList.add("united-email-unread-menuitem");
+      menuitem.classList.add("menuitem-iconic");
+      menuitem.setAttribute("tooltiptext", tooltiptext);
+      menuitem.addEventListener("command", onCommandAccountMenuitem, false);
+      updateMenuitem(menuitem, acc, 3);
+      menuitem.account = acc;
+      gEmailMenuitems.push(menuitem);
+      gEmailButtonDropdown.insertBefore(menuitem, insertBeforeE);
+    }
   }
-  insertBefore.hidden = !gMailAccs.length;
 
   var summary = accountsSummary();
   var summaryFakeAcc = summary.accountCount ? summary : null;
   gEmailButton.setAttribute("status", statusAttr(summaryFakeAcc));
   gEmailButton.setAttribute("tooltiptext", unreadText(summaryFakeAcc));
-  drawUnreadCount(summary.newMailCount);
+  drawCount(summary.newMailCount, gEmailButton, gMailImage);
+  unitedinternet.toolbar.onButtonSizeChangedByCode();
+  // Disabled because of Mozilla bug 744992
+  //updateTaskbarIcon(window, summary.newMailCount > 0 ? gMailImage.src : null);
 
   // show new mail alerts
   // |newMailCount| is actually unread mail, so check whether this increased
   // to see whether we have really new mail.
   // We need to know this only momentarily to show the alert.
   const kMinIntervall = 3000; // Minimum time between 2 notifications. in ms
-  //united.debug("last notification was on " + gLastNotificationTime.toLocaleString() + " = " + gLastNotificationTime.valueOf() + ", that is " + (new Date() - gLastNotificationTime) + " ago");
+  //debug("last notification was on " + gLastNotificationTime.toLocaleString() + " = " + gLastNotificationTime.valueOf() + ", that is " + (new Date() - gLastNotificationTime) + " ago");
   if (gLastUnreadMailCount != -1 && // not at new window, but at browser start / login
       summary.newMailCount > gLastUnreadMailCount &&
       new Date() - gLastNotificationTime > kMinIntervall)
@@ -160,28 +179,53 @@ function updateUI()
   }
   gLastUnreadMailCount = summary.newMailCount;
 }
-united.autoregisterGlobalObserver("mail-check", updateUI);
+autoregisterGlobalObserver("mail-check", updateUI);
 
-function updateMenuitem(menuitem, acc)
+function updateMenuitem(menuitem, acc, type)
 {
   menuitem.account = acc;
   menuitem.setAttribute("status", statusAttr(acc));
   menuitem.setAttribute("label",
       gStringBundle.get("button.emailAddressPlacement")
         .replace("%1", acc.emailAddress)
-        .replace("%2", unreadText(acc)));
+        .replace("%2", unreadText(acc, type)));
 }
 
-function unreadText(acc)
+/**
+ * Function that generates the text of the menubutton or tooltip
+ * based on the number of emails, the status, and the type
+ * @param acc {object} The account object
+ * @param type {integer} The type of item for which text is being generated
+ *   1 = New mail (all minus cruft, as defined by server)
+ *   2 = Friends only
+ *   3 = Unknown senders only
+ * @returns {String} the formatted string
+ */
+function unreadText(acc, type)
 {
+  var count;
+  var bundleSuffix;
+  if (acc) {
+    if (type == 2) { // Friends only
+      count = acc.friendsNewMailCount;
+      bundleSuffix = ".inbox";
+    } else if (type == 3) { // Unknown senders
+      count = acc.unknownNewMailCount;
+      bundleSuffix = ".unknown";
+    } else {
+      count = acc.newMailCount;
+      bundleSuffix = "";
+    }
+  }
+
   return acc
       ? (acc.isLoggedIn
-        ? (acc.newMailCount > 0
-           ? PluralForm.get(acc.newMailCount,
-               gStringBundle.get("button.new.tooltip"))
-               .replace("%S", acc.newMailCount)
-           : gStringBundle.get("button.nonew.tooltip"))
-        : gStringBundle.get("button.disconnected.tooltip"))
+        ? (count > 0
+           ? PluralForm.get(count,
+               gBrandBundle.get("button.new" + bundleSuffix))
+               .replace("%S", count)
+           : gBrandBundle.get("button.nonew" + bundleSuffix))
+        : gStringBundle.get("button.disconnected"))
       : document.getElementById("united-email-configure-menuitem")
           .getAttribute("tooltiptext");
 }
@@ -196,42 +240,40 @@ function statusAttr(acc)
 function playSound()
 {
   try {
-    if ( !united.ourPref.get("email.notification.sound.enabled"))
+    if ( !ourPref.get("email.notification.sound.enabled"))
       return;
     var sound = Cc["@mozilla.org/sound;1"]
         .createInstance(Ci.nsISound);
-    if (united.getOS() == "mac")
+    if (getOS() == "mac")
       sound.beep();
     else
       sound.playEventSound(Ci.nsISound.EVENT_NEW_MAIL_RECEIVED);
-    //sound.play(united.makeNSIURI("chrome://unitedtb/skin/email/kongas.wav"));
-    united.debug("beep");
-  } catch (e) { united.errorNonCritical(e); } // unexpected, but non-critical
+    //sound.play(makeNSIURI("chrome://unitedtb/skin/email/kongas.wav"));
+    debug("beep");
+  } catch (e) { errorNonCritical(e); } // unexpected, but non-critical
 }
 
 function showDesktopNotification(newMailCount)
 {
   try {
-    if ( !united.ourPref.get("email.notification.desktop.enabled"))
+    if ( !ourPref.get("email.notification.desktop.enabled"))
       return;
-    var message = PluralForm.get(newMailCount,
-        gStringBundle.get("alert.message.pluralform"))
-        .replace("%S", newMailCount);
+    var message = gStringBundle.get("alert.message");
     var alerts = Cc["@mozilla.org/alerts-service;1"]
         .getService(Ci.nsIAlertsService);
     alerts.showAlertNotification(
-        "chrome://unitedtb/skin/email/email-new-small.png", // image
-        gStringBundle.get("alert.title"), // title
+        "chrome://unitedtb/skin/email/email-new-dropdown.png", // image
+        brand.toolbar.name, // title
         message, // message text
         true, // clickable
         null, // callback ID
         desktopNotificationClickObserver, // listener
         gStringBundle.get("alert.name") // name for Growl config
         );
-    united.debug(message);
+    debug(message);
   } catch (e) { // expected, e.g. if Growl is not installed
-    united.errorNonCritical("Could not show desktop notificaton");
-    united.errorNonCritical(e);
+    errorNonCritical("Could not show desktop notificaton");
+    errorNonCritical(e);
   }
 }
 
@@ -259,61 +301,6 @@ function desktopNotificationClicked(dummy, cookie)
   }
 }
 
-const minUnreadCountWidth = 16;
-const unreadCountPadding = 1;
-const separatorWidth = 2;
-const iconWidth = 16;
-const iconHeight = 16;
-
-function drawUnreadCount(unreadcount)
-{
-  if (unreadcount == 0)
-  {
-    gEmailButton.style.listStyleImage = "";
-    //updateTaskbarIcon(window, null);
-    return;
-  }
-
-  var canvas = document.getElementById("united-email-canvas");
-  if (!canvas)
-  {
-    canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
-    canvas.setAttribute("id", "united-email-canvas");
-    canvas.setAttribute("height", iconHeight);
-  }
-  var ctx = canvas.getContext("2d");
-  /* Measure text and adjust canvas accordingly */
-  ctx.strokeStyle = "#C31718";
-  var textMetrics = ctx.measureText(unreadcount);
-  /* If the width of the text plus 2 for padding is over 16, grow the canvas */
-  var unreadCountWidth;
-  if (textMetrics.width + unreadCountPadding > minUnreadCountWidth) {
-    canvas.setAttribute("width", iconWidth + separatorWidth + textMetrics.width + unreadCountPadding*2);
-    unreadCountWidth = textMetrics.width + unreadCountPadding*2;
-  } else {
-    canvas.setAttribute("width", iconWidth + separatorWidth + minUnreadCountWidth);
-    unreadCountWidth = minUnreadCountWidth;
-  }
-  ctx.drawImage(gMailImage, 0, 0);
-  ctx.fillStyle = "#C40A0A"; // dark red
-  ctx.strokeStyle = "#C31718";
-  ctx.fillRect(iconWidth + separatorWidth, 0, unreadCountWidth, iconHeight);
-  ctx.font = "bold 10px Helvetica, sans-serif";
-  ctx.fillStyle = "white";
-  var xPos = iconWidth + separatorWidth + unreadCountPadding;
-  /* If we did not grow the canvas, we need to center the text */
-  if (unreadCountWidth == minUnreadCountWidth) {
-    xPos = xPos + (unreadCountWidth - textMetrics.width)/2;
-  }
-  // Math can't be used to compute this value.
-  // It's the position where the 10 pixels font looks best
-  // centered vertocally
-  ctx.fillText(unreadcount, xPos, 12);
-  var url = canvas.toDataURL();
-  gEmailButton.style.listStyleImage = "url('" + url + "')";
-  //updateTaskbarIcon(window, gMailImage.src);
-}
-
 /**
  * Mail button clicked.
  * Effect:
@@ -325,7 +312,7 @@ function onCommandMailButton()
 {
   if (gMailAccs.length == 0) // nothing configured
   {
-    united.notifyWindowObservers("do-login", {
+    notifyWindowObservers("do-login", {
       withUI : true,
       account : null,
       needAccountType : 1,
@@ -355,7 +342,7 @@ function onCommandAccountMenuitem(event)
 {
   event.stopPropagation(); // prevent it from bubbling to main <button>
   var acc = event.target.account;
-  united.assert(acc && acc.emailAddress);
+  assert(acc && acc.emailAddress);
   ensureLoginAndDo(acc, goToWebmail);
 }
 
@@ -367,6 +354,19 @@ function goToWebmail(acc)
     goToWebmailOld(acc, window);
 }
 
+// Set the checking attribute on the icon so we get animation
+function animateMailCheckIcon() {
+  gEmailButton.setAttribute("checking", "true");
+}
+
+// Stop the animation for checking mail by removing the attribute
+// We do this on a 1 second timeout so we get at least a second of animation
+function stopMailCheckIcon() {
+  window.setTimeout(function() {
+    gEmailButton.removeAttribute("checking");
+  }, 1000);
+}
+
 /**
  * User wants to trigger a mail poll right now.
  */
@@ -374,19 +374,33 @@ function onCommandCheckMailsNow(event)
 {
   event.stopPropagation(); // prevent it from bubbling to main <button>
 
-  united.notifyWindowObservers("do-login", {
+  animateMailCheckIcon();
+  notifyWindowObservers("do-login", {
     withUI : true,
     needAccountType : 10, // all accounts
     successCallback : function(a)
     {
+      // Need to track if mail was actually checked so we can turn off
+      // the icon if it wasn't
+      var checkedMail = false;
       for each (let acc in gMailAccs)
       {
         if (acc.isLoggedIn)
-          acc.mailCheck(false, false, function() {}, united.errorCritical);
+        {
+          checkedMail = true;
+          acc.mailCheck(false, false, stopMailCheckIcon,
+                        function(e) { stopMailCheckIcon(); errorCritical(e); });
+        }
       }
+      if (!checkedMail)
+        stopMailCheckIcon();
     },
-    // errorCallback default: show errors
-    // abortCallback default: do nothing
+    errorCallback: function(e)
+    {
+      stopMailCheckIcon();
+      errorCritical(e);
+    },
+    abortCallback: stopMailCheckIcon
   });
 }
 
@@ -398,7 +412,7 @@ function onCommandCheckMailsNow(event)
 function onCommandConfigureMenuitem(event)
 {
   event.stopPropagation(); // prevent it from bubbling to main <button>
-  united.openPrefWindow("email");
+  unitedinternet.openPrefWindow("email");
 }
 
 /**
@@ -413,7 +427,7 @@ function ensureLoginAndDo(acc, successCallback)
   }
   else
   {
-    united.notifyWindowObservers("do-login", {
+    notifyWindowObservers("do-login", {
       withUI : true,
       account: acc,
       needAccountType : 9, // specific account
@@ -431,12 +445,12 @@ function ensureLoginAndDo(acc, successCallback)
 function onXXLTooltipClicked()
 {
   // make server ping to measure clicks
-  if (united.brand.login.trackXXLTooltipClickedURL)
+  if (brand.login.trackXXLTooltipClickedURL)
   {
-    new united.FetchHTTP({
-        url : united.brand.login.trackXXLTooltipClickedURL,
+    new FetchHTTP({
+        url : brand.login.trackXXLTooltipClickedURL,
         method : "GET",
-    }, function() {}, united.errorNonCritical).start();
+    }, function() {}, errorNonCritical).start();
   }
 
   onCommandMailButton();

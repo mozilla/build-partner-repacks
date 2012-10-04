@@ -15,19 +15,6 @@
         >
       <caption label="&pane.title;" />
 
-      <hbox align="baseline">
-        <label value="&viewmode.label;" control="viewmode"/>
-        <menulist id="viewmode"
-                    preference="extensions.unitedinternet.newtab.viewmode"
-                    >
-          <menupopup>
-            <menuitem value="1"
-                label="&as-pics.label;" accesskey="&as-pics.accesskey;"/>
-            <menuitem value="2"
-                label="&as-text.label;" accesskey="&as-text.accesskey;"/>
-          </menupopup>
-        </menulist>
-      </hbox>
       <checkbox preference="extensions.unitedinternet.newtab.setFocus"
           label="&focus.label;"/>
       <checkbox preference="extensions.unitedinternet.newtab.enabled"

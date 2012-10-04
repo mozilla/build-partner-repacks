@@ -36,11 +36,11 @@ mSearchTermResult.prototype =
 
   activate : function(firefoxWindow)
   {
-    firefoxWindow.united.notifyWindowObservers("search-started",
+    firefoxWindow.unitedinternet.common.notifyWindowObservers("search-started",
       { searchTerm : this._term, source : 1 });
     var url = brand.search.toolbarURL;
     url += encodeURIComponent(this._term);
-    firefoxWindow.united.loadPage(url); // from util.js
+    firefoxWindow.unitedinternet.common.loadPage(url); // from util.js
   },
 
 }

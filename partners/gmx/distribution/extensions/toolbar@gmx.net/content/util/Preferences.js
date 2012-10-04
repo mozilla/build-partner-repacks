@@ -60,6 +60,7 @@ function Preferences(args) {
     }
     else if (args)
       this._prefBranch = args;
+    this.isDefaultBranch = false;
 }
 
 Preferences.prototype = {
@@ -87,7 +88,16 @@ Preferences.prototype = {
   _get: function(prefName, defaultValue) {
     switch (this._prefSvc.getPrefType(prefName)) {
       case Ci.nsIPrefBranch.PREF_STRING:
-        return this._prefSvc.getComplexValue(prefName, Ci.nsISupportsString).data;
+        try {
+          return value = this._prefSvc.getComplexValue(prefName, Ci.nsISupportsString).data;
+        } catch (ex) {
+          if (this.isDefaultBranch)
+            // The preference might exist as a user pref, but not have a default
+            // value. In that case, getComplexValue throws. Just return null.
+            return null;
+          else
+            return this._prefSvc.getCharPref(prefName);
+        }
 
       case Ci.nsIPrefBranch.PREF_INT:
         return this._prefSvc.getIntPref(prefName);
@@ -323,7 +333,7 @@ Preferences.prototype = {
    * *Only* call get() on this.
    * If you call set(), you will modify the defaults, so don't do that!
    */
-  defaults : function() {
+  get defaults() {
     let defaultBranch = Cc["@mozilla.org/preferences-service;1"].
                   getService(Ci.nsIPrefService).
                   getDefaultBranch(this._prefBranch).
@@ -331,6 +341,7 @@ Preferences.prototype = {
     let prefs = new Preferences(this._prefBranch);
     // override. nasty, but this is internal, so OK.
     prefs.__defineGetter__("_prefSvc", function() defaultBranch);
+    prefs.isDefaultBranch = true;
     return prefs;
   },
 

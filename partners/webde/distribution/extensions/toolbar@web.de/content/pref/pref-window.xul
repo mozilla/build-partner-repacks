@@ -22,9 +22,9 @@
      windowtype="Unitedtb:Preferences"
      persist="lastSelected screenX screenY"
      buttons="accept,cancel,extra1"
-     ondialogaccept="return upref.win.save();"
-     ondialogcancel="return upref.win.cancel();"
-     ondialogextra1="return upref.win.setDefault();"
+     ondialogaccept="return unitedinternet.win.save();"
+     ondialogcancel="return unitedinternet.win.cancel();"
+     ondialogextra1="return unitedinternet.win.setDefault();"
      buttonlabelextra1="&setdefault.label;"
      buttonaccesskeyextra1="&setdefault.accesskey;"
      buttonlabelaccept="&ok.label;"
@@ -34,10 +34,9 @@
   <script type="application/javascript"
           src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    united.loadJS("chrome://unitedtb/content/pref/pref-element.js", this);
-    var upref = {};
-    upref.win = {};
-    united.loadJS("chrome://unitedtb/content/pref/pref-window.js", upref.win);
+    unitedinternet.loadJS("chrome://unitedtb/content/pref/pref-element.js", this);
+    unitedinternet.initModule(unitedinternet, "win");
+    unitedinternet.loadJS("chrome://unitedtb/content/pref/pref-window.js", unitedinternet.win);
   </script>
 
   <tabbox id="tabbox">

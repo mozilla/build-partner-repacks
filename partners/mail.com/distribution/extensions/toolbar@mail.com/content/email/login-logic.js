@@ -29,6 +29,7 @@ Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/util/fetchhttp.js");
 Components.utils.import("resource://unitedtb/util/observer.js");
+Components.utils.import("resource://unitedtb/util/JXON.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
 Components.utils.import("resource://unitedtb/email/account-base.js");
 var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/login.properties");
@@ -530,7 +531,7 @@ function uasLogin(uasURL, serviceID, loginToken,
         },
         headers : kStandardHeaders,
   },
-  function(responseXML) // success
+  function(responseDOM) // success
   {
     /* Does a HTTP redirect (which XMLHttpRequest follows) directly to the
        ContextService, which gives:
@@ -558,50 +559,64 @@ function uasLogin(uasURL, serviceID, loginToken,
       </weblogin>
     </ToolbarContext>
     */
-    assert(typeof(responseXML) == "xml", gStringBundle.get("error.notXML"));
+    assert(responseDOM && responseDOM.firstChild.nodeName == "ToolbarContext", gStringBundle.get("error.notXML"));
     //assert(response.mailServiceBaseURI, gStringBundle.get("error.badXML"));
-    //debug("contextservice response:\n" + response);
+    //debug("contextservice response:\n" + fetch._request.response.replace(/>/g, ">\n"));
+
+    var fatalError = null;
+
     var loginContext = {
       service : {},
       weblogin : {},
     };
     //try {
-      for each (let webloginXML in responseXML.weblogin)
-      {
-        //try {
-        let name = sanitize.alphanumdash(webloginXML.@name);
-        assert(name);
-        loginContext.weblogin[name] = {
-          url : sanitize.url(webloginXML.loginURI),
-          body : replaceLoginParams(
-              sanitize.string(webloginXML.loginFormParams), loginToken),
-          mimetype : "application/x-www-form-urlencoded",
-          httpMethod : sanitize.enum(webloginXML.loginMethod,
-              [ "GET", "POST" ], "POST"),
-        };
-        //} catch (e) { errorInBackend(e); }
-      }
-      for each (let serviceXML in responseXML.service)
-      {
-        //try {
-        let name = sanitize.alphanumdash(serviceXML.@name);
-        assert(name);
-        loginContext.service[name] = {
-          url : sanitize.url(serviceXML.baseURI),
-        };
+      var response = JXON.build(responseDOM).ToolbarContext;
 
-        obj = loginContext.service[name];
-        if (name == "mailbox")
-        {
-          obj.ignoreFolderTypes = sanitize.string(serviceXML.ignoredFolders).split(",");
-          obj.interval = sanitize.integer(serviceXML.pollIntervalSec);
-          obj.sessionCookie = fetch.getResponseHeader("Set-Cookie"); // HACK bug 163861
+      for each (let weblogin in response.$weblogin)
+      {
+        try {
+          let name = sanitize.alphanumdash(weblogin["@name"]);
+          assert(name);
+          loginContext.weblogin[name] = {
+            url : sanitize.url(weblogin.loginURI),
+            body : replaceLoginParams(
+                sanitize.string(weblogin.loginFormParams), loginToken),
+            mimetype : "application/x-www-form-urlencoded",
+            httpMethod : sanitize.enum(weblogin.loginMethod,
+                [ "GET", "POST" ], "POST"),
+          };
+        } catch (e) { errorInBackend(e); }
+      }
+      for each (let service in response.$service)
+      {
+        try {
+          let name = sanitize.alphanumdash(service["@name"]);
+          assert(name);
+          loginContext.service[name] = {
+            url : sanitize.url(service.baseURI),
+          };
+
+          obj = loginContext.service[name];
+          if (name == "mailbox")
+          {
+            obj.ignoreFolderTypes = sanitize.string(service.ignoredFolders).split(",");
+            obj.interval = sanitize.integer(service.pollIntervalSec);
+            obj.sessionCookie = fetch.getResponseHeader("Set-Cookie"); // HACK bug 163861
+          }
+        } catch (e) {
+          errorInBackend(e);
+          /* If something fails with mailbox, it's a serious error. */
+          /* We need to call the errorCallback */
+          if (sanitize.alphanumdash(service["@name"]) == "mailbox")
+            fatalError = e;
         }
-        //} catch (e) { errorInBackend(e); }
       }
     //} catch (e) { throw new Exception(gStringBundle.get("error.notXML") + ": " + e); }
     //debugObject(loginContext, "login context");
-    successCallback(loginContext);
+    if (fatalError)
+      errorCallback(fatalError);
+    else
+      successCallback(loginContext);
   }, errorCallback);
   fetch.start();
 }

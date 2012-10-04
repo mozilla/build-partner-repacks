@@ -31,7 +31,7 @@ var webTabProgressListener =
   onStateChange : function(browser, webProgress, request, stateFlags, status)
   {
     try {
-      //united.debug("onStateChanged called");
+      //debug("onStateChanged called");
       // TODO think carefully about what we want listen for.
       // we want to interrupt loading of bad url as early as possible
       // so we look for STATE_START and STATE_REDIRECTING,
@@ -49,13 +49,13 @@ var webTabProgressListener =
       try {
         request = request.QueryInterface(Ci.nsIChannel);
       } catch (e) {
-        //united.debug("request is not a channel");
+        //debug("request is not a channel");
         return;
       }
       let uri = request.URI;
-      //united.debug("uri requested: " + uri.spec);
+      //debug("uri requested: " + uri.spec);
       checkBlacklisted(uri, browser, request);
-    } catch (e) { united.errorInBackend(e); }
+    } catch (e) { errorInBackend(e); }
   },
   onLocationChange: function() {},
   onProgressChange: function() {},
@@ -79,7 +79,7 @@ var webTabProgressListener =
  */
 function checkBlacklisted(url, browser, request)
 {
-  if (! united.ourPref.get("phish.enable"))
+  if (! ourPref.get("phish.enable"))
     return;
 
   /**
@@ -92,7 +92,7 @@ function checkBlacklisted(url, browser, request)
   {
     if (!block)
       return;
-    //united.debug("URL " + url + " is blacklisted");
+    //debug("URL " + url + " is blacklisted");
     request.cancel(Components.results.NS_BINDING_ABORTED);
     // TODO: semantics of loadURIWithFlags(foo, LOAD_FLAGS_REPLACE_HISTORY)
     // are not entirely clear to me
@@ -102,5 +102,5 @@ function checkBlacklisted(url, browser, request)
     browser.loadURIWithFlags(
         "chrome://unitedtb/content/phish/phish-warning.xhtml?u=" + encoded,
         Ci.nsIWebNavigation.LOAD_FLAGS_REPLACE_HISTORY, null, null);
-  }, united.errorInBackend);
+  }, errorInBackend);
 }

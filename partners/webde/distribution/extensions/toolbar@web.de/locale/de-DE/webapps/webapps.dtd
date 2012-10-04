@@ -2,9 +2,15 @@
 <!ENTITY united.compose.tooltip "Neue E-Mail schreiben">
 <!ENTITY united.addressbook.label "Adressbuch">
 <!ENTITY united.addressbook.tooltip "&brand.name; Adressbuch">
+<!ENTITY united.sms.label "SMS/MMS">
+<!ENTITY united.sms.tooltip "&brand.name; SMS/MMS">
 
 <!ENTITY united.smartdrive.button.label "Online-Speicher">
 <!ENTITY united.smartdrive.button.tooltip "&brand.name; Online-Speicher">
+<!ENTITY united.photoalbum.button.label "Fotoalbum">
+<!ENTITY united.photoalbum.button.tooltip "&brand.name; Fotoalbum">
+<!ENTITY united.sms.button.label "SMS">
+<!ENTITY united.sms.button.tooltip "&brand.name; SMS">
 <!ENTITY united.bookmark.button.label "Lesezeichen">
 <!ENTITY united.bookmark.button.tooltip "&brand.name; Lesezeichen - Ihre bevorzugten Websites immer griffbereit">
 <!ENTITY united.notes.button.label "Pinnwand">

@@ -8,12 +8,12 @@
  * "first-run"
  *    Means: First installation of extension.
  *       Really the very first time. Not on upgrade and not on re-installs.
- *    When: shortly after onInit after an install.
+ *    When: shortly after onInit after an install and the following browser restart.
  *       Do not load webpages yet, Firefox is not yet ready for that.
  *    Parameter: null
  * "upgrade"
  *    Means: Installation of extension (but not the first)
- *       On upgrade and on re-installs.
+ *       Only when the version changed (lower or higher), not reinstall
  *    When: see first-run
  *    Parameter: null
  * "first-run-pageload"
@@ -23,6 +23,10 @@
  * "uninstall"
  *   Means: Application is removed via Extension Manager
  *   When: User removes Application via Extension Manager
+ * "reinstall"
+ *   Means: The same version of the extension has been installed over itself
+ *   When: The user clicked to install the extension, but before he restarts
+ *         the browser to complete the install.
  */
 
 const EXPORTED_SYMBOLS = [];
@@ -151,29 +155,21 @@ var emAction =
     if (addon.id == EMID) {
       this._uninstall = false;
     }
+  },
+  onInstalling: function(addon) {
+    // The user is installing the same version of the extension over itself
+    if (addon.id == EMID) {
+      if (addon.version == getExtensionFullVersion()) {
+        notifyGlobalObservers("reinstall", {});
+      }
+    }
   }
 }
-
-// <copied from="tracking/aib.js">
-function addTrackingInfo(url) {
-  try {
-    if ( !brand.tracking.sendCampaignID)
-      return url;
-    var kid = ourPref.get("tracking.campaignid");
-    var installTime = new Date(ourPref.get("tracking.installtime") * 1000).toISOString();
-    var installDate = installTime.substr(0, installTime.indexOf("T"));
-    var mod = ourPref.get("tracking.statisticclass");
-    return url + (url.indexOf("?") >= 0 ? "&" : "?") +
-        "kid=" + kid + "&ins=" + installDate + "&mod=" + mod;
-  } catch (e) { errorInBackend(e); return url; }
-}
-// </copied>
 
 function onUninstall()
 {
   notifyGlobalObservers("uninstall", {});
-  var url = addTrackingInfo(brand.toolbar.uninstallURL);
-  findSomeBrowserWindow().united.loadPage(url, "tab");
+  findSomeBrowserWindow().unitedinternet.common.loadPage(brand.toolbar.uninstallURL, "tab");
 }
 
 function onInstall()
@@ -189,12 +185,7 @@ function onInstall()
 
       notifyGlobalObservers("first-run", {});
 
-      // opt-in page must be the first page visible after install
-      // which is the page loaded *last*, so load runonce first
-      var url = addTrackingInfo(brand.toolbar.firstrunURL);
-      findSomeBrowserWindow().united.loadPage(url, "tab");
-
-      // this loads opt-in page
+      // this loads opt-in pages and then first run page
       notifyGlobalObservers("first-run-pageload", {});
     }
     else
@@ -203,11 +194,32 @@ function onInstall()
         var lastVersion = ourPref.get("ext.currentversion");
         if (currentVersion != lastVersion)
         {
-          findSomeBrowserWindow().united.loadPage(brand.toolbar.upgradeURL, "tab");
+          findSomeBrowserWindow().unitedinternet.common.loadPage(brand.toolbar.upgradeURL, "tab");
           notifyGlobalObservers("upgrade", {
               lastVersion : lastVersion,
               currentVersion : currentVersion,
           });
+        }
+        // We don't want to remind them to configure the toolbar if there
+        // is an upgrade page displayed
+        else
+        {
+          if (ourPref.isSet("optin.reminder")) {
+            var remindDate = ourPref.get("optin.reminder");
+            var now = Math.round(new Date().getTime() / 1000);
+            if (remindDate > now)
+            {
+              // If no accounts have been setup, remind them
+              var accounts = {};
+              Components.utils.import("resource://unitedtb/email/account-list.js", accounts);
+              if (accounts.getAllExistingAccounts().length == 0) {
+                notifyGlobalObservers("first-run-pageload", {});
+              }
+              // Reset the reminder pref. It will get set again by optin
+              // if the user chooses.
+              ourPref.reset("optin.reminder");
+            }
+          }
         }
     }
     ourPref.set("ext.currentversion", currentVersion);
@@ -324,8 +336,7 @@ function checkForBrandedBrowser()
   var brandedBrowser = ourPref.get("brandedbrowser", false);
   var bundledToolbar = (kVariant == "browser");
   if (bundledToolbar && !brandedBrowser) {
-    var browser = findSomeBrowserWindow();
-    var noCoexistenceWarning = browser.united.ourPref.get("noCoexistenceWarning", false);
+    var noCoexistenceWarning = ourPref.get("noCoexistenceWarning", false);
     if (noCoexistenceWarning)
       return;
     var check = {value: false};
@@ -336,10 +347,10 @@ function checkForBrandedBrowser()
                    check);
     /* Save the value of the checkbox no matter what */
     if (check.value)
-      browser.united.ourPref.set("noCoexistenceWarning", true);
+      ourPref.set("noCoexistenceWarning", true);
     /* Only show the install page for the bundle if they clicked OK */
     if (result)
-      browser.united.loadPage(brand.toolbar.browserInstallURL, "window");
+      findSomeBrowserWindow().unitedinternet.common.loadPage(brand.toolbar.browserInstallURL, "window");
   }
 }
 

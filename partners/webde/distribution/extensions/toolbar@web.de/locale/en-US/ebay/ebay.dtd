@@ -2,3 +2,5 @@
 <!ENTITY united.ebay.button.tooltip "eBay">
 <!ENTITY united.lastminute.button.label "LastMinute">
 <!ENTITY united.lastminute.button.tooltip "LastMinute">
+<!ENTITY united.amazon.button.label "Amazon">
+<!ENTITY united.amazon.button.tooltip "Amazon">

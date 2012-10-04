@@ -19,6 +19,8 @@
     <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/util/uiutil.js"></script>
     <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/util/observerOnWindow.js"></script>
+    <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/newtab/newtab-page.js"></script>
 
 <div id="container">
@@ -37,15 +39,11 @@
         </form>
 <!--        <div id="poweredby-logo"></div> -->
     </div>
-    <div id="main">
         <div id="contentheader">
             <h2>&most-visited.label;</h2>
-            <div id="listview" onclick="toggleViewToList();" class="unselectable">
-                &as-text.button.label; <span class="imgbutton"/></div>
-            <div id="galleryview" class="last unselectable" onclick="toggleViewToGallery();">
-                &as-pics.button.label; <span class="imgbutton"/></div>
             <a id="most-visited-manage" onclick="onHistoryCleanButton();">&newtab.manage;</a>
         </div>
+    <div id="main">
         <div id="sitebar">
             <div class="module">
                 <div class="moduleheader"><h3>&last-searches.label;</h3></div>
@@ -63,11 +61,12 @@
             </div>
         </div>
         <div id="content">
+          <iframe id="firefoxThumbnails"></iframe>
           <span id="most-visited-list"/>
-        </div>
         <div id="recommended" have-results="false">
           <h2 id="recommended-header">&recommended.label;</h2>
           <span id="recommended-list"/>
+        </div>
         </div>
     </div>
 </div>

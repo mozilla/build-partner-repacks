@@ -18,9 +18,9 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
     <script type="application/x-javascript">
-      var united = window.opener.united;
-      united.loadJS("chrome://unitedtb/content/email/login-dialog.js", this);
-      united.loadJS("chrome://unitedtb/content/email/login-common.js", this);
+      var unitedinternet = window.opener.unitedinternet;
+      unitedinternet.loadJS("chrome://unitedtb/content/email/login-common.js", this);
+      unitedinternet.loadJS("chrome://unitedtb/content/email/login-dialog.js", this);
     </script>
 
     <hbox id="intro-box"
@@ -81,5 +81,8 @@
     </hbox-->
     <hbox id="error-box">
       <description id="error-msg" />
+    </hbox>
+    <hbox id="forgot-password-box">
+      <label id="forgot-password" value="&forgotpassword.label;" class="text-link"/>
     </hbox>
 </dialog>

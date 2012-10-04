@@ -1,3 +1,6 @@
+Components.utils.import("resource://unitedtb/util/util.js");
+Components.utils.import("resource://unitedtb/util/StringBundle.js");
+
 /**
  * An data entry, e.g. a visited URL.
  *
@@ -72,7 +75,7 @@ Components.utils.import("resource://unitedtb/search/search-store.js", this);
 
 function PSHModule()
 {
-  var sb = new united.StringBundle("chrome://unitedtb/locale/newtab/psh.properties");
+  var sb = new StringBundle("chrome://unitedtb/locale/newtab/psh.properties");
   var label = sb.get("label");
   Module.call(this, "psh", label);
 }
@@ -88,10 +91,10 @@ PSHModule.prototype =
       var entries = [];
       for each (let result in results)
       {
-        united.assert(result.term);
+        assert(result.term);
         result.term = result.term + ""; // sqlite returns Number, if I stored "1" :(
-        united.assert(result.date);
-        //united.assert(result.date instanceof Date, "date not of type Date");
+        assert(result.date);
+        //assert(result.date instanceof Date, "date not of type Date");
         entries.push(new PSHEntry(result.term, result.date));
       }
       successCallback(entries);
@@ -99,7 +102,7 @@ PSHModule.prototype =
   }
 }
 
-united.extend(PSHModule, Module);
+extend(PSHModule, Module);
 
 
 function PSHEntry(label, date)
@@ -116,7 +119,7 @@ PSHEntry.prototype =
   },
   action : function(event)
   {
-    united.loadPage(united.brand.search.historyNewTabURL + event.target.entry.label, "united-psh");
+    loadPage(brand.search.historyNewTabURL + event.target.entry.label, "united-psh");
   },
 }
-united.extend(PSHEntry, Entry);
+extend(PSHEntry, Entry);

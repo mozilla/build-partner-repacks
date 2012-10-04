@@ -46,7 +46,7 @@
  */
 
 const EXPORTED_SYMBOLS = [ "AuthPLAIN", "AuthLOGIN",
-    "AuthCRAMMD5", "AuthDIGESTMD5",
+    "AuthCRAMMD5", "AuthDIGESTMD5", "sha1",
     "atob", "btoa", ];
 
 Components.utils.import("resource://unitedtb/util/util.js");
@@ -526,3 +526,20 @@ function btoa(arr, c62, c63) {
 }
 //</copied>
 
+// Copied from https://developer.mozilla.org/en-US/docs/XPCOM_Interface_Reference/nsICryptoHash#Computing_the_Hash_of_a_String
+function sha1(text) {
+  var converter = Cc['@mozilla.org/intl/scriptableunicodeconverter']
+      .createInstance(Ci.nsIScriptableUnicodeConverter);
+  converter.charset = 'UTF-8';
+  var result = {};
+  var data = converter.convertToByteArray(text, result);
+  var ch = Cc["@mozilla.org/security/hash;1"]
+      .createInstance(Ci.nsICryptoHash);
+  ch.init(ch.SHA1);
+  ch.update(data, data.length);
+  var hash = ch.finish(false);
+  function toHexString(charCode) {
+    return ('0' + charCode.toString(16)).slice(-2);
+  }
+  return [toHexString(hash.charCodeAt(i)) for (i in hash)].join('');
+}

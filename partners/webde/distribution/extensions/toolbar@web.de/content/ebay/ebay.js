@@ -11,15 +11,15 @@
  */
 function onButton(event)
 {
-  if (currentSearchTerm)
+  if (false && currentSearchTerm) // #702
   {
-    united.notifyWindowObservers("search-started",
+    notifyWindowObservers("search-started",
       { searchTerm : currentSearchTerm, source : 1 });
-    united.loadPage(united.brand.ebay.searchURL +
+    loadPage(brand.ebay.searchURL +
         encodeURIComponent(currentSearchTerm), "united-ebay");
   }
   else
-    united.loadPage(united.brand.ebay.portalURL, "united-ebay");
+    loadPage(brand.ebay.portalURL, "united-ebay");
 };
 
 /**
@@ -28,16 +28,16 @@ function onButton(event)
  */
 function onLastMinuteButton(event)
 {
-  if (currentSearchTerm)
+  if (false && currentSearchTerm) // #702
   {
-    united.notifyWindowObservers("search-started",
+    notifyWindowObservers("search-started",
       { searchTerm : currentSearchTerm, source : 1 });
     // NOTE: not encodeURIComponent() = UTF-(), but escape() = ISO-8859-1
-    united.loadPage(united.brand.ebay.lastminuteSearchURL +
+    loadPage(brand.ebay.lastminuteSearchURL +
         window.escape(currentSearchTerm), "tab");
   }
   else
-    united.loadPage(united.brand.ebay.lastminutePortalURL, "tab");
+    loadPage(brand.ebay.lastminutePortalURL, "tab");
 };
 
 // <copied from="amazon.js">
@@ -50,6 +50,14 @@ function saveSearchTerm(object)
   currentSearchTerm = object.searchTerm;
 };
 
-united.autoregisterWindowObserver("search-started", saveSearchTerm);
-united.autoregisterWindowObserver("search-keypress", saveSearchTerm);
+autoregisterWindowObserver("search-started", saveSearchTerm);
+autoregisterWindowObserver("search-keypress", saveSearchTerm);
 // </copied>
+
+/**
+ * User clicked on Amazon button
+ */
+function onAmazonButton(event)
+{
+  loadPage(brand.amazon.portalURL, "tab");
+};

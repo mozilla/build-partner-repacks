@@ -22,7 +22,11 @@ FoxcubService.SpeedDial.Bookmarks.prototype.$constructor = function() {
 			.createInstance(Components.interfaces.nsIJSON);
 	this.FOLDER_NAME = this.toUTF16("Rychlá volba Lištičky", "UTF-8");
 	this.GUID = this.toUTF16("{3910b0c7-7541-4c51-a984-062228ddf8fd}", "UTF-8");
+	this.log(this.GUID);
 	this.rootId = -1;
+	var rootId = FoxcubService.pref.get().getPref("speedDial.favorites");
+	if(rootId.success)this.rootId = rootId.value;
+	
 	this.log("constructor end", "info");
 }
 
@@ -32,7 +36,7 @@ FoxcubService.SpeedDial.Bookmarks.prototype.init = function(options) {
 	try{
 		this._setRootId();
 	}catch(e){
-		this.log(e,"error")
+		this.log(e,"error");
 	}
 	
 	
@@ -40,7 +44,8 @@ FoxcubService.SpeedDial.Bookmarks.prototype.init = function(options) {
 }
 FoxcubService.SpeedDial.Bookmarks.prototype._setRootId = function() {
 	
-	this.rootId = this.bookmarksService.getItemIdForGUID(this.GUID);
+	//this.rootId = this.bookmarksService.getItemTitle(this.FOLDER_NAME);
+	this.log(this.rootId);
 	if(this.rootId<0){
 		var tree = this._getTree(this.bookmarksService.placesRoot);
 		this._setRootIdRecursive(tree);
@@ -51,7 +56,7 @@ FoxcubService.SpeedDial.Bookmarks.prototype._setRootIdRecursive = function(tree)
 	for(var i=0;i<tree.length;i++){
 		if(tree[i].title == this.FOLDER_NAME){
 			this.rootId = tree[i].bookmarkId;
-			this.bookmarksService.setItemGUID(this.rootId, this.GUID);
+			//this.bookmarksService.setItemGUID(this.rootId, this.GUID);
 			return true;
 		}else if(tree[i].childs && tree[i].childs.length){
 			var a = this._setRootIdRecursive(tree[i].childs);
@@ -171,8 +176,13 @@ FoxcubService.SpeedDial.Bookmarks.prototype._createFolder = function() {
 	if(this.rootId<0){
 		this.rootId = this.bookmarksService.createFolder(
 						this.bookmarksService.bookmarksMenuFolder, this.FOLDER_NAME, -1);	
-		this.bookmarksService.setItemGUID (this.rootId , this.GUID);
+		
+		FoxcubService.pref.get().setPref("speedDial.favorites",this.rootId);
+		this.log(this.rootId);
+		//this.bookmarksService.setItemGUID (this.rootId , this.GUID);
 	}
+	FoxcubService.pref.get().setPref("speedDial.favorites",this.rootId);
+	this.log('s ' + this.rootId);
 }
 
 FoxcubService.SpeedDial.Bookmarks.prototype._getTree = function(folderId) {

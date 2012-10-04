@@ -21,7 +21,7 @@ const CONTRACT_ID = "@toolbar.aol.com/aoluninstallobserver;1";
 const UNINSTALL_BRAND = "aol";
 const UNINSTALL_LANGLOCALE = "en-US";
 const UNINSTALL_TITLE = "AOL Toolbar";
-const UNINSTALL_SOURCE = "tb50-ff-aol";
+const UNINSTALL_SOURCE = "aol-ff";
 
 /***********************************************************
 class definition

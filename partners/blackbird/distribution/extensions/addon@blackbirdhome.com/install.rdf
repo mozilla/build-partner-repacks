@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>addon@blackbirdhome.com</em:id>
+    <em:type>2</em:type>
+    <em:name>Blackbird</em:name>
+    <em:version>1.0</em:version>
+    <em:creator>40A Inc</em:creator>
+    <em:contributor></em:contributor>
+    <em:description></em:description>
+    <em:iconURL>chrome://blackbird/skin/icon.png</em:iconURL>
+    <em:optionsURL>chrome://blackbird/content/options.xul</em:optionsURL>
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
+        <em:minVersion>3.0</em:minVersion>
+        <em:maxVersion>10.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+  </Description>
+</RDF>

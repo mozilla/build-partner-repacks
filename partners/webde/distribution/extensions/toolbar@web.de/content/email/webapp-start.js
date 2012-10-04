@@ -72,7 +72,7 @@ function startUsecase(account, usecase, parameters, win)
   }
   else
   {
-    assert(win && win.united, "Need a Firefox window");
+    assert(win && win.unitedinternet, "Need a Firefox window");
     if (usecase == "openmail") // Hack per PM: Go to homepage first
       goToWebmailOldUnitedInternet(account, win);
     else
@@ -220,11 +220,11 @@ function sendEventToPage(doc, payload)
  */
 function loadNewTab(account, payload, win)
 {
-  assert(win && win.united);
+  assert(win && win.unitedinternet);
   var lc = account.loginContext.weblogin.iacUsecase;
   assert(lc);
   assert(lc.httpMethod == "POST", "GET for login calls not supported");
-  win.united.loadPageWithPOST(
+  win.unitedinternet.common.loadPageWithPOST(
       lc.url,
       "tab",
       lc.body.replace("@IAC_USECASE@",
@@ -274,7 +274,7 @@ function makePayloadStr(payload)
 function goToWebmailOld(acc, win)
 {
   assert(acc && acc.emailAddress);
-  assert(win && win.united);
+  assert(win && win.unitedinternet);
   debug("going to webmail of " + acc.emailAddress);
   debug("type " + acc.type + ", domain " + acc.domain);
   if (acc.type == "imap" && acc.providerID == "mailcom")
@@ -306,12 +306,12 @@ function goToWebmailOldUnitedInternet(acc, win)
   if (webmail.httpMethod == "GET")
   {
     debug("using GET webmail URL " + webmail.url);
-    win.united.loadPage(webmail.url);
+    win.unitedinternet.common.loadPage(webmail.url);
   }
   else if (webmail.httpMethod == "POST")
   {
     debug("using POST webmail URL " + webmail.url);
-    win.united.loadPageWithPOST(webmail.url, "tab", webmail.body, webmail.mimetype);
+    win.unitedinternet.common.loadPageWithPOST(webmail.url, "tab", webmail.body, webmail.mimetype);
   }
   else
     throw new NotReached("invalid webmail.httpMethod" + webmail.httpMethod);
@@ -332,8 +332,8 @@ function goToWebmailMailcom(acc, win)
   params += "&rdirurl=" + encodeURIComponent("http://www.mail.com"); // needed
   params += "&login=" + encodeURIComponent(acc.emailAddress);
   params += "&password=" + encodeURIComponent(acc._password); // tralala
-  win.united.loadPageWithPOST(url, "tab", params, "application/x-www-form-urlencoded");
-  //win.united.loadPage(url + "?" + params, "tab"); // GET works, too
+  win.unitedinternet.common.loadPageWithPOST(url, "tab", params, "application/x-www-form-urlencoded");
+  //win.unitedinternet.common.loadPage(url + "?" + params, "tab"); // GET works, too
 }
 
 
@@ -349,6 +349,6 @@ function goToWebmail1und1(acc, win)
   var params = "__sendingauthdata=1&login.ValidBrowser=false&jsenabled=true";
   params += "&login.Username=" + encodeURIComponent(acc.emailAddress);
   params += "&login.Password=" + encodeURIComponent(acc._password); // tralala
-  win.united.loadPageWithPOST(url, "tab", params, "application/x-www-form-urlencoded");
-  //win.united.loadPage(url + "?" + params, "tab"); // GET works, too
+  win.unitedinternet.common.loadPageWithPOST(url, "tab", params, "application/x-www-form-urlencoded");
+  //win.unitedinternet.common.loadPage(url + "?" + params, "tab"); // GET works, too
 }

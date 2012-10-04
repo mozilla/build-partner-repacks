@@ -2,11 +2,11 @@ function onLoad()
 {
   try {
     new PostalCode(document.getElementById("postalcode"));
-  } catch (e) { united.debug(e); }
+  } catch (e) { debug(e); }
   if (isValidPostalCode(document.getElementById("postalcode").value))
     document.getElementById("no-nag").hidden = true;
-  gOldRegionalURL = united.brand.weather.regionalURL;
-  united.autoregisterGlobalObserver("region-changed", regionChanged);
+  gOldRegionalURL = brand.weather.regionalURL;
+  autoregisterGlobalObserver("region-changed", regionChanged);
 }
 window.addEventListener("load", onLoad, false);
 
@@ -18,20 +18,20 @@ var gOldRegionalURL = null;
 function regionChanged()
 {
   // only reset, if the weather module changed
-  if (gOldRegionalURL == united.brand.weather.regionalURL)
+  if (gOldRegionalURL == brand.weather.regionalURL)
     return;
-  gOldRegionalURL = united.brand.weather.regionalURL;
+  gOldRegionalURL = brand.weather.regionalURL;
 
-  united.ourPref.reset("weather.postalcode");
+  ourPref.reset("weather.postalcode");
 }
 
 function PostalCode(el)
 {
-  AutoPrefElement.call(this, el, "weather.postalcode", united.ourPref);
+  AutoPrefElement.call(this, el, "weather.postalcode", ourPref);
 }
 PostalCode.prototype =
 {
   reset: function()
   {},
 }
-united.extend(PostalCode, AutoPrefElement);
+extend(PostalCode, AutoPrefElement);

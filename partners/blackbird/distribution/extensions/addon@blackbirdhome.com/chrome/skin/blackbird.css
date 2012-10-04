@@ -1,0 +1,53 @@
+#blackbird-toolbar {
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    text-shadow: none;
+}
+
+.blackbird-ticker-ad,
+.blackbird-ticker-item {
+    max-width: 200px;
+}
+
+.blackbird-ticker-ad {
+    color: tan !important;
+}
+
+toolbar[iconsize="large"] #blackbird-toolbar-button
+{
+  list-style-image: url("chrome://blackbird/skin/toolbar-button-large.png");
+}
+
+toolbar[iconsize="small"] #blackbird-toolbar-button
+{
+  list-style-image: url("chrome://blackbird/skin/toolbar-button-small.png");
+}
+
+/* Only used for customize toolbar dialog */
+#blackbird-toolbar-button
+{
+  list-style-image: url("chrome://blackbird/skin/toolbar-button-small.png");
+}
+
+#blackbird-toolbar #zoom-controls .toolbarbutton-text {
+  display: none;
+}
+
+#blackbird-item-tooltip #blackbird-item-tooltip-feed {
+  font-weight: bold;
+  max-width: 400px;
+}
+
+#blackbird-item-tooltip #blackbird-item-tooltip-label {
+  text-decoration: underline;
+  max-width: 400px;
+}
+
+#blackbird-item-tooltip #blackbird-item-tooltip-href {
+  max-width: 400px;
+}
+
+#blackbird-item-tooltip #blackbird-item-tooltip-summary {
+  max-width: 400px;
+  margin-top: 10px;
+}

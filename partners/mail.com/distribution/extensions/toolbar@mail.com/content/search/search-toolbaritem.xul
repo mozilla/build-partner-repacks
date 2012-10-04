@@ -11,18 +11,16 @@
 
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    if (!united.search)
-      united.search = {};
-    united.loadJS("chrome://unitedtb/content/search/search-toolbaritem.js", united.search);
-
-    united.search.webselectionlistener = {};
-    united.loadJS("chrome://unitedtb/content/search/search-webselectionlistener.js",
-        united.search.webselectionlistener);
+    unitedinternet.initModule(unitedinternet, "search");
+    unitedinternet.loadJS("chrome://unitedtb/content/search/search-toolbaritem.js", unitedinternet.search);
+    unitedinternet.initModule(unitedinternet.search, "webselectionlistener");
+    unitedinternet.loadJS("chrome://unitedtb/content/search/search-webselectionlistener.js",
+        unitedinternet.search.webselectionlistener);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->
 
-  <toolbarpalette id="BrowserToolbarPalette">
+  <toolbar id="united-toolbar">
     <toolbaritem id="united-search-box"
           align="center"
           remove-priority="201"
@@ -34,29 +32,29 @@
               flex="1"
               emptytext="&united.search.button.emptytext;"
               placeholder="&united.search.button.emptytext;"
-              no-onfocus="united.search.onFocus(event);"
-              oninput="united.search.onTextChanged(event);"
-              ontextentered="united.search.onTextEntered();"
-              ondrop="united.search.onDragDrop(event);"
+              no-onfocus="unitedinternet.search.onFocus(event);"
+              oninput="unitedinternet.search.onTextChanged(event);"
+              ontextentered="unitedinternet.search.onTextEntered();"
+              ondrop="unitedinternet.search.onDragDrop(event);"
           >
         <hbox> <!-- the silly, "smart" trick they use in autocomplete.xml
              to put things on the right -->
           <toolbarbutton class="plain" id="united-search-clear-button"
               label="&united.search.clear.button.label;"
               tooltiptext="&united.search.clear.button.tooltip;"
-              oncommand="united.search.clearSearchField();"
+              oncommand="unitedinternet.search.clearSearchField();"
               />
           <!-- ontextentered is not a real event, and must not have |event|,
                See <https://bugzilla.mozilla.org/show_bug.cgi?id=568947> -->
           <toolbarbutton id="united-search-button"
               label="&united.search.button.label;"
               tooltiptext="&united.search.button.tooltip;"
-              oncommand="united.search.onButton(event);"
+              oncommand="unitedinternet.search.onButton(event);"
               orient="horizontal"
               class="plain"
               />
         </hbox>
       </textbox>
     </toolbaritem>
-  </toolbarpalette>
+  </toolbar>
 </overlay>

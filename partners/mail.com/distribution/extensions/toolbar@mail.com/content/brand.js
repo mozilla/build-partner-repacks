@@ -28,6 +28,7 @@ global : {
 // basic functions of the toolbar
 toolbar : {
   defaultlocale : {
+    name: "%BRAND% MailCheck",
     // homepage = e.g. http://www.web.de
     // startpage = shown when firefox starts ("homepage" in Firefox terminology)
     // toolbar.js
@@ -47,6 +48,22 @@ toolbar : {
       { label : "$TR help.faq", url : "%GOTB%helpfaq" },
       { label : "$TR help.about", aboutExtDialog : true },
     ],
+    // This specifies ALL items on the toolbar
+    // If you want an item hidden by default, set it to false
+    items: {
+      "homebutton-button": true,
+      "search-box": true,
+      "email-button": true,
+      "separator": true,
+      "highlight-button": false,
+      "amazon-button": true,
+      "ebay-button": true,
+      "lastminute-button": false,
+      "ticker-button": true,
+      "spacer": true,
+      "login-box": true,
+      "pref-button": true,
+    }
   },
 },
 homebutton : {
@@ -65,11 +82,13 @@ homebutton : {
 search : {
   defaultlocale : {
     toolbarURL : "%GOTB%web_search/?su=", // see also dropdownURLEntries below
+    pshURL : "%GOTB%psh/?su=",
     keywordURL : "%GOTB%keyurl_search/?su=",
     newTabURL : "%GOTB%web_search_newtab/?su=",
     historyNewTabURL : "%GOTB%web_search_history/?su=",
     netErrorURL : "%GOTB%search_404/?su=",
     historyNetErrorURL : "%GOTB%search_hsty_404/?su=",
+    injectPSHURL : "%GOTB%psh/?su=",
     suggestURL : "http://search.mail.com/SuggestSearch/suggest_json/?origin=tb_sbox_ff&mc=tb_sbox_ff@suche@ffox.suche@web&brand=mailcom&su=",
     suggestName : "%BRAND%",
     engineName : "mail.com search", // main -- do not translate, must match OSD
@@ -92,20 +111,22 @@ search : {
     },
   },
 },
-shopping : {
+ebay : {
   defaultlocale : {
-    // icons in skin/shopping/
-    dropdownURLEntries :
-    [
-      {
-        id : "amazon",
-        label : "$TR trademark.amazon",
-        icon : "amazon.png",
-        url : "%GOTB%amazon?keywords=",
-        searchURL : "%GOTB%amazon?keywords=",
-        removable : false,
-      },
+    disabled : true,
+    disabledIDs : [
+      { win : "main-window", el: "united-ebay-button" },
+      { win : "united-pref-window", el: "united-ebay-button" },
+      { win : "main-window", el: "united-lastminute-button" },
+      { win : "united-pref-window", el: "united-lastminute-button" },
     ],
+    portalURL : "%GOTB%ebay_hp",
+    lastminutePortalURL : "%GOTB%lastminute_hp",
+  },
+},
+amazon : {
+  defaultlocale : {
+    portalURL : "%GOTB%amazon",
   },
 },
 ticker : {
@@ -126,6 +147,7 @@ ticker : {
 },
 newtab : {
   defaultlocale : {
+    lasttabURL: "%GOTB%lasttab",
     // fill up the "most visited" list of the new tab page, *only* in a fresh profile
     initialEntries : [
       { label : "$TR newtab.initial.portal", preview: "mailcom.jpg", url : "%GOPREFIX%newtab/mff_nt_homepage" },
@@ -142,6 +164,7 @@ newtab : {
 },
 tracking : {
   defaultlocale : {
+    trackingURL: "http://event.ui-portal.de/metric/ca.gif?portal=mailcom&browser=ff&type=%TYPE%&event=%EVENT%&version=%VERSION%&installdate=%INSTALLDATE%&locale=%LOCALE%&kid=%KID%&mod=%MOD%",
     AIBDailyURL : "https://dl.mail.com/toolbar/firefox/aib.xml?vers=%VERSION%&local=%LOCALE%",
     AIBMonthlyURL : "https://dl.mail.com/toolbar30days/firefox/aib.xml?vers=%VERSION%&local=%LOCALE%",
     count404URL : "%GOMAIN%count404", // + &count=123
@@ -170,6 +193,7 @@ login : {
     afterLogoutWebURL : "%GOTB%logout",
     // webpage shown when the user logs in for the very first time. null = deactivated.
     runonceNewUsersWebURL : "%GOTB%firstlogin",
+    forgotPasswordURL : "%GOTB%help_password",
     configs : [
       {
         providerID : "webde",

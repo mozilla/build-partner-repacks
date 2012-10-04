@@ -15,11 +15,13 @@ function mLocalUnitedSearch(searchTerm)
 {
   mSearch.call(this, searchTerm);
   this._psh = new mPSHSearch(searchTerm);
+  this._pshclear = new mClearPSH(searchTerm);
   this._places = new mPlacesSearch(searchTerm, false);
   this._webSuggest = new mBrandSuggest(searchTerm);
 
   var notify = makeCallback(this, this._gotNewResults);
   this._psh.addObserver(notify);
+  this._pshclear.addObserver(notify);
   this._places.addObserver(notify);
   this._webSuggest.addObserver(notify);
 }
@@ -28,6 +30,7 @@ mLocalUnitedSearch.prototype =
   startSearch : function()
   {
     this._psh.startSearch();
+    this._pshclear.startSearch();
     this._places.startSearch();
     this._webSuggest.startSearch();
   },
@@ -35,6 +38,7 @@ mLocalUnitedSearch.prototype =
   {
     mSearch.prototype.cancel.apply(this);
     this._psh.cancel();
+    this._pshclear.cancel();
     this._places.cancel();
     this._webSuggest.cancel();
   },
@@ -43,6 +47,9 @@ mLocalUnitedSearch.prototype =
     // acquire and sort
     var r = [];
     this._fillUpToN(r, this._psh, 5);
+    // Add the clear search history item
+    if (this._psh.currentResults.length > 0)
+      this._fillUpToN(r, this._pshclear, 6);
     this._fillUpToN(r, this._webSuggest, 10);
     this._fillUpToN(r, this._places, 15);
     this._results = r;

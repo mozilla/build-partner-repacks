@@ -74,9 +74,9 @@ function createDB(dbConn)
   dbConn.executeSimpleSQL("DROP TABLE IF EXISTS " + PHISH_TABLE_DOMAIN);
   dbConn.executeSimpleSQL("DROP TABLE IF EXISTS " + PHISH_TABLE_EXACT);
 
-  dbConn.createTable(PHISH_TABLE_PREFIX, "pattern STRING PRIMARY KEY");
-  dbConn.createTable(PHISH_TABLE_DOMAIN, "pattern STRING PRIMARY KEY");
-  dbConn.createTable(PHISH_TABLE_EXACT, "pattern STRING PRIMARY KEY");
+  dbConn.createTable(PHISH_TABLE_PREFIX, "pattern TEXT PRIMARY KEY");
+  dbConn.createTable(PHISH_TABLE_DOMAIN, "pattern TEXT PRIMARY KEY");
+  dbConn.createTable(PHISH_TABLE_EXACT, "pattern TEXT PRIMARY KEY");
 }
 
 /**
@@ -198,7 +198,7 @@ function makeDomainQueryCallback(visitedHostname,
     let block = false;
     for each (row in rows)
     {
-      let domain = row.getResultByName("pattern").toString();
+      let domain = row.getResultByName("pattern");
       assert(domain, "Column expected but not found");
       if (visitedHostname == domain ||
           visitedHostname.charAt(visitedHostname.length - domain.length - 1) == ".")

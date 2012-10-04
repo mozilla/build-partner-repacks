@@ -60,12 +60,12 @@
         >
 
       <script type="application/x-javascript">
-        upref.login = {};
-        united.loadJS("chrome://unitedtb/content/email/pref-login.js",
-             upref.login);
-        upref.login.common = {};
-        united.loadJS("chrome://unitedtb/content/email/login-common.js",
-            upref.login.common);
+        unitedinternet.initModule(unitedinternet, "login");
+        unitedinternet.loadJS("chrome://unitedtb/content/email/pref-login.js",
+            unitedinternet.login);
+        unitedinternet.initModule(unitedinternet.login, "common");
+        unitedinternet.loadJS("chrome://unitedtb/content/email/login-common.js",
+            unitedinternet.login.common);
       </script>
 
       <richlistbox id="accounts-list" flex="1">
@@ -79,19 +79,19 @@
         <button id="setup-account"
               label="&setup-account.label;"
               accesskey="&setup-account.accesskey;"
-              oncommand="upref.login.setup();"
+              oncommand="unitedinternet.login.setup();"
               />
         <button id="remove-account"
               label="&remove-account.label;"
               accesskey="&remove-account.accesskey;"
-              oncommand="upref.login.remove();"
+              oncommand="unitedinternet.login.remove();"
               />
       </hbox>
       <!--hbox>
         <button id="create-account"
               label="&create-account.label;"
               accesskey="&create-account.accesskey;"
-              oncommand="upref.login.common.onCreateAccount();"
+              oncommand="unitedinternet.login.common.onCreateAccount();"
               type="link"
               />
       </hbox-->

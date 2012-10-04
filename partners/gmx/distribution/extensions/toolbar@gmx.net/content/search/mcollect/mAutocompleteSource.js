@@ -1,12 +1,9 @@
 // Caller must load AutoComplete.js and import mCollectImport.js and util.js
-var extend = united.extend;
-var debug = united.debug;
-
 Components.utils.import("resource://unitedtb/util/StringBundle.js", this);
 
 /**
  * Connects mCollect to our AutoComplete widget
- * @param windowContext {Object with united.loadPage() function}
+ * @param windowContext {Object with loadPage() function}
  */
 function mCollectAutocompleteSource(ac, windowContext)
 {
@@ -69,8 +66,9 @@ mCollectAutocompleteSource.prototype =
 
       var icon = result.icon;
       var value = result instanceof mSearchTermResult ? result.title : "";
+      var highlight = result instanceof mSearchTermResult ? this._currentTerm : null;
       var item = new SimpleAutocompleteItem(value, result.title, result.description, icon,
-          action, false, this._currentTerm, [ "ac-" + result.type ]);
+          action, false, highlight, [ "ac-" + result.type ]);
       item.searchResult = result;
       this._ac.addItem(item);
       if (result == selectedResult && selectedResult)

@@ -9,9 +9,17 @@
  */
 function openPrefWindow(module)
 {
-  window.openDialog("chrome://unitedtb/content/pref/pref-window.xul",
-      "united-pref-window",
-      // per <http://mdn.beonex.com/en/Preferences_System.1>
-      "chrome=yes,dialog,titlebar,toolbar,modal,centerscreen",
-      { module : module });
+  // If a preferences window is already open, focus it
+  var win = Cc["@mozilla.org/appshell/window-mediator;1"]
+              .getService(Ci.nsIWindowMediator)
+              .getMostRecentWindow("Unitedtb:Preferences");
+  if (win) {
+    win.focus();
+  } else {
+    window.openDialog("chrome://unitedtb/content/pref/pref-window.xul",
+        "united-pref-window",
+        // per <http://mdn.beonex.com/en/Preferences_System.1>
+        "chrome=yes,dialog,titlebar,toolbar,modal,centerscreen",
+        { module : module });
+  }
 }

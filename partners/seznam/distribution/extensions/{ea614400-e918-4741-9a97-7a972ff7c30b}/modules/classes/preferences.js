@@ -13,6 +13,7 @@ FoxcubService.Preferences.prototype.$constructor = function(branchStr) {
 	this.preferenceService = Components.classes['@mozilla.org/preferences-service;1']
 			.getService(Components.interfaces.nsIPrefService);
 	this.branch = this.preferenceService.getBranch(branchStr);
+	
 }
 
 FoxcubService.Preferences.prototype.getPref = function(key,object){

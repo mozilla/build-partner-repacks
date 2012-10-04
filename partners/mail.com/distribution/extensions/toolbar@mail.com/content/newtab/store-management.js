@@ -1,3 +1,5 @@
+Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+
 /**
  * Whether the UI currently is in edit mode.
  */
@@ -26,8 +28,6 @@ var gModules = {};
  */
 var gWeek; 
 
-var united = getTopLevelWindowContext().united;
-
 /**
  * i18n StringBundle
  */ 
@@ -35,7 +35,7 @@ var sb;
 
 function onLoad()
 {
-  sb = new united.StringBundle("chrome://unitedtb/locale/newtab/store-management.properties");
+  sb = new StringBundle("chrome://unitedtb/locale/newtab/store-management.properties");
   var mode = document.location.href.match(/\?mode=(.*)/)[1];
   addModule(new PSHModule());
   // may throw
@@ -52,8 +52,8 @@ window.addEventListener("load", onLoad, false);
  */
 function addModule(module)
 {
-  united.assert(module.key, "Module must have key");
-  united.assert(! gModules[module.key], "Module already added"); 
+  assert(module.key, "Module must have key");
+  assert(! gModules[module.key], "Module already added"); 
   gModules[module.key] = module;
   addButton(module);
 }
@@ -69,7 +69,7 @@ function addModule(module)
  */
 function addButton(module)
 {
-  united.debug("adding button for module: " + module.label);
+  debug("adding button for module: " + module.label);
   var buttons = document.getElementById("buttonlist");
   var newButton = document.createElement("a");
   newButton.setAttribute("class", "mode-toggle");
@@ -77,7 +77,7 @@ function addButton(module)
   newButton.module = module;
   newButton.addEventListener("click", onSwitchModule, false);
   buttons.appendChild(newButton);
-  united.debug("added button");
+  debug("added button");
 }
 
 /**
@@ -127,7 +127,8 @@ function checkOtherBoxes(event) {
  */
 function addEntries(entries)
 {
-  united.assert(entries, "addEntries method needs argument");
+  entries.sort(function(a, b) { return b.date - a.date; });
+  assert(entries, "addEntries method needs argument");
   var list = document.getElementById("items-list");
   /**
    * Sort |entries| into days.
@@ -217,10 +218,10 @@ function refreshUI()
  */
 function switchModule(module)
 {
-  united.assert(module, "unknown module requested or module is null");
+  assert(module, "unknown module requested or module is null");
   resetList();
   gCurrentModule = module;
-  module.getEntries(addEntries, united.errorCritical);
+  module.getEntries(addEntries, errorCritical);
 }
 
 /**
@@ -250,7 +251,7 @@ function onToggleEdit()
 function changeEditMode(isEditing)
 {
     var editButton = document.getElementById("edit-button");
-    united.cleanElement(editButton);
+    cleanElement(editButton);
     var text = editButton.getAttribute(isEditing ? "exit-string" : "edit-string");
     editButton.appendChild(document.createTextNode(text));
 
@@ -272,8 +273,8 @@ function onDeleteAll()
 {
   for each (let checkBox in gCheckBoxes)
   {
-    united.assert(checkBox.entry, "checkBox needs entry field");
-    checkBox.entry.delete(function() {}, united.errorCritical);
+    assert(checkBox.entry, "checkBox needs entry field");
+    checkBox.entry.delete(function() {}, errorCritical);
   }
   refreshUI();
 }
@@ -290,8 +291,8 @@ function onDeleteSelection()
       continue;
     if (checkBox.entry.duplicate)
       continue;
-    united.assert(checkBox.entry);
-    checkBox.entry.delete(function() {}, united.errorCritical);
+    assert(checkBox.entry);
+    checkBox.entry.delete(function() {}, errorCritical);
   }
   // TODO: do not refresh UI completely, just delete items we deleted from the UI
   refreshUI();
@@ -301,6 +302,20 @@ function onDeleteSelection()
 function initBrand()
 {
   document.getElementById("logo").setAttribute("href",
-      united.brand.toolbar.homepageURL);
+      brand.toolbar.homepageURL);
   document.getElementById("logo").setAttribute("target", "_blank");
+}
+
+function doneClicked()
+{
+  var gBrowser = getTopLevelWindowContext().gBrowser;
+  // If the management paged was displayed via new tab, go back to new tab
+  // And remove it from history
+  if (gBrowser.webNavigation.canGoBack)
+  {
+    gBrowser.webNavigation.goBack();
+    gBrowser.webNavigation.sessionHistory.PurgeHistory(1);
+  }
+  else
+    window.close();
 }

@@ -31,7 +31,7 @@ function getMyButton()
 
 function onLoad()
 {
-  united.ourPref.observeAuto(window, "highlight.color", function(newValue)
+  ourPref.observeAuto(window, "highlight.color", function(newValue)
   {
     updateColor(newValue);
     turnOnOff();
@@ -42,7 +42,7 @@ function onLoad()
   var button = getMyButton();
   if (!button)
     return;
-  button.checked = united.ourPref.get("highlight.enableOnNewWindow");
+  button.checked = ourPref.get("highlight.enableOnNewWindow");
   turnOnOff();
 }
 window.addEventListener("load", onLoad, false);
@@ -50,7 +50,7 @@ window.addEventListener("load", onLoad, false);
 function updateColor(newValue)
 {
   if (!newValue) {
-    newValue = united.ourPref.get("highlight.color");
+    newValue = ourPref.get("highlight.color");
   }
   var canvas = document.getElementById("united-highlight-canvas");
   if (!canvas)
@@ -85,7 +85,7 @@ function onButton(event)
   var button = getMyButton()
   button.checked = !button.checked;
 
-  united.notifyWindowObservers("do-search-suggestions",
+  notifyWindowObservers("do-search-suggestions",
       { enable: !button.checked });
 
   turnOnOff();
@@ -98,6 +98,17 @@ function onButton(event)
 function onTextChanged()
 {
   turnOnOff();
+}
+
+/**
+ * User clicked on a color
+ */
+function onColorChanged(event)
+{
+  window.setTimeout(function(cp) {
+    ourPref.set('highlight.color', cp.color);
+    cp.parentNode.hidePopup();
+  }, 0, event.target)
 }
 
 function onTabChanged()
@@ -113,7 +124,7 @@ function turnOnOff()
 
   var wasTurnedOn = gTurnedOn;
   gTurnedOn = !!currentSearchTerm && button.checked;
-  //united.debug("highlight turned on: " + gTurnedOn + ", was turned on: " + wasTurnedOn);
+  //debug("highlight turned on: " + gTurnedOn + ", was turned on: " + wasTurnedOn);
 
   if (gTurnedOn && !wasTurnedOn)
     gBrowser.addEventListener("DOMContentLoaded", onPageLoad, true);  
@@ -124,7 +135,7 @@ function turnOnOff()
   unhighlightPerDOMPoking(currentDoc);
   if (gTurnedOn)
     highlightPerDOMPoking(currentSearchTerm, currentDoc);
-  //united.debug("page modified");
+  //debug("page modified");
 };
 
 // <copied from="shopping.js">
@@ -138,8 +149,8 @@ function saveSearchTerm(object)
   onTextChanged(); // (not copied)
 };
 
-united.autoregisterWindowObserver("search-started", saveSearchTerm);
-united.autoregisterWindowObserver("search-keypress", saveSearchTerm);
+autoregisterWindowObserver("search-started", saveSearchTerm);
+autoregisterWindowObserver("search-keypress", saveSearchTerm);
 // </copied>
 
 
@@ -154,11 +165,11 @@ const kHighlightCSS = "united-highlight-term { display: inline; background-color
  */
 function highlightPerDOMPoking(term, doc)
 {
-  //united.debug("before replacement:\n" + doc.body.innerHTML);
-  //united.debug("highlight " + term);
+  //debug("before replacement:\n" + doc.body.innerHTML);
+  //debug("highlight " + term);
   var style = doc.createElement("style");
   style.id = "united-highlight-style";
-  var backgroundColor = united.ourPref.get("highlight.color");
+  var backgroundColor = ourPref.get("highlight.color");
   var r = parseInt(backgroundColor.substring(1,3), 16);
   var g = parseInt(backgroundColor.substring(3,5), 16);
   var b = parseInt(backgroundColor.substring(5,7), 16);
@@ -174,8 +185,8 @@ function highlightPerDOMPoking(term, doc)
   else
     doc.documentElement.appendChild(style);
   var textNodes = findTextNodes(doc.body);
-  //united.debug("OK tags: " + okTags.join(", ") + "\nSkipped tags: " + skippedTags.join(", "));
-  //united.debug("found " + textNodes.length + " text nodes");
+  //debug("OK tags: " + okTags.join(", ") + "\nSkipped tags: " + skippedTags.join(", "));
+  //debug("found " + textNodes.length + " text nodes");
   for each (let textNode in textNodes)
   {
     let text = textNode.data;
@@ -249,7 +260,7 @@ function unhighlightPerDOMPoking(doc)
     let textNode = doc.createTextNode(span.oldText);
     span.parentNode.replaceChild(textNode, span);
   }
-  //united.debug("after unhighlight:\n" + doc.body.innerHTML);
+  //debug("after unhighlight:\n" + doc.body.innerHTML);
 }
 
 /**

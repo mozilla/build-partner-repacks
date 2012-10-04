@@ -14,9 +14,19 @@
 <!ENTITY long-session.label "Angemeldet bleiben">
 <!ENTITY long-session.accesskey "b">
 
+<!ENTITY forgotpassword.label "Passwort vergessen?">
+
 <!ENTITY create-account.label "Jetzt bei &brand.name; registrieren!">
 <!ENTITY create-account.accesskey "r">
 <!ENTITY login.ok.button.label "Anmelden">
 <!ENTITY login.ok.button.accesskey "A">
 <!ENTITY save.ok.button.label "Speichern">
 <!ENTITY save.ok.button.accesskey "S">
+
+<!ENTITY intro.heading "Herzlichen Glückwunsch, Sie haben jetzt den &brand.name; MailCheck konfiguriert">
+<!ENTITY intro.descr "Bitte geben Sie Ihre Anmeldedaten ein. Sie können sie jederzeit ändern.">
+
+<!ENTITY createaccount.label "&brand.name; Postfach erstellen“">
+
+<!ENTITY login.finish.button.label "Fertigstellen">
+<!ENTITY close.button.label "Schließen">

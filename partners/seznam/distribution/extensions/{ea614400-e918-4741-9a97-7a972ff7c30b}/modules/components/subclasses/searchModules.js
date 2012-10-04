@@ -12,7 +12,6 @@ FoxcubService.Install.SearchModules.prototype.MODULES_URL = "http://download.sez
 FoxcubService.Install.SearchModules.prototype.MODULE_FILE_NAMES_SUFFIX = ""; /* "_ff" do budoucna!!! */
 FoxcubService.Install.SearchModules.prototype.MODULES_FILE_NAMES = ["mapy-cz","firmy-cz","zbozi-cz"];
 FoxcubService.Install.SearchModules.prototype.MODULE_HP_NAME = "seznam-cz";
-FoxcubService.Install.SearchModules.prototype.HP_URL = "http://www.seznam.cz/?clid="+FoxcubService.RELEASE;;
 FoxcubService.Install.SearchModules.prototype.KEYWORD_URL = "http://search.seznam.cz/?sourceid={0}&q=";
 FoxcubService.Install.SearchModules.prototype.INTERVAL_LENGTH =20000;// 180000;
 FoxcubService.Install.SearchModules.prototype.INTERVAL_STEP = 5000;
@@ -241,7 +240,7 @@ FoxcubService.Install.SearchModules.prototype._setHomePage = function(){
 			var oldHP = FoxcubService.pref.get("browser.startup.").getPref("homepage");
 			oldHP = (oldHP.success) ? oldHP.value : "";
 			FoxcubService.pref.get().setPref("prev.HP",oldHP);
-			FoxcubService.pref.get("browser.startup.").setPref("homepage", this.HP_URL);
+			FoxcubService.pref.get("browser.startup.").setPref("homepage", this._getHpUrl());
 			var HPFlag = 2;
 		} catch(e){
 			this.log(e,"error");
@@ -252,6 +251,10 @@ FoxcubService.Install.SearchModules.prototype._setHomePage = function(){
 	
 	FoxcubService.pref.get().setPref("homepage.state",HPFlag);
 }
+
+FoxcubService.Install.SearchModules.prototype._getHpUrl = function(){
+	return "http://www.seznam.cz/?clid=" + FoxcubService.RELEASE;
+};
 
 /**
  *  nastavim hledani z adresniho radku 

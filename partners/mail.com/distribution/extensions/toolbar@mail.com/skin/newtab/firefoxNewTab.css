@@ -1,0 +1,51 @@
+/* These are our modifications to the new tab page */
+/* They only apply when our custom attribute is set */
+
+/* Change the thumbnails to have no opacity */
+#newtab-scrollbox[united-toolbar] .newtab-thumbnail {
+  opacity: 1;
+}
+
+/* Always display the pin */
+#newtab-scrollbox[united-toolbar] .newtab-control-pin[pinned='true'] {
+  opacity: 1;
+}
+
+/* Don't display the toggle button */
+#newtab-scrollbox[united-toolbar] #newtab-toggle {
+  display: none;
+}
+
+/* Change the background to white */
+#newtab-scrollbox[united-toolbar] {
+  background-color: white !important;
+  background-image: none !important;
+  overflow: hidden;
+
+}
+
+#newtab-scrollbox[united-toolbar] .newtab-cell {
+  background-color: white;
+}
+
+/* Reduce all the margins */
+#newtab-scrollbox[united-toolbar] #newtab-margin-top {
+  min-height: 0px;
+  max-height: 0px;
+}
+
+#newtab-scrollbox[united-toolbar] #newtab-margin-bottom {
+  min-height: 0px;
+  max-height: 0px;
+}
+
+#newtab-scrollbox[united-toolbar] .newtab-side-margin {
+  min-width: 0px;
+  max-width: 0px;
+}
+
+/* Allow thumbnails to be as small as they want */
+#newtab-scrollbox[united-toolbar] #newtab-grid {
+  min-width: 0px;
+  min-height: 0px;
+}

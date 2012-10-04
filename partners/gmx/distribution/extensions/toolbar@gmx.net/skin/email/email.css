@@ -10,17 +10,36 @@
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-new-small.png");
 }
+#united-email-button[checking="true"]
+{
+  list-style-image: url("chrome://unitedtb/skin/email/email-spinner-16.png") !important;
+}
+#united-email-button[checking="true"] .toolbarbutton-icon
+{
+  -moz-animation-name: spinnerRotate;
+  -moz-animation-duration: 2s;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: linear;
+}
+@-moz-keyframes spinnerRotate {
+  from {
+    -moz-transform:rotate(0deg);
+  }
+  to {
+    -moz-transform:rotate(360deg);
+  }
+}
 #united-email-button-dropdown > menuitem.united-email-unread-menuitem[status="disconnected"]
 {
-  list-style-image: url("chrome://unitedtb/skin/email/email-disconnect-dropdown.png");
+  list-style-image: url("chrome://unitedtb/skin/email/email-disconnect-small.png");
 }
 #united-email-button-dropdown > menuitem.united-email-unread-menuitem[status="no-new"]
 {
-  list-style-image: url("chrome://unitedtb/skin/email/email-nonew-dropdown.png");
+  list-style-image: url("chrome://unitedtb/skin/email/email-nonew-small.png");
 }
 #united-email-button-dropdown > menuitem.united-email-unread-menuitem[status="new"]
 {
-  list-style-image: url("chrome://unitedtb/skin/email/email-new-dropdown.png");
+  list-style-image: url("chrome://unitedtb/skin/email/email-new-small.png");
 }
 
 #united-email-button-dropdown > menuitem.united-email-unread-menuitem[status="new"] {

@@ -7,7 +7,7 @@ Cc=C.classes,
 Cg=Ci.nsIComponentRegistrar;
 var JSON = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
 
-const InvocationType_Source= "tb50-ff-aoluk";
+const PROPS = "chrome://aoluktoolbar/locale/toolbar_props.properties";
 
 var log = function(msg) {
     var lg = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
@@ -22,6 +22,20 @@ gS.prototype={
         var lg = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
         lg.logStringMessage(msg);
     },
+
+	getStrings : function()
+	{
+	    var sbSvc = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
+		return sbSvc.createBundle(PROPS);	    
+	},
+	
+	getBranch : function()
+	{
+	    var strings = this.getStrings(); 
+		var brandName = strings.GetStringFromName("prefs.branch") + "." ;
+		var service = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
+		return service.getBranch(brandName);				
+	},
 	
   /*
    * Search for a given string and notify a listener (either synchronously
@@ -52,7 +66,10 @@ gS.prototype={
             r.push(suggestions[i]);
         l.onSearchResult(j,new gR(Ci.nsIAutoCompleteResult.RESULT_SUCCESS,r));
      };
-     q.open('GET','http://autocomplete.search.aol.com/autocomplete/get?it=' + InvocationType_Source + '&output=json&q='+encodeURIComponent(s),true);
+	 
+	 var strings = this.getStrings();	
+     var api = strings.GetStringFromName("autosuggest.url") + encodeURIComponent(s) +"&output=json";	   		
+     q.open('GET',api,true);
      q.send(null);
    },
    stopSearch:function(){},

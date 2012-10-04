@@ -1,41 +1,125 @@
-Components.utils.import("resource://unitedtb/search/search-store.js", this);
+Components.utils.import("resource://unitedtb/util/util.js");
+Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
+Components.utils.import("resource://unitedtb/util/fetchhttp.js");
+Components.utils.import("resource://unitedtb/util/observer.js");
+Components.utils.import("resource://unitedtb/search/search-store.js");
+Components.utils.import("resource://unitedtb/util/JXON.js");
+Components.utils.import("resource://gre/modules/NetUtil.jsm");
+try {
+  // These don't exist before Firefox 13, so we need a try catch
+  // We won't use either unless we are at least Firefox 13 anyway
+  Components.utils.import("resource:///modules/PageThumbs.jsm");
+  Components.utils.import("resource:///modules/NewTabUtils.jsm");
+} catch (ex) {}
 
-var united;
+var favicons = Components.classes["@mozilla.org/browser/favicon-service;1"]
+                         .getService(Components.interfaces.nsIFaviconService)
+                         .QueryInterface(Components.interfaces.mozIAsyncFavicons);
+
+var unitedFromAbove;
+var firefoxWindow;
 var searchField;
 var gAutocomplete;
 
-const prefCount = "tracking.countnewtab.count";
+var useFirefoxNewTab = true;
 
-function onLoad(unitedFromAbove)
+function onLoad()
 {
-  var firefoxWindow = getTopLevelWindowContext();
-  united = firefoxWindow.united;
+  // We need to access the global unitedinternet.newtab object, but we can't
+  // because we are not in the browser scope. Get it from the browser window.
+  // We do this because we need to access variables and functions in
+  // thumbnail-capture.js which is loaded per window.
+  // This is only needed for Firefox versions < 14 where we use our own
+  // thumbnails on the new tab page.
+  firefoxWindow = getTopLevelWindowContext(window);
+  unitedFromAbove = firefoxWindow.unitedinternet;
 
-  // Tracking new tab pages
-  var count = united.ourPref.get(prefCount, 0);
-  united.ourPref.set(prefCount, ++count);
+  useFirefoxNewTab = generalPref.defaults.get("browser.newtab.url", "about:blank") != "about:blank";
 
   searchField = document.getElementById("searchterm");
-  if (united.ourPref.get("newtab.setFocus"))
+  if (ourPref.get("newtab.setFocus"))
     searchField.focus();
 
   initAutocomplete();
   initBrand();
-  initViewMode();
   fillUserSearchTerms();
-  fillMostVisited();
   getRecommendedSites(fillRecommendedSites);
+  if (useFirefoxNewTab) {
+    document.getElementById("most-visited-list").style.display = "none";
+    var firefoxThumbnailsIFrame = document.getElementById("firefoxThumbnails");
+    firefoxThumbnailsIFrame.addEventListener("load", function(event) {
+      var doc = event.target.contentDocument;
+      // Add a custom attribute for our CSS. I investigated loading our CSS
+      // dynamically, but it caused a flash. Better to load via chrome.manifest
+      doc.getElementById('newtab-scrollbox').setAttribute('united-toolbar','true');
+      // Make sure our new tab page is never disabled
+      doc.getElementById('newtab-grid').removeAttribute('page-disabled');
+      doc.getElementById('newtab-scrollbox').removeAttribute('page-disabled');
+      // Reinitialize page just in case it was disabled
+      event.target.contentWindow.gPage._init();
+      // Use favicons for sites where we have no thumbnail
+      addSitePlaceholders(doc);
+      
+    }, false);
+    // The Firefox new tab page doesn't refresh, so we force it.
+    // Load the page only after the cache is populated.
+    NewTabUtils.links.populateCache(function () {
+      firefoxThumbnailsIFrame.contentDocument.location.replace("chrome://browser/content/newtab/newTab.xul");
+      },
+      true);
+  } else {
+    document.getElementById("firefoxThumbnails").style.display = "none";
+    fillMostVisited();
+  }
+
 }
 window.addEventListener("load", onLoad, false);
+
+// If there is no entry in the PageThumbsCache for a given URL, we
+// use a favicon instead
+function addSitePlaceholders(doc) {
+  let cells = doc.querySelectorAll(".newtab-cell");
+  // Can't use for each because Nodelists contains the length as a member
+  for (let i=0; i < cells.length; i++) {
+    let cell = cells[i];
+    var link = cell.querySelector(".newtab-link");
+    if (link) {
+      // When a user clicks on a link, we want it to go outside the iframe
+      link.setAttribute("target", "_top");
+      var url = link.getAttribute("href");
+      PageThumbsCache.getReadEntry(url, ReadEntryCallback(url, cell.querySelector(".newtab-thumbnail")));
+    }
+  }
+}
+
+// We need to use a separate function for this because we can not use a closure
+// in a loop
+function ReadEntryCallback(url, thumbnail) {
+  return function(aSourceEntry) {
+    if (!aSourceEntry) {
+      thumbnail.style.backgroundSize = "auto";
+      thumbnail.style.backgroundPosition = "center center";
+      thumbnail.style.backgroundImage = "url('chrome://mozapps/skin/places/defaultFavicon.png')";
+      favicons.getFaviconURLForPage(NetUtil.newURI(url), function(aURI, aDataLen, aData, aMimeType) {
+        if (aURI)
+        {
+          var iconURL = favicons.getFaviconLinkForIcon(aURI).spec;
+          thumbnail.style.backgroundImage = "url('" + iconURL + "')";
+        }
+      });
+    }
+  }
+}
 
 function initAutocomplete()
 {
   Components.utils.import("resource://unitedtb/search/mcollect/mCollectImport.js", this);
-  united.loadJS("chrome://unitedtb/content/util/AutoComplete.js", this);
-  united.loadJS("chrome://unitedtb/content/search/mcollect/mAutocompleteSource.js", this);
+  loadJS("chrome://unitedtb/content/util/AutoComplete.js", this);
+  loadJS("chrome://unitedtb/content/search/mcollect/mAutocompleteSource.js", this);
 
   gAutocomplete = new AutocompleteWidget(searchField, { xul: false });
-  gAutocomplete.addSource(new mCollectAutocompleteSource(gAutocomplete, window));
+  gAutocomplete.addSource(new mCollectAutocompleteSource(gAutocomplete, firefoxWindow));
 }
 
 // <copied to="neterror.js">
@@ -54,7 +138,7 @@ function fillUserSearchTerms()
     if (terms && terms.length)
       manageE.setAttribute("have-results", "true");
   },
-  united.error);
+  error);
 }
 
 /*
@@ -64,14 +148,14 @@ function fillUserSearchTerms()
 function fillSearchTerms(terms, listID, sourceID)
 {
   var listE = document.getElementById(listID);
-  united.cleanElement(listE);
+  cleanElement(listE);
   for each (let term in terms)
   {
     let item = document.createElement("li");
     let link = document.createElement("a");
     var url;
     if (sourceID == 5)
-      url = united.brand.search.historyNewTabURL;
+      url = brand.search.historyNewTabURL;
     else
       throw NotReached("known source value");
     url += encodeURIComponent(term);
@@ -104,7 +188,7 @@ function fillSearchTerms(terms, listID, sourceID)
 function initBrand()
 {
   document.getElementById("logo").setAttribute("href",
-      united.brand.toolbar.homepageURL);
+      brand.toolbar.homepageURL);
 }
 
 
@@ -119,10 +203,10 @@ const maxRecommendedItems = 9;
 function fillMostVisited()
 {
   var listE = document.getElementById("most-visited-list");
-  united.cleanElement(listE);
+  cleanElement(listE);
   initialFillIfNecessary();
   var i = 0;
-  for each (let entry in united.newtab.gMostVisited)
+  for each (let entry in unitedFromAbove.newtab.gMostVisited)
   {
     if (++i > maxItems)
       break;
@@ -157,10 +241,10 @@ function fillMostVisited()
       //});
     }
     imgThumb.setAttribute("src", tn);
-    imgThumbDiv.style.width = united.newtab.thumbnailWidth + "px";
-    imgThumbDiv.style.height = united.newtab.thumbnailHeight + "px";
-//    imgThumb.setAttribute("width", united.newtab.thumbnailWidth);
-//    imgThumb.setAttribute("height", united.newtab.thumbnailHeight);
+    imgThumbDiv.style.width = unitedFromAbove.newtab.thumbnailWidth + "px";
+    imgThumbDiv.style.height = unitedFromAbove.newtab.thumbnailHeight + "px";
+//    imgThumb.setAttribute("width", unitedFromAbove.newtab.thumbnailWidth);
+//    imgThumb.setAttribute("height", unitedFromAbove.newtab.thumbnailHeight);
     let imgFavicon = document.createElement("img");
     imgFavicon.setAttribute("class", "favicon");
     imgFavicon.setAttribute("src", entry.faviconURL);
@@ -179,28 +263,30 @@ function fillMostVisited()
  */
 function getRecommendedSites(successCallback)
 {
-  var url = united.brand.newtab.recommendedSitesXMLURL;
+  var url = brand.newtab.recommendedSitesXMLURL;
   if (!url)
     return;
   const intervalMS = 3 * 24 * 60 * 60 * 1000; // every 3 days
-  if (united.sanitize.integer(
-        united.ourPref.get("newtab.recommended.lastFetched", 0)) * 1000 >
+  if (sanitize.integer(
+        ourPref.get("newtab.recommended.lastFetched", 0)) * 1000 >
       (new Date() - intervalMS)) // have current cache
   {
+    var parser = new DOMParser();
     successCallback(
-        new XML(united.ourPref.get("newtab.recommended.cacheXML")));
+      parser.parseFromString(ourPref.get("newtab.recommended.cacheXML"), "application/xml"));
   }
   else
   {
-    new united.FetchHTTP({ url : url, method : "GET" },
+    new FetchHTTP({ url : url, method : "GET" },
     function(xml)
     {
-      united.ourPref.set("newtab.recommended.cacheXML", xml.toString());
-      united.ourPref.set("newtab.recommended.lastFetched",
+      var s = new XMLSerializer();
+      ourPref.set("newtab.recommended.cacheXML", s.serializeToString(xml));
+      ourPref.set("newtab.recommended.lastFetched",
           Math.round(new Date().getTime() / 1000));
       successCallback(xml);
     },
-    united.errorNonCritical).start();
+    errorNonCritical).start();
   }
 }
 
@@ -210,16 +296,17 @@ function getRecommendedSites(successCallback)
  */
 function fillRecommendedSites(xml)
 {
+  var launchitems = JXON.build(xml).launchitems;
   var listE = document.getElementById("recommended-list");
-  united.cleanElement(listE);
+  cleanElement(listE);
   var i = 0;
-  for each (let entry in xml.launchitem)
+  for each (let entry in launchitems.$launchitem)
   {
     if (++i > maxRecommendedItems)
       break;
-    let url = united.sanitize.label(entry.url);
-    let faviconURL = united.sanitize.label(entry.icon);
-    let title = united.sanitize.label(entry.name);
+    let url = sanitize.label(entry.url);
+    let faviconURL = sanitize.label(entry.icon);
+    let title = sanitize.label(entry.name);
     title = title || url;
     if (title.length > maxTitleChars)
       title = title.substr(0, maxTitleChars);
@@ -245,18 +332,18 @@ function fillRecommendedSites(xml)
 // if new profile, fill up list with defined initial entries
 function initialFillIfNecessary()
 {
-  if (united.newtab.gMostVisited.length >= maxItems)
+  if (unitedFromAbove.newtab.gMostVisited.length >= maxItems)
     return;
   // If fresh profile, just populate with "initial entries", up to maxItems.
   // If real most visited has 5 entries, fill up remaining slots with
   // the top of initial entries.
   // Also catch case when initial entries are less than max entries.
-  let l = Math.min(maxItems - united.newtab.gMostVisited.length,
-    united.brand.newtab.initialEntries.length);
+  let l = Math.min(maxItems - unitedFromAbove.newtab.gMostVisited.length,
+    brand.newtab.initialEntries.length);
   for (let i = 0; i < l; i++)
   {
-    let initEntry = united.brand.newtab.initialEntries[i];
-    let entry = new united.newtab.MostVisitedEntry(initEntry.url);
+    let initEntry = brand.newtab.initialEntries[i];
+    let entry = new unitedFromAbove.newtab.MostVisitedEntry(initEntry.url);
     entry.title = initEntry.label;
     entry.getThumbnailURL = function() // not nice :(
     {
@@ -264,7 +351,7 @@ function initialFillIfNecessary()
         return null;
       return "chrome://unitedtb/skin/newtab/initial-thumbs/" + initEntry.preview;
     }
-    united.newtab.gMostVisited.push(entry);
+    unitedFromAbove.newtab.gMostVisited.push(entry);
   }
 }
 
@@ -276,7 +363,7 @@ function initialFillIfNecessary()
 
 function onSearchTextChanged(event)
 {
-  united.notifyWindowObservers("search-keypress",
+  notifyWindowObservers("search-keypress",
       { searchTerm : event.target.value, source : 4 });
 };
 
@@ -300,64 +387,15 @@ function onSearchButtonClicked()
  */
 function startSearch(searchTerm)
 {
-  united.notifyWindowObservers("search-started",
+  searchTerm = searchTerm.trim().replace(/\s+/g, " ");
+  searchField.value = searchTerm;
+
+  notifyWindowObservers("search-started",
       { searchTerm : searchTerm, source : 4 });
-  united.loadPage(united.brand.search.newTabURL +
+  loadPage(brand.search.newTabURL +
       encodeURIComponent(searchTerm));
 };
 // </copied>
-
-
-//////////////////////////////////////////
-// View modes
-//////////////////////////////////////////
-
-const kViewModePrefname = "newtab.viewmode";
-
-function initViewMode()
-{
-  setViewModeFromPref();
-  united.ourPref.observeAuto(window, kViewModePrefname, setViewModeFromPref);
-}
-
-function setViewModeFromPref()
-{
-  var pref = united.ourPref.get(kViewModePrefname);
-  document.body.setAttribute("viewmode", pref == 2 ? "list" : "gallery");
-}
-
-function toggleView(mode)
-{
-  document.body.setAttribute("viewmode", mode);
-  united.ourPref.set(kViewModePrefname, mode == "list" ? 2 : 1);
-
-  //fillMostVisited();
-  /*
-  // swap <img> attribute "no-src" <-> "src"
-  var toGallery = mode != "list";
-  var oldAttr = toGallery ? "no-src" : "src";
-  var newAttr = toGallery ? "src" : "no-src";
-  var listE = document.getElementById("most-visited-list");
-  //var imgs = listE.getElementsByTagName("img");
-  var imgs = listE.getElementsByClassName("thumbnail");
-  for (let i = 0, l = imgs.length; i < l; i++)
-  {
-    let img = imgs[i];
-    let src = img.getAttribute(oldAttr);
-    img.removeAttribute(oldAttr);
-    img.setAttribute(newAttr, src);
-  }
-  */
-}
-
-function toggleViewToList()
-{
-  toggleView("list");
-}
-function toggleViewToGallery()
-{
-  toggleView("gallery");
-}
 
 /**
  * Makes a thumbnail of an arbitrary URL (for which we have
@@ -370,26 +408,26 @@ function toggleViewToGallery()
 function makeThumbnail(url, successCallback) 
 {
   try {
-    united.debug("making thumbnail on-the-fly for <" + url + ">");
+    debug("making thumbnail on-the-fly for <" + url + ">");
     var iframe = document.createElement("iframe"); // <html:iframe>
     iframe.height = "0px";
     iframe.width = (window.innerWidth - 25) + "px";
     iframe.style.visibility = "hidden";
     iframe.addEventListener("load", function(event)
     {
-      var thumbnailURL = united.newtab.captureThumbnail(iframe);
+      var thumbnailURL = unitedFromAbove.newtab.captureThumbnail(iframe);
       successCallback(thumbnailURL);
     }, true);
     iframe.src = url;
     // append <iframe> to the end of newtab-page.xhtml
     document.getElementsByTagName("body")[0].appendChild(iframe);
-  } catch (e) { alert(e); united.error(e); }
+  } catch (e) { alert(e); error(e); }
 }
 
 function onHistoryCleanButton()
 {
-  united.Cc['@mozilla.org/browser/browserglue;1']
-    .getService(united.Ci.nsIBrowserGlue)
+  Cc['@mozilla.org/browser/browserglue;1']
+    .getService(Ci.nsIBrowserGlue)
     .sanitize(window);
 }
 

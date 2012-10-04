@@ -9,19 +9,19 @@
 
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    united.ticker = {};
-    united.loadJS("chrome://unitedtb/content/ticker/ticker.js", united.ticker);
+    unitedinternet.initModule(unitedinternet, "ticker");
+    unitedinternet.loadJS("chrome://unitedtb/content/ticker/ticker.js", unitedinternet.ticker);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->
 
-  <toolbarpalette id="BrowserToolbarPalette">
+  <toolbar id="united-toolbar">
     <toolbarbutton id="united-ticker-button"
         type="menu-button"
         container="true"
         label="&united.ticker.button.label;"
         tooltiptext="&united.ticker.button.tooltip;"
-        oncommand="united.ticker.onButton(event);"
+        oncommand="unitedinternet.ticker.onButton(event);"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-removable="true"
@@ -29,5 +29,5 @@
         >
         <menupopup id="united-ticker-popup"/>
     </toolbarbutton>
-  </toolbarpalette>
+  </toolbar>
 </overlay>

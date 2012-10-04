@@ -5,11 +5,11 @@
  *    These can be later retrieved to show "last personal searches".
  */
 
-Components.utils.import("resource://unitedtb/search/search-store.js");
+Components.utils.import("resource://unitedtb/search/search-store.js", this);
 
 function onLoad()
 {
-  united.autoregisterWindowObserver("search-started", save);
+  autoregisterWindowObserver("search-started", save);
 }
 window.addEventListener("load", onLoad, false);
 
@@ -20,7 +20,7 @@ function save(obj)
   // and run them via our search engine.
   if (obj.engineThirdparty)
     return;
-  if (united.privateBrowsing.privateBrowsingEnabled)
+  if (privateBrowsing.privateBrowsingEnabled)
     return;
 
   saveSearchTerm(obj.searchTerm); // search-store.js

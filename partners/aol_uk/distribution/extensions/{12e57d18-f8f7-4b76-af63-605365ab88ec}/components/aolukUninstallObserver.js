@@ -21,7 +21,7 @@ const CONTRACT_ID = "@toolbar.aol.com/aolukuninstallobserver;1";
 const UNINSTALL_BRAND = "aoluk";
 const UNINSTALL_LANGLOCALE = "en-GB";
 const UNINSTALL_TITLE = "AOL UK Toolbar";
-const UNINSTALL_SOURCE = "tb50-ff-aoluk";
+const UNINSTALL_SOURCE = "aoluk-ff";
 
 /***********************************************************
 class definition

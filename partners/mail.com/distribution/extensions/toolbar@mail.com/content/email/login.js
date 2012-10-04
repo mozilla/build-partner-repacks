@@ -56,7 +56,7 @@
 Components.utils.import("resource://unitedtb/email/account-list.js", this);
 Components.utils.import("resource://unitedtb/email/webapp-start.js", this);
 
-var gStringBundle = new united.StringBundle(
+var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/email/login.properties");
 
 // All accounts
@@ -70,7 +70,7 @@ function onLoad()
     readAccounts();
     updateUI();
     autoLoginIfPossible();
-  } catch (e) { united.error(e); }
+  } catch (e) { error(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -83,20 +83,20 @@ function readAccounts()
 function migrate()
 {
   try {
-    let oldAccount = united.ourPref.get("login.emailAddress");
-    let accountsList = united.ourPref.get("accountsList");
+    let oldAccount = ourPref.get("login.emailAddress");
+    let accountsList = ourPref.get("accountsList");
     if ( !accountsList && oldAccount)
     {
-      let oldStoreLogin = !!united.ourPref.get("login.longSession", true);
-      united.ourPref.reset("login.emailAddress");
-      united.ourPref.reset("login.longSession");
+      let oldStoreLogin = !!ourPref.get("login.longSession", true);
+      ourPref.reset("login.emailAddress");
+      ourPref.reset("login.longSession");
       let acc = makeNewAccount(oldAccount);
       acc.wantStoredLogin = oldStoreLogin;
       acc.saveToPrefs();
     }
     if (accountsList)
-      united.ourPref.set("email.runonceNewUsersShown", true);
-  } catch (e) { united.error(e); }
+      ourPref.set("email.runonceNewUsersShown", true);
+  } catch (e) { error(e); }
 }
 
 // automatically log in without UI, if "remember me" activated and we have credentials
@@ -106,7 +106,7 @@ function autoLoginIfPossible()
   {
     if (acc.haveStoredLogin && !acc.isLoggedIn)
     {
-      acc.login(0, true, function() {}, united.error);
+      acc.login(0, true, function() {}, error);
       // automatic action, so do not bother user about errors
       // login-logic.js will send out a global "logged-in" message which will trigger
       // the further steps
@@ -134,7 +134,7 @@ function updateUI()
     loggedinMenuitemE.originalLabel = loggedinMenuitemE.label;
   if (primaryAcc && primaryAcc.isLoggedIn)
   {
-    let username = united.sanitize.label(primaryAcc.emailAddress.split("@")[0]);
+    let username = sanitize.label(primaryAcc.emailAddress.split("@")[0]);
     // Wanted to make it configurable in local, but ran into
     // <https://bugzilla.mozilla.org/show_bug.cgi?id=698831>
     loggedinE.label = username;
@@ -147,11 +147,11 @@ function updateUI()
     loggedinMenuitemE.label = loggedinMenuitemE.originalLabel;
   }
         
-  united.toolbar.onButtonSizeChangedByCode();
+  unitedinternet.toolbar.onButtonSizeChangedByCode();
 }
 
-united.autoregisterGlobalObserver("logged-in", updateUI);
-united.autoregisterGlobalObserver("logged-out", updateUI);
+autoregisterGlobalObserver("logged-in", updateUI);
+autoregisterGlobalObserver("logged-out", updateUI);
 
 /**
  * Listen to "do-login" requests.
@@ -161,21 +161,21 @@ united.autoregisterGlobalObserver("logged-out", updateUI);
 function onLoginRequest(params)
 {
   // param checking
-  united.assert(typeof(params.withUI) == "boolean");
+  assert(typeof(params.withUI) == "boolean");
   if ( !params.withUI)
     throw NotReached("Disabled - Do you really need this?"); //autoLoginIfPossible();
   var acc = params.account;
-  united.assert(typeof(acc) == "object" || typeof(acc) == "undefined");
-  if (acc && !united.arrayContains(gAccs, acc)) // just in case this is new
+  assert(typeof(acc) == "object" || typeof(acc) == "undefined");
+  if (acc && !arrayContains(gAccs, acc)) // just in case this is new
     gAccs.push(acc);
-  var needAccountType = united.sanitize.enum(params.needAccountType,
+  var needAccountType = sanitize.enum(params.needAccountType,
       [1, 9, 10], acc ? 9 : 1);
   var successCallback = params.successCallback || function() {};
-  var errorCallback = params.errorCallback || united.errorCritical;
+  var errorCallback = params.errorCallback || errorCritical;
   var abortCallback = params.abortCallback || function() {};
-  united.assert(typeof(successCallback) == "function");
-  united.assert(typeof(errorCallback) == "function");
-  united.assert(typeof(abortCallback) == "function");
+  assert(typeof(successCallback) == "function");
+  assert(typeof(errorCallback) == "function");
+  assert(typeof(abortCallback) == "function");
 
   if ( !gAccs.length) // we have no accounts yet
   {
@@ -229,7 +229,7 @@ function onLoginRequest(params)
           combinedAbortCallback);
   }
 }
-united.autoregisterWindowObserver("do-login", onLoginRequest);
+autoregisterWindowObserver("do-login", onLoginRequest);
 
 function accountListChange()
 {
@@ -240,15 +240,15 @@ function accountListChange()
 function logoutRemovedAccount(obj)
 {
   var account = obj.account;
-  united.assert(account);
+  assert(account);
   if (account.isLoggedIn)
   {
-    account.logout(function() {}, united.error);
+    account.logout(function() {}, error);
   }
 }
-united.autoregisterGlobalObserver("account-added", accountListChange);
-united.autoregisterGlobalObserver("account-removed", accountListChange);
-united.autoregisterGlobalObserver("account-removed", logoutRemovedAccount);
+autoregisterGlobalObserver("account-added", accountListChange);
+autoregisterGlobalObserver("account-removed", accountListChange);
+autoregisterGlobalObserver("account-removed", logoutRemovedAccount);
 
 /**
  * Called by Login button
@@ -263,7 +263,7 @@ function onCommandDoLogin()
       // errorCallback default: show errors
       // abortCallback default: do nothing
     });
-  } catch (e) { united.errorCritical(e); }
+  } catch (e) { errorCritical(e); }
 }
 
 /**
@@ -305,12 +305,12 @@ function tryLogin(usecase, acc, allowAutoLogin,
     successCallback, errorCallback, abortCallback)
 {
   try {
-    united.sanitize.enum(usecase, [1, 2, 3]);
-    united.assert(usecase == 2 || acc && acc.emailAddress);
-    united.assert(usecase != 2 || !acc);
-    united.assert(typeof(successCallback) == "function");
-    united.assert(typeof(errorCallback) == "function");
-    united.assert(typeof(abortCallback) == "function");
+    sanitize.enum(usecase, [1, 2, 3]);
+    assert(usecase == 2 || acc && acc.emailAddress);
+    assert(usecase != 2 || !acc);
+    assert(typeof(successCallback) == "function");
+    assert(typeof(errorCallback) == "function");
+    assert(typeof(abortCallback) == "function");
 
     if (usecase == 1 && acc.isLoggedIn)
     {
@@ -324,7 +324,7 @@ function tryLogin(usecase, acc, allowAutoLogin,
     {
       var prefillEmail = acc ? acc.emailAddress : "";
       var prefillStore = acc ? acc.wantStoredLogin : true;
-      var answ = united.login.common.getEmailAddressAndPassword({
+      var answ = common.getEmailAddressAndPassword({
           emailAddress : prefillEmail,
           wantStoredLogin : prefillStore,
           usecase : usecase,
@@ -338,11 +338,11 @@ function tryLogin(usecase, acc, allowAutoLogin,
       if (usecase == 2) // create account
       {
         // email address already checked in login-dialog.js
-        united.assert(answ.emailAddress && answ.emailAddress != prefillEmail);
+        assert(answ.emailAddress && answ.emailAddress != prefillEmail);
         acc = getExistingAccountForEmailAddress(answ.emailAddress);
         if (acc)
         {
-          errorCallback(new united.Exception(gStringBundle.get("error.exists")));
+          errorCallback(new Exception(gStringBundle.get("error.exists")));
           return;
         }
         acc = makeNewAccount(answ.emailAddress);
@@ -350,7 +350,7 @@ function tryLogin(usecase, acc, allowAutoLogin,
       }
       else // login or edit
       {
-        united.assert(answ.emailAddress == prefillEmail);
+        assert(answ.emailAddress == prefillEmail);
         if (answ.wantStoredLogin != prefillStore)
         {
           acc.wantStoredLogin = answ.wantStoredLogin;
@@ -375,7 +375,7 @@ function tryLogin(usecase, acc, allowAutoLogin,
     },
     function(e) // error handler, e.g. wrong password
     {
-      united.errorCritical(e); // explicit user action, so notify user of errors
+      errorCritical(e); // explicit user action, so notify user of errors
       if (usecase == 2)
       {
         acc.deleteAccount();
@@ -384,7 +384,7 @@ function tryLogin(usecase, acc, allowAutoLogin,
       // let user try again. no loop, because user can abort dialog
       tryLogin(usecase, acc, false, successCallback, errorCallback, abortCallback);
     });
-  } catch (e) { united.errorCritical(e); }
+  } catch (e) { errorCritical(e); }
 }
 
 /**
@@ -400,20 +400,20 @@ function onCommandDoLogout()
   var loggedOut = function()
   {
     remainingCount--;
-    if (remainingCount == 0 && united.brand.login.afterLogoutWebURL)
-      united.loadPage(united.brand.login.afterLogoutWebURL, "tab");
+    if (remainingCount == 0 && brand.login.afterLogoutWebURL)
+      loadPage(brand.login.afterLogoutWebURL, "tab");
   };
 
   for each (let acc in gAccs)
   {
     try {
       logoutPerUsecase(acc); // log out web app, too (must happen before toolbar logout)
-    } catch (e) { united.errorCritical(e) };
+    } catch (e) { errorCritical(e) };
 
     if ( !acc.isLoggedIn)
       loggedOut();
     else
-      acc.logout(loggedOut, united.errorCritical); // (notify user of errors)
+      acc.logout(loggedOut, errorCritical); // (notify user of errors)
   }
 }
 
@@ -424,26 +424,26 @@ function onCommandDoLogout()
  */
 function openWelcomePageMaybe(account)
 {
-  var webpageURL = united.brand.login.runonceNewUsersWebURL;
+  var webpageURL = brand.login.runonceNewUsersWebURL;
   if ( !webpageURL)
     return;
-  if (united.ourPref.get("email.runonceNewUsersShown"))
+  if (ourPref.get("email.runonceNewUsersShown"))
     return;
   // If the redirect does not exist, the page is not shown, and no error is thrown.
   // So, we need to make 2 requests: The first background request is only
   // to check whether the URL gives HTTP 200 or 404.
   // The second is then the browser.
-  new united.FetchHTTP({ url : webpageURL, method : "GET" },
+  new FetchHTTP({ url : webpageURL, method : "GET" },
   function() // success
   {
     // load in browser
-    united.ourPref.set("email.runonceNewUsersShown", true);
-    united.loadPage(webpageURL, "tab");
+    ourPref.set("email.runonceNewUsersShown", true);
+    loadPage(webpageURL, "tab");
   },
   function(e)
   {
     // silence error (esp. 404), that's the whole point
-    united.debug("Got error from runonceNewUsers: " + e);
+    debug("Got error from runonceNewUsers: " + e);
   }).start();
 }
 
@@ -455,10 +455,10 @@ function openWelcomePageMaybe(account)
  */
 function logoutConfirmation()
 {
-  if (united.ourPref.get("login.logoutConfirm"))
+  if (ourPref.get("login.logoutConfirm"))
   {
-    var prompts = united.Cc["@mozilla.org/embedcomp/prompt-service;1"]
-        .getService(united.Ci.nsIPromptService);
+    var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+        .getService(Ci.nsIPromptService);
     var buttonFlags = prompts.BUTTON_POS_0 * prompts.BUTTON_TITLE_IS_STRING +
         prompts.BUTTON_POS_1 * prompts.BUTTON_TITLE_CANCEL +
         prompts.BUTTON_POS_1_DEFAULT;
@@ -476,7 +476,7 @@ function logoutConfirmation()
     if (!ok)
       return false;
     if (ok && remember.value)
-      united.ourPref.set("login.logoutConfirm", false);
+      ourPref.set("login.logoutConfirm", false);
   }
   return true;
 }
@@ -494,7 +494,7 @@ function getPrimaryAccount()
 {
   for each (let acc in gAccs)
   {
-    if (acc.providerID == united.brand.login.providerID)
+    if (acc.providerID == brand.login.providerID)
       return acc;
   }
   return null;

@@ -8,7 +8,23 @@
 }
 #united-smartdrive-menuitem
 {
-  list-style-image: url("chrome://unitedtb/skin/webapps/smartdrive-dropdown.png");
+  list-style-image: url("chrome://unitedtb/skin/webapps/smartdrive-16.png");
+}
+#united-photoalbum-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/photoalbum-16.png");
+}
+#united-photoalbum-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/photoalbum-16.png");
+}
+#united-sms-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/sms-16.png");
+}
+#united-sms-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/sms-16.png");
 }
 #united-notes-button
 {
@@ -24,7 +40,7 @@
 }
 #united-addressbook-email-menuitem
 {
-  list-style-image: url("chrome://unitedtb/skin/webapps/addressbook-dropdown.png");
+  list-style-image: url("chrome://unitedtb/skin/webapps/addressbook-16.png");
 }
 #united-composeemail-button
 {
@@ -32,7 +48,7 @@
 }
 #united-compose-email-menuitem
 {
-  list-style-image: url("chrome://unitedtb/skin/webapps/compose-dropdown.png");
+  list-style-image: url("chrome://unitedtb/skin/webapps/compose-16.png");
 }
 #united-start-button
 {

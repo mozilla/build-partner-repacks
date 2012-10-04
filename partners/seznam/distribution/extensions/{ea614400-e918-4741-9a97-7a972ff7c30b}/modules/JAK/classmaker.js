@@ -197,6 +197,7 @@ FoxcubService.JAK.ClassMaker._setInheritance = function(constructor) {
 */
 FoxcubService.JAK.ClassMaker._makeInheritance = function(constructor, parent, noSuper){
 	/* nastavit funkcim predka referenci na predka */
+	if(!parent)return;
 	for (var p in parent.prototype) {
 		var item = parent.prototype[p];
 		if (typeof(item) != "function") { continue; }

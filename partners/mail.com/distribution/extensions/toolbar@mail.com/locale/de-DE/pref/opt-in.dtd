@@ -6,5 +6,7 @@
 <!ENTITY startpage-brand.radiobutton.label "&brand.name;">
 <!ENTITY newtab.checkbox.label "Im neuen Tab Ihre beliebtesten Seiten und Suchanfragen zeigen">
 <!ENTITY region.label "Land:">
-<!ENTITY close.button.label "Anwenden">
-<!ENTITY intro.descr "Danke, dass Sie die &brand.name; MailCheck installiert haben. Sie können hier die Voreinstellungen bearbeiten.">
+<!ENTITY close.button.label "Schließen">
+<!ENTITY continue.button.label "Weiter zur Anmeldung">
+<!ENTITY intro.descr "Danke, dass Sie die &brand.name; MailCheck installiert haben.">
+<!ENTITY intro.heading "Sie können hier die Voreinstellungen bearbeiten.">

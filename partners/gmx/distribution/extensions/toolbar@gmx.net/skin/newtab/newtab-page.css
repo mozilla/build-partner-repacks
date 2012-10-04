@@ -15,7 +15,7 @@ a { text-decoration: none; outline: none; }
   height: 64px;
 }
 .img-alt { display: none; }
-#header #searchform { position: absolute; top: 20px; left: 185px; }
+#header #searchform { position: absolute; top: 20px; left: 180px; }
 #header #searchform fieldset { border: 0px; background-color: white; padding: 15px; }
 #poweredby-logo {
   position: absolute; right: 20px; top: 30px;
@@ -55,7 +55,7 @@ a { text-decoration: none; outline: none; }
 #contentheader { height: 20px; padding-top: 10px; border-bottom: 1px solid #E7E7E7; margin-bottom: 10px; text-align: right; }
 #contentheader h2 { float: left; margin-left: 190px; }
 #recommended-header { clear: left; margin-bottom: 15px; }
-#recommended { margin-left: 190px; margin-top: 30px; }
+#recommended { margin-top: 30px; }
 #contentheader h2, #recommended-header { font-size: 12px; color: #55AB01; }
 #contentheader > div { display: inline; margin-left: 20px; }
 /* TODO: is this the correct color? */
@@ -82,7 +82,7 @@ body[viewmode="list"] #galleryview > .imgbutton { background-position: 0px 0px; 
 body[viewmode="gallery"] #galleryview > .imgbutton { background-position: -17px 0px; }
 body[viewmode="gallery"] #listview > .imgbutton { background-position: -33px 0px; }
 body[viewmode="list"] #listview > .imgbutton { background-position: -49px 0px; }
-#sitebar { position: absolute; width: 180px; }
+#sitebar { width: 180px; }
 .module, .module a { color: #353A3D; line-height: 15px; }
 .module { margin-bottom: 20px; }
 .module li { margin-top: 2px; cursor: pointer; }
@@ -92,7 +92,6 @@ body[viewmode="list"] #listview > .imgbutton { background-position: -49px 0px; }
 .modulepart a img { float: left; clear: left; margin-right: 10px; }
 .modulepart h4 { vertical-align: -5px; }
 .modulepart h4 a, .module p a { float: none; }
-#content { margin-left: 190px; }
 #most-visited-list a { color: #2269C3; }
 #last-searches-delete { cursor: pointer; }
 #last-searches-delete[have-results="false"] { display: none; }
@@ -105,7 +104,7 @@ li.no-results { cursor: text; }
 
 img.favicon { width: 16px; height: 16px; }
 
-body[viewmode="gallery"] #content, body[viewmode="gallery"] #recommended { margin-left: 186px; margin-top: 30px; }
+body[viewmode="gallery"] #content, body[viewmode="gallery"] #recommended { margin-top: 15px; }
 body[viewmode="gallery"] #most-visited-list .mostvisited {
   /*background: url(chrome://unitedtb/skin/newtab/sprite.jpg) no-repeat 0px -76px;*/
   width: 204px; height: 164px;
@@ -116,8 +115,7 @@ body[viewmode="gallery"] #most-visited-list .mostvisited {
 }
 body[viewmode="gallery"] .recommended-site {
   float: left;
-  width: 204px;
-  margin: 0 60px 40px 0;
+  margin: 0 25px 20px 0;
 }
 body[viewmode="gallery"] #most-visited-list div.thumbnail img.smallicon { padding: 16px; margin-top: 43px; border: 2px solid lightgray;}
 body[viewmode="gallery"] #most-visited-list div.thumbnail { margin: 4px; text-align: center;}
@@ -141,4 +139,49 @@ body[viewmode="gallery"] #most-visited-list img.thumbnail[loading="true"] {
 
 .ac-popup {
   width: 500px;
+}
+
+/* This CSS converts the new tab page to use the CSS box model */
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+div#container {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  width: 100%;
+  height: 100%;
+}
+div {
+}
+div#header {
+  width: 100%;
+}
+div#main {
+  -moz-box-flex: 1;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+}
+div#contentheader {
+  height: 20px;
+}
+div#content {
+  -moz-box-flex: 1;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+}
+
+/* This value for min-height was chosen because it is the smallest amount */
+/* that does not cout off the bottom of the favicons */
+#firefoxThumbnails {
+  -moz-box-flex: 1;
+  min-width: 0px;
+  min-height: 250px;
+  margin: 0px;
+  padding: 0px;
+  border: none;
+  margin-right: 20px;
 }

@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://blackbird/skin/blackbird.css" type="text/css"?>
+<!DOCTYPE browserDTD SYSTEM "chrome://browser/locale/browser.dtd" >
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript" src="blackbird.js"/>
+  <window id="main-window" titlemodifier="Mozilla Firefox, Blackbird Edition"
+                           titlemodifier_privatebrowsing="Mozilla Firefox, Blackbird Edition &mainWindow.titlePrivateBrowsingSuffix;"
+                           titlemodifier_normal="Mozilla Firefox, Blackbird Edition"/>
+  <toolbox id="navigator-toolbox">
+    <toolbar id="blackbird-toolbar"
+             label="Blackbird Toolbar"
+             insertafter="nav-bar"
+             persist="collapsed"
+             class="chromeclass-toolbar"
+             customizable="true"
+			 context="blackbird-toolbar-contextmenu">
+       <hbox flex="1" id="blackbird-ticker" style="overflow: hidden" context="blackbird-ticker-contextmenu">
+       </hbox>
+       <toolbarbutton id="blackbird-links" label="Links" hidden="true" type="menu">
+            <menupopup id="blackbird-links-menu">
+            </menupopup>
+         </toolbarbutton>
+	   <toolbaritem hidden="true" id="blackbird-magnify-controls">
+     <toolbarbutton id="zoom-out-button" class="toolbarbutton-1"
+                        command="cmd_fullZoomReduce"/>
+         <toolbarbutton id="zoom-in-button" class="toolbarbutton-1"
+                        command="cmd_fullZoomEnlarge"/>
+	   </toolbaritem>
+    </toolbar>
+  </toolbox>
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarbutton id="blackbird-toolbar-button" class="toolbarbutton-1 chromeclass-toolbar-additional"
+                   label="Blackbird" tooltiptext="Blackbird"
+                      oncommand="document.getElementById('blackbird-toolbar').hidden = !document.getElementById('blackbird-toolbar').hidden">
+    </toolbarbutton>
+  </toolbarpalette>
+  <popupset id="mainPopupSet">
+    <menupopup id="blackbird-item-contextmenu">
+        <menuitem id="blackbird-item-contextmenu-open" label="Open"/>
+        <menuitem id="blackbird-item-contextmenu-opennewtab" label="Open in New Tab"/>
+		<menuseparator/>
+        <menuitem id="blackbird-item-contextmenu-markasread" label="Mark as Read"/>
+        <menuitem id="blackbird-item-contextmenu-markfeedread" label="Mark Feed as Read"/>
+        <menuitem id="blackbird-item-contextmenu-markallread" label="Mark All as Read"/>
+		<menuseparator/>
+        <menuitem id="blackbird-item-contextmenu-add" origlabel="Add" label="Add" hidden="true"/>
+		<menuseparator id="blackbird-item-contextmenu-addseparator" hidden="true"/>
+        <menuitem id="blackbird-item-contextmenu-options" label="Options" oncommand="window.openDialog('chrome://blackbird/content/options.xul', '', 'toolbar=yes,chrome=yes,centerscreen')"/>
+    </menupopup>
+    <menupopup id="blackbird-ticker-contextmenu">
+        <menuitem id="blackbird-ticker-contextmenu-add" origlabel="Add" label="Add" hidden="true"/>
+		<menuseparator id="blackbird-ticker-contextmenu-addseparator" hidden="true"/>
+        <menuitem id="blackbird-ticker-contextmenu-options" label="Options" oncommand="window.openDialog('chrome://blackbird/content/options.xul', '', 'toolbar=yes,chrome=yes,centerscreen')"/>
+    </menupopup>
+    <menupopup id="blackbird-toolbar-contextmenu">
+        <menuitem id="blackbird-toolbar-contextmenu-options" label="Options" oncommand="window.openDialog('chrome://blackbird/content/options.xul', '', 'toolbar=yes,chrome=yes,centerscreen')"/>
+    </menupopup>
+	<tooltip id="blackbird-item-tooltip" noautohide="true">
+	  <hbox align="center">
+		<image id="blackbird-item-tooltip-image"/>
+		<vbox>
+		  <label id="blackbird-item-tooltip-feed" crop="end"/>
+		  <label id="blackbird-item-tooltip-label" crop="end"/>
+		</vbox>
+	  </hbox>
+	  <description id="blackbird-item-tooltip-summary"/>
+	</tooltip>
+  </popupset>
+</overlay>
+
+<!--
+
+Open
+Open in New Tab
+-
+Open All in Tabs
+Open Feedin Tabs
+-
+Refresh Feeds
+-
+Mark as Read
+Mark Feed as Read
+Mark All as Read
+-
+Options
+
+
+-->
+
+<!--
+
+Open All in Tabs
+-
+Refresh Feeds
+-
+Mark All as Read
+-
+Options
+
+-->

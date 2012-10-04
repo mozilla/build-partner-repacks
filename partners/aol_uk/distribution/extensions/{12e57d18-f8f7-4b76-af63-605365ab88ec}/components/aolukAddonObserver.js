@@ -13,14 +13,231 @@ function aolukAddonObserver() {
     this.wrappedJSObject = this;  
 }
 
-aolukAddonObserver.prototype = 
-{
+
+
+var uninstall_metrics = function() {
+
+    var _props = "";
+    var _version = "";
+    var _browser = "";
+    var _os = "";
+    
+    var searchUrl = "";
+    var toolbar_event = "";
+
+    
+	function getStrings() {
+	    var sbSvc = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
+		return sbSvc.createBundle(_props);	    
+	}
+	
+	function getBranch() {
+	    var strings = getStrings(); 
+		var brandName = strings.GetStringFromName("prefs.branch") + "." ;
+		var service = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
+		return service.getBranch(brandName);				
+	}
+	
+	
+    function log(msg) {
+    
+        var consoleService = Components.classes["@mozilla.org/consoleservice;1"]
+                                 .getService(Components.interfaces.nsIConsoleService);
+        consoleService.logStringMessage(msg);
+    }
+    
+    
+    function sendRequest(url) {
+	     try {
+	        var req = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+            req.open("GET", url, false); 
+            req.send(null);
+        } catch(e) {
+            log("sendRequest ex ["+ e.message +"] "+ url);
+        }
+	}	
+
+    function stripDashes(str) {
+        var i;
+        var sd = str.length;
+        
+        for(i = str.length - 1; i > 0; i--) {
+            if(str.substring(i,i+1) == "-") {
+                sd = i - 1;
+                i-=1;
+            } else if(str.substring(i,1) != "-" && str.substring(i,1) != "_") {
+                break;
+            } 
+        }
+        return(str.substring(0,sd));        
+    }
+        
+    function formatDate(val) {
+        var ret = "20000101";
+        var parts = val.split("-");
+        if (parts.length == 3) {
+            ret = parts[2]+parts[1]+parts[0];
+        }
+        return ret;
+    }
+    
+    
+    function registerSearchMetric(payloadUpdate) {
+        var url,
+            eventStr,
+            payloadName,
+            payloadValue,
+            metric = payloadUpdate;
+      
+	    var branch = getBranch();
+		var strings = getStrings();
+		
+		var installId = branch.getCharPref("search.instd");
+		var originalDate = branch.getCharPref("search.oid");
+		var currentDate = branch.getCharPref("search.cid");
+		var installSource = branch.getCharPref("search.source");
+		
+		var searchUrl =  strings.GetStringFromName("search.metrics");
+		searchUrl = searchUrl.replace(/{it}/g, installSource);
+		searchUrl = searchUrl.replace(/{mrud}/g, formatDate(currentDate));
+		searchUrl = searchUrl.replace(/{oid}/g, formatDate(originalDate));
+		searchUrl = searchUrl.replace(/{uuid}/g, installId);  
+		
+	    var payload_fixed = {};
+		payload_fixed.product = "tlb";
+		payload_fixed.productName = strings.GetStringFromName("toolbar.id");
+		payload_fixed.version = _version;
+		
+		var langlocale = strings.GetStringFromName("toolbar.langlocale").toLowerCase().split("-");
+		payload_fixed.language = langlocale[0];
+		payload_fixed.locale = langlocale[1];		
+		payload_fixed.os = _os
+		payload_fixed.browser = _browser;
+		
+		var val;
+		val = branch.getCharPref("install.ncid");		
+		payload_fixed.ncid = (val) ? val : '-';
+		val = branch.getCharPref("install.distroid");
+		payload_fixed.distroID = (val) ? val : '-';
+		
+        toolbar_event = payload_fixed.product + "_" + 
+                    payload_fixed.productName + "_" + 
+                    payload_fixed.version + "_" +
+                    payload_fixed.ncid + "_" +
+                    payload_fixed.os + "_" + 
+                    payload_fixed.browser + "_" +
+                    payload_fixed.language + "_" +
+                    payload_fixed.locale + "_" +
+                    payload_fixed.distroID + "_";
+		
+        // makes sure it's all lower case and only contains a-z, 0-9, and .
+		for(payloadName in metric) {
+            if(payloadName !== "invType" && payloadName !== "instd" && payloadName !== "mrud" && payloadName !== "uuid") {
+                payloadValue = metric[payloadName];
+                if (payloadValue) {
+                    payloadValue = payloadValue.toLowerCase();
+                    payloadValue = payloadValue.replace(/[^a-z0-9\.]/g,"");
+                    metric[payloadName] = payloadValue;
+                }
+            }
+        }
+        
+        // the compName should not exceed 6 chars
+        if(metric.compName.length > 6) {
+            metric.compName = metric.compName.substring(0,6);
+        }
+        
+        eventStr =  toolbar_event  +
+                    ((metric.component) ? metric.component : 'tlb') + "_" +                        
+                    ((metric.compName) ? metric.compName : '-') + "_" +
+                    ((metric.actionType) ? metric.actionType : '-') + "_" +
+                    ((metric.actionName) ? metric.actionName : '-') + "_" +
+                    ((metric.misc1) ? metric.misc1 : '-') + "_" +
+                    ((metric.misc2) ? metric.misc2 : '-');
+
+
+        eventStr = stripDashes(eventStr);
+        url = searchUrl.replace(/{event}/g, eventStr);           
+        sendRequest(url);
+        metric = null;
+        log("["+eventStr+"] "+url);            
+	}
+	
+	function recordToolbar(cName, aType, aName, m1, m2) {        
+        registerSearchMetric({compName:cName, actionType:aType, actionName:aName, misc1:m1, misc2:m2});        
+    }     
+	
+	return {
+	
+	    init : function(addon, props) {
+	    
+	        try {
+	            
+	            if (!_props.length) {
+	                _props = props;
+	        	    _version = addon.version;
+    	        	
+    	        	
+        	        var windowMediator = Components.classes["@mozilla.org/appshell/window-mediator;1"].getService(Components.interfaces.nsIWindowMediator);
+                    if (windowMediator)  {
+                        var win = windowMediator.getMostRecentWindow("navigator:browser");  
+        	            var ua =  win.navigator.userAgent;
+        	            if ( ua.indexOf('Firefox') != -1) {
+                            var versionLocation = ua.indexOf('Firefox') + 8;
+                            var versionNumber = ua.substr(versionLocation); 
+                            if (versionNumber.indexOf('.')) {
+                                versionNumber = versionNumber.substring(0,versionNumber.indexOf('.'));
+                            }
+                            _browser = "ff" + versionNumber;
+                        }
+                
+                        if (ua.indexOf("Windows NT 5.1") != -1) {
+                            _os = "xp";
+                        } else if (ua.indexOf("Windows NT 6.0") != -1) {
+                            _os = "vi";
+                        } else if ( (ua.indexOf("Windows NT 6.1") != -1) || (nav.userAgent.indexOf("Windows NT 7") != -1) ) {
+                            _os = "w7";
+                        } else if ( (ua.indexOf("Windows NT 6.2") != -1)) {
+                            _os = "w8";
+                        } else if (ua.indexOf("Mac OS X") != -1 ) {
+                            _os = "ox";
+                        } else if (ua.indexOf("Linux") != -1 ) {
+                            _os = "lx";
+                        }
+                    }
+                }
+            } catch(e) {
+	            log(e.message);
+	        }
+	    }, 
+	    
+	    uninstall : function() {	        
+	        try {
+	           registerSearchMetric({compName:"", actionType:"png", actionName:"complete", component:"uninst"});        
+	        } catch(e) {
+	            log(e.message);
+	        }
+	        
+	    },
+	    
+	    disable : function(result) {
+            try {
+                registerSearchMetric({compName:"disabl", actionType:"clk", actionName:result, component:"pmpt"}); 
+            } catch(e) {
+	            log(e.message);
+	        }                
+	    }
+	}
+}();
+
+aolukAddonObserver.prototype = {
 	
 	_init : false,
 	_state : "",
 	_enable:true,
 	_chromeDir:'',
 	_hideToolbar:false,
+	_addon:null,
 	
     classDescription : CLASS_NAME,
     contractID : CONTRACT_ID,
@@ -106,6 +323,11 @@ aolukAddonObserver.prototype =
 	{	    
         try
         {
+        
+            
+            uninstall_metrics.init(this._addon, PROPS);
+            uninstall_metrics.uninstall();
+        
             var strings = this.getStrings();	           
         
             // remove the user agent if we set one
@@ -161,16 +383,19 @@ aolukAddonObserver.prototype =
 	
 	disabling:function(addon)
 	{
+	    this.log('disabling');
+		this._addon = addon;
 	    this._state = "Disable";	
-	    this.showUninstallPage(addon);
+	    this.showUninstallPage(addon, false);
 	},
 	
 	
 	uninstalling : function(addon)
 	{   
 	    this.log('uninstalling');
+		this._addon = addon;
 	    this._state = "uninstalling";	
-	    this.showUninstallPage(addon);		
+	    this.showUninstallPage(addon, true);		
 	},
 	
     installing : function()
@@ -337,94 +562,43 @@ aolukAddonObserver.prototype =
 		return uninstallUrl;
 	},
 	
-	sendRequest:function(url) {
+	
+    showUninstallPage : function(addon, uninstalling) {
 	     try {
-            var req = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
-            req.open("GET", url, false); 
-            req.send(null);
-        } catch(e) {
-            this.log("sendRequest ex ["+ e.message +"] "+ url);
-        }
-	},	
+            var windowMediator = Components.classes["@mozilla.org/appshell/window-mediator;1"].getService(Components.interfaces.nsIWindowMediator);
+            if (windowMediator) {
+                var win = windowMediator.getMostRecentWindow("navigator:browser");
+                if (win) {
 	
-	formatDate: function(val)
-    {
-        var ret = "20000101";
-        var parts = val.split("-");
-        if (parts.length == 3) {
-            ret = parts[2]+parts[1]+parts[0];
-        }
-        return ret;
-    },
-	
-    sendSearch : function(typeName, subTypeName) {
-		var branch = this.getBranch();
-		var strings = this.getStrings();
-		var installId = branch.getCharPref("search.instd");
-		var originalDate = branch.getCharPref("search.oid");
-		var currentDate = branch.getCharPref("search.cid");
-		var langlocale = strings.GetStringFromName("toolbar.langlocale");
-		var installSource = branch.getCharPref("search.source");
-		var  searchUrl = strings.GetStringFromName("search.metrics");
-		
-		searchUrl = searchUrl.replace(/{it}/g, installSource);
-		searchUrl = searchUrl.replace(/{langlocale}/g, langlocale.toLowerCase());
-		searchUrl = searchUrl.replace(/{mrud}/g, this.formatDate(currentDate));
-		searchUrl = searchUrl.replace(/{oid}/g, this.formatDate(originalDate));
-		searchUrl = searchUrl.replace(/{uuid}/g, installId);  
+                    uninstall_metrics.init(addon, PROPS);
 
-		var evt = typeName + "-" + subTypeName;
-
-		var url = searchUrl.replace(/{event}/g, evt);           
-
-		this.sendRequest(url);
-   },
-	showUninstallPage : function(addon)
-	{
-	    try
-	    {
-	        var window = null;
-		    var windowMediator = Components.classes["@mozilla.org/appshell/window-mediator;1"].getService(Components.interfaces.nsIWindowMediator);
-		    if (windowMediator) 
-		    {
-			    window = windowMediator.getMostRecentWindow("navigator:browser");
 				var branch = this.getBranch();
 				var strings = this.getStrings();	
 
 				var xul_id = strings.GetStringFromName("toolbar.xul.id");
-				var tb = window.document.getElementById(xul_id);
-
-
-			    if (window)
-			    {
+                    var tb = win.document.getElementById(xul_id);
 				    var path= this._chromeDir + "content/enableBox.xul";
-				    window.openDialog(path, "aol", "modal,centerscreen,titlebar=no", this);
+                    win.openDialog(path, "aol", "modal,centerscreen,titlebar=no", this);
 					
 					    if(this._enable){
 					
 							addon.userDisabled = false;
 							//if this is a user uninstall action. cancel uninstall
-							if((addon.pendingOperations & AddonManager.PENDING_UNINSTALL) != 0)  
+                        if((addon.pendingOperations & AddonManager.PENDING_UNINSTALL) != 0)  {
 								addon.cancelUninstall();
+                        }
 
-							var branch = this.getBranch();
-							var strings = this.getStrings();	
 
-							var xul_id = strings.GetStringFromName("toolbar.xul.id");
-							var tb = window.document.getElementById(xul_id);
 							if(tb && this._hideToolbar){
 								tb.collapsed = true;
-						
-							this.sendSearch("prompt", "detect_disable-hide-this-session");	
-						}
-						else{
-							this.sendSearch("prompt", "detect_disable-cancel-disable");
+                            uninstall_metrics.disable("hide");	
+                        } else {
+                            uninstall_metrics.disable("cancel");	
 						}
 						
-					}
-                   else{  //if uninstall , show uninstall url  
-					this.sendSearch("prompt", "detect disable-disable toolbar");	
-			        var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+                    } else {  //if uninstall , show uninstall url  
+                        uninstall_metrics.disable(uninstalling ? "remove" : "disable");	
+                        var mainWindow = win.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                        .getInterface(Components.interfaces.nsIWebNavigation)
                        .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
                        .rootTreeItem
@@ -436,9 +610,7 @@ aolukAddonObserver.prototype =
 			    }
 			    }
 		    }		    
-        }
-		catch(e)
-		{
+        } catch(e) {
 		    this.log(e.message);
 		}		    
 	}

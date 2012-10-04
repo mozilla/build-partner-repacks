@@ -1,3 +1,6 @@
+Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
+Components.utils.import("resource://unitedtb/util/util.js");
+
 var gPrefElements = [];
 
 /**
@@ -9,7 +12,7 @@ var gPrefElements = [];
  */
 function SettingElement(element)
 {
-  united.assert(element && element instanceof united.Ci.nsIDOMElement);
+  assert(element && element instanceof Ci.nsIDOMElement);
   this.element = element;
 
   if (this.element.tagName == "checkbox")
@@ -84,8 +87,7 @@ SettingElement.prototype =
 
   reset : function()
   {
-     this.storeValue = this.defaultValue;
-     this.elementValue = this.storeValue;
+     this.elementValue = this.defaultValue;
   },
 
   get storeValue()
@@ -107,8 +109,6 @@ SettingElement.prototype =
 
   /**
    * Checks whether the user input in the element is correct.
-   * Default implementation is to
-   * call the function in the onvalidate="" XUL attribute of the element.
    *
    * @param save {Boolean}
    *      true, if [Save] button has been pressed.
@@ -121,12 +121,7 @@ SettingElement.prototype =
    */
   validate : function(save)
   {
-    let validator = this.element.getAttribute("onvalidate");
-    if (!validator)
-      return null;
-    let varstr = "let save = " + united.sanitize.boolean(save) + "; ";
-    let errorMsg = eval(varstr + validator); // meh, no other way to run onfoo event handlers
-    return errorMsg;
+    return null;
   },
 
 }
@@ -148,8 +143,8 @@ SettingElement.prototype =
  */
 function AutoPrefElement(element, prefName, prefBranch)
 {
-  united.assert(prefBranch && typeof(prefBranch.isSet) == "function");
-  this.prefName = united.sanitize.nonemptystring(prefName);
+  assert(prefBranch && typeof(prefBranch.isSet) == "function");
+  this.prefName = sanitize.nonemptystring(prefName);
   this.prefBranch = prefBranch;
   SettingElement.call(this, element);
 }
@@ -198,15 +193,22 @@ AutoPrefElement.prototype =
     this.prefBranch.set(this.prefName, val);
   },
 
+  get defaultValue()
+  {
+    return this.prefBranch.defaults.get(this.prefName);
+  },
+
+  /* - we want to wait until user clicks [Save], so use parent implementation
   reset : function()
   {
     this.prefBranch.reset(this.prefName);
     // pref observer doesn't trigger, if user changed the element and didn't save yet
     this.elementValue = this.storeValue;
   },
+  */
 
 }
-united.extend(AutoPrefElement, SettingElement);
+extend(AutoPrefElement, SettingElement);
 
 /**
  * Utility function that gets all elements that have a
@@ -218,7 +220,7 @@ united.extend(AutoPrefElement, SettingElement);
  */
 function hookupAllPreferencesElements(element, prefBranch)
 {
-  united.assert(element instanceof united.Ci.nsIDOMElement);
+  assert(element instanceof Ci.nsIDOMElement);
   var prefName = element.getAttribute("preference");
   if (prefName)
     new AutoPrefElement(element, prefName, prefBranch);

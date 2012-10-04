@@ -5,16 +5,16 @@
   
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    Components.utils.import("resource://unitedtb/tracking/aib.js", this);
-    Components.utils.import("resource://unitedtb/tracking/count404.js", this);
-    Components.utils.import("resource://unitedtb/tracking/countnewtab.js", this);
-    Components.utils.import("resource://unitedtb/tracking/modifyheader.js", this);
-    united.identifyMyselfToSite = {};
-    united.loadJS("chrome://unitedtb/content/tracking/identifyMyselfToSite.js",
-        united.identifyMyselfToSite);
-    united.sslErrorExit = {};
-    united.loadJS("chrome://unitedtb/content/tracking/sslErrorExit.js",
-        united.sslErrorExit);
+    unitedinternet.initModule(unitedinternet, "tracking");
+    Components.utils.import("resource://unitedtb/tracking/campaign-id.js", unitedinternet.tracking);
+    Components.utils.import("resource://unitedtb/tracking/aib.js", unitedinternet.tracking);
+    Components.utils.import("resource://unitedtb/tracking/modifyheader.js", unitedinternet.tracking);
+    unitedinternet.initModule(unitedinternet, "identifyMyselfToSite");
+    unitedinternet.loadJS("chrome://unitedtb/content/tracking/identifyMyselfToSite.js",
+        unitedinternet.identifyMyselfToSite);
+    unitedinternet.initModule(unitedinternet, "sslErrorExit");
+    unitedinternet.loadJS("chrome://unitedtb/content/tracking/sslErrorExit.js",
+        unitedinternet.sslErrorExit);
   </script>
 </overlay>
 <!-- /copied -->

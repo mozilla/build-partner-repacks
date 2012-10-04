@@ -28,6 +28,7 @@ global : {
 // basic functions of the toolbar
 toolbar : {
   defaultlocale : {
+    name: "%BRAND% MailCheck",
     // homepage = portal, e.g. http://www.web.de
     // startpage = shown when firefox starts ("homepage" in Firefox terminology)
     // toolbar.js
@@ -49,6 +50,32 @@ toolbar : {
       { label : "$TR help.toolbar", url : "%GOTB%help" },
       { label : "$TR help.about", aboutExtDialog : true },
     ],
+    // This specifies ALL items on the toolbar
+    // If you want an item hidden by default, set it to false
+    items: {
+      "homebutton-button": true,
+      "search-box": true,
+      "start-button": false,
+      "email-button": true,
+      "composeemail-button": true,
+      "addressbook-button": true,
+      "smartdrive-button": true,
+      "notes-button": true,
+      "sms-button": true,
+      "photoalbum-button": true,
+      "separator": true,
+      "highlight-button": false,
+      "coupon-button": true,
+      "amazon-button": true,
+      "ebay-button": true,
+      "lastminute-button": false,
+      "weather-button": true,
+      "ticker-button": true,
+      "horoscope-button": false,
+      "spacer": true,
+      "login-box": true,
+      "pref-button": true,
+    }
   },
 },
 homebutton : {
@@ -68,11 +95,13 @@ homebutton : {
 search : {
   defaultlocale : {
     toolbarURL : "%GOTB%web_search/?su=", // see also dropdownURLEntries below
+    pshURL : "%GOTB%psh/?su=",
     keywordURL : "%GOTB%keyurl_search/?su=",
     newTabURL : "%GOTB%web_search_newtab/?su=",
     historyNewTabURL : "%GOTB%web_search_history/?su=",
     netErrorURL : "%GOTB%search_404/?su=",
     historyNetErrorURL : "%GOTB%search_hsty_404/?su=",
+    injectPSHURL : "%GOTB%psh/?su=",
     suggestURL : "http://suggestplugin.ui-portal.de/suggest_json/?origin=tb_sbox_ff&brand=webde&su=",
     suggestName : "%BRAND%",
     engineName : "WEB.DE Suche", // main -- do not translate, must match OSD
@@ -104,22 +133,6 @@ search : {
     },
   },
 },
-shopping : {
-  defaultlocale : {
-    // icons in skin/shopping/
-    dropdownURLEntries :
-    [
-      {
-        id : "amazon",
-        label : "$TR trademark.amazon",
-        icon : "amazon.png",
-        url : "%GOTB%amazon?keywords=",
-        searchURL : "%GOTB%amazon?keywords=",
-        removable : false,
-      },
-    ],
-  },
-},
 ebay : {
   defaultlocale : {
     suggestURL : "http://anywhere.ebay.com/services/suggest/?s=77&r=707-52222-19487-5&q=",
@@ -131,6 +144,7 @@ ebay : {
 },
 amazon : {
   defaultlocale : {
+    portalURL : "%GOTB%amazon",
     APIProxyURL : "%GOTB%amazon_listbox/s",
   },
 },
@@ -156,7 +170,6 @@ weather : {
     disabledIDs : [
       { win : "main-window", el: "united-weather-button" },
       { win : "united-pref-window", el: "weather-postcode" },
-      { win : "united-pref-window", el: "weather-location-services" },
       { win : "united-pref-window", el: "weather-no-nag" },
     ],
   },
@@ -175,6 +188,7 @@ horoscope : {
 },
 newtab : {
   defaultlocale : {
+    lasttabURL: "%GOTB%lasttab",
     recommendedSitesXMLURL : "%GOTB%quicklaunch_xml",
     // TODO use placeholder for newtab prefix?
     // fill up the "most visited" list of the new tab page, *only* in a fresh profile
@@ -192,6 +206,7 @@ newtab : {
 },
 tracking : {
   defaultlocale : {
+    trackingURL: "http://event.ui-portal.de/metric/ca.gif?portal=webde&browser=ff&type=%TYPE%&event=%EVENT%&version=%VERSION%&installdate=%INSTALLDATE%&locale=%LOCALE%&kid=%KID%&mod=%MOD%",
     AIBDailyURL : "https://dl.web.de/toolbar/firefox/aib.xml?vers=%VERSION%&local=%LOCALE%",
     AIBMonthlyURL : "https://dl.web.de/toolbar30days/firefox/aib.xml?vers=%VERSION%&local=%LOCALE%",
     count404URL : "%GOMAIN%count404", // + &count=123
@@ -223,6 +238,7 @@ login : {
     runonceNewUsersWebURL : null,
     enableXXLTooltip : false,
     trackXXLTooltipClickedURL : null,
+    forgotPasswordURL : "%GOTB%help_password",
     configs : [
       {
         providerID : "webde",
@@ -277,6 +293,13 @@ phish: {
   defaultlocale : {
     blacklist : "http://dl.web.de/backend/phish.txt",
     updateFrequency : 15 * 60, // in seconds
+  },
+},
+coupon: {
+  defaultlocale : {
+    dataXMLURL : "http://go.web.de/tb/coupon/feed",
+    updateFrequency : 6 * 60 * 60, // 6h, in seconds
+    enableViaKidStartValues : [ "6", "7" ], // if campaignID (kid) starts with these, enable coupon automatically
   },
 },
 }

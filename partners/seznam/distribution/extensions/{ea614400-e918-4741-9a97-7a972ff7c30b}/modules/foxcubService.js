@@ -29,7 +29,8 @@ FoxcubService.debug = function(msg,convert) {
 
 //definicia konstant
 FoxcubService.SOURCE = "FFListicka_3";
-FoxcubService.VERSION = "2.4.3";
+FoxcubService.VERSION = "2.5.4";
+FoxcubService.BETA = false;
 FoxcubService.FOXCUB_PREF_BRANCH = "extensions.foxcub.";
 FoxcubService.EXTENSION_ID = "{ea614400-e918-4741-9a97-7a972ff7c30b}";
 //cesta k extensnu
@@ -40,7 +41,6 @@ FoxcubService.SEP = (FoxcubService.EXTENSION_PATH.indexOf("\\")==-1)?"/":"\\";
 FoxcubService.FF4 = false;
 
 //ziskanie release
-
 var branch  = Components.classes['@mozilla.org/preferences-service;1']
 			.getService(Components.interfaces.nsIPrefService).getBranch(FoxcubService.FOXCUB_PREF_BRANCH);
 var constids = FoxcubService.SOURCE.split("_");

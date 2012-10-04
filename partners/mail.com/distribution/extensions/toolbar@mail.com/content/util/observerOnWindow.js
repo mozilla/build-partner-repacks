@@ -1,5 +1,3 @@
-// assumes that common.js already imported observer.js
-
 var gWindowObservers = [];
 
 function registerWindowObserver(observer)

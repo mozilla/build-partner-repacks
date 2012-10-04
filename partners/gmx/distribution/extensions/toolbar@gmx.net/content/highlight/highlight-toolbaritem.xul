@@ -10,28 +10,28 @@
 
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    united.highlight = {};
-    united.loadJS("chrome://unitedtb/content/highlight/highlight.js", united.highlight);
+    unitedinternet.initModule(unitedinternet, "highlight");
+    unitedinternet.loadJS("chrome://unitedtb/content/highlight/highlight.js", unitedinternet.highlight);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->
 
-  <toolbarpalette id="BrowserToolbarPalette">
+  <toolbar id="united-toolbar">
     <toolbarbutton id="united-highlight-button"
         label="&united.highlight.button.label;"
         tooltiptext="&united.highlight.button.tooltip;"
         type="menu-button"
         autocheck="true"
-        oncommand="united.highlight.onButton(event);"
-        oninput="united.highlight.onTextChanged(event);"
+        oncommand="unitedinternet.highlight.onButton(event);"
+        oninput="unitedinternet.highlight.onTextChanged(event);"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-removable="true"
         united-icon-only="true"
         >
       <menupopup>
-        <colorpicker onclick="window.setTimeout(function(cp) {united.ourPref.set('highlight.color', cp.color);cp.parentNode.hidePopup();}, 0, this)"/>
+        <colorpicker onclick="unitedinternet.highlight.onColorChanged(event);"/>
       </menupopup>
     </toolbarbutton>
-  </toolbarpalette>
+  </toolbar>
 </overlay>

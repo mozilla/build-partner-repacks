@@ -5,8 +5,8 @@
   
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    united.phish = {};
-    united.loadJS("chrome://unitedtb/content/phish/tab-listener.js", united.phish);
+    unitedinternet.initModule(unitedinternet, "phish");
+    unitedinternet.loadJS("chrome://unitedtb/content/phish/tab-listener.js", unitedinternet.phish);
   </script>
 </overlay>
 <!-- /copied -->

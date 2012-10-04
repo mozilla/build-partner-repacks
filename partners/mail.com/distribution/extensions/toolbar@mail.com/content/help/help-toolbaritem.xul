@@ -14,8 +14,8 @@
 
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    united.help = {};
-    united.loadJS("chrome://unitedtb/content/help/help-toolbaritem.js", united.help);
+    unitedinternet.initModule(unitedinternet, "help");
+    unitedinternet.loadJS("chrome://unitedtb/content/help/help-toolbaritem.js", unitedinternet.help);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->
@@ -26,14 +26,25 @@
         insertbefore="troubleShooting,releaseNotes,aboutSeparator,aboutName"
         >
       <menupopup id="united-help-submenu"
-          onpopupshowing="united.help.initMenus();"
+          onpopupshowing="unitedinternet.help.initMenus();"
+          >
+      </menupopup>
+    </menu>
+  </menupopup>
+
+  <menupopup id="appmenu_helpMenupopup">
+    <menu label="&brand.name;"
+        insertafter="appmenu_openHelp"
+        >
+      <menupopup id="united-helpbutton-submenu"
+          onpopupshowing="unitedinternet.help.initMenus();"
           >
       </menupopup>
     </menu>
   </menupopup>
 
     <menupopup id="united-pref-button-dropdown"
-        onpopupshowing="united.help.initMenus();"
+        onpopupshowing="unitedinternet.help.initMenus();"
         >
     </menupopup>
 

@@ -13,23 +13,23 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    united.email = {};
-    united.loadJS("chrome://unitedtb/content/email/email.js", united.email);
-    united.login = {};
-    united.loadJS("chrome://unitedtb/content/email/login.js", united.login);
-    united.login.common = {};
-    united.loadJS("chrome://unitedtb/content/email/login-common.js", united.login.common);
+    unitedinternet.initModule(unitedinternet, "email");
+    unitedinternet.loadJS("chrome://unitedtb/content/email/email.js", unitedinternet.email);
+    unitedinternet.initModule(unitedinternet, "login");
+    unitedinternet.loadJS("chrome://unitedtb/content/email/login.js", unitedinternet.login);
+    unitedinternet.initModule(unitedinternet.login, "common");
+    unitedinternet.loadJS("chrome://unitedtb/content/email/login-common.js", unitedinternet.login.common);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->
 
-  <toolbarpalette id="BrowserToolbarPalette">
+  <toolbar id="united-toolbar">
     <toolbarbutton id="united-email-button"
         label="&united.email.button.label;"
         tooltiptext="&united.email.button.tooltip;"
         tooltiptext-for-item="&united.email.messages.tooltip;"
         status="disconnected"
-        oncommand="united.email.onCommandMailButton();"
+        oncommand="unitedinternet.email.onCommandMailButton();"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         type="menu-button"
@@ -38,14 +38,13 @@
           <menuitem id="united-email-checknow"
               class="menuitem-iconic"
               label="&united.email.checknow.label;"
-              oncommand="united.email.onCommandCheckMailsNow(event);"/>
-          <menuseparator id="united-email-separator-before-accounts"/>
+              oncommand="unitedinternet.email.onCommandCheckMailsNow(event);"/>
           <menuseparator id="united-email-separator-after-accounts"/>
           <menuitem id="united-email-configure-menuitem"
               class="menuitem-iconic"
               label="&united.email.configure.label;"
               tooltiptext="&united.email.configure.tooltip;"
-              oncommand="united.email.onCommandConfigureMenuitem(event);"/>
+              oncommand="unitedinternet.email.onCommandConfigureMenuitem(event);"/>
       </menupopup>
     </toolbarbutton>
 
@@ -56,7 +55,7 @@
       <toolbarbutton id="united-logged-out-button"
           label="&united.logged-out.label;"
           tooltiptext="&united.logged-out.tooltip;"
-          oncommand="united.login.onCommandDoLogin();"
+          oncommand="unitedinternet.login.onCommandDoLogin();"
           orient="horizontal"
           class="chromeclass-toolbar-additional toolbarbutton-1"
           remove-priority="300"
@@ -73,17 +72,17 @@
           <menuitem id="united-logged-in-menuitem"
               class="menuitem-iconic"
               label="&united.logged-in.label;"
-              oncommand="united.login.onCommandDoLogout();"/>
+              oncommand="unitedinternet.login.onCommandDoLogout();"/>
         </menupopup>
       </toolbarbutton>
     </toolbaritem>
-  </toolbarpalette>
+  </toolbar>
 
   <popupset>
     <panel id="united-email-popup"
         position="after_start"
         noautohide="true"
-        onclick="this.hidePopup(); united.email.onXXLTooltipClicked();"
+        onclick="this.hidePopup(); unitedinternet.email.onXXLTooltipClicked();"
         >
       <hbox align="center" pack="center">
         <image />

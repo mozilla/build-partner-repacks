@@ -21,6 +21,10 @@ h1 {
   font-weight: bold;
   margin-bottom: 10px;
 }
+.intro .descr {
+  font-size: medium;
+  font-weight: normal;
+}
 .checkbox-box {
   font-size: small;
   margin-bottom: 5px;
@@ -31,7 +35,7 @@ h1 {
   margin-left: 20px;
 }
 .button-box {
-  text-align: left;
+  text-align: right;
   margin-top: 10px;
 }
 pref-region {
@@ -45,3 +49,6 @@ pref-region menulist, pref-region *|menulist {
   margin-left: 20px;
 }
 
+#close-button {
+  font-size: smaller;
+}

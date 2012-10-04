@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 Components.utils.import("resource://unitedtb/email/account-list.js", this);
-var gStringBundle = new united.StringBundle(
+var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/email/login.properties");
 
 function onLoad()
@@ -81,32 +81,32 @@ function populateList()
 
     document.getElementById("remove-account").disabled =
         getAllExistingAccounts().length == 0;
-  } catch (e) { united.errorCritical(e); }
+  } catch (e) { errorCritical(e); }
 }
 
 function checkForDesktopNotifications()
 {
   try
   {
-    var alerts = united.Cc["@mozilla.org/alerts-service;1"].getService(united.Ci.nsIAlertsService);
+    var alerts = Cc["@mozilla.org/alerts-service;1"].getService(Ci.nsIAlertsService);
   }
   catch (ex)
   {
     document.getElementById("desktop-notification").disabled = true;
-    if (united.getOS() == "mac")
+    if (getOS() == "mac")
     {
       document.getElementById("growl").hidden = false;
       document.getElementById("growl").addEventListener("click", function()
       {
-        united.loadPage("http://growl.info/", "tab");
+        loadPage("http://growl.info/", "tab");
       }, false);
     }
   }
 }
 
 window.addEventListener("load", onLoad, false);
-united.autoregisterGlobalObserver("account-added", populateList);
-united.autoregisterGlobalObserver("account-removed", populateList);
+autoregisterGlobalObserver("account-added", populateList);
+autoregisterGlobalObserver("account-removed", populateList);
 
 function setup()
 {
@@ -118,8 +118,8 @@ function setup()
 
   // Short-term workaround until POP3/IMAP and the above wizard is integrated
   // 2 = create account
-  united.findSomeBrowserWindow().united.login.tryLogin(2, null, false,
-      function() {}, united.errorCritical, function() {});
+  findSomeBrowserWindow().unitedinternet.login.tryLogin(2, null, false,
+      function() {}, errorCritical, function() {});
   // list refreshes automatically due to listeners
 }
 
@@ -128,7 +128,7 @@ function edit()
 {
   var acc = getSelectedAccount();
 
-  var answ = upref.login.common.getEmailAddressAndPassword({
+  var answ = login.common.getEmailAddressAndPassword({
       emailAddress : acc.emailAddress,
       wantStoredLogin : acc.wantStoredLogin,
       usecase : 2,
@@ -151,7 +151,7 @@ function remove()
 {
   var acc = getSelectedAccount();
 
-  var ok = united.promptService.confirm(window,
+  var ok = promptService.confirm(window,
       gStringBundle.get("remove.title"),
       gStringBundle.get("remove.confirm", [ acc.emailAddress ]));
   if (!ok) {
@@ -178,7 +178,7 @@ function getSelectedAccount()
     listitem = listbox.selectedItem;
   if (!listitem)
   {
-    united.errorCritical(gStringBundle.get("error.noselection"));
+    errorCritical(gStringBundle.get("error.noselection"));
     throw "no selection";
   }
   return listitem.backendAccount;
@@ -186,7 +186,7 @@ function getSelectedAccount()
 
 function RememberMe(el, account)
 {
-  united.assert(account);
+  assert(account);
   this._account = account;
   SettingElement.call(this, el);
 }
@@ -201,7 +201,7 @@ RememberMe.prototype =
     this._account.wantStoredLogin = val;
     if ( !val && this._account.isLoggedIn) {
       // destroy token on server
-      this._account.logout(function() {}, united.errorCritical);
+      this._account.logout(function() {}, errorCritical);
     }
   },
   get defaultValue()
@@ -209,4 +209,4 @@ RememberMe.prototype =
      return true;
   },
 }
-united.extend(RememberMe, SettingElement);
+extend(RememberMe, SettingElement);

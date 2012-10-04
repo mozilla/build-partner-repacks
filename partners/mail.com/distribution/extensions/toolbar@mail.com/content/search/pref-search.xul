@@ -10,8 +10,8 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript">
-    upref.search = {};
-    united.loadJS("chrome://unitedtb/content/search/pref-search.js", upref.search);
+    unitedinternet.initModule(unitedinternet, "search");
+    unitedinternet.loadJS("chrome://unitedtb/content/search/pref-search.js", unitedinternet.search);
   </script>
 
   <tabs id="tabs">
@@ -22,6 +22,7 @@
   </tabs>
   <tabpanels id="tabpanels">
     <tabpanel id="search-tabpanel"
+        orient="vertical"
         insertafter="features-tabpanel,general-tabpanel"
         >
 

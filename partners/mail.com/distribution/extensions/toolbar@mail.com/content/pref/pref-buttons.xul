@@ -10,8 +10,8 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript">
-    upref.buttons = {};
-    united.loadJS("chrome://unitedtb/content/pref/pref-buttons.js", upref.buttons);
+    unitedinternet.initModule(unitedinternet, "buttons");
+    unitedinternet.loadJS("chrome://unitedtb/content/pref/pref-buttons.js", unitedinternet.buttons);
   </script>
 
   <tabs id="tabs">

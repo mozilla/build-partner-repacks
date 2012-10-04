@@ -4,12 +4,12 @@ function onLoad()
 {
   try {
     new HoroscopeSelector(document.getElementById("sign"));
-  } catch (e) { united.debug(e); }
+  } catch (e) { debug(e); }
   try {
-    gStringBundle = new united.StringBundle(
+    gStringBundle = new StringBundle(
       "chrome://unitedtb/locale/horoscope/horoscope.properties");
     buildTypeMenu();
-  } catch (e) { united.debug(e); } // TODO
+  } catch (e) { debug(e); } // TODO
 }
 window.addEventListener("load", onLoad, false);
 
@@ -17,8 +17,8 @@ function buildTypeMenu()
 {
   var dropdown = document.getElementById("type")
   var menu = document.getElementById("type-menu");
-  var pref = dropdown.value; // united.ourPref.get("ticker.channel");
-  united.cleanElement(menu);
+  var pref = dropdown.value; // ourPref.get("ticker.channel");
+  cleanElement(menu);
   var menuitems = ["tag","woche","monat","jahr","liebe","partnertest","typologie"];
   for (let i=0; i < menuitems.length; i++)
   {
@@ -35,11 +35,11 @@ function buildTypeMenu()
 
 function HoroscopeSelector(el)
 {
-  AutoPrefElement.call(this, el, "horoscope.sign", united.ourPref);
+  AutoPrefElement.call(this, el, "horoscope.sign", ourPref);
 }
 HoroscopeSelector.prototype =
 {
   reset: function()
   {},
 }
-united.extend(HoroscopeSelector, AutoPrefElement);
+extend(HoroscopeSelector, AutoPrefElement);

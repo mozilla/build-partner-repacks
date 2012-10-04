@@ -12,18 +12,24 @@
  *
  * Over time, this grew into a general installation questionaire.
  */
+Components.utils.import("resource://unitedtb/util/util.js");
+Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
 
-
-var united; // see onLoad()
+var confirmClose = true;
 
 function onLoad()
 {
-  var firefoxWindow = getTopLevelWindowContext();
-  united = firefoxWindow.united;
+  window.onbeforeunload = function(e) {
+    if (confirmClose)
+      return confirmClose;
+    else
+      return;
+  };
 }
 
-function onCloseButton()
+function onContinueButton()
 {
+  confirmClose = false;
   var searchengine = document.getElementById("searchengine").checked;
   var startpage = document.getElementById("startpage").checked;
   var newtab = document.getElementById("newtab").checked;
@@ -31,29 +37,39 @@ function onCloseButton()
   //<copied from="pref-general.js (with modifications">
   if (searchengine)
   {
-    var search = united.Cc["@mozilla.org/browser/search-service;1"]
-        .getService(united.Ci.nsIBrowserSearchService);
+    var search = Cc["@mozilla.org/browser/search-service;1"]
+        .getService(Ci.nsIBrowserSearchService);
     // sets pref "browser.search.selectedEngine" and notifies app
-    search.currentEngine = search.getEngineByName(united.brand.search.engineName);
+    try {
+      search.currentEngine = search.getEngineByName(brand.search.engineName);
+    } catch (ex) {
+      // Fails on Mara
+    }
 
     // URLbar search
-    united.generalPref.set("keyword.URL", united.brand.search.keywordURL);
+    generalPref.set("keyword.URL", brand.search.keywordURL);
   }
 
   if (startpage)
   {
     if (document.getElementById("startpage-search").checked)
     {
-      united.generalPref.set("browser.startup.homepage",
-          united.brand.toolbar.startpageURL);
+      generalPref.set("browser.startup.homepage",
+          brand.toolbar.startpageURL);
     } else {
-      united.generalPref.set("browser.startup.homepage",
-          united.brand.toolbar.startpageHomepageURL);
+      generalPref.set("browser.startup.homepage",
+          brand.toolbar.startpageHomepageURL);
     }
   }
   //</copied>
 
-  united.ourPref.set("newtab.enabled", newtab);
+  ourPref.set("newtab.enabled", newtab);
 
-  window.close();
+  document.location.href = "chrome://unitedtb/content/email/login-page.xhtml";
+}
+
+function onCloseButton()
+{
+  confirmClose = false;
+  optinConfirmClose();
 }

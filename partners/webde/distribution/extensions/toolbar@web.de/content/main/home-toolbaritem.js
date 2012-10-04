@@ -11,16 +11,16 @@ function home(event)
 {
   var url = event.target.getAttribute("url"); // dropdown entries
   if (!url) // no dropdown
-    url = united.brand.homebutton.homepageURL;
-  united.loadPage(url);
+    url = brand.homebutton.homepageURL;
+  loadPage(url);
 };
 
 function onLoad()
 {
-  new united.appendBrandedMenuitems("homebutton", "homebutton", null,
+  new appendBrandedMenuitems("homebutton", "homebutton", null,
   function(entry)
   {
-    united.loadPage(entry.url, "tab");
+    loadPage(entry.url, "tab");
   });
 }
 window.addEventListener("load", onLoad, false);

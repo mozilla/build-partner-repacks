@@ -7,12 +7,13 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript">
-    upref.highlight = {};
-    united.loadJS("chrome://unitedtb/content/highlight/pref-highlight.js", upref.highlight);
+    unitedinternet.initModule(unitedinternet, "highlight");
+    unitedinternet.loadJS("chrome://unitedtb/content/highlight/pref-highlight.js", unitedinternet.highlight);
   </script>
 
-  <tabpanel id="features-tabpanel">
+  <tabpanel id="search-tabpanel">
     <groupbox id="highlight-box"
+        insertafter="search-box"
         pack="start"
         >
       <caption label="&pane.title;" />
@@ -21,7 +22,6 @@
         preference="extensions.unitedinternet.highlight.enableOnNewWindow"
         label="&enableOnNewWindow.checkbox.label;"
         tooltiptext="&enableOnNewWindow.checkbox.tooltip;"
-        insertafter="search-webpageDoubleclick"
         />
     <hbox>
       <label value="&color.label;"/>

@@ -1,5 +1,6 @@
 Components.utils.import("resource://unitedtb/email/account-base.js", this); // just for getDomainForEmailAddress()
-var gStringBundle = new united.StringBundle(
+Components.utils.import("resource://unitedtb/util/StringBundle.js", this);
+var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/email/login.properties");
 
 /**
@@ -11,16 +12,16 @@ var gStringBundle = new united.StringBundle(
 function isOurBrand(emailAddress)
 {
   var domains = [];
-  for each (let provider in united.brand.login.configs)
-    if (provider.providerID == united.brand.login.providerID)
+  for each (let provider in brand.login.configs)
+    if (provider.providerID == brand.login.providerID)
       domains = domains.concat(provider.domains);
-  return united.arrayContains(domains, Account.getDomainForEmailAddress(emailAddress));
+  return arrayContains(domains, Account.getDomainForEmailAddress(emailAddress));
 }
 
 
 function onCreateAccount()
 {
-  united.loadPage(united.brand.login.createAccountURLWeb);
+  loadPage(brand.login.createAccountURLWeb);
   window.close();
 }
 
@@ -44,7 +45,7 @@ function getPassword(emailAddress, wantStoredLoginDefault)
 {
   var passwordInout = { value : "" };
   var storedLoginInout = { value : wantStoredLoginDefault };
-  var ok = united.promptService.promptPassword(window,
+  var ok = promptService.promptPassword(window,
       gStringBundle.get("passwordDialog.title"),
       gStringBundle.get("passwordDialog.msgWithEmail", [ emailAddress ]),
       passwordInout,
@@ -81,7 +82,7 @@ function getEmailAddressAndPassword(inparams)
   // 2 modal dialogs, overlapping, which is OK. See #486 / bug 165280.
   // We'll use the email address. Alternatively, we could use random().
   var windowID = "united-login-dialog-" + inparams.emailAddress;
-  //united.debug(new Date().toISOString() + "opening " + windowID);
+  //debug(new Date().toISOString() + "opening " + windowID);
 
   var parentWin = window;
   var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
@@ -103,4 +104,34 @@ function getEmailAddressAndPassword(inparams)
     password : outparams.password,
     wantStoredLogin : outparams.wantStoredLogin,
   };
+}
+
+/**
+ * Verify email address, esp. that it's a UnitedInternet address.
+ * Shows an error to the user, if needed.
+ * @param emailAddress {String} to be checked
+ * @param brandOnly {Boolean}
+ *     Accept only accounts that are of the same brand as this toolbar,
+ *     e.g. if this is a WEB.DE toolbar, accept only @web.de email addresses.
+ * @param domains {Array of String}   List of acceptable domains.
+ *     Accept only email addresses from these domains.
+ *     If empty array, this check is skipped.
+ * @param exampleDomain {String}   Any domain that we want to show
+ *     to users in the example email address.
+ * @returns null, if address OK, otherwise the error msg to display to the user
+ */
+function verifyEmailAddress(emailAddress, brandOnly, domains, exampleDomain)
+{
+  try {
+    var newAddress = emailAddress.toLowerCase();
+    const emailAddressRegexp = /^[a-z0-9\-%+_\.]+@[a-z0-9\-\.]+$/;
+    if ( !emailAddressRegexp.test(newAddress))
+      return gStringBundle.get(brandOnly ? "error.syntax.brand" : "error.syntax",
+          [ brand.login.providerName, exampleDomain ]);
+    if (domains.length > 0 && !arrayContains(domains,
+            Account.getDomainForEmailAddress(newAddress)))
+      return gStringBundle.get(brandOnly ? "error.domain.brand" : "error.domain",
+          [ brand.login.providerName, exampleDomain, domains.join(", ") ]);
+    return null;
+  } catch (e) { return e.toString(); }
 }

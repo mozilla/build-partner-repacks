@@ -49,8 +49,8 @@
  */
 
 Components.utils.import("resource://unitedtb/search/mcollect/mCollectImport.js", this);
-united.loadJS("chrome://unitedtb/content/util/AutoComplete.js", this);
-united.loadJS("chrome://unitedtb/content/search/mcollect/mAutocompleteSource.js", this);
+loadJS("chrome://unitedtb/content/util/AutoComplete.js", this);
+loadJS("chrome://unitedtb/content/search/mcollect/mAutocompleteSource.js", this);
 
 
 var searchField = null;
@@ -67,7 +67,7 @@ function onLoad(event)
   // must use capture and parent node, to prevent the Mozilla ac widget from interfering :(
   searchField.parentNode.addEventListener("keypress", onKeyPressTab, true);
 
-  if (! united.XPCOMUtils.generateNSGetFactory) // FF 3.6
+  if (! XPCOMUtils.generateNSGetFactory) // FF 3.6
   {
     emptytext = searchField.getAttribute("emptytext");
     searchField.addEventListener("dragover", onDragMouseover, false);
@@ -78,11 +78,11 @@ function onLoad(event)
 };
 window.addEventListener("load", onLoad, false);
 
-united.autoregisterWindowObserver("do-search-suggestions", function(obj)
+autoregisterWindowObserver("do-search-suggestions", function(obj)
 {
   searchField.disableAutoComplete = !obj.enable;
 });
-united.autoregisterWindowObserver("search-term", function(obj)
+autoregisterWindowObserver("search-term", function(obj)
 {
   setSearchText(obj.searchTerm);
 });
@@ -110,17 +110,17 @@ function setSearchText(text)
   clearButton.hidden = !text;
   // pretending it came from here, because Amazon module expects that. TODO good idea?
   var obj = { searchTerm : text, source : 1 };
-  united.notifyWindowObservers("search-keypress", obj);
-  united.notifyWindowObservers("search-entered", obj);
+  notifyWindowObservers("search-keypress", obj);
+  notifyWindowObservers("search-entered", obj);
 }
 
 // <copied to="newtab-page.js">
 
 function onTextChanged(event)
 {
-  united.debug("on text changed in textfield");
+  debug("on text changed in textfield");
   var searchTerm = searchField.value;
-  united.notifyWindowObservers("search-keypress",
+  notifyWindowObservers("search-keypress",
       { searchTerm : searchTerm, source : 1 });
   clearButton.hidden = !searchTerm;
   restoreEmptytext();
@@ -143,11 +143,14 @@ function onTextEntered()
 
 function startSearchOrURL(term)
 {
-  united.debug("search term or URL: " + term);
+  term = term.trim().replace(/\s+/g, " ");
+  searchField.value = term;
+
+  debug("search term or URL: " + term);
 
   // Help the user who enters URLs or domains in the search field
   var url = null;
-  if (united.ourPref.get("search.goDirectlyToURLs"))
+  if (ourPref.get("search.goDirectlyToURLs"))
   {
     if (!url)
       url = getTermRedirect(term);
@@ -158,8 +161,8 @@ function startSearchOrURL(term)
   }
   if (url)
   {
-    united.debug("going to <" + url + ">");
-    united.loadPage(url);
+    debug("going to <" + url + ">");
+    loadPage(url);
     setSearchText("");
   }
   else
@@ -191,12 +194,12 @@ function getFreetextURL(str)
   if (str.indexOf(".") == -1) // has no dot => no URL
     return null;
   try {
-    //united.debug("got dot-string");
-    var hostname = united.sanitize.hostname(str);
-    //united.debug("got syntactic hostname");
+    //debug("got dot-string");
+    var hostname = sanitize.hostname(str);
+    //debug("got syntactic hostname");
     if (!knownTLD(hostname))
       return null;
-    //united.debug("creating URI");
+    //debug("creating URI");
     return "http://" + hostname;
   } catch (e) { return null; }
 }
@@ -211,9 +214,9 @@ function knownTLD(hostname)
     /* getBaseDomainFromHost("utter.non.sense") returns "non.sense" => useless :-( 
     try {
       var domain = eTLDService.getBaseDomainFromHost(hostname);
-      united.debug("base domain: " + domain);
+      debug("base domain: " + domain);
       return !!domain;
-    } catch (e) { united.errorInBackend(e); return false; }
+    } catch (e) { errorInBackend(e); return false; }
     */
     var tld = hostname.substr(hostname.lastIndexOf(".") + 1);
     switch (tld)
@@ -242,7 +245,7 @@ function knownTLD(hostname)
  */
 function getTermRedirect(term)
 {
-  return united.brand.search.termRedirect[term];
+  return brand.search.termRedirect[term];
 }
 
 /**
@@ -251,11 +254,11 @@ function getTermRedirect(term)
  */
 function startRealSearch(searchTerm)
 {
-  united.notifyWindowObservers("search-started",
+  notifyWindowObservers("search-started",
       { searchTerm : searchTerm, source : 1 });
 
-  var url = united.brand.search.toolbarURL;
-  united.loadPage(url + encodeURIComponent(searchTerm));
+  var url = brand.search.toolbarURL;
+  loadPage(url + encodeURIComponent(searchTerm));
 };
 
 // </copied>
@@ -277,14 +280,14 @@ function onKeyPressTab(event)
   {
     gDidAutocomplete = true;
     var curText = searchField.value;
-    united.debug("waiting for search for " + curText);
+    debug("waiting for search for " + curText);
     getLocalmCollectAutocompleteLabels(curText, function(results)
     {
-      united.debug("search completed " + curText);
+      debug("search completed " + curText);
       if (searchField.value != curText)
         return; // user modified before search completed
       var completed = getAutocompleteText(curText, results);
-      united.debug("autocomplete text " + completed);
+      debug("autocomplete text " + completed);
       if (!completed)
         return;
       setSearchText(completed);
@@ -331,13 +334,13 @@ function getAutocompleteText(userTyped, labels)
         return -comp; // lower is better
       return 0;
     });
-    united.debug("result words, sorted: " + results.map(function(a) { return a.term; }));
+    debug("result words, sorted: " + results.map(function(a) { return a.term; }));
 
     if (results.length < 1)
       return null;
     return results[0].term; // return best hit
 
-  } catch (e) { united.errorInBackend(e); return null; }
+  } catch (e) { errorInBackend(e); return null; }
 }
 
 /**
@@ -352,7 +355,7 @@ function getMozillaAutocompleteLabels()
   var results = [];
   for (let i = 0, l = controller.matchCount; i < l; i++)
     results.push(controller.getLabelAt(i));
-  united.debug("result labels: " + results);
+  debug("result labels: " + results);
   return results;
 }
 */
@@ -391,7 +394,7 @@ function getLocalmCollectAutocompleteLabels(term, successCallback)
 // Called ondrop and ondragover of searchfield
 function onDragDrop(event)
 {
-  united.debug("drop");
+  debug("drop");
   var dragData = event.dataTransfer;
   var text = dragData.getData("text/plain");
   if (!text)

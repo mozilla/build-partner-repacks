@@ -1,7 +1,7 @@
 /**
- * This loads the brand.js and assembles united.brand from it.
+ * This loads the brand.js and assembles brand from it.
  * It is responsible for selecting the right locale for each module,
- * and putting that in united.brand, so that the modules don't
+ * and putting that in brand, so that the modules don't
  * have to care about it.
  */
 
@@ -9,7 +9,7 @@
  * Messages sent by this module:
  * "region-changes" (global)
  *    Means: The user changed the region/country for at least one module.
- *    When: A region pref changed and we changed united.brand accordingly.
+ *    When: A region pref changed and we changed brand accordingly.
  *    Parameter:
  *      pref {String} The name of the region pref that changed. (Not its content.)
  */
@@ -111,8 +111,9 @@ function loadComponent(brandfile, componentname, locale, upperPlaceholders)
     locale = ourPref.get("region." + componentname);
   if (!locale)
     locale = ourPref.get("region.general");
+  // If locale is not specified, use the first entry in the locale list
   if (!locale)
-    locale = "de-DE";
+    locale = brandfile.regions.defaultlocale.list[0].locale
 
   if (componentname != "global") // avoid loop
   {

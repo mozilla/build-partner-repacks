@@ -127,6 +127,7 @@ FetchHTTP.prototype =
   _successCallback : null,
   _errorCallback : null,
   _request : null, // the XMLHttpRequest object
+  _callStack : null, // The original call stack
   result : null,
 
   start : function()
@@ -201,6 +202,8 @@ FetchHTTP.prototype =
     request.onload = function() { me._response(true); }
     request.onerror = function() { me._response(false); }
     request.send(body);
+    // Store the original stack so we can use it if there is an exception
+    this._callStack = Error().stack;
   },
   _response : function(success, exStored)
   {
@@ -224,11 +227,7 @@ FetchHTTP.prototype =
             mimetype == "text/rdf" ||
             mimetype == "application/rss+xml")
         {
-          // Bug 270553 prevents usage of .responseXML
-          var text = this._request.responseText;
-           // Bug 336551 trips over <?xml ... >
-          text = text.replace(/<\?xml[^>]*\?>/, "");
-          this.result = new XML(text);
+          this.result = this._request.responseXML;
         }
         else
         {
@@ -276,8 +275,12 @@ FetchHTTP.prototype =
         this._successCallback(this.result);
       else if (exStored)
         this._errorCallback(exStored);
-      else
-        this._errorCallback(new ServerException(errorStr, errorCode, this._url));
+      else {
+        // Put the caller's stack into the exception
+        var ex = new ServerException(errorStr, errorCode, this._url);
+        ex.stack = this._callStack;
+        this._errorCallback(ex);
+      }
 
       if (this._finishedCallback)
         this._finishedCallback(this);

@@ -8,8 +8,8 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript">
-    upref.ticker = {};
-    united.loadJS("chrome://unitedtb/content/ticker/pref-ticker.js", upref.ticker);
+    unitedinternet.initModule(unitedinternet, "ticker");
+    unitedinternet.loadJS("chrome://unitedtb/content/ticker/pref-ticker.js", unitedinternet.ticker);
   </script>
 
   <tabpanel id="features-tabpanel">

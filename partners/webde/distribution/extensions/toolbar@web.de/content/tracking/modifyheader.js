@@ -8,6 +8,8 @@ const EXPORTED_SYMBOLS = [];
 
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+var build = {}
+Components.utils.import("resource://unitedtb/build.js", build);
 
 /**
  * Listen to all HTTP requests
@@ -22,6 +24,10 @@ runAsync(listen);
 
 var gInstallDate = null;
 var gStatisticClass = null;
+var gBrand = null;
+var gVersion = null;
+var gVariant = null;
+var gBrandedBrowser = null;
 
 function getValues()
 {
@@ -29,6 +35,14 @@ function getValues()
   var isoInstallDate = new Date(ourPref.get("tracking.installtime") * 1000).toISOString();
   gInstallDate = isoInstallDate.substr(0, isoInstallDate.indexOf("T"));
   gStatisticClass = ourPref.get("tracking.statisticclass");
+  gBrand = brand.tracking.brand;
+  gVersion = build.version;
+  gVariant = build.kVariant;
+  if (gVariant == "browser")
+    gVariant = "bundle";
+  else if (gVariant == "release")
+    gVariant = "full";
+  gBrandedBrowser = ourPref.get("brandedbrowser", false);
 }
 
 var AddHeaders =
@@ -55,6 +69,14 @@ var AddHeaders =
                                    gInstallDate, false);
       httpChannel.setRequestHeader("X-UnitedInternet-StatisticClass",
                                    gStatisticClass, false);
+      httpChannel.setRequestHeader("X-UnitedInternet-Brand",
+                                   gBrand, false);
+      httpChannel.setRequestHeader("X-UnitedInternet-Version",
+                                   gVersion, false);
+      httpChannel.setRequestHeader("X-UnitedInternet-Variant",
+                                   gVariant, false);
+      httpChannel.setRequestHeader("X-UnitedInternet-Branded-Browser",
+                                   gBrandedBrowser, false);
     } catch (e) { errorInBackend(e); }
   }
 }
