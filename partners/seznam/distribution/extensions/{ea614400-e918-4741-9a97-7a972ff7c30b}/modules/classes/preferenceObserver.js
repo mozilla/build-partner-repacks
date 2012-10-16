@@ -13,24 +13,14 @@ FoxcubService.PreferenceObserver = FoxcubService.JAK.ClassMaker.makeClass({
  * vseobecny observer na sledovanie zmeny preferencii<br>
  * funguje az po zavolani register
  */
-FoxcubService.PreferenceObserver.prototype.$constructor = function(branchName,owner,callback){
-	var console = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
-	
-	try{
-
-	
+FoxcubService.PreferenceObserver.prototype.$constructor = function(branchName,owner,callback){	
 	this.prefService = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefService);
 	this.branchName = branchName;
 	this._owner = owner;
-	this._callback = callback;
-	
+	this._callback = callback;	
 	
 	this.branch = this.prefService.getBranch(this.branchName);
-	this.branch.QueryInterface(Components.interfaces.nsIPrefBranch2);
-
-	}catch(e){
-		this.log(branchName);
-	}
+	this.branch.QueryInterface(Components.interfaces.nsIPrefBranch2);	
 };
 
 FoxcubService.PreferenceObserver.prototype.$destructor = function(){
@@ -38,7 +28,6 @@ FoxcubService.PreferenceObserver.prototype.$destructor = function(){
 };
 
 FoxcubService.PreferenceObserver.prototype.register = function(){
-	var console = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
 	this.branch.addObserver("", this, false);
 };
 

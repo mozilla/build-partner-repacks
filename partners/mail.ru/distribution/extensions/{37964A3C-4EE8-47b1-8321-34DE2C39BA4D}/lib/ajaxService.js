@@ -109,7 +109,7 @@ MRAjaxService.prototype.send = function(sURL) {
     }
     this.ajax.setRequestHeader('If-Modified-Since', 'Sat, 1 Jan 2000 00:00:00 GMT');
     this.ajax.onreadystatechange = this.toolbarObject.appContext.BindToObject(this.end, this);
-    this.ajax.channel.loadFlags |= Components.interfaces.nsIRequest.LOAD_BYPASS_CACHE;    
+    this.ajax.channel.loadFlags |= Components.interfaces.nsIRequest.LOAD_BYPASS_CACHE;  
     this.ajax.send(null);
 }
 

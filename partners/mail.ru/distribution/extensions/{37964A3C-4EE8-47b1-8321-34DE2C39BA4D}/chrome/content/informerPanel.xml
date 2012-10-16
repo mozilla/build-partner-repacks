@@ -105,7 +105,7 @@
             {
               return;
             }
-            G_Debug(this, "show:" + evt.target.mInfo.tooltip);
+<!--            G_Debug(this, "show:" + evt.target.mInfo.tooltip);-->
             this.setHTML(evt.target.mInfo.tooltip);
             this.openPopup(evt.target, "after_start", 0, 0, false, false);
 

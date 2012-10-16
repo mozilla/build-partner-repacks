@@ -29,10 +29,12 @@ Storage.prototype.getRow = function(url) {
         this.onCreate();
     }
     var statement = this.mDBConn.createStatement("SELECT * FROM search_url where url = '" + md5(url) + "'");
-    var wrapper = Components.classes["@mozilla.org/storage/statement-wrapper;1"].createInstance(Components.interfaces.mozIStorageStatementWrapper);
-    wrapper.initialize(statement);
-    if(wrapper.step()) {
-        result = {'id': wrapper.row["id"], 'url': wrapper.row["url"], 'date_insert': wrapper.row["date_insert"]};
+    if(statement.step()) {
+        result = {
+            'id': statement.row["id"], 
+            'url': statement.row["url"], 
+            'date_insert': statement.row["date_insert"]
+        };
     }
     return result;
 }

@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="windows-1251"?>
+п»ї<?xml version="1.0" encoding="utf-8"?>
 <spudata>
 <brick id="weather" status="" href="http://pogoda.mail.ru/" valid="10" refetch="60">
 	<image>chrome://mail.ru.toolbar/skin/weather_default.png</image>
     <textover></textover>
-    <textafter>Погода</textafter>
-    <tooltip><![CDATA[<a msg="http://pogoda.mail.ru">Погода@Mail.ru</a> -- прогноз погоды<br>в Вашем городе.]]></tooltip>
+    <textafter>РџРѕРіРѕРґР°</textafter>
+    <tooltip><![CDATA[<a msg="http://pogoda.mail.ru">РџРѕРіРѕРґР°@Mail.ru</a> -- РїСЂРѕРіРЅРѕР· РїРѕРіРѕРґС‹<br>РІ Р’Р°С€РµРј РіРѕСЂРѕРґРµ.]]></tooltip>
 </brick>
 </spudata>

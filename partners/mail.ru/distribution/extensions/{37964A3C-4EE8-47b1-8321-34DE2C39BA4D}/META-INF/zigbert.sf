@@ -28,8 +28,8 @@ SHA1-Digest: BxhBUpk1yo9aMlZH5GiDyXwjs6Q=
 
 Name: chrome/content/informerPanel.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 9LEIuY743A+cVtoZic/yLA==
-SHA1-Digest: 23X1J8e/7d9nnW098ZrrfNOkOSY=
+MD5-Digest: PlxcIFm7ooy0+3XyiDE+ug==
+SHA1-Digest: AD7lrBh2P8mwIBAPRghBYHiu67E=
 
 Name: chrome/content/mail.ru.xml
 Digest-Algorithms: MD5 SHA1
@@ -48,8 +48,8 @@ SHA1-Digest: RJsGGTKoNXedwuZlgScK/kgfae4=
 
 Name: chrome/content/newtabhomepage.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: y6X3T6kMZloY5voLLFJtfQ==
-SHA1-Digest: SpYlVKSjujtT1GdoKWuRSz3V9Kc=
+MD5-Digest: 2B9KA6MQAiwt6sYmPe7aSg==
+SHA1-Digest: 1R8h1E0SxcqVmki91475V0cOrEI=
 
 Name: chrome/content/save_controls.js
 Digest-Algorithms: MD5 SHA1
@@ -68,8 +68,8 @@ SHA1-Digest: jBGqipRZzSFFkJgbPZXSiPSRafs=
 
 Name: chrome/content/settings.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: at5pyHfQ1Od5gcmqB9LBrw==
-SHA1-Digest: w4M0gun9eiICfExi2th/9Hm8vzA=
+MD5-Digest: gohbbH6oYYkZ4q3RpmckgQ==
+SHA1-Digest: l54o/jgGETEsUFLTmE1sGBHxr9c=
 
 Name: chrome/content/settings.xul
 Digest-Algorithms: MD5 SHA1
@@ -78,8 +78,8 @@ SHA1-Digest: Hf4bwnpnkv0muXvjNZP6IV3dR9Q=
 
 Name: chrome/content/sputnik/mailruInformers.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: frExyMNuDTb5T2mxlPpPcQ==
-SHA1-Digest: QedL6r+LppQBuycfCvilhPk/aoU=
+MD5-Digest: 9gle78XYSZjv3U1unO6Mjw==
+SHA1-Digest: m/nz4HsvVUtKnbSzOc8p6gMySl8=
 
 Name: chrome/content/sputnik/mailruObservers.js
 Digest-Algorithms: MD5 SHA1
@@ -88,8 +88,8 @@ SHA1-Digest: AxRzNl5KgFQfzF785wDnkxfkRLc=
 
 Name: chrome/content/sputnik/sputnik.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: IyazmKr0ucVPekhBVrKd2g==
-SHA1-Digest: Ezv24JkiRNsQlsOgV5s34BM1u6M=
+MD5-Digest: Y36bKnSEyQpHbwNz9bjYhQ==
+SHA1-Digest: y2seUrNZqFn0rhWqewAr6VqwCBc=
 
 Name: chrome/content/sputnik/sputnik.toolbar.xul
 Digest-Algorithms: MD5 SHA1
@@ -103,8 +103,8 @@ SHA1-Digest: 0SK3rren+BdNnzIwXw1zQYwfnvg=
 
 Name: chrome/content/tabs_storage.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: NRdRdUtijsOc2/0bLEGCKQ==
-SHA1-Digest: 3wVjXUGrenDA1PG6GuHeRaydLto=
+MD5-Digest: r5DT647WtTND7fUeb4RVIA==
+SHA1-Digest: GQwF99eNsiqmV5FmA1o1ob7nJho=
 
 Name: chrome/content/tools.js
 Digest-Algorithms: MD5 SHA1
@@ -178,158 +178,158 @@ SHA1-Digest: 8UwpV0/xB5aT4fG3KzEbOtU/++4=
 
 Name: chrome/locale/ru-RU/sputnik/informer.2gis.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 52YUbcKtVae2lOy1kYwi6w==
-SHA1-Digest: qpq5jTahfIWUTBeh2bZEYGYO0L4=
+MD5-Digest: Htt9DlWz9rgXr4PaKV/JeQ==
+SHA1-Digest: t0gcF1WVXZR87yP0wmtGeQnWOjA=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.aud.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: H3CMofqCl5aB6Utl6TADAQ==
-SHA1-Digest: smtI5EF8pEUS4GA9jj1xlLLqrHw=
+MD5-Digest: UyB7FcN+3vjTZG7zUkGCrA==
+SHA1-Digest: iAC6h+nZWT57fikIIIt9TtkKLzA=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.byr.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: KkakKLiw52OzgaKR9N1FLg==
-SHA1-Digest: dqTDuUaghOAaFY9+XpSG8o1BiFo=
+MD5-Digest: 5TRWk97JHGYFp3HFV/08cg==
+SHA1-Digest: S/h52p7hvBzRbsjk2MXyz0cFOQs=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.cad.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: rjohfk73JBjjo3Nj/hRIrQ==
-SHA1-Digest: NSYinbRrXT26XWxmD6x6BJpEk4U=
+MD5-Digest: xJzQ9UrMo+OL3P2EbGdvdA==
+SHA1-Digest: pRmPdmAaiHikppjgjIo7to4pA/E=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.chf.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 95puP8qQ5ITLQ+Lnb+Z4xA==
-SHA1-Digest: M8PPeJkUNmUzRKAVNTY8qccjjdY=
+MD5-Digest: 5SI/U2HR1MdTmHMxqAxHlA==
+SHA1-Digest: 0D0jD55dcTccUEUJC+dzRCH8k9s=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.cny.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 3lHZ+gT7aM2qeKPGhclEUA==
-SHA1-Digest: PwowPxVX4PxPtpqmQwwcW/e+iEE=
+MD5-Digest: coC7JgGqLUV9tte0SYMBsQ==
+SHA1-Digest: WbEVip4ymw9JBY3LExqvcPCM0SE=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.dkk.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: lyBWbbyrWkSMARSelqiKCQ==
-SHA1-Digest: LOW50peHmWkCfosLhkOBJb1kP0k=
+MD5-Digest: TkySsLjCKXPcG0wI6CA44A==
+SHA1-Digest: 0i9cYLKDhGrtyYfk2TST3TqrAjU=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.eur.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: WgpJmh16CoGv9de4aoFW2w==
-SHA1-Digest: FSNiYeNTudtKSUpRs2R3SmOJ8KA=
+MD5-Digest: hpGQaRnNVT0F0xxgIBgNCA==
+SHA1-Digest: p1N4RflgadmP31MwYj1dcaTAXN0=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.gbp.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: K92e4xwcqXxGJRf91K83iA==
-SHA1-Digest: Cg356g2AOKUoXmcUaguBhK4zuY4=
+MD5-Digest: ScNca9jUKfjupvAIRwrN8w==
+SHA1-Digest: Vd9SaxEZBmxwIWTMmJjXTlibfKY=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.isk.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: r2DrMNk5MK/VXzJXRyg4JQ==
-SHA1-Digest: NpaRz8naxtTqh/PEYe75zRQ/V+M=
+MD5-Digest: zFJabrtBW0AvRi4Wnu/E0w==
+SHA1-Digest: hVE/jIfjdy3nwVgSyBuuNvXsUfM=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.jpy.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: pb9jenxp6OObJV3b71KHOg==
-SHA1-Digest: 8uvMznhJZPlKmZTcedq4DcthYg8=
+MD5-Digest: 98zFU8zZnIYLdiEwvMFY5w==
+SHA1-Digest: ja+oJUDLh0hE8ZIiqufKtuj1uGA=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.kzt.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: GcnEablOmcmxe0xbE9qK7w==
-SHA1-Digest: 23yn0aDPWwN4J5n7G48xkqpO4/Y=
+MD5-Digest: m7HSzErJATutXPyJ1sIRqg==
+SHA1-Digest: YY6oLpmE3FGkPyYWaV/R821Sj6I=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.nok.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: YrSfYCzkHRdZGveQF4ybUw==
-SHA1-Digest: ncaQWgiUdt5miU82oohQCU2Vfuw=
+MD5-Digest: 17BqSU4bRo31QWlSeQmBUA==
+SHA1-Digest: PWWj/FZiTFTuVgYdCQ0p4P+s01M=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.sek.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: eMbJnk6PfGBM/mL13LlLyw==
-SHA1-Digest: gA2+vX/0cFDTREWE/oGXrx2C6bE=
+MD5-Digest: iDkGKtCXjA6ZkMsfXX8+sA==
+SHA1-Digest: xb4Yjh+moZsOCkY9Z2nn5RcKiuA=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.sgd.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: lweEIdlP92YgKJwX2hSrzQ==
-SHA1-Digest: SmaR5QqKwD5dm2T02MuZKxUZ7Ho=
+MD5-Digest: Zrx56Wc5AOUnfsjInwJw4w==
+SHA1-Digest: CtapiOkrjVrRk4giQpq0y0rQ9bM=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.try.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Ncqz53gmA32GOlq0m3faLQ==
-SHA1-Digest: cPcqE3kvsS4ODeVQH+qA/OE4gUI=
+MD5-Digest: sRs3D53rQkzVevRzFnJFdg==
+SHA1-Digest: 4m3KXwi8l/uGwTrjvgXbLd3arxg=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.uah.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: tciUOS4QYvYyAtNjRS/CnA==
-SHA1-Digest: +nBM7+k+bcU3CM/npKyeT1/hbbY=
+MD5-Digest: 3CWRRBoi5wMPC50bbVD0hA==
+SHA1-Digest: whYJAAWExVAD0vU/6mfUcCfhr9g=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.usd.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: vR1AJcqjBNWgfLGHWBcCqg==
-SHA1-Digest: u2PzqXv5FeoemL29b1fkBc8d68I=
+MD5-Digest: PUddMNS3OR1fIaA2siIJxw==
+SHA1-Digest: JRQctHcxUJuYj7oMNcnLfvqGHfo=
 
 Name: chrome/locale/ru-RU/sputnik/informer.currency.xdr.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: o4+raAkhZW4FQxafxmM5ww==
-SHA1-Digest: XnoFb9MHViXc3/WJ9OATXfeFUKI=
+MD5-Digest: ZdAhUcaK1VK8lSAHiS4fXw==
+SHA1-Digest: m8/v7uk6NvgFH8TCW+AT902R7fI=
 
 Name: chrome/locale/ru-RU/sputnik/informer.mail.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: SaxwCyRmKYvbwSQEftFQWw==
-SHA1-Digest: iXQb7sVxvXAw6ukuNCToGhivf3k=
+MD5-Digest: JwuXw7Mc9hdz6avsZ+FVQA==
+SHA1-Digest: 1PejLkPRyqFfrbVcN1kyB4RozrE=
 
 Name: chrome/locale/ru-RU/sputnik/informer.maps.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: ywMJt8gIyZazUyL8z1mAyg==
-SHA1-Digest: VG5fARQWZzEsaRfT73zi2K3vm3g=
+MD5-Digest: 1BO5knwezzuTlHgWxDnNLA==
+SHA1-Digest: yRjVk32gacfAuOwS1Wco7pE3lKU=
 
 Name: chrome/locale/ru-RU/sputnik/informer.money.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Fl/FwLVYU8Hy2Zc6LmgF/w==
-SHA1-Digest: hGSifLx2j5PS+VQnD2/1saTZfz4=
+MD5-Digest: vZDplRXcrc964tWA48SMKQ==
+SHA1-Digest: qmp142jeDntI2S8dTQ1MDko0kPI=
 
 Name: chrome/locale/ru-RU/sputnik/informer.my.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: zyi5sKOrWQTWWeSR8BhXtw==
-SHA1-Digest: NkWJGLCqeSN4+9RJS8CkzmMv4dI=
+MD5-Digest: MF9KEIuntPsEzHhPalESjg==
+SHA1-Digest: H0D+XRUsIm8/efVO2gVgtQApq8U=
 
 Name: chrome/locale/ru-RU/sputnik/informer.provider.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: WE79TOsTx3Rymloc+GjGuA==
-SHA1-Digest: eI5U5lZd5oppLTgBI89qurkJeh4=
+MD5-Digest: A3tE5zkADAIXnfrTWpgZQg==
+SHA1-Digest: vOZIwEaU5Np0yS0rtHm4NR/Ogko=
 
 Name: chrome/locale/ru-RU/sputnik/informer.url-rank.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: KpLNWAv2FnBgPt8g2pwDIQ==
-SHA1-Digest: ZWUo+SXQQ0mFYh8njhwGxwtKKSw=
+MD5-Digest: gDosqLkoyR8C2aNC+UXLlQ==
+SHA1-Digest: SDMqLa4r8DjPzqQaeb3vQON1kW8=
 
 Name: chrome/locale/ru-RU/sputnik/informer.weather.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: PUBQbYHcHK79uaYPbRwh7g==
-SHA1-Digest: LRgZSPRLxvMgb81iJA1F/tb6CSk=
+MD5-Digest: 6RQK/uboAmDCTKMqBwtI+Q==
+SHA1-Digest: QkgNFCvNdxymaEOuho3aICKm8xM=
 
 Name: chrome/locale/ru-RU/sputnik/InformerStream.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Mw0ridRdYpQgOBhOcv7QKg==
-SHA1-Digest: CZ/sv6WnEFaGcBvrXdodyQt+rd4=
+MD5-Digest: xwBAKFwjvuVbeEFihILs+g==
+SHA1-Digest: NZVThY+5eLtC0bmbZjfwdcaxMGs=
 
 Name: chrome/locale/ru-RU/sputnik/mail.ru.cyrrencies.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: yU8cD1BAt1hPL0TzQR73CQ==
-SHA1-Digest: UdxqU5/OuouNHVnZnPGPq8zKDhw=
+MD5-Digest: GmpP6tC2cg3uxZnL+8fzGQ==
+SHA1-Digest: fVi3sKfFysxpzUSo/KmQYOUP5nc=
 
 Name: chrome/locale/ru-RU/sputnik/mail.ru.fast-services.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 4ywu/as7iOWMuSDaE6i/Lg==
-SHA1-Digest: fuuUmWHc2M9Y73VYg36Ek8Jnt0E=
+MD5-Digest: RrrwGk9ln1tdG5D1b0XiHw==
+SHA1-Digest: ZHfCG3V7mQd+BY4bW2dCBpVVsAo=
 
 Name: chrome/locale/ru-RU/sputnik/mail.ru.search.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: qBj32d946atusR9Yl9LtyA==
-SHA1-Digest: D0AlsNTuA7606CdaET66mUIEgaI=
+MD5-Digest: 5Ks2B0Ft09LdhmtAPCsBEg==
+SHA1-Digest: pW5A8uFNcJIxwQmcaGhKgko/mgI=
 
 Name: chrome/locale/ru-RU/sputnik/mail.ru.services.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 9lxDmsHCZrJpD44KqRi7tA==
-SHA1-Digest: bRAC6PDm7a3purdT+HtN0mDfqlc=
+MD5-Digest: pi25H01DYgAmckEnYZEPkw==
+SHA1-Digest: EXBeaRyrT3M7LFRUxRx1oJ7vtKA=
 
 Name: chrome/locale/ru-RU/sputnik/mail.ru.toolbar.dtd
 Digest-Algorithms: MD5 SHA1
@@ -1213,18 +1213,18 @@ SHA1-Digest: BELtOT/mVrQn4kzHU68R6WaOMH0=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: zbz+DgG6UgqlKPcR34UYsw==
-SHA1-Digest: kN5mjLu0+VDsXxZ7c2MThgDYl68=
+MD5-Digest: yN2AEyGUxNTJgHf5KxsAmA==
+SHA1-Digest: NU1ihfsojWk2GRqV+bxi2u/0LOA=
 
 Name: lib/addonListener.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: XLSl9d5NDQfErzIdIegxOA==
-SHA1-Digest: UkypY6OFceF5PO/F5np9l5otWY8=
+MD5-Digest: HoqWfBPl+hlrvQGhBM7bvg==
+SHA1-Digest: S6sZdbC+rLlxqtaYAAHoszZpB2I=
 
 Name: lib/ajaxService.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: oahhfFR8GyANk7q31/gwQQ==
-SHA1-Digest: b77HH8urus8SLQyTz8/opGAKJMk=
+MD5-Digest: 92GFzXFREfDj7XbdG9MRtg==
+SHA1-Digest: ivYZKyW4lLzLtME8elIfTljW/i4=
 
 Name: lib/attention.js
 Digest-Algorithms: MD5 SHA1
@@ -1268,8 +1268,8 @@ SHA1-Digest: 04AwFBnccE7wofFLQpS0paGatI4=
 
 Name: lib/installation.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: qj1zt2FJoxATujL0161RHw==
-SHA1-Digest: sACCGGXWcNzx0igqT5PxiAdvCTM=
+MD5-Digest: ob7DyYqYM0vMGiTnLxx+BA==
+SHA1-Digest: TRWcRxoSmhPyAjBckjWV8vD0CiI=
 
 Name: lib/installationOverride.js
 Digest-Algorithms: MD5 SHA1
@@ -1308,28 +1308,28 @@ SHA1-Digest: 59I+NhkkObwtZVEGNIW8s6JPwbA=
 
 Name: lib/send.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: YzcG1jARWgAuEFxeKwG8mw==
-SHA1-Digest: EFkEKG/Kf4j9k8x5hIz4UVz025E=
+MD5-Digest: qmeBq0AZ8D5u0/Norwf5PA==
+SHA1-Digest: lI9xezfknq51+Q5KrZykENHyMV0=
 
 Name: lib/storage.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: ywZh8jzoVgBeGBPYu/BwpQ==
-SHA1-Digest: MCKi/4jruqgoRl/nBNtqOE6F3RY=
+MD5-Digest: 5nay3887Mv/mEXZOpsxIyQ==
+SHA1-Digest: YYEfvQW3LIH899oRRJi6Re1r10A=
 
 Name: lib/toolbar.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: PFqS+uRFE7EvQIHqpWTHDA==
-SHA1-Digest: CfxV1RH+PoAhUSma+ys79ub9Z8c=
+MD5-Digest: mR60+ADMm38pWj4oLHi25Q==
+SHA1-Digest: A2uAJYnQabojbdLZSuhAxcwNt+g=
 
 Name: lib/version.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: crB1p7lRVmKGzVFytbIf+A==
-SHA1-Digest: n9AX+UqEVuK8THlVm00+g+Af5w0=
+MD5-Digest: SiHGMp+lL9I2IfFqUV/gHQ==
+SHA1-Digest: 7vL7Irj0cf4TfWquHKt+YJ3Zz60=
 
 Name: lib/vote.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: q8khOFomxR+YiEsnz14F8Q==
-SHA1-Digest: 3cJW/ZR/ThAN3zRHONp4fu7C2+g=
+MD5-Digest: /EJeeQV3wyyFF6yThpYB7g==
+SHA1-Digest: kzSijiTZxCmwRXw0CegDrMWzOks=
 
 Name: lib/webMetrics.js
 Digest-Algorithms: MD5 SHA1
@@ -1348,5 +1348,5 @@ SHA1-Digest: 4AlEmqXDoYbzTbotHe0/WbmN1Ek=
 
 Name: lib/xmlObjects.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 5xHn6iE26xyRKz73FqFXnw==
-SHA1-Digest: wERB3d07pZz7SYXRw/nABY9M6NU=
+MD5-Digest: WESdy/EkRD/zB4AGE+R9gg==
+SHA1-Digest: jtPyfH9QZjNYfiODCL6rv5sdeUc=

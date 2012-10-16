@@ -8,7 +8,7 @@
         <em:name>Спутник @Mail.Ru</em:name>
         <em:type>2</em:type>
         <em:unpack>true</em:unpack>
-        <em:version>2.5.3.12</em:version>
+        <em:version>2.5.3.30</em:version>
         <em:description>Mail.ru Toolbar for FireFox</em:description>
         <em:creator>Mail.Ru</em:creator>
 
@@ -22,7 +22,7 @@
             <Description>
   	        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
                 <em:minVersion>3.0</em:minVersion>
-                <em:maxVersion>14.*</em:maxVersion>
+                <em:maxVersion>15.*</em:maxVersion>
             </Description>
         </em:targetApplication>
 

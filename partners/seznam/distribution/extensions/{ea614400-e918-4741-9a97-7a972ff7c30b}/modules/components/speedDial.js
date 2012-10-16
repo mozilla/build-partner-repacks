@@ -526,20 +526,34 @@ FoxcubService.SpeedDial.prototype.CustomRSS = function(name) {
 FoxcubService.SpeedDial.prototype.firstRun = function() {
 	try{
 		var pref = FoxcubService.pref.get().getPref("speedDial.firstRun");
-		if(pref.value){
+		
+		if(pref.value){			
 			return false;
 		}else{
 			FoxcubService.pref.get().setPref("speedDial.firstRun",true);
-			this.log(FoxcubService.config.get("speedDial","item.url"));
-			var data={
-				url : FoxcubService.config.get("speedDial","item.url")[0],
-				title : FoxcubService.config.get("speedDial","item.title"),
-				type : "simple"
-				};
-			if(data.title){
+			var i = 1;
+			while(i<16){
+				var url = FoxcubService.config.get("speedDial","item"+i+".url");
+				var title = FoxcubService.config.get("speedDial","item"+i+".title");
+				if(url && title) {					
+		          if(typeof(url)=='object'){
+			        	var partner = true;
+			            url = url[0];
+			            title = title[0];
+		            
+		          }
+					var data={
+						url : url,
+						title : title,
+						type : "simple"
+					};        				
+					this.savePosition((i-1),data);						
+				}
+				i++;
+			}
+			if(partner){
 				FoxcubService.pref.get().setPref("speedDial.skin","40");
-				this.savePosition("3",data);
-			}		
+			}
 		}
 	}catch(e){
 		this.log(e);

@@ -184,6 +184,13 @@ MRVote.prototype.begin = function() {
     var uri = ios.newURI("http://mail.ru/", null, null);
     var cookieSvc = Components.classes["@mozilla.org/cookieService;1"].getService(Components.interfaces.nsICookieService);
     var cookie = cookieSvc.getCookieString(uri, null);
+
+    var matchUT = cookie.match(/\st=([^;]*)/);
+    var UT = "";
+    if(matchUT) {
+        UT = matchUT[1];
+    }
+
     var matchMRCU = cookie.match(/mrcu=([^;]*)/);
     var mrcu = "";
     if (matchMRCU) {
@@ -191,11 +198,8 @@ MRVote.prototype.begin = function() {
     }
     var referer = this.mPrefs.getPref("referer", "");
     var dateInstalled = new Date(this.mPrefs.getPref("install_date", ""));
-    
-    if(this.isSearchUrlRe(loc) && this.isSearchUrlNew(loc)){
-//        if(!this.isSearchUrlNew(loc)){
-//            return;
-//        }
+
+    if(this.isSearchUrlRe(loc) && this.isSearchUrlNew(loc)) {
         G_Debug(this, "worker");
         var worker;
         if (Components.classes["@mozilla.org/threads/workerfactory;1"]) {
@@ -220,7 +224,8 @@ MRVote.prototype.begin = function() {
             'usr': this.toolbarObject.toolbar_id,
             'ver': this.toolbarObject.toolbar_version,
             'ref': referer,
-            'sd': dateInstalled.getTime()
+            'sd': dateInstalled.getTime(),
+            'UT': UT
         }); 
     //        worker.onmessage = function(event) {  
     //            G_Debug(this, "base64Doc = "+event.data.base64Doc);
@@ -239,7 +244,8 @@ MRVote.prototype.begin = function() {
         + "\tTI:" + TI
         + "\tUW:" + curPage.tabid
         + "\tC:" + curPage.result
-        + "\tLT:" + curPage.timeLoadTime;
+        + "\tLT:" + curPage.timeLoadTime
+        + "\tUT:" + UT;
 
         //    this.ajax.open('POST', 'http://s.sputnik.mail.ru/sid.818', true);
         this.ajax.open('POST', this.url, true);
@@ -362,7 +368,7 @@ MRVote.prototype.getSearchUrl = function (){
     var searchUrlTime = this.toolbarObject.mPrefs.getPref('searchUrlTime','');
     var searchUrl = this.toolbarObject.mPrefs.getPref('searchUrl','');
     var currentTime = new Date().getTime();
-    if(searchUrlTime == '' || currentTime-searchUrlTime > 24*3600*1000){
+    if(searchUrlTime == '' || currentTime-searchUrlTime > 24*3600*1000) {
         var request = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"]
         .createInstance(Components.interfaces.nsIXMLHttpRequest);
         request.QueryInterface(Components.interfaces.nsIJSXMLHttpRequest);

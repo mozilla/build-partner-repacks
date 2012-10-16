@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <services title="mail.ru">
 	<!--<service id="my_world" url="http://my.mail.ru/" hint="Сообщество пользователей." img="chrome://mail.ru.toolbar/skin/services/my_world.png">Мой мир</service>-->
 	<service id="files" url="http://files.mail.ru/" hint="Сервис пересылки больших файлов." img="chrome://mail.ru.toolbar/skin/services/files.png">Файлы</service>

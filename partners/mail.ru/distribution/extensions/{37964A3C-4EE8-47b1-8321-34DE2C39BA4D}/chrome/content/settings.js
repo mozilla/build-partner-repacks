@@ -178,9 +178,10 @@ var MAIL_Settings = {
         document.getElementById('mailru_settings_show_money').checked = read_reg_bool('mailru_settings_money_show', true);
 
         var sel_tab = read_reg_string("settings_selected_tab", "");
-        document.getElementById("settings_tabbox").selectedTab = document.getElementById(sel_tab);
-        write_reg_string("settings_selected_tab", '');
-
+        if(sel_tab != '') {
+            document.getElementById("settings_tabbox").selectedTab = document.getElementById(sel_tab);
+            write_reg_string("settings_selected_tab", '');
+        }
 
     },
     accept: function() {

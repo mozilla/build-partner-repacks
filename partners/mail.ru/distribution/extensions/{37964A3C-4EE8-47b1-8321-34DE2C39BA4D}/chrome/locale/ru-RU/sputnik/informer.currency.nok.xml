@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="windows-1251"?>
+п»ї<?xml version="1.0" encoding="utf-8"?>
 <spudata>
 <brick id="currency-nok" status="" href="http://news.mail.ru/currency.html?charcode=NOK" valid="10" refetch="9">
 	<image>chrome://mail.ru.toolbar/skin/currencies/nok_na.png</image>
     <textover></textover>
     <textafter></textafter>
     <tooltip>
-		<![CDATA[<a msg="http://news.mail.ru/currency.html?charcode=NOK&sputnik=1">10 Норвежских крон</a> -- курсы валют.]]>
+		<![CDATA[<a msg="http://news.mail.ru/currency.html?charcode=NOK&sputnik=1">10 РќРѕСЂРІРµР¶СЃРєРёС… РєСЂРѕРЅ</a> -- РєСѓСЂСЃС‹ РІР°Р»СЋС‚.]]>
 	</tooltip>
 </brick>
 </spudata>

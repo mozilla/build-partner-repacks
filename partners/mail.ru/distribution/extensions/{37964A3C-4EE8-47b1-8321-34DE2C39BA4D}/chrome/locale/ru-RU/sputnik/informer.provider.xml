@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="windows-1251"?>
+п»ї<?xml version="1.0" encoding="utf-8"?>
 <spudata>
 	<brick id="provider" status="data-not-available" href="mrsputnik://settings_provider" valid="1000" refetch="600">
 		<image>res://291</image>
 		<tooltip>
-			<![CDATA[Для показа остатка на счёте и других<br>параметров тарифного плана<br>нажмите <a msg="mrsputnik://settings_provider">настроить</a>]]>
+			<![CDATA[Р”Р»СЏ РїРѕРєР°Р·Р° РѕСЃС‚Р°С‚РєР° РЅР° СЃС‡С‘С‚Рµ Рё РґСЂСѓРіРёС…<br>РїР°СЂР°РјРµС‚СЂРѕРІ С‚Р°СЂРёС„РЅРѕРіРѕ РїР»Р°РЅР°<br>РЅР°Р¶РјРёС‚Рµ <a msg="mrsputnik://settings_provider">РЅР°СЃС‚СЂРѕРёС‚СЊ</a>]]>
 		</tooltip>
 	</brick>
 </spudata>

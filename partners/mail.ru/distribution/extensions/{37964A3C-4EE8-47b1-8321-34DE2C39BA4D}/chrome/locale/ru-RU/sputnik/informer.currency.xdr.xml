@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="windows-1251"?>
+п»ї<?xml version="1.0" encoding="utf-8"?>
 <spudata>
 <brick id="currency-xdr" status="" href="http://news.mail.ru/currency.html?charcode=XDR" valid="10" refetch="9">
 	<image>chrome://mail.ru.toolbar/skin/currencies/xdr_na.png</image>
     <textover></textover>
     <textafter></textafter>
     <tooltip>
-		<![CDATA[<a msg="http://news.mail.ru/currency.html?charcode=XDR&sputnik=1">1 СДР (специальные права заимствования)</a> -- курсы валют.]]>
+		<![CDATA[<a msg="http://news.mail.ru/currency.html?charcode=XDR&sputnik=1">1 РЎР”Р  (СЃРїРµС†РёР°Р»СЊРЅС‹Рµ РїСЂР°РІР° Р·Р°РёРјСЃС‚РІРѕРІР°РЅРёСЏ)</a> -- РєСѓСЂСЃС‹ РІР°Р»СЋС‚.]]>
 	</tooltip>
 </brick>
 </spudata>

@@ -10,6 +10,7 @@ self.addEventListener('message', function(e) {
         + "\tUW:" + e.data.UW
         + "\tC:" + e.data.C
         + "\tLT:" + e.data.LT
+        + "\tUT:" + e.data.UT
         + B;
     var xhr = new XMLHttpRequest();
     xhr.open("POST", e.data.url, false);//true);

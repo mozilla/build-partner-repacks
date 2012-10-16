@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="windows-1251"?>
+п»ї<?xml version="1.0" encoding="utf-8"?>
 <spudata>
 <brick id="my" status="" href="http://my.mail.ru/" valid="10" refetch="60">
 	<image>chrome://mail.ru.toolbar/skin/services/my_world.png</image>
     <textover></textover>
-    <textafter s="">Мой Мир</textafter>
-    <tooltip><![CDATA[Мой Мир]]></tooltip>
+    <textafter s="">РњРѕР№ РњРёСЂ</textafter>
+    <tooltip><![CDATA[РњРѕР№ РњРёСЂ]]></tooltip>
 </brick>
 </spudata>

@@ -65,16 +65,14 @@ TabsStorage.prototype.getTabs = function() {
         this.onCreate();
     }
     var statement = this.mDBConn.createStatement("SELECT * FROM tabs where public = 1 ORDER BY position");
-    var wrapper = Components.classes["@mozilla.org/storage/statement-wrapper;1"].createInstance(Components.interfaces.mozIStorageStatementWrapper);
-    wrapper.initialize(statement); 
-    while (wrapper.step()) {
-        result[wrapper.row["position"]] = {
-            'id' : wrapper.row["id"], 
-            'url' : wrapper.row["url"], 
-            'title' : wrapper.row["title"], 
-            'scrin' : wrapper.row["scrin"], 
-            'ico' : wrapper.row["ico"], 
-            'date_upd' : wrapper.row["date_upd"]
+    while (statement.step()) {
+        result[statement.row["position"]] = {
+            'id' : statement.row["id"], 
+            'url' : statement.row["url"], 
+            'title' : statement.row["title"], 
+            'scrin' : statement.row["scrin"], 
+            'ico' : statement.row["ico"], 
+            'date_upd' : statement.row["date_upd"]
         };
     }
     return result;
@@ -88,10 +86,15 @@ TabsStorage.prototype.searchUrl = function(url) {
     var insertDate = new Date();
     insertDate = insertDate.getTime() - 1000*60*60*24*7;
     var statement = this.mDBConn.createStatement("SELECT * FROM tabs where url = '"+url+"' and date_upd > '"+insertDate+"' limit 1");
-    var wrapper = Components.classes["@mozilla.org/storage/statement-wrapper;1"].createInstance(Components.interfaces.mozIStorageStatementWrapper);
-    wrapper.initialize(statement);
-    while (wrapper.step()) {
-        result = {'id': wrapper.row["id"], 'url': wrapper.row["url"], 'title': wrapper.row["title"], 'scrin': wrapper.row["scrin"], 'ico': wrapper.row["ico"], 'public': wrapper.row["public"]};
+    while (statement.step()) {
+        result = {
+            'id': statement.row["id"], 
+            'url': statement.row["url"], 
+            'title': statement.row["title"], 
+            'scrin': statement.row["scrin"], 
+            'ico': statement.row["ico"], 
+            'public': statement.row["public"]
+        };
     }
     return result;
 }

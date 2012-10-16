@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <engines title="mail.ru">
 	<engine id="1" 
 			url="http://go.mail.ru/search?utf8in=1"

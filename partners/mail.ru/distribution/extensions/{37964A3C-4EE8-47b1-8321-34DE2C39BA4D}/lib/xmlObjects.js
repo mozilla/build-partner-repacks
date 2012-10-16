@@ -60,6 +60,13 @@ MRInstallOptions.prototype.read = function() {
 				{
                                     this.toolbarNewSig = xmlNewSig.getAttribute("value");
 				}
+                                
+                                var xmlSearchName = G_FirefoxXMLUtils.selectSingleNode(xmlInstall, "//params/param[@name='search_name']");
+				if(xmlSearchName)
+				{
+                                    this.providerSearchName = xmlSearchName.getAttribute("value");
+				}
+                                
                                 var partnerOnlineUrl = G_FirefoxXMLUtils.selectSingleNode(xmlInstall, "//params/param[@name='partner_online_url']");
 				if(partnerOnlineUrl)
 				{

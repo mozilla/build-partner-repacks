@@ -74,12 +74,14 @@ function SputnikToolbar(elToolbar) {
     this.ajaxCity =  new MRCityDetect(this);
     this.ajaxPing =  new MRPing(this);
     this.ajaxButtons =  new MRButtons(this);
-	
+
     this.chevron =  null;
     this.brand =  new this.appContext.MRBrand();
   	
     this.elToolbar = elToolbar;
     this.elToolbar.mMRObject = this;
+    
+    this.newtabhomepage =  new newtabhomepage(this);
 
     this.progressListener = {
         toolbarObject : this,
@@ -154,7 +156,7 @@ function SputnikToolbar(elToolbar) {
         }
 
     };
-
+    
 };
 
 SputnikToolbar.prototype = new gMRRefService.MRToolbar;
@@ -221,6 +223,10 @@ SputnikToolbar.prototype.init = function()
         this.brand.load();
         //identify flash plugin version
         this.flash_version=this.getFlashPluginVersion();
+        
+        this.addEventTab();
+        
+        this.newtabhomepage.init();
         G_Debug(this, "init done");
     }catch (err) {
         G_Debug(this, "exception: " + err + ", stack: " + err.stack + "\n");
@@ -284,8 +290,29 @@ SputnikToolbar.prototype.apply_toolbar_settings = function(subject)
         this.observer.notifyObservers(this,'MAIL-apply-settings',0);
     }
     
-    this.win.setTimeout(newtabhomepage.init, 0);
+//    this.win.setTimeout(newtabhomepage.init, 0);
 };
+
+SputnikToolbar.prototype.addEventTab = function() {
+    var that = this;
+    var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                   .getService(Components.interfaces.nsIWindowMediator);
+    var mainWindow = wm.getMostRecentWindow("navigator:browser");
+    var container = mainWindow.gBrowser.tabContainer;
+    container.addEventListener("TabOpen", function(event){
+        if(that.mPrefs.getPref('visualbookmarks', true)) {
+            event.target.addEventListener("load", onLoad, false); 
+        }
+    }, false);
+}
+
+function onLoad(event) {
+    event.target.removeEventListener("load", onLoad, false);
+    setTimeout(function() {
+        getBrowser().selectedTab.label = 'Mail.Ru: Визуальные закладки';
+    }, 50)
+}
+
 function onViewToolbarsPopupShowing(aEvent, aInsertPoint) {
     var popup = aEvent.target;
     if (popup != aEvent.currentTarget)

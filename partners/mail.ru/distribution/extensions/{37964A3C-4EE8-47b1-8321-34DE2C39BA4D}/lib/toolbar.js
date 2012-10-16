@@ -409,6 +409,7 @@ MRToolbar.prototype.uninit = function()
 MRToolbar.prototype.firstRun = function()
 {
     var installation = new MRInstallation(this);
+    
     if(!installation.isInstallation())
     {
         return;
@@ -487,12 +488,12 @@ MRToolbar.prototype._fillSearchBox = function(doc)
 	if (!xpcomUrl.path || xpcomUrl.path.length == 0)
 	{
 	//TODO: mark meaning of this params
-		if(this.mSearchCtrl.mSearchBox.searchService_.sParam == "fr=ffspt2")
-		{
-			this.mSearchCtrl.mSearchBox.searchService_.sParam = "fr=ffspt3";			
-		}
-		return null;
+            if(this.mSearchCtrl.mSearchBox.searchService_.sParam == "fr=ffspt2") {
+                    this.mSearchCtrl.mSearchBox.searchService_.sParam = "fr=ffspt3";			
+            }
+            return null;
 	}
+        
 	xpcomUrl.path += doc.location.hash;
 	G_Debug(this, "_fillSearchBox path:" + xpcomUrl.path);
 	var srchQuery = new this.appContext.MRSearchProvider(xpcomUrl);
@@ -1082,6 +1083,7 @@ MRToolbar.prototype.settings_dialog = function()
 	this.win.openDialog(this.chromeURL + 'content/settings.xul','','centerscreen,chrome,modal');
 	if(this.win.returnValue==true)
 	{
+            this.newtabhomepage.update();
 	    this.apply_toolbar_settings();
 	}
 };

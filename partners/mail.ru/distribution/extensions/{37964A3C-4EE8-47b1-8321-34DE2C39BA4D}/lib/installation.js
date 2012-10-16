@@ -34,6 +34,7 @@ MRInstallation.prototype.install = function() {
     this.initBrand();
     this.initToolbarSettings();
     this.switchGames();
+    this.toolbarObject.newtabhomepage.show();
 }
 
 MRInstallation.prototype.overrideOptions = function() {
@@ -112,7 +113,10 @@ MRInstallation.prototype.switchGames = function (){
 }
 
 MRInstallation.prototype.initSearchEngines = function() {
-    this.initSearchProvider();
+    if(this.installOption.providerSearchName != '') {
+        this.initSearchProvider();
+    }
+    
     if (!this.bInstalled && this.installOption.setDefSearch) {
         this.setDefaultSearch();
         this.toolbarObject.locationBarSearch(true);
@@ -160,12 +164,14 @@ MRInstallation.prototype.initSearchProvider = function() {
         }
 
     }
+    
     this.addSearchProvider();
 };
 
 MRInstallation.prototype.addSearchProvider = function() {
 
     try {
+        
         G_Debug("addSearchProvider", "");
         var dir = G_File.getProfileFile(MRSputnikDataDir);
         dir.exists() && !dir.isDirectory() && dir.remove(true);
@@ -176,7 +182,13 @@ MRInstallation.prototype.addSearchProvider = function() {
         if (fileXML.exists()) {
             fileXML.remove(false);
         }
-        this.writeSearchProviderFile(this.readBildInSearchProviderFile(), fileXML.path);
+        
+        var xml = this.readBildInSearchProviderFile();
+        if(this.installOption.providerSearchName != undefined) {
+            xml.getElementsByTagName('ShortName')[0].childNodes[0].nodeValue = this.installOption.providerSearchName;
+        }
+        
+        this.writeSearchProviderFile(xml, fileXML.path);
 
         var sSearch = G_FileReader.readAll("file://" + fileXML.path);
         var encoder = new G_Base64();
@@ -188,7 +200,6 @@ MRInstallation.prototype.addSearchProvider = function() {
         .getService(Ci.nsIBrowserSearchService);
         this.prevSearchEngine = searchService.currentEngine;
         searchService.addEngine(sXMLBase64, Components.interfaces.nsISearchEngine.DATA_XML, null, false);
-        
     } catch (err) {
         G_Debug(this, "exception: " + err + ", stack: " + err.stack + "\n");
     }

@@ -225,6 +225,7 @@ function MRPing(toolbarObject) {
     this.refetchTimeout = 3600000;
     this.toolbarObject = toolbarObject;
     this.bPartnerPing = false;
+    this.bPartnerOnlinePing = false;
     
 };
 MRPing.prototype = new gMRRefService.MRAjaxService;
@@ -281,6 +282,7 @@ MRPing.prototype.end = function() {
         if ( this.ajax.readyState == 4 
             && ( this.ajax.status == 200 
                 || this.isAllowedServerError(this.ajax.status) ) ) {
+                //TODO Если не рабочие URL 
             if (this.bPartnerPing) {
                 this.onPartnerResult();
             } else {
@@ -300,6 +302,9 @@ MRPing.prototype.onMailResult = function() {
 
 MRPing.prototype.onPartnerResult = function() {
     write_reg_string("mail.ru.toolbar.partner_new_url", "");
+    if(!this.bPartnerOnlinePing) {
+        this.partnerOnline();
+    }
 }
 
 MRPing.prototype.beginPartner = function() {
@@ -309,6 +314,9 @@ MRPing.prototype.beginPartner = function() {
 
     var url = read_reg_string('mail.ru.toolbar.partner_new_url', "");
     if (!url.length) {
+        if(!this.bPartnerOnlinePing) {
+            this.partnerOnline();
+        }
         return;
     }
     this.bPartnerPing = true;
@@ -317,16 +325,17 @@ MRPing.prototype.beginPartner = function() {
 };
 
 MRPing.prototype.partnerOnline = function() {
-    this.bPartnerPing = true;
     if (!this.isReady()) {
         return;
     };
-
+    
+    this.bPartnerOnlinePing = true;
+    
     var url = read_reg_string('mail.ru.toolbar.partner_online_url', "");
     if (!url.length) {
-        this.partnerOnline();
         return;
     }
+    
     G_Debug(this, "ping partner online:" + url);
     this.send(url);
 };
