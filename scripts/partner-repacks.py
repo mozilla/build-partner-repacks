@@ -185,6 +185,9 @@ def parseRepackConfig(filename, platforms):
     f = open(filename, 'r')
     for line in f:
         line = line.rstrip("\n")
+        # Ignore empty lines
+        if line.strip() == "":
+            continue
         [key, value] = line.split('=', 2)
         value = value.strip('"')
         if key == 'dist_id':
@@ -742,7 +745,7 @@ if __name__ == '__main__':
 
                         retrieveFile(original_build_url, filename)
                         if isWin(platform) and options.use_signed:
-                            # The following removes signatures by 
+                            # The following removes signatures by
                             # repacking the source file
                             repackSignedBuilds(os.getcwd())
                         os.chdir(base_workdir)
