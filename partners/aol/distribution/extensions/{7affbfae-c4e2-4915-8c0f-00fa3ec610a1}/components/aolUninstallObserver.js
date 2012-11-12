@@ -1,6 +1,7 @@
 /***********************************************************
 constants
 ***********************************************************/
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 // reference to the interface defined in nsIUninstallObserver.idl
 const nsIaolUninstallObserver = Components.interfaces.nsIaolUninstallObserver;
@@ -34,11 +35,15 @@ function aolUninstallObserver() {
 // class definition
 aolUninstallObserver.prototype = {
   
+	classDescription: CLASS_NAME,  
+	classID: CLASS_ID,  
+	contractID: CONTRACT_ID,
 	_uninstall: false,
 	_chromeDir: null,
 	_iid : "",
 	_source : "",
 	
+	QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIaolUninstallObserver]),
   
 	// define the function we want to expose in our interface
 	register: function() 
@@ -230,64 +235,11 @@ aolUninstallObserver.prototype = {
 	}
 };
 
-/***********************************************************
-class factory
+var components = [aolUninstallObserver];
 
-This object is a member of the global-scope Components.classes.
-It is keyed off of the contract ID. Eg:
-
-myUninstallObserver = Components.classes["@dietrich.ganx4.com/uninstallobserver;1"].
-                          createInstance(Components.interfaces.nsIUninstallObserver);
-
-***********************************************************/
-var aolUninstallObserverFactory = 
-{
-	createInstance: function (aOuter, aIID)
-	{
-		if (aOuter != null)
-			throw Components.results.NS_ERROR_NO_AGGREGATION;
-		return (new aolUninstallObserver()).QueryInterface(aIID);
-	}
-};
-
-/***********************************************************
-module definition (xpcom registration)
-***********************************************************/
-var aolUninstallObserverModule = 
-{
-	registerSelf: function(aCompMgr, aFileSpec, aLocation, aType)
-	{
-		aCompMgr = aCompMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar);
-		aCompMgr.registerFactoryLocation(CLASS_ID, CLASS_NAME, CONTRACT_ID, aFileSpec, aLocation, aType);
-	},
-
-	unregisterSelf: function(aCompMgr, aLocation, aType)
-	{
-		aCompMgr = aCompMgr.
-        QueryInterface(Components.interfaces.nsIComponentRegistrar);
-		aCompMgr.unregisterFactoryLocation(CLASS_ID, aLocation);        
-	},
-  
-	getClassObject: function(aCompMgr, aCID, aIID)
-	{
-	    if (!aIID.equals(Components.interfaces.nsIFactory))
-			throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
-
-		if (aCID.equals(CLASS_ID))
-			return aolUninstallObserverFactory;
-
-		throw Components.results.NS_ERROR_NO_INTERFACE;
-	},
-
-	canUnload: function(aCompMgr) { return true; }
-};
-
-/***********************************************************
-module initialization
-
-When the application registers the component, this function
-is called.
-***********************************************************/
-function NSGetModule(aCompMgr, aFileSpec) { return aolUninstallObserverModule; }
+if ("generateNSGetFactory" in XPCOMUtils) {
+	var NSGetFactory = XPCOMUtils.generateNSGetFactory(components);  // Firefox 4.0 and higher
+} else {
+	var NSGetModule = XPCOMUtils.generateNSGetModule(components);    // Firefox 3.x
 
 

@@ -8,8 +8,8 @@ SHA1-Digest: jCy5+JoYHOK2bTDMyVwpC3zlf00=
 
 Name: chrome/aoluktoolbar.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: bZ+6vtzxi1kABDx5FNnRrQ==
-SHA1-Digest: 5bVj3aCjK8cv8/VHgC+TpECT0IM=
+MD5-Digest: k6XxmZllZtIHyQu7/tX7+Q==
+SHA1-Digest: X1SokQMHoaeUst2kv19V+FUE+8k=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -18,18 +18,18 @@ SHA1-Digest: BBUwvjpREX/EcsjyhLCGsHCjrIA=
 
 Name: components/aolukAddonObserver.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: JVWxIQNuaPtd5ahrNuChrg==
-SHA1-Digest: YdtsT++CWWyQQkGV2n42XOLfVPw=
+MD5-Digest: K8f2+gygoWu9htMthauBwA==
+SHA1-Digest: n5FZKqfQtFrNsCw0DYajFQszH/E=
 
 Name: components/aolukAutoSuggest.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 9pV/63heo46T6uvAfIMi7Q==
-SHA1-Digest: ld4O/HP+6M52wjVtfAUXBVRjKxs=
+MD5-Digest: KUcigH/jwZw0vfc2wy854w==
+SHA1-Digest: v/JX6Vo/Hwmn9MWEo4Fu+T3midI=
 
 Name: components/aolukUninstallObserver.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: AAr0nVAkAOXPHZHjisFyvw==
-SHA1-Digest: 9JVpgNaFNuqA6Psr1XweKA6Ju3E=
+MD5-Digest: rPsKD+FPLwdsKKBMDEnnUg==
+SHA1-Digest: 3TfRd/x5UIleNvw/MHzHnkWlPXc=
 
 Name: components/IaolukUninstallObserver.xpt
 Digest-Algorithms: MD5 SHA1
@@ -53,5 +53,5 @@ SHA1-Digest: Vlj3eU/60e0JuFhKe/LhUTiRxWc=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Hjm3XNyXT5MlbQXgSEtIOQ==
-SHA1-Digest: ttIXfGZa/Ay1IKpjdu6QozCVjS4=
+MD5-Digest: mBf88ljLTAFXAOEESvSs1w==
+SHA1-Digest: gPPvORhM+J2UKn4x06G651BrJJA=

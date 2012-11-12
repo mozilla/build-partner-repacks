@@ -5,7 +5,7 @@ g=C.ID("c5ea9024-f74e-4d77-95fe-90b30c45c7b5"),
 Ci=C.interfaces,
 Cc=C.classes,
 Cg=Ci.nsIComponentRegistrar;
-var JSON = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
+
 
 const PROPS = "chrome://aoluktoolbar/locale/toolbar_props.properties";
 
@@ -58,7 +58,7 @@ gS.prototype={
         var r=[],
         rT = q.responseText,
         suggestions = "";
-        json_suggestions = JSON.decode(rT);
+        json_suggestions = JSON.parse(rT);
         if (json_suggestions.length >1) {
             suggestions = json_suggestions[1];
         }
@@ -67,8 +67,13 @@ gS.prototype={
         l.onSearchResult(j,new gR(Ci.nsIAutoCompleteResult.RESULT_SUCCESS,r));
      };
 	 
-	 var strings = this.getStrings();	
-     var api = strings.GetStringFromName("autosuggest.url") + encodeURIComponent(s) +"&output=json";	   		
+	var strings = this.getStrings();	
+	 var branch = this.getBranch();
+     var api = strings.GetStringFromName("autosuggest.url") ;	
+     api = api.replace(/&amp;/g,"&");
+	 var installSource = branch.getCharPref("search.source");
+	 api = api.replace(/%b/g , installSource);
+	 api = api.replace(/{searchTerms}/g, encodeURIComponent(s));	   		
      q.open('GET',api,true);
      q.send(null);
    },

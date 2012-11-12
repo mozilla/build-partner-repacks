@@ -99,8 +99,8 @@ var uninstall_metrics = function() {
 		
 		var searchUrl =  strings.GetStringFromName("search.metrics");
 		searchUrl = searchUrl.replace(/{it}/g, installSource);
-		searchUrl = searchUrl.replace(/{mrud}/g, formatDate(currentDate));
-		searchUrl = searchUrl.replace(/{oid}/g, formatDate(originalDate));
+		searchUrl = searchUrl.replace(/{mrud}/g, currentDate);
+		searchUrl = searchUrl.replace(/{oid}/g,  originalDate);
 		searchUrl = searchUrl.replace(/{uuid}/g, installId);  
 		
 	    var payload_fixed = {};
