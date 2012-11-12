@@ -1,2 +1,2 @@
-pref("extensions.unitedinternet.phish.enable", true);
+pref("extensions.unitedinternet.phish.enable", false);
 

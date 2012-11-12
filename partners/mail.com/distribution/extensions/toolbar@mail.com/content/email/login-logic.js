@@ -145,7 +145,7 @@ UnitedInternetLoginAccount.prototype =
   {
     this._pref = ourPref.branch("account." + this.accountID + ".");
     assert(this._pref.get("type") == this.kType);
-    this.emailAddress = this._pref.get("emailAddress");
+    this.emailAddress = this._pref.get("emailAddress").toLowerCase();
     this._wantStoredLogin = this._pref.get("storeLogin", this._wantStoredLogin);
     this._readServerConfig();
     this._verifyAccountSettings();

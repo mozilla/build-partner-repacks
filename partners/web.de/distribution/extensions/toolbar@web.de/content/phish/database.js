@@ -74,9 +74,9 @@ function createDB(dbConn)
   dbConn.executeSimpleSQL("DROP TABLE IF EXISTS " + PHISH_TABLE_DOMAIN);
   dbConn.executeSimpleSQL("DROP TABLE IF EXISTS " + PHISH_TABLE_EXACT);
 
-  dbConn.createTable(PHISH_TABLE_PREFIX, "pattern STRING PRIMARY KEY");
-  dbConn.createTable(PHISH_TABLE_DOMAIN, "pattern STRING PRIMARY KEY");
-  dbConn.createTable(PHISH_TABLE_EXACT, "pattern STRING PRIMARY KEY");
+  dbConn.createTable(PHISH_TABLE_PREFIX, "pattern TEXT PRIMARY KEY");
+  dbConn.createTable(PHISH_TABLE_DOMAIN, "pattern TEXT PRIMARY KEY");
+  dbConn.createTable(PHISH_TABLE_EXACT, "pattern TEXT PRIMARY KEY");
 }
 
 /**
@@ -141,7 +141,7 @@ function checkURI(anURI, successCallback, errorCallback)
   }
   catch (e)
   {
-    debug("url does not have host. probably chrome: or something like that. Skipping.");
+    //debug("url does not have host. probably chrome: or something like that. Skipping.");
     return;
   }
   //debug("domain is " + hostname);
@@ -271,11 +271,11 @@ function updateDB(parsedResults, targetDB)
       params.addParams(bp);
     }
     statement.bindParameters(params);
-    statement.executeAsync(sqlCallback(function(rows)
+    statement.executeAsync(new sqlCallback(function(rows)
     {
      if (--finishedTypeCounter)
         return;
-      debug("phish: now using " + newDB.databaseFile.leafName + " as database");
+      //debug("phish: now using " + newDB.databaseFile.leafName + " as database");
       gCurrentDB = newDB;
       if (!targetDB && gCurrentDB == gPhishingDBUpdate)
         updateDB(parsedResults, gPhishingDBMain);
@@ -360,8 +360,7 @@ function startPeriodicUpdate()
       sanitize.integer(ourPref.get("phish.lastUpdate")) <
         new Date() / 1000 - brand.phish.updateFrequency)
     downloadBlacklist();
-  else
-    debug("not updating phishing list, because we got a fresh enough one");
+  else debug("not updating phishing list, because we got a fresh enough one");
   gPoller = runPeriodically(downloadBlacklist,
       brand.phish.updateFrequency * 1000);
 }

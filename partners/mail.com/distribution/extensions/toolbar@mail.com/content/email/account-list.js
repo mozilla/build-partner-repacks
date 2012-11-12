@@ -151,6 +151,8 @@ function getExistingAccountForEmailAddress(emailAddress)
 function makeNewAccount(emailAddress)
 {
   sanitize.nonemptystring(emailAddress);
+  assert(emailAddress == emailAddress.toLowerCase(),
+         "email addresses must be lowercase");
   assert( !getExistingAccountForEmailAddress(emailAddress),
           "account already exists");
   //var accountID = emailAddress;

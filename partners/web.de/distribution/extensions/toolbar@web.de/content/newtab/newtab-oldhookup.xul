@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<overlay id="united-newtab-oldoverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/x-javascript"
+      src="chrome://unitedtb/content/newtab/newtab-oldhookup.js"/>
+  <script type="application/x-javascript">
+    unitedinternet.initModule(unitedinternet, "newtab");
+    unitedinternet.loadJS("chrome://unitedtb/content/newtab/thumbnail-capture.js", unitedinternet.newtab);
+  </script>
+</overlay>

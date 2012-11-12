@@ -336,6 +336,7 @@ function checkForBrandedBrowser()
   var brandedBrowser = ourPref.get("brandedbrowser", false);
   var bundledToolbar = (kVariant == "browser");
   if (bundledToolbar && !brandedBrowser) {
+    var browser = findSomeBrowserWindow();
     var noCoexistenceWarning = ourPref.get("noCoexistenceWarning", false);
     if (noCoexistenceWarning)
       return;

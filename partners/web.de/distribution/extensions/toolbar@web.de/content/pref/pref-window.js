@@ -6,7 +6,7 @@
  * Per customer request, we use instant apply (on all platforms),
  * like in the Mac OS X settings dialog.
  * Each module observes its own prefs using normal
- * nsIPrefBranch2.addObserver(), united.ourPref.observeAuto() or
+ * nsIPrefBranch2.addObserver(), ourPref.observeAuto() or
  * <preference> facilities, and adapts on pref change.
  * This way, the module's settings dialog and the module itself
  * are entirely decoupled and just have to agree on the pref to use.
@@ -14,81 +14,136 @@
 
 function onLoad()
 {
-  if (window.arguments && typeof(window.arguments[0]) == "object")
-    initWithParams(window.arguments[0]);
+  try {
+    if (window.arguments && typeof(window.arguments[0]) == "object")
+      initWithParams(window.arguments[0]);
 
-  // buttons="accept" doesn't show the button, so do manually
-  var prefWindow = document.getElementById("united-pref-window");
-  prefWindow.instantApply = true;
-  var okButton = prefWindow.getButton("accept");
-  okButton.hidden = false;
-  okButton.disabled = false;
-  okButton.label = prefWindow.getAttribute("closebuttonlabel");
-  okButton.accesskey = prefWindow.getAttribute("closebuttonaccesskey");
-  window.sizeToContent();
+    hookupAllPreferencesElements(document.getElementById("tabpanels"), generalPref);
 
-  united.checkDisabledModules(window); // uiuils.js
-  united.autoregisterGlobalObserver("region-changed", function()
-  {
-    united.checkDisabledModules(window);
-  });
+    checkDisabledModules(window); // uiuils.js
+    window.sizeToContent();
+    autoregisterGlobalObserver("region-changed", function()
+    {
+      checkDisabledModules(window);
+      window.sizeToContent();
+    });
+  } catch (e) { errorCritical(e); }
 }
-window.addEventListener("load", onLoad, false); // doesn't work as onload="onLoad();" :-(((
+window.addEventListener("load", onLoad, false);
 
 function initWithParams(args)
 {
   if (args.module) // see openPrefWindow() param |module|
   {
-    var prefWindow = document.getElementById("united-pref-window");
-    var pane = document.getElementById(args.module + "-pane");
-    prefWindow.showPane(pane);
+    var tabbox = document.getElementById("tabbox");
+    tabbox.selectedPanel = document.getElementById(args.module + "-panel");
+    tabbox.selectedTab = document.getElementById(args.module + "-tab");
   }
 }
 
 /**
- * Allows <prefpane>s to validate the input.
- * There should be a <prefpane onvalidate="upref.foo.checkPostalCode();">
- * (no "return" in the attribute!).
- * That function should return an error message for the user, if there's
- * a problem, otherwise null.
- * This function will call all onvalidate functions successively,
- * and in case of an error, display the error and switch to the pane with
- * the error, and prevent the dialog from closing.
+ * "Apply" button clicked
+ */
+function save()
+{
+  try {
+    if ( !validate(true))
+      return false;
+    //debug("validate all passed");
+
+    assert(gPrefElements);
+    for each (let prefElement in gPrefElements)
+    {
+      try {
+        prefElement.save();
+      } catch (e) { errorCritical(e); }
+    }
+    return true;
+  } catch (e) { errorCritical(e); return true; }
+}
+
+/**
+ * "Cancel" button clicked
+ */
+function cancel()
+{
+  try {
+    assert(gPrefElements);
+    for each (let prefElement in gPrefElements)
+    {
+      try {
+        prefElement.cancel();
+      } catch (e) { errorCritical(e); }
+    }
+    return true;
+  } catch (e) { errorCritical(e); return true; }
+}
+
+/**
+ * "Set defaults" button clicked
+ * Resets *all* panels.
+ */
+function setDefault()
+{
+  try {
+    assert(gPrefElements);
+    for each (let prefElement in gPrefElements)
+    {
+      try {
+        prefElement.reset();
+      } catch (e) { errorCritical(e); }
+    }
+    return true;
+  } catch (e) { errorCritical(e); return true; }
+}
+
+/**
+ * Allows elements to validate the input.
  *
- * All this should be supported by <prefwindow> natively.
- * In fact, we wouldn't need it, if addEventListener("dialogaccept"...
+ * This function will call all validate functions successively,
+ * and in case of the first error,
+ * - display the error
+ * - switch to the pane with the error
+ * - prevent the dialog from closing.
+ *
+ * We wouldn't need all this, if addEventListener("dialogaccept"...
  * (in contrast to ondialogaccept="" attribute) would react to return false
  * and not close the window.
  *
- * @param accepted {Boolean} if true, the OK button was pressed.
- *   If false, the Cancel button or the X in the window title bar was pressed.
+ * @param save {Boolean}   @see SettingElement.validate()
+ * @return {Boolean}   there was no error
  */
-function validateAllPanes(accepted)
+ function validate(save)
 {
   try {
-  var prefWindow = document.getElementById("united-pref-window");
-  var panes = prefWindow.getElementsByTagName("prefpane");
-  for (let i = 0, l = panes.length; i < l; i++)
-  {
-    let pane = panes.item(i);
-    let validator = pane.getAttribute("onvalidate");
-    if (!validator)
-      continue;
-    united.debug("accepted = " + accepted);
-    let resetOnInvalid = !united.sanitize.boolean(accepted);
-    let varstr = "let resetOnInvalid = " + resetOnInvalid + "; ";
-    let errorMsg = eval(varstr + validator); // meh, no other way to run onfoo event handlers
-    if (errorMsg)
+    //debug("save = " + save);
+    assert(gPrefElements);
+    for each (let prefElement in gPrefElements)
     {
-      united.debug(errorMsg);
-      try {
-        prefWindow.showPane(pane);
-      } catch (e) { united.error("when trying to switch pane to " + pane.id + ": " + e); }
-      united.errorCritical(errorMsg);
-      return !accepted; // if cancel: close. if OK button: stay open and let correct.
+      if ( !validateElementWithUI(prefElement, save))
+        return false;
     }
+    return true;
+  } catch (e) { errorCritical(e); return true; }
+}
+
+/**
+ * @param save {Boolean}   @see SettingElement.validate()
+ * @return {Boolean}   there was no error
+ */
+function validateElementWithUI(prefElement, save)
+{
+  try {
+    var errorMsg = prefElement.validate(save);
+  } catch (e) { errorMsg = e.toString(); }
+  if (errorMsg)
+  {
+    try {
+      document.getElementById("tabbox").selectedPanel =
+          findParentTagForElement("tabpanel", prefElement.element); // from uiutil.js
+    } catch (e) { error("when trying to switch pane to " + pane.id + ": " + e); }
+    errorCritical(errorMsg);
+    return false;
   }
-  //united.debug("all panes OK");
   return true;
-  } catch (e) { united.errorCritical(e); return true; }
 }

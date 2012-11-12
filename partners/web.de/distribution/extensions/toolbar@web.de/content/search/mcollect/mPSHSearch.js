@@ -1,4 +1,5 @@
 Components.utils.import("resource://unitedtb/search/search-store.js", this);
+var sb = new StringBundle("chrome://unitedtb/locale/search/mcollect.properties");
 
 /**
  * This searches in the user's previous searches, whether the user searched for
@@ -15,7 +16,7 @@ function mPSHSearch(searchTerm)
 mPSHSearch.prototype =
 {
   /**
-   * Triggers the actual search, via DB, or over the network etc..
+   * Triggers the actual search in the search term DB
    */
   startSearch : function()
   {
@@ -24,11 +25,7 @@ mPSHSearch.prototype =
       // fetch whole list from search-store.js
       getLastSearches(10000, function(terms)
       {
-        XPCOMUtils.defineLazyGetter(this, "descr", function()
-        {
-          var sb = new StringBundle("chrome://unitedtb/locale/search/mcollect.properties");
-          return sb.get("mPSHSearch.descr");
-        });
+        var descr = sb.get("mPSHSearch.descr");
         var icon = "chrome://unitedtb/skin/search/search-small.png";
 
         // check whether a hit
@@ -38,10 +35,10 @@ mPSHSearch.prototype =
           if (pos == -1)
             continue;
           //debug("PSH hit for " + self._searchTerm + " in " + term + " at pos " + pos);
-          let result = new mSearchTermResult(term, descr, icon);
+          let result = new mPSHSearchTermResult(term, descr, icon);
           result.hitPos = pos;
           result.hitLengthRatio = term.length / self._searchTerm.length;
-          self._results.push(result);
+          self._addResult(result);
         }
 
         // sort
@@ -58,8 +55,53 @@ mPSHSearch.prototype =
 
         self._notifyObserversOfResultChanges();
       },
-      function(e) { self._haveError(e); });
-    } catch (e) { this._haveError(e); }
+      function(e) { self._haveFatalError(e); });
+    } catch (e) { this._haveFatalError(e); }
   },
 }
 extend(mPSHSearch, mSearch);
+
+/**
+ * This adds the clear history item
+ *
+ * Returns |mResult|s.
+ */
+function mClearPSH()
+{
+  mSearch.call(this);
+}
+mClearPSH.prototype =
+{
+  /**
+   * Adds exactly one static item
+   */
+  startSearch : function()
+  {
+    try {
+      this._addResult(new mClearCommandResult());
+      this._notifyObserversOfResultChanges();
+    } catch (e) { this._haveFatalError(e); }
+  },
+}
+extend(mClearPSH, mSearch);
+
+
+/**
+ * An result item that allows the user to clear the search history.
+ */
+function mClearCommandResult()
+{
+  var title = sb.get("clearSearchHistory.descr");
+  //var descr = sb.get("commands.descr"); // its own section
+  var descr = sb.get("mPSHSearch.descr");
+  mResult.call(this, title, descr, null, "command");
+}
+mClearCommandResult.prototype =
+{
+  activate : function(firefoxWindow)
+  {
+    Components.utils.import("resource://unitedtb/search/search-store.js", this);
+    deleteLastSearches(function() {}, firefoxWindow.unitedinternet.common.errorCritical);
+  },
+}
+extend(mClearCommandResult, mResult);

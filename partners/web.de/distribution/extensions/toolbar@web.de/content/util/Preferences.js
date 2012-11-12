@@ -60,6 +60,7 @@ function Preferences(args) {
     }
     else if (args)
       this._prefBranch = args;
+    this.isDefaultBranch = false;
 }
 
 Preferences.prototype = {
@@ -87,7 +88,16 @@ Preferences.prototype = {
   _get: function(prefName, defaultValue) {
     switch (this._prefSvc.getPrefType(prefName)) {
       case Ci.nsIPrefBranch.PREF_STRING:
-        return this._prefSvc.getComplexValue(prefName, Ci.nsISupportsString).data;
+        try {
+          return value = this._prefSvc.getComplexValue(prefName, Ci.nsISupportsString).data;
+        } catch (ex) {
+          if (this.isDefaultBranch)
+            // The preference might exist as a user pref, but not have a default
+            // value. In that case, getComplexValue throws. Just return null.
+            return null;
+          else
+            return this._prefSvc.getCharPref(prefName);
+        }
 
       case Ci.nsIPrefBranch.PREF_INT:
         return this._prefSvc.getIntPref(prefName);
@@ -150,6 +160,34 @@ Preferences.prototype = {
     let prefType;
     if (typeof prefValue != "undefined" && prefValue != null)
       prefType = prefValue.constructor.name;
+
+    var existingPrefType = this._prefSvc.getPrefType(prefName);
+    if (existingPrefType != Ci.nsIPrefBranch.PREF_INVALID)
+    {
+      // convert
+      if (existingPrefType == Ci.nsIPrefBranch.PREF_INT && prefType == "String")
+      {
+        prefValue = parseInt(prefValue);
+        if (isNaN(prefValue))
+          throw "Incompatible pref value type";
+        prefType = "Number";
+      }
+      else if (existingPrefType == Ci.nsIPrefBranch.PREF_BOOL && prefType == "String")
+      {
+        if (prefValue == "true")
+          prefValue = true;
+        else if (prefValue == "false")
+          prefValue = false;
+        else
+          throw "Incompatible pref value type";
+        prefType = "Boolean";
+      }
+      else if (existingPrefType == Ci.nsIPrefBranch.PREF_BOOL && prefType == "Number")
+      {
+        prefValue = prefValue != 0;
+        prefType = "Boolean";
+      }
+    }
 
     switch (prefType) {
       case "String":
@@ -285,6 +323,26 @@ Preferences.prototype = {
 
   _siteReset: function(prefName) {
     return this._contentPrefSvc.removePref(this._site, this._prefBranch + prefName);
+  },
+
+  /**
+   * If you need to know the default values, without resetting the actual
+   * user prefs, you can use this.
+   * @returns {Preferences} a new Preferences object, which accesses
+   * the defaults rather than the user prefs.
+   * *Only* call get() on this.
+   * If you call set(), you will modify the defaults, so don't do that!
+   */
+  get defaults() {
+    let defaultBranch = Cc["@mozilla.org/preferences-service;1"].
+                  getService(Ci.nsIPrefService).
+                  getDefaultBranch(this._prefBranch).
+                  QueryInterface(Ci.nsIPrefBranch);
+    let prefs = new Preferences(this._prefBranch);
+    // override. nasty, but this is internal, so OK.
+    prefs.__defineGetter__("_prefSvc", function() defaultBranch);
+    prefs.isDefaultBranch = true;
+    return prefs;
   },
 
   /**
@@ -435,15 +493,15 @@ Preferences.prototype = {
    * This equals nsIPrefBranch.getChildList().
    * This allows you to do e.g.
    * var myPrefs = new Preferences("extensions.cooler.");
-   * for each (let prefname in myPrefs.childPrefNames("contents."))
-   *   dump("have " + myPrefs("contents." + prefname) + " " + prefname + "\n");
+   * var contents = myPrefs.branch("contents.");
+   * for each (let prefname in contents.childPrefNames())
+   *   dump("have " + contents.get(prefname) + " " + prefname + "\n");
    *
-   * @param {String} subbranch
    * @returns {Array of String} The names of the children,
    *     without the base pref branch, but with subbranch.
    */
-  childPrefNames : function(subbranch) {
-    return this._prefSvc.getChildList(subbranch, []);
+  childPrefNames : function() {
+    return this._prefSvc.getChildList("", []);
   },
 
   /**
@@ -462,6 +520,19 @@ Preferences.prototype = {
    */
   get prefBranchName() {
     return this._prefBranch;
+  },
+
+  /**
+   * Returns an Preferences object for an sub pref branch
+   * underneath the current pref branch.
+   * @param subbranch {String} Will be appended to the
+   *     current pref branch. Don't forget the trailing dot,
+   *     where necessary.
+   *     E.g. "contents."
+   * @returns {Preferences}
+   */
+  branch : function(subbranch) {
+    return new Preferences(this._prefBranch + subbranch);
   },
 
   /**

@@ -44,11 +44,12 @@ const EXPORTED_SYMBOLS = [ "Cc", "Ci", "Cu", "extend", "mixInto", "assert",
   "makeCallback", "sqlCallback", "loadJS", "runAsync", "runPeriodically",
   "makeNSIURI", "readURLasUTF8", "readFile", "writeFile", "splitLines",
   "ioService", "promptService", "ourPref", "generalPref", "privateBrowsing",
+  "DOMParser", "XMLSerializer",
   "getStringBundle", "StringBundle", "getExtensionFullVersion", "findSomeBrowserWindow",
   "Exception", "NotReached", "Abortable", "TimeoutAbortable", "IntervalAbortable",
-  "SuccessiveAbortable", "XPCOMUtils",  "getProfileDir", "getSpecialDir",
-  "arrayRemove", "arrayContains", "deepCopy",
-  "errorInBackend", "kDebug", "debug", "debugObject" ];
+  "SuccessiveAbortable", "XPCOMUtils",  "getProfileDir", "getSpecialDir", "getOS",
+  "arrayRemove", "arrayContains", "deepCopy", "ObserveTopic", "getErrorText",
+  "errorInBackend", "kDebug", "debug", "debugObject", "dumpObject" ];
 
 // to not pullute Firefox global namespace, load into a scope using subscriptloader
 // (same for util/*.js)
@@ -71,6 +72,11 @@ XPCOMUtils.defineLazyServiceGetter(this, "privateBrowsing",
 XPCOMUtils.defineLazyServiceGetter(this, "scriptLoader",
     "@mozilla.org/moz/jssubscript-loader;1", "mozIJSSubScriptLoader");
 
+const DOMParser = new Components.Constructor(
+  "@mozilla.org/xmlextras/domparser;1", Ci.nsIDOMParser);
+const XMLSerializer = new Components.Constructor(
+  "@mozilla.org/xmlextras/xmlserializer;1", Ci.nsIDOMSerializer);
+
 XPCOMUtils.defineLazyGetter(this, "ourPref", function()
 {
   return new Preferences("extensions.unitedinternet.");
@@ -80,27 +86,26 @@ XPCOMUtils.defineLazyGetter(this, "generalPref", function()
   return Preferences;
 });
 
+/**
+ * @returns {nsIFile} the current profile directory
+ */
 function getProfileDir()
 {
   return getSpecialDir("ProfD");
 }
+/**
+ * Convenience for nsIDirectoryService
+ * @returns {nsIFile}
+ */
 function getSpecialDir(key)
 {
   return Cc["@mozilla.org/file/directory_service;1"]
       .getService(Ci.nsIProperties)
-      .get(key, Ci.nsILocalFile);
-}
-
-function makeCallback(obj, func)
-{
-  return function()
-  {
-    return func.apply(obj, arguments);
-  }
+      .get(key, Ci.nsIFile);
 }
 
 /**
- * Create a subtype
+ * Create a subtype.
  */
 function extend(child, supertype)
 {
@@ -108,7 +113,8 @@ function extend(child, supertype)
 }
 
 /**
- * Copy properties of |source| into |target|
+ * Copy properties of |source| into |target|.
+ * This is an alternative to extend().
  */
 function mixInto(source, target)
 {
@@ -229,6 +235,37 @@ extend(TimerAbortable, Abortable);
 function makeNSIURI(uriStr)
 {
   return ioService.newURI(uriStr, null, null);
+}
+
+
+/**
+ * @param nsresult {Integer}  an XPCOM error code
+ * @returns {String} an error message
+ *     Mostly based on the C++ macro constants, so
+ *     may be very technical and in English.
+ *     If no name found, returns the error code in hex.
+ * @see <https://developer.mozilla.org/en/Table_Of_Errors>
+ */
+function getErrorText(nsresult)
+{
+  assert(typeof(nsresult) == "number");
+  // name is the C++ macro name of the error
+  // code is the numeric error code
+  for (let name in Components.results)
+  {
+    let code = Components.results[name];
+    if (code == nsresult)
+    {
+      // Just base the text on the C++ macro name.
+      // If we wanted to make a nice human-readable, translated error msg,
+      // we could insert a string bundle read right here.
+      let text = name.toString().replace("NS_ERROR_", "")
+          .replace("_", " ").toLowerCase();
+      return text;
+    }
+  }
+  // Just return error code as hex code
+  return "0x" + nsresult.toString(16).toUpperCase();
 }
 
 
@@ -386,6 +423,41 @@ function getExtensionFullVersion()
 }
 
 /**
+ * The operating system we're running on currently.
+ *
+ * @returns {String-enum}
+ *     "win" =  Windows
+ *     "mac" =  Mac OS X
+ *     "unix" =  Linux, BSD, Solaris etc.
+ *     "android" = Android
+ *     "other" = anything not fitting above
+ */
+function getOS()
+{
+  switch(Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime).OS)
+  {
+    case "WINNT":
+      return "win";
+    case "Darwin":
+      return "mac";
+    case "Linux":
+    case "FreeBSD":
+    case "NetBSD":
+    case "OpenBSD":
+    case "DragonFly":
+    case "SunOS": // Solaris
+    case "IRIX64":
+    case "AIX":
+    case "HP-UX":
+      return "unix";
+    case "Android":
+      return "android";
+    default:
+      return "other";
+  }
+}
+
+/**
  * When you need to go to the UI, from the JSM.
  * Avoid at all costs.
  */
@@ -407,7 +479,7 @@ function Exception(msg)
   } catch (e) {
     this.stack = e.stack; // ... to get the current stack
   }
-  debug("ERROR (exception): " + msg + "\nStack:\n" + this.stack);
+  //debug("ERROR (exception): " + msg + "\nStack:\n" + this.stack);
 }
 Exception.prototype =
 {
@@ -506,115 +578,6 @@ SuccessiveAbortable.prototype =
 extend(SuccessiveAbortable, Abortable);
 
 
-function arrayRemove(array, element, all)
-{
-  var found = 0;
-  var pos = 0;
-  while ((pos = array.indexOf(element, pos)) != -1)
-  {
-    array.splice(pos, 1);
-    found++
-    if ( ! all)
-      return found;
-  }
-  return found;
-}
-
-function arrayContains(array, element)
-{
-  return array.indexOf(element) != -1;
-}
-
-
-function deepCopy(org)
-{
-  if (typeof(org) == "undefined")
-    return undefined;
-  if (org == null)
-    return null;
-  if (typeof(org) == "string")
-    return org;
-  if (typeof(org) == "number")
-    return org;
-  if (typeof(org) == "boolean")
-    return org == true;
-  if (typeof(org) == "function")
-    return org;
-  if (typeof(org) != "object")
-    throw "can't copy objects of type " + typeof(org) + " yet";
-
-  //TODO still instanceof org != instanceof copy
-  //var result = new org.constructor();
-  var result = new Object();
-  if (typeof(org.length) != "undefined")
-    var result = new Array();
-  for (var prop in org)
-    result[prop] = deepCopy(org[prop]);
-  return result;
-}
-
-//kDebug defined in build.js
-var kDebugAlsoOnErrorConsole = true;
-
-XPCOMUtils.defineLazyServiceGetter(this, "gConsoleService",
-    "@mozilla.org/consoleservice;1", "nsIConsoleService");
-
-function debug(text)
-{
-  if (!kDebug)
-    return;
-  dump(text + "\n");
-  if (!kDebugAlsoOnErrorConsole)
-    return;
-
-  gConsoleService.logStringMessage(text);
-}
-
-/**
- * You are in the backend without UI, and there's
- * no way to redesign your API to pass the errors to the UI.
- * This should be avoided at all costs and is basically a bug.
- */
-function errorInBackend(e)
-{
-  debug("ERROR (from backend): " + e);
-  debug("Stack:\n" + (e.stack ? e.stack : "none"));
-}
-
-function debugObject(obj, name, maxDepth, curDepth)
-{
-  if (curDepth == undefined)
-    curDepth = 0;
-  if (maxDepth != undefined && curDepth > maxDepth)
-    return;
-
-  var i = 0;
-  for (prop in obj)
-  {
-    i++;
-    try {
-      if (typeof(obj[prop]) == "object")
-      {
-        if (obj[prop] && obj[prop].length != undefined)
-          debug(name + "." + prop + "=[probably array, length " +
-                       obj[prop].length + "]");
-        else
-          debug(name + "." + prop + "=[" + typeof(obj[prop]) + "]");
-        debugObject(obj[prop], name + "." + prop, maxDepth, curDepth+1);
-      }
-      else if (typeof(obj[prop]) == "function")
-        debug(name + "." + prop + "=[function]");
-      else
-        debug(name + "." + prop + "=" + obj[prop]);
-    } catch (e) {
-      debug(name + "." + prop + "-> Exception(" + e + ")");
-    }
-  }
-  if (!i)
-    debug(name + " is empty");
-}
-
-
 /**
  * Callback for asynchronous SQL queries.
  *
@@ -674,3 +637,241 @@ sqlCallback.prototype =
   }
 }
 
+
+/**
+ * UNTESTED
+ * Get notified for a certain nsIObserver event from Mozilla.
+ *
+ * This wraps nsIObserver, and listens for a one-time notification.
+ * You need to pass the topic to listen to.
+ *
+ * In the filterFunc, you can discard all notifications of a certain topic
+ * that are not relevant to you, e.g. look for a certain nsIChannel or URL.
+ *
+ * @param once {Boolean}   Unhook when the callback is called.
+ * @param topic {String}   nsIObserver topic,
+ *     e.g. "http-on-examine-response" or "http-on-modify-request"
+ * @param filterFunc {Function(subject)} (Optional)
+ *     Called for every |topic| notification. If this returns true,
+ *     |callback| is called and, if |once| is true, the observer removed.
+ *     If this returns false, nothing happens and it will continue
+ *     to observe for other events.
+ *     subject {Object}  nsIObserver subject.
+ *         For network notifications, this is an {nsIChannel}.
+ *         So, you can check e.g. subject.originalURI.spec == "http://...";
+ * @param callback {Function(subject, data)}
+ *     Do what you actually wanted to do in the case of the event.
+ *     subject {Object}  nsIObserver subject
+ *     data {Object}  nsIObserver data
+ */
+function ObserveTopic(once, topic, filterFunc, callback)
+{
+  this._once = !!once;
+  this._topic = topic.toString();
+  assert(typeof(filterFunc) == "function" || !filterFunc, "filterFunc is not a function");
+  assert(typeof(callback) == "function", "need callback");
+  this._filterFunc = filterFunc;
+  this._callback = callback;
+
+  this._hookup();
+}
+ObserveTopic.prototype =
+{
+  _once : true,
+  _topic : null,
+  _filterFunc : null,
+  _callback : null,
+
+  observe: function(subject, topic, data)
+  {
+    try {
+      if (topic != this._topic)
+        return;
+      if (this._filterFunc && !this._filterFunc(subject, data))
+        return;
+      if (this._once)
+        this.unhook();
+      this._callback(subject, data);
+    } catch (e) { errorInBackend(e); }
+  },
+  _hookup : function()
+  {
+    var observerService = Cc["@mozilla.org/observer-service;1"]
+        .getService(Ci.nsIObserverService);
+    observerService.addObserver(this, this._topic, false);
+  },
+  unhook : function()
+  {
+    var observerService = Cc["@mozilla.org/observer-service;1"]
+        .getService(Ci.nsIObserverService);
+    observerService.removeObserver(this, this._topic);
+  },
+}
+
+
+/**
+ * Removes |element| from |array|.
+ * @param array {Array} to be modified. Will be modified in-place.
+ * @param element {Object} If |array| has a member that equals |element|,
+ *    the array member will be removed.
+ * @param all {boolean}
+ *     if true: remove all occurences of |element| in |array.
+ *     if false: remove only the first hit
+ * @returns {Integer} number of hits removed (0, 1 or more)
+ */
+function arrayRemove(array, element, all)
+{
+  var found = 0;
+  var pos = 0;
+  while ((pos = array.indexOf(element, pos)) != -1)
+  {
+    array.splice(pos, 1);
+    found++
+    if ( ! all)
+      return found;
+  }
+  return found;
+}
+
+/**
+ * Check whether |element| is in |array|
+ * @param array {Array}
+ * @param element {Object}
+ * @returns {boolean} true, if |array| has a member that equals |element|
+ */
+function arrayContains(array, element)
+{
+  return array.indexOf(element) != -1;
+}
+
+/**
+ * Normally, var b = a; (with a being an Object) copies only the pointer,
+ * and does not copy the whole object.
+ * E.g. when you do
+ * var a = { foo: 1 };
+ * var b = a;
+ * b.foo = 2;
+ * then a.foo == 2, not 1.
+ * This is what you normally expect, but sometimes you really need a copy.
+ *
+ * This function tries to copy the whole object, recursively.
+ * E.g. you can do:
+ * var a = { foo: 1 };
+ * var b = deepCopy(a);
+ * b.foo = 2;
+ * then a.foo == 1.
+ * 
+ * The function can only deal with simple objects, though, not with classes.
+ * I.e. you can use it for JSON-like objects, but
+ * not objects from class hierarchies.
+ */
+function deepCopy(org)
+{
+  if (typeof(org) == "undefined")
+    return undefined;
+  if (org == null)
+    return null;
+  if (typeof(org) == "string")
+    return org;
+  if (typeof(org) == "number")
+    return org;
+  if (typeof(org) == "boolean")
+    return org == true;
+  if (typeof(org) == "function")
+    return org;
+  if (typeof(org) != "object")
+    throw "can't copy objects of type " + typeof(org) + " yet";
+
+  //TODO still instanceof org != instanceof copy
+  //var result = new org.constructor();
+  var result = new Object();
+  if (typeof(org.length) != "undefined")
+    var result = new Array();
+  for (var prop in org)
+    result[prop] = deepCopy(org[prop]);
+  return result;
+}
+
+//kDebug defined in build.js
+var kDebugAlsoOnErrorConsole = true;
+
+XPCOMUtils.defineLazyServiceGetter(this, "gConsoleService",
+    "@mozilla.org/consoleservice;1", "nsIConsoleService");
+
+/**
+ * Output some text on the console which helps in debugging,
+ * but not for end-users.
+ */
+function debug(text)
+{
+  if (!kDebug)
+    return;
+  dump(text + "\n");
+  if (!kDebugAlsoOnErrorConsole)
+    return;
+
+  gConsoleService.logStringMessage(text);
+}
+
+/**
+ * Output contents of object on console.
+ * @see dumpObject()
+ */
+function debugObject(obj, name, maxDepth, curDepth)
+{
+  debug(dumpObject(obj, name, maxDepth, curDepth));
+}
+
+/**
+ * Return the contents of an object as multi-line string, for debugging.
+ * @param obj {Object} What you want to show
+ * @param name {String} What this object is. Used as prefix in output.
+ * @param maxDepth {Integer} How many levels of properties to access.
+ *    1 = just the properties directly on |obj|
+ * @param curDepth {Integer} internal, ignore
+ */
+function dumpObject(obj, name, maxDepth, curDepth)
+{
+  if (curDepth == undefined)
+    curDepth = 1;
+  if (maxDepth != undefined && curDepth > maxDepth)
+    return "";
+
+  var result = "";
+  var i = 0;
+  for (var prop in obj)
+  {
+    i++;
+    if (typeof(obj[prop]) == "xml")
+    {
+      result += name + "." + prop + "=[object]" + "\n";
+      result += dumpObject(obj[prop], name + "." + prop, maxDepth, curDepth+1);
+    }
+    else if (typeof(obj[prop]) == "object")
+    {
+      if (obj[prop] && typeof(obj[prop].length) != "undefined")
+        result += name + "." + prop + "=[probably array, length " + obj[prop].length + "]" + "\n";
+      else
+        result += name + "." + prop + "=[object]" + "\n";
+      result += dumpObject(obj[prop], name + "." + prop, maxDepth, curDepth+1);
+    }
+    else if (typeof(obj[prop]) == "function")
+      result += name + "." + prop + "=[function]" + "\n";
+    else
+      result += name + "." + prop + "=" + obj[prop] + "\n";
+  }
+  if ( ! i)
+    result += name + " is empty\n";
+  return result;
+}
+
+/**
+ * You are in the backend without UI, and there's
+ * no way to redesign your API to pass the errors to the UI.
+ * This should be avoided at all costs and is basically a bug.
+ */
+function errorInBackend(e)
+{
+  debug("ERROR (from backend): " + e);
+  debug("Stack:\n" + (e.stack ? e.stack : "none"));
+}

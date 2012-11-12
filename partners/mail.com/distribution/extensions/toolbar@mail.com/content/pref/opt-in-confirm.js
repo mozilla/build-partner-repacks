@@ -29,6 +29,8 @@ function optinConfirmClose()
       ourPref.reset("optin.reminder");
 
     // Route to the firstrun page
-    document.location.href = brand.toolbar.firstrunURL;
+    document.location.href = brand.toolbar.firstrunURL +
+                             "/?kid=" + ourPref.get("tracking.campaignid", 0);
+;
   }
 }

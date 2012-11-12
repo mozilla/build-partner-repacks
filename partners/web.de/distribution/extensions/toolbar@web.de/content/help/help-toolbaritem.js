@@ -8,10 +8,10 @@ function loadPageWithFallback(url, fallbackURL)
 {
   new TrackHTTPError(url, null, function(url, httpcode) // error callback
   {
-    united.debug("url <" + url + "> failed to load (" + httpcode + "), falling back to <" + fallbackURL + ">");
-    united.loadPage(fallbackURL);
+    debug("url <" + url + "> failed to load (" + httpcode + "), falling back to <" + fallbackURL + ">");
+    loadPage(fallbackURL);
   });
-  united.loadPage(url);
+  loadPage(url);
 }
 
 // <copied from="uiutil.js (with modifications, for fallbackURL)">
@@ -28,7 +28,7 @@ function onMenuitem(event)
     if (fallbackURL)
       loadPageWithFallback(url, fallbackURL);
     else
-      united.loadPage(url);
+      loadPage(url);
   }
   event.stopPropagation(); // prevent from bubbling to main <button>
 };
@@ -38,8 +38,9 @@ function initMenus()
 {
   if (gMenuInited)
     return;
-  initMenuitems("united-help-button-dropdown");
+  initMenuitems("united-pref-button-dropdown");
   initMenuitems("united-help-submenu");
+  initMenuitems("united-helpbutton-submenu");
   gMenuInited = true;
 }
 
@@ -47,7 +48,7 @@ function initMenuitems(containerID)
 {
   // create <menuitem label="Foobar" url="..."/>, url attr used above
   var container = document.getElementById(containerID);
-  for each (let entry in united.brand.toolbar.helpMenuURLEntries)
+  for each (let entry in brand.toolbar.helpMenuURLEntries)
   {
     let item = document.createElement("menuitem");
     if (entry.aboutExtDialog)
@@ -73,13 +74,13 @@ function openAboutDialog()
     var extensionDS= Cc["@mozilla.org/extensions/manager;1"].getService(Ci.nsIExtensionManager).datasource;
 
     window.openDialog("chrome://mozapps/content/extensions/about.xul", "", "chrome,centerscreen,modal",
-                      "urn:mozilla:item:" + united.EMID, extensionDS);
+                      "urn:mozilla:item:" + EMID, extensionDS);
   }
   else // FF4
   {
     var am = {};
     Components.utils.import("resource://gre/modules/AddonManager.jsm", am);
-    am.AddonManager.getAddonByID(united.EMID, function(addon)
+    am.AddonManager.getAddonByID(EMID, function(addon)
     {
       window.openDialog("chrome://mozapps/content/extensions/about.xul",
           "", "chrome,centerscreen,modal", addon);
@@ -93,7 +94,7 @@ function openAboutDialog()
  */
 function TrackHTTPError(url, successCallback, errorCallback)
 {
-  united.assert(url && typeof(url) == "string", "need url");
+  assert(url && typeof(url) == "string", "need url");
   this.url = url;
   if (successCallback)
     this.successCallback = successCallback;
@@ -121,7 +122,7 @@ TrackHTTPError.prototype =
         this.successCallback(this.url);
       else
         this.errorCallback(this.url, subject.responseStatus);
-    } catch (e) { united.errorInBackend(e); }
+    } catch (e) { errorInBackend(e); }
   },
   _hookup : function()
   {

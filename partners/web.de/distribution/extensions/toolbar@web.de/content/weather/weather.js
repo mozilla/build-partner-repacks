@@ -6,11 +6,11 @@ function onButton(event)
   getPostalCode(
   function(postalcode)
   {
-    united.loadPage(united.brand.weather.regionalURL + postalcode);
+    loadPage(brand.weather.regionalURL + postalcode, "united-weather");
   },
   function() // got no postal code
   {
-    united.loadPage(united.brand.weather.normalURL);
+    loadPage(brand.weather.normalURL, "united-weather");
   });
 };
 
@@ -21,52 +21,52 @@ function onDropdown(event)
 {
   var panel = document.getElementById("united-weather-panel");
   var browser = document.getElementById("united-weather-panel-iframe");
-  new united.BlockContentListener(function(url) {
-        return url == united.brand.weather.popupNormalURL || // iframe
-          url == united.brand.weather.popupRegionalURL ||
+  new BlockContentListener(function(url) {
+        return url == brand.weather.popupNormalURL || // iframe
+          url == brand.weather.popupRegionalURL ||
           url.substr(0, 7) == "file://" || // resource -> file:
           url == "about:blank";
       },
-      united.loadBlockedInBrowser(panel)).hookUpIFrame(browser);
-  //new united.BlockContentListener(united.allowURLPrefix("file://"), // resource: -> file:
-  //   united.loadBlockedInBrowser(panel)).hookUpIFrame(browser);
+      loadBlockedInBrowser(panel)).hookUpIFrame(browser);
+  //new BlockContentListener(allowURLPrefix("file://"), // resource: -> file:
+  //   loadBlockedInBrowser(panel)).hookUpIFrame(browser);
 
   getPostalCode(
   function(postalcode)
   {
-    browser.setAttribute("src", united.brand.weather.popupRegionalURL + postalcode);
+    browser.setAttribute("src", brand.weather.popupRegionalURL + postalcode);
   },
   function() // got no postal code
   {
-    browser.setAttribute("src", united.brand.weather.popupNormalURL);
+    browser.setAttribute("src", brand.weather.popupNormalURL);
   });
 }
 
   //browser.reload();
-  new united.BlockContentListener(function(url) {
-        return url == united.brand.weather.normalURL ||
-            url == united.brand.weather.regionalURL;
+  new BlockContentListener(function(url) {
+        return url == brand.weather.normalURL ||
+            url == brand.weather.regionalURL;
       },
-      united.loadBlockedInBrowser(panel)).hookUpIFrame(browser);
+      loadBlockedInBrowser(panel)).hookUpIFrame(browser);
   browser.contentWindow.addEventListener("load", onPageLoad, false);
 };
 
 function old_onPageLoad()
 {
-  united.debug("on page load");
+  debug("on page load");
   var browser = document.getElementById("united-weather-panel-iframe");
   var doc = browser.contentDocument;
   var nodes = doc.getElementsByClassName("image center");
   if (nodes.length != 1)
     throw "expected one class='image center' on weather page";
   var map = nodes.item(0);
-  united.debug("have div");
+  debug("have div");
   browser.contentDocument.innerHTML = "<html><body>In Kooperation mit wetter.net<p><div id='insert'></div></body></html>";
-  united.debug("created new doc");
+  debug("created new doc");
   var insertpoint = doc.getElementById("insert");
-  united.debug("got insertpoint");
+  debug("got insertpoint");
   insertpoint.appendChild(map);
-  united.debug("done");
+  debug("done");
 }
 */
 
@@ -84,16 +84,16 @@ function old_onPageLoad()
  */
 function getPostalCode(successCallback, noValueCallback)
 {
-  var postalcode = united.ourPref.get("weather.postalcode");
+  var postalcode = ourPref.get("weather.postalcode");
   if (isValidPostalCode(postalcode))
     return successCallback(postalcode);
 
-  if (united.ourPref.get("weather.do-not-ask"))
+  if (ourPref.get("weather.do-not-ask"))
     return noValueCallback();
 
-  united.openPrefWindow("weather");
+  unitedinternet.openPrefWindow("features");
 
-  var postalcode = united.ourPref.get("weather.postalcode");
+  var postalcode = ourPref.get("weather.postalcode");
   if (isValidPostalCode(postalcode))
     return successCallback(postalcode);
 

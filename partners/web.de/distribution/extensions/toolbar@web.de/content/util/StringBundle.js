@@ -126,10 +126,16 @@ StringBundle.prototype = {
    * @returns {String} the value of the string
    */
   get: function(key, args) {
-    if (args)
-      return this.stringBundle.formatStringFromName(key, args, args.length);
-    else
-      return this.stringBundle.GetStringFromName(key);
+    try {
+      if (args)
+        return this.stringBundle.formatStringFromName(key, args, args.length);
+      else
+        return this.stringBundle.GetStringFromName(key);
+    } catch (e) {
+      dump("Could not get key " + key + " from stringbundle <" + this.url +
+          ">, error: " + e + "\n");
+      throw e;
+    }
   },
 
   /**

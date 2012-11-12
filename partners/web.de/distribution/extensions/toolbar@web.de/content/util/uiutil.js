@@ -1,15 +1,18 @@
-
 function error(e)
 {
-  dump("ERROR: " + e + "\n");
-  dump("Stack:\n" + (e.stack ? e.stack : "none") + "\n");
+  debug("ERROR: " + e);
+  debug("Stack:\n" + (e.stack ? e.stack : "none"));
+};
+
+function errorNonCritical(e)
+{
+  error(e);
 };
 
 function errorCritical(e)
 {
-  dump("ERROR: " + e + "\n");
-  dump("Stack:\n" + (e.stack ? e.stack : "none") + "\n");
-  var sb = united.getStringBundle("chrome://unitedtb/locale/util.properties");
+  error(e);
+  var sb = getStringBundle("chrome://unitedtb/locale/util.properties");
   var title = sb.GetStringFromName("errorDialog.title");
   alertPrompt(title, e);
 };
@@ -21,6 +24,44 @@ function alertPrompt(alertTitle, alertMsg)
   Cc["@mozilla.org/embedcomp/prompt-service;1"]
       .getService(Ci.nsIPromptService)
       .alert(window, alertTitle, alertMsg);
+}
+
+/**
+ * For loadPageInSpecificTab() only.
+ * When a button is clicked, the corresponding tab is stored in this array.
+ * Then it is reused (if open) the next time the button is clicked.
+ * {Array of {weak reference to <tab> from <tabbrowser>}}
+ */
+var _gActiveTabs = {};
+
+function loadPageInSpecificTab(url, tabName)
+{
+  url = sanitize.url(url); // critical for security
+  // .get retrieves the actual tab object from the weak reference.
+  // If it is null, the tab no longer exists
+  // We also have to check for parentNode, because the tab might
+  // exist, but not be in the DOM anymore
+  var tabRef = _gActiveTabs[tabName];
+  if (tabRef &&
+      tabRef.get() &&
+      tabRef.get().parentNode)
+  {
+    var tabToUse = tabRef.get();
+    var uri = ioService.newURI(url, null, null);
+    // Only use the same tab if the hosts are the same
+    if (tabToUse.linkedBrowser.currentURI.host == uri.host)
+    {
+      gBrowser.selectedTab = tabToUse;
+      loadChromePage(url, "current");
+      return;
+    }
+  }
+  var newTab = gBrowser.addTab();
+  gBrowser.selectedTab = newTab;
+  // Because we've added the tab and made it the selected tab, we can
+  // pass to loadChromePage and use openUILink in current
+  loadChromePage(url, "current");
+  _gActiveTabs[tabName] = Components.utils.getWeakReference(newTab);
 }
 
 /**
@@ -38,13 +79,18 @@ function alertPrompt(alertTitle, alertMsg)
  *      to select new tabs, and vice versa.
  *   "window"      new window
  *   "save"        save to disk (with no filename hint!)
+ *   "united-*"    invokes code to reuse a tab that corresponds to the target
  */
 function loadPage(url, target)
 {
-  url = united.sanitize.url(url); // critical for security
-  target = united.sanitize.enum(target,
-      ["current", "tab", "tabshifted", "window", "save"], "current");
-  openUILinkIn(url, target);  // from utilityOverlay.js
+  var gBrowser = top.gBrowser ? top.gBrowser :
+      findSomeBrowserWindow().gBrowser;
+  url = sanitize.url(url); // critical for security
+  /* If the target begins with united, try to reuse a tab */
+  if (target && target.match(/^united/))
+    loadPageInSpecificTab(url, target);
+  else
+    loadChromePage(url, target);
 }
 
 /**
@@ -57,10 +103,82 @@ function loadPage(url, target)
  */
 function loadChromePage(url, target)
 {
-  target = united.sanitize.enum(target,
+  target = sanitize.enum(target,
       ["current", "tab", "tabshifted", "window", "save"], "current");
+  var openUILinkIn = top.openUILinkIn ? top.openUILinkIn :
+      findSomeBrowserWindow().openUILinkIn;
+  debug("loading webpage <" + url + "> in " + target);
   openUILinkIn(url, target);  // from utilityOverlay.js
 }
+
+
+/**
+ * Similar to loadPage(), but using HTTP POST.
+ */
+function loadPageWithPOST(url, target, uploadBody, mimetype)
+{
+  url = sanitize.url(url); // critical for security
+  target = sanitize.enum(target,
+      ["current", "tab", "tabshifted", "window", "save"], "current");
+  var openUILinkIn = top.openUILinkIn ? top.openUILinkIn :
+      findSomeBrowserWindow().openUILinkIn;
+  debug("loading webpage with POST <" + url + "> in " + target);
+  openUILinkIn(url, target, false, createPostDataFromString(uploadBody, mimetype));
+}
+
+/**
+ * Takes a JavaScript string and MIME-Type and creates
+ * an nsIInputStream suitable for passing to webnavigation.loadURI().
+ * @param uploadBody {String} what you want to post.
+ *     The HTTP body of the HTTP request you will send.
+ * @param mimetype {String} the format in which you are posting
+ * @returns {nsIInputStream}
+ */
+function createPostDataFromString(uploadBody, mimetype)
+{
+  var stringStream = Cc["@mozilla.org/io/string-input-stream;1"]
+      .createInstance(Ci.nsIStringInputStream);
+  stringStream.data = uploadBody;
+  var postData = Cc["@mozilla.org/network/mime-input-stream;1"]
+      .createInstance(Ci.nsIMIMEInputStream);
+  postData.addHeader("Content-Type", mimetype);
+  postData.addContentLength = true;
+  postData.setData(stringStream);
+  return postData;
+}
+
+  /*
+  var params = {
+    sendingauthdata : 1,
+    jsenabled : true,
+    "login.ValidBrowser" : false,
+    "login.Username" : acc.emailAddress,
+    "login.Password" : acc._password, // tralala
+  };
+  loadPageWithPOSTParams(url, params);
+  */
+/**
+ * loadPageWithPOST(), but passes params like a form submission
+ *
+function loadPageWithPOSTParams(url, target, params)
+{
+  assert(typeof(params) == "object");
+  var paramsStr = "";
+  var first = true;
+  for (let paramname in params)
+  {
+    if (first)
+      first = false;
+    else
+      paramsStr += "&";
+    paramsStr += sanitize.alphanumdash(paramname) + "=" +
+        encodeURIComponent(params[paramname]);
+  }
+  loadPageWithPOSTParams(url, target, paramsStr, "application/x-www-form-urlencoded");
+}
+*/
+
+
 
 function cleanElement(el)
 {
@@ -68,12 +186,62 @@ function cleanElement(el)
     el.removeChild(el.firstChild);
 }
 
+/**
+ * For a given element, finds the tagname which contains it
+ * @param element {DOMElement}
+ * @return {DOMElement <tagname>} or null
+ */
+function findParentTagForElement(tagname, element)
+{
+  assert(element && element instanceof Ci.nsIDOMElement);
+  sanitize.nonemptystring(tagname);
+  for (; element && element.tagName != tagname; element = element.parentNode)
+    ;
+  return element;
+}
+
+
+
+/**
+ * Same as waitForPageLoad(), just that you're waiting for a specific
+ * URL to load.
+ *
+ * @param tabbrowser {<tabbrowser>}
+ * @param url {<String-URL}
+ * @param callback {Function(browser)}
+ *    Will be called then any page in the tabbrowser finished loading.
+ *    browser {<browser>}   <browser> element containing the page.
+ *    Unlike waitForPageLoad |callback|, no |url| param, no return value.
+ */
+function waitForURLLoad(tabbrowser, waitForURL, callback)
+{
+  waitForPageLoad(tabbrowser, function(browser, loadedURL)
+  {
+    var hit = waitForURL == loadedURL;
+    if (hit)
+      callback(browser);
+    return hit;
+  });
+}
 
 /**
  * If you load a page, e.g. with loadPage() here, and want to wait until
  * it's loaded.
+ * You decide whether this is the page you are waiting for.
+ * Note that you get calls for all pageloads in all tabs in this browser window,
+ * so you have to filter properly.
+ *
+ * @param tabbrowser {<tabbrowser>}
+ * @param callback {Function(browser)}
+ *    Will be called then any page in the tabbrowser finished loading.
+ *    browser {<browser>}   <browser> element containing the page.
+ *    url {String-URL}   URL of the page that just finished loading.
+ *    You must return either true or false, whether this was the page you
+ *    were waiting for.
+ *      If true, we will stop listening for page loads and calling |callback|.
+ *      If false, you will get further callbacks.
  */
-function waitForPageLoad(tabbrowser, pageURL, callback)
+function waitForPageLoad(tabbrowser, callback)
 {
   var webTabProgressListener =
   {
@@ -84,7 +252,7 @@ function waitForPageLoad(tabbrowser, pageURL, callback)
     onStateChange : function(browser, webProgress, request, stateFlags, status)
     {
       try {
-        //united.debug("onStateChange");
+        //debug("onStateChange");
         if (! (stateFlags & Ci.nsIWebProgressListener.STATE_STOP ||
               stateFlags & Ci.nsIWebProgressListener.STATE_REDIRECTING))
           return;
@@ -92,15 +260,14 @@ function waitForPageLoad(tabbrowser, pageURL, callback)
         try {
           request = request.QueryInterface(Ci.nsIChannel);
         } catch (e) {
-          //united.debug("request is not a channel");
+          //debug("request is not a channel");
           return;
         }
-        //united.debug("uri requested: " + request.URI.spec);
-        if (request.URI.spec != pageURL)
+        //debug("uri requested: " + request.URI.spec);
+        if (! callback(browser, request.URI.spec))
           return;
         tabbrowser.removeTabsProgressListener(webTabProgressListener);
-        callback(browser);
-      } catch (e) { united.errorInBackend(e); }
+      } catch (e) { errorInBackend(e); }
     },
     onLocationChange: function() {},
     onProgressChange: function() {},
@@ -156,7 +323,7 @@ function getTopLevelWindowContext()
  */
 function checkDisabledModules(win)
 {
-  for each (let module in united.brand)
+  for each (let module in brand)
   {
     if (typeof(module.disabled) == "undefined")
       continue;
@@ -165,6 +332,11 @@ function checkDisabledModules(win)
       if (entry.win != win.document.documentElement.id)
         continue;
       let e = win.document.getElementById(entry.el);
+      if (!e)
+      {
+        debug("warning: element ID " + entry.el + " (to be disabled) not found");
+        continue;
+      }
       e.hidden = module.disabled;
     }
   }
@@ -176,7 +348,7 @@ function checkDisabledModules(win)
  * The entries are coming from brand.js. They will be reloaded when the region changes.
  * Assumptions:
  * - The URL entries are at the end of the menu.
- * - The entries are defined in united.brand.<modulename>.dropdownURLEntries
+ * - The entries are defined in brand.<modulename>.dropdownURLEntries
  * - The <menupopup> has the ID "united-<modulename>-button-dropdown"
  * - The icons are at URL chrome://unitedtb/skin/<iconpath>/<entry.icon>
  * You call this function on window onLoad and then not again for this window.
@@ -189,21 +361,21 @@ function checkDisabledModules(win)
  *     May be null.
  * @param itemClickedCallback {Function(entry, item)}
  *     entry {Object with label, icon} the entry in
- *        united.brand.<modulename>.dropdownURLEntries
+ *        brand.<modulename>.dropdownURLEntries
  *     item {<menuitem>} The clicked menuitem
  *     event   The click event
  *     event.target == item and event.target.entry == item.entry == entry
  */
 function appendBrandedMenuitems(modulename, iconpath, initedCallback, itemClickedCallback)
 {
-  // I can't save (or get passed) united.brand[modulename] here,
+  // I can't save (or get passed) brand[modulename] here,
   // because it gets re-created by brand-var-loader.js on region change.
-  this.modulename = united.sanitize.nonemptystring(modulename);
-  this.iconpath = united.sanitize.nonemptystring(iconpath);
+  this.modulename = sanitize.nonemptystring(modulename);
+  this.iconpath = sanitize.nonemptystring(iconpath);
   this.container = document.getElementById(
       "united-" + modulename + "-button-dropdown");
-  united.assert(!initedCallback || typeof(initedCallback) == "function");
-  united.assert(typeof(itemClickedCallback) == "function", "need an itemClickedCallback");
+  assert(!initedCallback || typeof(initedCallback) == "function");
+  assert(typeof(itemClickedCallback) == "function", "need an itemClickedCallback");
   this.itemClickedCallback = itemClickedCallback;
   this.initedCallback = initedCallback;
 
@@ -212,7 +384,7 @@ function appendBrandedMenuitems(modulename, iconpath, initedCallback, itemClicke
   {
     self.populate();
   }, false);
-  united.autoregisterGlobalObserver("region-changed", function()
+  autoregisterGlobalObserver("region-changed", function()
   {
     self.resetMenuitems();
   });
@@ -236,7 +408,7 @@ appendBrandedMenuitems.prototype =
     if (this.inited)
       return;
     // create <menuitem label="Foobar" url="..."/>, url property used above
-    for each (let entry in united.brand[this.modulename].dropdownURLEntries)
+    for each (let entry in brand[this.modulename].dropdownURLEntries)
     {
       let item = this.container.ownerDocument.createElement("menuitem");
       item.setAttribute("label", entry.label);
@@ -306,7 +478,7 @@ BlockContentListener.prototype =
   },
   onStartURIOpen: function(uri)
   {
-    united.debug("Shall I load <" + uri.spec + ">?");
+    debug("Shall I load <" + uri.spec + ">?");
     var allow = this.allowFunc(uri.spec, uri)
     if (!allow && this.blockedCallback)
       this.blockedCallback(uri.spec);
@@ -364,6 +536,6 @@ function loadBlockedInBrowser(panel)
   return function(uri) // blockedCallback
   {
     panel.hidePopup();
-    united.loadPage(uri);
+    loadPage(uri);
   };
 }

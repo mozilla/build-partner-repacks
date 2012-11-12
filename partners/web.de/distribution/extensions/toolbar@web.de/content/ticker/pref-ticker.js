@@ -5,12 +5,12 @@ var gStringBundle;
 function onLoad()
 {
   try {
-  gStringBundle = new united.StringBundle(
+  gStringBundle = new StringBundle(
       "chrome://unitedtb/locale/ticker/ticker.properties");
   buildFeedMenu();
   // update labels to new region and feeds
-  united.autoregisterGlobalObserver("region-changed", buildFeedMenu);
-  } catch (e) { united.debug(e); } // TODO
+  autoregisterGlobalObserver("region-changed", buildFeedMenu);
+  } catch (e) { debug(e); } // TODO
 }
 window.addEventListener("load", onLoad, false);
 
@@ -18,9 +18,9 @@ function buildFeedMenu()
 {
   var dropdown = document.getElementById("channel")
   var menu = document.getElementById("channel-menu");
-  var pref = dropdown.value; // united.ourPref.get("ticker.channel");
+  var pref = dropdown.value; // ourPref.get("ticker.channel");
   // clear first
-  united.cleanElement(menu);
+  cleanElement(menu);
   // Display "Loading..."
   let loading = document.createElement("menuitem");
   loading.setAttribute("label", gStringBundle.get("feedslist.loading.message"));

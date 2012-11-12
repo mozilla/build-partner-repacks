@@ -16,19 +16,11 @@ function mSearchTermResult(term, descr, icon)
     descr = "";
   descr = sanitize.label(descr).replace(/\$searchterm\$/g, term);
   this._term = sanitize.label(term);
-  mResult.call(this, term, descr, icon);
+  mResult.call(this, term, descr, icon, "searchterm");
 }
 mSearchTermResult.prototype =
 {
   _term : null, // {String}
-
-  /**
-   * Load this in the browser window, if the user activates this result.
-   */
-  get url()
-  {
-    return this._url;
-  },
 
   // Help for ranking
   /**
@@ -44,12 +36,11 @@ mSearchTermResult.prototype =
 
   activate : function(firefoxWindow)
   {
-    // TODO
-    //united.notifyWindowObservers("search-started",
-    //    { searchTerm : this._term, source : 1 });
+    firefoxWindow.unitedinternet.common.notifyWindowObservers("search-started",
+      { searchTerm : this._term, source : 1 });
     var url = brand.search.toolbarURL;
     url += encodeURIComponent(this._term);
-    firefoxWindow.united.loadPage(url); // from util.js
+    firefoxWindow.unitedinternet.common.loadPage(url); // from util.js
   },
 
 }

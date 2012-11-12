@@ -40,65 +40,39 @@
  * "mail-check"
  *    Means: New information about number of new/unread mails
  *    When: We polled the server (periodically) about new mails, here in background
- *    Parameter: {MailCheckAccount}
- *
- * "session-failed" (observed by login-logic.js)
- *    Parameter: emailAddress {String}, account {Account}
- *    Meaning: Our session expired or is not accepted
- *    When: A server function returned an error saying that our session (cookie)
- *      is no longer valid.
+ *    Parameter:
+ *      account {Account}
  */
 
-const EXPORTED_SYMBOLS = [ "getMailCheckAccount" ];
+const EXPORTED_SYMBOLS = [ "UnitedInternetMailCheckAccount" ];
 
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/util/fetchhttp.js");
 Components.utils.import("resource://unitedtb/util/observer.js");
+Components.utils.import("resource://unitedtb/util/JXON.js");
 Components.utils.import("resource://unitedtb/email/login-logic.js");
 
 var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/email.properties");
 
-/**
- * Known |MailCheckAccount|s. All of these will be polled for new mail
- * as soon as they are logged in.
- * This module is supporting several accounts, even though the UI doesn't yet.
- */
-var gMailCheckAccounts = {};
-
-/**
- * Returns the |MailCheckAccount| object for |emailAddress|.
- * If none exists yet, creates it.
- * Note: Implicitly start mail checks, see top of file.
- * @constructor
- */
-function getMailCheckAccount(emailAddress)
+function UnitedInternetMailCheckAccount(accountID, isNew)
 {
-  assert(emailAddress);
-  if (gMailCheckAccounts[emailAddress])
-    return gMailCheckAccounts[emailAddress];
-  gMailCheckAccounts[emailAddress] = new MailCheckAccount(emailAddress);
-  return gMailCheckAccounts[emailAddress];
+  UnitedInternetLoginAccount.call(this, accountID, isNew);
+  this._loginAccount = this; // we used delegation before, so map to that
 }
-
-function MailCheckAccount(emailAddress)
+UnitedInternetMailCheckAccount.prototype =
 {
-  assert(emailAddress);
-  this._loginAccount = getAccount(emailAddress); // login-logic.js
-  assert(this._loginAccount);
-}
-MailCheckAccount.prototype =
-{
-  // |Account| object from logic-logic.js
-  _loginAccount : null,
-  _newMailCount : 0,
+  kType : "unitedinternet",
+  _newMailCount : -1,
+  _friendsNewMailCount : -1,
+  _unknownNewMailCount : -1,
 
-  _poller : null, // nsITimer for mail poll
+  _poller : null, // {Abortable} for poll
   _eTag : null,
 
-  get emailAddress() { return this._loginAccount.emailAddress; },
-  get isLoggedIn() { return this._loginAccount._isLoggedIn; },
   get newMailCount() { return this._newMailCount; },
+  get friendsNewMailCount() { return this._friendsNewMailCount; },
+  get unknownNewMailCount() { return this._unknownNewMailCount; },
 
   /**
    * If the user is logged in and wants to go to webmail, i.e. read the mail
@@ -112,21 +86,26 @@ MailCheckAccount.prototype =
    */
   getWebmailPage : function()
   {
-    var context = this._loginAccount.loginContext;
-    return {
-      url : context.webmailURL,
-      httpMethod : context.webmailHTTPMethod,
-      mimetype : context.webmailMimetype,
-      body : context.webmailBody,
-    };
+    return this._loginAccount.loginContext.weblogin.mailbox;
   },
 
-  _logout : function()
+  logout : function(successCallback, errorCallback)
   {
-    this._poller.cancel(); // stop polling
+    if (this._poller)
+      this._poller.cancel();
     this._poller = null;
-    this._newMailCount = 0;
+    this._newMailCount = -1;
+    this._friendsNewMailCount = -1;
+    this._unknownNewMailCount = -1;
     this._eTag = null;
+    UnitedInternetLoginAccount.prototype.logout.apply(this, arguments);
+  },
+
+  mailCheck : function(peekMails, continuously, notifyCallback, errorCallback)
+  {
+    assert(this.isLoggedIn, "Please log in first");
+    assert( !continuously, "I'm already checking regularly");
+    this._mailPoll(notifyCallback, errorCallback);
   },
 
   /**
@@ -136,40 +115,50 @@ MailCheckAccount.prototype =
   _startMailCheck : function()
   {
     assert(this._loginAccount.isLoggedIn);
-    var context = this._loginAccount.loginContext;
-    assert(context.mailCheckBaseURL);
+    var context = this._loginAccount.loginContext.service.mailbox;
+    assert(context.interval > 5);
 
     this._mailPoll();
     var self = this;
-    this._poller = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-    this._poller.initWithCallback(function() { self._mailPoll(); },
-        context.mailCheckInterval * 1000, Ci.nsITimer.TYPE_REPEATING_SLACK);
+    this._poller = runPeriodically(function() { self._mailPoll(); },
+        context.interval * 1000);
   },
-  _mailPoll : function()
+  _mailPoll : function(successCallback, errorCallback)
   {
+    if (!errorCallback)
+      errorCallback = errorInBackend;
     try {
       assert(this._loginAccount.isLoggedIn);
       var self = this;
-      getFolderStats(this._loginAccount.loginContext.mailCheckBaseURL,
-          this._loginAccount.loginContext.mailIgnoreFolderTypes,
-          this._eTag, this._newMailCount,
-          function(newMailCount, eTag)
+      var lc = this._loginAccount.loginContext.service.mailbox;
+      getFolderStats(lc.url, lc.ignoreFolderTypes,
+          lc.sessionCookie, this._eTag, this._newMailCount,
+          this._friendsNewMailCount, this._unknownNewMailCount,
+          function(newMailCount, friendsNewMailCount, unknownNewMailCount, eTag)
           {
             self._newMailCount = newMailCount;
+            self._friendsNewMailCount = friendsNewMailCount;
+            self._unknownNewMailCount = unknownNewMailCount;
             self._eTag = eTag;
-            notifyGlobalObservers("mail-check", self);
+            notifyGlobalObservers("mail-check", { account : self });
+            if (successCallback)
+              successCallback();
           },
           function (e)
           {
             if (e.code == 403) // Forbidden, e.g. session expired
-              notifyGlobalObservers("session-failed",
-                  { emailAddress : self.emailAddress, account : self._loginAccount });
-            else
-              errorInBackend(e);
+            {
+              self._loginAccount._sessionFailed();
+              // Calling the errorCallback allows the front end to update the UI
+              if (errorCallback != errorInBackend)
+                errorCallback(e);
+            } else
+              errorCallback(e);
           });
-    } catch (e) { errorInBackend(e); }
+    } catch (e) { errorCallback(e); }
   }
 }
+extend(UnitedInternetMailCheckAccount, UnitedInternetLoginAccount);
 
 
 
@@ -178,20 +167,20 @@ MailCheckAccount.prototype =
  */
 function onLoginStateChange(msg, obj)
 {
-  assert(obj.emailAddress);
-  var acc = gMailCheckAccounts[obj.emailAddress];
+  var acc = obj.account;
   if (!acc) // not yet created by UI, so don't poll
+    return;
+  if (acc.kType != "unitedinternet")
     return;
   if (msg == "logged-in")
   {
     assert(acc.isLoggedIn);
-    assert(!acc.newMailCount);
+    //assert(!acc.newMailCount);
     acc._startMailCheck(); // will send another "mail-check" msg after server call
   }
   else if (msg == "logged-out")
   {
-    acc._logout();
-    notifyGlobalObservers("mail-check", acc);
+    notifyGlobalObservers("mail-check", { account : acc });
   }
 }
 
@@ -224,38 +213,57 @@ const kStandardHeaders =
  *
  * @param mailCheckBaseURL {String}
  * @param ignoreFolderTypes {Array of String} @see loginContext
- * @param successCallback {Function(newMailCount {Integer}, eTag {String})}
+ * @param sessionCookie {String} @see loginContext
+ * @param successCallback {Function(
+ *           newMailCount {Integer}, friendsNewMailCount {Integer},
+ *           unknownNewMailCount {Integer},
+ *           eTag {String})}
  *     newMailCount   how many new (currently all unread!) mails are in all folders
+ *     friendsNewMailCount   how many new mails are in all folders excluding SPAM_UNKNOWN
+ *     unknownNewMailCount   how many new mails are in the SPAM_UNKNOWN folder
  *     eTag   Caching-mechanism for server's benefit, see "HTTP ETag"
  *
  */
 function getFolderStats(mailCheckBaseURL, ignoreFolderTypes,
-    eTag, lastNewMailCount,
-    successCallback, errorCallback)
+    sessionCookie, eTag, lastNewMailCount, lastFriendsNewMailCount,
+    lastUnknownNewMailCount, successCallback, errorCallback)
 {
   assert(ignoreFolderTypes);
-  var headers = !eTag ? kStandardHeaders :
-        {
-          "If-None-Match" : eTag,
-          prototype : kStandardHeaders,
-        };
+  assert(sessionCookie);
+  var headers = {
+    Cookie : sessionCookie,   
+    __proto__ : kStandardHeaders,
+  };
+  if (eTag)
+    headers["If-None-Match"] = eTag;
   var fetch = new FetchHTTP(
       {
         url : mailCheckBaseURL + "FolderQuota?absoluteURI=false",
         method : "GET",
         headers : headers,
       },
-  function(response) // success
+  function(responseDOM) // success
   {
-    assert(typeof(response) == "xml", gStringBundle.get("error.notXML"));
-    assert(response.folderQuota, gStringBundle.get("error.badXML"));
+    assert(responseDOM && responseDOM.firstChild.nodeName == "FolderQuotas", gStringBundle.get("error.notXML"));
+    //assert(response.folderQuota, gStringBundle.get("error.badXML"));
     try {
       var newETag = fetch.getResponseHeader("ETag");
     } catch (e) { debug("Getting ETag failed: " + e); }
     //debug(response.toString());
 
-    successCallback(countNewMailsInFolder(response.folderQuota,
-                                          ignoreFolderTypes), newETag);
+    var response = JXON.build(responseDOM).FolderQuotas;
+
+    var newMailCount = countNewMailsInFolder(response.$folderQuota,
+                                             ignoreFolderTypes);
+    var ignoreUnknown = deepCopy(ignoreFolderTypes);
+    ignoreUnknown.push("SPAM_UNKNOWN");
+    var friendsNewMailCount = countNewMailsInFolder(response.$folderQuota,
+                                                    ignoreUnknown);
+    var unknownNewMailCount = countNewMailsInFolder(response.$folderQuota,
+                                                    [],
+                                                    ["SPAM_UNKNOWN"]);
+
+    successCallback(newMailCount, friendsNewMailCount, unknownNewMailCount, newETag);
   },
   function (e)
   {
@@ -266,7 +274,7 @@ function getFolderStats(mailCheckBaseURL, ignoreFolderTypes,
         if (eTag != newETag)
           debug("server says 'not modified', but sends different eTag");
       } catch (e) { debug("Getting ETag failed: " + e); }
-      successCallback(lastNewMailCount, newETag);
+      successCallback(lastNewMailCount, lastFriendsNewMailCount, lastUnknownNewMailCount, newETag);
     }
     else
       errorCallback(e);
@@ -279,10 +287,13 @@ function getFolderStats(mailCheckBaseURL, ignoreFolderTypes,
  * adds up the number of new/unread mails in each folder,
  * including subfolders
  * @param xFolders {XML} A list of <folderQuota> elements
- * @param ignoreFolderTypes {Array of String} @see LoginContext
+ * @param ignoreFolderTypes {Array of String} blacklist @see LoginContext
+ * @param allowedFolderTypes {Array of String} String-IDs of folder types
+ *    that will be counted. This is a whitelist, so only these folders will
+ *    be counted. Optional.
  * @returns {Integer} number of new mails in this folder and all subfolders
  */
-function countNewMailsInFolder(xFolders, ignoreFolderTypes)
+function countNewMailsInFolder(xFolders, ignoreFolderTypes, allowedFolderTypes)
 {
   var result = 0;
   assert(ignoreFolderTypes);
@@ -297,9 +308,14 @@ function countNewMailsInFolder(xFolders, ignoreFolderTypes)
       //debug("ignoring folder " + sanitize.string(folder.folderName));
       continue;
     }
+    if (allowedFolderTypes &&
+        !arrayContains(allowedFolderTypes, sanitize.string(folder.folderType)))
+    {
+      continue;
+    }
     result += sanitize.integer(folder.unreadMessages);
     if (folder.subFolders)
-      result += countNewMailsInFolder(folder.subFolders.folderQuota, ignoreFolderTypes);
+      result += countNewMailsInFolder(folder.subFolders.$folderQuota, ignoreFolderTypes, allowedFolderTypes);
   }
   return result;
 }

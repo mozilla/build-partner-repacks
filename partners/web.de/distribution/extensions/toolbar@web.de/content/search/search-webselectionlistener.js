@@ -13,9 +13,11 @@
 
 function onHandleContentDoubleClick(event)
 {
+  if ( !ourPref.get("search.webpageDoubleclick"))
+    return;
   var sel = event.view.getSelection();
   var selText = sel.toString()
-  united.debug("selection " + selText);
+  debug("selection " + selText);
   if (!sel.containsNode(event.target, true))
     return;
   // MS Windows selects "foo ", so strip trailing and leading whitespace
@@ -23,7 +25,7 @@ function onHandleContentDoubleClick(event)
   if (selText.indexOf(" ") != -1) // only single words
     return;
   var searchTerm = selText;
-  united.notifyWindowObservers("search-term",
+  notifyWindowObservers("search-term",
       { searchTerm : searchTerm, source : 7 });
 }
 

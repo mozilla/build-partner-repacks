@@ -26,32 +26,36 @@ border:0;
 color:#77C;
 }
 
-form {
-text-align:center;
-}
-
-input {
-font-family:arial, sans-serif;
-font-size:1em;
-}
-
 label {
 display:block;
 text-align:left;
 padding:0 0 .8em;
 }
 
-#searchterm {
-width:250px;
+#searchform #searchterm {
+  float: left;
+  height: 25px;
+  max-width: 542px;
+  width: 400px;
+  line-height: 21px;
+  padding: 1px 4px;
+  border-width: 1px;
+  /*border-right-width: 0px; -- looks bad when wrapping */
+  border-style: solid; border-color: #BBBBBB;
+  color: black;
+  font-family: Arial, Verdana, Helvetica, sans-serif; font-size: 18px; font-weight: 300;
+}
+#searchform .button {
+  height: 29px;
+  width: 75px;
+  padding: 1px 0 3px;
+  border-width: 1px; border-style: solid;
+  border-color: #1144CC #7995DD #7995DD #1144CC;
+  color: white;
+  font-family: Arial, sans-serif; font-size: 18px; font-weight: 400;
+  /* <https://developer.mozilla.org/en/CSS/-moz-linear-gradient> */
+  background: -moz-linear-gradient(rgb(110,160,185) 40%, rgb(27,112,153) 60%);  
 }
 
-#searchform .button {
-  border-style: solid; border-color: #47839B #8DA8B3 #8DA8B3 #47839B; border-width: 1px;
-  margin-left: 10px;
-  font-family: Arial, sans-serif; font-size: 14px; font-weight: 700;
-  padding: 1px 2px;
-  width: 82px;
-  color: white;
-  /* <https://developer.mozilla.org/en/CSS/-moz-linear-gradient> */
-  background: -moz-linear-gradient(rgb(110,160,185) 40%, rgb(27,112,153) 60%);
+#badurl {
 }

@@ -9,55 +9,61 @@
 <overlay id="united-pref-general-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <prefwindow id="united-pref-window">
-    <prefpane id="general-pane"
+  <script type="application/x-javascript">
+    unitedinternet.initModule(unitedinternet, "general");
+    unitedinternet.loadJS("chrome://unitedtb/content/pref/pref-general.js", unitedinternet.general);
+  </script>
+
+  <tabs id="tabs">
+    <tab id="general-tab"
         label="&pane.title;"
-        position="1"
+        insertafter="email-tab"
+        />
+  </tabs>
+  <tabpanels id="tabpanels">
+    <tabpanel id="general-tabpanel"
+        insertafter="email-tabpanel"
+        orient="vertical"
         >
-      <preferences id="general-preferences">
-      </preferences>
 
-      <script type="application/x-javascript">
-        upref.general = {};
-        united.loadJS("chrome://unitedtb/content/pref/pref-general.js", upref.general);
-      </script>
+      <groupbox id="general-region-box">
+        <caption label="&region.title;" />
+        <pref-region label="&region.title;" id="general-region-general" module="general" />
+      </groupbox>
 
-      <grid>
-        <columns>
-          <column/>
-          <column/>
-        </columns>
-        <rows>
-          <row align="baseline">
-            <label value="&toolbarmode.label;" control="general-toolbarmode"/>
-            <menulist id="general-toolbarmode"
-                        oncommand="upref.general.onChangedToolbarMode(this.value);"
-                        >
-              <menupopup>
-                <menuitem value="full" label="&all.full.label;"/>
-                <menuitem value="icons" label="&all.icons.label;"/>
-                <menuitem value="text" label="&all.text-only.label;"/>
-              </menupopup>
-            </menulist>
-          </row>
-          <row align="baseline">
-            <label value="&locale.general.label;" control="general-region" />
-            <pref-region id="general-region" module="general" />
-          </row>
-        </rows>
-      </grid>
+      <groupbox id="general-start-box">
+        <caption label="&start.title;"/>
 
-      <vbox id="general-checkbox-box" align="start">
-          <checkbox id="general-search-checkbox"
-              label="&search.checkbox.label;"
-              oncommand="upref.general.onSearchChanged(this.checked);"
-              />
-          <checkbox id="general-homepage-checkbox"
-              label="&homepage.checkbox.label;"
-              oncommand="upref.general.onHomepageChanged(this.checked);"
-              />
-      </vbox>
+        <hbox align="baseline" pack="start">
+          <label value="&homepage.dropdown.label;"
+              control="general-homepage-dropdown"/>
+          <menulist id="general-homepage-dropdown">
+            <menupopup>
+              <menuitem value="newtab" label="&newtab.label;"
+                  id="general-newtab-item" hidden="true"/><!--overlay-->
+              <menuitem value="our-start-page" label="&our-start-page.label;"/>
+              <menuitem value="our-search-page" label="&our-search-page.label;"/>
+              <menuitem value="browser-homepage" label="&browser-homepage.label;"/>
+            </menupopup>
+          </menulist>
+        </hbox>
+      </groupbox>
 
-    </prefpane>
-  </prefwindow>
+    </tabpanel>
+  </tabpanels>
+
+
+  <tabs id="tabs">
+    <tab id="features-tab"
+        label="&features.title;"
+        insertafter="general-tab"
+        />
+  </tabs>
+  <tabpanels id="tabpanels">
+    <tabpanel id="features-tabpanel"
+        insertafter="general-tabpanel"
+        orient="vertical"
+        >
+    </tabpanel>
+  </tabpanels>
 </overlay>

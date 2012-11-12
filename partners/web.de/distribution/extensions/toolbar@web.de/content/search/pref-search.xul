@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/search/pref-search.dtd">
+  %thisDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
+<?xml-stylesheet href="chrome://unitedtb/skin/search/pref-search.css" type="text/css"?>
+<overlay id="united-pref-search-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript">
+    unitedinternet.initModule(unitedinternet, "search");
+    unitedinternet.loadJS("chrome://unitedtb/content/search/pref-search.js", unitedinternet.search);
+  </script>
+
+  <tabs id="tabs">
+    <tab id="search-tab"
+        label="&pane.title;"
+        insertafter="features-tab,general-tab"
+        />
+  </tabs>
+  <tabpanels id="tabpanels">
+    <tabpanel id="search-tabpanel"
+        orient="vertical"
+        insertafter="features-tabpanel,general-tabpanel"
+        >
+
+      <groupbox id="search-box" align="start">
+        <caption label="&pane.title;" />
+        <checkbox id="search-ourengine-checkbox"
+            label="&ourengine.checkbox.label;"
+            />
+        <checkbox id="search-webpageDoubleclick"
+            label="&doubleclick.checkbox.label;"
+            preference="extensions.unitedinternet.search.webpageDoubleclick"
+            />
+        <checkbox id="search-goDirectlyToURLs"
+            label="&goDirectlyToURLs.checkbox.label;"
+            preference="extensions.unitedinternet.search.goDirectlyToURLs"
+            />
+      </groupbox>
+
+    </tabpanel>
+  </tabpanels>
+</overlay>

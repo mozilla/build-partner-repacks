@@ -1,1 +1,5 @@
 <!ENTITY window.title "Settings">
+<!ENTITY ok.label "Apply">
+<!ENTITY ok.accesskey "a">
+<!ENTITY setdefault.label "Set defaults">
+<!ENTITY setdefault.accesskey "d">

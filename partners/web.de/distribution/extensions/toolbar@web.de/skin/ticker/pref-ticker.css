@@ -2,3 +2,8 @@ radio[pane="ticker-pane"]
 {
   list-style-image: url("chrome://unitedtb/skin/ticker/ticker-32.png");
 }
+
+#channel {
+  max-width: 20em;
+  width: 20em;
+}

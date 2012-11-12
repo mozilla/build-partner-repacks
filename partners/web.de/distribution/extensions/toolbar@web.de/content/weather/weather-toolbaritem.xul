@@ -9,25 +9,26 @@
 
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    united.weather = {};
-    united.loadJS("chrome://unitedtb/content/weather/weather.js", united.weather);
-    united.loadJS("chrome://unitedtb/content/weather/pref-weather-check.js", united.weather);
+    unitedinternet.initModule(unitedinternet, "weather");
+    unitedinternet.loadJS("chrome://unitedtb/content/weather/weather.js", unitedinternet.weather);
+    unitedinternet.loadJS("chrome://unitedtb/content/weather/pref-weather-check.js", unitedinternet.weather);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->
 
-  <toolbarpalette id="BrowserToolbarPalette">
+  <toolbar id="united-toolbar">
     <toolbarbutton id="united-weather-button"
         label="&united.weather.button.label;"
         tooltiptext="&united.weather.button.tooltip;"
-        oncommand="united.weather.onButton(event);"
+        oncommand="unitedinternet.weather.onButton(event);"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
-        disabled-type="menu-button"
+        united-removable="true"
+        united-icon-only="true"
         >
       <!-- Waiting for GMX/Web.de to provide minimal page to show in popup
       <panel id="united-weather-panel"
-          onpopupshowing="united.weather.onDropdown(event);"
+          onpopupshowing="unitedinternet.weather.onDropdown(event);"
           >
         <browser id="united-weather-panel-iframe"
             type="content"
@@ -36,5 +37,5 @@
       </panel>
       -->
     </toolbarbutton>
-  </toolbarpalette>
+  </toolbar>
 </overlay>

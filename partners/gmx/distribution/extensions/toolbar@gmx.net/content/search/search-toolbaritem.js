@@ -94,6 +94,7 @@ function clearSearchField()
 {
   setSearchText("");
   clearButton.hidden = true;
+  searchField.focus();
   restoreEmptytext();
 }
 

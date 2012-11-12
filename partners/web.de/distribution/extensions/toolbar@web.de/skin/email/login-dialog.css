@@ -1,4 +1,4 @@
-#long-session-box, #create-account-box, #intro-box {
+#long-session-box, #create-account-box, #intro-box, #forgot-password-box {
   -moz-box-pack: center;
 }
 
@@ -25,6 +25,9 @@ row {
 #error-msg {
   margin-top: 5px;
   margin-bottom: 5px;
+}
+#forgot-password {
+  font-size: smaller;
 }
 
 /**

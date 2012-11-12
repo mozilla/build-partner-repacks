@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/newtab/pref-store-management.dtd">
+  %thisDTD;
+]>
+<overlay id="united-pref-store-management-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript">
+  <![CDATA[
+    unitedinternet.storeman = {};
+    unitedinternet.storeman.editPSH = function()
+    {
+      const url = "chrome://unitedtb/content/newtab/store-management.xhtml?mode=psh";
+      //loadChromePage(url, "window");
+      var win = window;
+      if (window instanceof Components.interfaces.nsIDOMChromeWindow) {
+        while (win.opener && !win.opener.closed)
+          win = win.opener;
+      }
+      win.open(url);
+    }
+  ]]>
+  </script>
+
+  <groupbox id="search-box">
+
+    <hbox>
+      <button id="edit-psh"
+            type="link"
+            label="&edit-psh.label;"
+            accesskey="&edit-psh.accesskey;"
+            oncommand="unitedinternet.storeman.editPSH();"
+            />
+    </hbox>
+
+  </groupbox>
+</overlay>

@@ -17,16 +17,18 @@
     <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/util/uiutil.js"></script>
     <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/util/observerOnWindow.js"></script>
+    <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/neterror/neterror.js"></script>
 
   <div id="page">
     <div id="content">
-      <h2><div id="message" /><a id="logo" href=""><img src="chrome://unitedtb/skin/brand/icon-big.png" /></a></h2>
+      <h2><div id="message">&neterror.message.label.1;<span id="badurl"/>&neterror.message.label.2;<br/>&neterror.message.label.3;</div><a id="logo" href=""><img src="chrome://unitedtb/skin/brand/icon-big.png" /></a></h2>
       
 
       <h3>&alternatives.header;</h3>
       <ul>
-        <li>&search.intro;<br/>
+        <li>&search.intro;<br/><br/>
           <form id="searchform" onsubmit="onSearchButtonClicked(); return false;">
             <input type="text"
                    id="searchterm"

@@ -18,7 +18,6 @@
  *         3 = URLbar "keyword" search (currently not implemented)
  *         4 = new tab page, search text field
  *         5 = new tab page, click on previous search terms (history)
- *         6 = new tab page, click on marketed search terms
  *         7 = user double-clicked / selected on a word / test in a web page
  *         8 = net load error page, search text field
  *         9 = net load error page, click on previous search terms (history)
@@ -49,48 +48,41 @@
  *    Parameter: @see "search-started"
  */
 
+Components.utils.import("resource://unitedtb/search/mcollect/mCollectImport.js", this);
+loadJS("chrome://unitedtb/content/util/AutoComplete.js", this);
+loadJS("chrome://unitedtb/content/search/mcollect/mAutocompleteSource.js", this);
+
+
 var searchField = null;
 var clearButton = null;
-/**
- * {Object} The brand object corresponding to the selected menu item.
- */
-var currentEngine = null;
-/**
- * Drop down where user selects search engine variant,
- * e.g. web or picture or maps search.
- * {<toolbarbutton>}
- */
-var engineDropdown = null;
+
+var gAutocomplete = null;
 
 function onLoad(event)
 {
   clearButton = document.getElementById("united-search-clear-button");
   searchField = document.getElementById("united-search-field");
-  engineDropdown = document.getElementById("united-search-button-select");  
   clearButton.hidden = true;
+  
+  // must use capture and parent node, to prevent the Mozilla ac widget from interfering :(
+  searchField.parentNode.addEventListener("keypress", onKeyPressTab, true);
 
-  if (! united.XPCOMUtils.generateNSGetFactory) // FF 3.6
+  if (! XPCOMUtils.generateNSGetFactory) // FF 3.6
   {
     emptytext = searchField.getAttribute("emptytext");
     searchField.addEventListener("dragover", onDragMouseover, false);
   }
 
-  new united.appendBrandedMenuitems("search", "search/engine",
-  function(menupopup)
-  {
-    // activate first entry by default (usually "web search")
-    var first = menupopup.firstChild;
-    onEngineChanged(first.entry, first);
-  },
-  onEngineChanged).populate();
+  gAutocomplete = new AutocompleteWidget(searchField, { xul: true });
+  gAutocomplete.addSource(new mCollectAutocompleteSource(gAutocomplete, window));
 };
 window.addEventListener("load", onLoad, false);
 
-united.autoregisterWindowObserver("do-search-suggestions", function(obj)
+autoregisterWindowObserver("do-search-suggestions", function(obj)
 {
   searchField.disableAutoComplete = !obj.enable;
 });
-united.autoregisterWindowObserver("search-term", function(obj)
+autoregisterWindowObserver("search-term", function(obj)
 {
   setSearchText(obj.searchTerm);
 });
@@ -102,6 +94,7 @@ function clearSearchField()
 {
   setSearchText("");
   clearButton.hidden = true;
+  searchField.focus();
   restoreEmptytext();
 }
 
@@ -118,37 +111,25 @@ function setSearchText(text)
   clearButton.hidden = !text;
   // pretending it came from here, because Amazon module expects that. TODO good idea?
   var obj = { searchTerm : text, source : 1 };
-  united.notifyWindowObservers("search-keypress", obj);
-  united.notifyWindowObservers("search-entered", obj);
+  notifyWindowObservers("search-keypress", obj);
+  notifyWindowObservers("search-entered", obj);
 }
 
 // <copied to="newtab-page.js">
 
 function onTextChanged(event)
 {
-  var searchTerm = event.target.value;
-  united.notifyWindowObservers("search-keypress",
+  debug("on text changed in textfield");
+  var searchTerm = searchField.value;
+  notifyWindowObservers("search-keypress",
       { searchTerm : searchTerm, source : 1 });
   clearButton.hidden = !searchTerm;
   restoreEmptytext();
-};
-
-/**
- * Fired once the user selects a different search engine in
- * our search box.
- * @param entry {Object} The brand object corresponding to the selected menu item
- * @param item {<menuitem>}
- */
-function onEngineChanged(entry, item)
-{
-  currentEngine = entry;
-  engineDropdown.setAttribute("image", item.getAttribute("image"));
-  engineDropdown.setAttribute("tooltiptext", item.getAttribute("label"));
 }
 
 function onButton(event)
 {
-  this.startSearch(searchField.value);
+  startSearchOrURL(searchField.value);
 };
 
 /**
@@ -158,26 +139,36 @@ function onButton(event)
  */
 function onTextEntered()
 {
-  var term = searchField.value;
-  /* HACK: The autocomplete entries may give us an URL to go to directly.
-   * However, the Mozilla autocomplete widget doesn't allow the entries
-   * to define a special action, they will always just fill text into the textfield.
-   * So, mURLResults will return the URL and we'll try to detect that here.
-   * We won't catch all URLs, but well.
-   */
+  startSearchOrURL(searchField.value);
+}
+
+function startSearchOrURL(term)
+{
+  term = term.trim().replace(/\s+/g, " ");
+  searchField.value = term;
+
+  debug("search term or URL: " + term);
+
+  // Help the user who enters URLs or domains in the search field
   var url = null;
-  if (isFullURL(term))
-    url = term;
-  else
-    url = getFreetextURL(term);
+  if (ourPref.get("search.goDirectlyToURLs"))
+  {
+    if (!url)
+      url = getTermRedirect(term);
+    if (!url && isFullURL(term))
+      url = term;
+    if (!url)
+      url = getFreetextURL(term);
+  }
   if (url)
   {
-    united.loadPage(url);
+    debug("going to <" + url + ">");
+    loadPage(url);
     setSearchText("");
   }
   else
   {
-    this.startSearch(searchField.value);
+    startRealSearch(term);
   }
 };
 
@@ -204,12 +195,12 @@ function getFreetextURL(str)
   if (str.indexOf(".") == -1) // has no dot => no URL
     return null;
   try {
-    //united.debug("got dot-string");
-    var hostname = united.sanitize.hostname(str);
-    //united.debug("got syntactic hostname");
+    //debug("got dot-string");
+    var hostname = sanitize.hostname(str);
+    //debug("got syntactic hostname");
     if (!knownTLD(hostname))
       return null;
-    //united.debug("creating URI");
+    //debug("creating URI");
     return "http://" + hostname;
   } catch (e) { return null; }
 }
@@ -224,9 +215,9 @@ function knownTLD(hostname)
     /* getBaseDomainFromHost("utter.non.sense") returns "non.sense" => useless :-( 
     try {
       var domain = eTLDService.getBaseDomainFromHost(hostname);
-      united.debug("base domain: " + domain);
+      debug("base domain: " + domain);
       return !!domain;
-    } catch (e) { united.errorInBackend(e); return false; }
+    } catch (e) { errorInBackend(e); return false; }
     */
     var tld = hostname.substr(hostname.lastIndexOf(".") + 1);
     switch (tld)
@@ -247,27 +238,164 @@ function knownTLD(hostname)
 }
 
 /**
+ * If the user enters "amazon.de" into our search field,
+ * redirect him to our link for amazon.
+ *
+ * @returns {URL as String} open this page directly
+ *     if null or undefined: there is no redirect, continue as normal.
+ */
+function getTermRedirect(term)
+{
+  return brand.search.termRedirect[term];
+}
+
+/**
  * Searches for the term, by loading a page in the browser.
  * Called from our search field (but not Firefox' search field nor urlbar).
  */
-function startSearch(searchTerm)
+function startRealSearch(searchTerm)
 {
-  united.notifyWindowObservers("search-started",
+  notifyWindowObservers("search-started",
       { searchTerm : searchTerm, source : 1 });
 
-  var url = united.brand.search.toolbarURL;
-  if (currentEngine)
-    url = currentEngine.url;
-  united.loadPage(url + encodeURIComponent(searchTerm));
+  var url = brand.search.toolbarURL;
+  loadPage(url + encodeURIComponent(searchTerm));
 };
 
 // </copied>
 
+
+////////////////////////////////////////////////////////////
+// Autocomplete single words inline in text field, after pressing TAB
+
+var gDidAutocomplete = false;
+var gSearchCompleteHandler = null;
+
+/**
+ * Handle TAB to autocomplete word
+ */
+function onKeyPressTab(event)
+{
+  if (!gDidAutocomplete &&
+      event.keyCode == event.DOM_VK_TAB)
+  {
+    gDidAutocomplete = true;
+    var curText = searchField.value;
+    debug("waiting for search for " + curText);
+    getLocalmCollectAutocompleteLabels(curText, function(results)
+    {
+      debug("search completed " + curText);
+      if (searchField.value != curText)
+        return; // user modified before search completed
+      var completed = getAutocompleteText(curText, results);
+      debug("autocomplete text " + completed);
+      if (!completed)
+        return;
+      setSearchText(completed);
+      searchField.setSelectionRange(curText.length, completed.length);
+    });
+    event.preventDefault();
+  }
+  // a real letter
+  // <http://mdn.beonex.com/en/DOM/event.charCode>
+  if (event.charCode)
+  {
+    gDidAutocomplete = false;
+  }
+}
+
+function getAutocompleteText(userTyped, labels)
+{
+  try {
+    userTyped = userTyped.toLowerCase();
+    var results = [];
+    for each (let label in labels)
+    {
+      for each (let word in label.split(" "))
+      {
+        let pos = word.toLowerCase().indexOf(userTyped);
+        if (pos != 0) // only accept hits at the start
+          continue;
+        results.push({
+          term : word,
+          hitPos : pos,
+          hitLengthRatio : userTyped.length / word.length,
+        });
+      }
+    }
+
+    // sort
+    results.sort(function(a, b)
+    {
+      let comp = a.hitPos - b.hitPos;
+      if (comp)
+        return comp; // lower is better
+      let comp = a.hitLengthRatio - b.hitLengthRatio;
+      if (comp)
+        return -comp; // lower is better
+      return 0;
+    });
+    debug("result words, sorted: " + results.map(function(a) { return a.term; }));
+
+    if (results.length < 1)
+      return null;
+    return results[0].term; // return best hit
+
+  } catch (e) { errorInBackend(e); return null; }
+}
+
+/**
+ * Returns all labels that are currently in the
+ * Mozilla <textbox type="autocomplete"> dropdown.
+ * It only returns what is already populated.
+ * @returns {Array of String}
+ *
+function getMozillaAutocompleteLabels()
+{
+  var controller = searchField.controller;
+  var results = [];
+  for (let i = 0, l = controller.matchCount; i < l; i++)
+    results.push(controller.getLabelAt(i));
+  debug("result labels: " + results);
+  return results;
+}
+*/
+
+/**
+ * Makes an mCollect search in PSH and bookmarks.
+ * @param successCallback {Function(results)}
+ *     results {Array of String}   the search result = search terms
+ */
+function getLocalmCollectAutocompleteLabels(term, successCallback)
+{
+  var psh = new mPSHSearch(term);
+  var places = new mPlacesSearch(term);
+  var waiting = 2;
+  var end = function()
+  {
+    if (--waiting != 0)
+      return;
+    var mresults = psh.currentResults.concat(places.currentResults);
+    var labels = mresults.map(function(a) { return a.title; });
+    successCallback(labels);
+  }
+  // observer can be called several times, but we'll ignore that
+  psh.addObserver(end);
+  places.addObserver(end);
+  psh.startSearch();
+  places.startSearch();
+}
+
+
+
+
+
+//////////////////////////////////////////////////
 // Workaround for bug #293, Mozilla bug 509800
 // Called ondrop and ondragover of searchfield
 function onDragDrop(event)
 {
-  united.debug("drop");
+  debug("drop");
   var dragData = event.dataTransfer;
   var text = dragData.getData("text/plain");
   if (!text)

@@ -5,17 +5,21 @@
 
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    if (!united.search)
-      united.search = {};
-    united.loadJS("chrome://unitedtb/content/search/search-listener.js", united.search);
+    unitedinternet.initModule(unitedinternet, "search");
+    unitedinternet.loadJS("chrome://unitedtb/content/search/search-listener.js", unitedinternet.search);
 
-    united.search.plugininstall = {};
+    unitedinternet.initModule(unitedinternet.search, "plugininstall");
     Components.utils.import("resource://unitedtb/search/search-plugin-install.js",
-        united.search.plugininstall)
+        unitedinternet.search.plugininstall)
 
-    united.search.storeui = {};
-    united.loadJS("chrome://unitedtb/content/search/search-store-ui.js",
-        united.search.storeui);
+    unitedinternet.initModule(unitedinternet.search, "storeui");
+    unitedinternet.loadJS("chrome://unitedtb/content/search/search-store-ui.js",
+        unitedinternet.search.storeui);
+
+    unitedinternet.initModule(unitedinternet.search, "injectPSH");
+    unitedinternet.loadJS("chrome://unitedtb/content/search/inject-psh.js",
+        unitedinternet.search.injectPSH);
+
   </script>
 
 </overlay>

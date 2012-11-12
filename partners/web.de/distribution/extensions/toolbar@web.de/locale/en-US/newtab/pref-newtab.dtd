@@ -4,5 +4,5 @@
 <!ENTITY as-pics.label "Gallery">
 <!ENTITY as-text.accesskey "l">
 <!ENTITY as-pics.accesskey "g">
-<!ENTITY enabled.label "Show this page when opening a new tab">
+<!ENTITY enabled.label "Activate &brand.name; 'New Tab' page">
 <!ENTITY focus.label "Set focus to search field">

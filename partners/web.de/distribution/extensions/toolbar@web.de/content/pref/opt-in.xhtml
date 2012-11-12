@@ -20,28 +20,49 @@
 <body onload="onLoad();">
     <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/util/uiutil.js"></script>
+    <script type="text/javascript">
+      var united = getTopLevelWindowContext().united;
+    </script>
     <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/pref/opt-in.js"></script>
+    <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/pref/opt-in-confirm.js"></script>
 
     <div id="container">
-        <h1><span id="logo"></span>&page.heading;</h1>
-
-        <div class="intro">
-          &intro.descr;
+        <div class="button-box">
+            <a id="close-button" href="#" onclick="onCloseButton()">&close.button.label;</a>
         </div>
-        <form id="searchform" onsubmit="onCloseButton(); return false;">
+        <h1><span id="logo"></span>&page.heading;</h1>
+        <div class="intro">
+          &intro.heading;<br/>
+          <span class="descr">&intro.descr;</span>
+        </div>
+        <form id="searchform" onsubmit="onContinueButton(); return false;">
           <div class="widget-box">
               <pref-region id="region" module="general" label="&region.label;" />
           </div>
           <div class="checkbox-box">
               <input type="checkbox" id="searchengine"
+                 checked="checked"
                   />
               <label for="searchengine">&searchengine.checkbox.label;</label>
           </div>
           <div class="checkbox-box">
               <input type="checkbox" id="startpage"
+                 checked="checked"
                   />
               <label for="startpage">&startpage.checkbox.label;</label>
+              <div>
+                  <input class="indent" type="radio" id="startpage-search" name="startpage"
+                     checked="checked"
+                      />
+                  <label for="startpage-search">&startpage-search.radiobutton.label;</label>
+              </div>
+              <div>
+                  <input class="indent" type="radio" id="startpage-brand" name="startpage"
+                     />
+                  <label for="startpage-brand">&startpage-brand.radiobutton.label;</label>
+              </div>
           </div>
           <div class="checkbox-box">
               <input type="checkbox" id="newtab"
@@ -50,7 +71,7 @@
               <label for="newtab">&newtab.checkbox.label;</label>
           </div>
           <div class="button-box">
-              <input type="submit" class="button" value="&close.button.label;"/>
+              <input type="submit" class="button" value="&continue.button.label;"/>
           </div>
         </form>
     </div>

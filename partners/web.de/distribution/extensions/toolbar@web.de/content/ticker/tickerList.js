@@ -18,9 +18,10 @@ const EXPORTED_SYMBOLS = [ "getFeedsList", "getFeedURL", ];
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/util/fetchhttp.js");
+Components.utils.import("resource://unitedtb/util/JXON.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
 
-const kFeedListRefreshInterval = 7*24*60*60; // 1 day
+const kFeedListRefreshInterval = 24*60*60; // 1 day
 const kPrefBranch = "ticker.feedsListCache.";
 const kChannelPrefname = "ticker.channel"; // also in ticker.js
 
@@ -42,24 +43,33 @@ function getFeedsList(successCallback)
         > (new Date().getTime() / 1000) &&
       ourPref.get(kPrefBranch + "fromURL") == brand.ticker.feedsListURL)
   {
-    successCallback(parseFeedsList(new XML(ourPref.get(kPrefBranch + "XML"))));
+    var parser = Components.classes["@mozilla.org/xmlextras/domparser;1"]
+                           .createInstance(Components.interfaces.nsIDOMParser);
+    var feedsListXML = ourPref.get(kPrefBranch + "XML");
+    successCallback(parseFeedsList(parser.parseFromString(feedsListXML, "application/xml")));
     return;
   }
-  var url = brand.ticker.feedsListURL;
-  new FetchHTTP({ url : url },
-  function(xml) // success
-  {
-    assert(typeof(xml) == "xml", "FeedsList URL didn't return XML");
-    ourPref.set(kPrefBranch + "XML", xml.toString());
-    ourPref.set(kPrefBranch + "fromURL", url);
-    ourPref.set(kPrefBranch + "since", Math.round(new Date().getTime() / 1000));
-    successCallback(parseFeedsList(xml));
-  },
-  function(e) // error
-  {
+  try {
+    var url = brand.ticker.feedsListURL;
+    new FetchHTTP({ url : url },
+    function(xml) // success
+    {
+      assert(xml && xml.firstChild.nodeName == "feeds", "FeedsList URL didn't return XML");
+      var s = new XMLSerializer();
+      ourPref.set(kPrefBranch + "XML", s.serializeToString(xml));
+      ourPref.set(kPrefBranch + "fromURL", url);
+      ourPref.set(kPrefBranch + "since", Math.round(new Date().getTime() / 1000));
+      successCallback(parseFeedsList(xml));
+    },
+    function(e) // error
+    {
+      errorInBackend(e);
+      successCallback(brand.ticker.feedsListFallback);
+    }).start();
+  } catch (e) {
     errorInBackend(e);
     successCallback(brand.ticker.feedsListFallback);
-  }).start();
+  }
 }
 
 /**
@@ -69,11 +79,12 @@ function getFeedsList(successCallback)
  */
 function parseFeedsList(xml)
 {
+  var feeds = JXON.build(xml).feeds;
   var result = [];
-  for each (let feed in xml.feed)
+  for each (let feed in feeds.$feed)
   {
     result.push({
-      id : sanitize.integer(feed.@id),
+      id : sanitize.integer(feed["@id"]),
       label : sanitize.label(feed.title),
       url : sanitize.url(feed.link),
     });
@@ -91,7 +102,8 @@ function getFeedURL(successCallback)
   var feedsListXML = ourPref.get(kPrefBranch + "XML");
   if (feedsListXML)
   {
-    getFeedURLCallback(parseFeedsList(new XML(feedsListXML)), successCallback);
+    var parser = new DOMParser();
+    getFeedURLCallback(parseFeedsList(parser.parseFromString(feedsListXML, "application/xml")), successCallback);
   }
   else
   {

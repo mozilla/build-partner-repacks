@@ -330,7 +330,7 @@ BaseStandardAccount.prototype =
     this._pref = ourPref.branch("account." + this.accountID + ".");
     assert(this._pref.get("type") == this.kType);
 
-    this.emailAddress = this._pref.get("emailAddress");
+    this.emailAddress = this._pref.get("emailAddress").toLowerCase();
     this.hostname = this._pref.get("hostname");
     this.port = this._pref.get("port");
     this.ssl = this._pref.get("socketType");

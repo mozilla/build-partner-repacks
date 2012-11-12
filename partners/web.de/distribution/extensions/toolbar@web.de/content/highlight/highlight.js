@@ -8,44 +8,134 @@
  *    Effect: disable search suggestions dropdown in highlight mode
  */
 
-var gButton;
 var gTurnedOn = false;
+
+var gHighlightImage = new Image();
+// Takes a bit to load,
+// but must be finished before updateUI() is called with an unread count > 0.
+// Obviously, do not modify it, but copy it.
+// This avoids repeated loading, async onload(), setTimeout for bug 574330,
+// and the resulting out-of-order problems when several accounts get logged out
+gHighlightImage.src = "chrome://unitedtb/skin/highlight/highlight-small.png";
+
+/**
+ * Get the toolbar button that acts as checkbox
+ */
+function getMyButton()
+{
+  var outerButton = document.getElementById("united-highlight-button")
+  if ( !outerButton)
+    return null;
+  return document.getAnonymousElementByAttribute(outerButton, "anonid", "button");
+}
 
 function onLoad()
 {
-  gButton = document.getElementById("united-highlight-button");
+  ourPref.observeAuto(window, "highlight.color", function(newValue)
+  {
+    updateColor(newValue);
+    turnOnOff();
+  });
+  gBrowser.tabContainer.addEventListener("TabSelect", onTabChanged, false);
+
+  updateColor();
+  var button = getMyButton();
+  if (!button)
+    return;
+  button.checked = ourPref.get("highlight.enableOnNewWindow");
+  turnOnOff();
 }
 window.addEventListener("load", onLoad, false);
+
+function updateColor(newValue)
+{
+  if (!newValue) {
+    newValue = ourPref.get("highlight.color");
+  }
+  var canvas = document.getElementById("united-highlight-canvas");
+  if (!canvas)
+  {
+    canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+    canvas.setAttribute("id", "united-highlight-canvas");
+    canvas.setAttribute("width", 16);
+    canvas.setAttribute("height", 16);
+  }
+  var ctx = canvas.getContext("2d");
+  ctx.drawImage(gHighlightImage, 0, 0);
+  ctx.fillStyle = newValue;
+  ctx.fillRect(0,10,16,6);
+  var url = canvas.toDataURL();
+
+  for (var i = 0; i < document.styleSheets.length; i++) {
+    if (document.styleSheets[i].href == "chrome://unitedtb/skin/highlight/highlight-color.css") {
+      while (document.styleSheets[i].cssRules.length > 0) {
+        document.styleSheets[i].deleteRule(0);
+      }
+      document.styleSheets[i].insertRule("#united-highlight-button { list-style-image: url('" + url + "')}", 0);
+      break;
+    }
+  }
+}
 
 /**
  * User clicked on Highlight button
  */
 function onButton(event)
 {
-  united.notifyWindowObservers("do-search-suggestions",
-      { enable: !gButton.checked });
+  var button = getMyButton()
+  button.checked = !button.checked;
 
-  onTextChanged(event);
+  notifyWindowObservers("do-search-suggestions",
+      { enable: !button.checked });
+
+  turnOnOff();
 };
 
 /**
  * User clicked on Highlight button or
  * entered text in search field (while highlight is enabled)
  */
-function onTextChanged(event)
+function onTextChanged()
 {
+  turnOnOff();
+}
+
+/**
+ * User clicked on a color
+ */
+function onColorChanged(event)
+{
+  window.setTimeout(function(cp) {
+    ourPref.set('highlight.color', cp.color);
+    cp.parentNode.hidePopup();
+  }, 0, event.target)
+}
+
+function onTabChanged()
+{
+  turnOnOff();
+}
+
+function turnOnOff()
+{
+  var button = getMyButton();
+  if (!button)
+    return;
+
   var wasTurnedOn = gTurnedOn;
-  gTurnedOn = gButton.checked && currentSearchTerm;
+  gTurnedOn = !!currentSearchTerm && button.checked;
+  //debug("highlight turned on: " + gTurnedOn + ", was turned on: " + wasTurnedOn);
+
+  if (gTurnedOn && !wasTurnedOn)
+    gBrowser.addEventListener("DOMContentLoaded", onPageLoad, true);  
+  else if (!gTurnedOn && wasTurnedOn)
+    gBrowser.removeEventListener("DOMContentLoaded", onPageLoad, true);  
 
   var currentDoc = gBrowser.contentDocument;
   unhighlightPerDOMPoking(currentDoc);
   if (gTurnedOn)
     highlightPerDOMPoking(currentSearchTerm, currentDoc);
-
-  if (gTurnedOn && !wasTurnedOn)
-    gBrowser.addTabsProgressListener(webProgressListener);
-  else if (!gTurnedOn && wasTurnedOn)
-    gBrowser.removeTabsProgressListener(webProgressListener);
+  //debug("page modified");
 };
 
 // <copied from="shopping.js">
@@ -59,12 +149,14 @@ function saveSearchTerm(object)
   onTextChanged(); // (not copied)
 };
 
-united.autoregisterWindowObserver("search-started", saveSearchTerm);
-united.autoregisterWindowObserver("search-keypress", saveSearchTerm);
+autoregisterWindowObserver("search-started", saveSearchTerm);
+autoregisterWindowObserver("search-keypress", saveSearchTerm);
 // </copied>
 
+
+
 //const kHighlightCSS = "span.united-highlight-term { background-color: #DDBB00; color: black; border: none !important; margin: 0px !important; padding: 0px !important; }";
-const kHighlightCSS = "united-highlight-term { display: inline; background-color: #DDBB00; color: black; } united-highlight-textrun { display: inline; }";
+const kHighlightCSS = "united-highlight-term { display: inline; background-color: %backgroundColor%; color: %foregroundColor%; } united-highlight-textrun { display: inline; }";
 
 /**
  * Replaces all instances of |term| with <span> with a yellow background
@@ -73,37 +165,56 @@ const kHighlightCSS = "united-highlight-term { display: inline; background-color
  */
 function highlightPerDOMPoking(term, doc)
 {
-  //united.debug("before replacement:\n" + doc.body.innerHTML);
-  //united.debug("highlight " + term);
+  //debug("before replacement:\n" + doc.body.innerHTML);
+  //debug("highlight " + term);
   var style = doc.createElement("style");
   style.id = "united-highlight-style";
-  style.appendChild(doc.createTextNode(kHighlightCSS));
-  doc.documentElement.appendChild(style);
+  var backgroundColor = ourPref.get("highlight.color");
+  var r = parseInt(backgroundColor.substring(1,3), 16);
+  var g = parseInt(backgroundColor.substring(3,5), 16);
+  var b = parseInt(backgroundColor.substring(5,7), 16);
+  let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  var foregroundColor = "black";
+  if (luminance <= 110) {
+    foregroundColor = "white";
+  }
+  style.appendChild(doc.createTextNode(kHighlightCSS.replace("%backgroundColor%", backgroundColor).replace("%foregroundColor%", foregroundColor)));
+  var head = doc.documentElement.getElementsByTagName("head").item(0);
+  if (head)
+    head.appendChild(style);
+  else
+    doc.documentElement.appendChild(style);
   var textNodes = findTextNodes(doc.body);
-  //united.debug("OK tags: " + okTags.join(", ") + "\nSkipped tags: " + skippedTags.join(", "));
-  //united.debug("found " + textNodes.length + " text nodes");
+  //debug("OK tags: " + okTags.join(", ") + "\nSkipped tags: " + skippedTags.join(", "));
+  //debug("found " + textNodes.length + " text nodes");
   for each (let textNode in textNodes)
   {
     let text = textNode.data;
-    let foundHere = 0;
-    var highlighted = text.replace(term, function(found) {
-      foundHere++;
-      return "<united-highlight-term>" + found + "</united-highlight-term>";
+    let startIndex = 0;
+    let newNode = null; // lazy for speed
+    text.replace(term, function(termFound, index)
+    {
+      if ( !newNode)
+        newNode = doc.createElement("united-highlight-textrun");
+      if (index)
+        newNode.appendChild(doc.createTextNode(text.substring(startIndex, index)));
+      let highlightNode = doc.createElement("united-highlight-term");
+      highlightNode.appendChild(doc.createTextNode(termFound));
+      newNode.appendChild(highlightNode);
+      startIndex = index + termFound.length;
     }, "gi");
-    if (!foundHere)
+    if ( !startIndex)
       continue;
-    //united.debug(highlighted);
-    let newNode = doc.createElement("united-highlight-textrun");
-    textNode.parentNode.replaceChild(newNode, textNode);
-    newNode.innerHTML = highlighted;
+    newNode.appendChild(doc.createTextNode(text.substring(startIndex))); // rest
     newNode.oldText = text; // allow revert, i.e. unhighlight
+    textNode.parentNode.replaceChild(newNode, textNode);
   }
   //alert("after replacement:\n" + doc.body.innerHTML);
 }
 
-const kSkipTags = [ "script", "style", "noscript", "embed" ];
-  var okTags = [];
-  var skippedTags = [];
+const kSkipTags = [ "script", "style", "noscript", "embed", "option" ];
+var okTags = [];
+var skippedTags = [];
 
 /**
  * Returns all non-empty text nodes in the DOM document
@@ -122,20 +233,11 @@ function findTextNodes(el)
       result.push(node);
     else if (node instanceof Ci.nsIDOMElement)
     {
-      let parent = node.parentNode.tagName;
-      //united.debug(parent);
-      if (kSkipTags.indexOf(parent) == -1)
+      let tag = node.tagName.toLowerCase();
+      if (kSkipTags.indexOf(tag) == -1)
       {
-        //if (okTags.indexOf(parent) == -1)
-        //  okTags.push(parent);
         result = result.concat(findTextNodes(node));
       }
-      //else
-      //{
-      //  united.debug("skipping " + parent);
-      //  if (skippedTags.indexOf(parent) == -1)
-      //    skippedTags.push(parent);
-      //}
     }
   }
   return result;
@@ -148,7 +250,9 @@ function findTextNodes(el)
 function unhighlightPerDOMPoking(doc)
 {
   var style = doc.getElementById("united-highlight-style");
-  //style.parentNode.removeChild(style);
+  if ( !style)
+    return;
+  style.parentNode.removeChild(style);
   for each (let span in nodeListToArray(doc.getElementsByTagName("united-highlight-textrun")))
   {
     if (!span.oldText)
@@ -156,7 +260,7 @@ function unhighlightPerDOMPoking(doc)
     let textNode = doc.createTextNode(span.oldText);
     span.parentNode.replaceChild(textNode, span);
   }
-  //united.debug("after unhighlight:\n" + doc.body.innerHTML);
+  //debug("after unhighlight:\n" + doc.body.innerHTML);
 }
 
 /**
@@ -176,31 +280,19 @@ function nodeListToArray(nodeList)
 // Browser page load hookup
 /////////////////////////////////////////////////////
 
-var webProgressListener =
-{
-  // |browser| == <browser> (iframe) which fired the event. != gBrowser
-  onStateChange : function(browser, webProgress, request, stateFlags, status)
-  {
-    if (stateFlags & Ci.nsIWebProgressListener.STATE_STOP)
-      onPageLoad(browser);
-    return 0;
-  },
-  onLocationChange: function() {},
-  onProgressChange: function() {},
-  onStatusChange: function() {},
-  onSecurityChange: function() {},
-  onLinkIconAvailable: function() {},
-  // it's not a real Ci.nsIWebProgressListener
-  QueryInterface : XPCOMUtils.generateQI([Ci.nsISupportsWeakReference])
-}
-
 /**
  * Called on every new browser page load, so be efficient!
- * @param browser {<browser> (<iframe>)}   which fired the event. != gBrowser
+ * <https://developer.mozilla.org/en/Code_snippets/On_page_load>
  */
-function onPageLoad(browser)
+function onPageLoad(event)
 {
+  var doc = event.target; // document that was loaded
+  var win = doc.defaultView; // the |window| for the doc
+  if ( !doc instanceof HTMLDocument)
+    return;
+  if (win != win.top) // only top window
+    return;
   if (!gTurnedOn)
     return;
-  highlightPerDOMPoking(currentSearchTerm, browser.contentDocument);
+  highlightPerDOMPoking(currentSearchTerm, doc);
 }

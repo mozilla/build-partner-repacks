@@ -29,21 +29,20 @@ window.addEventListener("load", onLoadResize, false);
 
 function onWindowResize()
 {
-  for each (let button in getButtonsToShrink())
+  var buttons = getButtonsToShrink();
+  for each (let button in buttons)
     button.removeAttribute("crowded");
-  if (tb.hasAttribute("customizeToolbar"))
-    return;
   // scroll width is the natural size it wants to have
   if (!gWantWidth)
     gWantWidth = tb.scrollWidth;
-  //united.debug("on overflow: want width " + gWantWidth + ", now natural (scroll) width " + tb.scrollWidth + ", have (client) width " + tb.clientWidth);
-  for each (let button in getButtonsToShrink())
+  //debug("on overflow: want width " + gWantWidth + ", now natural (scroll) width " + tb.scrollWidth + ", have (client) width " + tb.clientWidth);
+  for each (let button in buttons)
   {
     if (tb.scrollWidth <= tb.clientWidth)
       return;
     button.setAttribute("crowded", "true");
     window.getComputedStyle(tb, null); // force reflow/update
-    //united.debug("after button " + button.id + ": natural width " + tb.scrollWidth + ", have width " + tb.clientWidth);
+    //debug("after button " + button.id + ": natural width " + tb.scrollWidth + ", have width " + tb.clientWidth);
   }
 }
 
@@ -62,6 +61,7 @@ function getButtonsToShrink()
   for (let i = 0, l = buttons.length; i < l; i++)
     result.push(buttons.item(i));
 
+  result.reverse(); // remove right to left
   result.sort(function(a, b)
   {
     try {
@@ -71,21 +71,9 @@ function getButtonsToShrink()
       aPrio = 100;
     if (isNaN(bPrio))
       bPrio = 100;
-    //united.debug(a.id + "<>" + b.id + ", a prio=" + aPrio + ", b prio=" + bPrio);
+    //debug(a.id + "<>" + b.id + ", a prio=" + aPrio + ", b prio=" + bPrio);
     return aPrio - bPrio;
-    } catch (e) { united.error(e); return 0; }
+    } catch (e) { error(e); return 0; }
   });
   return result;
-}
-
-// hooked up in customizeToolbar.js
-function customize_onLoad()
-{
-  tb.setAttribute("customizeToolbar", "true");
-  onWindowResize();
-}
-function customize_onClose()
-{
-  tb.removeAttribute("customizeToolbar");
-  onWindowResize();
 }

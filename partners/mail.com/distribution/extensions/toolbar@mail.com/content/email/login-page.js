@@ -36,7 +36,7 @@ function onLoginButtonClicked()
   // Disable login button so it can't be double clicked
   eLoginButton.disabled = true;
   try {
-    var acc = makeNewAccount(eEmailAddress.value);
+    var acc = makeNewAccount(eEmailAddress.value.toLowerCase());
   } catch (ex) {
     errorCritical(ex);
     // Even though there was an error, we reenable the button since
@@ -51,7 +51,8 @@ function onLoginButtonClicked()
     {
       confirmClose = false;
       acc.saveToPrefs();
-      document.location.href = brand.toolbar.firstrunURL;
+      document.location.href = brand.toolbar.firstrunURL +
+                               "/?kid=" + ourPref.get("tracking.campaignid", 0);
     },
     function(e) // error handler, e.g. wrong password
     {

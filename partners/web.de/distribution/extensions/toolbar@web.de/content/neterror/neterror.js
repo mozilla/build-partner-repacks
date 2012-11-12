@@ -1,12 +1,13 @@
+Components.utils.import("resource://unitedtb/util/util.js");
+Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
+Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/search/search-store.js", this);
+Components.utils.import("resource://unitedtb/util/observer.js", this);
 
-var united;
 var searchField;
 
-function onLoad(unitedFromAbove)
+function onLoad()
 {
-  var firefoxWindow = getTopLevelWindowContext();
-  united = firefoxWindow.united;
   searchField = document.getElementById("searchterm");
 
   setSearchTerm();
@@ -18,29 +19,26 @@ function onLoad(unitedFromAbove)
 
 function setSearchTerm()
 {
-   var url = document.documentURI;
+  var url = document.documentURI;
 
-   var desc = url.search(/d\=/);
-   // desc == -1 if not found; if so, return an empty string
-   // instead of what would turn out to be portions of the URI
-   if (desc != -1)
-   {
-     let msg = decodeURIComponent(url.slice(desc + 2));
-     document.getElementById("message").appendChild(document.createTextNode(msg));
-   }
+  var u = url.search(/u\=/);
+  var badurl = decodeURIComponent(url.substr(u).slice(2, url.substr(u).indexOf('&')));
 
-   var u = url.search(/u\=/);
-   // desc == -1 if not found; if so, return an empty string
-   // instead of what would turn out to be portions of the URI
-   if (u != -1)
-   {
-     var badurl = decodeURIComponent(url.substr(u).slice(2, url.substr(u).indexOf('&')));
-     badurl = badurl.slice(badurl.search(/:\/\//)+3);
-     badurl = badurl.replace(/^www\./,'');
-     badurl = badurl.replace(/\/$/,'');
-     badurl = badurl.replace(/\./g,' ').replace(/\//g,' ');
-     document.getElementById("searchterm").value = badurl;
-   }
+  var ioService = Components.classes["@mozilla.org/network/io-service;1"]  
+                  .getService(Components.interfaces.nsIIOService);  
+  var uri = ioService.newURI(badurl, null, null);  
+
+  document.getElementById("badurl").textContent = uri.host;
+
+  // Turn the URL into search parameters
+  if (u != -1)
+  {
+    badurl = badurl.slice(badurl.search(/:\/\//)+3);
+    badurl = badurl.replace(/^www\./,'');
+    badurl = badurl.replace(/\/$/,'');
+    badurl = badurl.replace(/\./g,' ').replace(/\//g,' ');
+    document.getElementById("searchterm").value = badurl;
+  }
 }
 
 // <copied from="newtab-page.xhtml">
@@ -55,7 +53,7 @@ function fillUserSearchTerms()
   {
     fillSearchTerms(terms, "last-searches-list", 9);
   },
-  united.error);
+  error);
 }
 
 /*
@@ -65,12 +63,12 @@ function fillUserSearchTerms()
 function fillSearchTerms(terms, listID, sourceID)
 {
   var listE = document.getElementById(listID);
-  united.cleanElement(listE);
+  cleanElement(listE);
   for each (let term in terms)
   {
     let item = document.createElement("li");
     let link = document.createElement("a");
-    var url = united.brand.search.historyNetErrorURL;
+    var url = brand.search.historyNetErrorURL;
     url += encodeURIComponent(term);
    /*  The user did not enter the search term,
     * but it's a stored search term from the personal search history, or
@@ -100,7 +98,7 @@ function fillSearchTerms(terms, listID, sourceID)
 function initBrand()
 {
   document.getElementById("logo").setAttribute("href",
-      united.brand.toolbar.homepageURL);
+      brand.toolbar.homepageURL);
 }
 // </copied>
 
@@ -112,7 +110,7 @@ function initBrand()
 
 function onSearchTextChanged(event)
 {
-  united.notifyWindowObservers("search-keypress",
+  notifyWindowObservers("search-keypress",
       { searchTerm : event.target.value, source : 8 });
 };
 
@@ -136,9 +134,12 @@ function onSearchButtonClicked()
  */
 function startSearch(searchTerm)
 {
-  united.notifyWindowObservers("search-started",
+  searchTerm = searchTerm.trim().replace(/\s+/g, " ");
+  searchField.value = searchTerm;
+
+  notifyWindowObservers("search-started",
       { searchTerm : searchTerm, source : 8 });
-  united.loadPage(united.brand.search.netErrorURL +
+  loadPage(brand.search.netErrorURL +
       encodeURIComponent(searchTerm));
 };
 // </copied>

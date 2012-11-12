@@ -1,7 +1,7 @@
 /**
- * This loads the brand.js and assembles united.brand from it.
+ * This loads the brand.js and assembles brand from it.
  * It is responsible for selecting the right locale for each module,
- * and putting that in united.brand, so that the modules don't
+ * and putting that in brand, so that the modules don't
  * have to care about it.
  */
 
@@ -9,7 +9,7 @@
  * Messages sent by this module:
  * "region-changes" (global)
  *    Means: The user changed the region/country for at least one module.
- *    When: A region pref changed and we changed united.brand accordingly.
+ *    When: A region pref changed and we changed brand accordingly.
  *    Parameter:
  *      pref {String} The name of the region pref that changed. (Not its content.)
  */
@@ -21,6 +21,8 @@ Components.utils.import("resource://unitedtb/util/util.js");
 var build = {};
 Components.utils.import("resource://unitedtb/build.js", build);
 Components.utils.import("resource://unitedtb/util/observer.js");
+var gBrandJsStringBundle = new StringBundle(
+    "chrome://unitedtb/locale/brand.js.properties");
 
 XPCOMUtils.defineLazyServiceGetter(this, "prefService",
     "@mozilla.org/preferences-service;1", "nsIPrefBranch");
@@ -51,21 +53,22 @@ function load(isFirst)
     var brandfile = {}
     if (true)
     {
-      debug("loading brand.js as JS file");
+      //debug("loading brand.js as JS file");
       var brandfile2 = {};
-      Cc["@mozilla.org/moz/jssubscript-loader;1"]
-          .getService(Ci.mozIJSSubScriptLoader)
-          .loadSubScript("chrome://unitedtb/content/brand.js", brandfile2);
+      loadJS("chrome://unitedtb/content/brand.js", brandfile2);
       brandfile = brandfile2.brand;
+
+      // variant overlay
+      loadJS("chrome://unitedtb/content/brand-overlay.js", brandfile);
     }
     else
     {
-      debug("loading brand.js as JSON file");
+      //debug("loading brand.js as JSON file");
       var jsonString = readURLasUTF8("chrome://unitedtb/content/brand.js");
-      debug("brand.js read");
+      //debug("brand.js read");
       brandfile = JSON.parse(jsonString);
     }
-    debug("brand.js loaded");
+    //debug("brand.js loaded");
 
     var weblocale = prefService.getComplexValue("intl.accept_languages",
         Ci.nsIPrefLocalizedString).data.split(",")[0];
@@ -91,6 +94,8 @@ function load(isFirst)
  * So, this function picks the right locale, merges |brandfile.global| into it,
  * and replaces %FOO% placefolders with their values, including
  * considering brandfile.global.
+ * It also replaces strings starting with "$TR " with their translations from
+ * brand.js.properties.
  *
  * Note brandfile.global will be used in the locale of this component,
  * i.e. weather may get a different value for global placeholder %WWW%
@@ -106,8 +111,9 @@ function loadComponent(brandfile, componentname, locale, upperPlaceholders)
     locale = ourPref.get("region." + componentname);
   if (!locale)
     locale = ourPref.get("region.general");
+  // If locale is not specified, use the first entry in the locale list
   if (!locale)
-    locale = "de-DE";
+    locale = brandfile.regions.defaultlocale.list[0].locale
 
   if (componentname != "global") // avoid loop
   {
@@ -161,6 +167,8 @@ function getPlaceholders(vars, upperPlaceholders)
 /**
  * Replaces %FOO% in properties of |vars| with value from |placeholders|.
  *
+ * Also replaces strings starting with "$TR " with their translations.
+ *
  * @param vars {Object} variables to be expanded.
  *    |vars| is in/out, i.e. will be altered.
  * @param placeholders {Object} @see getPlaceholders() result
@@ -186,6 +194,8 @@ function replaceVars(vars, placeholders)
 /**
  * Replaces %FOO% in value with value from |placeholders|.
  *
+ * Also replaces strings starting with "$TR " with their translations.
+ *
  * @param value {String}  to be expanded
  * @param placeholders {Object} @see getPlaceholders() result
  *    |placeholders| will not be altered.
@@ -193,8 +203,17 @@ function replaceVars(vars, placeholders)
  */
 function replaceVar(value, placeholders)
 {
-  if (!value.indexOf("%") < 0) // has no placeholders
+  // translations
+  if (value.substr(0, 4) == "$TR ")
+  {
+    try {
+      value = gBrandJsStringBundle.get(value.substr(4));
+    } catch (e) { errorInBackend("missing translation of " + value + " for brand.js"); }
+  }
+
+  if (value.indexOf("%") == -1) // has no placeholders
     return value;
+
   for (let phname in placeholders)
   {
     value = value.replace("%" + phname + "%", placeholders[phname]);

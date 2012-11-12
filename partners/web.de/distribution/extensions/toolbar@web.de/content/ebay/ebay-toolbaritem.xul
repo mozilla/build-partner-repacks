@@ -9,19 +9,45 @@
 
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    united.ebay = {};
-    united.loadJS("chrome://unitedtb/content/ebay/ebay.js", united.ebay);
+    unitedinternet.initModule(unitedinternet, "ebay");
+    unitedinternet.loadJS("chrome://unitedtb/content/ebay/ebay.js", unitedinternet.ebay);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->
 
-  <toolbarpalette id="BrowserToolbarPalette">
+  <toolbar id="united-toolbar">
+    <toolbarbutton id="united-amazon-button"
+        label="&united.amazon.button.label;"
+        tooltiptext="&united.amazon.button.tooltip;"
+        oncommand="unitedinternet.ebay.onAmazonButton(event);"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-removable="true"
+        united-icon-only="true"
+        />
+  </toolbar>
+
+  <toolbar id="united-toolbar">
     <toolbarbutton id="united-ebay-button"
         label="&united.ebay.button.label;"
         tooltiptext="&united.ebay.button.tooltip;"
-        oncommand="united.ebay.onButton(event);"
+        oncommand="unitedinternet.ebay.onButton(event);"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-removable="true"
+        united-icon-only="true"
         />
-  </toolbarpalette>
+  </toolbar>
+
+  <toolbar id="united-toolbar">
+    <toolbarbutton id="united-lastminute-button"
+        label="&united.lastminute.button.label;"
+        tooltiptext="&united.lastminute.button.tooltip;"
+        oncommand="unitedinternet.ebay.onLastMinuteButton(event);"
+        orient="horizontal"
+        class="chromeclass-toolbar-additional toolbarbutton-1"
+        united-removable="true"
+        united-icon-only="true"
+        />
+  </toolbar>
 </overlay>

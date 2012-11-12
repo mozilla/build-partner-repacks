@@ -1,4 +1,3 @@
-Cu.import("resource://gre/modules/ISO8601DateUtils.jsm", this);
 Cu.import("resource://unitedtb/util/globalobject.js", this);
 
 XPCOMUtils.defineLazyServiceGetter(this, "annotationService",
@@ -19,7 +18,7 @@ XPCOMUtils.defineLazyServiceGetter(this, "historyService",
 
 function onLoad()
 {
-  united.autoregisterGlobalObserver("uninstall", cleanUpOnUnInstall);
+  autoregisterGlobalObserver("uninstall", cleanUpOnUnInstall);
   gBrowser.addTabsProgressListener(webProgressListener);
   findLastModified();
 }
@@ -59,17 +58,17 @@ function onPageLoad(browser)
   {
     return;
   }
-  //united.debug("lastmodtime (cached): " + entry.lastmodtime + ", earliest allowed: " + (new Date() - expireCurrentAfter) + ", diff: " + new Date(new Date() - entry.lastmodtime).toUTCString());
+  //debug("lastmodtime (cached): " + entry.lastmodtime + ", earliest allowed: " + (new Date() - expireCurrentAfter) + ", diff: " + new Date(new Date() - entry.lastmodtime).toUTCString());
   if (entry.lastmodtime > (new Date() - expireCurrentAfter))
   {
-    //united.debug("have current thumbnail");
+    //debug("have current thumbnail");
     return;
   }
   // update cache, in case new snapshot was just made, possibly in other window
   entry.load();
   if (entry.lastmodtime > (new Date() - expireCurrentAfter))
   {
-    //united.debug("have just made new thumbnail");
+    //debug("have just made new thumbnail");
     return;
   }
   captureThumbnail(browser);
@@ -91,13 +90,13 @@ const visibleWidthMax = 1024;
  */
 function captureThumbnail(browser)
 {
-  if (united.privateBrowsing.privateBrowsingEnabled)
+  if (privateBrowsing.privateBrowsingEnabled)
     return null;
   var win = browser.contentWindow;
   if (!win)
     return null;
   var uri = browser.currentURI ? browser.currentURI :
-      united.ioService.newURI(browser.contentDocument.location.href, null, null);
+      ioService.newURI(browser.contentDocument.location.href, null, null);
   if (uri.scheme != "http" && uri.scheme != "https")
     return null;
 
@@ -112,10 +111,12 @@ function captureThumbnail(browser)
   var scale = thumbnailWidth / visibleWidth;
   ctx.scale(scale, scale);
   ctx.drawWindow(win, 0, 0, visibleWidth, visibleHeight, "white");
-  united.debug("capturing thumbnail for <" + win.location + ">, with size w " + thumbnailHeight + ", h " + thumbnailWidth +
+  debug("capturing thumbnail for <" + win.location + ">, with size w " + thumbnailHeight + ", h " + thumbnailWidth +
       ", scale " + scale + ", page area w " + visibleWidth + " h " + visibleHeight);
 
-  return storeThumbnail(uri, canvas);
+  var imageDataURL = canvas.toDataURL("image/png")
+  storeThumbnail(uri, imageDataURL);
+  return imageDataURL;
 }
 
 /////////////////////////////////////////////////////
@@ -127,19 +128,17 @@ function captureThumbnail(browser)
  * Currently storing in Places database as Annotation.
  *
  * @param uri {nsIURI}  page URL for which the thumbnail is made
- * @param canvas {DOMElement <canvas>} the thumbnail drawn on <canvas>
- * @returns {String}  URL of the thumbnail image
+ * @param imageURL {URL} URL of the thumbnail image
  */
-function storeThumbnail(uri, canvas)
+function storeThumbnail(uri, imageURL)
 {
   var now = new Date();
-  var dataURL = canvas.toDataURL("image/png");
 
   annotationService.setPageAnnotation(uri,
-      "unitedtb/thumbnail/dataurl", dataURL,
+      "unitedtb/thumbnail/dataurl", imageURL,
       0, expireStorageAfter);
   annotationService.setPageAnnotation(uri,
-      "unitedtb/thumbnail/lastmodtime", ISO8601DateUtils.create(now),
+      "unitedtb/thumbnail/lastmodtime", now.toISOString(),
       0, expireStorageAfter);
 
   /* save as binary:
@@ -149,7 +148,6 @@ function storeThumbnail(uri, canvas)
       binaryArray, binaryArray.length,
       expireStorageAfter);
   */
-  return dataURL;
 }
 
 /**
@@ -161,14 +159,14 @@ function storeThumbnail(uri, canvas)
 function getThumbnailURL(pageURL)
 {
   try {
-    //return annotationService.getPageAnnotation(united.makeNSIURI(pageURL),
+    //return annotationService.getPageAnnotation(makeNSIURI(pageURL),
     //  "unitedtb/thumbnail/dataurl");
-    var imgurl = annotationService.getPageAnnotation(united.makeNSIURI(pageURL),
+    var imgurl = annotationService.getPageAnnotation(makeNSIURI(pageURL),
       "unitedtb/thumbnail/dataurl");
-    //united.debug("returning thumbnail URL for <" + pageURL + ">: <" + imgurl.substr(0,30) + "...>");
+    //debug("returning thumbnail URL for <" + pageURL + ">: <" + imgurl.substr(0,30) + "...>");
     return imgurl;
   } catch (e) {
-    //united.debug("have no thumbnail for <" + pageURL + ">");
+    //debug("have no thumbnail for <" + pageURL + ">");
     return null;
   }
 }
@@ -194,17 +192,21 @@ function findLastModified()
   options.resultType = O.RESULT_AS_URI;
   options.sortingMode = O.SORT_BY_VISITCOUNT_DESCENDING;
   options.maxResults = kMostVisitedEntryCount;
-  options.redirectsMode = O.REDIRECTS_MODE_TARGET;
+  try {
+    options.redirectsMode = O.REDIRECTS_MODE_TARGET;
+  } catch (ex) {
+    // This doesn't work on FF14
+  }
   var result = historyService.executeQuery(query, options); // TODO should be async
   var container = result.root;
   container.containerOpen = true;
-  //united.debug("have " + container.childCount + " entries in history");
+  //debug("have " + container.childCount + " entries in history");
   for (let i = 0; i < container.childCount; i ++)
   {
     let node = container.getChild(i);
     // <http://mdn.beonex.com/en/nsINavHistoryResultNode>
-    //united.debug(i + ". " + node.accessCount + "times <" + node.uri + ">, title: " + node.title);
-    if (node.uri.substr(0, 5) != "http:" && node.uri.substr(0, 6) != "https:")
+    //debug(i + ". " + node.accessCount + "times <" + node.uri + ">, title: " + node.title);
+    if ((node.uri.substr(0, 5) != "http:" && node.uri.substr(0, 6) != "https:") || (!node.title))
       continue;
     let entry = new MostVisitedEntry(node.uri);
     entry.title = node.title;
@@ -243,7 +245,7 @@ function initialPopulateHack(url, browser)
 {
   if (gMostVisited.length < kMostVisitedEntryCount)
   {
-    //united.debug("have only " + gMostVisited.length + " entries in gMostVisited");
+    //debug("have only " + gMostVisited.length + " entries in gMostVisited");
     findLastModified(); // flushes gMostVisited, and searches history
 
     // HACK just add current URL
@@ -254,10 +256,10 @@ function initialPopulateHack(url, browser)
       entry.title = browser.contentTitle;
       entry.faviconURL = faviconService.getFaviconForPage(browser.currentURI);
     } catch (e if e.result == Components.results.NS_ERROR_NOT_AVAILABLE) {} // no favicon
-      catch (e) { united.errorInBackend(e) };
+      catch (e) { errorInBackend(e) };
     gMostVisited.push(entry);
 
-    //united.debug("now have " + gMostVisited.length + " entries in gMostVisited");
+    //debug("now have " + gMostVisited.length + " entries in gMostVisited");
   }
 }
 
@@ -274,7 +276,7 @@ function getMostVisitedEntryForURL(url, browser)
     if (e.url == url)
       entry = e;
   });
-  //united.debug("found URL in gMostVisited? " + entry);
+  //debug("found URL in gMostVisited? " + entry);
   return entry;
 }
 
@@ -283,7 +285,7 @@ function getMostVisitedEntryForURL(url, browser)
  */
 function MostVisitedEntry(url)
 {
-  united.assert(typeof(url) == "string" && url);
+  assert(typeof(url) == "string" && url);
   this.url = url;
   this.load();
 }
@@ -300,9 +302,9 @@ MostVisitedEntry.prototype =
   load : function()
   {
     try {
-      this.lastmodtime = ISO8601DateUtils.parse(
-          annotationService.getPageAnnotation(united.makeNSIURI(this.url),
-            "unitedtb/thumbnail/lastmodtime")).getTime();
+      this.lastmodtime = new Date(Date.parse(
+          annotationService.getPageAnnotation(makeNSIURI(this.url),
+            "unitedtb/thumbnail/lastmodtime"))).getTime();
     } catch (e) {} // default = unixtime 0 = 1970
   },
   getThumbnailURL : function()

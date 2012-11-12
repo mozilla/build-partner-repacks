@@ -8,5 +8,5 @@
 <!ENTITY region.label "Country:">
 <!ENTITY close.button.label "Close">
 <!ENTITY continue.button.label "Continue to Login">
-<!ENTITY intro.heading "Congratulations, you now have the &brand.name; MailCheck installed.">
-<!ENTITY intro.descr "Please configure the settings below. You can change them at any time.">
+<!ENTITY intro.heading "Congratulations, you successfully installed the &brand.name; MailCheck!">
+<!ENTITY intro.descr "Please select your settings below.">

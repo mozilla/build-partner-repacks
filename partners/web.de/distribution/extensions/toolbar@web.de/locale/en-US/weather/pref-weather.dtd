@@ -1,4 +1,4 @@
-<!ENTITY pane.title "Weather">
+<!ENTITY pane.title "Location-Based Services">
 <!ENTITY country.label "Country">
 <!ENTITY postalcode.label "Postal code">
 <!ENTITY postalcode.accesskey "P">

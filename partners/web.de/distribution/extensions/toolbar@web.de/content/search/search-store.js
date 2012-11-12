@@ -1,5 +1,11 @@
 /**
  * Store and retrieve searches (personal history of search terms)
+ *
+ * Search terms are stored as an JSON array in the preferences
+ * [{
+ *   "searchterm": "apple",
+ *   "visited": "2012-06-11T17:02:25.657Z"
+ *  }]
  */
 
 const EXPORTED_SYMBOLS = [
@@ -14,7 +20,6 @@ const EXPORTED_SYMBOLS = [
 
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/observer.js");
-Components.utils.import("resource://gre/modules/ISO8601DateUtils.jsm");
 
 //////////////////////////////////////////////////////////////////////////
 // Store searches
@@ -35,37 +40,47 @@ Components.utils.import("resource://gre/modules/ISO8601DateUtils.jsm");
  */
 function getLastSearches(amount, resultCallback, errorCallback)
 {
-  var sel = searchHistoryDB().createStatement("SELECT " +
-      "searchterm FROM searchterms GROUP BY searchterm ORDER BY id DESC LIMIT :amount");
-  sel.params["amount"] = amount;
-  sel.executeAsync(new sqlCallback(function (rows)
+  var searchitems = JSON.parse(ourPref.get("search.termsJSON"));
+
+  // This was the easiest way to imitate GROUP BY so we can remove dupes
+  // without sorting
+  var addedTerms = {};
+  var terms = []
+  for each (let searchitem in searchitems)
   {
-    let terms = []
-    for each (let row in rows)
+    if (!addedTerms[searchitem.searchterm])
     {
-      terms.push(row.getResultByName("searchterm"));
+      terms.push(searchitem.searchterm)
+      addedTerms[searchitem.searchterm] = true;
     }
-    resultCallback(terms);
-  }, errorCallback));
+  }
+  if (amount < terms.length)
+    terms = terms.slice(0, amount);
+  resultCallback(terms);
 }
 
+/**
+ * @see getLastSearches(), just that the the time of search is included
+ *
+ * @param amount @see getLastSearches()
+ * @param resultCallback {Function(terms)}
+ *    terms { Array of { term {String}, date {Date} }}
+ */
 function getLastSearchesWithDate(amount, resultCallback, errorCallback)
 {
-  var sel = searchHistoryDB().createStatement("SELECT " +
-      "searchterm,visited FROM searchterms ORDER BY id LIMIT :amount");
-  sel.params["amount"] = amount;
-  sel.executeAsync(new sqlCallback(function (rows)
+  var searchitems = JSON.parse(ourPref.get("search.termsJSON"));
+
+  var terms = []
+  for each (let searchitem in searchitems)
   {
-    let terms = [];
-    for each (let row in rows)
-    {
-      let term = row.getResultByName("searchterm");
-      let date = row.getResultByName("visited");
-      let dateObj = ISO8601DateUtils.parse(date);
-      terms.push([term, dateObj]);
-    }
-    resultCallback(terms);
-  }, errorCallback));
+    terms.push({
+      term : searchitem.searchterm,
+      date : new Date(Date.parse(searchitem.visited))
+    });
+  }
+  if (amount < terms.length)
+    terms = terms.slice(0, amount);
+  resultCallback(terms);
 }
 
 /**
@@ -73,8 +88,10 @@ function getLastSearchesWithDate(amount, resultCallback, errorCallback)
  */
 function deleteLastSearches(successCallback, errorCallback)
 {
-  var sel = searchHistoryDB().createStatement("DELETE FROM searchterms");
-  sel.executeAsync(new sqlCallback(successCallback, errorCallback));
+  ourPref.reset("search.termsJSON");
+  /* Notify all observers to clear out their stored search term */
+  notifyGlobalObservers("delete-search-history", {});
+  successCallback();
 }
 
 /**
@@ -84,11 +101,14 @@ function deleteLastSearches(successCallback, errorCallback)
 function deleteSearchTerm(term, successCallback, errorCallback)
 {
   // multiple entries with the given search term might exist, delete them all
-  // this mimicks the behaviour of getLastSearches which uses GROUP BY to
-  // collapse multiple occurences of the same searchterm
-  var sel = searchHistoryDB().createStatement("DELETE FROM searchterms WHERE searchterm = :term");
-  sel.params["term"] = term;
-  sel.executeAsync(new sqlCallback(successCallback, errorCallback));
+  // this mimicks the behaviour of getLastSearches which
+  // collapses multiple occurences of the same searchterm
+  var searchitems = JSON.parse(ourPref.get("search.termsJSON"));
+
+  searchitems = searchitems.filter(function(e) {return e.searchterm != term});
+
+  ourPref.set("search.termsJSON", JSON.stringify(searchitems));
+  successCallback();
 }
 
 function debugShowLastSearches()
@@ -101,56 +121,24 @@ function debugShowLastSearches()
   debug);
 }
 
-var gSearchHistoryDB = null;
-const amountToRememeber = 20;
-
-/**
- * Set up sqlite database for storeing search terms
- * Called onLoad()
- */
-function searchHistoryDB()
-{
-  if (gSearchHistoryDB)
-    return gSearchHistoryDB;
-
-  var file = getProfileDir();
-  file.append("search-history.sqlite");
-  var storageService = Cc["@mozilla.org/storage/service;1"]
-                         .getService(Ci.mozIStorageService);
-  // (also creates the file if it does not yet exist)
-  gSearchHistoryDB = storageService.openDatabase(file);
-
-  // init DB
-  if (!gSearchHistoryDB.tableExists("searchterms"))
-  {
-    gSearchHistoryDB.createTable("searchterms",
-        "id INTEGER PRIMARY KEY autoincrement, searchterm STRING, visited STRING");
-    ourPref.set("search.db.version", 1);
-  }
-  return gSearchHistoryDB;  
-}
+const amountToRemember = 30;
 
 function saveSearchTerm(searchTerm)
 {
   debug("saving search term " + searchTerm);
 
-  // store the search term
-  var insert = searchHistoryDB().createStatement("INSERT INTO searchterms " +
-      "(searchterm, visited) VALUES (:searchterm, :visited)");
-  insert.params["searchterm"] = searchTerm;
-  insert.params["visited"] = ISO8601DateUtils.create(new Date());
-  insert.executeAsync();
+  if (!searchTerm) // when user searches without anything in search field
+    return;
 
-  // delete all but the last n search terms
-  // DELETE FROM searchterms ORDER BY id DESC LIMIT -1 OFFSET :amountToRem
-  // GRRR, sqlite not complied with SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-  var del = searchHistoryDB().createStatement(
-      "DELETE FROM searchterms WHERE id IN" +
-      " (SELECT id FROM searchterms ORDER BY id DESC" +
-      "  LIMIT -1 OFFSET :amountToRememeber)");
-  del.params["amountToRememeber"] = amountToRememeber;
-  del.executeAsync();
-  //setTimeout(debugShowLastSearches, 500);
+  var term = {};
+  term.searchterm = searchTerm;
+  term.visited = new Date().toISOString();
+
+  var searchitems = JSON.parse(ourPref.get("search.termsJSON"));
+  searchitems.push(term);
+  if (searchitems.length > amountToRemember)
+    searchitems.splice(0, searchitems.length - amountToRemember);
+  ourPref.set("search.termsJSON", JSON.stringify(searchitems));
 }
 
 /**
@@ -161,11 +149,44 @@ function cleanUpOnUnInstall()
 {
   deleteLastSearches(function() {}, function() {});
 }
+
+function convertDatabaseToJSON()
+{
+  var file = getProfileDir();
+  file.append("search-history.sqlite");
+  if (!file.exists()) {
+    return;
+  }
+  var storageService = Cc["@mozilla.org/storage/service;1"]
+                         .getService(Ci.mozIStorageService);
+  var searchHistoryDB = storageService.openDatabase(file);
+
+  if (searchHistoryDB.tableExists("searchterms")) {
+    var sel = searchHistoryDB.createStatement("SELECT " +
+      "searchterm,visited FROM searchterms ORDER BY id LIMIT :amount");
+    sel.params["amount"] = amountToRemember;
+    sel.executeAsync(new sqlCallback(function (rows) {
+      var searchitems = []
+      for each (let row in rows)
+      {
+        searchitems.push({
+          searchterm : row.getResultByName("searchterm").toString(),
+          visited : row.getResultByName("visited").toString()
+        });
+      }
+      ourPref.set("search.termsJSON", JSON.stringify(searchitems));
+    }, function() {}));
+    searchHistoryDB.asyncClose()
+  }
+}
+
 registerGlobalObserver(
 {
   notification : function(msg, obj)
   {
     if (msg == "uninstall")
       cleanUpOnUnInstall();
+    else if (msg == "upgrade")
+      convertDatabaseToJSON();
   }
 });

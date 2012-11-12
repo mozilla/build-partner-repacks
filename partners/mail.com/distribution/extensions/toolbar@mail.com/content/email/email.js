@@ -262,7 +262,7 @@ function showDesktopNotification(newMailCount)
     var alerts = Cc["@mozilla.org/alerts-service;1"]
         .getService(Ci.nsIAlertsService);
     alerts.showAlertNotification(
-        "chrome://unitedtb/skin/email/email-new-dropdown.png", // image
+        "chrome://unitedtb/skin/email/email-new-small.png", // image
         brand.toolbar.name, // title
         message, // message text
         true, // clickable

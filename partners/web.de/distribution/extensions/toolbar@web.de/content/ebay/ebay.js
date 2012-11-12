@@ -11,11 +11,33 @@
  */
 function onButton(event)
 {
-  if (currentSearchTerm)
-    united.loadPage(united.brand.ebay.searchURL +
-        encodeURIComponent(currentSearchTerm));
+  if (false && currentSearchTerm) // #702
+  {
+    notifyWindowObservers("search-started",
+      { searchTerm : currentSearchTerm, source : 1 });
+    loadPage(brand.ebay.searchURL +
+        encodeURIComponent(currentSearchTerm), "united-ebay");
+  }
   else
-    united.loadPage(united.brand.ebay.portalURL);
+    loadPage(brand.ebay.portalURL, "united-ebay");
+};
+
+/**
+ * User clicked on LastMinute button
+ * HACK
+ */
+function onLastMinuteButton(event)
+{
+  if (false && currentSearchTerm) // #702
+  {
+    notifyWindowObservers("search-started",
+      { searchTerm : currentSearchTerm, source : 1 });
+    // NOTE: not encodeURIComponent() = UTF-(), but escape() = ISO-8859-1
+    loadPage(brand.ebay.lastminuteSearchURL +
+        window.escape(currentSearchTerm), "tab");
+  }
+  else
+    loadPage(brand.ebay.lastminutePortalURL, "tab");
 };
 
 // <copied from="amazon.js">
@@ -28,6 +50,14 @@ function saveSearchTerm(object)
   currentSearchTerm = object.searchTerm;
 };
 
-united.autoregisterWindowObserver("search-started", saveSearchTerm);
-united.autoregisterWindowObserver("search-keypress", saveSearchTerm);
+autoregisterWindowObserver("search-started", saveSearchTerm);
+autoregisterWindowObserver("search-keypress", saveSearchTerm);
 // </copied>
+
+/**
+ * User clicked on Amazon button
+ */
+function onAmazonButton(event)
+{
+  loadPage(brand.amazon.portalURL, "tab");
+};

@@ -6,31 +6,44 @@
 <?xml-stylesheet href="chrome://unitedtb/content/pref/pref-region-xbl.css" type="text/css"?>
 
 <?xul-overlay href="chrome://unitedtb/content/pref/pref-general.xul"?>
-<?xul-overlay href="chrome://unitedtb/content/pref/pref-region.xul"?>
+<!--?xul-overlay href="chrome://unitedtb/content/pref/pref-region.xul"?-->
+<?xul-overlay href="chrome://unitedtb/content/pref/pref-buttons.xul"?>
 
-<!DOCTYPE prefwindow [
+<!DOCTYPE dialog [
   <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd">
   %brandDTD;
   <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/pref/pref-window.dtd">
   %thisDTD;
 ]>
 
-<prefwindow type="prefwindow"
+<dialog
      id="united-pref-window"
      title="&window.title;"
      windowtype="Unitedtb:Preferences"
      persist="lastSelected screenX screenY"
-     buttons="accept"
-     ondialogaccept="return upref.win.validateAllPanes(true);"
-     ondialogcancel="return upref.win.validateAllPanes(false);"
+     buttons="accept,cancel,extra1"
+     ondialogaccept="return unitedinternet.win.save();"
+     ondialogcancel="return unitedinternet.win.cancel();"
+     ondialogextra1="return unitedinternet.win.setDefault();"
+     buttonlabelextra1="&setdefault.label;"
+     buttonaccesskeyextra1="&setdefault.accesskey;"
+     buttonlabelaccept="&ok.label;"
+     buttonaccesskeyaccept="&ok.accesskey;"
      xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/javascript"
           src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    var upref = {};
-    upref.win = {};
-    united.loadJS("chrome://unitedtb/content/pref/pref-window.js", upref.win);
+    unitedinternet.loadJS("chrome://unitedtb/content/pref/pref-element.js", this);
+    unitedinternet.initModule(unitedinternet, "win");
+    unitedinternet.loadJS("chrome://unitedtb/content/pref/pref-window.js", unitedinternet.win);
   </script>
 
-</prefwindow>
+  <tabbox id="tabbox">
+    <tabs id="tabs">
+    </tabs>
+    <tabpanels id="tabpanels">
+    </tabpanels>
+  </tabbox>
+
+</dialog>

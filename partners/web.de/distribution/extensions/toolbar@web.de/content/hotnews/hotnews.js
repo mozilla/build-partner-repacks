@@ -9,15 +9,22 @@ const EXPORTED_SYMBOLS = [];
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/util/fetchhttp.js");
+Components.utils.import("resource://unitedtb/util/JXON.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
-Components.utils.import("resource://gre/modules/ISO8601DateUtils.jsm");
 
-// on startup
-function onInit()
-{
-  fetch();
+var obss = Cc["@mozilla.org/observer-service;1"]
+  .getService(Ci.nsIObserverService);
+
+sessionRestoreObserve =  {
+  observe: function(subject, topic, data)
+  {
+    if (!ourPref.get("hotnews.firstrun", true))
+      fetch();
+    else
+      ourPref.set("hotnews.firstrun", false);
+  }
 }
-runAsync(onInit);
+obss.addObserver( sessionRestoreObserve,  "sessionstore-windows-restored" , false);
 
 function fetch()
 {
@@ -36,30 +43,24 @@ function fetch()
   }).start();
 }
 
-function parseRSS(rssXML)
+function parseRSS(rssDOM)
 {
-  var channel = rssXML.channel[0];
-  var uiNS = "http://www.1und1.de/xmlns/tb/hotnews";
+  var channel = JXON.build(rssDOM).rss.channel;
   let result = [];
-  for each (let item in channel.item)
+  for each (let item in channel.$item)
   {
     try {
-      let validDate = sanitize.alphanumdash(item.uiNS::validDate[0]);
-      if (validDate)
-      {
-        validDate = ISO8601DateUtils.parse(validDate);
-      }
-      else
+      let validDate = item["ui:validDate"];
+      if (!validDate)
       {
         // default: valid until pubDate + 2 days
-        let pubDate = sanitize.alphanumdash(item.pubDate[0]);
-        pubDate = ISO8601DateUtils.parse(pubDate);
+        let pubDate = item.pubDate;
         validDate = pubDate;
         validDate.setDate(validDate.getDate() + 2);
       }
       result.push({
-        url : sanitize.url(item.link[0]),
-        guid : sanitize.alphanumdash(item.guid[0]),
+        url : sanitize.url(item.link),
+        guid : sanitize.alphanumdash(item.guid),
         validDate : validDate,
       });
     } catch (e)  { errorInBackend(e); }

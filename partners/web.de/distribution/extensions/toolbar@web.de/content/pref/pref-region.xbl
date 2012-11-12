@@ -19,10 +19,9 @@
       <field name="mRegions">null</field>
       <constructor><![CDATA[
         try {
-        this.united = {};
-        Components.utils.import("resource://unitedtb/util/util.js", this.united);
-        Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this.united);
-        this.united.loadJS("chrome://unitedtb/content/util/uiutil.js", this.united); // error()
+        Components.utils.import("resource://unitedtb/util/util.js", this);
+        Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
+        loadJS("chrome://unitedtb/content/util/uiutil.js", this); // error()
 
         var labelE = document.getAnonymousElementByAttribute(this, "anonid", "label");
         if (!labelE.value)
@@ -30,7 +29,7 @@
 
         this.mRegions = [];
         /*
-        var fileContent = this.united.readURLAsUTF8("chrome://unitedtb/content/regions.txt");
+        var fileContent = readURLAsUTF8("chrome://unitedtb/content/regions.txt");
         fileContent = [ "de-DE;Deutschland", "de-AT;Österreich", "it-IT;Italia" ];
         for each (let line in fileContent)
         {
@@ -41,7 +40,7 @@
           this.mRegions.push(region);
         }
         */
-        this.mRegions = this.united.brand.regions.list;
+        this.mRegions = brand.regions.list;
         for each (let region in this.mRegions)
           this.appendOption(region);
         if (this.mRegions.length < 2)
@@ -65,9 +64,9 @@
           }
         }
 
-        var region = this.united.ourPref.get(this.prefName);
+        var region = ourPref.get(this.prefName);
         if (!region)
-          region = this.united.ourPref.get("region.general");
+          region = ourPref.get("region.general");
         if (!region)
           region = "de-DE";
         this.value = region; // TODO which one?
@@ -76,12 +75,12 @@
           this.dropdown.selectedIndex = 0;
 
         var self = this;
-        this.united.ourPref.observeAuto(window, this.prefName, function(newRegion)
+        ourPref.observeAuto(window, this.prefName, function(newRegion)
         {
           self.value = newRegion;
           self.dropdown.value = newRegion;
         })
-        } catch(e) { dump(e + "\n"); this.united.error(e); }
+        } catch(e) { dump(e + "\n"); error(e); }
       ]]></constructor>
       <method name="appendOption">
         <parameter name="region"/>
@@ -103,7 +102,7 @@
     <handlers>
       <handler event="command"><![CDATA[
         dump("region for " + this.prefName + " changed to " + this.dropdown.value + "\n");
-        this.united.ourPref.set(this.prefName, this.dropdown.value);
+        ourPref.set(this.prefName, this.dropdown.value);
       ]]></handler>
     </handlers>
   </binding>

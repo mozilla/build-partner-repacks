@@ -1,8 +1,12 @@
 <!ENTITY page.title "&brand.name; installation">
 <!ENTITY page.heading "&brand.name;">
-<!ENTITY searchengine.checkbox.label "Use &brand.name; as standard search engine">
-<!ENTITY startpage.checkbox.label "Use &brand.name; as start page">
-<!ENTITY newtab.checkbox.label "When opening a new tab, manage your most popular sites and searches">
+<!ENTITY searchengine.checkbox.label "Set &brand.name; search as my default">
+<!ENTITY startpage.checkbox.label "Set my home page to">
+<!ENTITY startpage-search.radiobutton.label "&brand.name; search">
+<!ENTITY startpage-brand.radiobutton.label "&brand.name; portal">
+<!ENTITY newtab.checkbox.label "Use &brand.name; MailCheck new tab">
 <!ENTITY region.label "Country:">
-<!ENTITY close.button.label "Apply">
-<!ENTITY intro.descr "Thank you for installing the &brand.name; Toolbar. You can now set the defaults for the toolbar.">
+<!ENTITY close.button.label "Close">
+<!ENTITY continue.button.label "Continue to Login">
+<!ENTITY intro.heading "Congratulations, you successfully installed the &brand.name; MailCheck!">
+<!ENTITY intro.descr "Please select your settings below.">

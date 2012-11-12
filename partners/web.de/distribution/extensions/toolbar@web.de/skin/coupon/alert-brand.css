@@ -1,0 +1,23 @@
+.united-coupon-alert-button {
+  -moz-appearance: none;
+  border: none;
+  background-color: transparent;
+}
+
+.united-coupon-alert-button-stack {
+  height: 27px;
+  margin-right: 25px;
+}
+
+.united-coupon-alert-button-stack-left {
+  background-image: url('chrome://unitedtb/skin/coupon/gold-button-left.png');
+  background-position: left center;
+  margin-right: 5px;
+}
+
+.united-coupon-alert-button-stack-right {
+  background-image: url('chrome://unitedtb/skin/coupon/gold-button-right.png');
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+

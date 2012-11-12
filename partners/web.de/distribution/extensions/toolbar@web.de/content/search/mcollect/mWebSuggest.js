@@ -6,6 +6,8 @@ Components.utils.import("resource://unitedtb/util/fetchhttp.js", this);
  *
  * Returns |mSearchTermResult|s.
  *
+ * Part of the implementation is <copied to="mEBay.js">
+ *
  * @param searchTerm {String}
  * @param engine {String} Name of OSD search plugin to use
  *    "-current-" = Use the currently in Firefox selected engine (top-right search field)
@@ -20,6 +22,7 @@ function mWebSuggest(searchTerm, engine)
 mWebSuggest.prototype =
 {
   _engineName : null, // for use by _getEngine() only, @see ctor engine
+  _fetch : null, // {FetchHTTP}
 
   /**
    * Triggers the the network request to the search engine.
@@ -33,7 +36,7 @@ mWebSuggest.prototype =
         return;
       var self = this;
       var submission = engine.getSubmission(this._searchTerm, kSuggestType);
-      var fetch = new FetchHTTP({
+      this._fetch = new FetchHTTP({
         url : submission.uri.spec,
         method : submission.postData ? "POST" : "GET",
         uploadBody : submission.postData,
@@ -53,16 +56,27 @@ mWebSuggest.prototype =
 
         // create mSearchTermResult objects
         for each (let term in terms)
-          self._results.push(new mSearchTermResult(term, descr, icon));
+          self._addResult(new mSearchTermResult(term, descr, icon));
 
         // keep sort order of search engine
 
         self._notifyObserversOfResultChanges();
       },
-      function(e) { self._haveError(e); });
-      //fetch._request.channel.notificationCallbacks = ...
-      fetch.start();
-    } catch (e) { this._haveError(e); }
+      function(e) {
+        if (e instanceof UserCancelledException)
+          return;
+        self._haveFatalError(e);
+      });
+      //this._fetch._request.channel.notificationCallbacks = ...
+      this._fetch.start();
+    } catch (e) { this._haveFatalError(e); }
+  },
+
+  cancel : function()
+  {
+    mSearch.prototype.cancel.apply(this);
+    if (this._fetch && ! this._fetch.result)
+      this._fetch.cancel();
   },
 
   /**

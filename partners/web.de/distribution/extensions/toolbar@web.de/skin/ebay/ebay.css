@@ -1,4 +1,12 @@
 #united-ebay-button
 {
-  list-style-image: url("chrome://unitedtb/skin/ebay/ebay-small.png");
+  list-style-image: url("chrome://unitedtb/skin/ebay/ebay.png");
+}
+#united-lastminute-button
+{
+  list-style-image: url("chrome://unitedtb/skin/ebay/lastminute.png");
+}
+#united-amazon-button
+{
+  list-style-image: url("chrome://unitedtb/skin/ebay/amazon.png");
 }

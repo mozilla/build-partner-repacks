@@ -127,6 +127,7 @@ FetchHTTP.prototype =
   _successCallback : null,
   _errorCallback : null,
   _request : null, // the XMLHttpRequest object
+  _callStack : null, // The original call stack
   result : null,
 
   start : function()
@@ -165,15 +166,30 @@ FetchHTTP.prototype =
     this._request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
         .createInstance(Ci.nsIXMLHttpRequest);
     let request = this._request;
+    try {
+      // prevents dialogs like "bad cert" and makes the request fail instead
+      request.mozBackgroundRequest = true;
+    } catch (e) { error(e); } // non-fatal
     debug("contacting <" + url + ">");
     request.open(this._method, url);
     request.channel.loadGroup = null;
+    // Disable Mozilla HTTP cache, causes bugs, see #305 and #459
+    request.channel.loadFlags |= Ci.nsICachingChannel.LOAD_BYPASS_LOCAL_CACHE;
+
     // Headers
     if (mimetype)
       request.setRequestHeader("Content-Type", mimetype);
     for (var name in this._headers)
     {
       request.setRequestHeader(name, this._headers[name]);
+      if (name == "Cookie")
+      {
+        // Websites are not allowed to set this, but chrome is, so no problem.
+        // Nevertheless, the cookie lib later overwrites our header.
+        // request.channel.setCookie(this._headers[name]); -- crashes
+        // So, deactivate that Firefox cookie lib.
+        request.channel.loadFlags |= Ci.nsIRequest.LOAD_ANONYMOUS;
+      }
     }
     // needs bug 407190 patch v4 (or higher) - uncomment if that lands.
     // try {
@@ -186,6 +202,8 @@ FetchHTTP.prototype =
     request.onload = function() { me._response(true); }
     request.onerror = function() { me._response(false); }
     request.send(body);
+    // Store the original stack so we can use it if there is an exception
+    this._callStack = Error().stack;
   },
   _response : function(success, exStored)
   {
@@ -209,25 +227,19 @@ FetchHTTP.prototype =
             mimetype == "text/rdf" ||
             mimetype == "application/rss+xml")
         {
-          // Bug 270553 prevents usage of .responseXML
-          var text = this._request.responseText;
-           // Bug 336551 trips over <?xml ... >
-          text = text.replace(/<\?xml[^>]*\?>/, "");
-          this.result = new XML(text);
+          this.result = this._request.responseXML;
         }
         else
         {
-          //ddump("mimetype: " + mimetype + " only supported as text");
           this.result = this._request.responseText;
         }
-        //ddump("result:\n" + this.result);
       }
       catch (e)
       {
         success = false;
+        errorCode = -4;
         let stringBundle = getStringBundle("chrome://unitedtb/locale/util.properties");
         errorStr = stringBundle.GetStringFromName("bad_response_content.error") + ": " + e;
-        errorCode = -4;
       }
     }
     else
@@ -238,11 +250,22 @@ FetchHTTP.prototype =
         errorCode = this._request.status;
         errorStr = this._request.statusText;
       } catch (e) {
-        // If we can't resolve the hostname in DNS etc., .statusText throws
+        // If we can't resolve the hostname in DNS etc.,
+        // .statusText throws in FF3.6, while FF 4+ gives .statusText = "".
+        // Both versions give success = false and status = 0.
+        errorCode = 0;
+        errorStr = "";
+      }
+      if (errorCode == 0 && errorStr == "")
+      {
         errorCode = -2;
-        let stringBundle = getStringBundle("chrome://unitedtb/locale/util.properties")
+        let stringBundle = getStringBundle("chrome://unitedtb/locale/util.properties");
         errorStr = stringBundle.GetStringFromName("cannot_contact_server.error");
-        errorInBackend(errorStr);
+        try {
+          // try to get a more precise error from nsIHttpChannel / nsIRequest
+          errorCode = this._request.channel.status; // gives an nsresult
+          errorStr = errorStr + "\n("+ getErrorText(errorCode) +")"; //util.js
+        } catch (e) {} // ignore, we already have set a default above
       }
     }
 
@@ -252,8 +275,12 @@ FetchHTTP.prototype =
         this._successCallback(this.result);
       else if (exStored)
         this._errorCallback(exStored);
-      else
-        this._errorCallback(new ServerException(errorStr, errorCode, this._url));
+      else {
+        // Put the caller's stack into the exception
+        var ex = new ServerException(errorStr, errorCode, this._url);
+        ex.stack = this._callStack;
+        this._errorCallback(ex);
+      }
 
       if (this._finishedCallback)
         this._finishedCallback(this);

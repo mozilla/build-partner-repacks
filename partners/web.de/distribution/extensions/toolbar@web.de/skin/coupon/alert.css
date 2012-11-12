@@ -1,0 +1,58 @@
+.united-coupon-alert {
+  background-color: white;
+  border-bottom: 1px solid black;
+  cursor: pointer;
+}
+
+#united-coupon-alert-right {
+  background-color: #A10D59;
+}
+#united-coupon-alert-right-rewards {
+  background-color: #E8923D;
+}
+.united-coupon-alert-left {
+  width: 300px;
+}
+.united-coupon-alert-logo-brand {
+  width: 32px;
+  height: 32px;
+  margin-left: 6px;
+}
+.united-coupon-alert-logo-coupon {
+  padding: 3px 8px 3px 5px;
+  font-size: 16pt;
+  font-weight: bold;
+  font-family: Verdana, sans-serif;
+  color: #A10D59;
+  text-shadow: gray 0 1px;
+}
+.united-coupon-alert-text-generated {
+  color: white;
+  text-shadow: black 0 1px;
+  font-weight: bold;
+  cursor: inherit;
+}
+
+.united-coupon-closebutton-box {
+  width: 20px;
+}
+
+.united-coupon-closebutton {
+   border: none;
+   list-style-image: url("chrome://unitedtb/skin/coupon/closebox.png");
+   -moz-appearance: none;
+   background-color: transparent;
+   min-width: 0px;
+   margin: 0px;
+   padding: 0px;
+}
+
+.united-coupon-closebutton > hbox {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+
+.united-coupon-alert-button {
+  min-width: 120px;
+}

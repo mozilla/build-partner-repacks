@@ -60,7 +60,7 @@ var sanitize =
       return unchecked;
 
     var r = parseInt(unchecked);
-    if (r == NaN)
+    if (isNaN(r))
       throw new MalformedException("no_number.error", unchecked);
 
     return r;

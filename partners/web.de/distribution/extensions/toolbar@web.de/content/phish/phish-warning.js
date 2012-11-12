@@ -5,15 +5,15 @@
  * by adding new entries as request by the user.
  */
 
-var united = {};
-Components.utils.import("resource://unitedtb/util/util.js", united);
-Components.utils.import("resource://unitedtb/util/globalobject.js", united);
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js", united);
+Components.utils.import("resource://unitedtb/util/util.js", this);
+Components.utils.import("resource://unitedtb/util/globalobject.js", this);
+Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
 
 function onload()
 {
   initBrand();
 }
+window.addEventListener("load", onload, false);
 
 function initBrand()
 {
@@ -21,9 +21,9 @@ function initBrand()
   // directly to the search page, so use the value
   // of the placeholder which is just what we want.
   document.getElementById("search-button").setAttribute("href",
-      united.brand.search.netErrorURL);
+      brand.search.netErrorURL);
   document.getElementById("home-anchor").setAttribute("href",
-      united.brand.toolbar.homepageURL);
+      brand.toolbar.homepageURL);
 
 }
 
@@ -37,7 +37,7 @@ function initBrand()
 function whitelist()
 {
   var URL = getURL();
-  //united.debug("whitelist: got URL: " + URL);
+  //debug("whitelist: got URL: " + URL);
   whitelistURL(URL);
   document.location = URL;
 }
@@ -49,10 +49,10 @@ function whitelist()
  */
 function whitelistURL(URL)
 {
-  //united.debug("whitelist() called with url: " + URL);
+  //debug("whitelist() called with url: " + URL);
   var host = getHost(URL);
-  //united.debug("host: " + host);
-  var whitelist = united.getGlobalObject("united", "whitelist");
+  //debug("host: " + host);
+  var whitelist = getGlobalObject("united", "whitelist");
   whitelist.push(host);
 }
 
@@ -63,7 +63,7 @@ function whitelistURL(URL)
  */
 function getHost(url)
 {
-  var wrapped = united.ioService.newURI(url, null, null);
+  var wrapped = ioService.newURI(url, null, null);
   var host = wrapped.host;
   return host;
 }
@@ -85,7 +85,7 @@ function getURL()
   // If this is a view-source page, then get then real URI of the page
   if (/^view-source\:/.test(url))
     url = url.slice(12);
-  //united.debug("extracted url: " + url);
+  //debug("extracted url: " + url);
   return url;
 }
 

@@ -9,21 +9,30 @@
 
   <script type="application/x-javascript" src="chrome://unitedtb/content/util/common.js"/>
   <script type="application/x-javascript">
-    united.loadJS("chrome://unitedtb/content/pref/pref-toolbaritem.js", united);
-    united.optinload = {};
-    united.loadJS("chrome://unitedtb/content/pref/opt-in-load.js", united.optinload);
+    unitedinternet.loadJS("chrome://unitedtb/content/pref/pref-toolbaritem.js", unitedinternet);
+    unitedinternet.initModule(unitedinternet, "optinload");
+    unitedinternet.loadJS("chrome://unitedtb/content/pref/opt-in-load.js", unitedinternet.optinload);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->
 
-  <toolbarpalette id="BrowserToolbarPalette">
+  <toolbar id="united-toolbar">
     <toolbarbutton id="united-pref-button"
+        type="menu-button"
         label="&united.pref.button.label;"
         tooltiptext="&united.pref.button.tooltip;"
-        oncommand="united.openPrefWindow();"
+        oncommand="unitedinternet.openPrefWindow();"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
-        remove-priority="1"
-        />
-  </toolbarpalette>
+        united-icon-only="true"
+        >
+      <menupopup id="united-pref-button-dropdown">
+        <menuitem id="united-pref-button-menuitem"
+          label="&united.pref.button.label;"
+          tooltiptext="&united.pref.button.tooltip;"
+          oncommand="event.stopPropagation(); unitedinternet.openPrefWindow();"
+          />
+      </menupopup>
+    </toolbarbutton>
+  </toolbar>
 </overlay>
