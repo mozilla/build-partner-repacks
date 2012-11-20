@@ -1,5 +1,0 @@
-
-/* Always show close button on tabs */
-.tabbrowser-tabs > * > * > * > .tab-close-button:not([pinned]) {
-  display: -moz-box;
-}

@@ -1,7 +1,0 @@
-<!ENTITY pane.title "Buttons">
-<!ENTITY toolbarmode.label "MailCheck mode">
-<!ENTITY all.full.label "Text &amp; Icons">
-<!ENTITY all.icons.label "Icons only">
-<!ENTITY all.text-only.label "Text only">
-<!ENTITY list.title "Custom buttons">
-<!ENTITY list.descr "The selected elements are shown in MailCheck">

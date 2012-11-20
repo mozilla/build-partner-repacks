@@ -1,4 +1,0 @@
-<!ENTITY enableOnNewWindow.checkbox.label "Highlight search terms automatically">
-<!ENTITY enableOnNewWindow.checkbox.tooltip "Activate the feature 'Highlight search terms' in all new windows. You can also en-/disable it manually using the highlight button.">
-<!ENTITY pane.title "Highlight">
-<!ENTITY color.label "Color:">

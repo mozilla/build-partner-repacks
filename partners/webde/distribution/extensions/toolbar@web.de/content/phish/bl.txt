@@ -1,6 +1,0 @@
-D www.heise.de
-D heise.de
-D icanhascheezburger.com
-P http://www.golem.de
-E http://www.heise.de/newsticker/meldung/Internetsperren-gegen-Urheberrechtsverletzer-Hadopi-wuenscht-Happy-Surfing-1176454.html
-P http://www.com
