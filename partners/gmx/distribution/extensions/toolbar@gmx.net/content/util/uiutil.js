@@ -1,3 +1,6 @@
+Components.utils.import("resource://gre/modules/Services.jsm");
+const kBundleURL = "chrome://unitedtb/locale/util.properties";
+
 function error(e)
 {
   debug("ERROR: " + e);
@@ -12,18 +15,14 @@ function errorNonCritical(e)
 function errorCritical(e)
 {
   error(e);
-  var sb = getStringBundle("chrome://unitedtb/locale/util.properties");
+  var sb = Services.strings.createBundle(kBundleURL);
   var title = sb.GetStringFromName("errorDialog.title");
   alertPrompt(title, e);
 };
 
 function alertPrompt(alertTitle, alertMsg)
 {
-  const Cc = Components.classes;
-  const Ci = Components.interfaces;
-  Cc["@mozilla.org/embedcomp/prompt-service;1"]
-      .getService(Ci.nsIPromptService)
-      .alert(window, alertTitle, alertMsg);
+  promptService.alert(window, alertTitle, alertMsg);
 }
 
 /**
@@ -47,7 +46,7 @@ function loadPageInSpecificTab(url, tabName)
       tabRef.get().parentNode)
   {
     var tabToUse = tabRef.get();
-    var uri = ioService.newURI(url, null, null);
+    var uri = Services.io.newURI(url, null, null);
     // Only use the same tab if the hosts are the same
     if (tabToUse.linkedBrowser.currentURI.host == uri.host)
     {
@@ -538,4 +537,31 @@ function loadBlockedInBrowser(panel)
     panel.hidePopup();
     loadPage(uri);
   };
+}
+
+/**
+ * If a dialog with the given name is open, it focuses it and returns true
+ * It also checks for child dialogs and focuses them as well.
+ * Otherwise it returns false
+ * @param type {String}   The name of the dialog as specified to openDialog
+ * @returns {Boolean} true if the window exists and was focused. False otherwise.
+ */
+function focusDialogIfOpen(name) {
+  // nsIWindowWatcher
+  var winToFocus = Services.ww.getWindowByName(name, null);
+  if (winToFocus) {
+    // It won't focus, if it has child windows. Check for them
+    // nsIWindowMediator
+    let enumerator = Services.wm.getEnumerator(null);
+    while (enumerator.hasMoreElements()) {
+      let win = enumerator.getNext().QueryInterface(Ci.nsIDOMWindow);
+      if (winToFocus == win.opener) {
+        winToFocus = win;
+        break;
+      }
+    }
+    winToFocus.focus();
+    return true;
+  }
+  return false;
 }

@@ -67,14 +67,17 @@ function onLoad(event)
   // must use capture and parent node, to prevent the Mozilla ac widget from interfering :(
   searchField.parentNode.addEventListener("keypress", onKeyPressTab, true);
 
-  if (! XPCOMUtils.generateNSGetFactory) // FF 3.6
-  {
-    emptytext = searchField.getAttribute("emptytext");
-    searchField.addEventListener("dragover", onDragMouseover, false);
-  }
-
   gAutocomplete = new AutocompleteWidget(searchField, { xul: true });
   gAutocomplete.addSource(new mCollectAutocompleteSource(gAutocomplete, window));
+
+  // add splitter to allow user to resize search field
+  // (which is positioned dynamically by toolbar.js)
+  var splitter = document.createElement("splitter");
+  splitter.setAttribute("resizebefore", "flex");
+  splitter.setAttribute("resizeafter", "grow");
+  var toolbar = document.getElementById("united-toolbar");
+  var toolbaritem = document.getElementById("united-search-box");
+  toolbar.insertBefore(splitter, toolbaritem.nextSibling);
 };
 window.addEventListener("load", onLoad, false);
 
@@ -93,9 +96,8 @@ autoregisterWindowObserver("search-term", function(obj)
 function clearSearchField()
 {
   setSearchText("");
-  clearButton.hidden = true;
   searchField.focus();
-  restoreEmptytext();
+  clearButton.hidden = true;
 }
 
 function onFocus(event)
@@ -124,7 +126,6 @@ function onTextChanged(event)
   notifyWindowObservers("search-keypress",
       { searchTerm : searchTerm, source : 1 });
   clearButton.hidden = !searchTerm;
-  restoreEmptytext();
 }
 
 function onButton(event)
@@ -384,40 +385,4 @@ function getLocalmCollectAutocompleteLabels(term, successCallback)
   places.addObserver(end);
   psh.startSearch();
   places.startSearch();
-}
-
-
-
-
-
-//////////////////////////////////////////////////
-// Workaround for bug #293, Mozilla bug 509800
-// Called ondrop and ondragover of searchfield
-function onDragDrop(event)
-{
-  debug("drop");
-  var dragData = event.dataTransfer;
-  var text = dragData.getData("text/plain");
-  if (!text)
-    return;
-  setSearchText(text);
-  event.preventDefault();
-}
-// Further workaround for FF3.6, because it doesn't send the ondrop event.
-function onDragMouseover(event)
-{
-  removeEmptytext();
-}
-function removeEmptytext()
-{
-  searchField.setAttribute("emptytext", "");
-  searchField.setAttribute("placeholder", "");
-}
-var emptytext = ""; // set in onLoad()
-function restoreEmptytext()
-{
-  if (! emptytext) // FF4
-    return;
-  searchField.setAttribute("emptytext", emptytext);
-  searchField.setAttribute("placeholder", emptytext);
 }

@@ -12,36 +12,54 @@
  *
  * Over time, this grew into a general installation questionaire.
  */
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+Components.utils.import("resource://unitedtb/build.js");
 
-var confirmClose = true;
+/* The following function is used to call functions in both opt-in.js and
+  login-page.js */
 
-function onLoad()
-{
-  window.onbeforeunload = function(e) {
-    if (confirmClose)
-      return confirmClose;
-    else
-      return;
-  };
+function onFinishButton() {
+  // If we are branded browser, don't process optin options
+  if (!ourPref.get("brandedbrowser", false))
+    onOptin();
+  onLogin();
 }
 
-function onContinueButton()
+function onOptinLoad()
 {
-  confirmClose = false;
+  if (brand.regions.list.length < 2)
+    document.getElementById("region-label").hidden = true;
+  if (ourPref.get("brandedbrowser", false)) {
+    document.getElementById("container").setAttribute("brandedbrowser", "true");
+  }
+  if (kVariant == "amo")
+    document.getElementById("container").setAttribute("amo", "true");
+}
+window.addEventListener("load", onOptinLoad, false);
+
+function onOptin()
+{
   var searchengine = document.getElementById("searchengine").checked;
-  var startpage = document.getElementById("startpage").checked;
+
+  var startpageSelectedID;
+  var startpageRadioButtons = document.getElementsByName("startpage");
+  for (var i = 0; i < startpageRadioButtons.length; i++) {
+    if (startpageRadioButtons[i].checked) {
+      startpageSelectedID = startpageRadioButtons[i].id;
+      break;
+    }
+  }
   var newtab = document.getElementById("newtab").checked;
 
   //<copied from="pref-general.js (with modifications">
   if (searchengine)
   {
-    var search = Cc["@mozilla.org/browser/search-service;1"]
-        .getService(Ci.nsIBrowserSearchService);
     // sets pref "browser.search.selectedEngine" and notifies app
     try {
-      search.currentEngine = search.getEngineByName(brand.search.engineName);
+      // nsIBrowserSearchService
+      Services.search.currentEngine = Services.search.getEngineByName(brand.search.engineName);
     } catch (ex) {
       // Fails on Mara
     }
@@ -50,26 +68,17 @@ function onContinueButton()
     generalPref.set("keyword.URL", brand.search.keywordURL);
   }
 
-  if (startpage)
-  {
-    if (document.getElementById("startpage-search").checked)
-    {
+  switch (startpageSelectedID) {
+    case "startpage-search":
       generalPref.set("browser.startup.homepage",
           brand.toolbar.startpageURL);
-    } else {
+      break;
+    case "startpage-brand":
       generalPref.set("browser.startup.homepage",
           brand.toolbar.startpageHomepageURL);
-    }
+      break;
   }
   //</copied>
 
   ourPref.set("newtab.enabled", newtab);
-
-  document.location.href = "chrome://unitedtb/content/email/login-page.xhtml";
-}
-
-function onCloseButton()
-{
-  confirmClose = false;
-  optinConfirmClose();
 }

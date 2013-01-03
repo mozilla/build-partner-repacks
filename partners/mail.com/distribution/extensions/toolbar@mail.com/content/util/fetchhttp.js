@@ -52,6 +52,8 @@ const EXPORTED_SYMBOLS = [ "FetchHTTP", "FakeFetchHTTP",
 
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
+Components.utils.import("resource://gre/modules/Services.jsm");
+const kBundleURL = "chrome://unitedtb/locale/util.properties";
 
 /**
  * Set up a fetch.
@@ -238,7 +240,7 @@ FetchHTTP.prototype =
       {
         success = false;
         errorCode = -4;
-        let stringBundle = getStringBundle("chrome://unitedtb/locale/util.properties");
+        let stringBundle = Services.strings.createBundle(kBundleURL);
         errorStr = stringBundle.GetStringFromName("bad_response_content.error") + ": " + e;
       }
     }
@@ -259,7 +261,7 @@ FetchHTTP.prototype =
       if (errorCode == 0 && errorStr == "")
       {
         errorCode = -2;
-        let stringBundle = getStringBundle("chrome://unitedtb/locale/util.properties");
+        let stringBundle = Services.strings.createBundle(kBundleURL);
         errorStr = stringBundle.GetStringFromName("cannot_contact_server.error");
         try {
           // try to get a more precise error from nsIHttpChannel / nsIRequest
@@ -307,7 +309,7 @@ FetchHTTP.prototype =
    */
   cancel : function(ex)
   {
-    assert(!this.result, "Call already returned");
+    // TODO must able able to call cancel() at any time, without errors
 
     this._request.abort();
 

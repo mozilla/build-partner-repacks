@@ -22,11 +22,13 @@
 
 #united-search-box[crowded="true"] #united-search-field
 {
-  max-width: 15em;
+  width: 15em;
 }
 
+/* 26 em plus 2 to account for X and mag glass */
 #united-search-field, .ac-popup {
-  width: 250px;
+  width: 28em;
+  min-width: 15em;
 }
 .ac-item {
   max-width: 250px;

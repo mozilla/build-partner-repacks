@@ -23,12 +23,7 @@ Cu.import("resource://unitedtb/util/globalobject.js", this);
 
 function loadIfNecessary(object)
 {
-  var firstrunPage;
-  // If we're branded browser, just show the login page
-  if (ourPref.get("brandedbrowser", false))
-    firstrunPage = "chrome://unitedtb/content/email/login-page.xhtml";
-  else
-    firstrunPage = "chrome://unitedtb/content/pref/opt-in.xhtml";
+  var firstrunPage = "chrome://unitedtb/content/pref/opt-in.xhtml";
 
   // Ensure that it shows only once, even if several windows are open,
   // e.g. due to session restore.

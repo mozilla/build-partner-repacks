@@ -11,6 +11,7 @@
 
 const EXPORTED_SYMBOLS = [ "downloadCouponsIfNecessary", "haveCouponsForURL", "getDomain" ];
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/util/fetchhttp.js");
@@ -18,9 +19,6 @@ Components.utils.import("resource://unitedtb/util/JXON.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
 Components.utils.import("resource://unitedtb/util/Auth.js"); // for encodeEmailAddress()
 //var sb = new united.StringBundle("chrome://unitedtb/locale/coupon/coupon.properties");
-
-const eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"]
-                  .getService(Components.interfaces.nsIEffectiveTLDService);
 
 const kDBFile = "coupon.sqlite";
 /**
@@ -73,8 +71,6 @@ function getDatabase()
   if (gDB)
     return gDB;
 
-  var storageService = Cc["@mozilla.org/storage/service;1"]
-      .getService(Ci.mozIStorageService);
   var dbFile = getProfileDir();
   dbFile.append(kDBFile);
   var dbFileExisted = dbFile.exists();
@@ -84,7 +80,8 @@ function getDatabase()
     dbFile.remove(false);
     dbFileExisted = false;
   }
-  gDB = storageService.openDatabase(dbFile);
+  // mozIStorageService
+  gDB = Services.storage.openDatabase(dbFile);
 
   if ( !dbFileExisted)
   {
@@ -167,7 +164,8 @@ function xmlToDB(xml)
  */
 
 function getDomain(uri) {
-  return eTLDService.getBaseDomain(uri);
+  // nsIEffectiveTLDService
+  return Services.eTLD.getBaseDomain(uri);
 }
 
 

@@ -264,7 +264,7 @@ AutocompleteWidget.prototype =
       }
       else
       {
-        this._onTextEntered();
+        this._onTextEntered(event);
       }
       this.cancel();
       event.preventDefault();
@@ -548,7 +548,7 @@ AutocompleteWidget.prototype =
    * not in the popup.
    * Calls the event handler
    */
-  _onTextEntered : function(text)
+  _onTextEntered : function(event)
   {
     var handler = this._textfield.getAttribute("ontextentered");
     if (!handler)
@@ -1061,6 +1061,7 @@ const kAutocompleteCSS = "\n\
   overflow: auto;\n\
   max-height : 50em;\n\
   cursor: default;\n\
+  background-color: white;\n\
 }\n\
 .ac-popup-html {\n\
   position: relative;\n\

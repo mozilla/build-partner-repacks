@@ -305,7 +305,6 @@ login : {
         providerID : "gmx",
         domains : [ "gmx.net", "gmx.de", "gmx.at", "gmx.ch",
             "gmx.co.uk", "gmx.fr", "gmx.it",
-            "gmx.com",
             "gmx.eu", "gmx.info", "gmx.biz", "gmx.tm", "gmx.org",
             "imail.de", ],
         type : "unitedinternet",
@@ -323,7 +322,7 @@ login : {
       },
       {
         providerID : "mailcom",
-        domains : [ "mail.com",
+        domains : [ "mail.com", "gmx.com",
           "email.com", "usa.com", "consultant.com", "myself.com",
           "london.com", "europe.com", "post.com", "dr.com", "doctor.com",
           "lawyer.com", "engineer.com", "techie.com", "linuxmail.org",

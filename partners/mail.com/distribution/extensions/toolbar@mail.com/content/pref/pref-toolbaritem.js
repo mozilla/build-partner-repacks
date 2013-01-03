@@ -10,16 +10,11 @@
 function openPrefWindow(module)
 {
   // If a preferences window is already open, focus it
-  var win = Cc["@mozilla.org/appshell/window-mediator;1"]
-              .getService(Ci.nsIWindowMediator)
-              .getMostRecentWindow("Unitedtb:Preferences");
-  if (win) {
-    win.focus();
-  } else {
+  // This file is in the unitedinternet scope so we have to use common
+  if (!common.focusDialogIfOpen("united-pref-window"))
     window.openDialog("chrome://unitedtb/content/pref/pref-window.xul",
         "united-pref-window",
         // per <http://mdn.beonex.com/en/Preferences_System.1>
         "chrome=yes,dialog,titlebar,toolbar,modal,centerscreen",
         { module : module });
-  }
 }

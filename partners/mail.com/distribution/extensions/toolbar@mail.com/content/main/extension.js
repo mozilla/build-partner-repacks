@@ -31,6 +31,8 @@
 
 const EXPORTED_SYMBOLS = [];
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/observer.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
@@ -77,8 +79,6 @@ function onLoadForInit()
  */
 function waitForFirefox()
 {
-    var obss = Cc["@mozilla.org/observer-service;1"]
-      .getService(Ci.nsIObserverService);
     sessionRestoreObserve =  {
         observe: function(subject, topic, data)
         {
@@ -87,48 +87,31 @@ function waitForFirefox()
             } catch (e) { errorInBackend(e); }
         }
     }
-    obss.addObserver( sessionRestoreObserve,  "sessionstore-windows-restored" , false);
-
+    // nsIObserverService
+    Services.obs.addObserver(sessionRestoreObserve, "sessionstore-windows-restored", false);
 }
 
 function hookupUninstall()
 { 
-  // Extension Manager actions, used for uninstall. cancel
-  var obss = Cc["@mozilla.org/observer-service;1"]
-      .getService(Ci.nsIObserverService);
-  if (Cc["@mozilla.org/extensions/manager;1"])
-  {
-    obss.addObserver(this.emAction, "em-action-requested", false);
-  }
-  else
-  {
-    Components.utils.import("resource://gre/modules/AddonManager.jsm");
-    AddonManager.addAddonListener(emAction);
-  }
-  obss.addObserver(this.emAction, "quit-application-granted", false);
+  // Addon Manager actions, used for uninstall, disable and cancel
+  AddonManager.addAddonListener(emAction);
+  // nsIObserverService
+  Services.obs.addObserver(this.emAction, "profile-before-change", false);
 }
 
 var emAction =
 {
   _uninstall : false,
+  _disable : false,
   observe : function (subject, topic, data) {
     try {
-      if (topic == "em-action-requested") {
-        subject.QueryInterface(Ci.nsIUpdateItem);
-        if (subject.id == EMID) { // build.js
-          if (data == "item-uninstalled") {
-            this._uninstall = true;
-            // Some XPCOM is not available at quit-application-granted time,
-            // so we are showing the page here
-            onUninstall();
-          } else if (data == "item-cancel-action") {
-            this._uninstall = false;
-          }
-        }
-      } else if (topic == "quit-application-granted") {
+      if (topic == "profile-before-change") {
         if (this._uninstall) {
-          // You can do other actions here such as remove user preferences
           ourPref.reset("ext.firstrun");
+          notifyGlobalObservers("uninstalled", {});
+        }
+        if (this._disable) {
+          notifyGlobalObservers("disabled", {});
         }
         this.unregister();
       }
@@ -136,10 +119,8 @@ var emAction =
   },
 
   unregister : function() {
-    var obss = Cc["@mozilla.org/observer-service;1"]
-       .getService(Ci.nsIObserverService);
-    obss.removeObserver(this, "em-action-requested");
-    obss.removeObserver(this, "quit-application-granted");
+    // nsIObserverService
+    Services.obs.removeObserver(this, "profile-before-change");
   },
 
   onUninstalling: function(addon) {
@@ -151,9 +132,20 @@ var emAction =
     } catch (e) { errorInBackend(e); }
   },
 
+  onDisabling: function(addon) {
+    try {
+      if (addon.id == EMID) {
+        this._disable = true;
+      }
+    } catch (e) { errorInBackend(e); }
+  },
+
   onOperationCancelled: function(addon) {
     if (addon.id == EMID) {
-      this._uninstall = false;
+      if (this._uninstall)
+        this._uninstall = false;
+      else if (this._disable)
+        this._disable = false;
     }
   },
   onInstalling: function(addon) {
@@ -240,89 +232,77 @@ function onInstall()
  */
 function checkMultipleToolbars()
 {  
-  if (Cc["@mozilla.org/extensions/manager;1"]) // FF3.6
+  AddonManager.getAddonsByIDs(ourEMIDs, function(addons)
   {
-    /* We do nothing for Firefox 3.6 and lower */
-  }
-  else // FF4
-  {
-    var am = {};
-    Components.utils.import("resource://gre/modules/AddonManager.jsm", am);
-    am.AddonManager.getAddonsByIDs(ourEMIDs, function(addons)
-    {
-      try {
-        var numAddons = 0;
-        addons.forEach(function(addon)
+    try {
+      var numAddons = 0;
+      addons.forEach(function(addon)
+      {
+        if (addon)
+          numAddons++;
+      });
+      if (numAddons == 1) {
+        return;  // All fine
+      }
+
+      // show warning dialog. Asking user for permission to uninstall.
+      var conflNames  = [];
+      var conflIDs  = [];
+      var myName = "";
+      addons.forEach(function(addon) {
+        if (!addon) {
+          return;
+        }
+        if (addon.id == EMID) // me
         {
-          if (addon)
-            numAddons++;
-        });
-        if (numAddons == 1) {
-          return;  // All fine
+          myName = addon.name;
+      }
+        else
+        {
+          conflNames.push(addon.name);
+          conflIDs.push(addon.id);
         }
+      });
+      assert(myName, "Couldn't find myself. ourEMIDs is missing my ID " + EMID);
 
-        // show warning dialog. Asking user for permission to uninstall.
-        var conflNames  = [];
-        var conflIDs  = [];
-        var myName = "";
-        addons.forEach(function(addon) {
-          if (!addon) {
-            return;
-          }
-          if (addon.id == EMID) // me
-          {
-            myName = addon.name;
+      var aButtonFlags = (promptService.BUTTON_POS_0) * (promptService.BUTTON_TITLE_IS_STRING) +
+                         (promptService.BUTTON_POS_1) * (promptService.BUTTON_TITLE_IS_STRING) +
+                         promptService.BUTTON_POS_1_DEFAULT;
+
+      var confirm = promptService.confirmEx(findSomeBrowserWindow(),
+            gStringBundle.get("ext.conflict.title"),
+            gStringBundle.get("ext.conflict.msg"),
+            aButtonFlags,
+            gStringBundle.get("ext.conflict.keep", [conflNames[0]]),
+            gStringBundle.get("ext.conflict.keep", [myName]),
+            null,
+            null,
+            {}
+            );
+
+      var addonToUninstall;
+      if (confirm == 1) {
+        addonToUninstall = conflIDs[0];
+      } else {
+        addonToUninstall = EMID;
+      }
+      addons.forEach(function(addon) {
+        if (!addon) {
+          return;
         }
-          else
-          {
-            conflNames.push(addon.name);
-            conflIDs.push(addon.id);
-          }
-        });
-        assert(myName, "Couldn't find myself. ourEMIDs is missing my ID " + EMID);
-        var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-            .getService(Ci.nsIPromptService);
-
-        var aButtonFlags = (prompts.BUTTON_POS_0) * (prompts.BUTTON_TITLE_IS_STRING) +
-                           (prompts.BUTTON_POS_1) * (prompts.BUTTON_TITLE_IS_STRING) +
-                           prompts.BUTTON_POS_1_DEFAULT;
-
-        var confirm = prompts.confirmEx(findSomeBrowserWindow(),
-              gStringBundle.get("ext.conflict.title"),
-              gStringBundle.get("ext.conflict.msg"),
-              aButtonFlags,
-              gStringBundle.get("ext.conflict.keep", [conflNames[0]]),
-              gStringBundle.get("ext.conflict.keep", [myName]),
-              null,
-              null,
-              {}
-              );
-
-        var addonToUninstall;
-        if (confirm == 1) {
-          addonToUninstall = conflIDs[0];
-        } else {
-          addonToUninstall = EMID;
+        if (addon.id == addonToUninstall)
+        {
+          addon.uninstall();
         }
-        addons.forEach(function(addon) {
-          if (!addon) {
-            return;
-          }
-          if (addon.id == addonToUninstall)
-          {
-            addon.uninstall();
-          }
-        });
+      });
 
-        // try to restart, to effectuate the uninstall
-        var appService = Cc["@mozilla.org/toolkit/app-startup;1"]
-            .getService(Ci.nsIAppStartup)
-        appService.quit(Ci.nsIAppStartup.eRestart |
-            Ci.nsIAppStartup.eAttemptQuit); // asks in each window. TODO too nice?
+      // try to restart, to effectuate the uninstall
+      // nsIAppStartup
+      Services.startup.quit(Services.startup.eRestart |
+          Services.startup.eAttemptQuit); // asks in each window. TODO too nice?
 
-      } catch (e) { errorInBackend(e); }
-    });
-  }
+    } catch (e) { errorInBackend(e); }
+  });
 }
 
  /**

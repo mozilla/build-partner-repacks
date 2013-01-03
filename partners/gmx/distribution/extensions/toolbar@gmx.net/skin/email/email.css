@@ -1,16 +1,20 @@
-#united-email-button[status="disconnected"]
+#united-email-button[status="disconnected"],
+#united-email-statusbar-image[status="disconnected"]
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-disconnect-small.png");
 }
-#united-email-button[status="no-new"]
+#united-email-button[status="no-new"],
+#united-email-statusbar-image[status="no-new"]
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-nonew-small.png");
 }
-#united-email-button[status="new"]
+#united-email-button[status="new"],
+#united-email-statusbar-image[status="new"]
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-new-small.png");
 }
-#united-email-button[checking="true"]
+#united-email-button[checking="true"],
+#united-email-statusbar-image[checking="true"]
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-spinner-16.png") !important;
 }

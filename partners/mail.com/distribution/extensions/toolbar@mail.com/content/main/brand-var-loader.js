@@ -17,6 +17,7 @@
 const EXPORTED_SYMBOLS = [ "brand" ];
 var brand = {};
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 var build = {};
 Components.utils.import("resource://unitedtb/build.js", build);
@@ -24,20 +25,14 @@ Components.utils.import("resource://unitedtb/util/observer.js");
 var gBrandJsStringBundle = new StringBundle(
     "chrome://unitedtb/locale/brand.js.properties");
 
-XPCOMUtils.defineLazyServiceGetter(this, "prefService",
-    "@mozilla.org/preferences-service;1", "nsIPrefBranch");
-
 function load(isFirst)
 {
   try {
     // read brand.currentRegion from prefs
-    XPCOMUtils.defineLazyServiceGetter(this, "prefService",
-        "@mozilla.org/preferences-service;1", "nsIPrefService");
     const prefBaseStr = "extensions.unitedinternet.region.";
     if (isFirst)
     {
-      prefService.QueryInterface(Ci.nsIPrefBranch2)
-          .addObserver(prefBaseStr, brandRegionPrefObserver, false);
+      Services.prefs.addObserver(prefBaseStr, brandRegionPrefObserver, false);
     }
 
 /*
@@ -70,7 +65,7 @@ function load(isFirst)
     }
     //debug("brand.js loaded");
 
-    var weblocale = prefService.getComplexValue("intl.accept_languages",
+    var weblocale = Services.prefs.getComplexValue("intl.accept_languages",
         Ci.nsIPrefLocalizedString).data.split(",")[0];
     var appPlaceholders = {
       VERSION : build.version,
@@ -81,9 +76,7 @@ function load(isFirst)
 
 //  } catch (e) { errorInBackend(e); }
   } catch (e) { errorInBackend(e);
-    Cc["@mozilla.org/embedcomp/prompt-service;1"]
-      .getService(Ci.nsIPromptService)
-      .alert(null, "error when loading brand.js", e + "");
+    promptService.alert(null, "error when loading brand.js", e + "");
   }
 }
 

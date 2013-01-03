@@ -83,18 +83,7 @@ function readAccounts()
 function migrate()
 {
   try {
-    let oldAccount = ourPref.get("login.emailAddress");
-    let accountsList = ourPref.get("accountsList");
-    if ( !accountsList && oldAccount)
-    {
-      let oldStoreLogin = !!ourPref.get("login.longSession", true);
-      ourPref.reset("login.emailAddress");
-      ourPref.reset("login.longSession");
-      let acc = makeNewAccount(oldAccount);
-      acc.wantStoredLogin = oldStoreLogin;
-      acc.saveToPrefs();
-    }
-    if (accountsList)
+    if (ourPref.get("accountsList", null))
       ourPref.set("email.runonceNewUsersShown", true);
   } catch (e) { error(e); }
 }
@@ -180,13 +169,13 @@ function onLoginRequest(params)
   if ( !gAccs.length) // we have no accounts yet
   {
     // create account, but only our brand
-    tryLogin(2, null, false, successCallback, errorCallback, abortCallback);
+    tryLogin(2, null, false, null, successCallback, errorCallback, abortCallback);
   }
   else if (needAccountType == 9 || needAccountType == 1) // specific account
   {
     if (needAccountType == 1)
       acc = getPrimaryAccount();
-    tryLogin(1, acc, true, successCallback, errorCallback, abortCallback);
+    tryLogin(1, acc, true, null, successCallback, errorCallback, abortCallback);
   }
   else if (needAccountType == 10) // all accounts
   {
@@ -225,7 +214,7 @@ function onLoginRequest(params)
     };
 
     for each (let acc in gAccs)
-      tryLogin(1, acc, true, combinedSuccessCallback, combinedErrorCallback,
+      tryLogin(1, acc, true, null, combinedSuccessCallback, combinedErrorCallback,
           combinedAbortCallback);
   }
 }
@@ -289,6 +278,9 @@ function onCommandDoLogin()
  * @param allowAutoLogin {Boolean}
  *     if true and we have a password stored, don't show UI, but login directly
  *     if false, show dialog in any case
+ * @param parentWin {Window} optional
+ *     if given the window is used as the parent of the login dialog
+ *     if null, the current window is used
  *
  * @param successCallback {Function(account)}
  *    called when the user successfully logged in (usecase 1 and 2)
@@ -301,66 +293,11 @@ function onCommandDoLogin()
  * @param abortCallback {Function(e)}
  *    called when user clicked Cancel (including after an error)
  */
-function tryLogin(usecase, acc, allowAutoLogin,
+function tryLogin(usecase, acc, allowAutoLogin, parentWindow,
     successCallback, errorCallback, abortCallback)
 {
-  try {
-    sanitize.enum(usecase, [1, 2, 3]);
-    assert(usecase == 2 || acc && acc.emailAddress);
-    assert(usecase != 2 || !acc);
-    assert(typeof(successCallback) == "function");
-    assert(typeof(errorCallback) == "function");
-    assert(typeof(abortCallback) == "function");
-
-    if (usecase == 1 && acc.isLoggedIn)
-    {
-      successCallback(acc);
-      return;
-    }
-
-    if (usecase == 1 && acc.haveStoredLogin && allowAutoLogin)
-      ; // don't show dialog, skip directly to login
-    else // show dialog
-    {
-      var prefillEmail = acc ? acc.emailAddress : "";
-      var prefillStore = acc ? acc.wantStoredLogin : true;
-      var answ = common.getEmailAddressAndPassword({
-          emailAddress : prefillEmail,
-          wantStoredLogin : prefillStore,
-          usecase : usecase,
-        });
-      if (!answ) // user cancelled
-      {
-        abortCallback();
-        return;
-      }
-
-      if (usecase == 2) // create account
-      {
-        // email address already checked in login-dialog.js
-        assert(answ.emailAddress && answ.emailAddress != prefillEmail);
-        acc = getExistingAccountForEmailAddress(answ.emailAddress);
-        if (acc)
-        {
-          errorCallback(new Exception(gStringBundle.get("error.exists")));
-          return;
-        }
-        acc = makeNewAccount(answ.emailAddress);
-        acc.wantStoredLogin = answ.wantStoredLogin;
-      }
-      else // login or edit
-      {
-        assert(answ.emailAddress == prefillEmail);
-        if (answ.wantStoredLogin != prefillStore)
-        {
-          acc.wantStoredLogin = answ.wantStoredLogin;
-          acc.saveToPrefs();
-        }
-      }
-
-      acc.setPassword(answ.password);
-    }
-
+  var loginFunc = function()
+  {
     acc.login(0, true,
     // on success, login-logic.js will send out a global "logged-in"
     // message, which will trigger the further steps (in all windows)
@@ -382,8 +319,74 @@ function tryLogin(usecase, acc, allowAutoLogin,
         acc = null;
       }
       // let user try again. no loop, because user can abort dialog
-      tryLogin(usecase, acc, false, successCallback, errorCallback, abortCallback);
+      tryLogin(usecase, acc, false, parentWindow,
+               successCallback, errorCallback, abortCallback);
     });
+  };
+
+  try {
+    sanitize.enum(usecase, [1, 2, 3]);
+    assert(usecase == 2 || acc && acc.emailAddress);
+    assert(usecase != 2 || !acc);
+    assert(typeof(successCallback) == "function");
+    assert(typeof(errorCallback) == "function");
+    assert(typeof(abortCallback) == "function");
+
+    if (usecase == 1 && acc.isLoggedIn)
+    {
+      successCallback(acc);
+      return;
+    }
+
+    if (usecase == 1 && acc.haveStoredLogin && allowAutoLogin)
+    {
+      // don't show dialog, skip directly to login
+      loginFunc(acc);
+    }
+    else // show dialog
+    {
+      var prefillEmail = acc ? acc.emailAddress : "";
+      var prefillStore = acc ? acc.wantStoredLogin : true;
+      var answ = common.getEmailAddressAndPassword({
+          emailAddress : prefillEmail,
+          wantStoredLogin : prefillStore,
+          usecase : usecase,
+        }, parentWindow);
+      if (!answ) // user cancelled
+      {
+        abortCallback();
+        return;
+      }
+
+      if (usecase == 2) // create account
+      {
+        // email address already checked in login-dialog.js
+        assert(answ.emailAddress && answ.emailAddress != prefillEmail);
+        acc = getExistingAccountForEmailAddress(answ.emailAddress);
+        if (acc)
+        {
+          errorCallback(new Exception(gStringBundle.get("error.exists")));
+          return;
+        }
+        makeNewAccount(answ.emailAddress, function(newAcc) {
+          acc = newAcc;
+          acc.wantStoredLogin = answ.wantStoredLogin;
+          acc.setPassword(answ.password);
+          loginFunc();
+        }, errorCallback);
+      }
+      else // login or edit
+      {
+        assert(answ.emailAddress == prefillEmail);
+        if (answ.wantStoredLogin != prefillStore)
+        {
+          acc.wantStoredLogin = answ.wantStoredLogin;
+          acc.saveToPrefs();
+        }
+        acc.setPassword(answ.password);
+        loginFunc();
+      }
+    }
   } catch (e) { errorCritical(e); }
 }
 
@@ -457,13 +460,11 @@ function logoutConfirmation()
 {
   if (ourPref.get("login.logoutConfirm"))
   {
-    var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-        .getService(Ci.nsIPromptService);
-    var buttonFlags = prompts.BUTTON_POS_0 * prompts.BUTTON_TITLE_IS_STRING +
-        prompts.BUTTON_POS_1 * prompts.BUTTON_TITLE_CANCEL +
-        prompts.BUTTON_POS_1_DEFAULT;
+    var buttonFlags = promptService.BUTTON_POS_0 * promptService.BUTTON_TITLE_IS_STRING +
+        promptService.BUTTON_POS_1 * promptService.BUTTON_TITLE_CANCEL +
+        promptService.BUTTON_POS_1_DEFAULT;
     var remember = { value : null };
-    var confirm = prompts.confirmEx(window,
+    var confirm = promptService.confirmEx(window,
         gStringBundle.get("logout.confirm.title"),
         gStringBundle.get("logout.confirm.msg"),
         buttonFlags,
@@ -489,6 +490,8 @@ function logoutConfirmation()
  *     or if none of the configured accounts is from
  *     the brand of the current toolbar,
  *     e.g. only a GMX account, but this is a web.de toolbar.
+ *
+ * <copied to="email.js">
  */
 function getPrimaryAccount()
 {

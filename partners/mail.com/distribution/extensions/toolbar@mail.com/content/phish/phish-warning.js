@@ -5,6 +5,7 @@
  * by adding new entries as request by the user.
  */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js", this);
 Components.utils.import("resource://unitedtb/util/globalobject.js", this);
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
@@ -63,7 +64,7 @@ function whitelistURL(URL)
  */
 function getHost(url)
 {
-  var wrapped = ioService.newURI(url, null, null);
+  var wrapped = Services.io.newURI(url, null, null);
   var host = wrapped.host;
   return host;
 }

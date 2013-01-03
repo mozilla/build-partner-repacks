@@ -30,9 +30,9 @@ function check()
                                   check);
             if (confirmRestart == 0)
             {
-              var nsIAppStartup = Components.classes["@mozilla.org/toolkit/app-startup;1"]
-                                            .getService(Components.interfaces.nsIAppStartup);
-              nsIAppStartup.quit(nsIAppStartup.eRestart | nsIAppStartup.eAttemptQuit);
+              // nsIAppStartup
+              Services.startup.quit(Services.startup.eRestart |
+                                    Services.startup.eAttemptQuit);
             }
           }
         },

@@ -1,20 +1,12 @@
+Components.utils.import("resource://gre/modules/AddonManager.jsm");
+
 /**
  * This implements the help menu for our toolbar.
  * It appears in the Firefox help menu and
  * in the "Settings" button dropdown.
  */
 
-function loadPageWithFallback(url, fallbackURL)
-{
-  new TrackHTTPError(url, null, function(url, httpcode) // error callback
-  {
-    debug("url <" + url + "> failed to load (" + httpcode + "), falling back to <" + fallbackURL + ">");
-    loadPage(fallbackURL);
-  });
-  loadPage(url);
-}
-
-// <copied from="uiutil.js (with modifications, for fallbackURL)">
+// <copied from="uiutil.js ">
 function onMenuitem(event)
 {
   if (event.target.hasAttribute("aboutextdialog"))
@@ -22,13 +14,9 @@ function onMenuitem(event)
   else
   {
     var url = event.target.getAttribute("url");
-    var fallbackURL = event.target.getAttribute("fallbackURL");
     if (!url)
       throw new NotReached("expected url attribute");
-    if (fallbackURL)
-      loadPageWithFallback(url, fallbackURL);
-    else
-      loadPage(url);
+    loadPage(url);
   }
   event.stopPropagation(); // prevent from bubbling to main <button>
 };
@@ -55,8 +43,6 @@ function initMenuitems(containerID)
       item.setAttribute("aboutextdialog", "true");
     if (entry.url)
       item.setAttribute("url", entry.url);
-    if (entry.fallbackURL)
-      item.setAttribute("fallbackURL", entry.fallbackURL);
     if (entry.replaceVersion && entry.url)
       item.setAttribute("url", entry.url);
     item.setAttribute("label", entry.label);
@@ -68,72 +54,9 @@ function initMenuitems(containerID)
 
 function openAboutDialog()
 {
-  if (Cc["@mozilla.org/extensions/manager;1"]) // FF3.6
+  AddonManager.getAddonByID(EMID, function(addon)
   {
-    var rdfs = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService);
-    var extensionDS= Cc["@mozilla.org/extensions/manager;1"].getService(Ci.nsIExtensionManager).datasource;
-
-    window.openDialog("chrome://mozapps/content/extensions/about.xul", "", "chrome,centerscreen,modal",
-                      "urn:mozilla:item:" + EMID, extensionDS);
-  }
-  else // FF4
-  {
-    var am = {};
-    Components.utils.import("resource://gre/modules/AddonManager.jsm", am);
-    am.AddonManager.getAddonByID(EMID, function(addon)
-    {
-      window.openDialog("chrome://mozapps/content/extensions/about.xul",
-          "", "chrome,centerscreen,modal", addon);
-    });
-  }
-}
-
-
-/**
- * Reports whether a certain URL load worked or failed.
- */
-function TrackHTTPError(url, successCallback, errorCallback)
-{
-  assert(url && typeof(url) == "string", "need url");
-  this.url = url;
-  if (successCallback)
-    this.successCallback = successCallback;
-  if (errorCallback)
-    this.errorCallback = errorCallback;
-  this._hookup();
-}
-TrackHTTPError.prototype =
-{
-  url : null,
-  errorCallback : function() {},
-  successCallback : function() {},
-  observe: function(subject, topic, data)
-  {
-    try {
-      if (topic != "http-on-examine-response")
-        return;
-      if (!(subject instanceof Ci.nsIHttpChannel))
-        return;
-      if (subject.originalURI.spec != this.url)
-        return;
-      this._unhook();
-      if (Components.isSuccessCode(subject.status) &&
-           subject.responseStatus == 200)
-        this.successCallback(this.url);
-      else
-        this.errorCallback(this.url, subject.responseStatus);
-    } catch (e) { errorInBackend(e); }
-  },
-  _hookup : function()
-  {
-    var observerService = Cc["@mozilla.org/observer-service;1"]
-        .getService(Ci.nsIObserverService);
-    observerService.addObserver(this, "http-on-examine-response", false);
-  },
-  _unhook : function()
-  {
-    var observerService = Cc["@mozilla.org/observer-service;1"]
-        .getService(Ci.nsIObserverService);
-    observerService.removeObserver(this, "http-on-examine-response");
-  },
+    window.openDialog("chrome://mozapps/content/extensions/about.xul",
+        "", "chrome,centerscreen,modal", addon);
+  });
 }

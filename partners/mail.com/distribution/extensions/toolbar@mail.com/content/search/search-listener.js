@@ -21,17 +21,15 @@
 var gFirefoxSearchbar = null;
 var origHandleSearchCommand = null;
 
-XPCOMUtils.defineLazyServiceGetter(this, "gSearchService",
-    "@mozilla.org/browser/search-service;1", "nsIBrowserSearchService");
-
 function ourHandleSearchCommand(aEvent)
 {
   // original Firfox handler
   origHandleSearchCommand.apply(gFirefoxSearchbar, [aEvent]);
 
-  // not via our search engine
+  // thirdparty = not via our search engine
+  // nsIBrowserSearchService
   var thirdparty =
-      gSearchService.currentEngine.name != brand.search.engineName;
+      Services.search.currentEngine.name != brand.search.engineName;
 
   var searchTerm = gFirefoxSearchbar._textbox.value;
   notifyWindowObservers("search-started",

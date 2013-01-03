@@ -6,14 +6,12 @@
 
 const EXPORTED_SYMBOLS = [];
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/util/fetchhttp.js");
 Components.utils.import("resource://unitedtb/util/JXON.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
-
-var obss = Cc["@mozilla.org/observer-service;1"]
-  .getService(Ci.nsIObserverService);
 
 sessionRestoreObserve =  {
   observe: function(subject, topic, data)
@@ -24,7 +22,8 @@ sessionRestoreObserve =  {
       ourPref.set("hotnews.firstrun", false);
   }
 }
-obss.addObserver( sessionRestoreObserve,  "sessionstore-windows-restored" , false);
+// nsIObserverService
+Services.obs.addObserver(sessionRestoreObserve, "sessionstore-windows-restored", false);
 
 function fetch()
 {

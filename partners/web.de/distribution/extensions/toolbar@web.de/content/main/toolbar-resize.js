@@ -30,13 +30,13 @@ window.addEventListener("load", onLoadResize, false);
 function onWindowResize()
 {
   var buttons = getButtonsToShrink();
-  for each (let button in buttons)
+  for (let [,button] in Iterator(buttons))
     button.removeAttribute("crowded");
   // scroll width is the natural size it wants to have
   if (!gWantWidth)
     gWantWidth = tb.scrollWidth;
   //debug("on overflow: want width " + gWantWidth + ", now natural (scroll) width " + tb.scrollWidth + ", have (client) width " + tb.clientWidth);
-  for each (let button in buttons)
+  for (let [,button] in Iterator(buttons))
   {
     if (tb.scrollWidth <= tb.clientWidth)
       return;

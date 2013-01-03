@@ -1,10 +1,10 @@
 <!ENTITY login.title "Anmeldung">
 
-<!ENTITY emailaddress.label "E-Mail-Adresse">
+<!ENTITY emailaddress.label "&brand.name; E-Mail-Adresse">
 <!ENTITY emailaddress.accesskey "E">
 <!ENTITY password.label "Passwort">
 <!ENTITY password.accesskey "P">
-<!ENTITY long-session.label "Angemeldet bleiben">
+<!ENTITY long-session.label "Angemeldet bleiben und bei neuen E-Mails gleich benachrichtigt werden">
 <!ENTITY long-session.accesskey "b">
 
 <!ENTITY forgotpassword.label "Passwort vergessen?">
@@ -12,7 +12,9 @@
 <!ENTITY intro.heading "Herzlichen Glückwunsch, Sie haben jetzt den &brand.name; MailCheck konfiguriert">
 <!ENTITY intro.descr "Bitte geben Sie Ihre Anmeldedaten ein. Sie können sie jederzeit ändern.">
 
-<!ENTITY createaccount.label "&brand.name; Postfach erstellen">
+<!ENTITY createaccount.label "Jetzt kostenlos registrieren!">
 
-<!ENTITY login.finish.button.label "Fertigstellen">
+<!ENTITY login.button.label "Login Only">
 <!ENTITY close.button.label "Schließen">
+
+<!ENTITY email.intro "Bitte melden Sie sich hier mit Ihrer vollständigen &brand.name; E-Mail-Adresse und Ihrem Passwort an, damit Sie sofort über neue E-Mails in Ihrem Postfach benachrichtigt werden:">

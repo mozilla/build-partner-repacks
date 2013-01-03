@@ -4,6 +4,7 @@ const EXPORTED_SYMBOLS = [
   "mLocalUnitedSearch",
 ];
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");

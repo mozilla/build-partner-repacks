@@ -6,6 +6,7 @@
 
 const EXPORTED_SYMBOLS = [];
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
 var build = {}
@@ -16,9 +17,8 @@ Components.utils.import("resource://unitedtb/build.js", build);
  */
 function listen()
 {
-  var observerService = Cc["@mozilla.org/observer-service;1"]
-      .getService(Ci.nsIObserverService);
-  observerService.addObserver(AddHeaders, "http-on-modify-request", false);
+  // nsIObserverService
+  Services.obs.addObserver(AddHeaders, "http-on-modify-request", false);
 }
 runAsync(listen);
 

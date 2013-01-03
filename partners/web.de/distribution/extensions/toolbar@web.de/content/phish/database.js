@@ -11,6 +11,7 @@
 
 const EXPORTED_SYMBOLS = ["checkURI", "downloadBlacklist"];
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/fetchhttp.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
@@ -18,55 +19,57 @@ Components.utils.import("resource://unitedtb/util/globalobject.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
 
 
-const PHISHING_DB_FILE_MAIN = "phishing-blacklist.sqlite";
-// we do not write into the same DB we're reading from.
-// instead, we switch them around.
-const PHISHING_DB_FILE_UPDATE = "phishing-blacklist-temp.sqlite";
+const PHISHING_DB_FILE = "phishing-blacklist.sqlite";
+const PHISHING_DB_FILE_OLD = "phishing-blacklist-temp.sqlite";
 const PHISH_TABLE_DOMAIN = "domains";
 const PHISH_TABLE_PREFIX = "prefixes";
 const PHISH_TABLE_EXACT = "exact";
 
-var gPhishingDBMain = null;
-var gPhishingDBUpdate = null;
-var gCurrentDB = null;
+// URLs that should always pass. If not, the phishing DB is ignored.
+var sanityCheckURLs = [
+  "http://freemail.web.de",
+  "https://freemail.web.de",
+  "http://www.google.com",
+  "http://www.gmx.net",
+  ];
+
+// Same as sanityCheckURLs, but cached as nsIURI. Populated onLoad().
+var sanityCheckURIsCache = [];
+
+var gPhishingDB = null;
 
 /**
- * Returns the currently active database instance.
+ * Initialilizes the phishing database.
  *
- * @return {mozIStorageConnection} Currently active 'Query' database connection
  */
-function phishingDB()
+function initDB()
 {
-  if (gCurrentDB)
-    return gCurrentDB;
+  if (gPhishingDB)
+    return;
 
-  var storageService = Cc["@mozilla.org/storage/service;1"]
-      .getService(Ci.mozIStorageService);
-  var dir = getProfileDir();
+  var dbfile = getProfileDir();
 
-  var db1file = dir.clone();
-  db1file.append(PHISHING_DB_FILE_MAIN);
-  var db1fileExisted = db1file.exists();
-  gPhishingDBMain = storageService.openDatabase(db1file);
-  if (!db1fileExisted)
-    createDB(gPhishingDBMain);
+  // Migration, remove in 2.5
+  var olddbfile = dbfile.clone();
+  olddbfile.append(PHISHING_DB_FILE_OLD);
+  if (olddbfile.exists()) {
+    try {
+      olddbfile.remove(false);
+    } catch(ex) {/*Just in case remove fails for some reason*/}
+  }
 
-  var db2file = dir.clone();
-  db2file.append(PHISHING_DB_FILE_UPDATE);
-  var db2fileExisted = db2file.exists();
-  gPhishingDBUpdate = storageService.openDatabase(db2file);
-  if (!db2fileExisted)
-    createDB(gPhishingDBUpdate);
-
-  gCurrentDB = gPhishingDBMain;
-  return gCurrentDB;
+  dbfile.append(PHISHING_DB_FILE);
+  var dbfileExisted = dbfile.exists();
+  gPhishingDB = Services.storage.openDatabase(dbfile);
+  if (!dbfileExisted)
+    makeEmptyDB(gPhishingDB);
 }
 
 
 /**
  * Initializes DB schema. Will delete old data.
  */
-function createDB(dbConn)
+function makeEmptyDB(dbConn)
 {
   ourPref.set("phish.db.version", 1);
 
@@ -101,6 +104,10 @@ function createDB(dbConn)
  */ 
 function checkURI(anURI, successCallback, errorCallback)
 {
+  // If we haven't initialized the database, just return success
+  if (!gPhishingDB)
+    successCallback();
+
   //debug("CheckURI(<" + anURI.spec + "> using " + gCurrentDB.databaseFile.leafName);
   //(A bug: SQLite only understands upper/lower case for ASCII characters by default. The LIKE operator is case sensitive by default for unicode characters that are beyond the ASCII range. For example, the expression 'a' LIKE 'A' is TRUE but 'æ' LIKE 'Æ' is FALSE.)
   // TODO: lowercase domain?
@@ -116,9 +123,9 @@ function checkURI(anURI, successCallback, errorCallback)
       " WHERE substr(:hostname, 0 - length(" + 
       PHISH_TABLE_DOMAIN + ".pattern)) = " + PHISH_TABLE_DOMAIN + ".pattern";
   
-  var exactSel = phishingDB().createStatement(exactQuery);
-  var prefixSel = phishingDB().createStatement(prefixQuery);
-  var domainSel = phishingDB().createStatement(domainQuery);
+  var exactSel = gPhishingDB.createStatement(exactQuery);
+  var prefixSel = gPhishingDB.createStatement(prefixQuery);
+  var domainSel = gPhishingDB.createStatement(domainQuery);
 
   // copied from nsIURI documentation
   //* Some characters may be escaped.
@@ -214,30 +221,18 @@ function makeDomainQueryCallback(visitedHostname,
  * Writes the parsed blacklist into the database.
  * 
  * When updating, we first delete the whole database.
- * To prevent a protection hole of 1-2 seconds,
- * which is right at the startup when the protection is important,
- * we use 2 databases:
- * - The main one will normally be queried.
- *   This is also the one used at startup.
- * - The update database.
- * We empty and write into the update database,
- * then make the update database shortly the current
- * database. Then we empty and write the main database.
- * Then we make the main database the current DB again.
  *
  * @param parsedResults {Object} @see return value of parse()
- * @param targetDB {mozIStorageConnection} (optional)   Database to write to
- *     If not passing this, the alternating logic above is used.
  */
-function updateDB(parsedResults, targetDB)
+function updateDB(parsedResults)
 {
-  assert(parsedResults);
-  var newDB = targetDB;
-  if (!newDB)
-    newDB = gPhishingDBUpdate;
-  assert(newDB instanceof Ci.mozIStorageConnection);
-  createDB(newDB);
-
+  initDB(); // Make sure the database is there, just in case
+  makeEmptyDB(gPhishingDB); // Empty the DB
+  if (!parsedResults) {
+    // if we get an invalid list from the server, continue with empty DB
+    return;
+  }
+  assert(parsedResults.E instanceof Array);
   var types = ["D", "E", "P"];
   var finishedTypeCounter = types.length;
   for each (let type in types)
@@ -251,7 +246,7 @@ function updateDB(parsedResults, targetDB)
       case  "P": {table = PHISH_TABLE_PREFIX; break;}
       default: throw new NotReached("Unknown type in phishing list");
     }
-    let statement = newDB.createStatement("INSERT OR IGNORE INTO " +
+    let statement = gPhishingDB.createStatement("INSERT OR IGNORE INTO " +
         table + " (pattern) VALUES (:pattern)");
     let params = statement.newBindingParamsArray();
     let patterns = parsedResults[type];
@@ -275,15 +270,20 @@ function updateDB(parsedResults, targetDB)
     {
      if (--finishedTypeCounter)
         return;
-      //debug("phish: now using " + newDB.databaseFile.leafName + " as database");
-      gCurrentDB = newDB;
-      if (!targetDB && gCurrentDB == gPhishingDBUpdate)
-        updateDB(parsedResults, gPhishingDBMain);
-      else
+      // Do a sanity check on a few major URLs
+      for (var i = 0; i < sanityCheckURIsCache.length; i++)
       {
-        ourPref.set("phish.lastUpdate", Math.round(new Date().getTime() / 1000));
-        debug("phish update done");
+        checkURI(sanityCheckURIsCache[i], function(block)
+        {
+          if (block) {
+            errorInBackend("Blacklist is blocking a major URL");
+            makeEmptyDB(gPhishingDB);
+            ourPref.reset("phish.lastUpdate");
+          }
+        }, errorInBackend);
       }
+      ourPref.set("phish.lastUpdate", Math.round(new Date().getTime() / 1000));
+      debug("phish update done");
     }, errorInBackend));
   }
 }
@@ -298,7 +298,8 @@ function downloadBlacklist()
   {
     //debug("phish: Got response from webserver");
     assert(typeof(response) == "string");
-    updateDB(parse(response));
+    var parsedResults = parse(response);
+    updateDB(parsedResults);
   }, errorInBackend);
   fetcher.start();
 }
@@ -320,6 +321,12 @@ function parse(blacklist)
   assert(blacklist, "blacklist is null");
   var parsed = { E : [], P : [], D : []};
   var entries = blacklist.split("\r\n");
+  // If we have too many entries (too slow), bail
+  if (entries.length > 10000)
+  {
+    errorInBackend("Blacklist file is too large: " + entries.length + " entries");
+    return null;
+  }
   // TODO: remove this for production use
   // or find more robust way to detect invalid format
   // such as broken line endings
@@ -334,9 +341,27 @@ function parse(blacklist)
     let type = sanitize.enum(split[0], ["E", "P", "D" ]);
     let pattern = split[1];
     if (type == "P" || type == "E")
+    {
       sanitize.url(pattern);
+      // If the pattern doesn't contain a '.', ignore.
+      // This is to prevent things like http://www and http:// or https://
+      // We also check for things like https://www.
+      if (pattern.indexOf('.') == -1 ||
+          pattern.indexOf('.') == pattern.length - 1) {
+        errorInBackend("Invalid blacklist file entry (no dot): " + pattern);
+        continue;
+      }
+    }
     else if (type == "D")
+    {
       sanitize.hostname(pattern);
+      // If the hostname doesn't contain a '.', ignore.
+      // This is to prevent blocking all of com, org, net, de, uk, etc.
+      if (pattern.indexOf('.') == -1) {
+        errorInBackend("Invalid blacklist file entry (no dot): D " + pattern);
+        continue;
+      }
+    }
     else
       throw new NotReached();
     //debug("type is " + type + ", pattern is " + pattern);
@@ -347,22 +372,46 @@ function parse(blacklist)
   return parsed;
 }
 
-var gPoller = null;
-
 /**
- * Starts periodic update of the blacklist.
- * Call this function in the background with runAsync().
+ * Checks to see if the blacklist has been downloaded recently
+ * If not, download it.
  */
-function startPeriodicUpdate()
-{
-  phishingDB(); // trigger DB init
-  if (!ourPref.get("phish.lastUpdate") ||
+function downloadIfNeeded() {
+  if (!ourPref.get("phish.enable"))
+    return;
+  if (!ourPref.get("phish.lastUpdate", null) ||
       sanitize.integer(ourPref.get("phish.lastUpdate")) <
         new Date() / 1000 - brand.phish.updateFrequency)
     downloadBlacklist();
-  else debug("not updating phishing list, because we got a fresh enough one");
-  gPoller = runPeriodically(downloadBlacklist,
-      brand.phish.updateFrequency * 1000);
+  else
+    debug("not updating phishing list, because we got a fresh enough one");
 }
 
-startPeriodicUpdate();
+/**
+ * The poller must not check lastUpdate again, to avoid time differences
+ * due to event queues and network download times.
+ */
+function downloadIfEnabled() {
+  if (!ourPref.get("phish.enable"))
+    return;
+  downloadBlacklist();
+}
+
+var gPoller = null;
+
+function onLoad()
+{
+  // sanityCheckURLs --nsIURI--> sanityCheckURIsCache
+  for (var i = 0; i < sanityCheckURLs.length; i++)
+    sanityCheckURIsCache.push(Services.io.newURI(sanityCheckURLs[i], null, null));
+
+  initDB();
+
+  downloadIfNeeded();
+  // Start periodic update of the blacklist
+  gPoller = runPeriodically(downloadIfEnabled,
+      brand.phish.updateFrequency * 1000);
+}
+runAsync(onLoad);
+
+ourPref.observe("phish.enable", downloadIfNeeded);

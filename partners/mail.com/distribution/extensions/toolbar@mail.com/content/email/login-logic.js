@@ -135,6 +135,7 @@ UnitedInternetLoginAccount.prototype =
 
   _verifyAccountSettings : function()
   {
+    assert(this.config && this.config.type == "unitedinternet");
     sanitize.nonemptystring(this.accountID);
     sanitize.nonemptystring(this.emailAddress);
     Account.getDomainForEmailAddress(this.emailAddress); // checks
@@ -156,11 +157,11 @@ UnitedInternetLoginAccount.prototype =
    */
   saveToPrefs : function()
   {
-    this._readServerConfig();
     this._verifyAccountSettings();
 
     this._pref = ourPref.branch("account." + this.accountID + ".");
     this._pref.set("type", "unitedinternet");
+    this._pref.set("provider", this.config.providerID);
     this._pref.set("emailAddress", this.emailAddress);
     this._pref.set("storeLogin", this._wantStoredLogin);
 
@@ -173,17 +174,48 @@ UnitedInternetLoginAccount.prototype =
     }
   },
 
+  /**
+   * Only for makeNewAccount() in account-list.js.
+   * Needs to be called only once, because it persists.
+   */
+  setServerConfig : function(config)
+  {
+    assert(config && config.type == "unitedinternet" &&
+        config.loginTokenServerURL,
+        "Invalid UnitedInternet config for " + this.emailAddress);
+    this.config = config;
+  },
+
   _readServerConfig : function()
   {
-    var domain = Account.getDomainForEmailAddress(this.emailAddress);
-    for each (let config in brand.login.configs)
+    var providerID = this._pref.get("provider");
+    if (providerID)
     {
-      if ( !arrayContains(config.domains, domain))
-        continue;
-      assert(config.type == "unitedinternet");
-      this.config = config;
+      for each (let config in brand.login.configs)
+      {
+        if (config.providerID != providerID)
+          continue;
+        assert(config.type == "unitedinternet");
+        this.config = config;
+        break;
+      }
     }
-    assert(this.config.loginTokenServerURL, "Got a " + domain + " UnitedInternet account, but not the corresponding server config in brand.js");
+    else // migrate old accounts
+    {
+      var domain = Account.getDomainForEmailAddress(this.emailAddress);
+      for each (let config in brand.login.configs)
+      {
+        if ( !arrayContains(config.domains, domain))
+          continue;
+        this.setServerConfig(config);
+        if (this._pref) // was read from prefs
+          this._pref.set("provider", this.config.providerID);
+        break;
+      }
+    }
+    assert(this.config && this.config.type == "unitedinternet" &&
+        this.config.loginTokenServerURL,
+        "Invalid UnitedInternet config for " + this.emailAddress);
   },
 
   /**

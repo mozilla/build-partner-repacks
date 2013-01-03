@@ -96,7 +96,7 @@ function captureThumbnail(browser)
   if (!win)
     return null;
   var uri = browser.currentURI ? browser.currentURI :
-      ioService.newURI(browser.contentDocument.location.href, null, null);
+      Services.io.newURI(browser.contentDocument.location.href, null, null);
   if (uri.scheme != "http" && uri.scheme != "https")
     return null;
 
@@ -324,7 +324,6 @@ MostVisitedEntry.prototype =
 */
 function cleanUpOnUnInstall()
 {
-  // TODO throws in FF 3.6 -- #285
   var URIs = annotationService.getPagesWithAnnotation("unitedtb/thumbnail/dataurl");
   for (var index in URIs)
   {

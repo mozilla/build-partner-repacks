@@ -30,6 +30,8 @@ var gBrandBundle = new StringBundle(
     "chrome://unitedtb/locale/email/email-brand.properties");
 
 var gEmailButton = null;
+var gEmailStatusBarImage = null;
+var gEmailStatusBarLabel = null;
 var gEmailButtonDropdown = null;
 var gEmailMenuitems = [];
 // All accounts
@@ -52,6 +54,8 @@ gMailImage.src = "chrome://unitedtb/skin/email/email-nonew-small.png";
 function onLoad()
 {
   try {
+    gEmailStatusBarImage = document.getElementById("united-email-statusbar-image");
+    gEmailStatusBarLabel = document.getElementById("united-email-statusbar-label");
     gEmailButton = document.getElementById("united-email-button");
     gEmailButtonDropdown = document.getElementById("united-email-button-dropdown");
     new appendBrandedMenuitems("email", "email", null, function(entry)
@@ -121,7 +125,7 @@ function accountsSummary()
 function updateUI()
 {
   // delete
-  for each (let menuitem in gEmailMenuitems)
+  for (let [,menuitem] in Iterator(gEmailMenuitems))
     gEmailButtonDropdown.removeChild(menuitem);
   var insertBeforeE = document.getElementById("united-email-separator-after-accounts");
   var tooltiptext = gEmailButton.getAttribute("tooltiptext-for-item");
@@ -157,6 +161,13 @@ function updateUI()
   var summaryFakeAcc = summary.accountCount ? summary : null;
   gEmailButton.setAttribute("status", statusAttr(summaryFakeAcc));
   gEmailButton.setAttribute("tooltiptext", unreadText(summaryFakeAcc));
+  gEmailStatusBarImage.setAttribute("status", statusAttr(summaryFakeAcc));
+  gEmailStatusBarImage.setAttribute("tooltiptext", unreadText(summaryFakeAcc));
+  gEmailStatusBarLabel.setAttribute("tooltiptext", unreadText(summaryFakeAcc));
+  if (summary.isLoggedIn)
+    gEmailStatusBarLabel.setAttribute("value", summary.newMailCount);
+  else
+    gEmailStatusBarLabel.setAttribute("value", gEmailStatusBarLabel.getAttribute("origvalue"));
   drawCount(summary.newMailCount, gEmailButton, gMailImage);
   unitedinternet.toolbar.onButtonSizeChangedByCode();
   // Disabled because of Mozilla bug 744992
@@ -184,7 +195,17 @@ autoregisterGlobalObserver("mail-check", updateUI);
 function updateMenuitem(menuitem, acc, type)
 {
   menuitem.account = acc;
-  menuitem.setAttribute("status", statusAttr(acc));
+
+  if (type == 2) { // Friends only
+    if (acc.friendsNewMailCount > 0)
+      menuitem.setAttribute("status", "new");
+  } else if (type == 3) { // Unknown senders
+    if (acc.unknownNewMailCount > 0)
+      menuitem.setAttribute("status", "new");
+  } else {
+    menuitem.setAttribute("status", statusAttr(acc));
+  }
+
   menuitem.setAttribute("label",
       gStringBundle.get("button.emailAddressPlacement")
         .replace("%1", acc.emailAddress)
@@ -307,8 +328,12 @@ function desktopNotificationClicked(dummy, cookie)
  * - If no accounts, go to configure
  * - If exactly 1 account, (login and) go to its webmail.
  * - If > 1 account, open dropdown.
+ * - If openPrimary, finds the primary account and opens it
+ *
+ * @param openPrimary {boolean} (optional, default false)
+ *    Avoid a dropdown
  */
-function onCommandMailButton()
+function onCommandMailButton(openPrimary)
 {
   if (gMailAccs.length == 0) // nothing configured
   {
@@ -325,11 +350,29 @@ function onCommandMailButton()
   {
     ensureLoginAndDo(gMailAccs[0], goToWebmail);
   }
+  else if (openPrimary)
+  {
+    // Use primary account (it might not be the first one)
+    ensureLoginAndDo(getPrimaryAccount(), goToWebmail);
+  }
   else
   {
     gEmailButton.open = true
     //gEmailButtonDropdown.openPopup(gEmailButton, "after_start");
   }
+}
+
+/**
+ * <copied from="login.js">
+ */
+function getPrimaryAccount()
+{
+  for each (let acc in getAllExistingAccounts())
+  {
+    if (acc.providerID == brand.login.providerID)
+      return acc;
+  }
+  return null;
 }
 
 /**

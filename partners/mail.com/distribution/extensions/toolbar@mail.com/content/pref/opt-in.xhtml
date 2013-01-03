@@ -4,6 +4,8 @@
   %brandDTD;
   <!ENTITY % optinDTD SYSTEM "chrome://unitedtb/locale/pref/opt-in.dtd">
   %optinDTD;
+  <!ENTITY % loginDTD SYSTEM "chrome://unitedtb/locale/email/login-page.dtd">
+  %loginDTD;
 ]>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,9 +17,9 @@
     <link rel="stylesheet" type="text/css"
       href="chrome://unitedtb/skin/pref/opt-in-brand.css"/>
     <link rel="stylesheet" type="text/css"
+      href="chrome://unitedtb/skin/email/login-page.css"/>
+    <link rel="stylesheet" type="text/css"
       href="chrome://unitedtb/content/pref/pref-region-xbl.css"/>
-</head>
-<body onload="onLoad();">
     <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/util/uiutil.js"></script>
     <script type="text/javascript">
@@ -26,32 +28,30 @@
     <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/pref/opt-in.js"></script>
     <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/email/login-page.js"></script>
+    <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/email/login-common.js"></script>
+    <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/pref/opt-in-confirm.js"></script>
-
-    <div id="container">
-        <div class="button-box">
-            <a id="close-button" href="#" onclick="onCloseButton()">&close.button.label;</a>
-        </div>
-        <h1><span id="logo"></span>&page.heading;</h1>
-        <div class="intro">
-          &intro.heading;<br/>
-          <span class="descr">&intro.descr;</span>
-        </div>
-        <form id="searchform" onsubmit="onContinueButton(); return false;">
-          <div class="widget-box">
-              <pref-region id="region" module="general" label="&region.label;" />
+</head>
+<body>
+    <div id="logo">
+        <img src="chrome://unitedtb/skin/brand/icon-medium.png"/>
+    </div>
+    <div id="outer_container">
+    <div id="container" style="position: relative">
+    <a id="close-button" href="#" onclick="onCloseButton()">
+        &close.button.label;<img src="chrome://unitedtb/skin/pref/closebutton.png"/>
+    </a>
+    <div id="header">
+        <div>&page.heading;</div>
+    </div>
+      <div id="optin-settings">
+          <div class="checkbox-box">
+              <label>&page.subheading;</label>
           </div>
           <div class="checkbox-box">
-              <input type="checkbox" id="searchengine"
-                 checked="checked"
-                  />
-              <label for="searchengine">&searchengine.checkbox.label;</label>
-          </div>
-          <div class="checkbox-box">
-              <input type="checkbox" id="startpage"
-                 checked="checked"
-                  />
-              <label for="startpage">&startpage.checkbox.label;</label>
+              <div class="section-heading">&startpage.label;</div>
               <div>
                   <input class="indent" type="radio" id="startpage-search" name="startpage"
                      checked="checked"
@@ -63,17 +63,66 @@
                      />
                   <label for="startpage-brand">&startpage-brand.radiobutton.label;</label>
               </div>
+              <div>
+                  <input class="indent" type="radio" id="startpage-browser" name="startpage"
+                     />
+                  <label for="startpage-browser">&startpage-browser.radiobutton.label;</label>
+              </div>
           </div>
           <div class="checkbox-box">
-              <input type="checkbox" id="newtab"
-                 checked="checked"
-                  />
-              <label for="newtab">&newtab.checkbox.label;</label>
+              <div class="section-heading">&searchengine.label;</div>
+              <div>
+                  <input class="indent" type="checkbox" id="searchengine"
+                     checked="checked"
+                      />
+                  <label for="searchengine">&searchengine.checkbox.label;</label>
+              </div>
           </div>
-          <div class="button-box">
-              <input type="submit" class="button" value="&continue.button.label;"/>
+          <div class="checkbox-box">
+              <div class="section-heading">&newtab.label;</div>
+              <div>
+                  <input class="indent" type="checkbox" id="newtab"
+                     checked="checked"
+                      />
+                  <label for="newtab">&newtab.checkbox.label;</label>
+              </div>
           </div>
-        </form>
+          <div class="checkbox-box">
+              <div class="section-heading" id="region-label">&region.label;</div>
+              <div class="indent">
+                  <pref-region id="region" module="general"/>
+              </div>
+          </div>
+      </div>
+      <div id="email-settings" style="position: relative">
+          <div id="email-intro">&email.intro;</div>
+          <div id="emailaddress-box">
+            <label for="emailaddress" accesskey="&emailaddress.accesskey;">&emailaddress.label;:</label><br/>
+            <input type="text" id="emailaddress" oninput="onEmailaddressChanged();"/>
+          </div>
+          <div id="password-box">
+            <label for="password" accesskey="&password.accesskey;">&password.label;:</label><br/>
+            <input type="password" id="password" oninput="onPasswordChanged();"
+                   onblur="onPasswordChanged();" onfocus="onLeaveEmailaddress();onPasswordChanged();"/>
+          </div>
+          <div id="account-changes">
+              <a target="_blank" id="forgot-password">&forgotpassword.label;</a>
+              <a target="_blank" id="create-account">&createaccount.label;</a>
+          </div>
+          <div id="long-session-box" >
+            <input type="checkbox" checked="true" id="long-session" accesskey="&long-session.accesskey;"/>
+            <label for="long-session">&long-session.label;</label>
+          </div>
+          <div id="error-msg"/>
+        </div>
+      <div id="footer">
+        <span>&configinfo.label;</span>
+      </div>
+      <div id="login-buttons">
+        <button onclick="onLoginFinish();" id="login-button">&login.button.label;</button>
+        <button onclick="onFinishButton();" id="finish-button">&finish.button.label;</button>
+      </div>
+    </div>
     </div>
 </body>
 </html>

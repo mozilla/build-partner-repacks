@@ -1,7 +1,34 @@
-#container {
-  background-image: url('chrome://unitedtb/skin/pref/opt-in-header.jpg');
-  background-position: top center;
-  /* width of jpg minus 20px padding */
-  width: 642px;
-  padding-top: 125px;
+
+#email-settings {
+  background-color: rgba(00, 32, 119, 0.25);
+}
+
+#header {
+  color: #05387e;
+}
+
+#login-buttons button {
+  -moz-appearance: none;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 2px;
+  background: linear-gradient(#4B8EFF, #3779FF);
+  border: 0px none;
+  font-size: large;
+}
+
+#login-buttons button:hover {
+  border-color: #F1B525;
+  background: #0054FF
+}
+
+#login-buttons button:active,
+#login-buttons button:active:hover {
+  background: linear-gradient(#4B8EFF, #3779FF);
+}
+
+#login-buttons button[disabled] {
+  color: #808080;
+  border-color: #F9DE9F;
+  background: linear-gradient(#a8b3bf,#94a1af);
 }

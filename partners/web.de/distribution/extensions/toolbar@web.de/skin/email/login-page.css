@@ -1,35 +1,56 @@
-label:first-child {
-  width: 125px;
+#email-settings {
+  width: 30em;
   display: inline-block;
   text-align: left;
+  vertical-align: top;
+  font-size: 13px;
+  margin-bottom: 25px;
 }
 
 input[type="text"], input[type="password"] {
-  width: 200px;
+  width: 100%;
 }
 
-#emailaddress-box, #password-box, #long-session-box {
+#emailaddress-box, #password-box, #long-session-box, #account-changes, #email-intro, #error-msg {
   margin: 10px;
 }
 
-#loginform {
-  text-align: center;
-  width: 630px;
+#email-intro {
+  margin-bottom: 20px;
+}
+
+#long-session-box {
+  margin-top: 20px;
 }
 
 #error-msg {
   color: red;
+  font-weight: bold;
 }
 
 #forgot-password, #create-account {
-  float: left;
-  font-size: smaller;
+  font-size: 11px;
+  text-decoration: none;
+  color: #2269c3
 }
 
+#forgot-password:hover, #create-account:hover {
+  text-decoration: underline;
+}
+
+
+#account-changes {
+  height: 10px;
+}
 #create-account {
-  margin-left: 25px;
+  float: right;
 }
-
-#close-button {
-  font-size: smaller;
+#forgot-password {
+  float: left;
+}
+#long-session-box {
+  clear: both;
+}
+#long-session {
+  vertical-align: middle;
 }

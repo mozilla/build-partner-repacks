@@ -44,6 +44,7 @@ const EXPORTED_SYMBOLS = [ "updateTaskbarIcon" ];
 
 Components.utils.import("resource://unitedtb/util/util.js");
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/NetUtil.jsm");
 
@@ -59,7 +60,7 @@ XPCOMUtils.defineLazyServiceGetter(this, "gTaskbarService",
  * imgIContainer for the image. Copied from WindowsPreviewPerTab.jsm.
  */
 function _imageFromURL(url, callback) {
-  let channel = ioService.newChannelFromURI(NetUtil.newURI(url));
+  let channel = Services.io.newChannelFromURI(NetUtil.newURI(url));
   NetUtil.asyncFetch(channel, function(inputStream, resultCode) {
     if (!Components.isSuccessCode(resultCode))
       return;

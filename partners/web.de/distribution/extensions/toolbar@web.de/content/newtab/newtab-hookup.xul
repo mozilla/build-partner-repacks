@@ -5,7 +5,10 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script type="application/x-javascript">
     unitedinternet.initModule(unitedinternet, "newtab");
-    unitedinternet.loadJS("chrome://unitedtb/content/newtab/newtab-hookup.js", unitedinternet.newtab);
+    Components.utils.import("resource://unitedtb/newtab/newtab-hookup.js", unitedinternet.newtab);
+    gInitialPages.push(unitedinternet.common.ourPref.get("newtab.url"));
+    unitedinternet.initModule(unitedinternet, "selecturl");
+    unitedinternet.loadJS("chrome://unitedtb/content/newtab/select-url.js", unitedinternet.selecturl);
     unitedinternet.initModule(unitedinternet, "closelasttab");
     unitedinternet.loadJS("chrome://unitedtb/content/newtab/closelasttab.js", unitedinternet.closelasttab);
   </script>

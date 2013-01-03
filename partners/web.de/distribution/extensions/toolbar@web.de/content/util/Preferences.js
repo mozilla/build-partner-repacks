@@ -42,6 +42,7 @@ const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
 
+Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 // The minimum and maximum integers that can be set as preferences.
@@ -117,7 +118,8 @@ Preferences.prototype = {
   },
 
   _siteGet: function(prefName, defaultValue) {
-    let value = this._contentPrefSvc.getPref(this._site, this._prefBranch + prefName);
+    // nsIContentPrefService
+    let value = Services.contentPrefs.getPref(this._site, this._prefBranch + prefName);
     return typeof value != "undefined" ? value : defaultValue;
   },
 
@@ -229,7 +231,8 @@ Preferences.prototype = {
   },
 
   _siteSet: function(prefName, prefValue) {
-    this._contentPrefSvc.setPref(this._site, this._prefBranch + prefName, prefValue);
+    // nsIContentPrefService
+    Services.contentPrefs.setPref(this._site, this._prefBranch + prefName, prefValue);
   },
 
   /**
@@ -261,7 +264,8 @@ Preferences.prototype = {
   },
 
   _siteHas: function(prefName) {
-    return this._contentPrefSvc.hasPref(this._site, this._prefBranch + prefName);
+    // nsIContentPrefService
+    return Services.contentPrefs.hasPref(this._site, this._prefBranch + prefName);
   },
 
   /**
@@ -322,7 +326,7 @@ Preferences.prototype = {
   },
 
   _siteReset: function(prefName) {
-    return this._contentPrefSvc.removePref(this._site, this._prefBranch + prefName);
+    return Services.contentPrefs.removePref(this._site, this._prefBranch + prefName);
   },
 
   /**
@@ -334,8 +338,8 @@ Preferences.prototype = {
    * If you call set(), you will modify the defaults, so don't do that!
    */
   get defaults() {
-    let defaultBranch = Cc["@mozilla.org/preferences-service;1"].
-                  getService(Ci.nsIPrefService).
+    // nsIPrefService
+    let defaultBranch = Services.prefs.
                   getDefaultBranch(this._prefBranch).
                   QueryInterface(Ci.nsIPrefBranch);
     let prefs = new Preferences(this._prefBranch);
@@ -543,7 +547,7 @@ Preferences.prototype = {
 
   site: function(site) {
     if (!(site instanceof Ci.nsIURI))
-      site = this._ioSvc.newURI("http://" + site, null, null);
+      site = Services.io.newURI("http://" + site, null, null);
     return new Preferences({ branch: this._prefBranch, site: site });
   },
 
@@ -552,34 +556,12 @@ Preferences.prototype = {
    * @private
    */
   get _prefSvc() {
-    let prefSvc = Cc["@mozilla.org/preferences-service;1"].
-                  getService(Ci.nsIPrefService).
+    // nsIPrefService
+    let prefSvc = Services.prefs.
                   getBranch(this._prefBranch).
                   QueryInterface(Ci.nsIPrefBranch2);
     this.__defineGetter__("_prefSvc", function() prefSvc);
     return this._prefSvc;
-  },
-
-  /**
-   * IO Service
-   * @private
-   */
-  get _ioSvc() {
-    let ioSvc = Cc["@mozilla.org/network/io-service;1"].
-                getService(Ci.nsIIOService);
-    this.__defineGetter__("_ioSvc", function() ioSvc);
-    return this._ioSvc;
-  },
-
-  /**
-   * Site Preferences Service
-   * @private
-   */
-  get _contentPrefSvc() {
-    let contentPrefSvc = Cc["@mozilla.org/content-pref/service;1"].
-                         getService(Ci.nsIContentPrefService);
-    this.__defineGetter__("_contentPrefSvc", function() contentPrefSvc);
-    return this._contentPrefSvc;
   }
 
 };

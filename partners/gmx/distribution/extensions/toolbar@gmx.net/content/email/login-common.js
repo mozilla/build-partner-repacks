@@ -1,4 +1,5 @@
 Components.utils.import("resource://unitedtb/email/account-base.js", this); // just for getDomainForEmailAddress()
+Components.utils.import("resource://unitedtb/email/account-list.js", this); // just for verifyEmailAddressDomain()
 Components.utils.import("resource://unitedtb/util/StringBundle.js", this);
 var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/email/login.properties");
@@ -65,6 +66,7 @@ function getPassword(emailAddress, wantStoredLoginDefault)
  * password, and returns it.
  *
  * @param inparams {Object}   Parameter @see login-dialog.js
+ * @param parentWin {Window}  Parent window to use for login dialog
  * @returns {
  *      emailAddress {String}  what user entered (or left as-is)
  *      password {String}
@@ -72,7 +74,7 @@ function getPassword(emailAddress, wantStoredLoginDefault)
  *    }
  *    null, if user cancels
  */
-function getEmailAddressAndPassword(inparams)
+function getEmailAddressAndPassword(inparams, parentWin)
 {
   var outparams = {};
   // Window ID needs to be unique, otherwise the async error callback
@@ -84,15 +86,17 @@ function getEmailAddressAndPassword(inparams)
   var windowID = "united-login-dialog-" + inparams.emailAddress;
   //debug(new Date().toISOString() + "opening " + windowID);
 
-  var parentWin = window;
-  var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
-       .getService(Ci.nsIWindowMediator);
-  // If our preferences window is open, use it as the parent
-  var win = wm.getMostRecentWindow("Unitedtb:Preferences");
-  if (win && !win.closed) {
-    parentWin = win;
+  // If a login window is open with the exact same ID, use it
+  // nsIWindowWatcher
+  var loginWin = Services.ww.getWindowByName(windowID, null);
+  if (loginWin)
+  {
+    loginWin.focus();
+    return null;
   }
 
+  if (!parentWin)
+    parentWin = window;
   parentWin.openDialog("chrome://unitedtb/content/email/login-dialog.xul",
       windowID, "modal,centerscreen", inparams, outparams);
 
@@ -108,30 +112,71 @@ function getEmailAddressAndPassword(inparams)
 
 /**
  * Verify email address, esp. that it's a UnitedInternet address.
- * Shows an error to the user, if needed.
- * @param emailAddress {String} to be checked
+ * This is a logic function with no access to UI.
+ *
+ * @param emailAddress {String} what the user entered, to be checked
+ * @param password {String} what the user entered, to be checked
+ * @param needPassword {Boolean} lack of password shall be an error or not
  * @param brandOnly {Boolean}
  *     Accept only accounts that are of the same brand as this toolbar,
  *     e.g. if this is a WEB.DE toolbar, accept only @web.de email addresses.
- * @param domains {Array of String}   List of acceptable domains.
- *     Accept only email addresses from these domains.
- *     If empty array, this check is skipped.
- * @param exampleDomain {String}   Any domain that we want to show
- *     to users in the example email address.
- * @returns null, if address OK, otherwise the error msg to display to the user
+ * @param successCallback {Function()} Called if the checks passed
+ * @param errorCallback {Function(msg {String or Exception})}
+ *     Called if the checks failed
+ *     |msg| a translated error message to show to the user verbatim.
+ * @returns {Abortable}
  */
-function verifyEmailAddress(emailAddress, brandOnly, domains, exampleDomain)
+function verifyEmailAddressAndPassword(emailAddress, password,
+    needPassword, brandOnly, successCallback, errorCallback)
 {
   try {
-    var newAddress = emailAddress.toLowerCase();
-    const emailAddressRegexp = /^[a-z0-9\-%+_\.]+@[a-z0-9\-\.]+$/;
-    if ( !emailAddressRegexp.test(newAddress))
-      return gStringBundle.get(brandOnly ? "error.syntax.brand" : "error.syntax",
+    assert(typeof(emailAddress) == "string", "need emailAddress param");
+    assert(typeof(password) == "string", "need password param");
+    assert(typeof(needPassword) == "boolean", "need needPassword param");
+    assert(typeof(brandOnly) == "boolean", "need brandOnly param");
+    assert(typeof(successCallback) == "function", "need successCallback");
+    assert(typeof(errorCallback) == "function", "need errorCallback");
+    emailAddress = emailAddress.toLowerCase();
+    var myBrand = brand.login.providerName;
+    var domains = [];
+    for each (let config in brand.login.configs) {
+      if (config.providerID == brand.login.providerID) {
+        domains = domains.concat(config.domains);
+      }
+    }
+    var exampleDomain = domains[0] || "example.net";
+    const emailAddressRegexp = /^[a-z0-9\-%+_\.]+@[a-z0-9\-\.]+\.[a-z]+$/;
+
+    if ( ! emailAddress && ! password) {
+      throw gStringBundle.get(
+          "error.noEmailAndPassword" + (brandOnly ? ".brand" : ""),
+          [ myBrand, exampleDomain ]);
+    } else if (needPassword && ! password) {
+      throw gStringBundle.get(
+          "error.noPassword" + (brandOnly ? ".brand" : ""),
+          [ myBrand, exampleDomain ]);
+    } else if ( ! emailAddressRegexp.test(emailAddress)) {
+      throw gStringBundle.get(
+          "error.syntax" + (brandOnly ? ".brand" : ""),
           [ brand.login.providerName, exampleDomain ]);
-    if (domains.length > 0 && !arrayContains(domains,
-            Account.getDomainForEmailAddress(newAddress)))
-      return gStringBundle.get(brandOnly ? "error.domain.brand" : "error.domain",
-          [ brand.login.providerName, exampleDomain, domains.join(", ") ]);
-    return null;
-  } catch (e) { return e.toString(); }
+    } else {
+      // account-list.js
+      return verifyEmailAddressDomain(emailAddress,
+      function(config) {
+        if (brandOnly && config.providerID != brand.login.providerID) {
+          errorCallback(gStringBundle.get("error.domain.brand",
+              [ brand.login.providerName, exampleDomain, domains.join(", ") ]));
+        } else {
+          successCallback();
+        }
+      },
+      function (e) {
+        errorInBackend(e);
+        // Just tell user that it's not supported
+        errorCallback(gStringBundle.get(
+            "error.domain" + (brandOnly ? ".brand" : ""),
+            [ brand.login.providerName, exampleDomain, domains.join(", ") ]));
+      });
+    }
+  } catch (e) { errorInBackend(e); errorCallback(e); }
 }

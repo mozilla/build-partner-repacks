@@ -43,12 +43,12 @@
 const EXPORTED_SYMBOLS = [ "Cc", "Ci", "Cu", "extend", "mixInto", "assert",
   "makeCallback", "sqlCallback", "loadJS", "runAsync", "runPeriodically",
   "makeNSIURI", "readURLasUTF8", "readFile", "writeFile", "splitLines",
-  "ioService", "promptService", "ourPref", "generalPref", "privateBrowsing",
+  "promptService", "ourPref", "generalPref", "privateBrowsing",
   "DOMParser", "XMLSerializer",
-  "getStringBundle", "StringBundle", "getExtensionFullVersion", "findSomeBrowserWindow",
+  "StringBundle", "getExtensionFullVersion", "findSomeBrowserWindow",
   "Exception", "NotReached", "Abortable", "TimeoutAbortable", "IntervalAbortable",
   "SuccessiveAbortable", "XPCOMUtils",  "getProfileDir", "getSpecialDir", "getOS",
-  "arrayRemove", "arrayContains", "deepCopy", "ObserveTopic", "getErrorText",
+  "arrayRemove", "arrayContains", "deepCopy", "getErrorText",
   "errorInBackend", "kDebug", "debug", "debugObject", "dumpObject" ];
 
 // to not pullute Firefox global namespace, load into a scope using subscriptloader
@@ -58,19 +58,16 @@ var Cc = Components.classes;
 var Ci = Components.interfaces;
 var Cu = Components.utils;
 
+Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://unitedtb/util/Preferences.js");
 Cu.import("resource://unitedtb/util/StringBundle.js");
 Cu.import("resource://unitedtb/build.js");
 
-XPCOMUtils.defineLazyServiceGetter(this, "ioService",
-    "@mozilla.org/network/io-service;1", "nsIIOService");
 XPCOMUtils.defineLazyServiceGetter(this, "promptService",
     "@mozilla.org/embedcomp/prompt-service;1", "nsIPromptService");
 XPCOMUtils.defineLazyServiceGetter(this, "privateBrowsing",
     "@mozilla.org/privatebrowsing;1", "nsIPrivateBrowsingService");
-XPCOMUtils.defineLazyServiceGetter(this, "scriptLoader",
-    "@mozilla.org/moz/jssubscript-loader;1", "mozIJSSubScriptLoader");
 
 const DOMParser = new Components.Constructor(
   "@mozilla.org/xmlextras/domparser;1", Ci.nsIDOMParser);
@@ -99,9 +96,8 @@ function getProfileDir()
  */
 function getSpecialDir(key)
 {
-  return Cc["@mozilla.org/file/directory_service;1"]
-      .getService(Ci.nsIProperties)
-      .get(key, Ci.nsIFile);
+  // @mozilla.org/file/directory_service using nsIProperties
+  return Services.dirsvc.get(key, Ci.nsIFile);
 }
 
 /**
@@ -152,8 +148,163 @@ function makeCallback(obj, func)
  */
 function loadJS(url, scope)
 {
-  scriptLoader.loadSubScript(url, scope);
+  // mozIJSSubScriptLoader
+  Services.scriptloader.loadSubScript(url, scope);
 }
+
+/**
+ * Removes |element| from |array|.
+ * @param array {Array} to be modified. Will be modified in-place.
+ * @param element {Object} If |array| has a member that equals |element|,
+ *    the array member will be removed.
+ * @param all {boolean}
+ *     if true: remove all occurences of |element| in |array.
+ *     if false: remove only the first hit
+ * @returns {Integer} number of hits removed (0, 1 or more)
+ */
+function arrayRemove(array, element, all)
+{
+  var found = 0;
+  var pos = 0;
+  while ((pos = array.indexOf(element, pos)) != -1)
+  {
+    array.splice(pos, 1);
+    found++
+    if ( ! all)
+      return found;
+  }
+  return found;
+}
+
+/**
+ * Check whether |element| is in |array|
+ * @param array {Array}
+ * @param element {Object}
+ * @returns {boolean} true, if |array| has a member that equals |element|
+ */
+function arrayContains(array, element)
+{
+  return array.indexOf(element) != -1;
+}
+
+
+function Exception(msg)
+{
+  this._message = msg;
+
+  // get stack
+  try {
+    not.found.here += 1; // force a native exception ...
+  } catch (e) {
+    this.stack = e.stack; // ... to get the current stack
+  }
+  //debug("ERROR (exception): " + msg + "\nStack:\n" + this.stack);
+}
+Exception.prototype =
+{
+  get message()
+  {
+    return this._message;
+  },
+  toString : function()
+  {
+    return this._message;
+  }
+}
+
+function NotReached(msg)
+{
+  Exception.call(this, msg);
+}
+extend(NotReached, Exception);
+
+
+/**
+ * A handle for an async function which you can cancel.
+ * The async function will return an object of this type (a subtype)
+ * and you can call cancel() when you feel like killing the function.
+ */
+function Abortable()
+{
+}
+Abortable.prototype =
+{
+  /**
+   * Stop the process immediately.
+   *
+   * The process may call at most the error callback with a CancelledExeption.
+   *
+   * It must be possible to call cancel() at any time, even several times or
+   * when the process has already successfully finished. In such cases, the
+   * cancel() must be a no-op and not produce any errors, neither by throwing
+   * nor by calling the errorCallback again.
+   */
+  cancel : function()
+  {
+  }
+}
+
+/**
+ * Utility implementation, for allowing to abort a setTimeout.
+ * Use like: return new TimeoutAbortable(setTimeout(function(){ ... }, 0));
+ * @param setTimeoutID {Integer}  Return value of setTimeout()
+ */
+function TimeoutAbortable(setTimeoutID)
+{
+  this._id = setTimeoutID;
+}
+TimeoutAbortable.prototype =
+{
+  cancel : function()
+  {
+    clearTimeout(this._id);
+  }
+}
+extend(TimeoutAbortable, Abortable);
+
+/**
+ * Utility implementation, for allowing to abort a setTimeout.
+ * Use like: return new TimeoutAbortable(setTimeout(function(){ ... }, 0));
+ * @param setIntervalID {Integer}  Return value of setInterval()
+ */
+function IntervalAbortable(setIntervalID)
+{
+  this._id = setIntervalID;
+}
+IntervalAbortable.prototype =
+{
+  cancel : function()
+  {
+    clearInterval(this._id);
+  }
+}
+extend(IntervalAbortable, Abortable);
+
+
+// Allows you to make several network calls, but return only one Abortable object.
+function SuccessiveAbortable()
+{
+  this._current = null;
+}
+SuccessiveAbortable.prototype =
+{
+  set current(abortable)
+  {
+    assert(abortable instanceof Abortable || abortable == null,
+        "need an Abortable object (or null)");
+    this._current = abortable;
+  },
+  get current()
+  {
+    return this._current;
+  },
+  cancel : function()
+  {
+    if (this._current)
+      this._current.cancel();
+  },
+}
+extend(SuccessiveAbortable, Abortable);
 
 
 /**
@@ -222,7 +373,10 @@ TimerAbortable.prototype =
 {
   cancel : function()
   {
+    if ( ! this._timer)
+      return;
     this._timer.cancel();
+    this._timer = null;
   },
 };
 extend(TimerAbortable, Abortable);
@@ -234,7 +388,7 @@ extend(TimerAbortable, Abortable);
  */
 function makeNSIURI(uriStr)
 {
-  return ioService.newURI(uriStr, null, null);
+  return Services.io.newURI(uriStr, null, null);
 }
 
 
@@ -279,8 +433,8 @@ function readURLasUTF8(uri)
 {
   assert(uri && (uri instanceof Ci.nsIURI || typeof(uri) == "string"), "uri must be an nsIURI or string");
   try {
-    var chan = uri instanceof Ci.nsIURI ? ioService.newChannelFromURI(uri) :
-         ioService.newChannel(uri, null, null);
+    var chan = uri instanceof Ci.nsIURI ? Services.io.newChannelFromURI(uri) :
+         Services.io.newChannel(uri, null, null);
     var is = Cc["@mozilla.org/intl/converter-input-stream;1"]
              .createInstance(Ci.nsIConverterInputStream);
     is.init(chan.open(), "UTF-8", 1024,
@@ -398,22 +552,6 @@ function splitLines(content)
   return content.split("\n");
 }
 
-// TODO Use https://wiki.mozilla.org/Labs/JS_Modules#StringBundle
-/**
- * @param bundleURI {String}   chrome URL to properties file
- * @return nsIStringBundle
- */
-function getStringBundle(bundleURI)
-{
-  try {
-    return Cc["@mozilla.org/intl/stringbundle;1"]
-           .getService(Ci.nsIStringBundleService)
-           .createBundle(bundleURI);
-  } catch (e) {
-    throw new Exception("Failed to get stringbundle URI <" + bundleURI + ">. Error: " + e);
-  }
-}
-
 /**
  * Get our own version
  */
@@ -434,7 +572,8 @@ function getExtensionFullVersion()
  */
 function getOS()
 {
-  switch(Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime).OS)
+  // @mozilla.org/xre/app-info using nsIXULRuntime
+  switch(Services.appinfo.OS)
   {
     case "WINNT":
       return "win";
@@ -463,119 +602,9 @@ function getOS()
  */
 function findSomeBrowserWindow()
 {
-  return Cc["@mozilla.org/appshell/window-mediator;1"]
-     .getService(Ci.nsIWindowMediator)
-     .getMostRecentWindow("navigator:browser");
+  // nsIWindowMediator
+  return Services.wm.getMostRecentWindow("navigator:browser");
 }
-
-
-function Exception(msg)
-{
-  this._message = msg;
-
-  // get stack
-  try {
-    not.found.here += 1; // force a native exception ...
-  } catch (e) {
-    this.stack = e.stack; // ... to get the current stack
-  }
-  //debug("ERROR (exception): " + msg + "\nStack:\n" + this.stack);
-}
-Exception.prototype =
-{
-  get message()
-  {
-    return this._message;
-  },
-  toString : function()
-  {
-    return this._message;
-  }
-}
-
-function NotReached(msg)
-{
-  Exception.call(this, msg);
-}
-extend(NotReached, Exception);
-
-
-/**
- * A handle for an async function which you can cancel.
- * The async function will return an object of this type (a subtype)
- * and you can call cancel() when you feel like killing the function.
- */
-function Abortable()
-{
-}
-Abortable.prototype =
-{
-  cancel : function()
-  {
-  }
-}
-
-/**
- * Utility implementation, for allowing to abort a setTimeout.
- * Use like: return new TimeoutAbortable(setTimeout(function(){ ... }, 0));
- * @param setTimeoutID {Integer}  Return value of setTimeout()
- */
-function TimeoutAbortable(setTimeoutID)
-{
-  this._id = setTimeoutID;
-}
-TimeoutAbortable.prototype =
-{
-  cancel : function()
-  {
-    clearTimeout(this._id);
-  }
-}
-extend(TimeoutAbortable, Abortable);
-
-/**
- * Utility implementation, for allowing to abort a setTimeout.
- * Use like: return new TimeoutAbortable(setTimeout(function(){ ... }, 0));
- * @param setIntervalID {Integer}  Return value of setInterval()
- */
-function IntervalAbortable(setIntervalID)
-{
-  this._id = setIntervalID;
-}
-IntervalAbortable.prototype =
-{
-  cancel : function()
-  {
-    clearInterval(this._id);
-  }
-}
-extend(IntervalAbortable, Abortable);
-
-
-// Allows you to make several network calls, but return only one Abortable object.
-function SuccessiveAbortable()
-{
-  this._current = null;
-}
-SuccessiveAbortable.prototype =
-{
-  set current(abortable)
-  {
-    assert(abortable instanceof Abortable || abortable == null,
-        "need an Abortable object (or null)");
-    this._current = abortable;
-  },
-  get current()
-  {
-    return this._current;
-  },
-  cancel : function()
-  {
-    if (this._current)
-      this._current.cancel();
-  },
-}
-extend(SuccessiveAbortable, Abortable);
 
 
 /**
@@ -637,113 +666,6 @@ sqlCallback.prototype =
   }
 }
 
-
-/**
- * UNTESTED
- * Get notified for a certain nsIObserver event from Mozilla.
- *
- * This wraps nsIObserver, and listens for a one-time notification.
- * You need to pass the topic to listen to.
- *
- * In the filterFunc, you can discard all notifications of a certain topic
- * that are not relevant to you, e.g. look for a certain nsIChannel or URL.
- *
- * @param once {Boolean}   Unhook when the callback is called.
- * @param topic {String}   nsIObserver topic,
- *     e.g. "http-on-examine-response" or "http-on-modify-request"
- * @param filterFunc {Function(subject)} (Optional)
- *     Called for every |topic| notification. If this returns true,
- *     |callback| is called and, if |once| is true, the observer removed.
- *     If this returns false, nothing happens and it will continue
- *     to observe for other events.
- *     subject {Object}  nsIObserver subject.
- *         For network notifications, this is an {nsIChannel}.
- *         So, you can check e.g. subject.originalURI.spec == "http://...";
- * @param callback {Function(subject, data)}
- *     Do what you actually wanted to do in the case of the event.
- *     subject {Object}  nsIObserver subject
- *     data {Object}  nsIObserver data
- */
-function ObserveTopic(once, topic, filterFunc, callback)
-{
-  this._once = !!once;
-  this._topic = topic.toString();
-  assert(typeof(filterFunc) == "function" || !filterFunc, "filterFunc is not a function");
-  assert(typeof(callback) == "function", "need callback");
-  this._filterFunc = filterFunc;
-  this._callback = callback;
-
-  this._hookup();
-}
-ObserveTopic.prototype =
-{
-  _once : true,
-  _topic : null,
-  _filterFunc : null,
-  _callback : null,
-
-  observe: function(subject, topic, data)
-  {
-    try {
-      if (topic != this._topic)
-        return;
-      if (this._filterFunc && !this._filterFunc(subject, data))
-        return;
-      if (this._once)
-        this.unhook();
-      this._callback(subject, data);
-    } catch (e) { errorInBackend(e); }
-  },
-  _hookup : function()
-  {
-    var observerService = Cc["@mozilla.org/observer-service;1"]
-        .getService(Ci.nsIObserverService);
-    observerService.addObserver(this, this._topic, false);
-  },
-  unhook : function()
-  {
-    var observerService = Cc["@mozilla.org/observer-service;1"]
-        .getService(Ci.nsIObserverService);
-    observerService.removeObserver(this, this._topic);
-  },
-}
-
-
-/**
- * Removes |element| from |array|.
- * @param array {Array} to be modified. Will be modified in-place.
- * @param element {Object} If |array| has a member that equals |element|,
- *    the array member will be removed.
- * @param all {boolean}
- *     if true: remove all occurences of |element| in |array.
- *     if false: remove only the first hit
- * @returns {Integer} number of hits removed (0, 1 or more)
- */
-function arrayRemove(array, element, all)
-{
-  var found = 0;
-  var pos = 0;
-  while ((pos = array.indexOf(element, pos)) != -1)
-  {
-    array.splice(pos, 1);
-    found++
-    if ( ! all)
-      return found;
-  }
-  return found;
-}
-
-/**
- * Check whether |element| is in |array|
- * @param array {Array}
- * @param element {Object}
- * @returns {boolean} true, if |array| has a member that equals |element|
- */
-function arrayContains(array, element)
-{
-  return array.indexOf(element) != -1;
-}
-
 /**
  * Normally, var b = a; (with a being an Object) copies only the pointer,
  * and does not copy the whole object.
@@ -795,9 +717,6 @@ function deepCopy(org)
 //kDebug defined in build.js
 var kDebugAlsoOnErrorConsole = true;
 
-XPCOMUtils.defineLazyServiceGetter(this, "gConsoleService",
-    "@mozilla.org/consoleservice;1", "nsIConsoleService");
-
 /**
  * Output some text on the console which helps in debugging,
  * but not for end-users.
@@ -810,7 +729,8 @@ function debug(text)
   if (!kDebugAlsoOnErrorConsole)
     return;
 
-  gConsoleService.logStringMessage(text);
+  // nsIConsoleService
+  Services.console.logStringMessage(text);
 }
 
 /**

@@ -1,3 +1,4 @@
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
@@ -24,9 +25,7 @@ function setSearchTerm()
   var u = url.search(/u\=/);
   var badurl = decodeURIComponent(url.substr(u).slice(2, url.substr(u).indexOf('&')));
 
-  var ioService = Components.classes["@mozilla.org/network/io-service;1"]  
-                  .getService(Components.interfaces.nsIIOService);  
-  var uri = ioService.newURI(badurl, null, null);  
+  var uri = Services.io.newURI(badurl, null, null);
 
   document.getElementById("badurl").textContent = uri.host;
 

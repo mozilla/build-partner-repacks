@@ -17,9 +17,9 @@
  * @returns ok {Boolean} true = User clicked OK button, false = user aborted
  */
 
-Components.utils.import("resource://unitedtb/email/account-list.js", this);
 Components.utils.import("resource://unitedtb/util/util.js", this);
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
+Components.utils.import("resource://unitedtb/email/account-list.js", this);
 var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/email/login.properties");
 
@@ -33,6 +33,7 @@ var eErrorMsg = null;
 
 // In the login-page case, default gBrandOnly to true
 var gBrandOnly = true;
+var gVerifyAbortable = new Abortable();
 
 function onLoad()
 {
@@ -90,61 +91,53 @@ function onLoad()
 
 function onLeaveEmailaddress()
 {
-  verifyAndShowError(false);
+  try {
+    verifyAndShowError(false, function() {}, function () {});
+  } catch (e) { errorCritical(e); }
 }
 
-function verifyAndShowError(needPassword)
-{
-  var domains = [];
-  for each (let provider in brand.login.configs)
-    if ( !gBrandOnly || provider.providerID == brand.login.providerID)
-      domains = domains.concat(provider.domains);
-  var myBrand = brand.login.providerName;
-  var exampleDomain = domains[0] || "example.net";
-
-  var errorMsg = null;
-  if ( !errorMsg && !eEmailAddress.value && !ePassword.value)
-    errorMsg = gStringBundle.get(
-        gBrandOnly ? "error.noEmailAndPassword.brand" : "error.noEmailAndPassword",
-        [ myBrand, exampleDomain ]);
-  if ( !errorMsg) // login-common.js
-    errorMsg = verifyEmailAddress(eEmailAddress.value, gBrandOnly, domains, exampleDomain);
-  if ( !errorMsg && needPassword && !ePassword.value)
-    errorMsg = gStringBundle.get(
-        gBrandOnly ? "error.noPassword.brand" : "error.noPassword",
-        [ myBrand, exampleDomain ]);
-
+/**
+ * Calls verifyEmailAddressAndPassword() logic function, and
+ * populates UI fields with the result.
+ *
+ * <copied to="login-page.js"/>
+ */
+function verifyAndShowError(needPassword, successCallback, errorCallback) {
   var oldErrorMessage = eErrorMsg.textContent;
-  eErrorMsg.textContent = errorMsg ? errorMsg : "";
-  if (oldErrorMessage != eErrorMsg.textContent) // workaround for Mozilla bug 230959
-    // We only want to do this in the XUL case
-    if (document instanceof XULDocument)
+  eErrorMsg.textContent = "";
+  // login-common.js
+  // gVerifyAbortable.cancel(); TODO breaks all further verify calls. ditto below.
+  gVerifyAbortable = verifyEmailAddressAndPassword(
+      eEmailAddress.value, ePassword.value,
+      needPassword, gBrandOnly,
+  successCallback,
+  function(errorMsg) { // errorCallback, check failed
+    debug("check failed: " + errorMsg);
+    eErrorMsg.textContent = errorMsg;
+    if (oldErrorMessage != errorMsg) // workaround for Mozilla bug 230959
       window.sizeToContent(); // I would like to avoid that
-  if (errorMsg)
-  {
     eEmailAddress.focus();
     eEmailAddress.select();
-    return false;
-  }
-  else
-    return true;
+    errorCallback(errorMsg);
+  });
 }
 
 function onOK()
 {
-  if ( !verifyAndShowError(true))
-    return false; // don't close, force user to click Cancel
-
-  gOutParams.emailAddress = eEmailAddress.value.toLowerCase();
-  gOutParams.password = ePassword.value;
-  gOutParams.wantStoredLogin = eLongSession.checked;
-  gOutParams.ok = true;
-  return true;
+  verifyAndShowError(true, function() {
+    gOutParams.emailAddress = eEmailAddress.value.toLowerCase();
+    gOutParams.password = ePassword.value;
+    gOutParams.wantStoredLogin = eLongSession.checked;
+    gOutParams.ok = true;
+    window.close();
+  }, function() {}); // Don't close on error, force user to correct or click Cancel
+  return false; // Wait for verification
 }
 
 function onCancel()
 {
   debug("oncancel");
+  //gVerifyAbortable.cancel();
   gOutParams.ok = false;
   return true;
 }

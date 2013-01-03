@@ -1,6 +1,48 @@
-#container {
-  background-image: url('chrome://unitedtb/skin/pref/opt-in-header.jpg');
-  background-position: top center;
-  width: 630px;
-  padding-top: 125px;
+body {
+  background: repeating-linear-gradient(#e3ebf9 0em, #e7effa 10em, #c7dcfa 20em, white 30em, #e3ebf9 40em);
+}
+
+#header {
+  color: #385ba7;
+  font-size: xx-large;
+  transform: scale(0.8, 1.2); /* make the font tall, slim */
+  transform-origin: top left;
+  padding-left: 8pt;
+}
+
+#email-settings {
+  top: 15px;
+  background-color: #EAF1F8;
+}
+
+#login-buttons button {
+  -moz-appearance: none;
+  color: #FFFFFF;
+  border: 1px #A1A1A1 solid;
+  border-radius: 4px;
+  background: -moz-linear-gradient(#3C84D0, #144CAE);
+  background: linear-gradient(#3C84D0, #144CAE);
+  font-size: large;
+}
+
+#login-buttons button:hover {
+  color: #FFFFFF;
+  border-color: #A1A1A1;
+  background: -moz-linear-gradient(#2A82F1, #226AC5);
+  background: linear-gradient(#2A82F1, #226AC5);
+}
+
+#login-buttons button:active,
+#login-buttons button:active:hover {
+  color: #D3E2F5;
+  border-color: #A1A1A1;
+  background: moz-linear-gradient(#297EEB, #226AC5);
+  background: linear-gradient(#297EEB, #226AC5);
+}
+
+#login-buttons button[disabled] {
+  color: #FFFFFF;
+  border-color: #A1A1A1;
+  background: -moz-linear-gradient(#b1ceec, #a1b7de);
+  background: linear-gradient(#b1ceec, #a1b7de);
 }

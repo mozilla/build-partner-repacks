@@ -1,44 +1,10 @@
-// FF3.6 loads components before reading chrome.manifest,
-// so resource://unitedtb/ is not available. chrome:// isn't either for Cu.import in FF3.6.
-// So, wait for "app-startup" and do Cu.import then.
-// <http://blog.docuverse.com/2009/07/23/firefox-extension-developer-tips/>
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 const Cc = Components.classes;
 const Ci = Components.interfaces;
-if (XPCOMUtils.generateNSGetFactory) // FF4
-{
-  Components.utils.import("resource://unitedtb/util/util.js");
-  Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-  Components.utils.import("resource://unitedtb/search/mcollect/mCollectImport.js");
-}
-else // FF3.6
-{
-  let top = this;
 
-  function Load()
-  {
-  }
-  Load.prototype =
-  {
-    observe : function(subject, topic, data)
-    {
-      if (topic != "app-startup")
-        return;
-      Components.utils.import("resource://unitedtb/util/util.js", top);
-      Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js", top);
-      Components.utils.import("resource://unitedtb/search/mcollect/mCollectImport.js", top);
-    },
-    // nsICategoryManager registration
-    // <https://developer.mozilla.org/en/XPCOMUtils.jsm>
-    _xpcom_categories: [{
-      category: "app-startup",
-    }],
-    classDescription: "mCollect autocomplete: Delayed load for FF3.6",
-    contractID: "@mozilla.org/autocomplete/mcollect-load",
-    classID: Components.ID("{a7a9cfee-3681-4c0a-9383-005ec380b6ce}"),
-    QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver])
-  };
-}
+Components.utils.import("resource://unitedtb/util/util.js");
+Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
+Components.utils.import("resource://unitedtb/search/mcollect/mCollectImport.js");
 
 /**
  * @param engine {mSearch}
@@ -74,11 +40,7 @@ Results.prototype =
     }
 
     // call listeners
-    if (this._acListener.onUpdateSearchResult) // FF4
-      this._acListener.onUpdateSearchResult(this._acSearch, this);
-      // TODO call onSearchResult() for FF4, too? When?
-    else // FF3.6
-      this._acListener.onSearchResult(this._acSearch, this);
+    this._acListener.onUpdateSearchResult(this._acSearch, this);
   },
 
   /**
@@ -272,13 +234,10 @@ mCollectAutoComplete.prototype =
   },
 
   classDescription: "AutoComplete from mCollect search engines",
-  contractID: "@mozilla.org/autocomplete/search;1?name=mcollect",
+  contractID: "@mozilla.org/autocomplete/search;1?name=unitedinternet-mcollect",
   classID: Components.ID("{aec3bc83-0b7d-4612-b625-4f22070a9b33}"),
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIAutoCompleteSearch,
                                          Ci.nsIAutoCompleteObserver])
 };
 
-if (XPCOMUtils.generateNSGetFactory) // FF4
-  var NSGetFactory = XPCOMUtils.generateNSGetFactory([mCollectAutoComplete]);
-else // FF3.6
-  var NSGetModule = XPCOMUtils.generateNSGetModule([mCollectAutoComplete, Load]);
+var NSGetFactory = XPCOMUtils.generateNSGetFactory([mCollectAutoComplete]);

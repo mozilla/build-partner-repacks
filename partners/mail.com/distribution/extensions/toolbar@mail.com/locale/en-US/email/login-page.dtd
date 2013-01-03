@@ -1,18 +1,20 @@
 <!ENTITY login.title "Login">
 
-<!ENTITY emailaddress.label "Email">
+<!ENTITY emailaddress.label "&brand.name; email address">
 <!ENTITY emailaddress.accesskey "E">
 <!ENTITY password.label "Password">
 <!ENTITY password.accesskey "P">
 <!ENTITY long-session.label "Keep me logged in">
 <!ENTITY long-session.accesskey "K">
 
-<!ENTITY forgotpassword.label "Can't acccess your account?">
+<!ENTITY forgotpassword.label "Can't access your account?">
 
-<!ENTITY intro.heading "Congratulations, you successfully installed the &brand.name; MailCheck!">
-<!ENTITY intro.descr "Log in with your credentials now to get started.">
+<!ENTITY intro.heading "Congratulations, you successfully installed the &brand.name; MailCheck">
+<!ENTITY intro.descr "Log in with your credentials to get started">
 
-<!ENTITY createaccount.label "Get your free email account">
+<!ENTITY createaccount.label "Get a new free email account">
 
-<!ENTITY login.finish.button.label "Login">
+<!ENTITY login.button.label "Login Only">
 <!ENTITY close.button.label "Close">
+
+<!ENTITY email.intro "Please login here with your &brand.name; email address and password, so that you are notified about new emails:">

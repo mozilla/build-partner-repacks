@@ -22,3 +22,10 @@ function startUsecase(usecase)
     });
   } catch (e) { errorCritical(e); }
 };
+
+function onLoad(event)
+{
+  if (brand.toolbar.pay)
+    document.loadOverlay("chrome://unitedtb/content/webapps/webapps-pay.xul", null);
+};
+window.addEventListener("load", onLoad, false);

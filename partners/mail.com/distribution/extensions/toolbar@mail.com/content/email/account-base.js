@@ -42,6 +42,7 @@
 
 const EXPORTED_SYMBOLS = [ "Account", "BaseStandardAccount" ];
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/util/observer.js");
@@ -286,7 +287,8 @@ BaseStandardAccount.prototype =
     this._password = sanitize.string(password);
     if ( !this._wantStoredLogin)
       return;
-    loginManager.addLogin(new LoginInfo(
+    // nsILoginManager (same below)
+    Services.logins.addLogin(new LoginInfo(
         this.kType + "://" + this.hostname, null, "mailcheck",
         this.username, password,
         "", "")); // username and password field name
@@ -295,7 +297,7 @@ BaseStandardAccount.prototype =
   _getPasswordFromStore : function()
   {
     this._password = "";
-    for each (let login in loginManager.findLogins({},
+    for each (let login in Services.logins.findLogins({},
         this.kType + "://" + this.hostname, null, "mailcheck"))
       if (login.username == this.username)
          this._password = sanitize.string(login.password);
@@ -305,10 +307,10 @@ BaseStandardAccount.prototype =
   _deleteStoredPassword : function()
   {
     this._password = "";
-    for each (let login in loginManager.findLogins({},
+    for each (let login in Services.logins.findLogins({},
         this.kType + "://" + this.hostname, null, "mailcheck"))
       if (login.username == this.username)
-        loginManager.removeLogin(login);
+        Services.logins.removeLogin(login);
   },
 
   _verifyAccountSettings : function()
@@ -382,7 +384,5 @@ BaseStandardAccount.prototype =
 }
 extend(BaseStandardAccount, Account);
 
-XPCOMUtils.defineLazyServiceGetter(this, "loginManager",
-    "@mozilla.org/login-manager;1", "nsILoginManager");
 const LoginInfo = new Components.Constructor(
     "@mozilla.org/login-manager/loginInfo;1", Ci.nsILoginInfo, "init");

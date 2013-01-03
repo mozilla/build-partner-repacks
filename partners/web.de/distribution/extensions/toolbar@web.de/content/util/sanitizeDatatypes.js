@@ -51,6 +51,8 @@
 const EXPORTED_SYMBOLS = [ "sanitize", "MalformedException" ];
 
 Components.utils.import("resource://unitedtb/util/util.js");
+Components.utils.import("resource://gre/modules/Services.jsm");
+var kBundleURL = "chrome://unitedtb/locale/util.properties";
 
 var sanitize =
 {
@@ -147,7 +149,7 @@ var sanitize =
 
     var uri;
     try {
-      uri = ioService.newURI(str, null, null);
+      uri = Services.io.newURI(str, null, null);
       uri = uri.QueryInterface(Ci.nsIURL);
     } catch (e) {
       throw new MalformedException("url_parsing.error", unchecked);
@@ -224,8 +226,7 @@ var sanitize =
 
 function MalformedException(msgID, uncheckedBadValue)
 {
-  var stringBundle = getStringBundle(
-      "chrome://unitedtb/locale/util.properties");
+  var stringBundle = Services.strings.createBundle(kBundleURL);
   var msg = stringBundle.GetStringFromName(msgID);
   if (kDebug)
     msg += " (bad value: " + new String(uncheckedBadValue) + ")";

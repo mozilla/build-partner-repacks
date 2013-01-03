@@ -3,6 +3,12 @@
  * For Firefox 13 and higher.
  */
 
+const EXPORTED_SYMBOLS = [];
+
+Components.utils.import("resource://unitedtb/util/util.js");
+Components.utils.import("resource://unitedtb/util/observer.js");
+Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+
 var ourNewTabURL;
 
 function onLoad()
@@ -18,46 +24,10 @@ function onLoad()
     ourNewTabURL = ourPref.get("newtab.url");
 
   updateNewTabPagePref(ourPref.get("newtab.enabled"));
-  ourPref.observeAuto(window, "newtab.enabled", updateNewTabPagePref);
-  generalPref.observeAuto(window, "browser.newtab.url", updateNewTabPref);
-  if (/^chrome:/.test(ourNewTabURL))
-    // Pushing pages to gInitialPages, causes their URL not to be displayed
-    // at all in the URL bar. This is convenient for users to type a new URL.
-    // We only do this for chrome URLs.
-    gInitialPages.push(ourNewTabURL);
-  else
-    hookupSelectURLinURLbar();
+  ourPref.observe("newtab.enabled", updateNewTabPagePref);
+  generalPref.observe("browser.newtab.url", updateNewTabPref);
 }
-window.addEventListener("load", onLoad, false);
-
-/**
- * Firefox does not highlight the URL in the URL bar when a new tab
- * is opened (bug 757455). This code works around that.
- */
-
-function hookupSelectURLinURLbar() {
-  var newTab = false;
-
-  var FFBrowserOpenTab = BrowserOpenTab;
-  function ourBrowserOpenTab()
-  {
-    FFBrowserOpenTab();
-    newTab = true;
-  }
-  BrowserOpenTab = ourBrowserOpenTab;
-
-  var FFURLBarSetURI = URLBarSetURI;
-  function ourURLBarSetURI(aURI)
-  {
-    FFURLBarSetURI(aURI);
-    if (newTab)
-    {
-      gURLBar.select();
-      newTab = false;
-    }
-  }
-  URLBarSetURI = ourURLBarSetURI;
-}
+runAsync(onLoad);
 
 /**
  * If the user disables our new tab page, we need to reset the
@@ -86,21 +56,23 @@ function updateNewTabPref(newTabPage) {
 }
 
 /**
-* Reset the new tab page on uninstall.
-* Only reset it if it is set to our value.
-*/
-function cleanUpOnUnInstall()
-{
+ * When we are uninstalled or disabled, we need to reset the new tab URL
+ * if we are the ones that set it
+ */
+function cleanUpOnUninstall() {
   if (generalPref.get("browser.newtab.url") == ourNewTabURL) {
+    ourPref.ignore("newtab.enabled", updateNewTabPagePref);
+    generalPref.ignore("browser.newtab.url", updateNewTabPref);
     generalPref.reset("browser.newtab.url");
   }
 }
-registerGlobalObserver(
+
+var globalObserver =
 {
   notification : function(msg, obj)
   {
-    if (msg == "uninstall")
-      cleanUpOnUnInstall();
+    if (msg == "uninstalled" || msg == "disabled")
+      cleanUpOnUninstall();
   }
-});
-
+}
+registerGlobalObserver(globalObserver);

@@ -1,9 +1,9 @@
 <?xml version="1.0" ?><RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>toolbar@gmx.net</em:id>
-    <em:version>2.3.4</em:version>
+    <em:version>2.4</em:version>
     <em:name>GMX MailCheck</em:name>
-    <em:description>Der sichere Klick in Dein Postfach.</em:description>
+    <em:description>Schnell und sicher E-Mails abrufen.</em:description>
     <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
     <em:homepageURL>http://go.gmx.net/home</em:homepageURL>
     <em:updateURL>https://dl.gmx.net/toolbar/firefox/moztoolbar.rdf</em:updateURL>
@@ -13,14 +13,14 @@
         <Description>
             <em:locale>en-US</em:locale>
             <em:name>GMX MailCheck</em:name>
-            <em:description>The safe way to access your personal mail.</em:description>
+            <em:description>Fast and secure email checking.</em:description>
             <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
             <em:homepageURL>http://go.gmx.net/home</em:homepageURL>
         </Description>
         <Description>
             <em:locale>de-DE</em:locale>
             <em:name>GMX MailCheck</em:name>
-            <em:description>Der sichere Klick in Dein Postfach.</em:description>
+            <em:description>Schnell und sicher E-Mails abrufen.</em:description>
             <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
             <em:homepageURL>http://go.gmx.net/home</em:homepageURL>
         </Description>

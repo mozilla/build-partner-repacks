@@ -9,6 +9,7 @@ if (!unitedinternet)
   Components.utils.import("resource://unitedtb/util/observer.js", unitedinternet.common);
   Components.utils.import("resource://unitedtb/main/brand-var-loader.js", unitedinternet.common);
   Components.utils.import("resource://unitedtb/build.js", unitedinternet.common);
+  Components.utils.import("resource://gre/modules/Services.jsm", unitedinternet.common);
   unitedinternet.common.loadJS("chrome://unitedtb/content/util/observerOnWindow.js", unitedinternet.common);
   unitedinternet.common.loadJS("chrome://unitedtb/content/util/uiutil.js", unitedinternet.common);
 
@@ -22,12 +23,11 @@ if (!unitedinternet)
  * @param outerscope {Object} object on which to attach the new scope
  * @param scopename {String} name of new scope to be created
  */
-  function initModule(outerscope, scopename) {
+  unitedinternet.initModule = function initModule(outerscope, scopename) {
     if (!outerscope[scopename])
       outerscope[scopename] = {};
     if (!outerscope[scopename].loadJS)
       unitedinternet.common.mixInto(unitedinternet.common, outerscope[scopename]);
   }
-  unitedinternet.initModule = initModule;
   unitedinternet.loadJS = unitedinternet.common.loadJS;
 }

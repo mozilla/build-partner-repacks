@@ -24,6 +24,8 @@
     <toolbaritem id="united-search-box"
           align="center"
           remove-priority="201"
+          persist="width"
+          flex="1"
           >
 
       <textbox id="united-search-field"
@@ -35,7 +37,6 @@
               no-onfocus="unitedinternet.search.onFocus(event);"
               oninput="unitedinternet.search.onTextChanged(event);"
               ontextentered="unitedinternet.search.onTextEntered();"
-              ondrop="unitedinternet.search.onDragDrop(event);"
           >
         <hbox> <!-- the silly, "smart" trick they use in autocomplete.xml
              to put things on the right -->

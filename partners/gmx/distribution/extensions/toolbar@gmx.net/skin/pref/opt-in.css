@@ -1,17 +1,30 @@
+html {
+  height: 100%;
+}
+
 body {
-  font-family: sans-serif;
+  font-family: Verdana, sans-serif;
   background-color: ButtonFace;
 }
 #container {
   background-repeat: no-repeat;
   background-color: white;
   border: 1px outset black;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-bottom: 10px;
+  padding: 20px;
   margin-left: 25%;
   margin: auto;
+  text-align: center;
+  display: inline-block;
+  position: relative;
+  margin-top: 50px;
+  color: #262626;
+  font-size: 13px;
 }
+
+#outer_container {
+  text-align: center;
+}
+
 h1 {
   display: none;
   text-align: center;
@@ -27,8 +40,18 @@ h1 {
 }
 .checkbox-box {
   font-size: small;
+  margin-bottom: 10px;
+}
+
+.checkbox-box > div {
   margin-bottom: 5px;
 }
+
+.section-heading {
+  font-weight: bold;
+  margin-top: 15px;
+}
+
 .widget-box {
   font-size: small;
   margin-bottom: 5px;
@@ -38,9 +61,7 @@ h1 {
   text-align: right;
   margin-top: 10px;
 }
-pref-region {
-  margin-left: 1em;
-}
+
 pref-region menulist, pref-region *|menulist {
   min-width: 15em;
   font-size: small;
@@ -50,5 +71,68 @@ pref-region menulist, pref-region *|menulist {
 }
 
 #close-button {
-  font-size: smaller;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  text-decoration: none;
+  font-size: 12px;
+  color: #2269c3;
+}
+
+#close-button img {
+  padding-left: 5px;
+  vertical-align: middle;
+}
+
+#optin-settings {
+    width: 35em;
+    display: inline-block;
+    text-align: left;
+}
+
+#footer {
+  font-size: x-small;
+  font-size: 11px;
+  color: #6a6a6a;
+  text-align: left;
+  position: absolute;
+  left: 25px;
+  bottom: 25px;
+}
+
+#container[brandedbrowser] #optin-settings,
+#container[brandedbrowser] #footer {
+  display: none;
+}
+
+#header {
+  text-align: left;
+  margin-bottom: 30px;
+  font-size: x-large;
+}
+
+#logo {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+
+#login-buttons {
+  bottom: 10px;
+  right: 10px;
+  text-align: right;
+}
+
+#login-buttons button {
+  font-size: 19px;
+  height: 41px;
+  min-width: 120px;
+}
+
+#login-button {
+  display: none;
+}
+
+#container[amo] #login-button {
+  display: inline;
 }

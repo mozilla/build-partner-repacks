@@ -58,6 +58,7 @@
 
 const EXPORTED_SYMBOLS = [ "IMAPAccount" ];
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/util/observer.js");
@@ -65,6 +66,7 @@ Components.utils.import("resource://unitedtb/util/Socket.js");
 Components.utils.import("resource://unitedtb/util/Auth.js");
 Components.utils.import("resource://unitedtb/email/MIME.js");
 Components.utils.import("resource://unitedtb/email/account-base.js");
+Components.utils.import("resource://unitedtb/email/account-list.js"); // For getAllExistingAccounts
 var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/email.properties");
 
 
@@ -664,3 +666,23 @@ function IMAPSyntaxErrorResponse(serverErrorMsg, hostname)
   Exception.call(this, gStringBundle.get("imap.syntax.error", [ hostname, serverErrorMsg ]));
 }
 extend(IMAPSyntaxErrorResponse, Exception);
+
+/**
+ * Our IMAP connection is persistent.
+ *
+ * This means that when we shutdown, we need to kill the connection.
+ *
+ * The profile-change-net-teardown notification happens before the network
+ * connection is dropped, so it is the correct time to do this.
+ */
+var netTeardownListener =
+{
+  observe : function (subject, topic, data) {
+    var accounts = getAllExistingAccounts();
+    for each (let account in accounts)
+      if (account instanceof IMAPAccount)
+        for each (let conn in account._connections.slice(0)) // logout modifies _conns
+          conn.logout();
+  }
+}
+Services.obs.addObserver(netTeardownListener, "profile-change-net-teardown", false);

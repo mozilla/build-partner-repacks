@@ -13,6 +13,7 @@
 
 const EXPORTED_SYMBOLS = [ "startUsecase", "logoutPerUsecase", "goToWebmailOld" ];
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/util/observer.js");
@@ -73,7 +74,7 @@ function startUsecase(account, usecase, parameters, win)
   else
   {
     assert(win && win.unitedinternet, "Need a Firefox window");
-    if (usecase == "openmail") // Hack per PM: Go to homepage first
+    if (usecase == "openmail" && ! brand.toolbar.pay) // Hack per PM: Go to homepage first
       goToWebmailOldUnitedInternet(account, win);
     else
       loadNewTab(account, payload, win);
@@ -129,9 +130,8 @@ function logoutPerUsecase(account)
 function findExistingTab(account, returnAll)
 {
   var resultArray = [];
-  var wm = Cc["@mozilla.org/appshell/window-mediator;1"]  
-       .getService(Ci.nsIWindowMediator);
-  var browserEnumerator = wm.getEnumerator("navigator:browser");
+  // nsIWindowMediator
+  var browserEnumerator = Services.wm.getEnumerator("navigator:browser");
   while (browserEnumerator.hasMoreElements())
   {
     let browserWin = browserEnumerator.getNext();

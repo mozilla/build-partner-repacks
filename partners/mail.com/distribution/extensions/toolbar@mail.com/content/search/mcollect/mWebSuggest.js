@@ -92,14 +92,13 @@ mWebSuggest.prototype =
    */
   _getEngine : function()
   {
-    var searchServ = Cc["@mozilla.org/browser/search-service;1"]
-        .getService(Ci.nsIBrowserSearchService);
+    // nsIBrowserSearchService
     if (this._engineName == "-current-")
-      return searchServ.currentEngine;
+      return Services.search.currentEngine;
     else if (this._engineName == "-ours-")
-      return searchServ.getEngineByName(brand.search.engineName);
+      return Services.search.getEngineByName(brand.search.engineName);
     else
-      return searchServ.getEngineByName(this._engineName);
+      return Services.search.getEngineByName(this._engineName);
   },
 }
 extend(mWebSuggest, mSearch);

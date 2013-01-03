@@ -12,7 +12,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is the Beonex Mail Notifier
+ * The Original Code is the Beonex Mail Notifier and Mozilla Thunderbird
  *
  * The Initial Developer of the Original Code is
  *  Ben Bucksch <ben.bucksch beonex.com>
@@ -64,16 +64,19 @@
  */
 
 const EXPORTED_SYMBOLS = [ "getAllExistingAccounts", "getExistingAccount",
-    "getExistingAccountForEmailAddress", "makeNewAccount", "_removeAccount" ];
+    "getExistingAccountForEmailAddress", "makeNewAccount",
+    "verifyEmailAddressDomain", "_removeAccount", ];
 
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
+Components.utils.import("resource://unitedtb/util/fetchhttp.js");
 Components.utils.import("resource://unitedtb/util/observer.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
 Components.utils.import("resource://unitedtb/email/account-base.js");
 Components.utils.import("resource://unitedtb/email/imap.js");
 Components.utils.import("resource://unitedtb/email/pop3.js");
 Components.utils.import("resource://unitedtb/email/email-logic.js");
+Components.utils.import("resource://gre/modules/Services.jsm");
 var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/login.properties");
 
 /**
@@ -143,29 +146,32 @@ function getExistingAccountForEmailAddress(emailAddress)
 }
 
 /**
- * Returns the |Account| object for |emailAddress|.
- * If none exists yet, creates it.
+ * Create a new |Account| object for |emailAddress|.
  *
  * Note: You need to call account.saveToPrefs() yourself.
+ *
+ * @param successCallback {Function(account {Account})}
+ *     Called, if the email address is supported and could be configured.
+ * @param errorCallback {Function(msg {String or Exception})}
+ *     Called, if we cannot configure that email address.
+ * @returns {Abortable}
  */
-function makeNewAccount(emailAddress)
+function makeNewAccount(emailAddress, successCallback, errorCallback)
 {
-  sanitize.nonemptystring(emailAddress);
-  assert(emailAddress == emailAddress.toLowerCase(),
-         "email addresses must be lowercase");
-  assert( !getExistingAccountForEmailAddress(emailAddress),
-          "account already exists");
-  //var accountID = emailAddress;
-  var accountID = generateNewAccountID();
+  try {
+    sanitize.nonemptystring(emailAddress);
+    assert(emailAddress == emailAddress.toLowerCase(),
+            "email addresses must be lowercase");
+    assert( !getExistingAccountForEmailAddress(emailAddress),
+            "account already exists");
+    //var accountID = emailAddress;
+    var accountID = generateNewAccountID();
+    var domain = Account.getDomainForEmailAddress(emailAddress);
+  } catch (e) { errorCallback(e); }
 
-  // TODO move to account creation wizard
-  var domain = Account.getDomainForEmailAddress(emailAddress);
-  var account = null;
-  for each (let config in brand.login.configs)
+  return getAccountProviderWithNet(domain, function(config)
   {
-    if ( !arrayContains(config.domains, domain))
-      continue;
-    account = _newAccountOfType(config.type, accountID, true);
+    var account = _newAccountOfType(config.type, accountID, true);
     account.emailAddress = emailAddress;
     if (config.type == "imap" || config.type == "pop3")
     {
@@ -184,21 +190,13 @@ function makeNewAccount(emailAddress)
     }
     else if (config.type == "unitedinternet")
     {
-      account._readServerConfig();
+      account.setServerConfig(config);
     }
-  }
-  if ( !account)
-  {
-    throw new Exception(gStringBundle.get("error.domain",
-        [ brand.login.providerName ]));
-  }
 
-  gAccounts[accountID] = account;
-  runAsync(function()
-  {
+    gAccounts[accountID] = account;
+    successCallback(account);
     notifyGlobalObservers("account-added", { account : account });
-  }, 0);
-  return account;
+  }, errorCallback);
 }
 
 function generateNewAccountID()
@@ -211,6 +209,147 @@ function generateNewAccountID()
   } while (existingAccountIDs.indexOf(newAccountID) != -1 &&
       ourPref.get("account." + newAccountID + ".type", null))
   return newAccountID;
+}
+
+/**
+ * Checks whether the domain of the email address is supported by us.
+ *
+ * @param emailAddress {String}
+ * @param successCallback {Function(config {Object})} check passed
+ *    |config| the brand.js object for this provider
+ * @param errorCallback check failed, with reason
+ * @returns {Abortable}
+ */
+function verifyEmailAddressDomain(emailAddress, successCallback, errorCallback)
+{
+  var domain = Account.getDomainForEmailAddress(emailAddress);
+  return getAccountProviderWithNet(domain, successCallback, errorCallback);
+}
+
+/**
+ * Finds the provider that hosts this email address.
+ * Uses both the internal list of domains in brand.js,
+ * as well as MX lookups over the network to determine
+ * the provider.
+ *
+ * @see Disclaimers at fetchConfigForMX()
+ * <http://mxr.mozilla.org/comm-central/source/
+ * mailnews/base/prefs/content/accountcreation/fetchConfig.js#136>
+ *
+ * @param domain {String} email address, part after @
+ * @param successCallback {Function(provider {Object})}
+ *     Called, if the provider could be found and is supported.
+ *     |provider| config object from brand.js for the provider.
+ * @param errorCallback {Function(msg {String or Exception})}
+ *     Called, if we cannot configure that email address.
+ * @returns {Abortable}
+ */
+function getAccountProviderWithNet(domain,
+                                   successCallback, errorCallback)
+{
+  // first check whether it's one of the main domains for which
+  // we have the config locally
+  var config = getAccountProviderLocally(domain);
+  if (config)
+  {
+    successCallback(config);
+    return new Abortable();
+  }
+  var errorMsg = gStringBundle.get("error.domain",
+      [ brand.login.providerName ]);
+
+  // TODO move to TB account creation wizard
+
+  // Now fetch the MX record for the domain and check whether
+  // the SLD of it matches one of our known domains.
+  // Given that Mozilla can't do DNS MX lookups,
+  // we use the webservice that Thunderbird uses.
+  // @see fetchConfigForMX()
+  // <http://mxr.mozilla.org/comm-central/source/
+  // mailnews/base/prefs/content/accountcreation/fetchConfig.js#136>
+  return getMX(domain, function(mxHostname)
+  {
+    debug("got MX " + mxHostname);
+    var providerDomain = Services.eTLD.getBaseDomainFromHost(mxHostname);
+    debug("got domain " + providerDomain);
+    var config = getAccountProviderLocally(providerDomain);
+    debug("got config " + (config ? config.providerID : "(none)"));
+    if (config) {
+      successCallback(config);
+    } else {
+      errorCallback(errorMsg);
+    }
+  },
+  function(e)
+  {
+    errorCallback(e == "no MX found" ? errorMsg : e);
+  });
+}
+
+/**
+ * Finds the provider that hosts this email address.
+ * Uses only the internal list of domains in brand.js.
+ *
+ * @param domain {String} email address, part after @
+ * @returns {Object} config object from brand.js for the provider.
+ *     null, if no config found.
+ */
+function getAccountProviderLocally(domain)
+{
+  for each (let config in brand.login.configs)
+  {
+    if (arrayContains(config.domains, domain))
+      return config;
+  }
+  return null;
+}
+
+/**
+ * <copied from="mailnews/base/prefs/content/accountcreation/fetchConfig.js"
+ * license="MPL" />
+ *
+ * Queries the DNS MX for the domain
+ *
+ * The current implementation goes to a web service to do the
+ * DNS resolve for us, because Mozilla unfortunately has no implementation
+ * to do it. That's just a workaround. Once bug 545866 is fixed, we make
+ * the DNS query directly on the client. The API of this function should not
+ * change then.
+ *
+ * Returns (in successCallback) the hostname of the MX server.
+ * If there are several entires with different preference values,
+ * only the most preferred (i.e. those with the lowest value)
+ * is returned. If there are several most preferred servers (i.e.
+ * round robin), only one of them is returned.
+ *
+ * @param domain {String}
+ * @param successCallback {function(hostname {String})
+ *   Called when we found an MX for the domain.
+ *   For |hostname|, see description above.
+ * @param errorCallback
+ * @returns {Abortable}
+ */
+function getMX(domain, successCallback, errorCallback)
+{
+  domain = sanitize.hostname(domain);
+  var url = "https://mx-live.mozillamessaging.com/dns/mx/" + domain;
+  var fetch = new FetchHTTP({ url : url }, function(result)
+  {
+    // result is plain text, with one line per server.
+    // So just take the first line
+    debug("MX query result: \n" + result + "(end)");
+    assert(typeof(result) == "string");
+    let first = result.split("\n")[0];
+    first.toLowerCase().replace(/[^a-z0-9\-_\.]*/g, "");
+    if (first.length == 0)
+    {
+      errorCallback("no MX found");
+      return;
+    }
+    successCallback(first);
+  }, errorCallback);
+  fetch.start();
+  return fetch;
 }
 
 function _newAccountOfType(type, accountID, isNew)

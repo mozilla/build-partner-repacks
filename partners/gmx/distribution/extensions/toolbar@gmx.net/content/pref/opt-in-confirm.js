@@ -1,7 +1,9 @@
+/* TODO: Merge into login-page.js, the only caller */
+
 var gOptInBundle = new StringBundle(
     "chrome://unitedtb/locale/pref/opt-in.properties");
 
-function optinConfirmClose()
+function optinConfirmClose(confirmedCallback)
 {
   var aButtonFlags = (promptService.BUTTON_POS_0) * (promptService.BUTTON_TITLE_YES) +
                      (promptService.BUTTON_POS_1) * (promptService.BUTTON_TITLE_NO) +
@@ -28,9 +30,6 @@ function optinConfirmClose()
     else
       ourPref.reset("optin.reminder");
 
-    // Route to the firstrun page
-    document.location.href = brand.toolbar.firstrunURL +
-                             "/?kid=" + ourPref.get("tracking.campaignid", 0);
-;
+    confirmedCallback();
   }
 }

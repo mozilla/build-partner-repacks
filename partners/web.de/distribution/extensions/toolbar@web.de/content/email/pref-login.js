@@ -118,7 +118,12 @@ function setup()
 
   // Short-term workaround until POP3/IMAP and the above wizard is integrated
   // 2 = create account
-  findSomeBrowserWindow().unitedinternet.login.tryLogin(2, null, false,
+  var ffWin;
+  if (window.opener && window.opener.unitedinternet)
+    ffWin = window.opener;
+  else
+    ffWin = findSomeBrowserWindow();
+  ffWin.unitedinternet.login.tryLogin(2, null, false, window,
       function() {}, errorCritical, function() {});
   // list refreshes automatically due to listeners
 }
@@ -150,6 +155,20 @@ function edit()
 function remove()
 {
   var acc = getSelectedAccount();
+
+  // If this is the last brand account, don't let it be deleted
+  // (unless it's the last account)
+  if (acc.providerID == brand.login.providerID) {
+    var allAccounts = getAllExistingAccounts();
+    var numBrandAccounts = allAccounts.filter(function (acc) {
+      return acc.providerID == brand.login.providerID;
+    }).length;
+    if (numBrandAccounts == 1 && allAccounts.length > 1) {
+      errorCritical(gStringBundle.get("remove.brand",
+                    [ brand.login.providerName ]));
+      return;
+    }
+  }
 
   var ok = promptService.confirm(window,
       gStringBundle.get("remove.title"),

@@ -33,7 +33,14 @@ toolbar[mode="full"] toolbarbutton[id^="united-"] > label.toolbarbutton-text
   margin-right: 3px !important;
 }
 
-#united-toolbar > toolbarseparator {
+#united-toolbar > toolbarseparator,
+#united-toolbar > splitter {
   min-height: 0px;
   height: 24px;
+}
+
+#united-toolbar > splitter {
+  border: none;
+  background: transparent;
+  margin-left: -3px;
 }

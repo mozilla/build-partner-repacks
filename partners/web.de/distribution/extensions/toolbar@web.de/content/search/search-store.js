@@ -157,9 +157,8 @@ function convertDatabaseToJSON()
   if (!file.exists()) {
     return;
   }
-  var storageService = Cc["@mozilla.org/storage/service;1"]
-                         .getService(Ci.mozIStorageService);
-  var searchHistoryDB = storageService.openDatabase(file);
+  // mozIStorageService
+  var searchHistoryDB = Services.storage.openDatabase(file);
 
   if (searchHistoryDB.tableExists("searchterms")) {
     var sel = searchHistoryDB.createStatement("SELECT " +

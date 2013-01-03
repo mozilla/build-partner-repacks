@@ -1,12 +1,19 @@
-<!ENTITY page.title "&brand.name; installation">
-<!ENTITY page.heading "&brand.name;">
+<!ENTITY page.title "&brand.name; Installation">
+<!ENTITY page.heading "&brand.name; MailCheck Registration">
+<!ENTITY page.subheading "&brand.name; recommended settings">
 <!ENTITY searchengine.checkbox.label "Set &brand.name; search as my default">
 <!ENTITY startpage.checkbox.label "Set my home page to">
+<!ENTITY startpage.label "Make my homepage">
 <!ENTITY startpage-search.radiobutton.label "&brand.name; search">
-<!ENTITY startpage-brand.radiobutton.label "&brand.name; portal">
+<!ENTITY startpage-brand.radiobutton.label "&brand.name;">
+<!ENTITY startpage-browser.radiobutton.label "Default browser settings">
+<!ENTITY newtab.label "New Tab">
 <!ENTITY newtab.checkbox.label "Use &brand.name; MailCheck new tab">
-<!ENTITY region.label "Country:">
+<!ENTITY region.label "Country">
 <!ENTITY close.button.label "Close">
 <!ENTITY continue.button.label "Continue to Login">
-<!ENTITY intro.heading "Congratulations, you successfully installed the &brand.name; MailCheck!">
-<!ENTITY intro.descr "Please select your settings below.">
+<!ENTITY intro.heading "Congratulations, you successfully installed the &brand.name; MailCheck">
+<!ENTITY intro.descr "Please select your settings below">
+<!ENTITY searchengine.label "Choose your search engine">
+<!ENTITY configinfo.label "You can change these settings at any time">
+<!ENTITY finish.button.label "Finish">

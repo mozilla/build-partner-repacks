@@ -93,4 +93,13 @@
       </hbox>
     </panel>
   </popupset>
+  <statusbar id="status-bar">
+    <statusbarpanel id="unitedinternet-statusbarpanel"
+                    onclick="unitedinternet.email.onCommandMailButton(true);">
+      <image id="united-email-statusbar-image" status="disconnected"/>
+      <label id="united-email-statusbar-label"
+             origvalue="&united.logged-out.label;"
+             value="&united.logged-out.label;"/>
+    </statusbarpanel>
+  </statusbar>
 </overlay>

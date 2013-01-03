@@ -1,6 +1,43 @@
+body {
+  background: linear-gradient(#d5d5d5 0%, #eeeeee 50px, #f6f6f5 100%);
+  /* background: radial-gradient(center top 0deg, ellipse cover, #d5d5d5 0%, #eeeeee 50px, #f6f6f5 100%); */
+}
+
+#header {
+  font-family: "Segoe Print", serif;
+  color: #F0B400;
+}
+
 #container {
-  background-image: url('chrome://unitedtb/skin/pref/opt-in-header.jpg');
-  background-position: -5px -5px, top center;
-  width: 632px;
-  padding-top: 125px;
+  margin-top: 75px;
+}
+
+#email-settings {
+  background-color: #FFF7D9;
+}
+
+#login-buttons button {
+  -moz-appearance: none;
+  color: #000000;
+  border: 1px #F2BD3E solid;
+  border-radius: 4px;
+  background: linear-gradient(#FFE688, #FFCF20);
+}
+
+#login-buttons button:hover {
+  border-color: #F1B525;
+  background: linear-gradient(#FFDD62, #FFBF06);
+}
+
+#login-buttons button:active,
+#login-buttons button:active:hover {
+  color: #58440A;
+  border-color: #D7B260;
+  background: linear-gradient(#FFD74D, #FFBA05);
+}
+
+#login-buttons button[disabled] {
+  color: #808080;
+  border-color: #F9DE9F;
+  background: linear-gradient(#FFF3C4, #FFE790);
 }

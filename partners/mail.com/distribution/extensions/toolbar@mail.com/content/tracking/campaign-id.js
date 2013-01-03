@@ -16,6 +16,7 @@
 
 const EXPORTED_SYMBOLS = [ "setCampaignID" ];
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/util/observer.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
@@ -32,9 +33,8 @@ function checkForCampaignIDCookie()
 {
   var campaignID = 0;
 
-  var cookiemgr = Cc["@mozilla.org/cookiemanager;1"]
-                    .getService(Ci.nsICookieManager);
-  var e = cookiemgr.enumerator;
+  // nsICookieManager, same below
+  var e = Services.cookies.enumerator;
   while (e.hasMoreElements())
   {
     var cookie = e.getNext();
@@ -50,8 +50,8 @@ function checkForCampaignIDCookie()
           break;
         }
       }
-      /* We remove the cookie no matter what */
-      cookiemgr.remove(cookie.host, cookie.name, cookie.path, false);
+      // We remove the cookie no matter what
+      Services.cookies.remove(cookie.host, cookie.name, cookie.path, false);
       break;
     }
   }

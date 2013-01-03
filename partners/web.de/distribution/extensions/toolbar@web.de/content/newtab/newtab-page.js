@@ -76,8 +76,10 @@ function onLoad()
 }
 window.addEventListener("load", onLoad, false);
 
-// If there is no entry in the PageThumbsCache for a given URL, we
-// use a favicon instead
+/**
+ * If there is no entry in the Firefox thumbnail store for a given page URL, we
+ * use a favicon instead as fallback.
+ */
 function addSitePlaceholders(doc) {
   let cells = doc.querySelectorAll(".newtab-cell");
   // Can't use for each because Nodelists contains the length as a member
@@ -88,28 +90,50 @@ function addSitePlaceholders(doc) {
       // When a user clicks on a link, we want it to go outside the iframe
       link.setAttribute("target", "_top");
       var url = link.getAttribute("href");
-      PageThumbsCache.getReadEntry(url, ReadEntryCallback(url, cell.querySelector(".newtab-thumbnail")));
+
+      // Check whether Firefox has a thumbnail, see above.
+      if (parseInt(Services.appinfo.version) < 17) { // For < FF17. Remove in 2.5.
+        PageThumbsCache.getReadEntry(url, cacheCallback(url,
+            cell.querySelector(".newtab-thumbnail")));
+        // Continue in cacheCallback()
+      } else { // For >= FF17
+        var file = PageThumbsStorage.getFileForURL(url);
+        if (!file.exists())
+          displayFaviconForThumbnail(url, cell.querySelector(".newtab-thumbnail"));
+      }
     }
   }
 }
 
-// We need to use a separate function for this because we can not use a closure
-// in a loop
-function ReadEntryCallback(url, thumbnail) {
+/**
+ * Continuation of addSitePlaceholders().
+ * We need to use a separate function for this,
+ * because we can not use a closure in a loop.
+ * Used for < FF18 only.
+ */
+function cacheCallback(url, thumbnail) {
   return function(aSourceEntry) {
     if (!aSourceEntry) {
-      thumbnail.style.backgroundSize = "auto";
-      thumbnail.style.backgroundPosition = "center center";
-      thumbnail.style.backgroundImage = "url('chrome://mozapps/skin/places/defaultFavicon.png')";
-      favicons.getFaviconURLForPage(NetUtil.newURI(url), function(aURI, aDataLen, aData, aMimeType) {
-        if (aURI)
-        {
-          var iconURL = favicons.getFaviconLinkForIcon(aURI).spec;
-          thumbnail.style.backgroundImage = "url('" + iconURL + "')";
-        }
-      });
+      displayFaviconForThumbnail(url, thumbnail);
     }
   }
+}
+
+/**
+ * Display the favicon for a given URL
+ */
+function displayFaviconForThumbnail(url, thumbnail)
+{
+  thumbnail.style.backgroundSize = "auto";
+  thumbnail.style.backgroundPosition = "center center";
+  thumbnail.style.backgroundImage = "url('chrome://mozapps/skin/places/defaultFavicon.png')";
+  favicons.getFaviconURLForPage(NetUtil.newURI(url), function(aURI, aDataLen, aData, aMimeType) {
+    if (aURI)
+    {
+      var iconURL = favicons.getFaviconLinkForIcon(aURI).spec;
+      thumbnail.style.backgroundImage = "url('" + iconURL + "')";
+    }
+  });
 }
 
 function initAutocomplete()

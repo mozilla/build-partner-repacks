@@ -38,19 +38,16 @@ mPlacesSearch.prototype =
          Not sure whether that's any faster than LIKE, though. TODO benchmark
          <https://mxr.mozilla.org/mozilla-central/source/toolkit/components/places/src/SQLFunctions.h#58>
          <http://mxr.mozilla.org/comm-central/source/mozilla/toolkit/components/places/src/SQLFunctions.cpp#332>
-         Of course, the SQL function signature had to change between FF3.6 and FF4.
       */
       var db = Cc["@mozilla.org/browser/nav-history-service;1"]
           .getService(Ci.nsPIPlacesDatabase) // private, but no choice
           .DBConnection;
-      var FF3 = ! XPCOMUtils.generateNSGetFactory;
       /*
       var sql = "SELECT url, title, visit_count, typed, frecency " +
           "FROM moz_places " +
           "WHERE frecency != 0 " + 
             "AND AUTOCOMPLETE_MATCH(:searchTerm, url, title, " +
-                "NULL, visit_count, typed, 0, " +
-                (FF3 ? "" : "0, ") +
+                "NULL, visit_count, typed, 0, 0, " +
                 ":matchBehavior, :searchBehavior) " +
            "ORDER BY frecency DESC, last_visit_date DESC " +
            "LIMIT :maxResults";
@@ -95,7 +92,7 @@ mPlacesSearch.prototype =
             if (!title)
               title = url;
             let icon = faviconServ.getFaviconImageForPage(
-                ioService.newURI(url, null, null)).spec;
+                Services.io.newURI(url, null, null)).spec;
             self._addResult(new mURLResult(title, descr, icon, url));
           } catch (e) { self._haveItemError(e); }
         }
