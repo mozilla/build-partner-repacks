@@ -1,6 +1,6 @@
 <SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
-  <ShortName>Yahoo!Xtra</ShortName>
-  <Description>Yahoo!Xtra Search</Description>
+  <ShortName>Yahoo! New Zealand</ShortName>
+  <Description>Yahoo! New Zealand Search</Description>
   <InputEncoding>UTF-8</InputEncoding>
   <Image width="16" height="16">data:image/x-icon;base64,R0lGODlhEAAQAJECAP8AAAAAAP///wAAACH5BAEAAAIALAAAAAAQABAAAAIplI+py+0NogQuyBDEnEd2kHkfFWUamEzmpZSfmaIHPHrRguUm/fT+UwAAOw==</Image>
   <Url type="application/x-suggestions+json" method="GET" template="http://aue-sayt.ff.search.yahoo.com/gossip-nz?output=fxjson&amp;command={searchTerms}" />

@@ -9,9 +9,11 @@ cver=cver.join("_");}
 var vert=mConfigMgr.getCharValue('installer.activeVertical');var skinEnabled=mConfigMgr.getIntValue('general.enableskins');var skinrequest=mConfigMgr.getBoolValue('skin.request')||false;var showvert=mConfigMgr.getBoolValue('general.enableverticals');var userskininfo=mConfigMgr.getCharValue("toolbar.userskininfo");var jsonObj=null;if(userskininfo!=""){jsonObj=yahooUtils.JSON.parse(userskininfo);}
 var skin="";if(skinEnabled==1){skin=mConfigMgr.getCharValue('general.selectedskincode');}else if(skinEnabled==2&&jsonObj&&jsonObj[vert]){skin=jsonObj[vert];}
 var toolbar_guid="";mConfigMgr.isYahooKey=false;if(mConfigMgr.isKeyPresent('yahoo.ytffp.installer._u')){mConfigMgr.isYahooKey=false;toolbar_guid=mConfigMgr.getCharValue('yahoo.ytffp.installer._u');}
+var toolbar_bucket="";if(mConfigMgr.isKeyPresent('toolbar.bucket')){toolbar_bucket=mConfigMgr.getCharValue('toolbar.bucket');}
 url=protocol+d_url+"/bh/v8/1.html"+"?&.pc="+pc+"&.dc="+dc+"&.a=0"+"&.ta=cg"+tid+",cc"+cid+",ci"+lang+",cv"+cver+",cp"+pc+",cbm,cjs"+"&.skinm="+skinEnabled+"&.skin="+skin+"&.lo="+layout+"&t="+time+"&.tguid="+toolbar_guid;if(showvert)
 url+="&.vert="+vert;if(!isGuestMode){url+="&.crumb="+feedCrumb();}
 if(isGuestMode){var lu=elapsedDays(mConfigMgr.getCharValue('toolbar.lastuse'));var lc=elapsedDays(mConfigMgr.getCharValue('toolbar.lastcust'));var nf=mConfigMgr.getIntValue('toolbar.numfeed');url+="&.lu="+lu+"&.lc="+lc+"&.nf="+nf;}
+if(toolbar_bucket!=""){url+="&tmpl="+toolbar_bucket;}
 url+="&.cspb=1";if(skinrequest){url+="&alrt=2";mConfigMgr.setBoolValue('skin.request',false,true);}
 if(ep!==null){url+="&"+ep;}
 yahooDebug("Feed URL "+url);}catch(e){yahooError("Error in buildFeedUrl : "+e);}
@@ -23,15 +25,21 @@ return null;}catch(e){yahooError("Error in calculateYBCacheSig"+e);}},calculatep
 return null;}catch(e){yahooError("Error in calculateperButtonYBCacheSig"+e);}},calculateCacheSig=function(){try{var cacheblobfile=mFileIO.getUserCacheDir();cacheblobfile.appendRelativePath("cachesection");if(cacheblobfile.exists()){var fileContent=mFileIO.readFile(cacheblobfile);var sig=yahooUtils.MD5Hash(fileContent);return sig;}else{}
 return null;}catch(e){yahooError("Error in calculateCacheSig"+e);}},toolbarLoadRestart=function(seconds){yahooUtils.setTimeout(function(){_self.asyncLoadServerFeed();},1000*seconds);};this.setSecureKey=function(key){secureKey=key;}
 this.asyncLoadServerFeed=function(isGuestMode,cbFunc){if(loading){return"";}
-callBackFunc=cbFunc.wrappedJSObject.object;loading=true;FEED_URL=buildFeedUrl(isGuestMode);var iosvc=CC["@mozilla.org/network/io-service;1"].getService(CI.nsIIOService);var channel=iosvc.newChannel(FEED_URL,0,null);yahooDebug("Getting feed from URL :"+FEED_URL);channel.asyncOpen(this,null);};this.onStartRequest=function(request,context){serverRaw="";};this.onDataAvailable=function(request,context,inputStream,offset,count){stream.init(inputStream,"UTF-8",1024,CI.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);var str={};if(stream.readString(count,str)!==0)
-serverRaw+=str.value;};this.onStopRequest=function(request,context,statusCode){try{if(stream){try{stream.close();}catch(e){}}
-var retVal="";var http=request.QueryInterface(CI.nsIHttpChannel);if(serverRaw===""){}
-var stripped=stripKey();var strippedServerRaw=stripped[0];secureKey=stripped[1];if(raw!=strippedServerRaw){yahooDebug("Cached Feed and Server Feed are not equal");raw=serverRaw;loadedType=eLoadType.LIVE_LOADED;retVal=raw;raw=strippedServerRaw;if(mConfigMgr.getCharValue('installer.activeVertical')!=""){var file=mFileIO.getUserCacheDir();file.appendRelativePath("feed-"+mConfigMgr.getCharValue('installer.activeVertical'));var ding=yahooUtils.JSON.parse(raw);var feed={};feed.v=ding.v;feed.p=ding.p;feed.y=ding.y;feed.u=ding.u;feed=yahooUtils.JSON.stringify(feed);mFileIO.writeFile(file,feed);yahooDebug("cached vertical feed");}
-if(mConfigMgr.getBoolValue("feedcaching")===true){var file=mFileIO.getUserCacheDir();file.appendRelativePath("feed");var ding=yahooUtils.JSON.parse(raw);var feed={};feed.v=ding.v;feed.p=ding.p;feed.y=ding.y;feed.u=ding.u;feed=yahooUtils.JSON.stringify(feed);mFileIO.writeFile(file,feed);yahooDebug("cached normal feed");}}
-else{var retVal=raw;yahooDebug("Cached Feed == Server Feed");}
-var val=mConfigMgr.getIntValue('toolbar.numfeed');val++;mConfigMgr.setIntValue('toolbar.numfeed',val,true);}catch(e){raw="";loadedType=eLoadType.NOT_LOADED;yahooError(e);_self.SendFeedFailureErrorReport("405: "+e);notifier.notifyObservers(null,"yahoo-feed-error","405: "+e);}finally{loading=false;if(callBackFunc)
-callBackFunc(retVal);}}
-this.loadCachedFeed=function(localCacheFile){if(loading){return;}
+callBackFunc=cbFunc.wrappedJSObject.object;loading=true;FEED_URL=buildFeedUrl(isGuestMode);var feedContent=Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Components.interfaces.nsIXMLHttpRequest);feedContent.open("GET",FEED_URL,true);feedContent.setRequestHeader("Content-Type","application/x-www-form-urlencoded");feedContent.onreadystatechange=function(aEvt){if(feedContent.readyState==4){if(feedContent.status==200){serverRaw=feedContent.responseText;var httpResponsestatus=feedContent.status;var Errorstate=0;try{var retVal="";if(serverRaw===""){}
+Errorstate=2;var stripped=stripKey();Errorstate=3;var strippedServerRaw=stripped[0];secureKey=stripped[1];if(raw!=strippedServerRaw){yahooDebug("Cached Feed and Server Feed are not equal");raw=serverRaw;loadedType=eLoadType.LIVE_LOADED;retVal=raw;raw=strippedServerRaw;Errorstate=4;if(mConfigMgr.getCharValue('installer.activeVertical')!=""){var file=mFileIO.getUserCacheDir();file.appendRelativePath("feed-"+mConfigMgr.getCharValue('installer.activeVertical'));Errorstate=5;var ding=yahooUtils.JSON.parse(raw);Errorstate=6;var feed={};feed.v=ding.v;Errorstate=61;feed.p=ding.p;Errorstate=62;feed.y=ding.y;Errorstate=63;feed.u=ding.u;Errorstate=7;feed=yahooUtils.JSON.stringify(feed);Errorstate=8;mFileIO.writeFile(file,feed);Errorstate=9;yahooDebug("cached vertical feed");}
+if(mConfigMgr.getBoolValue("feedcaching")===true){var file=mFileIO.getUserCacheDir();file.appendRelativePath("feed");Errorstate=10;var ding=yahooUtils.JSON.parse(raw);Errorstate=11;var feed={};feed.v=ding.v;feed.p=ding.p;feed.y=ding.y;feed.u=ding.u;Errorstate=12;feed=yahooUtils.JSON.stringify(feed);Errorstate=13;mFileIO.writeFile(file,feed);Errorstate=14;yahooDebug("cached normal feed");}}
+else{Errorstate=15;var retVal=raw;yahooDebug("Cached Feed == Server Feed");}
+var val=mConfigMgr.getIntValue('toolbar.numfeed');val++;mConfigMgr.setIntValue('toolbar.numfeed',val,true);}catch(e){var feedsizeafterstripKey=0;var sections="sections=";if(raw!==undefined&&raw!=null)
+feedsizeafterstripKey=raw.length;var feedsize=0;if(serverRaw!==undefined&&serverRaw!=null)
+{feedsize=serverRaw.length;if(serverRaw.match(/\"v\":\[/)!==null)
+sections+="v";if(serverRaw.match(/\"p\":\[/)!==null)
+sections+="p";if(serverRaw.match(/\"y\":\[/)!==null)
+sections+="y";if(serverRaw.match(/\"u\":\[/)!==null)
+sections+="u";if(serverRaw.match(/\"s\":\[/)!==null)
+sections+="s";}
+yahooError("Error Feed Data            "+raw);raw="";loadedType=eLoadType.NOT_LOADED;yahooError(e);_self.SendFeedFailureErrorReport("405: "+e+",Errorstate="+Errorstate+",Statue_Code="+httpResponsestatus+",Feed_Size="+feedsize+",Feed_Size_After_stripKey="+feedsizeafterstripKey+","+sections);notifier.notifyObservers(null,"yahoo-feed-error","405: "+e);}finally{loading=false;if(callBackFunc)
+callBackFunc(retVal);}}else{var httpResponsestatus=feedContent.status;_self.SendFeedFailureErrorReport("405:Statue_Code="+httpResponsestatus);}}}
+feedContent.send(null);};this.onStartRequest=function(request,context){serverRaw="";};this.loadCachedFeed=function(localCacheFile){if(loading){return;}
 yahooStartTrace("LoadCachedFeed");var inStream,handle;var success=false;loading=true;try{if(localCacheFile!=null){loadedType=eLoadType.CACHE_LOADED;var file=mFileIO.getUserCacheDir();file.appendRelativePath(localCacheFile);var fileRaw=mFileIO.readFile(file);if(!fileRaw||fileRaw===""){}
 raw=fileRaw;success=true;}}catch(e){raw="";loadedType=eLoadType.NOT_LOADED;yahooError(e);_self.SendFeedFailureErrorReport("403: "+e);notifier.notifyObservers(null,"yahoo-feed-error","403: "+e);}finally{loading=false;if(!success)raw="";yahooStopTrace("LoadCachedFeed");return raw;}};this.pushLayoutToServer=function(userSave,layout,isGuestMode)
 {try{if(isGuestMode){return 0;}
