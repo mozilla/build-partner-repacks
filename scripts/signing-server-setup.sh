@@ -7,6 +7,10 @@ nonce_file="`pwd`/nonce"
 tools_repo="http://hg.mozilla.org/build/tools"
 signing_dir="`pwd`/tools/release/signing"
 
+# Clear out the nonce. Invalid nonces will cause our newly created token to be
+# deleted.
+rm -f $nonce_file
+
 stty -echo
 echo -n "Token generation password: "
 read token_password
