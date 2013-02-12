@@ -9,19 +9,21 @@ FoxcubService.Register = FoxcubService.JAK.ClassMaker.makeClass({
 
 FoxcubService.Register.prototype.RETRY_INTERVAL = 10800000; // 10800000 //(dve hodiny)
 FoxcubService.Register.prototype.PWD = "SeznamSoftware";
+FoxcubService.Register.prototype.COMPUTER_HASH = 'http://localhost:9719/unlockInstance';
 FoxcubService.Register.prototype.TICKET_REQUEST = "<?xml version=\"1.0\" encoding=\"utf-8\"?><methodCall><methodName>getTicket</methodName><params /></methodCall>";
 FoxcubService.Register.prototype.REGISTER_REQUEST = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 		+ "<methodCall><methodName>register</methodName><params>"
 		+ "<param><value><string>${0}</string></value></param>"
 		+ "<param><value><string>${1}</string></value></param>"
 		+ "<param><value><struct>"
-		+ "<member><name>computerHash</name><value><string></string></value></member>"
+		+ "<member><name>computerHash</name><value><string></string></value></member>"		
 		+ "<member><name>release</name><value><int>${2}</int></value></member>"
 		+ "<member><name>version</name><value><string>${3}</string></value></member>"
 		+ "<member><name>product</name><value><int>${4}</int></value></member>"
 		+ "<member><name>os</name><value><string>${5}</string></value></member>"
 		+ "<member><name>browser</name><value><string>${6}</string></value></member>"
 		+ "<member><name>params</name><value><struct><member><name>hp</name><value><int>${7}</int></value></member></struct></value></member>"
+		+ "<member><name>signedComputerHash</name><value><string>${8}</string></value></member>"
 		+ "</struct></value></param>" + "</params></methodCall>";
 FoxcubService.Register.prototype.RELEASE_REQUEST = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 		+ "<methodCall><methodName>release</methodName><params>"
@@ -160,12 +162,33 @@ FoxcubService.Register.prototype._ticketAnswer = function(data,status){
 	
 };
 
+
+
+
 FoxcubService.Register.prototype._registerRq = function(){
 	var info = this._getInfo();
+	var data = '{"partnerId":'+info.release+'}';
+	var rq = new FoxcubService.JAK.Request(FoxcubService.JAK.Request.TEXT,{method:'POST'});
+	rq.setCallback(this, "_registerRqHash");
+	this.log(data);
+	this.log(this.COMPUTER_HASH);
+	rq.send(this.COMPUTER_HASH,data);	
+};
+
+FoxcubService.Register.prototype._registerRqHash = function(data,status){
+	var signHash="";
+	this.log(data);
+	this.log(status);
+	if(status==200){
+		data = JSON.parse(data);	
+		signHash = data.computerHash;
+	}
+	var info = this._getInfo();
 	var signature = this._getTicketSignature(this.ticketObj.ticket + this.PWD);
-	var data = [this.ticketObj.ticket, signature, info.release, info.version, info.product, info.os, info.browser,info.hp];
+	var data = [this.ticketObj.ticket, signature, info.release, info.version, info.product, info.os, info.browser,info.hp,signHash];
 	this.sendRPC(this._getRegisterUrl(),"_registerAnswer",this.REGISTER_REQUEST,data,false);	
 };
+
 /**
  * Odpoveď na _registerRq<br>
  * Ak je v poriadku nastav ssid.

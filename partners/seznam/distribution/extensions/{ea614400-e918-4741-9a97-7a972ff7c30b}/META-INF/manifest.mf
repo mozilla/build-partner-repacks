@@ -1,0 +1,167 @@
+Manifest-Version: 1.0
+Created-By: xpisign.py (version: 2.0.1; https://github.com/nmaier/xpisign.py); M2Crypto 0.19.1
+
+Name: install.rdf
+SHA1-Digest: aPs6lWYxpU/MNATdA+/WOBtGfqY=
+
+Name: chrome.manifest
+SHA1-Digest: 1faYdd1bfm6F7pH13AW287rSfsA=
+
+Name: chrome/foxcub.jar
+SHA1-Digest: OkddU7kO9IkRcv7lEpqhj2ndpoE=
+
+Name: modules/foxcubService.js
+SHA1-Digest: Ooq7EnkherQxxaPYx7uSBkSa76k=
+
+Name: modules/master.cfg
+SHA1-Digest: z9lD0OgnTHOikYOh7fpD38mlVS0=
+
+Name: modules/classes/baseObserver.js
+SHA1-Digest: YywWREiO3xRxKga3wWLnV2raQ+c=
+
+Name: modules/classes/baseResponseAnswer.js
+SHA1-Digest: TDPvCqTkf5UGvIC6X4cQrCeXJxo=
+
+Name: modules/classes/crc32.js
+SHA1-Digest: nRFHPQVmS1WW1r87G3Dd0XqZig4=
+
+Name: modules/classes/encoding.js
+SHA1-Digest: +MLitGeOW8G9qpnjIMCCz+VQIVA=
+
+Name: modules/classes/fileReader.js
+SHA1-Digest: BBbGxAXiaDSmjFWQxaT17SrAtcU=
+
+Name: modules/classes/fileWriter.js
+SHA1-Digest: MzAcaF3U80Ty9UCKKbSA/BhUB44=
+
+Name: modules/classes/functions.js
+SHA1-Digest: TsFi4mhGfGFoJbdsxyyniuzO3Us=
+
+Name: modules/classes/FXBPrefObserver.js
+SHA1-Digest: 4wpUmMSsENWtOMQdEDZcJGe/zhU=
+
+Name: modules/classes/logInterface.js
+SHA1-Digest: vbLLl+ogSWvMQoob4kbCl/Y6eXU=
+
+Name: modules/classes/md5.js
+SHA1-Digest: qxOZqX3J0vKqPUvbW12NWv57hLY=
+
+Name: modules/classes/parentheses.js
+SHA1-Digest: itND844yBdnmJeC+TQxaP9zCUQw=
+
+Name: modules/classes/preferenceObserver.js
+SHA1-Digest: JAyNPVyKmjdPVLD72UVQg6cimF0=
+
+Name: modules/classes/preferences.js
+SHA1-Digest: 1tpc9ok6UZ4lrtgegTm0gswmnoQ=
+
+Name: modules/classes/preferencesContainer.js
+SHA1-Digest: uuvU3L7mCvDN6FpUA629+/KRrp0=
+
+Name: modules/classes/RPCInterface.js
+SHA1-Digest: MUh9cB7uiQrLuYKGoJ5TujHq3zU=
+
+Name: modules/classes/windowHelper.js
+SHA1-Digest: eaKLJobQEpTiFUkAFkojybZBNZo=
+
+Name: modules/components/baseManager.js
+SHA1-Digest: zD117PwjdzFJwv8gfWLWy6bL8dE=
+
+Name: modules/components/config.js
+SHA1-Digest: JGwqp6S9n/j3CC9GrRF9gFLSMXg=
+
+Name: modules/components/create.js
+SHA1-Digest: ZaUL6rvWVBfDZVSvoMftJ8L7NPA=
+
+Name: modules/components/email.js
+SHA1-Digest: kM/SWti3OiLKknVs9QxClxkZFA0=
+
+Name: modules/components/install.js
+SHA1-Digest: eXlA5Irpn7xPJN90VnlsvJErIoc=
+
+Name: modules/components/logger.js
+SHA1-Digest: eRGs8P9L4lO7pi/agqHom9Fkiv0=
+
+Name: modules/components/register.js
+SHA1-Digest: Ao6+NGaWay3xQqY253GoBtTviW0=
+
+Name: modules/components/speedDial.js
+SHA1-Digest: CCSNmxHeMa20On9+KA8lfSQfWgU=
+
+Name: modules/components/subclasses/bookmarks.js
+SHA1-Digest: NXjnmk0dslrKVI4gCe55y9h0i80=
+
+Name: modules/components/subclasses/consoleLog.js
+SHA1-Digest: ai+APseNddmKaQ6eu0klz4bPs0k=
+
+Name: modules/components/subclasses/fileLog.js
+SHA1-Digest: GfHZ/iaoHxL/P/rDfqSoRrgGquQ=
+
+Name: modules/components/subclasses/parentLog.js
+SHA1-Digest: xIfNaod7j3Y27JkqcNjwMmuuHf0=
+
+Name: modules/components/subclasses/preferenceMerger.js
+SHA1-Digest: 2HXqwNoP8VUx9nI8B/wkNoFW7rc=
+
+Name: modules/components/subclasses/searchModules.js
+SHA1-Digest: zWK6mvhckXtjZyAzXt/MX8+3+Xk=
+
+Name: modules/components/subclasses/uninstall.js
+SHA1-Digest: iJ9nCTvloYCgMf/bBiMAqJcqcrA=
+
+Name: modules/components/subclasses/windowLog.js
+SHA1-Digest: 2WVuDWWNrIshDGZwmqdelafz5xs=
+
+Name: modules/components/subclasses/email/abstractAccount.js
+SHA1-Digest: jyl+2l8BVTjyu5kaB5FZykCsFCY=
+
+Name: modules/components/subclasses/email/checkCompute.js
+SHA1-Digest: smkG++30ylYmZ2tGX/T/X/y07qU=
+
+Name: modules/components/subclasses/email/imapAccount.js
+SHA1-Digest: vt5Q6Vw/seoARZmYP9H10v2BUYw=
+
+Name: modules/components/subclasses/email/imapReader.js
+SHA1-Digest: MCHBxrYUXi2mpQ+PzvKTi8ZnpEo=
+
+Name: modules/components/subclasses/email/mailParser.js
+SHA1-Digest: 1SGVgRZ9Rsn1fgiT02d99dtIej8=
+
+Name: modules/components/subclasses/email/offAccount.js
+SHA1-Digest: iXiwj5ZTIekbN23MQ11UxLuRHW8=
+
+Name: modules/components/subclasses/email/pop3Account.js
+SHA1-Digest: K1MiFbN2GzdUQ5VCDUyVoIzMkqk=
+
+Name: modules/components/subclasses/email/pop3Reader.js
+SHA1-Digest: J4/5jK3hHzn9TLnI1fTKV2YEC1Y=
+
+Name: modules/components/subclasses/email/scriptParser.js
+SHA1-Digest: UnjHZBChD2fXXdp7uw2lkvzpBIU=
+
+Name: modules/components/subclasses/email/seznamAccount.js
+SHA1-Digest: rms86AhBOpXZeGuhh+txZHKw1sw=
+
+Name: modules/components/subclasses/email/sockedReader.js
+SHA1-Digest: hPJbrM5volHWVDnzG0h6rk+GkFw=
+
+Name: modules/JAK/classmaker.js
+SHA1-Digest: 87rKOBZgVwqGy8dX5Kw18XqlDms=
+
+Name: modules/JAK/components.js
+SHA1-Digest: Zaf8zltM6wjL0G/pgDjIlT1qvf0=
+
+Name: modules/JAK/isignals.js
+SHA1-Digest: Cq+y434GuDwMT12DI0W9wpLEZNI=
+
+Name: modules/JAK/main.js
+SHA1-Digest: Jy0STeEfdo/ODYw9gcpZfQVoa64=
+
+Name: modules/JAK/object.js
+SHA1-Digest: QF3pXXSqlTxW1R5hvRAVyk/XbTQ=
+
+Name: modules/JAK/request.js
+SHA1-Digest: Z8ZjDCkNG/jYGtT4NiNiRTGokyU=
+
+Name: modules/JAK/signals.js
+SHA1-Digest: f5kyFz6VTnkNQXCVa+wZNqGA40g=

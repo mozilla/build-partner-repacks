@@ -11,9 +11,10 @@ FoxcubService.Crc32 = FoxcubService.JAK.ClassMaker.makeClass({
 	VERSION : "0.1"
 });
 
-FoxcubService.Crc32.HASH_LENGTH = 8;
+FoxcubService.Crc32.prototype.HASH_LENGTH = 8;
 
 FoxcubService.Crc32.prototype.$constructor = function(owner,name){
+	
 };
 
 

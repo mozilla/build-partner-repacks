@@ -25,11 +25,11 @@ FoxcubService.debug = function(msg,convert) {
  	
 	} 
 	promptService.alert(null, "Debug", msg);
-};
+}; 
 
 //definicia konstant
 FoxcubService.SOURCE = "FFListicka_3";
-FoxcubService.VERSION = "2.5.6";
+FoxcubService.VERSION = "2.5.14";
 FoxcubService.BETA = false;
 FoxcubService.FOXCUB_PREF_BRANCH = "extensions.foxcub.";
 FoxcubService.EXTENSION_ID = "{ea614400-e918-4741-9a97-7a972ff7c30b}";
