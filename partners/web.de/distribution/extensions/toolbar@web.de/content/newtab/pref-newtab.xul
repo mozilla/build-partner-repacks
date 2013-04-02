@@ -15,10 +15,11 @@
         >
       <caption label="&pane.title;" />
 
+      <checkbox preference="extensions.unitedinternet.newtab.enabled"
+          id="newtab-enabled-checkbox"
+          label="&enabled.label;"/>
       <checkbox preference="extensions.unitedinternet.newtab.setFocus"
           label="&focus.label;"/>
-      <checkbox preference="extensions.unitedinternet.newtab.enabled"
-          label="&enabled.label;"/>
 
     </groupbox>
   </tabpanel>

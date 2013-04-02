@@ -303,10 +303,10 @@ UnitedInternetLoginAccount.prototype =
     function(e)
     {
       if (e.code == 403)
-        e = gStringBundle.get("error.loginFailed");
+        e.message = gStringBundle.get("error.loginFailed");
       else if (e.code >= 500 && e.code < 600)
         // TODO suppress when just polling?
-        e = gStringBundle.get("error.serverSide", [ e.message ]);
+        e.message = gStringBundle.get("error.serverSide", [ e.message ]);
       errorCallback(e);
     });
   },
@@ -628,7 +628,7 @@ function uasLogin(uasURL, serviceID, loginToken,
             url : sanitize.url(service.baseURI),
           };
 
-          obj = loginContext.service[name];
+          let obj = loginContext.service[name];
           if (name == "mailbox")
           {
             obj.ignoreFolderTypes = sanitize.string(service.ignoredFolders).split(",");

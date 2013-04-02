@@ -109,7 +109,7 @@ function verifyAndShowError(needPassword, successCallback, errorCallback) {
   // gVerifyAbortable.cancel(); TODO breaks all further verify calls. ditto below.
   gVerifyAbortable = verifyEmailAddressAndPassword(
       eEmailAddress.value, ePassword.value,
-      needPassword, gBrandOnly,
+      needPassword, gBrandOnly, gInParams.usecase == 2,
   successCallback,
   function(errorMsg) { // errorCallback, check failed
     debug("check failed: " + errorMsg);

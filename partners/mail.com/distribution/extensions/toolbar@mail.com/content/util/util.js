@@ -48,6 +48,7 @@ const EXPORTED_SYMBOLS = [ "Cc", "Ci", "Cu", "extend", "mixInto", "assert",
   "StringBundle", "getExtensionFullVersion", "findSomeBrowserWindow",
   "Exception", "NotReached", "Abortable", "TimeoutAbortable", "IntervalAbortable",
   "SuccessiveAbortable", "XPCOMUtils",  "getProfileDir", "getSpecialDir", "getOS",
+  "parseURLQueryString", "createURLQueryString",
   "arrayRemove", "arrayContains", "deepCopy", "getErrorText",
   "errorInBackend", "kDebug", "debug", "debugObject", "dumpObject" ];
 
@@ -63,12 +64,14 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://unitedtb/util/Preferences.js");
 Cu.import("resource://unitedtb/util/StringBundle.js");
 Cu.import("resource://unitedtb/build.js");
+try {
+  Components.utils.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
+} catch (ex) {
+  // First available in Firefox 16
+}
 
 XPCOMUtils.defineLazyServiceGetter(this, "promptService",
     "@mozilla.org/embedcomp/prompt-service;1", "nsIPromptService");
-XPCOMUtils.defineLazyServiceGetter(this, "privateBrowsing",
-    "@mozilla.org/privatebrowsing;1", "nsIPrivateBrowsingService");
-
 const DOMParser = new Components.Constructor(
   "@mozilla.org/xmlextras/domparser;1", Ci.nsIDOMParser);
 const XMLSerializer = new Components.Constructor(
@@ -82,6 +85,23 @@ XPCOMUtils.defineLazyGetter(this, "generalPref", function()
 {
   return Preferences;
 });
+
+/**
+ * PrivateBrowsingUtils.jsm was introduced in Firefox 16, but it maps to the
+ * old private browsing API until Firefox 20. We check for PrivateBrowsingUtils
+ * and if available, use it, otherwise use the old API.
+ */
+
+var privateBrowsing = {
+  isEnabled: function(win) {
+    assert(win);
+    if (typeof PrivateBrowsingUtils == "object")
+      return PrivateBrowsingUtils.isWindowPrivate(win);
+    else
+      return Cc["@mozilla.org/privatebrowsing;1"]
+             .getService(Ci.nsIPrivateBrowsingService).privateBrowsingEnabled;
+  }
+}
 
 /**
  * @returns {nsIFile} the current profile directory
@@ -206,6 +226,10 @@ Exception.prototype =
   {
     return this._message;
   },
+  set message(msg)
+  {
+    this._message = msg;
+  },
   toString : function()
   {
     return this._message;
@@ -314,20 +338,26 @@ extend(SuccessiveAbortable, Abortable);
  * the returned Abortable until the function executed.
  *
  * @param func {Function}
+ * @param errorCallback {Function(e)} Called when |func| throws
  * @param delay {Integer} in ms. Default 0.
  * @returns {Abortable}
  */
-function runAsync(func, delay)
+function runAsync(func, errorCallback, delay)
 {
+  assert(typeof(delay) == "number" || !delay);
+  assert(typeof(errorCallback) == "function" || !errorCallback);
   if (!delay)
     delay = 0;
+  if (!errorCallback)
+    errorCallback = errorInBackend;
+
   //setTimeout(func, delay);
   var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
   timer.initWithCallback(function()
   {
     try {
       func();
-    } catch (e) { debug(e); }
+    } catch (e) { errorCallback(e); }
   }, delay, timer.TYPE_ONE_SHOT);
 
   return new TimerAbortable(timer);
@@ -342,12 +372,17 @@ function runAsync(func, delay)
  * to be fired.
  *
  * @param func {Function}
+ * @param errorCallback {Function(e)} Called when |func| throws (each time!)
  * @param interval {Integer} in ms
  * @returns {Abortable}
  */
-function runPeriodically(func, interval)
+function runPeriodically(func, errorCallback, interval)
 {
   assert(typeof(interval) == "number" && interval > 0);
+  assert(typeof(errorCallback) == "function" || !errorCallback);
+  if (!errorCallback)
+    errorCallback = errorInBackend;
+
   //setInterval(func, interval);
   //var next = new Date();
   //next.setSeconds(next.getSeconds() + interval/1000);
@@ -358,7 +393,7 @@ function runPeriodically(func, interval)
   {
     try {
       func();
-    } catch (e) { debug(e); }
+    } catch (e) { errorCallback(e); }
   }, interval, timer.TYPE_REPEATING_SLACK);
 
   return new TimerAbortable(timer);
@@ -794,4 +829,42 @@ function errorInBackend(e)
 {
   debug("ERROR (from backend): " + e);
   debug("Stack:\n" + (e.stack ? e.stack : "none"));
+}
+
+/**
+ * Parses a URL query string into an object.
+ *
+ * @param queryString {String} query ("?foo=bar&baz=3") part of the URL,
+ *     with or without the leading question mark
+ * @returns {Object} JS map { name1 : "value", name2: "othervalue" }
+ */
+function parseURLQueryString(queryString)
+{
+  var queryParams = {};
+  if (queryString.charAt(0) == "?")
+    queryString = queryString.substr(1); // remove leading "?", if it exists
+  var queries = queryString.split("&");
+  for (var i = 0; i < queries.length; i++) {
+    var querySplit = queries[i].split("=");
+    var value = querySplit[1].replace(/\+/g, " "); // "+" is space, before decoding
+    queryParams[querySplit[0]] = decodeURIComponent(value);
+  }
+  return queryParams;
+}
+
+/**
+ * Create a URL query string from a JS map
+ *
+ * @param {Object} JS map { name1 : "value", name2: "othervalue" }
+ * @returns queryString {String} query ("foo=bar&baz=3") part
+ *     of the URL, without (!) the leading question mark
+ */
+function createURLQueryString(queryParams)
+{
+  var queryString = "";
+  for (var name in queryParams) {
+    queryString += name + "=" + queryParams[name] + "&";
+  }
+  queryString = queryString.replace(/&$/, ""); // Remove trailing "&"
+  return queryString;
 }

@@ -1,0 +1,70 @@
+<!--
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this file,
+You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+<html>
+  <head>
+    <script src="tPanel.js"></script>
+    <style>
+        body {
+            background: #ddd;
+            color:#222;
+            font-family: Arial, sans-serif; 
+            font-size: .75em; 
+        }
+        .button {
+            padding:10px;
+            border-radius:5px;
+            cursor:pointer;
+        }
+        .button:hover {
+            background:#bdc1c9;
+        }
+        .buttonText {
+            position:relative; 
+            margin-left:28px
+        }
+        #modeDot1, #modeDot2, #modeDot3 {
+            display:inline-block;
+            margin:5px 0 0 0px;
+            float:left;
+            border-style:solid;
+            border-width:4px;
+            border-radius:4px;
+        }
+        #modeDot1 { 
+            background:#ddd;
+            border-width:1px;
+            border-color:#999;
+            border-radius:0px;
+            width:8px;
+            height:0px;
+            }
+        #modeDot2 { border-color:#00ab00; }        
+        #modeDot3 { border-color:#777;    }
+        #icon {
+            float:left;
+            margin: 3px 0 0; 
+        }
+    </style>
+  </head>
+  <body onload="init()">
+        <div id="summaryButton" class="button">
+            <div id="icon"><image src="hourglassicon.png" width=16 height=16 ></div>
+            <div class="buttonText"><strong>Mind the Time</strong><br>Show summary page.</div>
+        </div>
+        <div id="mode1Button" class="button">
+            <div id="modeDot1"></div>
+            <div class="buttonText"><strong>Timer On</strong><br>Pause timing after<br>a minute of inactivity.</div>
+        </div>
+        <div id="mode2Button" class="button">
+            <div id="modeDot2"></div>
+            <div class="buttonText"><strong>Timer On</strong><br>Keep timing despite<br>inactivity (video mode).</div>
+        </div>
+        <div id="mode3Button" class="button">
+            <div id="modeDot3"></div>
+            <div class="buttonText"><strong>Timer Off</strong><br>Stop timing and <br>logging websites.</div>
+        </div>
+  </body>
+</html>

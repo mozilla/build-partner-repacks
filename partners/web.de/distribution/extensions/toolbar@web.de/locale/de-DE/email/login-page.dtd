@@ -14,7 +14,9 @@
 
 <!ENTITY createaccount.label "Jetzt kostenlos registrieren!">
 
-<!ENTITY login.button.label "Login Only">
+<!ENTITY login-only.button.label "Nur einloggen">
+<!ENTITY login.button.label "Login">
+<!ENTITY login-amo.button.label "Login und ändern">
 <!ENTITY close.button.label "Schließen">
 
 <!ENTITY email.intro "Bitte melden Sie sich hier mit Ihrer vollständigen &brand.name; E-Mail-Adresse und Ihrem Passwort an, damit Sie sofort über neue E-Mails in Ihrem Postfach benachrichtigt werden:">

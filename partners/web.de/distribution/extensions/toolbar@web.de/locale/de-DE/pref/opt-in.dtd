@@ -17,3 +17,4 @@
 <!ENTITY searchengine.label "Wählen Sie Ihren Suchanbieter">
 <!ENTITY configinfo.label "Diese Voreinstellungen können Sie später jederzeit wieder ändern.">
 <!ENTITY finish.button.label "Fertigstellen">
+<!ENTITY finish-amo.button.label "Fertigstellen und ändern">

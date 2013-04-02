@@ -39,13 +39,12 @@ OurEngineCheckbox.prototype =
         }
       } catch (e if build.kVariant == "browser") { error(e); } // silence for bug 163689
 
-      // URLbar search
-      generalPref.set("keyword.URL", brand.search.keywordURL);
+      ourPref.set("search.opt-in", true);
     }
     else // turned off, restore default
     {
       Services.search.currentEngine = Services.search.defaultEngine;
-      generalPref.reset("keyword.URL");
+      ourPref.set("search.opt-in", false);
     }
     //</copied>
   },

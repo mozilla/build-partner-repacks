@@ -11,31 +11,65 @@
  * Here, we only set the default.
  *
  * Over time, this grew into a general installation questionaire.
+ *
+ * Buttons:
+ * There are multiple possibilities for the buttons. This summarizes the states
+ * of the buttons.
+ *
+ * Regular build, no email address entered: "Finish" (does opt-in)
+ * Regular build, email address entered: "Login" (does opt-in)
+ * AMO Build, no email address entered: "Login Only" and "Finish & Opt-in"
+ * AMO Build, email address entered: "Login Only" and "Login & Opt-in"
+ * 
+ * We reuse the same 2 buttons, we just change the labels.
+ *
+ * These are required because:
+ *   1. AMO required that we provide a separate button that does not opt-in
+ *        and to make it clear that the other button opts-in.
+ *   2. Product management request that the button text change from Finish
+ *        to Login when an email address is entered.
+ *
+ * This was implemented by using attributes on the finish button so that we
+ * didn't have to bring properties files in.
  */
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
 Components.utils.import("resource://unitedtb/build.js");
 
-/* The following function is used to call functions in both opt-in.js and
-  login-page.js */
-
-function onFinishButton() {
-  // If we are branded browser, don't process optin options
-  if (!ourPref.get("brandedbrowser", false))
-    onOptin();
-  onLogin();
-}
-
 function onOptinLoad()
 {
   if (brand.regions.list.length < 2)
     document.getElementById("region-label").hidden = true;
-  if (ourPref.get("brandedbrowser", false)) {
+  if (ourPref.get("brandedbrowser", false))
+  {
     document.getElementById("container").setAttribute("brandedbrowser", "true");
+    confirmClose = false;
+  }
+  else
+  {
+    // Only optin if we are not branded browser
+    document.getElementById("finish-button").addEventListener("click", onOptin, true);
   }
   if (kVariant == "amo")
+  {
     document.getElementById("container").setAttribute("amo", "true");
+    confirmClose = false;
+    var finishButton = document.getElementById("finish-button")
+    // See comment in login-page.js
+    // For AMO, we were required to add a second button that allows the user to login
+    // without opting in. We show the new button via CSS, but we have to modify the
+    // labels for the finish button to have opt-in text.
+    finishButton.setAttribute("finish-label", finishButton.getAttribute("finish-amo-label"));
+    finishButton.setAttribute("login-label", finishButton.getAttribute("login-amo-label"));
+    // For AMO, we have to default new tab to false
+    ourPref.set("newtab.enabled", false);
+  }
+  document.getElementById("login-button").addEventListener("click", function () { onLogin(showFirstRun); }, true);
+  // finish-button also has click handler onOptin() added above.
+  // onLogin must be called after onOptin()
+  document.getElementById("finish-button").addEventListener("click", function () { onLogin(showFirstRun); }, true);
+  document.getElementById("close-button").addEventListener("click", function () { onCloseButton(showFirstRun); }, true);
 }
 window.addEventListener("load", onOptinLoad, false);
 
@@ -63,9 +97,7 @@ function onOptin()
     } catch (ex) {
       // Fails on Mara
     }
-
-    // URLbar search
-    generalPref.set("keyword.URL", brand.search.keywordURL);
+    ourPref.set("search.opt-in", true);
   }
 
   switch (startpageSelectedID) {

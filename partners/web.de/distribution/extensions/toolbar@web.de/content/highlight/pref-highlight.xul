@@ -27,6 +27,7 @@
       <label value="&color.label;"/>
         <colorpicker preference="extensions.unitedinternet.highlight.color"
                      id="highlight-color"
+                     onblur="this.hidePopup()"
                      onchange="this.value = this.color"
                      type="button"/>
       </hbox>

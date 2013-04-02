@@ -41,8 +41,8 @@ body {
 }
 
 #login-buttons button[disabled] {
-  color: #FFFFFF;
-  border-color: #A1A1A1;
-  background: -moz-linear-gradient(#b1ceec, #a1b7de);
-  background: linear-gradient(#b1ceec, #a1b7de);
+  color: #FFFFFF !important;
+  border-color: #A1A1A1 !important;
+  background: -moz-linear-gradient(#b1ceec, #a1b7de) !important;
+  background: linear-gradient(#b1ceec, #a1b7de) !important;
 }

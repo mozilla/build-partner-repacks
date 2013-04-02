@@ -413,8 +413,7 @@ function startSearch(searchTerm)
 {
   searchTerm = searchTerm.trim().replace(/\s+/g, " ");
   searchField.value = searchTerm;
-
-  notifyWindowObservers("search-started",
+  unitedFromAbove.common.notifyWindowObservers("search-started",
       { searchTerm : searchTerm, source : 4 });
   loadPage(brand.search.newTabURL +
       encodeURIComponent(searchTerm));

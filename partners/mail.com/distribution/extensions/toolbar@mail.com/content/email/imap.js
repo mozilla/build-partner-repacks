@@ -442,7 +442,7 @@ IMAPConnection.prototype =
           self._poller = runAsync(function()
           {
             socket.sendLines(["DONE"]);
-          }, 28*60*1000); // 28min
+          }, errorCallback, 28 * 60 * 1000); // 28min
           // There's no need to implement a nice loop exit.
           // The only way is to stop is logout(), which cuts the connection and
           // prevents the runAsync = DONE.
@@ -463,7 +463,7 @@ IMAPConnection.prototype =
           function(okMsg)
           {
           }, errorCallback);
-        }, self._account._interval * 1000);
+        }, errorInBackend, self._account._interval * 1000);
       }
     }, errorCallback);
   },

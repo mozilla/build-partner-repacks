@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<r:RDF xmlns="http://www.mozilla.org/2004/em-rdf#"
+       xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <r:Description about="urn:mozilla:install-manifest">
+    <creator>Wanderlust</creator>
+    <description>Add's a pinned app tab for the Wanderlust Festival</description>
+    <homepageURL>http://www.wanderlustfestival.com/</homepageURL>
+    <id>apptab@wanderlustfestival.com</id>
+    <name>Wanderlust Festival AppTab</name>
+    <version>1.0</version>
+
+    <bootstrap>true</bootstrap>
+    <type>2</type>
+
+    <targetApplication>
+      <r:Description>
+        <id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</id>
+        <minVersion>4.0</minVersion>
+        <maxVersion>19.0</maxVersion>
+      </r:Description>
+    </targetApplication>
+  </r:Description>
+</r:RDF>

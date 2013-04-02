@@ -121,6 +121,7 @@ UnitedInternetMailCheckAccount.prototype =
     this._mailPoll();
     var self = this;
     this._poller = runPeriodically(function() { self._mailPoll(); },
+        errorInBackend,
         context.interval * 1000);
   },
   _mailPoll : function(successCallback, errorCallback)

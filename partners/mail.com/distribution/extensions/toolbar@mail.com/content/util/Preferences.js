@@ -90,7 +90,7 @@ Preferences.prototype = {
     switch (this._prefSvc.getPrefType(prefName)) {
       case Ci.nsIPrefBranch.PREF_STRING:
         try {
-          return value = this._prefSvc.getComplexValue(prefName, Ci.nsISupportsString).data;
+          return this._prefSvc.getComplexValue(prefName, Ci.nsISupportsString).data;
         } catch (ex) {
           if (this.isDefaultBranch)
             // The preference might exist as a user pref, but not have a default

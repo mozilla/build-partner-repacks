@@ -9,7 +9,8 @@ Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/util/fetchhttp.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
 Components.utils.import("resource://unitedtb/tracking/campaign-id.js");
-Components.utils.import("resource://unitedtb/build.js");
+var build = {}
+Components.utils.import("resource://unitedtb/build.js", build);
 Components.utils.import("resource://unitedtb/util/observer.js");
 
 function onInit()
@@ -68,8 +69,8 @@ function saveInstallDate(object)
 function pingTrackingServer(event, addlParams, callback) {
   var url = brand.tracking.trackingURL;
   url = url.replace("%EVENT%", event);
-  url = url.replace("%VERSION%", version);
-  url = url.replace("%TYPE%", kVariant == "release" ? "toolbar" : kVariant);
+  url = url.replace("%VERSION%", build.version);
+  url = url.replace("%TYPE%", build.kVariant == "release" ? "toolbar" : build.kVariant);
   var installTime = new Date(ourPref.get("tracking.installtime") * 1000).toISOString();
   var installDate = installTime.substr(0, installTime.indexOf("T"));
   url = url.replace("%INSTALLDATE%", installDate);

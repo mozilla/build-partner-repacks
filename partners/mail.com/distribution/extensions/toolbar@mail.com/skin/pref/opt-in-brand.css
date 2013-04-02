@@ -1,34 +1,48 @@
-
-#email-settings {
-  background-color: rgba(00, 32, 119, 0.25);
+body {
+  background-color: #EBEEF3;
 }
 
 #header {
-  color: #05387e;
+  background-image: url('opt-in-header.png');
+  background-repeat: no-repeat;
+  background-position: top left;
+  height: 37px;
+  color: transparent;
+}
+
+#email-settings {
+  background-color: #F1F6FC;
 }
 
 #login-buttons button {
   -moz-appearance: none;
   color: #FFFFFF;
   border: none;
-  border-radius: 2px;
-  background: linear-gradient(#4B8EFF, #3779FF);
+  border-radius: 4px;
+  background: linear-gradient(#5988CA, #4271BC);
   border: 0px none;
-  font-size: large;
+  font-size: x-large;
 }
 
 #login-buttons button:hover {
-  border-color: #F1B525;
-  background: #0054FF
+  background: linear-gradient(#315DAE, #6B98D2);
 }
 
 #login-buttons button:active,
 #login-buttons button:active:hover {
-  background: linear-gradient(#4B8EFF, #3779FF);
+  background: linear-gradient(#315DAE, #6B98D2);
 }
 
 #login-buttons button[disabled] {
-  color: #808080;
-  border-color: #F9DE9F;
-  background: linear-gradient(#a8b3bf,#94a1af);
+  color: #808080 !important;
+  background: linear-gradient(#a8b3bf,#94a1af) !important;
+}
+
+#close-button {
+  font-size: 16px;
+  color: #26408A;
+}
+
+#container {
+  border: none;
 }

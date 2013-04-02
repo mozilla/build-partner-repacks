@@ -1,3 +1,8 @@
+/**
+ * Dead code, unused
+ * TODO convert from E4X ot JXON
+ */
+
 Components.utils.import("resource://unitedtb/util/fetchhttp.js", this);
 
 /**

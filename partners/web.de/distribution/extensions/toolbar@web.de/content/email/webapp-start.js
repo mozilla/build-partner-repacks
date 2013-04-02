@@ -222,7 +222,7 @@ function loadNewTab(account, payload, win)
 {
   assert(win && win.unitedinternet);
   var lc = account.loginContext.weblogin.iacUsecase;
-  assert(lc);
+  assert(lc, "Did not get IAC usecase URLs from PACS server");
   assert(lc.httpMethod == "POST", "GET for login calls not supported");
   win.unitedinternet.common.loadPageWithPOST(
       lc.url,

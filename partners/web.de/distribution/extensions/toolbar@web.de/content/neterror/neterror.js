@@ -136,7 +136,9 @@ function startSearch(searchTerm)
   searchTerm = searchTerm.trim().replace(/\s+/g, " ");
   searchField.value = searchTerm;
 
-  notifyWindowObservers("search-started",
+  var firefoxWindow = getTopLevelWindowContext(window);
+  var unitedFromAbove = firefoxWindow.unitedinternet;
+  unitedFromAbove.common.notifyWindowObservers("search-started",
       { searchTerm : searchTerm, source : 8 });
   loadPage(brand.search.netErrorURL +
       encodeURIComponent(searchTerm));

@@ -90,7 +90,7 @@ const visibleWidthMax = 1024;
  */
 function captureThumbnail(browser)
 {
-  if (privateBrowsing.privateBrowsingEnabled)
+  if (privateBrowsing.isEnabled(window))
     return null;
   var win = browser.contentWindow;
   if (!win)

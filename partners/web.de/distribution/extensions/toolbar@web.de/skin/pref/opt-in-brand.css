@@ -37,7 +37,7 @@ body {
 }
 
 #login-buttons button[disabled] {
-  color: #808080;
-  border-color: #F9DE9F;
-  background: linear-gradient(#FFF3C4, #FFE790);
+  color: #808080 !important;
+  border-color: #F9DE9F !important;
+  background: linear-gradient(#FFF3C4, #FFE790) !important;
 }

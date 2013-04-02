@@ -20,7 +20,7 @@ function save(obj)
   // and run them via our search engine.
   if (obj.engineThirdparty)
     return;
-  if (privateBrowsing.privateBrowsingEnabled)
+  if (privateBrowsing.isEnabled(window))
     return;
 
   saveSearchTerm(obj.searchTerm); // search-store.js

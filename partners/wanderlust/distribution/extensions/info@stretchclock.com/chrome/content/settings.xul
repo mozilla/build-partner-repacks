@@ -1,0 +1,796 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://stretchclock/skin/stretchclock.css" type="text/css"?>
+   <prefwindow id="SCF__prefwindow" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" buttons="accept" title="StretchClock Options" ondialogaccept="return savePrefs();" ondialogcancel="return savePrefs();">
+     <prefpane id="StretchClock-settings" label="settings" image="chrome://stretchclock/skin/images/options.png">
+       <preferences>
+         <preference id="pref-hours-between-stretches" name="extensions.com_StretchClock_Fox.hours_between_stretches" type="string"/>
+         <preference id="pref-mins-between-stretches" name="extensions.com_StretchClock_Fox.mins_between_stretches" type="string"/>
+          <preference id="pref-play-reminder" name="extensions.com_StretchClock_Fox.play_reminder" type="bool"/>
+          <preference id="pref-ask-to-stretch" name="extensions.com_StretchClock_Fox.ask_to_stretch" type="bool"/>
+          <preference id="pref-show-addonbar" name="extensions.com_StretchClock_Fox.show_addonbar" type="bool"/>
+       </preferences>
+	   <hbox>
+		   <label value = "Time between stretches "/>
+		   <description>(recommend 1 hour)</description>
+	   </hbox>
+        <hbox>
+	   <hbox style="padding-left:8em;">
+	   <vbox>
+	<label value = "hours :" class="SCF__timepicker_label"/>
+	<textbox type="number"
+			 min="0"
+			 max="999"
+			 increment="1"
+			 wraparound="true" 
+			 decimalplaces="0"
+			 size="2"
+			 preference="pref-hours-between-stretches"  
+			 id="hours-between-stretches"
+			 class="SCF__timepicker_number"
+			 />
+			 </vbox>
+	<vbox maxwidth="12em;">		 
+	<label value = "minutes" class="SCF__timepicker_label" style="-moz-margin-start:0 !important;" />
+	<textbox type="number"
+			 min="0"
+			 max="59"
+			 value="0"
+			 increment="5"
+			 wraparound="true" 
+			 decimalplaces="0"
+			 size="2"
+			 preference="pref-mins-between-stretches"  
+			 id="mins-between-stretches"
+			 class="SCF__timepicker_number"
+			 />
+			 </vbox>
+			 </hbox>
+		</hbox>
+
+       <spacer style="padding:.6em;"/>
+       <label value = "Before each stretch:"/>
+		<groupbox>
+		<hbox id="play_reminder">
+			<checkbox id="check_play_reminder" label="play intro sound" preference="pref-play-reminder"/>
+		</hbox>
+		<hbox id="ask_to_stretch" >
+			<checkbox id="check_ask_to_stretch" label="ask before stretching" preference="pref-ask-to-stretch"/>
+		</hbox>
+	   </groupbox>
+       <label value = " "/>
+	   <groupbox>
+			<hbox id="showhide-addonbar" oncommand="saveShowAddonbarPref();">
+				<checkbox id="check_show_addonbar" label="show stretchclock in the add-on bar" preference="pref-show-addonbar"/>
+			</hbox>
+	   </groupbox>
+		 <button
+		id="sc-logo1"
+		class="preflogo"
+		image="chrome://stretchclock/skin/images/bw-logo.png"
+		disabled="true"/>	   
+     </prefpane>
+
+    <prefpane id="StretchClock-schedule" label="schedule" onpaneload="showHideSchedule();" helpURI="http://www.stretchclock.com/support/using-stretchclock-firefox.html" image="chrome://stretchclock/skin/images/schedule.png">
+    <preferences>
+		<preference id="pref-enable-schedule" name="extensions.com_StretchClock_Fox.enable_schedule" type="bool"/>
+
+		<preference id="pref-stretch-on-0" name="extensions.com_StretchClock_Fox.stretch_on_0" type="bool"/>
+		<preference id="pref-time-on-0" name="extensions.com_StretchClock_Fox.time_on_0" type="string"/>
+		<preference id="pref-time-off-0" name="extensions.com_StretchClock_Fox.time_off_0" type="string"/>
+		<preference id="pref-hour-on-0" name="extensions.com_StretchClock_Fox.hour_on_0" type="string"/>
+		<preference id="pref-min-on-0" name="extensions.com_StretchClock_Fox.min_on_0" type="string"/>
+		<preference id="pref-ampm-on-0" name="extensions.com_StretchClock_Fox.ampm_on_0" type="string"/>
+		<preference id="pref-hour-off-0" name="extensions.com_StretchClock_Fox.hour_off_0" type="string"/>
+		<preference id="pref-min-off-0" name="extensions.com_StretchClock_Fox.min_off_0" type="string"/>
+		<preference id="pref-ampm-off-0" name="extensions.com_StretchClock_Fox.ampm_off_0" type="string"/>
+		
+		<preference id="pref-stretch-on-1" name="extensions.com_StretchClock_Fox.stretch_on_1" type="bool"/>
+		<preference id="pref-time-on-1" name="extensions.com_StretchClock_Fox.time_on_1" type="string"/>
+		<preference id="pref-time-off-1" name="extensions.com_StretchClock_Fox.time_off_1" type="string"/>
+		<preference id="pref-hour-on-1" name="extensions.com_StretchClock_Fox.hour_on_1" type="string"/>
+		<preference id="pref-min-on-1" name="extensions.com_StretchClock_Fox.min_on_1" type="string"/>
+		<preference id="pref-ampm-on-1" name="extensions.com_StretchClock_Fox.ampm_on_1" type="string"/>
+		<preference id="pref-hour-off-1" name="extensions.com_StretchClock_Fox.hour_off_1" type="string"/>
+		<preference id="pref-min-off-1" name="extensions.com_StretchClock_Fox.min_off_1" type="string"/>
+		<preference id="pref-ampm-off-1" name="extensions.com_StretchClock_Fox.ampm_off_1" type="string"/>
+
+		<preference id="pref-stretch-on-2" name="extensions.com_StretchClock_Fox.stretch_on_2" type="bool"/>
+		<preference id="pref-time-on-2" name="extensions.com_StretchClock_Fox.time_on_2" type="string"/>
+		<preference id="pref-time-off-2" name="extensions.com_StretchClock_Fox.time_off_2" type="string"/>
+		<preference id="pref-hour-on-2" name="extensions.com_StretchClock_Fox.hour_on_2" type="string"/>
+		<preference id="pref-min-on-2" name="extensions.com_StretchClock_Fox.min_on_2" type="string"/>
+		<preference id="pref-ampm-on-2" name="extensions.com_StretchClock_Fox.ampm_on_2" type="string"/>
+		<preference id="pref-hour-off-2" name="extensions.com_StretchClock_Fox.hour_off_2" type="string"/>
+		<preference id="pref-min-off-2" name="extensions.com_StretchClock_Fox.min_off_2" type="string"/>
+		<preference id="pref-ampm-off-2" name="extensions.com_StretchClock_Fox.ampm_off_2" type="string"/>
+		
+		<preference id="pref-stretch-on-3" name="extensions.com_StretchClock_Fox.stretch_on_3" type="bool"/>
+		<preference id="pref-time-on-3" name="extensions.com_StretchClock_Fox.time_on_3" type="string"/>
+		<preference id="pref-time-off-3" name="extensions.com_StretchClock_Fox.time_off_3" type="string"/>
+		<preference id="pref-hour-on-3" name="extensions.com_StretchClock_Fox.hour_on_3" type="string"/>
+		<preference id="pref-min-on-3" name="extensions.com_StretchClock_Fox.min_on_3" type="string"/>
+		<preference id="pref-ampm-on-3" name="extensions.com_StretchClock_Fox.ampm_on_3" type="string"/>
+		<preference id="pref-hour-off-3" name="extensions.com_StretchClock_Fox.hour_off_3" type="string"/>
+		<preference id="pref-min-off-3" name="extensions.com_StretchClock_Fox.min_off_3" type="string"/>
+		<preference id="pref-ampm-off-3" name="extensions.com_StretchClock_Fox.ampm_off_3" type="string"/>
+		
+		<preference id="pref-stretch-on-4" name="extensions.com_StretchClock_Fox.stretch_on_4" type="bool"/>
+		<preference id="pref-time-on-4" name="extensions.com_StretchClock_Fox.time_on_4" type="string"/>
+		<preference id="pref-time-off-4" name="extensions.com_StretchClock_Fox.time_off_4" type="string"/>
+		<preference id="pref-hour-on-4" name="extensions.com_StretchClock_Fox.hour_on_4" type="string"/>
+		<preference id="pref-min-on-4" name="extensions.com_StretchClock_Fox.min_on_4" type="string"/>
+		<preference id="pref-ampm-on-4" name="extensions.com_StretchClock_Fox.ampm_on_4" type="string"/>
+		<preference id="pref-hour-off-4" name="extensions.com_StretchClock_Fox.hour_off_4" type="string"/>
+		<preference id="pref-min-off-4" name="extensions.com_StretchClock_Fox.min_off_4" type="string"/>
+		<preference id="pref-ampm-off-4" name="extensions.com_StretchClock_Fox.ampm_off_4" type="string"/>
+		
+		<preference id="pref-stretch-on-5" name="extensions.com_StretchClock_Fox.stretch_on_5" type="bool"/>
+		<preference id="pref-time-on-5" name="extensions.com_StretchClock_Fox.time_on_5" type="string"/>
+		<preference id="pref-time-off-5" name="extensions.com_StretchClock_Fox.time_off_5" type="string"/>
+		<preference id="pref-hour-on-5" name="extensions.com_StretchClock_Fox.hour_on_5" type="string"/>
+		<preference id="pref-min-on-5" name="extensions.com_StretchClock_Fox.min_on_5" type="string"/>
+		<preference id="pref-ampm-on-5" name="extensions.com_StretchClock_Fox.ampm_on_5" type="string"/>
+		<preference id="pref-hour-off-5" name="extensions.com_StretchClock_Fox.hour_off_5" type="string"/>
+		<preference id="pref-min-off-5" name="extensions.com_StretchClock_Fox.min_off_5" type="string"/>
+		<preference id="pref-ampm-off-5" name="extensions.com_StretchClock_Fox.ampm_off_5" type="string"/>
+		
+		<preference id="pref-stretch-on-6" name="extensions.com_StretchClock_Fox.stretch_on_6" type="bool"/>
+		<preference id="pref-time-on-6" name="extensions.com_StretchClock_Fox.time_on_6" type="string"/>
+		<preference id="pref-time-off-6" name="extensions.com_StretchClock_Fox.time_off_6" type="string"/>	
+		<preference id="pref-hour-on-6" name="extensions.com_StretchClock_Fox.hour_on_6" type="string"/>
+		<preference id="pref-min-on-6" name="extensions.com_StretchClock_Fox.min_on_6" type="string"/>
+		<preference id="pref-ampm-on-6" name="extensions.com_StretchClock_Fox.ampm_on_6" type="string"/>
+		<preference id="pref-hour-off-6" name="extensions.com_StretchClock_Fox.hour_off_6" type="string"/>
+		<preference id="pref-min-off-6" name="extensions.com_StretchClock_Fox.min_off_6" type="string"/>
+		<preference id="pref-ampm-off-6" name="extensions.com_StretchClock_Fox.ampm_off_6" type="string"/>		
+	</preferences>
+	<hbox id="myScheduleBox" oncommand="showHideSchedule();">
+	   <checkbox label="my Schedule" id="mySchedule" checked="false" preference="pref-enable-schedule" />
+	 </hbox>
+<hbox id="tab-holder">	 
+<tabbox orient="horizontal" id="schedule_tabbox">
+  <tabs orient="vertical" >
+    <tab label="sunday" class="SCF__Tab" />
+    <tab label="monday" class="SCF__Tab"/>
+    <tab label="tuesday" class="SCF__Tab"/>
+    <tab label="wednesday" class="SCF__Tab"/>
+    <tab label="thursday" class="SCF__Tab"/>
+    <tab label="friday" class="SCF__Tab"/>
+    <tab label="saturday" class="SCF__Tab"/>
+  </tabs>
+  <tabpanels id="schedule_tab_panels">
+    <tabpanel id="sunday" orient="vertical" class="SCF__tabpanel">
+		<hbox id="stretch_on_0" oncommand="showHideDay('0');">
+			<checkbox id="check_stretch_0" label="stretch on sunday" preference="pref-stretch-on-0" class="SCF__stretchDay"/>
+		</hbox>
+		<hbox orient="vertical" id="time_0">
+			<hbox>
+				<label id="label_on_0" class="on_off_label" value="on"/>		
+				<menulist class="timelist" preference="pref-hour-on-0" preference-editable="true">
+				  <menupopup id="hour_on_0">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-on-0" preference-editable="true">
+				  <menupopup id="min_on_0">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-on-0" preference-editable="true">
+				  <menupopup id="ampm_on_0">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+			<hbox>
+				<label id="label_on_0" class="on_off_label" value="off"/>		
+				<menulist class="timelist" preference="pref-hour-off-0" preference-editable="true">
+				  <menupopup id="hour_off_0">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-off-0" preference-editable="true">
+				  <menupopup id="min_off_0">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-off-0" preference-editable="true">
+				  <menupopup id="ampm_off_0">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+		</hbox>
+    </tabpanel>
+    <tabpanel id="monday" orient="vertical" class="SCF__tabpanel">
+		<hbox id="stretch_on_1" oncommand="showHideDay('1');">
+		<checkbox id="check_stretch_1" label="stretch on monday" preference="pref-stretch-on-1" class="SCF__stretchDay"/>
+		</hbox>
+		<hbox orient="vertical" id="time_1">
+			<hbox>
+				<label id="label_on_1" class="on_off_label" value="on"/>		
+				<menulist class="timelist" preference="pref-hour-on-1" preference-editable="true">
+				  <menupopup id="hour_on_1">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-on-1" preference-editable="true">
+				  <menupopup id="min_on_1">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-on-1" preference-editable="true">
+				  <menupopup id="ampm_on_1">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+			<hbox>
+				<label id="label_on_1" class="on_off_label" value="off"/>		
+				<menulist class="timelist" preference="pref-hour-off-1" preference-editable="true">
+				  <menupopup id="hour_off_1">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-off-1" preference-editable="true">
+				  <menupopup id="min_off_1">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-off-1" preference-editable="true">
+				  <menupopup id="ampm_off_1">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+		</hbox>
+    </tabpanel>
+    <tabpanel id="tuesday" orient="vertical" class="SCF__tabpanel">
+		<hbox id="stretch_on_2" oncommand="showHideDay('2');">
+			<checkbox id="check_stretch_2" label="stretch on tuesday" preference="pref-stretch-on-2" class="SCF__stretchDay"/>
+		</hbox>
+		<hbox orient="vertical" id="time_2">
+			<hbox>
+				<label id="label_on_2" class="on_off_label" value="on"/>		
+				<menulist class="timelist" preference="pref-hour-on-2" preference-editable="true">
+				  <menupopup id="hour_on_2">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-on-2" preference-editable="true">
+				  <menupopup id="min_on_2">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-on-2" preference-editable="true">
+				  <menupopup id="ampm_on_2">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+			<hbox>
+				<label id="label_on_2" class="on_off_label" value="off"/>		
+				<menulist class="timelist" preference="pref-hour-off-2" preference-editable="true">
+				  <menupopup id="hour_off_2">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-off-2" preference-editable="true">
+				  <menupopup id="min_off_2">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-off-2" preference-editable="true">
+				  <menupopup id="ampm_off_2">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+		</hbox>
+    </tabpanel>	
+    <tabpanel id="wednesday" orient="vertical" class="SCF__tabpanel">
+		<hbox id="stretch_on_3" oncommand="showHideDay('3');">
+			<checkbox id="check_stretch_3" label="stretch on wednesday" preference="pref-stretch-on-3" class="SCF__stretchDay"/>
+		</hbox>
+		<hbox orient="vertical" id="time_3">
+			<hbox>
+				<label id="label_on_3" class="on_off_label" value="on"/>		
+				<menulist class="timelist" preference="pref-hour-on-3" preference-editable="true">
+				  <menupopup id="hour_on_3">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-on-3" preference-editable="true">
+				  <menupopup id="min_on_3">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-on-3" preference-editable="true">
+				  <menupopup id="ampm_on_3">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+			<hbox>
+				<label id="label_on_3" class="on_off_label" value="off"/>		
+				<menulist class="timelist" preference="pref-hour-off-3" preference-editable="true">
+				  <menupopup id="hour_off_3">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-off-3" preference-editable="true">
+				  <menupopup id="min_off_3">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-off-3" preference-editable="true">
+				  <menupopup id="ampm_off_3">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+		</hbox>
+    </tabpanel>	
+    <tabpanel id="thursday" orient="vertical" class="SCF__tabpanel">
+		<hbox id="stretch_on_4" oncommand="showHideDay('4');">
+			<checkbox id="check_stretch_4" label="stretch on thursday" preference="pref-stretch-on-4" class="SCF__stretchDay"/>
+		</hbox>
+		<hbox orient="vertical" id="time_4">
+			<hbox>
+				<label id="label_on_4" class="on_off_label" value="on"/>		
+				<menulist class="timelist" preference="pref-hour-on-4" preference-editable="true">
+				  <menupopup id="hour_on_4">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-on-4" preference-editable="true">
+				  <menupopup id="min_on_4">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-on-4" preference-editable="true">
+				  <menupopup id="ampm_on_4">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+			<hbox>
+				<label id="label_on_4" class="on_off_label" value="off"/>		
+				<menulist class="timelist" preference="pref-hour-off-4" preference-editable="true">
+				  <menupopup id="hour_off_4">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-off-4" preference-editable="true">
+				  <menupopup id="min_off_4">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-off-4" preference-editable="true">
+				  <menupopup id="ampm_off_4">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+		</hbox>
+    </tabpanel>	
+    <tabpanel id="friday" orient="vertical" class="SCF__tabpanel">
+		<hbox id="stretch_on_5" oncommand="showHideDay('5');">
+			<checkbox id="check_stretch_5" label="stretch on friday" preference="pref-stretch-on-5" class="SCF__stretchDay"/>
+		</hbox>
+		<hbox orient="vertical" id="time_5">
+			<hbox>
+				<label id="label_on_5" class="on_off_label" value="on"/>		
+				<menulist class="timelist" preference="pref-hour-on-5" preference-editable="true">
+				  <menupopup id="hour_on_5">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-on-5" preference-editable="true">
+				  <menupopup id="min_on_5">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-on-5" preference-editable="true">
+				  <menupopup id="ampm_on_5">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+			<hbox>
+				<label id="label_on_5" class="on_off_label" value="off"/>		
+				<menulist class="timelist" preference="pref-hour-off-5" preference-editable="true">
+				  <menupopup id="hour_off_5">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-off-5" preference-editable="true">
+				  <menupopup id="min_off_5">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-off-5" preference-editable="true">
+				  <menupopup id="ampm_off_5">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+		</hbox>
+    </tabpanel>	
+    <tabpanel id="saturday" orient="vertical" class="SCF__tabpanel">
+		<hbox id="stretch_on_6" oncommand="showHideDay('6');">
+			<checkbox id="check_stretch_6" label="stretch on saturday" preference="pref-stretch-on-6" class="SCF__stretchDay"/>
+		</hbox>
+		<hbox orient="vertical" id="time_6">
+			<hbox>
+				<label id="label_on_6" class="on_off_label" value="on"/>		
+				<menulist class="timelist" preference="pref-hour-on-6" preference-editable="true">
+				  <menupopup id="hour_on_6">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-on-6" preference-editable="true">
+				  <menupopup id="min_on_6">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-on-6" preference-editable="true">
+				  <menupopup id="ampm_on_6">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+			<hbox>
+				<label id="label_on_6" class="on_off_label" value="off"/>		
+				<menulist class="timelist" preference="pref-hour-off-6" preference-editable="true">
+				  <menupopup id="hour_off_6">
+					<menuitem label="01" value="1"/>
+					<menuitem label="02" value="2"/>
+					<menuitem label="03" value="3"/>
+					<menuitem label="04" value="4"/>
+					<menuitem label="05" value="5"/>
+					<menuitem label="06" value="6"/>
+					<menuitem label="07" value="7"/>
+					<menuitem label="08" value="8"/>
+					<menuitem label="09" value="9"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="11" value="11"/>
+					<menuitem label="12" value="12"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-min-off-6" preference-editable="true">
+				  <menupopup id="min_off_6">
+					<menuitem label="00" value="00"/>
+					<menuitem label="05" value="05"/>
+					<menuitem label="10" value="10"/>
+					<menuitem label="15" value="15"/>
+					<menuitem label="20" value="20"/>
+					<menuitem label="25" value="25"/>
+					<menuitem label="30" value="30"/>
+					<menuitem label="35" value="35"/>
+					<menuitem label="40" value="40"/>
+					<menuitem label="45" value="45"/>
+					<menuitem label="50" value="50"/>
+					<menuitem label="55" value="55"/>
+				  </menupopup>
+				</menulist>
+				<menulist class="timelist" preference="pref-ampm-off-6" preference-editable="true">
+				  <menupopup id="ampm_off_6">
+					<menuitem label="am " value="am"/>
+					<menuitem label="pm " value="pm"/>
+				  </menupopup>
+				</menulist>
+			</hbox>
+		</hbox>
+    </tabpanel>	
+  </tabpanels>
+</tabbox>
+</hbox>
+		 <button
+		id="sc-logo"
+		class="preflogo"
+		image="chrome://stretchclock/skin/images/bw-logo.png"
+		disabled="true"/>
+     </prefpane> 
+ 	<script src="chrome://stretchclock/content/settings.js" />
+   </prefwindow>

@@ -79,7 +79,7 @@ function copySearchPlugins(makeDefault)
     // restore user choice after addEngine()
     else
       Services.search.currentEngine = oldDefault;
-  }, 500);
+  }, errorInBackend, 500);
 }
 
 function removeAddedEngines()
@@ -154,7 +154,6 @@ function searchInitRun(func)
     func();
 }
 
-
 function install()
 {
   if ( !ourPref.get("brandedbrowser", false) &&
@@ -181,7 +180,14 @@ var globalObserver =
       install();
     else if (msg == "upgrade")
     {
+      generalPref.reset("keyword.URL"); // now set in our default prefs
+
       try {
+        searchInitRun(function() {
+          // Migration: add pref. Just for 2.5, remove in 2.6.
+          if (Services.search.currentEngine == brand.search.engineName)
+            ourPref.set("search.opt-in", true);
+        });
         if ( !ourPref.get("brandedbrowser", false) &&
             kVariant != "browser") {
           searchInitRun(upgradeSearchPlugins);

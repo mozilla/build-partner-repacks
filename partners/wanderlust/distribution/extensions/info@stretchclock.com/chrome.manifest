@@ -1,0 +1,5 @@
+content stretchclock chrome/content/
+overlay chrome://browser/content/browser.xul chrome://stretchclock/content/stretchclock.xul
+overlay chrome://browser/content/browser.xul chrome://stretchclock/content/toolbar.xul
+skin stretchclock classic/1.0  chrome/skin/
+

@@ -186,7 +186,7 @@ POP3Account.prototype =
     this._timer = runAsync(function()
     {
       self._checkWithServerOnce(peekMails, notifyCallback, errorCallback);
-    }, this._interval * 1000);
+    }, errorCallback, this._interval * 1000);
   },
   _stopCheckingInterval : function()
   {

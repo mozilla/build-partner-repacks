@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<overlay id="StretchClockTB-Overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:h="http://www.w3.org/1999/xhtml">
+
+			<toolbar id="nav-bar" name="stretchclock toolbox" customizable="true" context="toolbar-context-menu" insertbefore="PersonalToolbar">
+			<toolbaritem id="scf__toolbar">
+			         <toolbaritem id="sc_toolbarset">
+			<toolbaritem id="SCF__toolbaritem_display">
+				<textbox id="SCF__toolbar_display" class="SCF__toolbar_display" disabled="true" />
+			</toolbaritem>
+
+                <toolbarbutton id="SCF__toolbar_shield" class="SCF__toolbar_shield" type="menu" 
+                               tooltiptext="Stretch Now">
+				    <menupopup>
+					  <menuitem label="StretchClock&#8482;" id="SCF__menu_stretchclock" oncommand="com_StretchClock_Fox.Stretch()" accesskey="s"  class="menuitem-iconic" image="chrome://stretchclock/skin/images/sheild-over.png" />
+					  <menuitem label="pause" id="SCF__menu_pause" oncommand="com_StretchClock_Fox.togglePause()" accesskey="p" class="menuitem-iconic" image="chrome://stretchclock/skin/images/pause-normal.png"/>
+					  <menuitem label="reset timer" accesskey="r"  
+                                  oncommand="com_StretchClock_Fox.ResetClock();" class="menuitem-iconic" image="chrome://stretchclock/skin/images/reset-normal.png"/>
+					  <menuitem label="settings and schedule" accesskey="t" 
+                                  oncommand="com_StretchClock_Fox.openPreferences();" class="menuitem-iconic" image="chrome://stretchclock/skin/images/settings-normal.png"/>
+								<menuitem label="show display" id="SCF__checkbox_showdisplay" accesskey="d" type="checkbox" checked="true" oncommand="com_StretchClock_Fox.showToolbarDisplay();" />
+								<menuseparator/>
+					  <menuitem label="StretchClock" id="SCF__menu_display" oncommand="com_StretchClock_Fox.Stretch()" accesskey="s" />
+								<menuseparator/>
+					  <menuitem label="help for version 2.0.1" oncommand="com_StretchClock_Fox.OpenUrl('http://www.stretchclock.com/support/using-stretchclock-firefox.html','stretchclock');" accesskey="h" />
+					  <menuitem label="&#169;2006-2013 by fitclock productions" oncommand="com_StretchClock_Fox.OpenUrl('http://www.stretchclock.com/','stretchclock');" accesskey="f" />
+					</menupopup>
+				</toolbarbutton>
+            </toolbaritem>
+			</toolbaritem>
+			</toolbar>
+</overlay>

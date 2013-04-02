@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#" xmlns:NC="http://home.netscape.com/NC-rdf#" xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <RDF:Description RDF:about="urn:mozilla:install-manifest" em:id="info@stretchclock.com" em:name="StretchClock - Desk Yoga Break Reminder. Feel better, be more productive." em:version="2.0.1" em:creator="ShaneG" em:description="StretchClock is an easy-to-use break reminder for computer users. I developed this program to help you avoid back pain and repetitive stress injury. Anyone who uses a computer for more than one hour at a time should try StretchClock. During every break StretchClock shows easy-to-follow videos of no-sweat exercises that you can do at your desk in office attire. Avoid pain and be more alert. Try it for 2 weeks and see if you feel better." em:homepageURL="http://www.stretchclock.com/" em:optionsURL="chrome://stretchclock/content/settings.xul">
+	<em:type>2</em:type> 
+	<em:unpack>true</em:unpack>
+	<em:iconURL>chrome://stretchclock/skin/images/StretchClockIcon.png</em:iconURL>
+	<em:targetApplication RDF:resource="rdf:#$CB5C62"/>
+</RDF:Description>
+<RDF:Description RDF:about="rdf:#$CB5C62" em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}" em:minVersion="3.0" em:maxVersion="17.*" />
+</RDF:RDF>

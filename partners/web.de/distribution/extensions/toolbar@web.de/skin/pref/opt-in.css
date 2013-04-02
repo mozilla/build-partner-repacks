@@ -129,10 +129,15 @@ pref-region menulist, pref-region *|menulist {
   min-width: 120px;
 }
 
-#login-button {
+#login-button,
+#finish-button-amo {
   display: none;
 }
 
 #container[amo] #login-button {
+  display: inline;
+}
+#container[amo] #login-button,
+#container[amo] #finish-button-amo {
   display: inline;
 }

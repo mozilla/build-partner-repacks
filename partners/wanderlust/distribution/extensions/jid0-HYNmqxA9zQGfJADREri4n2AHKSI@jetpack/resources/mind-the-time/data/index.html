@@ -1,0 +1,28 @@
+<!-- 
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this file,
+You can obtain one at http://mozilla.org/MPL/2.0/. 
+-->
+
+<!-- the summary page html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="icon" type="image/png" href="hourglassicon.png">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Mind the Time</title>
+<link href="index.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<ul id="headerUL">
+    <li><strong>Mind the Time</strong></li>
+    <li><a target="_blank" href="https://addons.mozilla.org/firefox/addon/mind-the-time/">About</a></li>
+    <li><a id="prefsButton">Preferences</a></li>
+    <li id="reloadLi"><a id="reloadButton">Refresh</a></li>
+</ul>
+
+<div id="table-today"><span id="loadFailMessage">Oops, the data did not load, please:<br><br><input type="button" class="button" value="Reload the Page" onClick="window.location.reload()"></span></div>
+<div id="table-week"></div>
+</body>
+</html>

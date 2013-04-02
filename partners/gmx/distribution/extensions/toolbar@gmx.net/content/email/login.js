@@ -312,6 +312,7 @@ function tryLogin(usecase, acc, allowAutoLogin, parentWindow,
     },
     function(e) // error handler, e.g. wrong password
     {
+      e.causedByUser = true;
       errorCritical(e); // explicit user action, so notify user of errors
       if (usecase == 2)
       {
@@ -365,7 +366,9 @@ function tryLogin(usecase, acc, allowAutoLogin, parentWindow,
         acc = getExistingAccountForEmailAddress(answ.emailAddress);
         if (acc)
         {
-          errorCallback(new Exception(gStringBundle.get("error.exists")));
+          var e = new Exception(gStringBundle.get("error.exists"));
+          e.causedByUser = true;
+          errorCallback(e);
           return;
         }
         makeNewAccount(answ.emailAddress, function(newAcc) {

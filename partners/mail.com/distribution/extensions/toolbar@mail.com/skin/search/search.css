@@ -3,6 +3,12 @@
   list-style-image: url("chrome://unitedtb/skin/search/search-small.png");
 }
 
+#united-search-urlbar-button
+{
+  list-style-image: url("chrome://unitedtb/skin/search/search-urlbar.png") !important;
+  visibility: visible !important;
+}
+
 #united-search-button-select
 {
   padding-left: 2px;

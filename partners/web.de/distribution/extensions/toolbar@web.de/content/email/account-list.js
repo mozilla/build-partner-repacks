@@ -282,7 +282,7 @@ function getAccountProviderWithNet(domain,
   },
   function(e)
   {
-    errorCallback(e == "no MX found" ? errorMsg : e);
+    errorCallback(e == "no MX found" || e.code == 404 ? errorMsg : e);
   });
 }
 

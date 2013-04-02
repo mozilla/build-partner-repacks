@@ -1,6 +1,6 @@
 const EXPORTED_SYMBOLS = [
   "mSearch", "mResult", "mURLResult", "mSearchTermResult",
-  "mPSHSearch", "mPlacesSearch", "mWebSuggest", "mAmazon",
+  "mPSHSearch", "mPlacesSearch", "mWebSuggest",
   "mLocalUnitedSearch",
 ];
 
@@ -22,6 +22,5 @@ loadJS("chrome://unitedtb/content/search/mcollect/mPlacesSearch.js", this);
 loadJS("chrome://unitedtb/content/search/mcollect/mWebSuggest.js", this);
 loadJS("chrome://unitedtb/content/search/mcollect/mBrandSuggest.js", this);
 loadJS("chrome://unitedtb/content/search/mcollect/mEBay.js", this);
-loadJS("chrome://unitedtb/content/search/mcollect/mAmazon.js", this);
 
 loadJS("chrome://unitedtb/content/search/mcollect/mLocalUnitedSearch.js", this);

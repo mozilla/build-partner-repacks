@@ -21,6 +21,8 @@
  *         7 = user double-clicked / selected on a word / test in a web page
  *         8 = net load error page, search text field
  *         9 = net load error page, click on previous search terms (history)
+ *         10 = search on a competitor's site
+ *         11 = URLbar icon
  *       engineThirdparty {Boolean}  only for source == 2
  *         false, if web.de/GMX/etc. search engine is selected.
  *         true, if third-party engine is selected, e.g. Google, Yahoo, Wikipedia.
@@ -44,7 +46,8 @@
  *       enable {Boolean}  if true, autocomplete dropdown will open when user types
  * "search-term"
  *    Means: we have some text that we want to put in the search field
- *    When: User double-clicked on a word in a page.
+ *    When: User double-clicked on a word in a page
+ *      or user searched on a competitor's search website.
  *    Parameter: @see "search-started"
  */
 
@@ -130,7 +133,9 @@ function onTextChanged(event)
 
 function onButton(event)
 {
-  startSearchOrURL(searchField.value);
+  var term = startSearchOrURL(searchField.value);
+  if (term)
+    startRealSearch(term, brand.search.toolbarURL, 1);
 };
 
 /**
@@ -140,19 +145,26 @@ function onButton(event)
  */
 function onTextEntered()
 {
-  startSearchOrURL(searchField.value);
+  var term = startSearchOrURL(searchField.value);
+  if (term)
+    startRealSearch(term, brand.search.toolbarURL, 1);
 }
 
-function startSearchOrURL(term)
+/**
+ * Checks whether |term| is an URL.
+ * If so, goes to that URL and returns null.
+ * If not a URL, returns the term.
+ * @return {String} term (if search term) or null (if URL)
+ */
+function startSearchOrURL(term, goDirectlyToURLs)
 {
   term = term.trim().replace(/\s+/g, " ");
-  searchField.value = term;
 
   debug("search term or URL: " + term);
 
   // Help the user who enters URLs or domains in the search field
   var url = null;
-  if (ourPref.get("search.goDirectlyToURLs"))
+  if (goDirectlyToURLs || ourPref.get("search.goDirectlyToURLs"))
   {
     if (!url)
       url = getTermRedirect(term);
@@ -166,18 +178,22 @@ function startSearchOrURL(term)
     debug("going to <" + url + ">");
     loadPage(url);
     setSearchText("");
+    return null;
   }
   else
   {
-    startRealSearch(term);
+    return term;
   }
 };
 
 function isFullURL(str)
 {
-  return str.substr(0, 5) == "http:" ||
-      str.substr(0, 6) == "https:" ||
-      str.substr(0, 4) == "ftp:";
+  try {
+    Services.io.newURI(str, null, null);
+  } catch (ex) {
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -195,6 +211,9 @@ function getFreetextURL(str)
     return null;
   if (str.indexOf(".") == -1) // has no dot => no URL
     return null;
+  // Remove trailing slash
+  if (str.substr(-1) == '/')
+    str = str.substr(0, str.length - 1);
   try {
     //debug("got dot-string");
     var hostname = sanitize.hostname(str);
@@ -206,8 +225,6 @@ function getFreetextURL(str)
   } catch (e) { return null; }
 }
 
-//XPCOMUtils.defineLazyServiceGetter(this, "eTLDService",
-//    "@mozilla.org/network/effective-tld-service;1", "nsIEffectiveTLDService");
 /**
  * @returns {Boolean} the hostname ends in a TLD that we know.
  */
@@ -215,7 +232,7 @@ function knownTLD(hostname)
 {
     /* getBaseDomainFromHost("utter.non.sense") returns "non.sense" => useless :-( 
     try {
-      var domain = eTLDService.getBaseDomainFromHost(hostname);
+      var domain = Services.eTLD.getBaseDomainFromHost(hostname);
       debug("base domain: " + domain);
       return !!domain;
     } catch (e) { errorInBackend(e); return false; }
@@ -226,6 +243,7 @@ function knownTLD(hostname)
       case "com":
       case "org":
       case "net":
+      case "edu":
       case "de":
       case "at":
       case "ch":
@@ -254,13 +272,12 @@ function getTermRedirect(term)
  * Searches for the term, by loading a page in the browser.
  * Called from our search field (but not Firefox' search field nor urlbar).
  */
-function startRealSearch(searchTerm)
+function startRealSearch(searchTerm, searchURL, source)
 {
   notifyWindowObservers("search-started",
-      { searchTerm : searchTerm, source : 1 });
+      { searchTerm : searchTerm, source : source });
 
-  var url = brand.search.toolbarURL;
-  loadPage(url + encodeURIComponent(searchTerm));
+  loadPage(searchURL + encodeURIComponent(searchTerm));
 };
 
 // </copied>
@@ -385,4 +402,23 @@ function getLocalmCollectAutocompleteLabels(term, successCallback)
   places.addObserver(end);
   psh.startSearch();
   places.startSearch();
+}
+
+function onURLBarButton(event)
+{
+  var searchTerm = document.getElementById("urlbar").value;
+  try {
+    var uriFixup = Cc["@mozilla.org/docshell/urifixup;1"].getService(Ci.nsIURIFixup);
+    var fixupURI = uriFixup.createFixupURI(searchTerm, Ci.nsIURIFixup.FIXUP_FLAG_USE_UTF8);
+    // If the current URL is the same as the search URL, just reload the page
+    if (fixupURI.spec == content.document.location.href) {
+      loadPage(fixupURI.spec);
+      return;
+    }
+  } catch (ex) {
+    // Not a fatal error - just means URI Fixup couldn't fix up the URL
+  }
+  var term = startSearchOrURL(searchTerm, true);
+  if (term)
+    startRealSearch(term, brand.search.urlbarURL, 11);
 }

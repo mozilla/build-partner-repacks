@@ -4,3 +4,4 @@
 <!ENTITY united.search.clear.button.label "Clear">
 <!ENTITY united.search.clear.button.tooltip "Empty the search field">
 <!ENTITY united.search.dropbown.button.label "Search option">
+<!ENTITY united.search.icon.label "&brand.name; Search">

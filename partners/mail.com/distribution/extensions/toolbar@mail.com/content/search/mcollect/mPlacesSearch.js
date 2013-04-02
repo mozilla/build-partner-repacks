@@ -78,22 +78,27 @@ mPlacesSearch.prototype =
       {
         var sb = new StringBundle("chrome://unitedtb/locale/search/mcollect.properties");
         var descr = sb.get("mPlacesSearch.descr");
-        var faviconServ = Cc["@mozilla.org/browser/favicon-service;1"]
-            .getService(Ci.nsIFaviconService);
         for each (let row in rows)
         {
           try {
-            let url = row.getResultByName("url").toString();
+            let url = row.getResultByName("url");
+            if (!url)
+              continue;
+            url = url.toString();
             if (url.substr(0, 5) != "http:" && url.substr(0, 6) != "https:")
               continue; // would throw in mURLResult
-            let title = row.getResultByName("bookmarkTitle").toString();
+            let title = row.getResultByName("bookmarkTitle");
             if (!title)
-              title = row.getResultByName("pageTitle").toString();
-            if (!title)
+              title = row.getResultByName("pageTitle");
+            if (title)
+              title = title.toString();
+            else
               title = url;
-            let icon = faviconServ.getFaviconImageForPage(
-                Services.io.newURI(url, null, null)).spec;
-            self._addResult(new mURLResult(title, descr, icon, url));
+//          If we ever enable icons in the search dropdown, this will
+//          have to be moved to the async favicon service
+//            let icon = faviconServ.getFaviconImageForPage(
+//                Services.io.newURI(url, null, null)).spec;
+            self._addResult(new mURLResult(title, descr, null, url));
           } catch (e) { self._haveItemError(e); }
         }
         self._notifyObserversOfResultChanges();

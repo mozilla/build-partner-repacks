@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://stretchclock/skin/stretchclock.css" type="text/css"?>
+<overlay id="com_StretchClock_Fox" 
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+ 
+ <script type="application/x-javascript"
+  src="chrome://stretchclock/content/stretchclock.js"/>
+
+ <statusbar id="status-bar">
+  <statusbarpanel id="stretchclock-panel">
+   <image id="btn_pause" class="pause_normal" onclick="com_StretchClock_Fox.togglePause();" onmouseover="this.className='pause_hover';com_StretchClock_Fox.updateDisplay('pause');" onmouseout="com_StretchClock_Fox.paintPauseButton();com_StretchClock_Fox.updateDisplay('');" />
+   <image id="btn_stretch" class="btn_stretch_normal" onclick ="this.className='btn_stretch_normal';com_StretchClock_Fox.Stretch();" onmouseover="this.className='btn_stretch_hover';com_StretchClock_Fox.updateDisplay('stretch now');" onmouseout="com_StretchClock_Fox.paintStretchButton();com_StretchClock_Fox.updateDisplay('');" />
+   <label id="com_StretchClock_Fox_display" value="StretchClock" onclick ="com_StretchClock_Fox.Stretch();" onmouseover="com_StretchClock_Fox.updateDisplay('stretch now');" onmouseout="com_StretchClock_Fox.updateDisplay('');" />
+   <image id="btn_reset" onmouseover="com_StretchClock_Fox.updateDisplay('reset');" onmouseout="com_StretchClock_Fox.updateDisplay('');" onclick="com_StretchClock_Fox.ResetClock();" />
+   <image id="btn_prefs" onclick="com_StretchClock_Fox.openPreferences();"  onmouseover="com_StretchClock_Fox.updateDisplay('settings');" onmouseout="com_StretchClock_Fox.updateDisplay('');" />
+</statusbarpanel>
+ </statusbar>
+</overlay>
+
+

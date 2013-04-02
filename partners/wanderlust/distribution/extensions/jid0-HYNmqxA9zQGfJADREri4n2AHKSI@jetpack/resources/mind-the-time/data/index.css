@@ -1,0 +1,145 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Styles for the summary page (index.html) */
+
+body {
+    text-align:center;
+    font-family:verdana,arial,helvetica,sans-serif;
+    margin:0px;
+    background-image: -moz-linear-gradient(to bottom , rgb(173, 181, 194), rgb(191, 198, 209) 80px, rgb(201,208,219));
+    background-color:rgb(201, 208, 219);
+    background-repeat: repeat-x;
+    background-attachment:fixed;
+}
+
+#headerUL {
+    list-style:none;
+    margin:30px auto 10px;
+    padding:0;
+}
+#headerUL li {
+    display:inline-block;
+    padding:0 10px;
+    border-right:0px solid #737a88;
+    color:rgb(105,112,126);
+}
+#headerUL li a {
+    color: rgb(105,112,126);
+    text-decoration:none;
+    cursor:pointer;
+}
+#headerUL li a:hover {
+    text-decoration:underline;
+}
+#reloadLi {
+    display:none;
+}
+#loadFailMessage {
+    color: #737a88;
+}
+
+#table-today, #table-week {
+    margin-top:50px;
+}
+.newtable{
+    font-size:12px; 
+    margin:0 auto 60px;
+    width:10%;
+    border-collapse: collapse;
+}
+.newtable tr {
+    background:#ddd;
+}
+tr.headerrow {
+    background:transparent;
+}
+.headertd {
+    padding:0;
+    background:#8c94a4;
+    border-top-right-radius:8px;
+    border-top-left-radius:8px;
+    color:#eee;
+}
+
+.dateheader {
+    margin:0;
+    padding:0;
+    text-align:center;
+}
+
+.totalrow {
+    font-weight:bold;
+}
+
+.newtable td {
+    border:0px;
+    border-bottom:1px solid #8c94a4; 
+    text-align:left;
+    padding:.5em 1.2em;
+    margin:0px;
+    white-space:nowrap;
+}
+
+.domainlink {
+    text-decoration:none;
+    color:#000;
+}
+
+.domainlink:hover {
+    text-decoration:underline;
+}
+
+.graphUL {
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:block;
+}
+
+.graphLI {
+    background:#8c94a4;
+    height:10px;
+    display:block;
+    float:left;
+    margin:1px 0px 1px 0;
+    border-left:1px solid #aaafb7;  
+}
+
+.showmore{
+    font-size:10px;
+    cursor:pointer;
+}
+
+.showmore:hover{
+    text-decoration:underline;
+}
+#footer {
+    padding-top:30px;
+}
+.footnote {
+    color:#737a88;
+    font-size:13px;
+    border-bottom:0px solid #737a88;
+}
+.footerlink {
+    text-decoration:none;
+    color:#737a88;
+    font-size:13px;
+}
+
+.footerlink:hover {
+    text-decoration:underline;
+}
+
+#explainDiv {
+    color:#737a88;
+    width:330px;
+    margin: 0 auto;
+    font-size:12px;
+}
+
+.smalltext {
+    font-size:12px;
+}

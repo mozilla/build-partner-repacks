@@ -28,6 +28,8 @@
     <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/pref/opt-in.js"></script>
     <script type="text/javascript;version=1.8"
+      src="chrome://unitedtb/content/pref/runonce.js"></script>
+    <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/email/login-page.js"></script>
     <script type="text/javascript;version=1.8"
       src="chrome://unitedtb/content/email/login-common.js"></script>
@@ -40,7 +42,7 @@
     </div>
     <div id="outer_container">
     <div id="container" style="position: relative">
-    <a id="close-button" href="#" onclick="onCloseButton()">
+    <a id="close-button" href="#">
         &close.button.label;<img src="chrome://unitedtb/skin/pref/closebutton.png"/>
     </a>
     <div id="header">
@@ -119,8 +121,14 @@
         <span>&configinfo.label;</span>
       </div>
       <div id="login-buttons">
-        <button onclick="onLoginFinish();" id="login-button">&login.button.label;</button>
-        <button onclick="onFinishButton();" id="finish-button">&finish.button.label;</button>
+        <button onclick="onLogin();" id="login-button">&login-only.button.label;</button>
+        <button id="finish-button"
+                finish-label="&finish.button.label;"
+                login-label="&login.button.label;"
+                finish-amo-label="&finish-amo.button.label;"
+                login-amo-label="&login-amo.button.label;">
+          &finish.button.label;
+        </button>
       </div>
     </div>
     </div>

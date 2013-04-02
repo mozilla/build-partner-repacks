@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <setting data-jetpack-id="jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack" pref="extensions.jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack.autoRefreshPref" pref-name="autoRefreshPref" title="Summary Page Refresh: Manual or Automatic" type="bool">
+    How to refresh the data on the summary page: CHECKED = automatically, UNCHECKED = manually
+  </setting>
+  <setting data-jetpack-id="jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack" pref="extensions.jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack.showRemindersPref" pref-name="showRemindersPref" title="Show Reminder Messages?" type="bool">
+    These are messages that indicate the amount of time spent on the web so far today.
+  </setting>
+  <setting data-jetpack-id="jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack" pref="extensions.jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack.reminderRatePref" pref-name="reminderRatePref" title="Reminder Message Rate (In Minutes)" type="integer">
+    The number of minutes to be logged between each reminder message.
+  </setting>
+  <setting data-jetpack-id="jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack" pref="extensions.jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack.notificationsPref" pref-name="notificationsPref" title="Reminder Message Type: Modal or Toast-Style" type="bool">
+    How to display reminder messages: CHECKED = modal messages in the browser, UNCHECKED = transient desktop notifications.  The modal-style messages are harder to ignore and work everywhere. The transient toast-style desktop notifications are less disruptive and work natively on Windows, but require Growl on Mac OS X, and libnotify on Linux.
+  </setting>
+  <setting data-jetpack-id="jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack" pref="extensions.jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack.whiteListPref" pref-name="whiteListPref" title="Exclude These Sites (White List)" type="string">
+    Enter a list of domains separated by commas to prevent those sites from being logged, and any time spent on them from being counted.  This lets you exclude work-related sites, for example. It is not necessary to include the &quot;http://&quot; which will be added automatically. However, you must include the &quot;https://&quot; for sites that use https, and &quot;www&quot; or other subdomains when they are part of the site's address.  The ticker text will be &quot;grayed-out&quot; when visiting sites in this list.
+  </setting>
+  <setting data-jetpack-id="jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack" pref="extensions.jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack.deleteData" pref-name="deleteData" title="Delete All Data" type="control">
+    This cannot be undone.
+    <button data-jetpack-id="jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack" label="Delete All Data" oncommand="Services.obs.notifyObservers(null, 'jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack-cmdPressed', 'deleteData');" pref-name="deleteData"/>
+  </setting>
+</vbox>

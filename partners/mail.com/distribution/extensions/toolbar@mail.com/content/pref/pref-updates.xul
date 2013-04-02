@@ -6,7 +6,7 @@
 
   <script type="application/x-javascript">
     unitedinternet.initModule(unitedinternet, "updates");
-    unitedinternet.loadJS("chrome://unitedtb/content/pref/pref-updates.js", unitedinternet.updates);
+    unitedinternet.loadJS("chrome://unitedtb/content/pref/update-check.js", unitedinternet.updates);
   </script>
 
   <tabpanel id="general-tabpanel">

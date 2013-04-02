@@ -1,0 +1,246 @@
+@charset "utf-8";
+/* CSS Document */
+#SCF__TB-Toolbar	{
+	background-image: URL("chrome://stretchclock/skin/images/display.jpg");
+	background-repeat: no-repeat;
+}
+.SCF__toolbar_shield {
+	list-style-image: URL("chrome://stretchclock/skin/images/scLogo-15px.png");
+}
+
+.SCF__timepicker_label	{
+	font-size:1.2em !important;
+	font-weight:bold;
+	color:#494b4e;
+	padding-top:.1em;
+}
+
+.SCF__timepicker_number	{
+	-moz-appearance:none;
+	max-width: 2.4em;
+	height:2em;
+	font-size:1.8em; 
+	font-weight:bold;
+	color:#404040;
+	background-color:#505050;
+	border: 2px inset #a9e54f;
+	color:#8fc243;			
+}
+.SCF__toolbar_display {
+	-moz-appearance: none;
+	background-image: URL("chrome://stretchclock/skin/images/display.png");
+	background-repeat: no-repeat;
+	background-color: #434446;	
+	width:92px;
+	border: 2px inset #d2cecd;
+	color:#fdfdfd;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	vertical-align: top;
+	padding-top: 1px;
+	padding-right: 1px;
+	padding-bottom: 2px;
+	padding-left: 1px;
+	text-align: center;
+	}
+	
+#StretchClock-settings description	{
+	font-size:.8em;
+	color:#A0A0A0;
+	margin-top:.4em;
+	padding-bottom:1em;
+}
+
+#StretchClock-settings label	{
+	font-size:1.2em;
+	font-weight:bold;
+	padding-bottom:.2em;
+	color:#606060;	
+}
+
+#StretchClock-settings groupbox	{
+	-moz-appearance: none;
+	background-color:#505050;
+	padding: .2em;	
+}
+
+#StretchClock-settings checkbox	label {
+	font-size:1em;
+	color:#8fc243 !important;
+	padding-bottom:.2em;
+}
+
+.SCF__stretchDay	{
+	padding-bottom:1em;
+}
+
+prefwindow	{
+	background-image: url("chrome://stretchclock/skin/images/background.jpg");
+	font-family:Arial, Helvetica, sans-serif;
+	height:42em; 
+}
+
+.preflogo	{
+	-moz-appearance:none;
+	border:none;
+	background-color:none;
+	padding-top:2em;
+	margin:auto;
+	clear:both;
+}
+.SCF__Tab	{
+    height: 3em;
+    font-size: 0.8em;
+    padding: 0 1em .1em .6em;
+    width: 7em;
+}
+#mySchedule	{
+	padding-bottom:.8em;
+}
+
+.SCF__tabpanel	{
+	padding: .2em .4em .2em .4em;
+	width: 22em;	
+}
+
+prefpane {
+	font-size:1.2em;
+	padding: 1.4em;
+	height:100%;
+}
+
+.timelist {
+	font-size:1.1em;
+	width:4.2em;
+	max-width: none;
+	font-size:1.1em;
+}
+
+.timelist menupopup	{
+}
+.timelist menuitem	{
+	font-size:1.1em;
+}
+
+#tab-holder	{
+	height: 16em;
+	width: 25em;		
+}
+
+.on_off_label	{
+	font-size:1.1em;
+	width:2em;
+	padding: 16px 0 16px 0;
+}
+
+  .pause_normal {
+	list-style-image: url("chrome://stretchclock/skin/images/pause-normal.gif");
+	padding-top: 2px;
+	padding-right: 1px;
+	padding-bottom: 2px;
+	padding-left: 9px;
+  } 
+  
+  .pause_hover {
+	cursor: pointer;	
+	list-style-image: url("chrome://stretchclock/skin/images/pause-over.gif");
+	padding-top: 2px;
+	padding-right: 1px;
+	padding-bottom: 2px;
+	padding-left: 9px;
+  } 
+
+  .pause_on {
+	cursor: pointer;	
+	list-style-image: url("chrome://stretchclock/skin/images/pause-on.gif");
+	padding-top: 2px;
+	padding-right: 1px;
+	padding-bottom: 2px;
+	padding-left: 9px;
+  } 
+
+  #StretchClock-Logo {
+	list-style-image: url("chrome://stretchclock/skin/images/stretchclock-logo.gif");
+	padding-top: 2px;
+	padding-right: 9px;
+	padding-bottom: 2px;
+	padding-left: 9px;  
+	} 
+
+  #btn_prefs {
+	list-style-image: url("chrome://stretchclock/skin/images/settings-normal.gif");
+	padding-top: 2px;
+	padding-right: 9px;
+	padding-bottom: 2px;
+	padding-left: 1px;  
+	} 
+  #btn_prefs:hover {
+	cursor: pointer;	
+	list-style-image: url("chrome://stretchclock/skin/images/settings-over.gif");
+  } 
+  #btn_prefs:active{
+	cursor: pointer;	
+	list-style-image: url("chrome://stretchclock/skin/images/settings-on.gif");
+  } 
+
+  #btn_reset {
+	list-style-image: url("chrome://stretchclock/skin/images/reset-normal.gif");
+	padding-top: 2px;
+	padding-right: 1px;
+	padding-bottom: 2px;
+	padding-left: 1px;  
+	} 
+  #btn_reset:hover {
+	cursor: pointer;
+	list-style-image: url("chrome://stretchclock/skin/images/reset-over.gif");		
+  } 
+
+  .btn_stretch_normal {
+	list-style-image: url("chrome://stretchclock/skin/images/stretch-normal.gif");
+	padding-top: 2px;
+	padding-right: 1px;
+	padding-bottom: 2px;
+	padding-left: 1px;
+	} 
+
+  .btn_stretch_hover {
+	cursor: pointer;	
+	list-style-image: url("chrome://stretchclock/skin/images/stretch-over.gif");
+	padding-top: 2px;
+	padding-right: 1px;
+	padding-bottom: 2px;
+	padding-left: 1px;
+  } 
+
+
+  .btn_stretch_anim {
+	list-style-image: url("chrome://stretchclock/skin/images/stretch-anim.gif");
+	padding-top: 2px;
+	padding-right: 1px;
+	padding-bottom: 2px;
+	padding-left: 1px;
+	} 
+
+#com_StretchClock_Fox_display {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	background-image: url(images/display.jpg);
+	vertical-align: middle;
+	height: 21px;
+	width: 95px;
+	color: #FFFFFF;
+	padding-top: 4px;
+	padding-right: 1px;
+	padding-bottom: 2px;
+	padding-left: 1px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	text-align: center;
+	cursor: pointer;	
+
+}
+  #display:hover {
+	cursor: pointer;	
+  } 

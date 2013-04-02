@@ -95,7 +95,7 @@ function getEmailAddressAndPassword(inparams, parentWin)
     return null;
   }
 
-  if (!parentWin)
+  if (!parentWin || parentWin.closed)
     parentWin = window;
   parentWin.openDialog("chrome://unitedtb/content/email/login-dialog.xul",
       windowID, "modal,centerscreen", inparams, outparams);
@@ -120,6 +120,9 @@ function getEmailAddressAndPassword(inparams, parentWin)
  * @param brandOnly {Boolean}
  *     Accept only accounts that are of the same brand as this toolbar,
  *     e.g. if this is a WEB.DE toolbar, accept only @web.de email addresses.
+ * @param newAccount {Boolean}
+ *     If true, we are about to add a new account.
+ *     If false, this email address is already in the list of accounts.
  * @param successCallback {Function()} Called if the checks passed
  * @param errorCallback {Function(msg {String or Exception})}
  *     Called if the checks failed
@@ -127,7 +130,7 @@ function getEmailAddressAndPassword(inparams, parentWin)
  * @returns {Abortable}
  */
 function verifyEmailAddressAndPassword(emailAddress, password,
-    needPassword, brandOnly, successCallback, errorCallback)
+    needPassword, brandOnly, newAccount, successCallback, errorCallback)
 {
   try {
     assert(typeof(emailAddress) == "string", "need emailAddress param");
@@ -159,6 +162,8 @@ function verifyEmailAddressAndPassword(emailAddress, password,
       throw gStringBundle.get(
           "error.syntax" + (brandOnly ? ".brand" : ""),
           [ brand.login.providerName, exampleDomain ]);
+    } else if (newAccount && getExistingAccountForEmailAddress(emailAddress)) {
+      throw gStringBundle.get("error.exists");
     } else {
       // account-list.js
       return verifyEmailAddressDomain(emailAddress,
@@ -178,5 +183,5 @@ function verifyEmailAddressAndPassword(emailAddress, password,
             [ brand.login.providerName, exampleDomain, domains.join(", ") ]));
       });
     }
-  } catch (e) { errorInBackend(e); errorCallback(e); }
+  } catch (e) { errorInBackend(e); errorCallback(e); return new Abortable(); }
 }

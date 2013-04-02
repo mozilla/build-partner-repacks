@@ -987,7 +987,7 @@ SimpleAutocompleteItem.prototype =
     itemDiv.appendChild(labelDiv);
     if (this.description)
     {
-      descDiv = document.createElementNS(HTML, "div");
+      var descDiv = document.createElementNS(HTML, "div");
       descDiv.classList.add("ac-item-desc");
       descDiv.appendChild(document.createTextNode(this.description));
       itemDiv.appendChild(descDiv);

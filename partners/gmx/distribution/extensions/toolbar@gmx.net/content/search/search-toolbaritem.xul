@@ -4,7 +4,12 @@
 <?xml-stylesheet href="chrome://unitedtb/skin/search/search-brand.css" type="text/css"?>
 <?xml-stylesheet href="chrome://unitedtb/content/util/textbox.css" type="text/css"?>
 
-<!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/search/search.dtd">
+<!DOCTYPE overlay [
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/search/search.dtd">
+  %thisDTD;
+  <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
+  %brandDTD;
+]>
 
 <overlay id="united-search-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -16,6 +21,9 @@
     unitedinternet.initModule(unitedinternet.search, "webselectionlistener");
     unitedinternet.loadJS("chrome://unitedtb/content/search/search-webselectionlistener.js",
         unitedinternet.search.webselectionlistener);
+    unitedinternet.initModule(unitedinternet.search, "searchcompetitor");
+    unitedinternet.loadJS("chrome://unitedtb/content/search/search-competitors.js",
+        unitedinternet.search.searchcompetitor);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->
@@ -58,4 +66,12 @@
       </textbox>
     </toolbaritem>
   </toolbar>
+  <textbox id="urlbar">
+    <toolbarbutton
+        id="united-search-urlbar-button"
+        insertafter="urlbar-stop-button"
+        class="chromeclass-toolbar-additional"
+        tooltiptext="&united.search.icon.label;"
+        onclick="unitedinternet.search.onURLBarButton(event);"/>
+  </textbox>
 </overlay>

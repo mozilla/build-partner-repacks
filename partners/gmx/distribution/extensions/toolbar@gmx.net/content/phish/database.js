@@ -42,10 +42,12 @@ var gPhishingDB = null;
  * Initialilizes the phishing database.
  *
  */
-function initDB()
+function initDB(successCallback)
 {
-  if (gPhishingDB)
+  if (gPhishingDB) {
+    successCallback();
     return;
+  }
 
   var dbfile = getProfileDir();
 
@@ -62,24 +64,32 @@ function initDB()
   var dbfileExisted = dbfile.exists();
   gPhishingDB = Services.storage.openDatabase(dbfile);
   if (!dbfileExisted)
-    makeEmptyDB(gPhishingDB);
+    makeEmptyDB(gPhishingDB, successCallback);
+  else
+    successCallback();
 }
 
 
 /**
  * Initializes DB schema. Will delete old data.
  */
-function makeEmptyDB(dbConn)
+function makeEmptyDB(dbConn, successCallback)
 {
   ourPref.set("phish.db.version", 1);
 
-  dbConn.executeSimpleSQL("DROP TABLE IF EXISTS " + PHISH_TABLE_PREFIX);
-  dbConn.executeSimpleSQL("DROP TABLE IF EXISTS " + PHISH_TABLE_DOMAIN);
-  dbConn.executeSimpleSQL("DROP TABLE IF EXISTS " + PHISH_TABLE_EXACT);
-
-  dbConn.createTable(PHISH_TABLE_PREFIX, "pattern TEXT PRIMARY KEY");
-  dbConn.createTable(PHISH_TABLE_DOMAIN, "pattern TEXT PRIMARY KEY");
-  dbConn.createTable(PHISH_TABLE_EXACT, "pattern TEXT PRIMARY KEY");
+  var dropStmts = [];
+  dropStmts.push(dbConn.createStatement("DROP TABLE IF EXISTS " + PHISH_TABLE_PREFIX));
+  dropStmts.push(dbConn.createStatement("DROP TABLE IF EXISTS " + PHISH_TABLE_DOMAIN));
+  dropStmts.push(dbConn.createStatement("DROP TABLE IF EXISTS " + PHISH_TABLE_EXACT));
+  dbConn.executeAsync(dropStmts, dropStmts.length, new sqlCallback(function()
+  {
+    // You can't do a DROP TABLE and CREATE TABLE in the same statement set
+    var createStmts = [];
+    createStmts.push(dbConn.createStatement("CREATE TABLE " + PHISH_TABLE_PREFIX + " (pattern TEXT PRIMARY KEY)"));
+    createStmts.push(dbConn.createStatement("CREATE TABLE " + PHISH_TABLE_DOMAIN + " (pattern TEXT PRIMARY KEY)"));
+    createStmts.push(dbConn.createStatement("CREATE TABLE " + PHISH_TABLE_EXACT + " (pattern TEXT PRIMARY KEY)"));
+    dbConn.executeAsync(createStmts, createStmts.length, new sqlCallback(successCallback, errorInBackend));
+  }, errorInBackend));
 }
 
 /**
@@ -217,6 +227,22 @@ function makeDomainQueryCallback(visitedHostname,
   }, errorCallback);
 }
 
+function updateDB_Start(parsedResults)
+{
+  initDB(function() // Make sure the database is there, just in case
+  {
+    makeEmptyDB(gPhishingDB, function()  // Empty the DB
+    {
+      if (!parsedResults) {
+        // if we get an invalid list from the server, continue with empty DB
+        return;
+      }
+      updateDB(parsedResults);
+    });
+  });
+}
+
+
 /**
  * Writes the parsed blacklist into the database.
  * 
@@ -226,12 +252,6 @@ function makeDomainQueryCallback(visitedHostname,
  */
 function updateDB(parsedResults)
 {
-  initDB(); // Make sure the database is there, just in case
-  makeEmptyDB(gPhishingDB); // Empty the DB
-  if (!parsedResults) {
-    // if we get an invalid list from the server, continue with empty DB
-    return;
-  }
   assert(parsedResults.E instanceof Array);
   var types = ["D", "E", "P"];
   var finishedTypeCounter = types.length;
@@ -299,7 +319,7 @@ function downloadBlacklist()
     //debug("phish: Got response from webserver");
     assert(typeof(response) == "string");
     var parsedResults = parse(response);
-    updateDB(parsedResults);
+    updateDB_Start(parsedResults);
   }, errorInBackend);
   fetcher.start();
 }
@@ -405,12 +425,13 @@ function onLoad()
   for (var i = 0; i < sanityCheckURLs.length; i++)
     sanityCheckURIsCache.push(Services.io.newURI(sanityCheckURLs[i], null, null));
 
-  initDB();
-
-  downloadIfNeeded();
-  // Start periodic update of the blacklist
-  gPoller = runPeriodically(downloadIfEnabled,
-      brand.phish.updateFrequency * 1000);
+  initDB(function()
+  {
+    downloadIfNeeded();
+    // Start periodic update of the blacklist
+    gPoller = runPeriodically(downloadIfEnabled, errorInBackend,
+        brand.phish.updateFrequency * 1000);
+  });
 }
 runAsync(onLoad);
 

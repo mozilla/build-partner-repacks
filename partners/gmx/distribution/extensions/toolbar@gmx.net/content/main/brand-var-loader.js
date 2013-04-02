@@ -53,6 +53,9 @@ function load(isFirst)
       loadJS("chrome://unitedtb/content/brand.js", brandfile2);
       brandfile = brandfile2.brand;
 
+      // all overlay
+      loadJS("chrome://unitedtb/content/brand-all.js", brandfile);
+
       // variant overlay
       loadJS("chrome://unitedtb/content/brand-overlay.js", brandfile);
     }

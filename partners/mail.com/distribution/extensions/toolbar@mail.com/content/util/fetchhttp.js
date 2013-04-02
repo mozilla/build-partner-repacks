@@ -420,9 +420,11 @@ UserCancelledException.prototype =
 }
 extend(UserCancelledException, Exception);
 
-function ServerException(msg, code, uri)
+function ServerException(serverMsg, code, uri)
 {
+  var msg = code + " " + serverMsg + " <" + uri + ">";
   Exception.call(this, msg);
+  this.rootErrorMsg = serverMsg;
   this.code = code;
   this.uri = uri;
 }

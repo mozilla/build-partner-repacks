@@ -45,7 +45,12 @@ toolbar : {
     // Appears in toolbar "Settings" button dropdown,
     // *and* in Firefox Help submenu
     helpMenuURLEntries : [
+      { separator: true },
       { label : "$TR help.faq", url : "%GOTB%helpfaq" },
+      { separator: true },
+      { label : "$TR help.checkforupdates", checkForUpdates : true },
+      { label : "$TR help.uninstall", uninstall : true },
+      { separator: true },
       { label : "$TR help.about", aboutExtDialog : true },
     ],
     // This specifies ALL items on the toolbar
@@ -89,6 +94,7 @@ search : {
     netErrorURL : "%GOTB%search_404/?su=",
     historyNetErrorURL : "%GOTB%search_hsty_404/?su=",
     injectPSHURL : "%GOTB%psh/?su=",
+    urlbarURL: "%GOTB%searchicon/?su=",
     suggestURL : "http://search.mail.com/SuggestSearch/suggest_json/?origin=tb_sbox_ff&mc=tb_sbox_ff@suche@ffox.suche@web&brand=mailcom&su=",
     suggestName : "%BRAND%",
     engineName : "mail.com search", // main -- do not translate, must match OSD
@@ -194,48 +200,6 @@ login : {
     // webpage shown when the user logs in for the very first time. null = deactivated.
     runonceNewUsersWebURL : "%GOTB%firstlogin",
     forgotPasswordURL : "%GOTB%help_password",
-    configs : [
-      {
-        providerID : "webde",
-        domains : [ "web.de" ],
-        type : "unitedinternet",
-        loginTokenServerURL : "https://lts.web.de/logintokenserver-1.0",
-        uasURL : "https://uas2.uilogin.de/tokenlogin",
-        serviceID : "pacs.toolbar.webde",
-      },
-      {
-        providerID : "gmx",
-        domains : [ "gmx.net", "gmx.de", "gmx.at", "gmx.ch",
-            "gmx.co.uk", "gmx.fr", "gmx.it",
-            "gmx.eu", "gmx.info", "gmx.biz", "gmx.tm", "gmx.org",
-            "imail.de", ],
-        type : "unitedinternet",
-        loginTokenServerURL : "https://lts.gmx.net/logintokenserver-1.0",
-        uasURL : "https://uas2.uilogin.de/tokenlogin",
-        serviceID : "pacs.toolbar.gmx",
-      },
-      {
-        providerID : "1und1",
-        domains : [ "online.de", "onlinehome.de", "sofortstart.de", "sofort-start.de", "go4more.de", "sofortsurf.de", "sofort-surf.de", ],
-        type : "imap",
-        hostname : "imap.1und1.de",
-        port : 993,
-        socketType : 2,
-      },
-      {
-        providerID : "mailcom",
-        domains : [ "mail.com", "gmx.com",
-          "email.com", "usa.com", "consultant.com", "myself.com",
-          "london.com", "europe.com", "post.com", "dr.com", "doctor.com",
-          "lawyer.com", "engineer.com", "techie.com", "linuxmail.org",
-          "iname.com", "cheerful.com", "contractor.net", "accountant.com",
-          "asia.com", "writeme.com", "uymail.com", "munich.com", ],
-        type : "unitedinternet",
-        loginTokenServerURL : "https://lts.mail.com/logintokenserver-1.1",
-        uasURL : "https://uas-us.gmx.com/tokenlogin",
-        serviceID : "mailcom.toolbar.live",
-      },
-    ],
   },
 },
 email : {

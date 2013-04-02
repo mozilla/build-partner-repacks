@@ -2,3 +2,8 @@ radio[pane="newtab-pane"]
 {
   list-style-image: url("chrome://unitedtb/skin/newtab/pref-newtab-32.png");
 }
+
+
+#newtab-enabled-checkbox:not([checked]) + checkbox {
+  visibility: hidden;
+}

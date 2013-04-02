@@ -1,3 +1,4 @@
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js", this);
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
 Components.utils.import("resource://unitedtb/email/account-list.js", this);
@@ -5,7 +6,13 @@ Components.utils.import("resource://unitedtb/build.js");
 var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/email/login.properties");
 
+var eEmailAddress;
+var ePassword;
+var eLongSession;
+var eErrorMsg;
 var eLoginButton;
+var eFinishButton;
+
 var gVerifyAbortable = new Abortable();
 var confirmClose = true;
 
@@ -25,11 +32,6 @@ function onLoginLoad()
   eLoginButton = document.getElementById("login-button");
   eFinishButton = document.getElementById("finish-button");
 
-  // We don't need to confirm close in the branded browser case or AMO
-  if (ourPref.get("brandedbrowser", false) || kVariant == "amo") {
-    confirmClose = false;
-  }
-
   document.getElementById("forgot-password").setAttribute("href", brand.login.forgotPasswordURL);
   document.getElementById("create-account").setAttribute("href", brand.login.createAccountURLWeb);
 
@@ -38,7 +40,7 @@ function onLoginLoad()
   // Allow enter key to work
   document.addEventListener("keypress", function(event) {
     if (event.keyCode == 13)
-      document.getElementById("login-button").click();
+      document.getElementById("finish-button").click();
   }, false);
 
   eEmailAddress.focus();
@@ -62,6 +64,14 @@ function updateLoginButton()
   eLoginButton.disabled = eFinishButton.disabled = !
     (ePassword.value && eEmailAddress.value ||
     !ePassword.value && !eEmailAddress.value);
+  // If we have an email address, change the button to say "Login"
+  // Otherwise change it to "Finish"
+  // We do this by having multiple attributes on the finish button that
+  // designate the various states. This allows us to avoid properties files.
+  if (eEmailAddress.value)
+    eFinishButton.textContent = eFinishButton.getAttribute("login-label");
+  else
+    eFinishButton.textContent = eFinishButton.getAttribute("finish-label");
 }
 
 function onLeaveEmailaddress()
@@ -85,7 +95,7 @@ function verifyAndShowError(needPassword, successCallback) {
   // gVerifyAbortable.cancel(); TODO breaks all further verify calls. ditto below.
   gVerifyAbortable = verifyEmailAddressAndPassword(
       eEmailAddress.value, ePassword.value,
-      needPassword, true,
+      needPassword, true, true,
   successCallback, showErrorInline);
 }
 
@@ -98,12 +108,20 @@ function showErrorInline(errorMsg)
 
 // </copied>
 
-function onLogin()
+function onLogin(closeCallback)
 {
+  assert(typeof(closeCallback) == "function");
   if (!eEmailAddress.value && !ePassword.value) {
-    closePage();
+    closePage(closeCallback);
     return;
   }
+  try {
+    verifyAndShowError(false, function() { onLoginStep2(closeCallback); });
+  } catch (e) { showErrorInline(e); }
+}
+
+function onLoginStep2(closeCallback)
+{
   // Disable login button so it can't be double clicked
   eLoginButton.disabled = true;
   eFinishButton.disabled = true;
@@ -115,7 +133,7 @@ function onLogin()
     acc.login(0, true, function() // success
     {
       acc.saveToPrefs();
-      closePage();
+      closePage(closeCallback);
     },
     function(e) // error, e.g. wrong password
     {
@@ -138,21 +156,18 @@ function onLogin()
   });
 }
 
-function onCloseButton()
+function onCloseButton(closeCallback)
 {
-  // gVerifyAbortable.cancel();
-  // We don't need to confirm close in the branded browser case
-  // or AMO
-  if (ourPref.get("brandedbrowser", false) || kVariant == "amo")
-    closePage();
+  assert(typeof(closeCallback) == "function");
+  // If confirmClose is false, don't show the nag screen
+  if (confirmClose)
+    optinConfirmClose(function() { closePage(closeCallback); });
   else
-    optinConfirmClose(closePage);
+    closePage(closeCallback);
 }
 
-function closePage()
+function closePage(closeCallback)
 {
   confirmClose = false;
-  // Route to the firstrun page
-  document.location.href = brand.toolbar.firstrunURL +
-                "/?kid=" + ourPref.get("tracking.campaignid", 0);
+  closeCallback();
 }

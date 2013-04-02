@@ -8,7 +8,7 @@
   <em:homepageURL>http://toolbar.aol.com/aoluk/aoluk-ff</em:homepageURL>
   <em:id>{12e57d18-f8f7-4b76-af63-605365ab88ec}</em:id>
   <em:name>AOL UK Toolbar</em:name>
-  <em:version>5.91.1.9291</em:version>
+  <em:version>5.91.1.9369</em:version>
   <em:optionsURL>chrome://aoluktoolbar/content/settings.xul</em:optionsURL>
   <em:iconURL>chrome://aoluktoolbar/locale/images/icon.png</em:iconURL>
   <em:updateURL>https://client.web.aol.com/toolbarfiles/Prod/Content/customffocuk/ffhostfiles/update.rdf</em:updateURL>
@@ -18,7 +18,7 @@
     <Description>
       <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
       <em:minVersion>1.0</em:minVersion>
-      <em:maxVersion>20.*</em:maxVersion>
+      <em:maxVersion>21.*</em:maxVersion>
     </Description>
   </em:targetApplication>
   
