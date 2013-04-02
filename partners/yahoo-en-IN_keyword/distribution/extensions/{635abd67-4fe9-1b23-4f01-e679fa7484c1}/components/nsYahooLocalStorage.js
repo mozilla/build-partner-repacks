@@ -5,7 +5,8 @@ return this;}};function YahooLocalStorage(){this.values=[];this.keys=[];this.put
 this.values[key]=value;this.keys[this.keys.length]=key;};this.putString=function(key,value){if(this.values===null){this.keys=[];this.values=[];}
 this.values[key]=value;this.keys[this.keys.length]=key;};this.clear=function(){if(this.values!==null){for(var i=0,len=this.keys.length;i<len;i++){if(this.values[this.keys[i]]instanceof CI.nsIYahooFeedNode){this.values[this.keys[i]].destroy();}
 this.values[this.keys[i]]=null;this.keys[i]=null;}}
-this.keys=null;this.values=null;};this.getObject=function(key){if(this.values!=null&&typeof(this.values[key])!='undefined'){count=this.values[key].length;return this.values[key];}
+this.keys=null;this.values=null;};this.clearKeysWithPrefix=function(prefix){if(this.values!==null){for(var i=0,len=this.keys.length;i<len;i++){if(typeof(this.keys[i])=="string"&&this.keys[i].indexOf(prefix)==0){if(this.values[this.keys[i]]instanceof CI.nsIYahooFeedNode){this.values[this.keys[i]].destroy();}
+this.values[this.keys[i]]=null;this.keys[i]=null;}}}};this.getObject=function(key){if(this.values!=null&&typeof(this.values[key])!='undefined'&&this.values[key]!=null){count=this.values[key].length;return this.values[key];}
 return null;};this.getString=function(key){if(this.values!==null&&typeof(this.values[key])=="string"){return this.values[key];}
 return null;};this.getKeys=function(count){count.value=0;if(this.keys!=null){count.value=this.keys.length;return this.keys;}else{return[];}};this.getValues=function(count){var out=[];var i=0
 if(this.values!=null){for(props in this.values){i++;out[out.length]=this.values[props];}}

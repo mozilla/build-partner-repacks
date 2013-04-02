@@ -9,7 +9,7 @@ cver=cver.join("_");}
 var vert=mConfigMgr.getCharValue('installer.activeVertical');var skinEnabled=mConfigMgr.getIntValue('general.enableskins');var skinrequest=mConfigMgr.getBoolValue('skin.request')||false;var showvert=mConfigMgr.getBoolValue('general.enableverticals');var userskininfo=mConfigMgr.getCharValue("toolbar.userskininfo");var jsonObj=null;if(userskininfo!=""){jsonObj=yahooUtils.JSON.parse(userskininfo);}
 var skin="";if(skinEnabled==1){skin=mConfigMgr.getCharValue('general.selectedskincode');}else if(skinEnabled==2&&jsonObj&&jsonObj[vert]){skin=jsonObj[vert];}
 var toolbar_guid="";mConfigMgr.isYahooKey=false;if(mConfigMgr.isKeyPresent('yahoo.ytffp.installer._u')){mConfigMgr.isYahooKey=false;toolbar_guid=mConfigMgr.getCharValue('yahoo.ytffp.installer._u');}
-var toolbar_bucket="";if(mConfigMgr.isKeyPresent('toolbar.bucket')){toolbar_bucket=mConfigMgr.getCharValue('toolbar.bucket');}
+var toolbar_bucket="";if(mConfigMgr.isKeyPresent('toolbar.forcedbucket')){toolbar_bucket=mConfigMgr.getCharValue('toolbar.forcedbucket');}
 url=protocol+d_url+"/bh/v8/1.html"+"?&.pc="+pc+"&.dc="+dc+"&.a=0"+"&.ta=cg"+tid+",cc"+cid+",ci"+lang+",cv"+cver+",cp"+pc+",cbm,cjs"+"&.skinm="+skinEnabled+"&.skin="+skin+"&.lo="+layout+"&t="+time+"&.tguid="+toolbar_guid;if(showvert)
 url+="&.vert="+vert;if(!isGuestMode){url+="&.crumb="+feedCrumb();}
 if(isGuestMode){var lu=elapsedDays(mConfigMgr.getCharValue('toolbar.lastuse'));var lc=elapsedDays(mConfigMgr.getCharValue('toolbar.lastcust'));var nf=mConfigMgr.getIntValue('toolbar.numfeed');url+="&.lu="+lu+"&.lc="+lc+"&.nf="+nf;}
