@@ -269,7 +269,10 @@ class RepackBase(object):
                  signing_formats=None):
         self.base_dir = os.getcwd()
         self.build = build
-        self.full_build_path = path.join(self.base_dir, build_dir, build)
+        self.full_build_path = path.join(build_dir, build)
+        if not os.path.isabs(self.full_build_path):
+            self.full_build_path = path.join(self.base_dir,
+                                             self.full_build_path)
         self.full_partner_path = path.join(self.base_dir, partner_dir)
         self.working_dir = working_dir
         self.final_dir = final_dir
