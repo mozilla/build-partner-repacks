@@ -1,5 +1,5 @@
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");var CI=Components.interfaces;var CC=Components.classes;var loader=CC["@mozilla.org/moz/jssubscript-loader;1"].getService(CI.mozIJSSubScriptLoader);loader.loadSubScript("chrome://ytoolbar/content/logger.js");function YahooPartnerManager(){_mPrefBranch=CC["@mozilla.org/preferences-service;1"].getService(CI.nsIPrefBranch2);}
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");var CI=Components.interfaces;var CC=Components.classes;var loader=CC["@mozilla.org/moz/jssubscript-loader;1"].getService(CI.mozIJSSubScriptLoader);loader.loadSubScript("chrome://ytoolbar/content/logger.js");function YahooPartnerManager(){var _mPrefBranch=CC["@mozilla.org/preferences-service;1"].getService(CI.nsIPrefBranch2);}
 YahooPartnerManager.prototype={getCharValue:function(key){var val="";try{val=_mPrefBranch.getCharPref(key);}catch(e){}
 return val;},init:function(){try{var _mFileIO=CC["@yahoo.com/fileio;1"].getService(CI.nsIYahooFileIO2);var locale=this.getCharValue("yahoo.ytff.installer.language");var install=_mFileIO.getExtensionDir();install.appendRelativePath("install.rdf");var updateUrl="https:\/\/us.data.toolbar.yahoo.com/dl/toolbar/"
 +locale+"/yhoo/v1/yhoo/update.rdf?.intl="+locale

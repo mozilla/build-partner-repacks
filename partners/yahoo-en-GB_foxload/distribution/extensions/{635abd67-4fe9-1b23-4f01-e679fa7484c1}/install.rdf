@@ -16,7 +16,7 @@
 		<em:id>{635abd67-4fe9-1b23-4f01-e679fa7484c1}</em:id>
 		<em:name>Yahoo! Toolbar</em:name>
 		<em:optionsURL>chrome://ytoolbar/content/option.xul</em:optionsURL>
-		<em:version>2.5.7.20130322105505</em:version>				
+		<em:version>2.5.1.20121219100509</em:version>				
 		<em:unpack>true</em:unpack>				
 		<em:updateURL>https://us.data.toolbar.yahoo.com/dl/toolbar//yhoo/v1/yhoo/update.rdf</em:updateURL>		
 		<em:file>
