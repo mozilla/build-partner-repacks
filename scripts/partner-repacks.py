@@ -35,7 +35,7 @@ SEVENZIP_HEADER_PATH = path.join('other-licenses/7zstub/firefox',
                                  SEVENZIP_HEADER)
 SEVENZIP_HEADER_COMPRESSED = SEVENZIP_HEADER + '.compressed'
 
-WINDOWS_DEST_DIR = 'core'
+WINDOWS_DEST_DIR = 'core/browser'
 
 
 class StrictFancyURLopener(urllib.FancyURLopener):
@@ -367,7 +367,7 @@ class RepackLinux(RepackBase):
             sys.exit(1)
 
     def copyFiles(self):
-        super(RepackLinux, self).copyFiles('firefox')
+        super(RepackLinux, self).copyFiles('firefox/browser')
 
     def repackBuild(self):
         if options.quiet:
@@ -403,10 +403,10 @@ class RepackMac(RepackBase):
             full_path = path.join(self.full_partner_path, i)
             if path.exists(full_path):
                 cp_cmd = "cp -r %s %s" % (full_path,
-                  path.join("stage", "Firefox.app", "Contents", "MacOS"))
+                  path.join("stage", "Firefox.app", "Contents", "MacOS", "browser"))
                 shellCommand(cp_cmd)
         self.createOverrideIni(path.join("stage", "Firefox.app", "Contents",
-                                         "MacOS"))
+                                         "MacOS", "browser"))
 
     def repackBuild(self):
         if options.quiet:
