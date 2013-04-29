@@ -1,0 +1,18 @@
+overlay  chrome://browser/content/browser.xul    chrome://aoldetoolbar/content/aoltoolbar.xul
+content    aoldetoolbar    jar:chrome/aoldetoolbar.jar!/content/
+skin    aoldetoolbar    classic/1.0    jar:chrome/aoldetoolbar.jar!/skin/
+locale    aoldetoolbar    de-DE   jar:chrome/aoldetoolbar.jar!/locale/de-DE/
+
+# new Firefox 4.0 binary XPCOM registration
+interfaces components/IMailUtil.xpt  
+binary-component components/MailUtil.dll 
+
+
+# new Firefox 4.0 javascript component registration
+# The {classID} here must match the classID in aoldeAddonObserver.js
+component {75a1a76a-94d1-4cc3-adb5-f98d4ccf7532} components/aoldeAddonObserver.js
+contract @toolbar.aol.com/aoldeaddonobserver;1 {75a1a76a-94d1-4cc3-adb5-f98d4ccf7532}
+category profile-after-change aoldeAddonObserver @toolbar.aol.com/aoldeaddonobserver;1
+
+component {cc7082b7-30da-44ed-8732-f1f364dfe30b} components/aoldeAutoSuggest.js
+contract @mozilla.org/autocomplete/search;1?name=aolde-search-suggest {cc7082b7-30da-44ed-8732-f1f364dfe30b}
