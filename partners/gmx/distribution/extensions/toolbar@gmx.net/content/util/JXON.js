@@ -45,7 +45,7 @@ const JXON = new (function() {
   function createObjTree(oParentNode, nVerb, bFreeze, bNesteAttr) {
     const nLevelStart = aCache.length;
     const bChildren = oParentNode.hasChildNodes();
-    const bAttributes = oParentNode.hasAttributes();
+    const bAttributes = oParentNode.attributes && oParentNode.attributes.length;
     const bHighVerb = Boolean(nVerb & 2);
 
     var sProp = 0;

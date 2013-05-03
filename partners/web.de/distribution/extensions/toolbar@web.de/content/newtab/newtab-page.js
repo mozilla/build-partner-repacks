@@ -9,8 +9,8 @@ Components.utils.import("resource://gre/modules/NetUtil.jsm");
 try {
   // These don't exist before Firefox 13, so we need a try catch
   // We won't use either unless we are at least Firefox 13 anyway
-  Components.utils.import("resource:///modules/PageThumbs.jsm");
-  Components.utils.import("resource:///modules/NewTabUtils.jsm");
+  Components.utils.import("resource://gre/modules/PageThumbs.jsm");
+  Components.utils.import("resource://gre/modules/NewTabUtils.jsm");
 } catch (ex) {}
 
 var favicons = Components.classes["@mozilla.org/browser/favicon-service;1"]

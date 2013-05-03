@@ -1,0 +1,21 @@
+<!ENTITY united.compose.label "E-Mail schreiben">
+<!ENTITY united.compose.tooltip "Neue E-Mail schreiben">
+<!ENTITY united.addressbook.label "Adressbuch">
+<!ENTITY united.addressbook.tooltip "&brand.name; Adressbuch">
+<!ENTITY united.sms.label "SMS/MMS">
+<!ENTITY united.sms.tooltip "&brand.name; SMS/MMS">
+
+<!ENTITY united.smartdrive.button.label "Online-Speicher">
+<!ENTITY united.smartdrive.button.tooltip "&brand.name; Online-Speicher">
+<!ENTITY united.photoalbum.button.label "Fotoalbum">
+<!ENTITY united.photoalbum.button.tooltip "&brand.name; Fotoalbum">
+<!ENTITY united.sms.button.label "SMS">
+<!ENTITY united.sms.button.tooltip "&brand.name; SMS">
+<!ENTITY united.bookmark.button.label "Lesezeichen">
+<!ENTITY united.bookmark.button.tooltip "&brand.name; Lesezeichen - Ihre bevorzugten Websites immer griffbereit">
+<!ENTITY united.notes.button.label "Pinnwand">
+<!ENTITY united.notes.button.tooltip "&brand.name; Pinnwand - Kleine Notizen, optional mit Erinnerung">
+<!ENTITY united.logincenter.button.label "Loginzentrale">
+<!ENTITY united.logincenter.button.tooltip "&brand.name; Loginzentrale">
+<!ENTITY united.start.button.label "Start">
+<!ENTITY united.start.button.tooltip "Ihre &brand.name; Dienste im Web">

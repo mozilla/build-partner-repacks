@@ -1,3 +1,4 @@
+Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
 
 /**

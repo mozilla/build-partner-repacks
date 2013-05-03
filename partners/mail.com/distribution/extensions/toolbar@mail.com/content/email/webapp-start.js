@@ -158,7 +158,7 @@ function findExistingTab(account, returnAll)
         let el = doc.getElementById("unitedinternet_toolbar");
         if (el &&
             el.getAttribute("session_alive") == "true" &&
-            el.getAttribute("primary_mail_address") == account.primaryEmailAddress)
+            el.getAttribute("primary_mail_address").toLowerCase() == account.primaryEmailAddress)
         {
           debug("yes, this is an active session for this account. Using it.");
           var aResult = {

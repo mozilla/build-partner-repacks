@@ -1,2 +1,6 @@
 <!ENTITY brand.name "GMX">
 <!ENTITY brand.website.name "GMX.DE">
+<!ENTITY united.smartdrive.button.label "MediaCenter">
+<!ENTITY united.smartdrive.button.tooltip "&brand.name; MediaCenter">
+<!ENTITY united.email.button.label "E-Mail">
+<!ENTITY united.email.button.tooltip "&brand.name; E-Mail">

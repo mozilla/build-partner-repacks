@@ -1,0 +1,42 @@
+diff --git a/content/email/login-logic.js b/content/email/login-logic.js
+index 7d9dee1..e2505fb 100644
+--- a/content/email/login-logic.js
++++ b/content/email/login-logic.js
+@@ -628,7 +628,7 @@ function uasLogin(uasURL, serviceID, loginToken,
+             url : sanitize.url(service.baseURI),
+           };
+ 
+-          var obj = loginContext.service[name];
++          let obj = loginContext.service[name];
+           if (name == "mailbox")
+           {
+             obj.ignoreFolderTypes = sanitize.string(service.ignoredFolders).split(",");
+diff --git a/content/search/search-toolbaritem.js b/content/search/search-toolbaritem.js
+index 128de55..a81910e 100644
+--- a/content/search/search-toolbaritem.js
++++ b/content/search/search-toolbaritem.js
+@@ -150,6 +150,12 @@ function onTextEntered()
+     startRealSearch(term, brand.search.toolbarURL, 1);
+ }
+ 
++/**
++ * Checks whether |term| is an URL.
++ * If so, goes to that URL and returns null.
++ * If not a URL, returns the term.
++ * @return {String} term (if search term) or null (if URL)
++ */
+ function startSearchOrURL(term, goDirectlyToURLs)
+ {
+   term = term.trim().replace(/\s+/g, " ");
+@@ -174,7 +180,10 @@ function startSearchOrURL(term, goDirectlyToURLs)
+     setSearchText("");
+     return null;
+   }
+-  return term;
++  else
++  {
++    return term;
++  }
+ };
+ 
+ function isFullURL(str)

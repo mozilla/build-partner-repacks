@@ -1,0 +1,92 @@
+diff --git a/content/search/mcollect/mAutocompleteSource.js b/content/search/mcollect/mAutocompleteSource.js
+index 3cd6401..6d2f2a3 100644
+--- a/content/search/mcollect/mAutocompleteSource.js
++++ b/content/search/mcollect/mAutocompleteSource.js
+@@ -3,19 +3,28 @@ Components.utils.import("resource://unitedtb/util/StringBundle.js", this);
+ 
+ /**
+  * Connects mCollect to our AutoComplete widget
++ * @param ac {AutocompleteWidget}
+  * @param windowContext {Object with loadPage() function}
++ * @param searchEngineClass {mSearch class} pass e.g. |mBrandSuggest|
++ *     You need to pass the class, not an instance of it.
+  */
+-function mCollectAutocompleteSource(ac, windowContext)
++function mCollectAutocompleteSource(ac, windowContext, searchEngineClass)
+ {
++  assert(ac instanceof mAC.AutocompleteWidget);
++  assert(typeof(windowContext.loadPage) == "function");
++  assert(searchEngineClass);
+   this._ac = ac;
+-  action.windowContext = windowContext;
++  this._engineClass = searchEngineClass;
++  this._windowContext = windowContext;
+ }
+ mCollectAutocompleteSource.prototype = 
+ {
+-  _ac : null,
++  _ac : null, // {AutocompleteWidget} passed by ctor
++  _windowContext : null, // {AutocompleteWidget} passed by ctor
+   _itemsShowing : {},
+   _slots : {},
+-  _engine : null, // {mSearch}
++  _engine : null, // {mSearch} created when the user enters something
++  _engineClass : null, // {mSearch class} passed by ctor
+   _currentTerm : null, // {mSearch}
+   _clearSearchHistoryLabel: null,
+ 
+@@ -33,7 +42,7 @@ mCollectAutocompleteSource.prototype =
+     this._currentTerm = text;
+     if (!text)
+       return;
+-    this._engine = new mLocalUnitedSearch(text);
++    this._engine = new this._engineClass(text);
+     var self = this;
+     this._engine.addObserver(function()
+     {
+@@ -59,7 +68,8 @@ mCollectAutocompleteSource.prototype =
+       }
+       else if (result.description) 
+       {
+-        header = new SimpleAutocompleteItem(null, result.description, null, null, null, true, null, ["ac-item-header"]);
++        header = new SimpleAutocompleteItem(null, result.description,
++            null, null, null, true, null, ["ac-item-header"]);
+         this._slots[result.description] = header;
+         this._ac.addItem(header);
+       }
+@@ -67,8 +77,11 @@ mCollectAutocompleteSource.prototype =
+       var icon = result.icon;
+       var value = result instanceof mSearchTermResult ? result.title : "";
+       var highlight = this._currentTerm;
+-      var item = new SimpleAutocompleteItem(value, result.title, result.description, icon,
+-          action, false, highlight, [ "ac-" + result.type ]);
++      var windowContext = this._windowContext;
++      var item = new SimpleAutocompleteItem(value, result.title,
++          result.description, icon, function(item) {
++            action(item, windowContext);
++          }, false, highlight, [ "ac-" + result.type ]);
+       item.searchResult = result;
+       this._ac.addItem(item);
+       if (result == selectedResult && selectedResult)
+@@ -86,7 +99,7 @@ mCollectAutocompleteSource.prototype =
+ }
+ extend(mCollectAutocompleteSource, AutocompleteSource);
+ 
+-function action(item)
++function action(item, windowContext)
+ {
+-  item.searchResult.activate(action.windowContext);
++  item.searchResult.activate(windowContext);
+ }
+diff --git a/content/util/AutoComplete.js b/content/util/AutoComplete.js
+index 802db4c..98a29ea 100644
+--- a/content/util/AutoComplete.js
++++ b/content/util/AutoComplete.js
+@@ -26,6 +26,7 @@
+  */
+ function AutocompleteWidget(textfield, params)
+ {
++  params = params || [];
+   this._items = [];
+   this._sources = [];
+   if (typeof(params.xul) == "boolean")

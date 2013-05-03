@@ -35,6 +35,8 @@ var _gActiveTabs = {};
 
 function loadPageInSpecificTab(url, tabName)
 {
+  var gBrowser = top.gBrowser ? top.gBrowser :
+      findSomeBrowserWindow().gBrowser;
   url = sanitize.url(url); // critical for security
   // .get retrieves the actual tab object from the weak reference.
   // If it is null, the tab no longer exists
@@ -82,8 +84,6 @@ function loadPageInSpecificTab(url, tabName)
  */
 function loadPage(url, target)
 {
-  var gBrowser = top.gBrowser ? top.gBrowser :
-      findSomeBrowserWindow().gBrowser;
   url = sanitize.url(url); // critical for security
   /* If the target begins with united, try to reuse a tab */
   if (target && target.match(/^united/))

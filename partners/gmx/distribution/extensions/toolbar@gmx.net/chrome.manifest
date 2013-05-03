@@ -17,6 +17,7 @@ overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/newtab
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/newtab/newtab-oldhookup.xul appversion<=12.*
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/search/search-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/search/search-listener.xul
+overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/webapps/webapps-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/horoscope/horoscope-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/ebay/ebay-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/phish/tab-listener.xul
@@ -32,6 +33,7 @@ style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/ticker
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/help/help.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/pref/pref.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/search/search.css
+style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/webapps/webapps.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/horoscope/horoscope.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/ebay/ebay.css
 

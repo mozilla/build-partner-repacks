@@ -3,10 +3,10 @@
 <?xml-stylesheet href="chrome://unitedtb/skin/email/email.css" type="text/css"?>
 
 <!DOCTYPE overlay [
-  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/email/email.dtd">
-  %thisDTD;
   <!ENTITY % brandDTD SYSTEM "chrome://unitedtb/locale/brand.dtd">
   %brandDTD;
+  <!ENTITY % thisDTD SYSTEM "chrome://unitedtb/locale/email/email.dtd">
+  %thisDTD;
 ]>
 
 <overlay id="united-email-overlay"

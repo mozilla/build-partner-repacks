@@ -1,0 +1,80 @@
+diff --git a/content/util/uiutil.js b/content/util/uiutil.js
+index 0f08941..614f405 100644
+--- a/content/util/uiutil.js
++++ b/content/util/uiutil.js
+@@ -29,15 +29,14 @@ function _showErrorDialog(e)
+   args.title = sb.GetStringFromName("errorDialog.title");
+   args.text = e.toString();
+ 
+-  if (!e.causedByUser) {
+-    // If we have a set value, use it
+-    if (ourPref.isSet("util.reportError.enabled"))
++  if ( !e.causedByUser) {
++    if (ourPref.isSet("util.reportError.enabled")) {
++      // If we have a set value, then the user made a choice, so use it
+       args.checked = ourPref.get("util.reportError.enabled");
+-    else
+-    {
+-      // Otherwise set the default state based on the statistic class
+-      if (ourPref.get("tracking.statisticclass") <= 10)
++    } else { // get a random sample, but only as default for the checkbox
++      if (Math.random() < 0.5) { // random sample of 50%
+         args.checked = true;
++      }
+     }
+     args.checkLabel  = sb.GetStringFromName("errorDialog.check");
+   }
+@@ -46,10 +45,9 @@ function _showErrorDialog(e)
+                     "united-error",
+                     "centerscreen,chrome,modal,titlebar", args);
+ 
+-  if (e.causedByUser)
+-    return;
++  // The dialog sets the pref "util.reportError.enabled"
+ 
+-  if (ourPref.get("util.reportError.enabled"), false) {
++  if ( !e.causedByUser && ourPref.get("util.reportError.enabled"), false) {
+     // Can't import at top of file, because that would create a
+     // circular dependency, which causes strange and subtle bugs
+     var reporter = {};
+diff --git a/content/util/util.js b/content/util/util.js
+index b1ae8b5..dbff78f 100644
+--- a/content/util/util.js
++++ b/content/util/util.js
+@@ -818,6 +818,13 @@ function errorInBackend(e)
+ {
+   debug("ERROR (from backend): " + e);
+   debug("Stack:\n" + (e.stack ? e.stack : "none"));
++  if (ourPref.get("util.reportError.enabled"), false) {
++    // Can't import at top of file, because that would create a
++    // circular dependency, which causes strange and subtle bugs
++    var reporter = {};
++    Components.utils.import("resource://unitedtb/util/sendError.js", reporter);
++    reporter.sendErrorToServer(e);
++  }
+ }
+ 
+ /**
+diff --git a/content/weather/weather.js b/content/weather/weather.js
+index b7bf882..ed3a101 100644
+--- a/content/weather/weather.js
++++ b/content/weather/weather.js
+@@ -3,6 +3,10 @@
+  */
+ function onButton(event)
+ {
++
++  errorCritical(new Error("Testing 1 2 3"));
++ return;
++
+   getPostalCode(
+   function(postalcode)
+   {
+diff --git a/defaults/preferences/unitedinternet-util.js b/defaults/preferences/unitedinternet-util.js
+index d3c56ce..7ac7554 100644
+--- a/defaults/preferences/unitedinternet-util.js
++++ b/defaults/preferences/unitedinternet-util.js
+@@ -1 +1,3 @@
++// enabled: Pref set only when the user confirmed our default in the UI. Until then, the code defaults to false.
++//pref("extensions.unitedinternet.util.reportError.enabled", false);
+ pref("extensions.unitedinternet.util.reportError.url", "http://176.221.43.118/error/upload");
