@@ -8,7 +8,7 @@
   <em:homepageURL>http://toolbar.aol.com/aolde/aolde-ff</em:homepageURL>
   <em:id>{43196362-5378-448b-8944-f097fa65e932}</em:id>
   <em:name>Custom Firefox DE Toolbar</em:name>
-  <em:version>5.95.1.9444</em:version>
+  <em:version>5.95.1.9455</em:version>
   <em:optionsURL>chrome://aoldetoolbar/content/settings.xul</em:optionsURL>
   <em:iconURL>chrome://aoldetoolbar/locale/images/icon.png</em:iconURL>
   <em:updateURL>https://client.web.aol.com/toolbarfiles/Prod/Content/customffde/ffhostfiles/update.rdf</em:updateURL>
