@@ -5,7 +5,7 @@
     <creator>Bing</creator>
     <description>Search the web with Bing.</description>
     <homepageURL>http://www.bing.com/</homepageURL>
-    <id>bing.search.for.firefox@firefox.bing</id>
+    <id>firefoxbingsearch.full@microsoft.com</id>
     <name>Bing Search for Firefox</name>
     <version>1.1</version>
 
