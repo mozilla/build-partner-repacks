@@ -70,6 +70,15 @@ function addSearchEngine() {
   if (engine == null)
     return;
 
+  // Core code unfortunately depends on this being a
+  // nsIPrefLocalizedString
+  // The properties file parser drops trailing white space, which we
+  // require, so we replace spaces with \u0020, which the properties
+  // file parser will replace with ordinary spaces after the elision
+  // happens.
+  setPref(PREF_ENGINENAME, 'data:text/plain,' + encodeURIComponent(
+    PREF_ENGINENAME + ' = ' + engineName.replace(/ /g, "\\u0020")));
+
   // Move it to the desired position
   Services.search.moveEngine(engine, SEARCH_POSITION);
 
@@ -82,9 +91,33 @@ function addSearchEngine() {
 }
 
 // Customize the default prefs
+let changedPrefs = {};
+let originalPrefs = {};
 function setPref(pref, value) {
-  let branch = Services.prefs.getBranch("");
+  let branch = Services.prefs.getDefaultBranch("");
+  let userBranch = Services.prefs.getBranch("");
+
+  if (branch.getPrefType(pref) == branch.PREF_STRING)
+    originalPrefs[pref] = branch.getCharPref(pref);
+  changedPrefs[pref] = value;
+
   branch.setCharPref(pref, value);
+  if (justInstalled)
+    userBranch.clearUserPref(pref);
+  else if (userBranch.prefHasUserValue(pref)
+           && userBranch.getPrefType(pref) == branch.PREF_STRING
+           && userBranch.getCharPref(pref) == value)
+    // Clear the user value if it's the same, so prefHasUserValue
+    // returns false.
+    userBranch.clearUserPref(pref);
+}
+function restorePrefs() {
+  let branch = Services.prefs.getDefaultBranch("");
+  for (let [pref, value] in Iterator(originalPrefs)) {
+    if (branch.getPrefType(pref) == branch.PREF_STRING
+        && branch.getCharPref(pref) == changedPrefs[pref])
+      branch.setCharPref(pref, value);
+  }
 }
 
 // Make sure the window has an app tab set to MSN
@@ -106,7 +139,7 @@ function ensureMsnAppTab(window) {
   });
 
   // Always remove the MSN tab when uninstalling
-  unload(function() gBrowser.removeTab(msnTab));
+  unload(function() gBrowser.removeTab(msnTab), window);
 
   // No need to add!
   if (msnTab != null)
@@ -138,19 +171,23 @@ function showLandingPage(window) {
     });
 
     // Always remove the landing page when uninstalling
-    unload(function() gBrowser.removeTab(landingTab));
+    unload(function() gBrowser.removeTab(landingTab), window);
 
     // Add the landing page if not open yet
     if (landingTab == null)
       landingTab = gBrowser.loadOneTab(LANDING_PAGE);
 
-    // Make sure it's focused
-    gBrowser.selectedTab = landingTab;
+    // Make sure it's focused, unless the Firefox whatsnew is open
+    let firstrunTab = findOpenTab(gbrowser, function(tab, URI) {
+      return URI.spec == FIRST_RUN;
+    });
+    if (firstrunTab == null)
+      gBrowser.selectedTab = landingTab;
   }
   else {
     let {BrowserUI} = window;
     let tab = BrowserUI.newTab(LANDING_PAGE);
-    unload(function() BrowserUI.closeTab(tab));
+    unload(function() BrowserUI.closeTab(tab), window);
   }
 
   // Only show the landing page once
@@ -171,11 +208,10 @@ function startup({id}, reason) AddonManager.getAddonByID(id, function(addon) {
   addSearchEngine();
 
   // Change some prefs to custom search on install
-  if (justInstalled) {
-    setPref(PREF_KEYWORD, SEARCH_KEYWORD_URL);
-    setPref(PREF_HOME, SEARCH_HOME_URL);
-    setPref(PREF_HOME_RESET, SEARCH_HOME_URL);
-  }
+  unload(restorePrefs);
+  setPref(PREF_KEYWORD, SEARCH_KEYWORD_URL);
+  setPref(PREF_HOME, SEARCH_HOME_URL);
+  setPref(PREF_HOME_RESET, SEARCH_HOME_URL);
 
   // Add an MSN app tab
   watchWindows(ensureMsnAppTab);

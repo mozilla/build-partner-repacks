@@ -45,13 +45,14 @@ const LANDING_PAGE = "http://discover.msn.com/tourmsn?skipintro=true&bdef=0";
 const PREF_HOME = "browser.startup.homepage";
 const PREF_HOME_RESET = "browser.startup.homepage_reset";
 const PREF_KEYWORD = "keyword.URL";
+const PREF_ENGINENAME = "browser.search.defaultenginename";
 const SEARCH_DOMAIN = "www.bing.com";
 const SEARCH_ICON = "data:image/x-icon;base64,AAABAAEAEBAAAAEAGABoAwAAFgAAACgAAAAQAAAAIAAAAAEAGAAAAAAAAAAAABMLAAATCwAAAAAAAAAAAAAVpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8ysf97zf%2B24%2F%2FF6f%2FF6f%2FF6f%2BK0%2F9QvP8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8krP%2BZ2P%2F%2F%2F%2F%2F%2F%2F%2F%2Fw%2Bf%2FF6f%2FF6f%2Fi9P%2F%2F%2F%2F%2F%2F%2F%2F%2FT7v9Bt%2F8Vpv8Vpv8Vpv8Vpv%2FT7v%2F%2F%2F%2F%2Fw%2Bf97zf8Vpv8Vpv8Vpv8Vpv9QvP%2FT7v%2F%2F%2F%2F%2Fw%2Bf9Bt%2F8Vpv8Vpv97zf%2F%2F%2F%2F%2F%2F%2F%2F9QvP8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8krP%2Fi9P%2F%2F%2F%2F%2Fi9P8Vpv8Vpv%2B24%2F%2F%2F%2F%2F%2Fi9P8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv%2BK0%2F%2F%2F%2F%2F%2F%2F%2F%2F8Vpv8Vpv%2FF6f%2F%2F%2F%2F%2F%2F%2F%2F8krP8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv%2Bn3v%2F%2F%2F%2F%2Fw%2Bf8Vpv8Vpv%2FF6f%2F%2F%2F%2F%2F%2F%2F%2F%2Bn3v8krP8Vpv8Vpv8Vpv8Vpv8Vpv9tx%2F%2F%2F%2F%2F%2F%2F%2F%2F%2BZ2P8Vpv8Vpv%2FF6f%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2Fi9P%2BK0%2F9QvP9QvP9tx%2F%2FF6f%2F%2F%2F%2F%2F%2F%2F%2F%2Bn3v8Vpv8Vpv8Vpv%2FF6f%2F%2F%2F%2F%2FT7v%2BZ2P%2Fi9P%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2B24%2F9QvP8Vpv8Vpv8Vpv8Vpv%2FF6f%2F%2F%2F%2F%2FF6f8Vpv8Vpv8krP9QvP9QvP9Bt%2F8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv%2FF6f%2F%2F%2F%2F%2FF6f8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv9Bt%2F9QvP9Bt%2F8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8Vpv8AAHBsAABhdAAAbiAAAHJ0AABsaQAAdGkAACBDAABlbgAAUEEAAEVYAAAuQwAAOy4AAEU7AABBVAAAQ00AAC5W";
 const SEARCH_HOME_URL = "http://www.msn.com/?pc=MOZM";
-const SEARCH_KEYWORD_URL = "http://www.bing.com/search?form=MOZMLB&pc=MOZM&q=";
+const SEARCH_KEYWORD_URL = "http://www.bing.com/search?form=MOZMLP&pc=MOZM&q=";
 const SEARCH_NAME = "Bing";
 const SEARCH_POSITION = 0;
-const SEARCH_URL = "http://www.bing.com/search?form=MOZMSB&pc=MOZM&q={searchTerms}";
+const SEARCH_URL = "http://www.bing.com/search?form=MOZMSP&pc=MOZM&q={searchTerms}";
 
 // Look through tabs in the browser to see if any match
 function findOpenTab(browser, checkTabAndURI) {
