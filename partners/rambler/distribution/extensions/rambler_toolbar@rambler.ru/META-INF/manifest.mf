@@ -54,8 +54,8 @@ SHA1-Digest: 0EM3guQ9idXbvv5BZ7sAtD8tEfc=
 
 Name: chrome/rambler_toolbar.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 052WNZkhx2gzwXOYDfNliA==
-SHA1-Digest: mzCZ6O1ueoKJgPX991+1NA9rbBg=
+MD5-Digest: 7Q+fVVabVx8Y8lQ6UEeY8Q==
+SHA1-Digest: 8rn+tSNDcQIaEKZg9slnDzygIu0=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1

@@ -3,7 +3,7 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
     <Description about="urn:mozilla:install-manifest">
-        <em:id>toolbar@rambler.ru</em:id>
+        <em:id>rambler_toolbar@rambler.ru</em:id>
         <em:type>2</em:type>
         <em:unpack>true</em:unpack>
         <em:name>Рамблер Ассистент</em:name>
