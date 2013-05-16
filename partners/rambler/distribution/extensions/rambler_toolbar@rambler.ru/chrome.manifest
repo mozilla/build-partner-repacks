@@ -1,0 +1,14 @@
+resource rambler_toolbar-mod           modules/
+resource rambler_toolbar-cache         cache/
+content  rambler_toolbar               jar:chrome/rambler_toolbar.jar!/content/
+locale   rambler_toolbar  ru-RU        jar:chrome/rambler_toolbar.jar!/locale/ru-RU/
+skin     rambler_toolbar  classic/1.0  jar:chrome/rambler_toolbar.jar!/skin/
+
+overlay  chrome://browser/content/browser.xul chrome://rambler_toolbar/content/plugbar.xul
+
+content  rambler_toolbar-platform      chrome://rambler_toolbar/skin/platform/    platform
+override chrome://rambler_toolbar-platform/content/platform.css chrome://rambler_toolbar-platform/content/platform-win6.css os=WINNT osversion>=6.0
+override chrome://rambler_toolbar/content/prefs.settings.xul chrome://rambler_toolbar/content/prefs.settings.mac.xul os=Darwin
+
+component {58C7660C-9BCD-11DF-8EE8-53FCDED72085} components/rambler-autocomplete.js
+contract @mozilla.org/autocomplete/search;1?name=rambler-autocomplete {58C7660C-9BCD-11DF-8EE8-53FCDED72085}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+	<ShortName>Рамблер</ShortName>
+	<Description>Рамблер - поиск по-новому</Description>
+    <Image width="16" height="16" type="image/x-icon">http://i.rl0.ru/2011/icons/rambler.ico</Image>
+    <InputEncoding>UTF-8</InputEncoding>
+    <Url type="text/html" template="http://nova.rambler.ru/search?query={searchTerms}&amp;osd=1" />
+    <Url type="application/x-suggestions+json" template="http://nova.rambler.ru/suggest?v=3&amp;query={searchTerms}"/>
+</OpenSearchDescription>
