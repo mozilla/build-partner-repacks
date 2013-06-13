@@ -55,7 +55,10 @@ def which(program):
     def is_exe(fpath):
         return path.exists(fpath) and os.access(fpath, os.X_OK)
 
-    fpath = path.dirname(program)
+    try:
+        fpath = path.dirname(program)
+    except AttributeError:
+        return None
     if fpath:
         if is_exe(program):
             return program
@@ -616,6 +619,9 @@ if __name__ == '__main__':
     if not options.platforms:
         options.platforms = default_platforms
 
+    if options.use_signed:
+       log.warning("Warning: use of --signed is deprecated. It is now the default.")
+
     # We only care about the tools if we're actually going to
     # do some repacking.
     if not options.verify_only:
@@ -625,7 +631,6 @@ if __name__ == '__main__':
             error = True
 
         if "win32" in options.platforms and \
-           options.use_signed and \
            not which(UPX_BIN):
             log.error("Error: couldn't find the %s executable in PATH." %
                       UPX_BIN)
@@ -653,10 +658,7 @@ if __name__ == '__main__':
     else:
         candidates_web_dir = "/pub/mozilla.org/%s/%s-candidates/build%s" % \
             (options.nightly_dir, options.version, options.build_number)
-        if options.use_signed:
-            win_candidates_web_dir = candidates_web_dir
-        else:
-            win_candidates_web_dir = candidates_web_dir + '/unsigned'
+        win_candidates_web_dir = candidates_web_dir
 
     # Local directories for builds
     script_directory = os.getcwd()
@@ -666,7 +668,7 @@ if __name__ == '__main__':
     repacked_builds_dir = path.join(script_directory, "repacked_builds",
                                     options.version,
                                     "build%s" % options.build_number)
-    if not options.use_signed or not signing_command:
+    if not signing_command:
         repacked_builds_dir = path.join(repacked_builds_dir, "unsigned")
     if not options.verify_only:
         mkdir(original_builds_dir)
@@ -747,7 +749,7 @@ if __name__ == '__main__':
                              ftp_platform, locale, filename)
 
                         retrieveFile(original_build_url, filename)
-                        if isWin(platform) and options.use_signed:
+                        if isWin(platform):
                             # The following removes signatures by
                             # repacking the source file
                             repackSignedBuilds(os.getcwd())
