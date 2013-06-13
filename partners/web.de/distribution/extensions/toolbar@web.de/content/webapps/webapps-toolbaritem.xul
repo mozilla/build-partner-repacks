@@ -27,6 +27,7 @@
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-removable="true"
+        removable="true"
         />
     <toolbarbutton id="united-addressbook-button"
         label="&united.addressbook.label;"
@@ -35,6 +36,7 @@
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-removable="true"
+        removable="true"
         />
     <toolbarbutton id="united-smartdrive-button"
         label="&united.smartdrive.button.label;"
@@ -43,14 +45,16 @@
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-removable="true"
+        removable="true"
         />
     <toolbarbutton id="united-sms-button"
         label="&united.sms.button.label;"
         tooltiptext="&united.sms.button.tooltip;"
-        oncommand="unitedinternet.webapps.startUsecase('opensms');"
+        oncommand="unitedinternet.webapps.startUsecase('open_umsapp');"
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-removable="true"
+        removable="true"
         />
     <toolbarbutton id="united-photoalbum-button"
         label="&united.photoalbum.button.label;"
@@ -59,6 +63,7 @@
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-removable="true"
+        removable="true"
         />
     <toolbarbutton id="united-notes-button"
         label="&united.notes.button.label;"
@@ -67,6 +72,7 @@
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-removable="true"
+        removable="true"
         />
     <!--
     <toolbarbutton id="united-bookmark-button"
@@ -93,6 +99,7 @@
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-removable="true"
+        removable="true"
         />
   </toolbar>
 
@@ -117,7 +124,7 @@
         insertafter="united-addressbook-email-menuitem"
         label="&united.sms.label;"
         tooltiptext="&united.sms.tooltip;"
-        oncommand="event.stopPropagation(); unitedinternet.webapps.startUsecase('opensms');"
+        oncommand="event.stopPropagation(); unitedinternet.webapps.startUsecase('open_umsapp');"
         />
     <menuseparator id="united-webapps-separator"
         insertafter="united-sms-menuitem"

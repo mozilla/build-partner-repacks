@@ -21,7 +21,7 @@
         try {
         Components.utils.import("resource://unitedtb/util/util.js", this);
         Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
-        loadJS("chrome://unitedtb/content/util/uiutil.js", this); // error()
+        loadJS("chrome://unitedtb/content/util/uiutil.js", this); // errorNonCritical()
 
         var labelE = document.getAnonymousElementByAttribute(this, "anonid", "label");
         if (!labelE.value)
@@ -80,7 +80,7 @@
           self.value = newRegion;
           self.dropdown.value = newRegion;
         })
-        } catch(e) { dump(e + "\n"); error(e); }
+        } catch(e) { errorNonCritical(e); }
       ]]></constructor>
       <method name="appendOption">
         <parameter name="region"/>

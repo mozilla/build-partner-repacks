@@ -1,0 +1,10 @@
+fieldset {
+  border: 1px solid #5AA70b;
+}
+
+.searchbutton {
+  border: 1px solid #5AA70b;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#aad880), color-stop(13%,#80bb4c), color-stop(25%,#63ab26), color-stop(44%,#51a112), color-stop(59%,#48980a), color-stop(91%,#408a0a), color-stop(100%,#3d7f0a)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  #aad880 0%,#80bb4c 13%,#63ab26 25%,#51a112 44%,#48980a 59%,#408a0a 91%,#3d7f0a 100%); /* Chrome10+,Safari5.1+ */
+  background: -moz-linear-gradient(top,  #aad880 0%,#80bb4c 13%,#63ab26 25%,#51a112 44%,#48980a 59%,#408a0a 91%,#3d7f0a 100%); /* Firefox */
+}

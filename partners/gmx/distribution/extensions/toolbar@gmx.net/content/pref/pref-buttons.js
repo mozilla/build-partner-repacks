@@ -79,8 +79,14 @@ ButtonEnable.prototype =
    */
   _getAvailableButtons : function()
   {
-    // find our buttons that are removable
-    var buttons = this._firefoxWindow.document.getElementsByAttribute("united-removable", "true");
+    // Find all our buttons that are removable
+    // Using the brand array ensures a consistent order
+    var buttons = [];
+    for (let i in brand.toolbar.items) {
+      var button = this._firefoxWindow.document.querySelector("#united-" + i + "[united-removable='true']");
+      if (button)
+        buttons.push(button);
+    }
 
     // get icon and label for each button
     var result = [];

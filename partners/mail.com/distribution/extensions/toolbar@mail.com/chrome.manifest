@@ -12,8 +12,7 @@ overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/email/
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/ticker/ticker-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/help/help-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/pref/pref-toolbaritem.xul
-overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/newtab/newtab-hookup.xul appversion>12
-overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/newtab/newtab-oldhookup.xul appversion<=12.*
+overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/newtab/newtab-hookup.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/search/search-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/search/search-listener.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/ebay/ebay-toolbaritem.xul

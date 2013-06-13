@@ -1,8 +1,5 @@
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/util/util.js", this);
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
 Components.utils.import("resource://unitedtb/email/account-list.js", this);
-Components.utils.import("resource://unitedtb/build.js");
 var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/email/login.properties");
 

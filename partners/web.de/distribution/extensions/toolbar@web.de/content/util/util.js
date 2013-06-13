@@ -45,7 +45,7 @@ const EXPORTED_SYMBOLS = [ "Cc", "Ci", "Cu", "extend", "mixInto", "assert",
   "makeNSIURI", "readURLasUTF8", "readFile", "writeFile", "splitLines",
   "promptService", "ourPref", "generalPref", "privateBrowsing",
   "DOMParser", "XMLSerializer",
-  "StringBundle", "getExtensionFullVersion", "findSomeBrowserWindow",
+  "StringBundle", "getExtensionFullVersion", "findSomeBrowserWindow", "UserError",
   "Exception", "NotReached", "Abortable", "TimeoutAbortable", "IntervalAbortable",
   "SuccessiveAbortable", "XPCOMUtils",  "getProfileDir", "getSpecialDir", "getOS",
   "parseURLQueryString", "createURLQueryString",
@@ -242,6 +242,19 @@ function NotReached(msg)
 }
 extend(NotReached, Exception);
 
+/**
+ * Error caused by the user, so it should never be sent to the server.
+ * Things like bad passwords, or email domains.
+ */
+function UserError(msg)
+{
+  Exception.call(this, msg);
+  this.causedByUser = true;
+}
+UserError.prototype =
+{
+}
+extend(UserError, Exception);
 
 /**
  * A handle for an async function which you can cancel.
@@ -829,6 +842,14 @@ function errorInBackend(e)
 {
   debug("ERROR (from backend): " + e);
   debug("Stack:\n" + (e.stack ? e.stack : "none"));
+  {
+    // Can't import at top of file, because that would create a
+    // circular dependency, which causes strange and subtle bugs
+    var reporter = {};
+    Components.utils.import("resource://unitedtb/util/sendError.js", reporter);
+    if (reporter.shouldSendErrorToServer(e))
+      reporter.sendErrorToServer(e);
+  }
 }
 
 /**

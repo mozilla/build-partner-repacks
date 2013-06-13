@@ -12,16 +12,10 @@
 
     <link rel="stylesheet" type="text/css"
       href="chrome://unitedtb/skin/newtab/newtab-page.css"/>
-    <link rel="stylesheet" type="text/css"
-      href="chrome://unitedtb/skin/newtab/newtab-page-brand.css"/>
 </head>
-<body viewmode="gallery">
-    <script type="text/javascript;version=1.8"
-      src="chrome://unitedtb/content/util/uiutil.js"></script>
-    <script type="text/javascript;version=1.8"
-      src="chrome://unitedtb/content/util/observerOnWindow.js"></script>
-    <script type="text/javascript;version=1.8"
-      src="chrome://unitedtb/content/newtab/newtab-page.js"></script>
+<body>
+    <script type="application/javascript;version=1.8" src="chrome://unitedtb/content/util/common-html.js"/>
+    <script type="application/javascript;version=1.8" src="chrome://unitedtb/content/newtab/newtab-page.js"/>
 
 <div id="container">
     <div id="header">
@@ -62,7 +56,6 @@
         </div>
         <div id="content">
           <iframe id="firefoxThumbnails"></iframe>
-          <span id="most-visited-list"/>
         <div id="recommended" have-results="false">
           <h2 id="recommended-header">&recommended.label;</h2>
           <span id="recommended-list"/>

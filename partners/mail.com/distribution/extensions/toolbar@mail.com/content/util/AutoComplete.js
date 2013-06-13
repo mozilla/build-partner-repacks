@@ -1,6 +1,3 @@
-// TODO: figure out how to make _popup only disappear if the focus goes outside the _popup or outside the _textfield
-// apparently, the _popup does not receive focus or blur events
-
 /**
  * Autocomplete textbox.
  *
@@ -26,6 +23,7 @@
  */
 function AutocompleteWidget(textfield, params)
 {
+  params = params || [];
   this._items = [];
   this._sources = [];
   if (typeof(params.xul) == "boolean")
@@ -94,13 +92,9 @@ AutocompleteWidget.prototype =
     if (this._xul)
     {
       this._popup = this._document.createElementNS(XUL, "panel");
+      this._popup.setAttribute("consumeoutsideclicks", "false");
       this._popup._onPopupShown = this._onPopupShown;
       this._popup.addEventListener("popupshown", this._onPopupShown, false);
-      this._popup.addEventListener("popupshowing", function(event)
-      {
-        event.target.popupBoxObject.setConsumeRollupEvent(
-            Components.interfaces.nsIPopupBoxObject.ROLLUP_NO_CONSUME);
-      }, false);
     }
     else
       this._popup = this._document.createElementNS(HTML, "div");
@@ -125,12 +119,29 @@ AutocompleteWidget.prototype =
     var self = this;
     this._textfield.addEventListener("focus", function (event)
         { self._onTextfieldFocus(event); }, false);
-    this._textfield.addEventListener("blur", function (event)
-        { self._onTextfieldBlur(event); }, false);
+    // keypress doesn't work on Google Chrome for keys without an actual char,
+    // so we have to use keydown there. NOTE
     this._textfield.addEventListener("keypress", function (event)
         { self._onTextfieldKeyPress(event); }, false);
     this._textfield.addEventListener("keyup", function (event)
         { self._onTextfieldKeyUp(event); }, false);
+    if (! this._xul) {
+      // Hide the popup when user clicks outside
+      // This catches only the clicks outside the popup, because the popup
+      // itself has a click handler below, and that stops propagation to not trigger this.
+      // This also requires making the html and body have a height of 100% in CSS.
+      this._document.documentElement.addEventListener("click", function (event)
+          { self.cancel() }, false);
+      // This seems counterintuitive since the textfield handles escape, but
+      // there are ways to get the focus on the body without a click, such as
+      // selection.
+      this._document.documentElement.addEventListener("keydown", function (event)
+          {
+            if (event.keyCode == 27) { // DOM_VK_ESCAPE
+              self.cancel();
+            }
+          }, false);
+    }
   },
 
   /**
@@ -184,18 +195,22 @@ AutocompleteWidget.prototype =
   },
 
   /**
-   * Event handler for |blur| on |_textfield|
+   * Google Chrome doesn't have DOM_VK constants on the event so we add them
    */
-  _onTextfieldBlur : function(event)
-  {
-    // focus moved to popup. this workaround
-    // prevents to hide the popup before the click event can fire
-    // when user clicks on an item
-    if (! this._xul &&
-        (this._document.activeElement == this._popup ||
-         this._domIsParent(this._document.activeElement, this._popup)))
-      return;
-    this.hideSuggestions();
+  _addConstants: function(event) {
+    if ("DOM_VK_CANCEL" in event)
+      return event;
+    event.DOM_VK_DOWN = 40;
+    event.DOM_VK_UP = 38;
+    event.DOM_VK_PAGE_DOWN = 34;
+    event.DOM_VK_PAGE_UP = 33;
+    event.DOM_VK_END = 35;
+    event.DOM_VK_HOME = 36;
+    event.DOM_VK_TAB = 9;
+    event.DOM_VK_ESCAPE = 27;
+    event.DOM_VK_RETURN = 13;
+    event.DOM_VK_ENTER = 14;
+    return event;
   },
 
   /**
@@ -203,6 +218,7 @@ AutocompleteWidget.prototype =
    */
   _onTextfieldKeyPress : function(event)
   {
+    event = this._addConstants(event);
     //dump("keypress in ac, key " + event.keyCode + ", char " + event.charCode + "\n");
     // @see <http://mxr.mozilla.org/mozilla-central/source/dom/interfaces/events/nsIDOMKeyEvent.idl#43>
     // <http://www.w3.org/TR/2001/WD-DOM-Level-3-Events-20010410/events.html>
@@ -384,8 +400,10 @@ AutocompleteWidget.prototype =
     itemDiv.setAttribute("selected", "false");
 
     var self = this;
-    itemDiv.addEventListener("click", function() {
+    itemDiv.addEventListener("click", function(event) {
       self._onItemClicked(item);
+      // Don't trigger our body click handler above that removes the popup
+      event.stopPropagation();
     }, false);
     itemDiv.addEventListener("mouseover", function() {
       self._onItemHover(item);
@@ -970,14 +988,14 @@ SimpleAutocompleteItem.prototype =
       itemDiv.appendChild(iconDiv);
     }
     var labelDiv = document.createElementNS(HTML, "div");
-    let highlightStart = this.highlightedText ? this.label.indexOf(this.highlightedText) : -1;
+    var highlightStart = this.highlightedText ? this.label.toLowerCase().indexOf(this.highlightedText.toLowerCase()) : -1;
     if (highlightStart != -1)
     {
-      let before = this.label.substring(0, highlightStart);
-      let after = this.label.substring(highlightStart + this.highlightedText.length);
+      var before = this.label.substring(0, highlightStart);
+      var after = this.label.substring(highlightStart + this.highlightedText.length);
       labelDiv.appendChild(document.createTextNode(before));
-      let highlightE = document.createElementNS(HTML, "ac-item-highlighted-text");
-      highlightE.appendChild(document.createTextNode(this.highlightedText));
+      var highlightE = document.createElementNS(HTML, "ac-item-highlighted-text");
+      highlightE.appendChild(document.createTextNode(this.label.substring(highlightStart, highlightStart + this.highlightedText.length)));
       labelDiv.appendChild(highlightE);
       labelDiv.appendChild(document.createTextNode(after));
     }
@@ -1064,7 +1082,7 @@ const kAutocompleteCSS = "\n\
   background-color: white;\n\
 }\n\
 .ac-popup-html {\n\
-  position: relative;\n\
+  position: absolute;\n\
   z-index: 1;\n\
   border: outset 1px;\n\
   background-color: Window;\n\

@@ -77,7 +77,7 @@ toolbar : {
       "weather-button": true,
       "ticker-button": true,
       "horoscope-button": false,
-      "spacer": true,
+      "spring": true,
       "login-box": true,
       "pref-button": true,
     }
@@ -198,24 +198,11 @@ newtab : {
     recommendedSitesXMLURL : "%GOTB%quicklaunch_xml",
     // TODO use placeholder for newtab prefix?
     // fill up the "most visited" list of the new tab page, *only* in a fresh profile
-    initialEntries : [
-      { label : "$TR newtab.initial.portal", preview: "portal.jpg", url : "%GOPREFIX%newtab/mff_portal" },
-      { label : "$TR newtab.initial.search", preview: "suche.jpg", url : "%GOPREFIX%newtab/mff_suche" },
-      { label : "$TR newtab.initial.ebay", preview: "ebay.jpg", url : "%GOPREFIX%newtab/mff_ebay" },
-      { label : "$TR newtab.initial.amazon", preview: "amazon.jpg", url : "%GOPREFIX%newtab/mff_amazon" },
-      { label : "$TR newtab.initial.lastminute", preview: "lastminute.jpg", url : "%GOPREFIX%newtab/mff_lastminute" },
-      { label : "$TR newtab.initial.news", preview: "nachrichten.jpg", url : "%GOPREFIX%newtab/mff_nachrichten" },
-      { label : "$TR newtab.initial.unicef", preview: "unicef.jpg", url : "%GOPREFIX%newtab/mff_unicef" },
-      { label : "$TR newtab.initial.topde", preview: "topde.jpg", url : "%GOPREFIX%newtab/mff_topde" },
-    ],
   },
 },
 tracking : {
   defaultlocale : {
     trackingURL: "http://event.ui-portal.de/metric/ca.gif?portal=webde&browser=ff&type=%TYPE%&event=%EVENT%&version=%VERSION%&installdate=%INSTALLDATE%&locale=%LOCALE%&kid=%KID%&mod=%MOD%",
-    AIBDailyURL : "https://dl.web.de/toolbar/firefox/aib.xml?vers=%VERSION%&local=%LOCALE%",
-    AIBMonthlyURL : "https://dl.web.de/toolbar30days/firefox/aib.xml?vers=%VERSION%&local=%LOCALE%",
-    count404URL : "%GOMAIN%count404", // + &count=123
     countNewTabURL : "%GOPREFIX%events/", // + &ntd=lastSubmit + &ntc=count
     brand : "%BRANDID%",
     sendCampaignID : true,

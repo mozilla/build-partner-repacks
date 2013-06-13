@@ -1,3 +1,16 @@
+/**
+ * This loads all our most common library files.
+ * It should be loaded in every file, so that we always have them available.
+ *
+ * This file is specifically for XUL overlays that are loaded into
+ * the Firefox UI.
+ * Compare common-html.js for HTML UI files.
+ *
+ * It is loading the libraries into the |unitedinternet.common| context.
+ * Then you load your UI code using initModule() (also defined here),
+ * which will merge the |common| context with your module.
+ */
+
 var unitedinternet;
 if (!unitedinternet)
 {

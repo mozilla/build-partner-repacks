@@ -25,6 +25,7 @@
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-icon-only="true"
+        removable="false"
         >
       <menupopup id="united-pref-button-dropdown">
         <menuitem id="united-pref-button-menuitem"

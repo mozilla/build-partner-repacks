@@ -22,38 +22,7 @@ var tb;
 function onLoad()
 {
   tb = document.getElementById("united-toolbar");
-
-  // Migration from 2.2
-  // If we have a spacer or a separator already on the toolbar, we're migrating
-  // Remove them and reset currentset
-  var tbseparator = tb.querySelector("toolbarseparator");
-  var tbspring = tb.querySelector("toolbarspring");
-  if (tbseparator || tbspring)
-  {
-    if (tbseparator)
-      tb.removeChild(tbseparator);
-    if (tbspring)
-      tb.removeChild(tbspring);
-
-    // Clean up our old settings
-    tb.setAttribute("currentset", "");
-    document.persist("united-toolbar", "currentset");
-    tb.setAttribute("last-defaultset", "");
-    document.persist("united-toolbar", "last-defaultset");
-  }
-
-  for (let i in brand.toolbar.items)
-  {
-    var tbitem;
-    if (i == "separator")
-      tbitem = document.createElement("toolbarseparator");
-    else if (i == "spacer" || i == "spring")
-      tbitem = document.createElement("toolbarspring");
-    else
-      tbitem = document.getElementById("united-" + i);
-    if (tbitem)
-      tb.appendChild(tbitem);
-  }
+  fixToolbarSet();
   setEnabledToolbarButtons();
   checkDisabledModules(window); // uiuils.js
   autoregisterGlobalObserver("region-changed", function(obj)
@@ -89,6 +58,66 @@ function onButtonSizeChangedByCode()
 function getCurrentToolbarMode()
 {
   return tb.getAttribute("mode");
+}
+
+/**
+ * Re/initializes the toolbar if it has never been setup before or
+ * if the toolbar set in brand.js has changed.
+ */
+
+function fixToolbarSet()
+{
+  // This covers any changes to brand.toolbar.items
+  // This should also cover migration scenarios. latestset doesn't exist
+  // for older versions, so getAttribute will return null.
+  if (JSON.stringify(brand.toolbar.items) == tb.getAttribute("latestset")) {
+    return;
+  }
+
+  // We're going to reset the toolbar, but first we need to remove
+  // separators and springs otherwise they get duplicated
+  var separators = tb.querySelectorAll("toolbarseparator");
+  for (var i=0; i < separators.length; i++)
+    tb.removeChild(separators[i]);
+  var springs = tb.querySelectorAll("toolbarspring");
+  for (var i=0; i < springs.length; i++)
+    tb.removeChild(springs[i]);
+
+  var defaultset = [];
+  for (let i in brand.toolbar.items) {
+    var tbitem;
+    if (i == "separator") {
+      tbitem = document.createElement("toolbarseparator");
+      tbitem.setAttribute("removable", "true");
+      defaultset.push("separator");
+    } else if (i == "spring") {
+      tbitem = document.createElement("toolbarspring");
+      tbitem.setAttribute("removable", "true");
+      tbitem.setAttribute("flex", "1");
+      defaultset.push("spring");
+    } else {
+      tbitem = document.getElementById("united-" + i);
+      defaultset.push("united-" + i);
+      // If the item is not on our toolbar, we don't move it
+      if (tbitem.parentNode != tb)
+        continue;
+    }
+    if (tbitem)
+      tb.appendChild(tbitem);
+  }
+  // currentSet is the internal representation of the currentset. Since
+  // we might have changed it, set it as an attribute
+  tb.setAttribute("currentset", tb.currentSet);
+  // Set the defaultset attribute so "Restore Default Set" works
+  tb.setAttribute("defaultset", defaultset.join(','));
+  // We're storing an attribute that contains our new set brand items
+  // We don't want to use prefs, because they could get out of sync (#286)
+  tb.setAttribute("latestset", JSON.stringify(brand.toolbar.items));
+  document.persist(tb.id, "currentset");
+  document.persist(tb.id, "defaultset");
+  document.persist(tb.id, "latestset");
+  // The list has changed, so we need to reset hidden buttons
+  ourPref.reset("hiddenButtons");
 }
 
 /**

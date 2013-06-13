@@ -151,19 +151,19 @@ function verifyEmailAddressAndPassword(emailAddress, password,
     const emailAddressRegexp = /^[a-z0-9\-%+_\.]+@[a-z0-9\-\.]+\.[a-z]+$/;
 
     if ( ! emailAddress && ! password) {
-      throw gStringBundle.get(
+      throw new UserError(gStringBundle.get(
           "error.noEmailAndPassword" + (brandOnly ? ".brand" : ""),
-          [ myBrand, exampleDomain ]);
+          [ myBrand, exampleDomain ]));
     } else if (needPassword && ! password) {
-      throw gStringBundle.get(
+      throw new UserError(gStringBundle.get(
           "error.noPassword" + (brandOnly ? ".brand" : ""),
-          [ myBrand, exampleDomain ]);
+          [ myBrand, exampleDomain ]));
     } else if ( ! emailAddressRegexp.test(emailAddress)) {
-      throw gStringBundle.get(
+      throw new UserError(gStringBundle.get(
           "error.syntax" + (brandOnly ? ".brand" : ""),
-          [ brand.login.providerName, exampleDomain ]);
+          [ brand.login.providerName, exampleDomain ]));
     } else if (newAccount && getExistingAccountForEmailAddress(emailAddress)) {
-      throw gStringBundle.get("error.exists");
+      throw new UserError(gStringBundle.get("error.exists"));
     } else {
       // account-list.js
       return verifyEmailAddressDomain(emailAddress,

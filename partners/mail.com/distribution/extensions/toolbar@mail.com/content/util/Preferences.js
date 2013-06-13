@@ -56,8 +56,6 @@ function Preferences(args) {
     if (isObject(args)) {
       if (args.branch)
         this._prefBranch = args.branch;
-      if (args.site)
-        this._site = args.site;
     }
     else if (args)
       this._prefBranch = args;
@@ -80,10 +78,7 @@ Preferences.prototype = {
     if (isArray(prefName))
       return prefName.map(function(v) this.get(v, defaultValue), this);
 
-    if (this._site)
-      return this._siteGet(prefName, defaultValue);
-    else
-      return this._get(prefName, defaultValue);
+    return this._get(prefName, defaultValue);
   },
 
   _get: function(prefName, defaultValue) {
@@ -117,12 +112,6 @@ Preferences.prototype = {
     }
   },
 
-  _siteGet: function(prefName, defaultValue) {
-    // nsIContentPrefService
-    let value = Services.contentPrefs.getPref(this._site, this._prefBranch + prefName);
-    return typeof value != "undefined" ? value : defaultValue;
-  },
-
   /**
    * Set a preference to a value.
    *
@@ -152,10 +141,7 @@ Preferences.prototype = {
       return;
     }
 
-    if (this._site)
-      this._siteSet(prefName, prefValue);
-    else
-      this._set(prefName, prefValue);
+    this._set(prefName, prefValue);
   },
 
   _set: function(prefName, prefValue) {
@@ -230,11 +216,6 @@ Preferences.prototype = {
     }
   },
 
-  _siteSet: function(prefName, prefValue) {
-    // nsIContentPrefService
-    Services.contentPrefs.setPref(this._site, this._prefBranch + prefName, prefValue);
-  },
-
   /**
    * Whether or not the given pref has a value.  This is different from isSet
    * because it returns true whether the value of the pref is a default value
@@ -253,19 +234,11 @@ Preferences.prototype = {
     if (isArray(prefName))
       return prefName.map(this.has, this);
 
-    if (this._site)
-      return this._siteHas(prefName);
-    else
-      return this._has(prefName);
+    return this._has(prefName);
   },
 
   _has: function(prefName) {
     return (this._prefSvc.getPrefType(prefName) != Ci.nsIPrefBranch.PREF_INVALID);
-  },
-
-  _siteHas: function(prefName) {
-    // nsIContentPrefService
-    return Services.contentPrefs.hasPref(this._site, this._prefBranch + prefName);
   },
 
   /**
@@ -302,10 +275,7 @@ Preferences.prototype = {
       return;
     }
 
-    if (this._site)
-      this._siteReset(prefName);
-    else
-      this._reset(prefName);
+    this._reset(prefName);
   },
   
   _reset: function(prefName) {
@@ -323,10 +293,6 @@ Preferences.prototype = {
       if (ex.result != Cr.NS_ERROR_UNEXPECTED)
         throw ex;
     }
-  },
-
-  _siteReset: function(prefName) {
-    return Services.contentPrefs.removePref(this._site, this._prefBranch + prefName);
   },
 
   /**
@@ -544,12 +510,6 @@ Preferences.prototype = {
    * @private
    */
   _prefBranch: "",
-
-  site: function(site) {
-    if (!(site instanceof Ci.nsIURI))
-      site = Services.io.newURI("http://" + site, null, null);
-    return new Preferences({ branch: this._prefBranch, site: site });
-  },
 
   /**
    * Preferences Service

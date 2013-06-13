@@ -56,8 +56,8 @@ function onLoad()
   try {
     gEmailStatusBarImage = document.getElementById("united-email-statusbar-image");
     gEmailStatusBarLabel = document.getElementById("united-email-statusbar-label");
-    gEmailButton = document.getElementById("united-email-button");
-    gEmailButtonDropdown = document.getElementById("united-email-button-dropdown");
+    gEmailButton = getToolbarItemE("united-email-button");
+    gEmailButtonDropdown = getToolbarItemE("united-email-button-dropdown");
     new appendBrandedMenuitems("email", "email", null, function(entry)
     {
       loadPage(entry.url, "tab");
@@ -293,7 +293,7 @@ function showDesktopNotification(newMailCount)
         );
     debug(message);
   } catch (e) { // expected, e.g. if Growl is not installed
-    errorNonCritical("Could not show desktop notificaton");
+    errorNonCritical(new Exception("Could not show desktop notification"));
     errorNonCritical(e);
   }
 }
@@ -363,19 +363,6 @@ function onCommandMailButton(openPrimary)
 }
 
 /**
- * <copied from="login.js">
- */
-function getPrimaryAccount()
-{
-  for each (let acc in getAllExistingAccounts())
-  {
-    if (acc.providerID == brand.login.providerID)
-      return acc;
-  }
-  return null;
-}
-
-/**
  * Dropdown menu item for a specific account was clicked.
  * Effect:
  * - If logged out, show login dialog.
@@ -420,7 +407,7 @@ function onCommandCheckMailsNow(event)
   animateMailCheckIcon();
   notifyWindowObservers("do-login", {
     withUI : true,
-    needAccountType : 10, // all accounts
+    needAccountType : 1, // primary account
     successCallback : function(a)
     {
       // Need to track if mail was actually checked so we can turn off

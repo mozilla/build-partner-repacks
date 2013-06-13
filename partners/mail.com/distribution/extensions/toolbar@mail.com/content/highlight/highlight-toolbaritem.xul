@@ -28,6 +28,7 @@
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-removable="true"
         united-icon-only="true"
+        removable="true"
         >
       <menupopup>
         <colorpicker onclick="unitedinternet.highlight.onColorChanged(event);"/>

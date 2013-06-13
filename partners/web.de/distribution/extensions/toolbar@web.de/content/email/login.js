@@ -70,7 +70,7 @@ function onLoad()
     readAccounts();
     updateUI();
     autoLoginIfPossible();
-  } catch (e) { error(e); }
+  } catch (e) { errorNonCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -85,7 +85,7 @@ function migrate()
   try {
     if (ourPref.get("accountsList", null))
       ourPref.set("email.runonceNewUsersShown", true);
-  } catch (e) { error(e); }
+  } catch (e) { errorNonCritical(e); }
 }
 
 // automatically log in without UI, if "remember me" activated and we have credentials
@@ -105,9 +105,9 @@ function autoLoginIfPossible()
 
 function updateUI()
 {
-  var loggedinE = document.getElementById("united-logged-in-button");
-  var loggedinMenuitemE = document.getElementById("united-logged-in-menuitem");
-  var loggedoutE = document.getElementById("united-logged-out-button");
+  var loggedinE = getToolbarItemE("united-logged-in-button");
+  var loggedinMenuitemE = getToolbarItemE("united-logged-in-menuitem");
+  var loggedoutE = getToolbarItemE("united-logged-out-button");
 
   var primaryAcc = getPrimaryAccount();
   // Show "logged in", if any account is logged in
@@ -483,25 +483,4 @@ function logoutConfirmation()
       ourPref.set("login.logoutConfirm", false);
   }
   return true;
-}
-
-/**
- * The "main" account is used by all the services and UI
- * that do not supple multiple accounts.
- * @returns {Account}
- *     May be null, if no account is configured,
- *     or if none of the configured accounts is from
- *     the brand of the current toolbar,
- *     e.g. only a GMX account, but this is a web.de toolbar.
- *
- * <copied to="email.js">
- */
-function getPrimaryAccount()
-{
-  for each (let acc in gAccs)
-  {
-    if (acc.providerID == brand.login.providerID)
-      return acc;
-  }
-  return null;
 }

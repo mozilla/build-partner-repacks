@@ -37,7 +37,7 @@ OurEngineCheckbox.prototype =
         } else {
           notifyGlobalObservers("install-searchengines", {});
         }
-      } catch (e if build.kVariant == "browser") { error(e); } // silence for bug 163689
+      } catch (e if build.kVariant == "browser") { errorNonCritical(e); } // silence for bug 163689
 
       ourPref.set("search.opt-in", true);
     }

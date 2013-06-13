@@ -65,7 +65,7 @@ function copySearchPlugins(makeDefault)
       if (success)
         debug("added search engine " + engine.name);
       else
-        error("could not add search engine " + engine.name);
+        errorNonCritical(new Exception("could not add search engine " + engine.name));
       if (engine.name != entry.name)
         debug("brand.js has engine name " + entry.name + ", but OSD file has name " + engine.name);
     });

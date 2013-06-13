@@ -1,0 +1,12 @@
+#checkbox {
+  font-size: smaller;
+  color: gray;
+}
+
+#moreInfoPanel {
+  width: 25em;
+}
+
+#moreInfoTitle {
+  font-weight: bold;
+}

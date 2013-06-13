@@ -18,86 +18,55 @@
   <!-- Overlay for Firefox browser/content/browser.xul -->
 
   <vbox id="appcontent">
-    <hbox class="united-coupon-alert" id="united-coupon-alert"
-        insertbefore="content"
-        tooltiptext="&button.tooltip;"
-        hidden="true"
-        onclick="unitedinternet.coupon.alert.applyButtonClicked(document.getElementById('united-coupon-alert-button'));"
-        >
-      <hbox class="united-coupon-alert-left">
-        <vbox align="center" pack="center">
-          <image class="united-coupon-alert-logo-brand" src="chrome://unitedtb/skin/brand/icon.svg"/>
-        </vbox>
-        <vbox align="center" pack="center">
-          <image class="united-coupon-alert-logo-coupon" src="chrome://unitedtb/skin/coupon/coupon-logo.png"/>
-        </vbox>
-      </hbox>
-      <hbox flex="1" id="united-coupon-alert-right" align="center" pack="end">
-        <description id="united-coupon-alert-text-generated"
-            class="united-coupon-alert-text-generated"
-            flex="1"
-            />
-        <hbox align="center" pack="end">
-          <stack class="united-coupon-alert-button-stack">
-            <box class="united-coupon-alert-button-stack-left"/>
-            <box class="united-coupon-alert-button-stack-right"/>
-            <button class="united-coupon-alert-button" id="united-coupon-alert-button"
-                label="&coupon.applyButton.label;"
-                oncommand="unitedinternet.coupon.alert.applyButtonClicked(this);"
-                onclick="event.stopPropagation();"
-                />
-          </stack>
+    <hbox id="united-coupon-notificationbox" insertbefore="content">
+      <hbox id="united-coupon-alert-rewards" align="center" flex="1" hidden="true"
+            onclick="unitedinternet.coupon.alert.applyButtonClicked(document.getElementById('united-coupon-alert-button-rewards'));">
+        <hbox class="united-coupon-brand-box" align="center">
+          <hbox id="united-reward-brand-icon-box" align="center">
+            <image id="united-reward-brand-icon" src="chrome://unitedtb/skin/brand/icon-normal.png"/>
+          </hbox>
+          <label id="united-reward-brand-text" class="united-reward-text" value="WEB.Cent"/>
+          <hbox id="united-reward-icon-box" align="center">
+            <image src="chrome://unitedtb/skin/coupon/reward-icon.png"/>
+          </hbox>
         </hbox>
-        <hbox class="united-coupon-closebutton-box"
-              onclick="event.stopPropagation();unitedinternet.coupon.alert.closeButtonClicked();">
-          <button class="united-coupon-closebutton"
-                  id="united-coupon-closebutton"
-                  oncommand="unitedinternet.coupon.alert.closeButtonClicked();"
+        <hbox class="united-coupon-content-box" flex="1" align="center">
+          <label flex="1" id="united-coupon-alert-text-generated-rewards" crop="end"/>
+          <!-- <label class="united-reward-text" value="Sammler aufgepasst"/>
+          <label flex="1" value="Zooplus.de it Partner bei WEB.Cent" crop="end"/> -->
+          <button class="united-coupon-button" id="united-coupon-alert-button-rewards"
+                  oncommand="unitedinternet.coupon.alert.applyButtonClicked(this);"
                   onclick="event.stopPropagation();"
-                  hidden="true"/>
-        </hbox>
-      </hbox>
-    </hbox>
-    <hbox class="united-coupon-alert" id="united-coupon-alert-rewards"
-        insertbefore="content"
-        tooltiptext="&button.tooltip;"
-        hidden="true"
-        onclick="unitedinternet.coupon.alert.applyButtonClicked(document.getElementById('united-coupon-alert-button-rewards'));"
-        >
-      <hbox class="united-coupon-alert-left">
-        <vbox align="center" pack="center">
-          <image class="united-coupon-alert-logo-brand" src="chrome://unitedtb/skin/brand/icon.svg"/>
-        </vbox>
-        <vbox align="center" pack="center">
-          <image class="united-coupon-alert-logo-coupon" src="chrome://unitedtb/skin/coupon/rewards-logo.png"/>
-        </vbox>
-      </hbox>
-      <hbox flex="1" id="united-coupon-alert-right-rewards" align="center" pack="end">
-        <description id="united-coupon-alert-text-generated-rewards"
-            class="united-coupon-alert-text-generated"
-            flex="1"
-            />
-        <hbox align="center" pack="end">
-          <stack class="united-coupon-alert-button-stack">
-            <box class="united-coupon-alert-button-stack-left"/>
-            <box class="united-coupon-alert-button-stack-right"/>
-            <button class="united-coupon-alert-button" id="united-coupon-alert-button-rewards"
-                label="&rewards.applyButton.label;"
-                oncommand="unitedinternet.coupon.alert.applyButtonClicked(this);"
-                onclick="event.stopPropagation();"
-                />
-          </stack>
-        </hbox>
-        <hbox class="united-coupon-closebutton-box"
-              onclick="event.stopPropagation();unitedinternet.coupon.alert.closeButtonClicked();">
+                  label="&rewards.applyButton.label;"/>
           <button class="united-coupon-closebutton"
-                  id="united-coupon-closebutton-rewards"
-                  oncommand="unitedinternet.coupon.alert.closeButtonClicked();"
                   onclick="event.stopPropagation();"
-                  hidden="true"/>
+                  oncommand="unitedinternet.coupon.alert.closeButtonClicked();"/>
+        </hbox>
+      </hbox>
+      <hbox id="united-coupon-alert" align="center" flex="1" hidden="true"
+            onclick="unitedinternet.coupon.alert.applyButtonClicked(document.getElementById('united-coupon-alert-button'));">
+        <hbox class="united-coupon-brand-box" align="center">
+          <hbox id="united-coupon-brand-icon-box" align="center">
+            <image id="united-coupon-brand-icon" src="chrome://unitedtb/skin/brand/icon-normal.png"/>
+          </hbox>
+          <label id="united-coupon-brand-text" class="united-coupon-text" value="WEB.DE Gutscheine"/>
+          <hbox id="united-coupon-icon-box" align="center">
+            <image src="chrome://unitedtb/skin/coupon/coupon-icon.png"/>
+          </hbox>
+        </hbox>
+        <hbox class="united-coupon-content-box" flex="1" align="center">
+          <label flex="1" id="united-coupon-alert-text-generated" crop="end"/>
+          <!-- <label class="united-coupon-text" value="12 Gutscheine"/>
+          <label flex="1" value="auf zooplus.de gefunden" crop="end"/> -->
+          <button class="united-coupon-button" id="united-coupon-alert-button"
+                  oncommand="unitedinternet.coupon.alert.applyButtonClicked(this);"
+                  onclick="event.stopPropagation();"
+                  label="&coupon.applyButton.label;"/>
+          <button class="united-coupon-closebutton"
+                  onclick="event.stopPropagation();"
+                  oncommand="unitedinternet.coupon.alert.closeButtonClicked();"/>
         </hbox>
       </hbox>
     </hbox>
   </vbox>
-
 </overlay>

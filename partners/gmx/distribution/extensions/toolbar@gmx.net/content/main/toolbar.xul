@@ -25,13 +25,14 @@
     <toolbar id="united-toolbar"
         toolbarname="&brand.name;&toolbar-name.label.suffix;"
         class="chromeclass-toolbar"
-        customizable="false"
+        customizable="true"
         fullscreentoolbar="false"
         mode="full"
         iconsize="small"
         context="toolbar-context-menu"
         align="center"
         crop="end"
+        persist="currentset,defaultset"
         />
   </toolbox>
 

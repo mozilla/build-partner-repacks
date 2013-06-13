@@ -63,6 +63,10 @@ function startUsecase(account, usecase, parameters, win)
   assert(account instanceof UnitedInternetLoginAccount,
       "account is an Account, but not a UnitedInternetLoginAccount");
   assert(account.isLoggedIn); // in toolbar
+  if (usecase == "homepage-logged-in" && brand.toolbar.pay) {
+    // see below
+    usecase = "openmail";
+  }
   var payload = makePayload(usecase, parameters);
 
   var existingTabData = findExistingTab(account, false);
@@ -74,8 +78,9 @@ function startUsecase(account, usecase, parameters, win)
   else
   {
     assert(win && win.unitedinternet, "Need a Firefox window");
-    if (usecase == "openmail" && ! brand.toolbar.pay) // Hack per PM: Go to homepage first
-      goToWebmailOldUnitedInternet(account, win);
+    // Hack per PM: Go to homepage first
+    if (usecase == "homepage-logged-in")
+      goToWebmailOld(account, win);
     else
       loadNewTab(account, payload, win);
   }
@@ -268,37 +273,10 @@ function makePayloadStr(payload)
 // Old, non-Usecase API for starting webmail
 
 /**
- * For UnitedInternet accounts, go to Webmail webpage in browser.
- * See top of email-logic.js for what's supposed to happen in general.
- */
-function goToWebmailOld(acc, win)
-{
-  assert(acc && acc.emailAddress);
-  assert(win && win.unitedinternet);
-  debug("going to webmail of " + acc.emailAddress);
-  debug("type " + acc.type + ", domain " + acc.domain);
-  if (acc.type == "imap" && acc.providerID == "mailcom")
-  {
-    goToWebmailMailcom(acc, win);
-  }
-  else if (acc.type == "imap" && acc.providerID == "1und1")
-  {
-    goToWebmail1und1(acc, win);
-  }
-  else if (acc.type == "unitedinternet")
-  {
-    goToWebmailOldUnitedInternet(acc, win);
-  }
-  else
-    assert(true, "Have no webmail for this account type: " + acc.emailAddress);
-}
-
-
-/**
  * Log in to UnitedInternet webmail, but
  * via webmail URL from PACS, not via usecase.
  */
-function goToWebmailOldUnitedInternet(acc, win)
+function goToWebmailOld(acc, win)
 {
   var webmail = acc.getWebmailPage();
   if (!webmail || !webmail.url) // (normally assert(), but it's a server error)
@@ -315,40 +293,4 @@ function goToWebmailOldUnitedInternet(acc, win)
   }
   else
     throw new NotReached("invalid webmail.httpMethod" + webmail.httpMethod);
-}
-
-/**
- * TODO move to brand.js?
- * For mail.com IMAP accounts,
- * log in to mail.com webmail upon button click.
- *
- * Just loads a URL with the login in URL parameters.
- */
-function goToWebmailMailcom(acc, win)
-{
-  assert(acc.haveStoredLogin);
-  var url = "https://service.mail.com/login.html";
-  var params = "";
-  params += "&rdirurl=" + encodeURIComponent("http://www.mail.com"); // needed
-  params += "&login=" + encodeURIComponent(acc.emailAddress);
-  params += "&password=" + encodeURIComponent(acc._password); // tralala
-  win.unitedinternet.common.loadPageWithPOST(url, "tab", params, "application/x-www-form-urlencoded");
-  //win.unitedinternet.common.loadPage(url + "?" + params, "tab"); // GET works, too
-}
-
-
-
-/**
- * Log in to 1&1 webmail
- * Just loads a URL with the login as HTTP POST content.
- */
-function goToWebmail1und1(acc, win)
-{
-  assert(acc.haveStoredLogin);
-  var url = "https://webmailcluster.1und1.de/xml/webmail/Login";
-  var params = "__sendingauthdata=1&login.ValidBrowser=false&jsenabled=true";
-  params += "&login.Username=" + encodeURIComponent(acc.emailAddress);
-  params += "&login.Password=" + encodeURIComponent(acc._password); // tralala
-  win.unitedinternet.common.loadPageWithPOST(url, "tab", params, "application/x-www-form-urlencoded");
-  //win.unitedinternet.common.loadPage(url + "?" + params, "tab"); // GET works, too
 }

@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://global/content/commonDialog.css" type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/commonDialog.css" type="text/css"?>
+<?xml-stylesheet href="chrome://unitedtb/skin/util/errorDialog.css" type="text/css"?>
+<!-- based on toolkit/components/prompts/content/commonDialog.xul -->
+<dialog id="united-errorDialog"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoad();"
+        ondialogaccept="return onOK();"
+        ondialogcancel="return onCancel();"
+        buttons="accept"
+        buttonpack="center">
+
+  <script type="application/javascript" src="chrome://unitedtb/content/util/errorDialog.js"/>
+  <script type="application/javascript" src="chrome://unitedtb/content/util/uiutil.js"/>
+
+  <hbox id="filler" style="min-width: 0%;">
+    <spacer style="width: 29em;"/>
+  </hbox>
+
+  <grid>
+    <columns>
+      <column/>
+      <column flex="1"/>
+    </columns>
+
+    <rows>
+      <row>
+        <hbox id="iconContainer" align="start">
+          <image id="info.icon" class="spaced alert-icon"/>
+        </hbox>
+        <vbox id="infoContainer" pack="center">
+          <description id="info.title" hidden="true"/>
+          <description id="info.body"/>
+        </vbox>
+      </row>
+    </rows>
+  </grid>
+
+  <vbox pack="center" align="center" >
+    <hbox id="checkboxContainer" hidden="true" align="center">
+      <spacer/>
+      <checkbox id="checkbox"/>
+      <image id="moreinfo" hidden="true"
+             src="chrome://unitedtb/skin/util/questionMark.jpg"
+             onclick="showMoreInfo(event)" tooltip="moreInfoPanel">
+      </image>
+    </hbox>
+  </vbox>
+  <panel id="moreInfoPanel">
+    <label id="moreInfoTitle"/>
+    <description id="moreInfoContent"/>
+  </panel>
+</dialog>

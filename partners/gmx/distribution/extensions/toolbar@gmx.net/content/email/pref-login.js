@@ -164,8 +164,8 @@ function remove()
       return acc.providerID == brand.login.providerID;
     }).length;
     if (numBrandAccounts == 1 && allAccounts.length > 1) {
-      errorCritical(gStringBundle.get("remove.brand",
-                    [ brand.login.providerName ]));
+      errorCritical(new UserError(gStringBundle.get("remove.brand",
+                    [ brand.login.providerName ])));
       return;
     }
   }
@@ -197,7 +197,7 @@ function getSelectedAccount()
     listitem = listbox.selectedItem;
   if (!listitem)
   {
-    errorCritical(gStringBundle.get("error.noselection"));
+    errorCritical(new UserError(gStringBundle.get("error.noselection")));
     throw "no selection";
   }
   return listitem.backendAccount;

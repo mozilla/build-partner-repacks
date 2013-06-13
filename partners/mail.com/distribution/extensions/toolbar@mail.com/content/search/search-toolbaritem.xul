@@ -32,6 +32,7 @@
     <toolbaritem id="united-search-box"
           align="center"
           remove-priority="201"
+          removable="false"
           persist="width"
           flex="1"
           >

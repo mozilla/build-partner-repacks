@@ -171,7 +171,7 @@ FetchHTTP.prototype =
     try {
       // prevents dialogs like "bad cert" and makes the request fail instead
       request.mozBackgroundRequest = true;
-    } catch (e) { error(e); } // non-fatal
+    } catch (e) { errorNonCritical(e); }
     debug("contacting <" + url + ">");
     request.open(this._method, url);
     request.channel.loadGroup = null;

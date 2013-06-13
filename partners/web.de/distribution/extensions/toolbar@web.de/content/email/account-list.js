@@ -64,7 +64,7 @@
  */
 
 const EXPORTED_SYMBOLS = [ "getAllExistingAccounts", "getExistingAccount",
-    "getExistingAccountForEmailAddress", "makeNewAccount",
+    "getExistingAccountForEmailAddress", "getPrimaryAccount", "makeNewAccount",
     "verifyEmailAddressDomain", "_removeAccount", ];
 
 Components.utils.import("resource://unitedtb/util/util.js");
@@ -109,6 +109,24 @@ function getAllExistingAccounts()
   for each (let acc in gAccounts)
     result.push(acc)
   return result;
+}
+
+/**
+ * The "main" account is used by all the services and UI
+ * that do not support multiple accounts.
+ * @returns {Account}
+ *     May be null, if no account is configured,
+ *     or if none of the configured accounts is from
+ *     the brand of the current toolbar,
+ *     e.g. only a GMX account, but this is a web.de toolbar.
+ */
+function getPrimaryAccount() {
+  for each (let acc in gAccounts) {
+    if (acc.providerID == brand.login.providerID) {
+      return acc;
+    }
+  }
+  return null;
 }
 
 function _readExistingAccountFromPrefs(accountID)

@@ -141,7 +141,7 @@ function validateElementWithUI(prefElement, save)
     try {
       document.getElementById("tabbox").selectedPanel =
           findParentTagForElement("tabpanel", prefElement.element); // from uiutil.js
-    } catch (e) { error("when trying to switch pane to " + pane.id + ": " + e); }
+    } catch (e) { errorNonCritical(new Exception("when trying to switch pane to " + pane.id + ": " + e)); }
     errorCritical(errorMsg);
     return false;
   }

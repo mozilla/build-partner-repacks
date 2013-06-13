@@ -33,6 +33,7 @@
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         type="menu-button"
+        removable="true"
         >
       <menupopup id="united-email-button-dropdown">
           <menuitem id="united-email-checknow"
@@ -51,6 +52,7 @@
 
     <toolbaritem id="united-login-box" align="center"      
       status="disconnected"
+      removable="true"
       >
       <toolbarbutton id="united-logged-out-button"
           label="&united.logged-out.label;"

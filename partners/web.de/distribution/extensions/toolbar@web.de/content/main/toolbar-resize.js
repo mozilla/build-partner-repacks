@@ -73,7 +73,7 @@ function getButtonsToShrink()
       bPrio = 100;
     //debug(a.id + "<>" + b.id + ", a prio=" + aPrio + ", b prio=" + bPrio);
     return aPrio - bPrio;
-    } catch (e) { error(e); return 0; }
+    } catch (e) { errorNonCritical(e); return 0; }
   });
   return result;
 }

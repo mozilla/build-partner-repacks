@@ -1,28 +1,81 @@
+// implicit Components.utils.import("resource://unitedtb/util/util.js");
 Components.utils.import("resource://gre/modules/Services.jsm");
 const kBundleURL = "chrome://unitedtb/locale/util.properties";
 
-function error(e)
+/**
+ * shortcut for getElementById()
+ */
+function E(id)
+{
+  return document.getElementById(id);
+}
+
+function errorNonCritical(e)
+{
+  _error(e);
+
+  {
+    // Can't import at top of file, because that would create a
+    // circular dependency, which causes strange and subtle bugs
+    var reporter = {};
+    Components.utils.import("resource://unitedtb/util/sendError.js", reporter);
+    if (reporter.shouldSendErrorToServer(e))
+      reporter.sendErrorToServer(e);
+  }
+};
+const error = errorNonCritical; // old alias, see #955
+
+function errorCritical(e)
+{
+  _error(e);
+  _showErrorDialog(e);
+};
+
+function _error(e)
 {
   debug("ERROR: " + e);
   debug("Stack:\n" + (e.stack ? e.stack : "none"));
 };
 
-function errorNonCritical(e)
+function _showErrorDialog(e)
 {
-  error(e);
-};
-
-function errorCritical(e)
-{
-  error(e);
   var sb = Services.strings.createBundle(kBundleURL);
-  var title = sb.GetStringFromName("errorDialog.title");
-  alertPrompt(title, e);
-};
+  var args = {};
+  args.title = sb.GetStringFromName("errorDialog.title");
+  args.text = e.toString();
 
-function alertPrompt(alertTitle, alertMsg)
-{
-  promptService.alert(window, alertTitle, alertMsg);
+  if ( !e.causedByUser) {
+    if (ourPref.isSet("util.reportError.enabled")) {
+      // If we have a set value, then the user made a choice, so use it
+      args.checked = ourPref.get("util.reportError.enabled");
+    } else {
+      // Get a random sample, but only as default for the checkbox.
+      // Let the user still confirm it.
+      if (Math.random() < 0.5) { // random sample of 50%
+        args.checked = true;
+      }
+    }
+    args.checkLabel  = sb.GetStringFromName("errorDialog.check");
+  }
+  args.moreInfo = {};
+  args.moreInfo.title = sb.GetStringFromName("errorDialog.moreInfo.title");
+  args.moreInfo.content = sb.GetStringFromName("errorDialog.moreInfo.content");
+
+  window.openDialog("chrome://unitedtb/content/util/errorDialog.xul",
+                    "united-error",
+                    "centerscreen,chrome,modal,titlebar", args);
+
+  if (args.checkLabel && !args.cancel)
+    ourPref.set("util.reportError.enabled", args.checked);
+
+  {
+    // Can't import at top of file, because that would create a
+    // circular dependency, which causes strange and subtle bugs
+    var reporter = {};
+    Components.utils.import("resource://unitedtb/util/sendError.js", reporter);
+    if (reporter.shouldSendErrorToServer(e))
+      reporter.sendErrorToServer(e);
+  }
 }
 
 /**
@@ -332,6 +385,8 @@ function checkDisabledModules(win)
         continue;
       let e = win.document.getElementById(entry.el);
       if (!e)
+        e = getToolbarItemE(entry.el, win.document);
+      if (!e)
       {
         debug("warning: element ID " + entry.el + " (to be disabled) not found");
         continue;
@@ -371,7 +426,7 @@ function appendBrandedMenuitems(modulename, iconpath, initedCallback, itemClicke
   // because it gets re-created by brand-var-loader.js on region change.
   this.modulename = sanitize.nonemptystring(modulename);
   this.iconpath = sanitize.nonemptystring(iconpath);
-  this.container = document.getElementById(
+  this.container = getToolbarItemE(
       "united-" + modulename + "-button-dropdown");
   assert(!initedCallback || typeof(initedCallback) == "function");
   assert(typeof(itemClickedCallback) == "function", "need an itemClickedCallback");
@@ -564,4 +619,47 @@ function focusDialogIfOpen(name) {
     return true;
   }
   return false;
+}
+
+/**
+ * createElement()
+ * @param tagname {String} <tagname>
+ * @param classname {String} class="classname"
+ * @param attributes {Array of String}
+ */
+function cE(tagname, classname, attributes) {
+  var el = document.createElement(tagname);
+  if (classname)
+    el.classList.add(classname);
+  for (var name in attributes)
+    el.setAttribute(name, attributes[name]);
+  return el;
+}
+
+/**
+ * createTextNode()
+ */
+function cTN(text) {
+  return document.createTextNode(text);
+}
+
+/**
+ * If a toolbar button or item is not on the toolbar, getting it by ID will
+ * fail. This is because the toolbar palette is removed from the document
+ * via removeChild, but still used to hold items in the palette.
+ * This function checks to see if it is in the current window and if
+ * not, it grabs it from the toolbar palette.
+ * This can be any item that is a child of a toolbar element
+ */
+function getToolbarItemE(id, doc) {
+  if (!doc)
+    doc = document;
+  var element = doc.getElementById(id);
+  if (element)
+    return element;
+  var toolbox = doc.getElementById("navigator-toolbox");
+  if (toolbox)
+    element = toolbox.palette.querySelector("#" + id);
+  // Will be either the element or null if no element was found
+  return element;
 }

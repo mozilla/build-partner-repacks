@@ -65,7 +65,7 @@ toolbar : {
       "ebay-button": true,
       "lastminute-button": false,
       "ticker-button": true,
-      "spacer": true,
+      "spring": true,
       "login-box": true,
       "pref-button": true,
     }
@@ -155,25 +155,11 @@ newtab : {
   defaultlocale : {
     lasttabURL: "%GOTB%lasttab",
     // fill up the "most visited" list of the new tab page, *only* in a fresh profile
-    initialEntries : [
-      { label : "$TR newtab.initial.portal", preview: "mailcom.jpg", url : "%GOPREFIX%newtab/mff_nt_homepage" },
-      { label : "$TR newtab.initial.search", preview: "search.jpg", url : "%GOPREFIX%newtab/mff_nt_search" },
-      { label : "$TR newtab.initial.jobs", preview: "jobs.jpg", url : "%GOPREFIX%newtab/mff_nt_jobs" },
-      { label : "$TR newtab.initial.dating", preview: "dating.jpg", url : "%GOPREFIX%newtab/mff_nt_dating" },
-      { label : "$TR newtab.initial.news", preview: "news.jpg", url : "%GOPREFIX%newtab/mff_nt_news" },
-      { label : "$TR newtab.initial.entertainment", preview: "entertainment.jpg", url : "%GOPREFIX%newtab/mff_nt_entertainment" },
-      { label : "$TR newtab.initial.sports", preview: "sports.jpg", url : "%GOPREFIX%newtab/mff_nt_sports" },
-      { label : "$TR newtab.initial.science", preview: "science.jpg", url : "%GOPREFIX%newtab/mff_nt_scitec" },
-      { label : "$TR newtab.initial.business", preview: ".jpg", url : "%GOPREFIX%newtab/mff_nt_business" },
-    ],
   },
 },
 tracking : {
   defaultlocale : {
     trackingURL: "http://event.ui-portal.de/metric/ca.gif?portal=mailcom&browser=ff&type=%TYPE%&event=%EVENT%&version=%VERSION%&installdate=%INSTALLDATE%&locale=%LOCALE%&kid=%KID%&mod=%MOD%",
-    AIBDailyURL : "https://dl.mail.com/toolbar/firefox/aib.xml?vers=%VERSION%&local=%LOCALE%",
-    AIBMonthlyURL : "https://dl.mail.com/toolbar30days/firefox/aib.xml?vers=%VERSION%&local=%LOCALE%",
-    count404URL : "%GOMAIN%count404", // + &count=123
     countNewTabURL : "%GOPREFIX%events/", // + &ntd=lastSubmit + &ntc=count
     brand : "%BRANDID%",
     identifyMyselfToSites : [

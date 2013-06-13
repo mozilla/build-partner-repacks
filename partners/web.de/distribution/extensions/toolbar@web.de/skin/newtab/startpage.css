@@ -1,0 +1,80 @@
+html {
+  height: 100%;
+}
+
+body {
+  text-align: center;
+  height: 100%;
+}
+
+#logo {
+  content: url("chrome-extension://__MSG_@@extension_id__/skin/brand/big1.png");
+  vertical-align: middle;
+}
+
+#search-box > h2 {
+  vertical-align: middle;
+  font-family: Arial, Helvetica;
+  font-size: 32pt;
+  color: #909090;
+  width: 100%;
+  margin-top: 100px;
+}
+
+fieldset {
+  border: 1px solid #BBBBBB;
+  display: inline;
+  height: 33px;
+  padding: 0px;
+  font-family: Arial, Helvetica, sans-serif;
+  min-width: 250px;
+  width: 50%;
+  text-align: left;
+}
+
+fieldset .searchterm {
+  background: #FFFFFF;
+  border: 0px;
+  font-size: 18px;
+  height: 33px;
+  text-indent: 5px;
+  margin: 0px;
+  outline: none;
+  font-family: inherit;
+  padding-right: 5px;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+}
+
+.searchbutton {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#7995dd), color-stop(39%,#7995dd), color-stop(42%,#738fd8), color-stop(55%,#4766b8), color-stop(58%,#405fb3), color-stop(100%,#3f5eb2)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  #7995dd 0%,#7995dd 39%,#738fd8 42%,#4766b8 55%,#405fb3 58%,#3f5eb2 100%); /* Chrome10+,Safari5.1+ */
+  background: -moz-linear-gradient(top,  #7995dd 0%,#7995dd 39%,#738fd8 42%,#4766b8 55%,#405fb3 58%,#3f5eb2 100%); /* Firefox */
+  color: #FFFFFF;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+  height: 35px;
+  padding: 0px 10px;
+  display: block;
+  border-left: 1px #1044cc solid;
+  border-top: 1px #1044cc solid;
+  border-right: 1px #7995de solid;
+  border-bottom: 1px #7995de solid;
+  display: inline;
+  font-family: Arial, Helvetica, sans-serif;
+  margin-left: -7px;
+}
+
+.ac-popup {
+  width: 500px;
+}
+
+.ac-command {
+  color: blue;
+  text-decoration: underline;
+  text-align: right;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

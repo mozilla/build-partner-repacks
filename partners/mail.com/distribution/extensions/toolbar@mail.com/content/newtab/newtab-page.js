@@ -1,17 +1,9 @@
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/util/fetchhttp.js");
-Components.utils.import("resource://unitedtb/util/observer.js");
 Components.utils.import("resource://unitedtb/search/search-store.js");
 Components.utils.import("resource://unitedtb/util/JXON.js");
 Components.utils.import("resource://gre/modules/NetUtil.jsm");
-try {
-  // These don't exist before Firefox 13, so we need a try catch
-  // We won't use either unless we are at least Firefox 13 anyway
-  Components.utils.import("resource://gre/modules/PageThumbs.jsm");
-  Components.utils.import("resource://gre/modules/NewTabUtils.jsm");
-} catch (ex) {}
+Components.utils.import("resource://gre/modules/PageThumbs.jsm");
+Components.utils.import("resource://gre/modules/NewTabUtils.jsm");
+Components.utils.import("resource://gre/modules/FileUtils.jsm");
 
 var favicons = Components.classes["@mozilla.org/browser/favicon-service;1"]
                          .getService(Components.interfaces.nsIFaviconService)
@@ -22,20 +14,13 @@ var firefoxWindow;
 var searchField;
 var gAutocomplete;
 
-var useFirefoxNewTab = true;
-
 function onLoad()
 {
-  // We need to access the global unitedinternet.newtab object, but we can't
+  // We need to access the global unitedinternet.newtab object, so that our
+  // observer notifications happen at the window level, but we can't,
   // because we are not in the browser scope. Get it from the browser window.
-  // We do this because we need to access variables and functions in
-  // thumbnail-capture.js which is loaded per window.
-  // This is only needed for Firefox versions < 14 where we use our own
-  // thumbnails on the new tab page.
   firefoxWindow = getTopLevelWindowContext(window);
   unitedFromAbove = firefoxWindow.unitedinternet;
-
-  useFirefoxNewTab = generalPref.defaults.get("browser.newtab.url", "about:blank") != "about:blank";
 
   searchField = document.getElementById("searchterm");
   if (ourPref.get("newtab.setFocus"))
@@ -45,34 +30,26 @@ function onLoad()
   initBrand();
   fillUserSearchTerms();
   getRecommendedSites(fillRecommendedSites);
-  if (useFirefoxNewTab) {
-    document.getElementById("most-visited-list").style.display = "none";
-    var firefoxThumbnailsIFrame = document.getElementById("firefoxThumbnails");
-    firefoxThumbnailsIFrame.addEventListener("load", function(event) {
-      var doc = event.target.contentDocument;
-      // Add a custom attribute for our CSS. I investigated loading our CSS
-      // dynamically, but it caused a flash. Better to load via chrome.manifest
-      doc.getElementById('newtab-scrollbox').setAttribute('united-toolbar','true');
-      // Make sure our new tab page is never disabled
-      doc.getElementById('newtab-grid').removeAttribute('page-disabled');
-      doc.getElementById('newtab-scrollbox').removeAttribute('page-disabled');
-      // Reinitialize page just in case it was disabled
-      event.target.contentWindow.gPage._init();
-      // Use favicons for sites where we have no thumbnail
-      addSitePlaceholders(doc);
-      
-    }, false);
-    // The Firefox new tab page doesn't refresh, so we force it.
-    // Load the page only after the cache is populated.
-    NewTabUtils.links.populateCache(function () {
-      firefoxThumbnailsIFrame.contentDocument.location.replace("chrome://browser/content/newtab/newTab.xul");
-      },
-      true);
-  } else {
-    document.getElementById("firefoxThumbnails").style.display = "none";
-    fillMostVisited();
-  }
-
+  var firefoxThumbnailsIFrame = document.getElementById("firefoxThumbnails");
+  firefoxThumbnailsIFrame.addEventListener("load", function(event) {
+    var doc = event.target.contentDocument;
+    // Add a custom attribute for our CSS. I investigated loading our CSS
+    // dynamically, but it caused a flash. Better to load via chrome.manifest
+    doc.getElementById('newtab-scrollbox').setAttribute('united-toolbar','true');
+    // Make sure our new tab page is never disabled
+    doc.getElementById('newtab-grid').removeAttribute('page-disabled');
+    doc.getElementById('newtab-scrollbox').removeAttribute('page-disabled');
+    // Reinitialize page just in case it was disabled
+    event.target.contentWindow.gPage._init();
+    // Use favicons for sites where we have no thumbnail
+    addSitePlaceholders(doc);
+  }, false);
+  // The Firefox new tab page doesn't refresh, so we force it.
+  // Load the page only after the cache is populated.
+  NewTabUtils.links.populateCache(function () {
+    firefoxThumbnailsIFrame.contentDocument.location.replace("chrome://browser/content/newtab/newTab.xul");
+    },
+    true);
 }
 window.addEventListener("load", onLoad, false);
 
@@ -92,14 +69,15 @@ function addSitePlaceholders(doc) {
       var url = link.getAttribute("href");
 
       // Check whether Firefox has a thumbnail, see above.
-      if (parseInt(Services.appinfo.version) < 17) { // For < FF17. Remove in 2.5.
-        PageThumbsCache.getReadEntry(url, cacheCallback(url,
-            cell.querySelector(".newtab-thumbnail")));
-        // Continue in cacheCallback()
-      } else { // For >= FF17
-        var file = PageThumbsStorage.getFileForURL(url);
-        if (!file.exists())
-          displayFaviconForThumbnail(url, cell.querySelector(".newtab-thumbnail"));
+      var file;
+      // This API was removed in Firefox 22
+      if (PageThumbsStorage.getFileForURL) {
+        file = PageThumbsStorage.getFileForURL(url);
+      } else if (PageThumbsStorage.getFilePathForURL) {
+        file = new FileUtils.File(PageThumbsStorage.getFilePathForURL(url));
+      }
+      if (!file || !file.exists()) {
+        displayFaviconForThumbnail(url, cell.querySelector(".newtab-thumbnail"));
       }
     }
   }
@@ -215,72 +193,6 @@ function initBrand()
       brand.toolbar.homepageURL);
 }
 
-
-//////////////////////////////////////////
-// Fill most visited buttons
-//////////////////////////////////////////
-
-const maxItems = 9;
-const maxTitleChars = 40;
-const maxRecommendedItems = 9;
-
-function fillMostVisited()
-{
-  var listE = document.getElementById("most-visited-list");
-  cleanElement(listE);
-  initialFillIfNecessary();
-  var i = 0;
-  for each (let entry in unitedFromAbove.newtab.gMostVisited)
-  {
-    if (++i > maxItems)
-      break;
-    let titleText = entry.title || entry.url;
-    if (titleText.length > maxTitleChars)
-      titleText = titleText.substr(0, maxTitleChars);
-    let item = document.createElement("div");
-    item.setAttribute("class", "mostvisited");
-    let link = document.createElement("a");
-    link.setAttribute("href", entry.url);
-    let title = document.createElement("span");
-    title.appendChild(document.createTextNode(titleText));
-    title.setAttribute("class", "sitetitle");
-    let imgThumbDiv = document.createElement("div");
-    imgThumbDiv.setAttribute("class", "thumbnail");
-    let imgThumb = document.createElement("img");
-    var tn = entry.getThumbnailURL();
-    if (!tn)
-    {
-      if (entry.faviconURL) {
-        tn = entry.faviconURL;
-      } else {
-        tn = "chrome://mozapps/skin/places/defaultFavicon.png";
-      }
-      imgThumb.setAttribute("class", "smallicon");
-      // on-the-fly thumbnail generation, trac bug #160
-      //imgThumb.setAttribute("loading", "true");
-      //makeThumbnail(entry.url, function(thumbnailURL)
-      //{
-      //  imgThumb.removeAttribute("loading");
-      //  imgThumb.setAttribute("src", thumbnailURL);
-      //});
-    }
-    imgThumb.setAttribute("src", tn);
-    imgThumbDiv.style.width = unitedFromAbove.newtab.thumbnailWidth + "px";
-    imgThumbDiv.style.height = unitedFromAbove.newtab.thumbnailHeight + "px";
-//    imgThumb.setAttribute("width", unitedFromAbove.newtab.thumbnailWidth);
-//    imgThumb.setAttribute("height", unitedFromAbove.newtab.thumbnailHeight);
-    let imgFavicon = document.createElement("img");
-    imgFavicon.setAttribute("class", "favicon");
-    imgFavicon.setAttribute("src", entry.faviconURL);
-    imgThumbDiv.appendChild(imgThumb);
-    link.appendChild(imgThumbDiv);
-    link.appendChild(imgFavicon);
-    link.appendChild(title);
-    item.appendChild(link);
-    listE.appendChild(item);
-  }
-}
-
 /**
  * Fetch the data for fillRecommendedSites() from server XML,
  * once a day. Cache in prefs.
@@ -313,6 +225,9 @@ function getRecommendedSites(successCallback)
     errorNonCritical).start();
   }
 }
+
+const maxTitleChars = 40;
+const maxRecommendedItems = 9;
 
 /**
  * This is a small list of partner sites that should be displayed
@@ -353,32 +268,6 @@ function fillRecommendedSites(xml)
   listE.parentNode.setAttribute("have-results", "true");
 }
 
-// if new profile, fill up list with defined initial entries
-function initialFillIfNecessary()
-{
-  if (unitedFromAbove.newtab.gMostVisited.length >= maxItems)
-    return;
-  // If fresh profile, just populate with "initial entries", up to maxItems.
-  // If real most visited has 5 entries, fill up remaining slots with
-  // the top of initial entries.
-  // Also catch case when initial entries are less than max entries.
-  let l = Math.min(maxItems - unitedFromAbove.newtab.gMostVisited.length,
-    brand.newtab.initialEntries.length);
-  for (let i = 0; i < l; i++)
-  {
-    let initEntry = brand.newtab.initialEntries[i];
-    let entry = new unitedFromAbove.newtab.MostVisitedEntry(initEntry.url);
-    entry.title = initEntry.label;
-    entry.getThumbnailURL = function() // not nice :(
-    {
-      if (!initEntry.preview)
-        return null;
-      return "chrome://unitedtb/skin/newtab/initial-thumbs/" + initEntry.preview;
-    }
-    unitedFromAbove.newtab.gMostVisited.push(entry);
-  }
-}
-
 //////////////////////////////////////////
 // Search field
 //////////////////////////////////////////
@@ -387,7 +276,7 @@ function initialFillIfNecessary()
 
 function onSearchTextChanged(event)
 {
-  notifyWindowObservers("search-keypress",
+  unitedFromAbove.common.notifyWindowObservers("search-keypress",
       { searchTerm : event.target.value, source : 4 });
 };
 
@@ -420,33 +309,6 @@ function startSearch(searchTerm)
 };
 // </copied>
 
-/**
- * Makes a thumbnail of an arbitrary URL (for which we have
- * no thumbnail yet), by loading the page in an invisible <browser>.
- * @param url {String} page URL to make the thumbnail of
- * @successCallback { Function(imageURL {String}) }
- *   Will be called when the thumbnail is made.
- *   imageURL {String} will contain the URL of the thumbnail
- */
-function makeThumbnail(url, successCallback) 
-{
-  try {
-    debug("making thumbnail on-the-fly for <" + url + ">");
-    var iframe = document.createElement("iframe"); // <html:iframe>
-    iframe.height = "0px";
-    iframe.width = (window.innerWidth - 25) + "px";
-    iframe.style.visibility = "hidden";
-    iframe.addEventListener("load", function(event)
-    {
-      var thumbnailURL = unitedFromAbove.newtab.captureThumbnail(iframe);
-      successCallback(thumbnailURL);
-    }, true);
-    iframe.src = url;
-    // append <iframe> to the end of newtab-page.xhtml
-    document.getElementsByTagName("body")[0].appendChild(iframe);
-  } catch (e) { alert(e); error(e); }
-}
-
 function onHistoryCleanButton()
 {
   Cc['@mozilla.org/browser/browserglue;1']
@@ -454,4 +316,8 @@ function onHistoryCleanButton()
     .sanitize(window);
 }
 
-                    
+// When history is deleted, update the user terms
+autoregisterGlobalObserver("delete-search-history", function()
+{
+  fillUserSearchTerms();
+});

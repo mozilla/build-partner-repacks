@@ -1,58 +1,96 @@
-.united-coupon-alert {
-  background-color: white;
-  border-bottom: 1px solid black;
+#united-coupon-notificationbox {
+  font-family: Verdana;
+  font-size: 11px;
+  color: #262626;
   cursor: pointer;
 }
 
-#united-coupon-alert-right {
-  background-color: #A10D59;
-}
-#united-coupon-alert-right-rewards {
-  background-color: #E8923D;
-}
-.united-coupon-alert-left {
-  width: 300px;
-}
-.united-coupon-alert-logo-brand {
-  width: 32px;
-  height: 32px;
-  margin-left: 6px;
-}
-.united-coupon-alert-logo-coupon {
-  padding: 3px 8px 3px 5px;
-  font-size: 16pt;
-  font-weight: bold;
-  font-family: Verdana, sans-serif;
-  color: #A10D59;
-  text-shadow: gray 0 1px;
-}
-.united-coupon-alert-text-generated {
-  color: white;
-  text-shadow: black 0 1px;
-  font-weight: bold;
-  cursor: inherit;
+/* Labels don't inherit their cursor from the parent */
+#united-coupon-notificationbox label {
+  cursor: pointer;
 }
 
-.united-coupon-closebutton-box {
-  width: 20px;
+#united-coupon-notificationbox hbox {
+  height: 32px;
+}
+
+.united-coupon-text {
+  color: #A10D59;
+}
+
+.united-reward-text {
+  color: #E8923C
+}
+
+#united-reward-brand-text,
+#united-coupon-brand-text,
+.united-reward-text,
+.united-coupon-text {
+  font-weight: bold;
+}
+
+.united-coupon-button {
+  border: solid 1px #f2bd3e;
+  -moz-appearance: none;
+  background-color: #ffc800;
+  border-radius: 4px;
+  -moz-boz-shadow: inset 0 1px 1px rgba(255,255,255,.2), inset 0 0 3px rgba(255,255,255,.9);
+  background-image: -moz-linear-gradient(bottom, rgba(255,255,255,0), rgba(255,255,255,0.35) 75%, rgba(255,255,255,0.5));
+  height: 22px;
+  font-weight: bold;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#united-coupon-notificationbox #united-coupon-brand-icon-box,
+#united-coupon-notificationbox #united-reward-brand-icon-box {
+  padding-left: 10px;
+}
+
+#united-coupon-notificationbox[both='true'] #united-reward-brand-icon-box {
+  padding-right: 10px;
+}
+
+
+#united-coupon-notificationbox[both='true'] #united-reward-brand-text,
+#united-coupon-notificationbox[both='true'] #united-coupon-brand-text,
+#united-coupon-notificationbox[both='true'] #united-coupon-brand-icon-box,
+#united-coupon-notificationbox[both='true'] #united-reward-box .united-coupon-closebutton {
+  display: none;
+}
+
+#united-coupon-notificationbox[both='true'] #united-reward-icon-box,
+#united-coupon-notificationbox[both='true'] #united-coupon-icon-box {
+  background: -moz-linear-gradient(#FFFFFF, #DFE3E5);
+}
+
+#united-coupon-notificationbox[both='true'] #united-reward-icon-box {
+  border-left: 1px outset #D1D4D9;
+}
+#united-coupon-notificationbox[both='true'] #united-reward-brand-icon-box {
+  border-right: 1px outset #D1D4D9;
+}
+
+#united-coupon-alert-rewards,
+#united-coupon-alert {
+  background-color: white;
+}
+
+.united-coupon-brand-box {
+  border: 1px outset #D1D4D9;
+}
+
+.united-coupon-content-box {
+  background: -moz-linear-gradient(#FFFFFF, #DFE3E5);
+  border: 1px outset #D1D4D9;
 }
 
 .united-coupon-closebutton {
-   border: none;
-   list-style-image: url("chrome://unitedtb/skin/coupon/closebox.png");
-   -moz-appearance: none;
-   background-color: transparent;
-   min-width: 0px;
-   margin: 0px;
-   padding: 0px;
-}
-
-.united-coupon-closebutton > hbox {
-  padding-left: 0px;
-  padding-right: 0px;
-}
-
-
-.united-coupon-alert-button {
-  min-width: 120px;
+  -moz-appearance: none;
+  list-style-image: url("chrome://unitedtb/skin/coupon/closebox.png");
+  min-width: 0px;
+  background: none;
+  border: none;
+  margin: 0px;
+  padding: 0px;
 }

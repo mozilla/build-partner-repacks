@@ -1,6 +1,5 @@
 /**
  * This sets our page as newtab page in Firefox prefs.
- * For Firefox 13 and higher.
  */
 
 const EXPORTED_SYMBOLS = [];

@@ -14,12 +14,8 @@
       href="chrome://unitedtb/skin/neterror/neterror.css"/>
 </head>
 <body>
-    <script type="text/javascript;version=1.8"
-      src="chrome://unitedtb/content/util/uiutil.js"></script>
-    <script type="text/javascript;version=1.8"
-      src="chrome://unitedtb/content/util/observerOnWindow.js"></script>
-    <script type="text/javascript;version=1.8"
-      src="chrome://unitedtb/content/neterror/neterror.js"></script>
+    <script type="application/javascript;version=1.8" src="chrome://unitedtb/content/util/common-html.js"/>
+    <script type="application/javascript;version=1.8" src="chrome://unitedtb/content/neterror/neterror.js"/>
 
   <div id="page">
     <div id="content">
@@ -56,5 +52,5 @@
    - an onload handler. This is because error pages are loaded as
    - LOAD_BACKGROUND, which means that onload handlers will not be executed.
    -->
-   <script type="application/x-javascript">onLoad();</script></body>
+   <script type="application/javascript;version=1.8">onLoad();</script></body>
 </html>

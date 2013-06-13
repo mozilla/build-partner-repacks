@@ -33,9 +33,6 @@
  * didn't have to bring properties files in.
  */
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
-Components.utils.import("resource://unitedtb/build.js");
 
 function onOptinLoad()
 {

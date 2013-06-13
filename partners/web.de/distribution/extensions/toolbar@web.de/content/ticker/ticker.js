@@ -35,7 +35,7 @@ var gStringBundle = new StringBundle(
 function onLoad()
 {
   try {
-    gMenuE = document.getElementById("united-ticker-popup");
+    gMenuE = getToolbarItemE("united-ticker-popup");
     gMenuE.addEventListener("popupshown", onDropdownOpened, false);
     if (kLazyLoad)
       reset();
@@ -46,7 +46,7 @@ function onLoad()
 
     autoregisterGlobalObserver("region-changed", reset);
     ourPref.observeAuto(window, "ticker.channel", fetchFeed);
-  } catch(e) { error(e); }
+  } catch(e) { errorNonCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -132,7 +132,7 @@ function buildMenu(xml)
     }
     appendStaticEntries();
   } catch (e) {
-    error(e);
+    errorNonCritical(e);
     buildEmptyMenu(gStringBundle.get("feed.error.message"), e);
   }
 }

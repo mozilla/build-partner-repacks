@@ -68,6 +68,7 @@ function initCoupons() {
 
 function onLoad()
 {
+  // Pref to disable module
   ourPref.observeAuto(window, "coupon.enabled", function(newValue)
   {
     if (newValue)
@@ -201,31 +202,33 @@ function showAlert(coupons)
   // there are rewards mixed in. Loop through once to get the number of coupons
   // It's a little hacky, but the alternative is rewriting this entire function
   var numCoupons = 0;
-  for each (let coupon in gCoupons)
+  for each (let coupon in coupons)
     if (!coupon.rewards)
       numCoupons++;
 
-  for each (let coupon in coupons)
-  {
-    if (coupon.rewards)
-    {
+  for each (let coupon in coupons) {
+    if (coupon.rewards) { // WEB.Cent
+      if ( !ourPref.get("coupon.rewards.show") || hasRewardsCoupon) {
+        continue;
+      }
       var textGeneratedE = document.getElementById("united-coupon-alert-text-generated-rewards");
       var buttonE = document.getElementById("united-coupon-alert-button-rewards");
       buttonE.coupon = coupon;
-      textGeneratedE.textContent = sb.get("alert.coupons.rewards")
-          .replace("%DOMAIN%", coupon.shopDomain);
+      textGeneratedE.setAttribute("value", sb.get("alert.coupons.rewards")
+          .replace("%DOMAIN%", coupon.shopDomain));
       hasRewardsCoupon = true;
-    }
-    else
-    {
+    } else { // regular coupon
+      if ( !ourPref.get("coupon.coupons.show") || hasRegularCoupon) {
+        continue;
+      }
       var textGeneratedE = document.getElementById("united-coupon-alert-text-generated");
       var buttonE = document.getElementById("united-coupon-alert-button");
       buttonE.coupon = coupon;
-      //textDescriptionE.textContent = gCoupon.description;
-      textGeneratedE.textContent = PluralForm.get(numCoupons,
+      //textDescriptionE.textContent = coupon.description;
+      textGeneratedE.setAttribute("value", PluralForm.get(numCoupons,
             sb.get("alert.coupons.pluralform"))
             .replace("%S", numCoupons)
-            .replace("%DOMAIN%", coupon.shopDomain);
+            .replace("%DOMAIN%", coupon.shopDomain));
       hasRegularCoupon = true;
     }
     if (hasRegularCoupon && hasRewardsCoupon) {
@@ -236,16 +239,12 @@ function showAlert(coupons)
   regularAlert.hidden = !hasRegularCoupon;
   rewardsAlert.hidden = !hasRewardsCoupon;
 
-  // This case is either regular or regular + rewards
-  if (hasRegularCoupon)
+  var alertContainer = document.getElementById("united-coupon-notificationbox");
+  if (hasRegularCoupon && hasRewardsCoupon)
   {
-    document.getElementById("united-coupon-closebutton").hidden = false;
-    document.getElementById("united-coupon-closebutton-rewards").hidden = true;
-  }
-  // Implicit in this case is that we have rewards with no regular
-  else if (hasRewardsCoupon)
-  {
-    document.getElementById("united-coupon-closebutton-rewards").hidden = false;
+    alertContainer.setAttribute("both", "true");
+  } else {
+    alertContainer.removeAttribute("both");
   }
 
   var closeAfterSec = ourPref.get("coupon.alert.closeAfterSec", 0);
@@ -267,7 +266,7 @@ function closeButtonClicked() {
   checkToAlert(function() {
     /* We only show the tooltip box three times */
     var tooltipBoxShown = ourPref.get("coupon.tooltipbox.shown", 0);
-    if (tooltipBoxShown >= 3)
+    if (tooltipBoxShown >= 1)
       return;
 
     var hasRegularCoupon = false;
@@ -327,14 +326,10 @@ function closeAlert()
     clearTimeout(gAlertTimer);
   gAlertTimer = null;
 
-  var alertE = document.getElementById("united-coupon-alert");
-  alertE.hidden = true;
-  var rewardsAlertE = document.getElementById("united-coupon-alert-rewards");
-  rewardsAlertE.hidden = true;
-  document.getElementById("united-coupon-closebutton").hidden = true;
-  document.getElementById("united-coupon-closebutton-rewards").hidden = true;
+  document.getElementById("united-coupon-alert-rewards").hidden = true;
+  document.getElementById("united-coupon-alert").hidden = true;
+  document.getElementById("united-coupon-notificationbox").removeAttribute("both");
 }
-
 
 /**
  * User clicked on the alert (button)

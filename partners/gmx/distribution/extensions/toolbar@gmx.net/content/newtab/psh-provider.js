@@ -1,6 +1,3 @@
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/StringBundle.js");
-
 /**
  * An data entry, e.g. a visited URL.
  *

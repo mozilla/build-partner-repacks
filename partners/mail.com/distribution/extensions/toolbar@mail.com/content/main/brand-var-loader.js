@@ -68,6 +68,7 @@ function load(isFirst)
     }
     //debug("brand.js loaded");
 
+    // TODO usually "de-de" or "en-US", but might be "de"
     var weblocale = Services.prefs.getComplexValue("intl.accept_languages",
         Ci.nsIPrefLocalizedString).data.split(",")[0];
     var appPlaceholders = {

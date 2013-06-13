@@ -60,8 +60,6 @@ a { text-decoration: none; outline: none; }
 #contentheader > div { display: inline; margin-left: 20px; }
 /* TODO: is this the correct color? */
 #contentheader a { color: #353A3A;} 
-#listview,
-#galleryview,
 #most-visited-manage {
   line-height: 16px;
   font-size: 10px;
@@ -69,19 +67,6 @@ a { text-decoration: none; outline: none; }
   padding: 1px 20px 5px 0;
   cursor: pointer;
 }
-#listview > .imgbutton,
-#galleryview > .imgbutton {
-  background-image: url("chrome://unitedtb/skin/newtab/gallery-buttons.png");
-  background-repeat: no-repeat;
-  background-position: 64px 16px;
-  width: 16px; height: 16px;
-  vertical-align: middle;
-  display: inline-block;
-}
-body[viewmode="list"] #galleryview > .imgbutton { background-position: 0px 0px; }
-body[viewmode="gallery"] #galleryview > .imgbutton { background-position: -17px 0px; }
-body[viewmode="gallery"] #listview > .imgbutton { background-position: -33px 0px; }
-body[viewmode="list"] #listview > .imgbutton { background-position: -49px 0px; }
 #sitebar { width: 180px; }
 .module, .module a { color: #353A3D; line-height: 15px; }
 .module { margin-bottom: 20px; }
@@ -92,7 +77,6 @@ body[viewmode="list"] #listview > .imgbutton { background-position: -49px 0px; }
 .modulepart a img { float: left; clear: left; margin-right: 10px; }
 .modulepart h4 { vertical-align: -5px; }
 .modulepart h4 a, .module p a { float: none; }
-#most-visited-list a { color: #2269C3; }
 #last-searches-delete { cursor: pointer; }
 #last-searches-delete[have-results="false"] { display: none; }
 #last-searches-manage { cursor: pointer; }
@@ -104,41 +88,29 @@ li.no-results { cursor: text; }
 
 img.favicon { width: 16px; height: 16px; }
 
-body[viewmode="gallery"] #content, body[viewmode="gallery"] #recommended { margin-top: 15px; }
-body[viewmode="gallery"] #most-visited-list .mostvisited {
-  /*background: url(chrome://unitedtb/skin/newtab/sprite.jpg) no-repeat 0px -76px;*/
-  width: 204px; height: 164px;
-  margin: 0 60px 40px 0;
-  position: relative;
-  float: left;
-  overflow: hidden;
-}
-body[viewmode="gallery"] .recommended-site {
+body #content, body #recommended { margin-top: 15px; }
+body .recommended-site {
   float: left;
   margin: 0 25px 20px 0;
 }
-body[viewmode="gallery"] #most-visited-list div.thumbnail img.smallicon { padding: 16px; margin-top: 43px; border: 2px solid lightgray;}
-body[viewmode="gallery"] #most-visited-list div.thumbnail { margin: 4px; text-align: center;}
-body[viewmode="gallery"] .sitetitle { line-height: 12px; }
-body[viewmode="gallery"] img.favicon { margin: 4px 2px 0 4px; position: relative; vertical-align: -4px; }
-
-body[viewmode="list"] #most-visited-list { margin-top: 20px; }
-body[viewmode="list"] #most-visited-list .mostvisited, body[viewmode="list"] #recommended .recommended-site { height: 36px; }
- body[viewmode="list"] #most-visited-list div.thumbnail { display: none; }
-body[viewmode="list"] .sitetitle { font-size: 14px; font-weight: 700; text-decoration: underline; }
-body[viewmode="list"] img.favicon { margin: 4px 2px 0 0; position: relative; vertical-align: -3px; }
+body .sitetitle { line-height: 12px; }
+body img.favicon { margin: 4px 2px 0 4px; position: relative; vertical-align: -4px; }
 
 .unselectable {
    -moz-user-select: none;
 }
 
-body[viewmode="gallery"] #most-visited-list img.thumbnail[loading="true"] {
-  background-image: url('chrome://unitedtb/skin/newtab/throbber.png');
-  background-repeat: no-repeat;
-}
-
 .ac-popup {
   width: 500px;
+}
+
+.ac-command {
+  color: blue;
+  text-decoration: underline;
+  text-align: right;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* This CSS converts the new tab page to use the CSS box model */

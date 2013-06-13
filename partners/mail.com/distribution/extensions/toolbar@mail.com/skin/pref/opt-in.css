@@ -108,6 +108,7 @@ pref-region menulist, pref-region *|menulist {
 #header {
   text-align: left;
   margin-bottom: 30px;
+  margin-top: 15px;
   font-size: x-large;
 }
 

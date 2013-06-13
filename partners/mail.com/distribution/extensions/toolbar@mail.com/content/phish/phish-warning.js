@@ -5,10 +5,8 @@
  * by adding new entries as request by the user.
  */
 
-Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/util/util.js", this);
 Components.utils.import("resource://unitedtb/util/globalobject.js", this);
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
+Components.utils.import("resource://gre/modules/Services.jsm");
 
 function onload()
 {

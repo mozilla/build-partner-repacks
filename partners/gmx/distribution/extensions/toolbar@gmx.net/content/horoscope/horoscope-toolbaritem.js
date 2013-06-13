@@ -97,11 +97,11 @@ function onItemClicked(entry)
   }
   if (url.match("partnertest"))
   {
-    if (!ourPref.isSet("horoscope.sign.partner") || !ourPref.isSet("horoscope.gender"))
+    if (!ourPref.get("horoscope.sign.partner") || !ourPref.get("horoscope.gender"))
     {
       unitedinternet.openPrefWindow("horoscope");
       // If they chose not to fill in the data we need, just return
-      if (!ourPref.isSet("horoscope.sign.partner") || !ourPref.isSet("horoscope.gender"))
+      if (!ourPref.get("horoscope.sign.partner") || !ourPref.get("horoscope.gender"))
       {
         return;
       }
@@ -133,7 +133,7 @@ function onItemClicked(entry)
         loadPage(brand.horoscope.horoscopeURL.replace("{SIGN}", "").replace("{TYPE}", "partnertest"), "united-horoscope");
       }
     } catch (e) {
-      error(e);
+      errorNonCritical(e);
       loadPage(brand.horoscope.horoscopeURL.replace("{SIGN}", sign).replace("{TYPE}", "partnertest"), "united-horoscope");
     }
   }

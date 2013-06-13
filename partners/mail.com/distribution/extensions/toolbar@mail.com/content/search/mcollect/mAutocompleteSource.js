@@ -66,7 +66,7 @@ mCollectAutocompleteSource.prototype =
 
       var icon = result.icon;
       var value = result instanceof mSearchTermResult ? result.title : "";
-      var highlight = result instanceof mSearchTermResult ? this._currentTerm : null;
+      var highlight = (result.type == "searchterm" || result.type == "url") ? this._currentTerm : "";
       var item = new SimpleAutocompleteItem(value, result.title, result.description, icon,
           action, false, highlight, [ "ac-" + result.type ]);
       item.searchResult = result;

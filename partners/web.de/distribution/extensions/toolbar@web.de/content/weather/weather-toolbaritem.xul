@@ -24,6 +24,7 @@
         orient="horizontal"
         class="chromeclass-toolbar-additional toolbarbutton-1"
         united-removable="true"
+        removable="true"
         united-icon-only="true"
         >
       <!-- Waiting for GMX/Web.de to provide minimal page to show in popup

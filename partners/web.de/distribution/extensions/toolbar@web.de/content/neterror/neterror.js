@@ -1,14 +1,14 @@
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
 Components.utils.import("resource://unitedtb/search/search-store.js", this);
-Components.utils.import("resource://unitedtb/util/observer.js", this);
 
+var unitedFromAbove;
 var searchField;
 
 function onLoad()
 {
+  var firefoxWindow = getTopLevelWindowContext(window);
+  unitedFromAbove = firefoxWindow.unitedinternet;
+
   searchField = document.getElementById("searchterm");
 
   setSearchTerm();
@@ -109,7 +109,7 @@ function initBrand()
 
 function onSearchTextChanged(event)
 {
-  notifyWindowObservers("search-keypress",
+  unitedFromAbove.common.notifyWindowObservers("search-keypress",
       { searchTerm : event.target.value, source : 8 });
 };
 
@@ -136,8 +136,6 @@ function startSearch(searchTerm)
   searchTerm = searchTerm.trim().replace(/\s+/g, " ");
   searchField.value = searchTerm;
 
-  var firefoxWindow = getTopLevelWindowContext(window);
-  var unitedFromAbove = firefoxWindow.unitedinternet;
   unitedFromAbove.common.notifyWindowObservers("search-started",
       { searchTerm : searchTerm, source : 8 });
   loadPage(brand.search.netErrorURL +
