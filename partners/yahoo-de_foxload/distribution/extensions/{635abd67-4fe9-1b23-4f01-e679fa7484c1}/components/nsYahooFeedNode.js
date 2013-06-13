@@ -1,0 +1,10 @@
+
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");function YahooFeedNode(){this.ICON_URL="http:\/\/us.i1.yimg.com/us.yimg.com/i/tb/iconsgif/";this.SKIN_URL="chrome:\/\/ytoolbar/skin/";this.BUTTON_TYPE=0x02;this.MENU_TYPE=0x03;this.BUTTONMENU_TYPE=0x04;this.PARAM_TYPE=0x06;this.EDITBOX_TYPE=0x07;this.GROUP_TYPE=0x08;this.VALUE_TYPE=0x09;this.TICKER_TYPE=0x23;this.SKIN_TYPE=0x0E;this.SIZER_TYPE=0x0F;this.MENUITEM_TYPE=0x16;this.SEPARATOR_TYPE=0x17;this.INJECTO_TYPE=0x30;this.MODULE_TYPE=0x82;this.MODULEMENU_TYPE=0x83;this.id=null;this.name=null;this.value=null;this.type=0;this.func=null;this.funcNum=-1;this.funcUrl="";this.funcTracking=-1;this.hash="";this.icon=null;this.styles="";this.childSize=0;this.childNodes=null;this.parentNode=null;this.domToolbar=null;this.domMenubar=null;this.mIdFull=null;this.iconPath=null;this.addChild=function(node){node.parentNode=this;if(this.childSize===0){this.childNodes=Components.classes["@mozilla.org/array;1"].createInstance(Components.interfaces.nsIMutableArray);}
+this.childNodes.appendElement(node,false);this.childSize++;};this.getChild=function(index){return(index<this.childSize)?this.childNodes.queryElementAt(index,Components.interfaces.nsIYahooFeedNode):null;};this.getNodeById=function(id){if(this.id==id||this.name==id){return this;}
+if(this.childSize>0){var node;for(var i=0;i<this.childSize;i++){if((node=this.getChild(i).getNodeById(id))){return node;}}}
+return null;};this.destroy=function(){if(this.childNodes){for(var i=0;i<this.childSize;i++){this.getChild(i).destroy();}
+this.childSize=0;this.childNodes.clear();}
+this.domMenubar=null;this.domToolbar=null;this.parentNode=null;this.childNodes=null;this.hash=null;};this.formatFunction=function(){};}
+YahooFeedNode.prototype={classID:Components.ID("{AFF842C7-8EDB-404f-9443-5DE5C96F1B25}"),contractID:"@yahoo.com/feed/node;1",QueryInterface:XPCOMUtils.generateQI([Components.interfaces.nsIYahooFeedNode])};if(XPCOMUtils.generateNSGetFactory)
+var NSGetFactory=XPCOMUtils.generateNSGetFactory([YahooFeedNode]);else
+var NSGetModule=XPCOMUtils.generateNSGetModule([YahooFeedNode]);
