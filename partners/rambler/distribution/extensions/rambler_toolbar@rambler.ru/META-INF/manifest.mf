@@ -49,8 +49,8 @@ SHA1-Digest: 0EM3guQ9idXbvv5BZ7sAtD8tEfc=
 
 Name: chrome/rambler_toolbar.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: CBUddAqynuLuKDm82TMmww==
-SHA1-Digest: BhBm8wO65+RZ35+j4hxWeqiw2Dc=
+MD5-Digest: OB59AhEKn5WDTd6+JDH6cg==
+SHA1-Digest: waPQ9LGLHeLAhJhM6nVtPLZNtvo=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -69,8 +69,8 @@ SHA1-Digest: RZ24ZfHipQHv+z//in7yRaKX4kE=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: KbyCGKulyKDfqnnqHd2zQg==
-SHA1-Digest: /IpppuTZcjUO6pn0nlTYetjLsSc=
+MD5-Digest: oKKqMninGTonleHt7LZq5A==
+SHA1-Digest: wP/cjYJHDzcV+Gr6vhO1CU8v/JI=
 
 Name: modules/Database.js
 Digest-Algorithms: MD5 SHA1
