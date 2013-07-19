@@ -1,6 +1,6 @@
 #!/bin/bash
 
-signing_server="signing3.srv.releng.scl3.mozilla.com:9120"
+signing_server="signing4.srv.releng.scl3.mozilla.com:9120"
 my_ip=`/sbin/ifconfig | grep inet | grep "10\." | cut -f2 -d" "`
 token_file="`pwd`/token"
 nonce_file="`pwd`/nonce"
