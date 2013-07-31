@@ -42,6 +42,6 @@ function ourRemoveTab(aTab, aParams)
   {
     overrideLastTab = false;
     gBrowser.tabContainer._closeWindowWithLastTab = us.generalPref.get("browser.tabs.closeWindowWithLastTab");
-    content.document.location.href = us.brand.newtab.lasttabURL;
+    loadPage(us.brand.newtab.lasttabURL);
   }
 }

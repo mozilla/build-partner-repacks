@@ -379,7 +379,7 @@ function onCommandAccountMenuitem(event)
 function goToWebmail(acc)
 {
   if (acc.type == "unitedinternet" && acc.providerID == "webde")
-    startUsecase(acc, "openmail", [], window);
+    startUsecase(acc, "homepage-logged-in", [], window);
   else
     goToWebmailOld(acc, window);
 }

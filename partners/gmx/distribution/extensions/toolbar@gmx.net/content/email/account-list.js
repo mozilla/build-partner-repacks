@@ -350,7 +350,7 @@ function getAccountProviderLocally(domain)
 function getMX(domain, successCallback, errorCallback)
 {
   domain = sanitize.hostname(domain);
-  var url = "https://mx-live.mozillamessaging.com/dns/mx/" + domain;
+  var url = "https://mx.thunderbird.net/dns/mx/" + domain;
   var fetch = new FetchHTTP({ url : url }, function(result)
   {
     // result is plain text, with one line per server.

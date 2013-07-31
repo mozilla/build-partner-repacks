@@ -38,7 +38,7 @@ function whitelist()
   var URL = getURL();
   //debug("whitelist: got URL: " + URL);
   whitelistURL(URL);
-  document.location = URL;
+  loadPage(URL);
 }
 
 /**
