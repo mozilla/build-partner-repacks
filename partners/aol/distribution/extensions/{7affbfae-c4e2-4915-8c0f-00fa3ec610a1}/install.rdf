@@ -2,18 +2,18 @@
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-
+  
   <em:creator>AOL Inc.</em:creator>
   <em:description>AOL Toolbar for Firefox</em:description>
   <em:homepageURL>http://toolbar.aol.com/aol/customfirefox</em:homepageURL>
   <em:id>{7affbfae-c4e2-4915-8c0f-00fa3ec610a1}</em:id>
   <em:name>AOL Toolbar</em:name>
-  <em:version>5.74.1.9371</em:version>
+  <em:version>5.74.1.9604</em:version>
   <em:optionsURL>chrome://aoltoolbar/content/settings.xul</em:optionsURL>
   <em:iconURL>chrome://aoltoolbar/locale/images/icon.png</em:iconURL>
   <em:updateURL>https://client.web.aol.com/toolbarfiles/Prod/Content/customfirefox/ffhostfiles/update.rdf</em:updateURL>
   <em:aboutURL>chrome://aoltoolbar/content/aboutBox.xul</em:aboutURL>
-
+  
   <em:targetApplication>
     <Description>
       <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
@@ -21,9 +21,9 @@
       <em:maxVersion>24.*</em:maxVersion>
     </Description>
   </em:targetApplication>
-
+  
   <em:unpack>true</em:unpack>
-
+  
   <em:file>
     <Description about="urn:mozilla:extension:file:aoltoolbar.jar">
       <em:package>content/</em:package>
@@ -31,7 +31,7 @@
 	  <em:locale>locale/en-US/</em:locale>
     </Description>
   </em:file>
-
+  
   </Description>
-
+  
 </RDF>
