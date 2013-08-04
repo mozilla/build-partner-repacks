@@ -2,18 +2,18 @@
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-
+  
   <em:creator>AOL Inc.</em:creator>
   <em:description>Custom Firefox DE Toolbar for Firefox</em:description>
   <em:homepageURL>http://toolbar.aol.com/aolde/aolde-ff</em:homepageURL>
   <em:id>{43196362-5378-448b-8944-f097fa65e932}</em:id>
   <em:name>Custom Firefox DE Toolbar</em:name>
-  <em:version>5.95.1.9457</em:version>
+  <em:version>5.95.1.9626</em:version>
   <em:optionsURL>chrome://aoldetoolbar/content/settings.xul</em:optionsURL>
   <em:iconURL>chrome://aoldetoolbar/locale/images/icon.png</em:iconURL>
   <em:updateURL>https://client.web.aol.com/toolbarfiles/Prod/Content/customffde/ffhostfiles/update.rdf</em:updateURL>
   <em:aboutURL>chrome://aoldetoolbar/content/aboutBox.xul</em:aboutURL>
-
+  
   <em:targetApplication>
     <Description>
       <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
@@ -21,9 +21,9 @@
       <em:maxVersion>24.*</em:maxVersion>
     </Description>
   </em:targetApplication>
-
+  
   <em:unpack>true</em:unpack>
-
+  
   <em:file>
     <Description about="urn:mozilla:extension:file:aoldetoolbar.jar">
       <em:package>content/</em:package>
@@ -31,7 +31,7 @@
 	  <em:locale>locale/de-DE/</em:locale>
     </Description>
   </em:file>
-
+  
   </Description>
-
+  
 </RDF>
