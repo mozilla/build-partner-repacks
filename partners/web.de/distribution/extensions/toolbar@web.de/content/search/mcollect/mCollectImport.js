@@ -5,9 +5,7 @@ const EXPORTED_SYMBOLS = [
 ];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 // mozIJSSubScriptLoader.loadSubScript(url) doesn't work right here
 // when passing null as scope (should be same as |this|)!
 

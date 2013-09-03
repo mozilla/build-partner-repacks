@@ -37,11 +37,6 @@ var gEmailMenuitems = [];
 // All accounts
 // {Array of Account}
 var gMailAccs = [];
-// Number of unread mail (of all accounts) in last poll intervall
-// Used to calculate new mail notifications
-var gLastUnreadMailCount = -1;
-// Time when the newmail notification was played/shows the last time. As |Date|
-var gLastNotificationTime = 0;
 
 var gMailImage = new Image();
 // Takes a bit to load,
@@ -54,10 +49,10 @@ gMailImage.src = "chrome://unitedtb/skin/email/email-nonew-small.png";
 function onLoad()
 {
   try {
-    gEmailStatusBarImage = document.getElementById("united-email-statusbar-image");
-    gEmailStatusBarLabel = document.getElementById("united-email-statusbar-label");
-    gEmailButton = getToolbarItemE("united-email-button");
-    gEmailButtonDropdown = getToolbarItemE("united-email-button-dropdown");
+    gEmailStatusBarImage = E("united-email-statusbar-image");
+    gEmailStatusBarLabel = E("united-email-statusbar-label");
+    gEmailButton = E("united-email-button");
+    gEmailButtonDropdown = E("united-email-button-dropdown");
     new appendBrandedMenuitems("email", "email", null, function(entry)
     {
       loadPage(entry.url, "tab");
@@ -72,7 +67,7 @@ function onLoad()
       if (!ourPref.get("email.shownOffer", false))
       {
         ourPref.set("email.shownOffer", true);
-        var popup = document.getElementById("united-email-popup");
+        var popup = E("united-email-popup");
         popup.openPopup(gEmailButton, "after_start", 0, 0, false, true);
       }
     }
@@ -127,7 +122,7 @@ function updateUI()
   // delete
   for (let [,menuitem] in Iterator(gEmailMenuitems))
     gEmailButtonDropdown.removeChild(menuitem);
-  var insertBeforeE = document.getElementById("united-email-separator-after-accounts");
+  var insertBeforeE = E("united-email-separator-after-accounts");
   var tooltiptext = gEmailButton.getAttribute("tooltiptext-for-item");
   gEmailMenuitems = [];
 
@@ -141,7 +136,8 @@ function updateUI()
     menuitem.classList.add("menuitem-iconic");
     menuitem.setAttribute("tooltiptext", tooltiptext);
     menuitem.addEventListener("command", onCommandAccountMenuitem, false);
-    updateMenuitem(menuitem, acc, 2);
+    updateMenuitem(menuitem, acc,
+        typeof(acc.friendsNewMailCount) == "number" ? 2 : 1);
     gEmailMenuitems.push(menuitem);
     gEmailButtonDropdown.insertBefore(menuitem, insertBeforeE);
     if (acc.unknownNewMailCount > 0) {
@@ -154,6 +150,15 @@ function updateUI()
       menuitem.account = acc;
       gEmailMenuitems.push(menuitem);
       gEmailButtonDropdown.insertBefore(menuitem, insertBeforeE);
+    }
+    if (acc.isLoggedIn) {
+      if (acc.newMailCount > 0 &&
+          (!("ui_previousNewMailCount" in acc) ||
+          acc.newMailCount != acc.ui_previousNewMailCount)) {
+        playSound();
+        showDesktopNotification(acc);
+        acc.ui_previousNewMailCount = acc.newMailCount;
+      }
     }
   }
 
@@ -172,36 +177,20 @@ function updateUI()
   unitedinternet.toolbar.onButtonSizeChangedByCode();
   // Disabled because of Mozilla bug 744992
   //updateTaskbarIcon(window, summary.newMailCount > 0 ? gMailImage.src : null);
-
-  // show new mail alerts
-  // |newMailCount| is actually unread mail, so check whether this increased
-  // to see whether we have really new mail.
-  // We need to know this only momentarily to show the alert.
-  const kMinIntervall = 3000; // Minimum time between 2 notifications. in ms
-  //debug("last notification was on " + gLastNotificationTime.toLocaleString() + " = " + gLastNotificationTime.valueOf() + ", that is " + (new Date() - gLastNotificationTime) + " ago");
-  if (gLastUnreadMailCount != -1 && // not at new window, but at browser start / login
-      summary.newMailCount > gLastUnreadMailCount &&
-      new Date() - gLastNotificationTime > kMinIntervall)
-  {
-    gLastNotificationTime = new Date();
-    let count = summary.newMailCount - gLastUnreadMailCount;
-    playSound();
-    showDesktopNotification(count);
-  }
-  gLastUnreadMailCount = summary.newMailCount;
 }
 autoregisterGlobalObserver("mail-check", updateUI);
 
+/**
+ * @param type {integer} @see unreadText()
+ */
 function updateMenuitem(menuitem, acc, type)
 {
   menuitem.account = acc;
 
-  if (type == 2) { // Friends only
-    if (acc.friendsNewMailCount > 0)
-      menuitem.setAttribute("status", "new");
-  } else if (type == 3) { // Unknown senders
-    if (acc.unknownNewMailCount > 0)
-      menuitem.setAttribute("status", "new");
+  if (//acc.kType == "unitedinternet" &&
+      (type == 2 && acc.friendsNewMailCount > 0 ||
+       type == 3 && acc.unknownNewMailCount > 0)) {
+    menuitem.setAttribute("status", "new");
   } else {
     menuitem.setAttribute("status", statusAttr(acc));
   }
@@ -247,7 +236,7 @@ function unreadText(acc, type)
                .replace("%S", count)
            : gBrandBundle.get("button.nonew" + bundleSuffix))
         : gStringBundle.get("button.disconnected"))
-      : document.getElementById("united-email-configure-menuitem")
+      : E("united-email-configure-menuitem")
           .getAttribute("tooltiptext");
 }
 
@@ -274,51 +263,27 @@ function playSound()
   } catch (e) { errorNonCritical(e); } // unexpected, but non-critical
 }
 
-function showDesktopNotification(newMailCount)
+function showDesktopNotification(acc)
 {
   try {
     if ( !ourPref.get("email.notification.desktop.enabled"))
       return;
-    var message = gStringBundle.get("alert.message");
-    var alerts = Cc["@mozilla.org/alerts-service;1"]
-        .getService(Ci.nsIAlertsService);
-    alerts.showAlertNotification(
-        "chrome://unitedtb/skin/email/email-new-small.png", // image
-        brand.toolbar.name, // title
-        message, // message text
-        true, // clickable
-        null, // callback ID
-        desktopNotificationClickObserver, // listener
-        gStringBundle.get("alert.name") // name for Growl config
-        );
-    debug(message);
-  } catch (e) { // expected, e.g. if Growl is not installed
-    errorNonCritical(new Exception("Could not show desktop notification"));
-    errorNonCritical(e);
-  }
-}
-
-var desktopNotificationClickObserver =  
-{
-  observe : function(subject, topic, data)
-  {  
-    if (topic != "alertclickcallback")
+    if ( !("Notification" in window)) {
       return;
-    desktopNotificationClicked(null, data);
-  }
-};
-
-function desktopNotificationClicked(dummy, cookie)
-{
-  // HACK: updateUI() doesn't know which account is new,
-  // so just open the first account with new mail
-  for each (let acc in gMailAccs)
-  {
-    if (acc.isLoggedIn && acc.newMailCount > 0)
-    {
-      goToWebmail(acc);
-      break;
     }
+    var notification = new Notification(brand.toolbar.name, {
+      body: PluralForm.get(acc.newMailCount,
+                           gStringBundle.get("alert.message.pluralform"))
+                      .replace("%count%", acc.newMailCount)
+                      .replace("%account%", acc.emailAddress),
+      icon: "chrome://unitedtb/skin/email/email-new-small.png",
+      tag: acc.emailAddress, // replaces existing notifications for that acc
+    });
+    notification.onclick = function() {
+      goToWebmail(acc);
+    }
+  } catch (e) {
+    errorNonCritical(e);
   }
 }
 
@@ -335,31 +300,33 @@ function desktopNotificationClicked(dummy, cookie)
  */
 function onCommandMailButton(openPrimary)
 {
-  if (gMailAccs.length == 0) // nothing configured
-  {
-    notifyWindowObservers("do-login", {
-      withUI : true,
-      account : null,
-      needAccountType : 1,
-      successCallback : goToWebmail,
-      // errorCallback default: show errors
-      // abortCallback default: do nothing
-    });
-  }
-  else if (gMailAccs.length == 1)
-  {
-    ensureLoginAndDo(gMailAccs[0], goToWebmail);
-  }
-  else if (openPrimary)
-  {
-    // Use primary account (it might not be the first one)
-    ensureLoginAndDo(getPrimaryAccount(), goToWebmail);
-  }
-  else
-  {
-    gEmailButton.open = true
-    //gEmailButtonDropdown.openPopup(gEmailButton, "after_start");
-  }
+  try {
+    if (gMailAccs.length == 0) // nothing configured
+    {
+      notifyWindowObservers("do-login", {
+        withUI : true,
+        account : null,
+        needAccountType : 1,
+        successCallback : goToWebmail,
+        // errorCallback default: show errors
+        // abortCallback default: do nothing
+      });
+    }
+    else if (gMailAccs.length == 1)
+    {
+      ensureLoginAndDo(gMailAccs[0], goToWebmail);
+    }
+    else if (openPrimary)
+    {
+      // Use primary account (it might not be the first one)
+      ensureLoginAndDo(getPrimaryAccount(), goToWebmail);
+    }
+    else
+    {
+      gEmailButton.open = true
+      //gEmailButtonDropdown.openPopup(gEmailButton, "after_start");
+    }
+  } catch (e) { errorCritical(e); }
 }
 
 /**
@@ -370,18 +337,23 @@ function onCommandMailButton(openPrimary)
  */
 function onCommandAccountMenuitem(event)
 {
-  event.stopPropagation(); // prevent it from bubbling to main <button>
-  var acc = event.target.account;
-  assert(acc && acc.emailAddress);
-  ensureLoginAndDo(acc, goToWebmail);
+  try {
+    event.stopPropagation(); // prevent it from bubbling to main <button>
+    var acc = event.target.account;
+    assert(acc && acc.emailAddress);
+    ensureLoginAndDo(acc, goToWebmail);
+  } catch (e) { errorCritical(e); }
 }
 
 function goToWebmail(acc)
 {
-  if (acc.type == "unitedinternet" && acc.providerID == "webde")
+  if (acc.type == "unitedinternet" && acc.providerID == "webde") {
     startUsecase(acc, "homepage-logged-in", [], window);
-  else
+  } else if (acc.type == "unitedinternet") {
     goToWebmailOld(acc, window);
+  } else {
+    // do nothing
+  }
 }
 
 // Set the checking attribute on the icon so we get animation
@@ -402,36 +374,38 @@ function stopMailCheckIcon() {
  */
 function onCommandCheckMailsNow(event)
 {
-  event.stopPropagation(); // prevent it from bubbling to main <button>
+  try {
+    event.stopPropagation(); // prevent it from bubbling to main <button>
 
-  animateMailCheckIcon();
-  notifyWindowObservers("do-login", {
-    withUI : true,
-    needAccountType : 1, // primary account
-    successCallback : function(a)
-    {
-      // Need to track if mail was actually checked so we can turn off
-      // the icon if it wasn't
-      var checkedMail = false;
-      for each (let acc in gMailAccs)
+    animateMailCheckIcon();
+    notifyWindowObservers("do-login", {
+      withUI : true,
+      needAccountType : 1, // primary account
+      successCallback : function(a)
       {
-        if (acc.isLoggedIn)
+        // Need to track if mail was actually checked so we can turn off
+        // the icon if it wasn't
+        var checkedMail = false;
+        for each (let acc in gMailAccs)
         {
-          checkedMail = true;
-          acc.mailCheck(false, false, stopMailCheckIcon,
-                        function(e) { stopMailCheckIcon(); errorCritical(e); });
+          if (acc.isLoggedIn)
+          {
+            checkedMail = true;
+            acc.mailCheck(0, false, stopMailCheckIcon,
+                          function(e) { stopMailCheckIcon(); errorCritical(e); });
+          }
         }
-      }
-      if (!checkedMail)
+        if (!checkedMail)
+          stopMailCheckIcon();
+      },
+      errorCallback: function(e)
+      {
         stopMailCheckIcon();
-    },
-    errorCallback: function(e)
-    {
-      stopMailCheckIcon();
-      errorCritical(e);
-    },
-    abortCallback: stopMailCheckIcon
-  });
+        errorCritical(e);
+      },
+      abortCallback: stopMailCheckIcon
+    });
+  } catch (e) { errorCritical(e); }
 }
 
 /**
@@ -441,8 +415,10 @@ function onCommandCheckMailsNow(event)
  */
 function onCommandConfigureMenuitem(event)
 {
-  event.stopPropagation(); // prevent it from bubbling to main <button>
-  unitedinternet.openPrefWindow("email");
+  try {
+    event.stopPropagation(); // prevent it from bubbling to main <button>
+    unitedinternet.openPrefWindow("email");
+  } catch (e) { errorCritical(e); }
 }
 
 /**

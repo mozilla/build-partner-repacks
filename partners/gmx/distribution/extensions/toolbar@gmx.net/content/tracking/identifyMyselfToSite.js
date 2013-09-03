@@ -32,23 +32,25 @@ var gCampaignID = null;
 
 function onLoad()
 {
-  window.removeEventListener("DOMContentLoaded", onLoad, false);
-  assert(typeof(brand.tracking.identifyMyselfToSites) == "object" &&
-      brand.tracking.identifyMyselfToSites.length);
+  try {
+    window.removeEventListener("DOMContentLoaded", onLoad, false);
+    assert(typeof(brand.tracking.identifyMyselfToSites) == "object" &&
+        brand.tracking.identifyMyselfToSites.length);
 
-  gBrand = brand.tracking.brand;
-  gVersion = build.version;
-  gVariant = build.kVariant;
-  if (gVariant == "browser")
-    gVariant = "bundle";
-  else if (gVariant == "release")
-    gVariant = "full";
-  gBrandedBrowser = ourPref.get("brandedbrowser", false);
-  debug("brand " + gBrand + ", version " + gVersion +
-      ", variant " + gVariant + ", branded browser " + gBrandedBrowser);
+    gBrand = brand.tracking.brand;
+    gVersion = build.version;
+    gVariant = build.kVariant;
+    if (gVariant == "browser")
+      gVariant = "bundle";
+    else if (gVariant == "release")
+      gVariant = "full";
+    gBrandedBrowser = ourPref.get("brandedbrowser", false);
+    debug("brand " + gBrand + ", version " + gVersion +
+        ", variant " + gVariant + ", branded browser " + gBrandedBrowser);
 
-  document.getElementById("appcontent")
-      .addEventListener("DOMContentLoaded", pageLoaded, false);
+    E("appcontent")
+        .addEventListener("DOMContentLoaded", pageLoaded, false);
+  } catch(e) { errorNonCritical(e); }
 }
 // on load fires too late for URLs passed on the firefox commandline
 window.addEventListener("DOMContentLoaded", onLoad, false);

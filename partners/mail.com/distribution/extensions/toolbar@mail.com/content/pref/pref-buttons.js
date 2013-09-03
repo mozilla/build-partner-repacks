@@ -1,8 +1,8 @@
 function onLoad()
 {
   try {
-    new ToolbarMode(document.getElementById("buttons-toolbarmode"));
-    new ButtonEnable(document.getElementById("buttons-list-list"));
+    new ToolbarMode(E("buttons-toolbarmode"));
+    new ButtonEnable(E("buttons-list-list"));
   } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);

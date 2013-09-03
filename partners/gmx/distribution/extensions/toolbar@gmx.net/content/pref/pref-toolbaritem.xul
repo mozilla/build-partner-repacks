@@ -33,6 +33,7 @@
           tooltiptext="&united.pref.button.tooltip;"
           oncommand="event.stopPropagation(); unitedinternet.openPrefWindow();"
           />
+        <menuseparator/>
       </menupopup>
     </toolbarbutton>
   </toolbar>

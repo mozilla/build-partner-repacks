@@ -19,8 +19,7 @@
       <field name="mRegions">null</field>
       <constructor><![CDATA[
         try {
-        Components.utils.import("resource://unitedtb/util/util.js", this);
-        Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
+        Components.utils.import("resource://unitedtb/util/common-jsm.js", this);
         loadJS("chrome://unitedtb/content/util/uiutil.js", this); // errorNonCritical()
 
         var labelE = document.getAnonymousElementByAttribute(this, "anonid", "label");

@@ -49,7 +49,7 @@ const EXPORTED_SYMBOLS = [ "Cc", "Ci", "Cu", "extend", "mixInto", "assert",
   "Exception", "NotReached", "Abortable", "TimeoutAbortable", "IntervalAbortable",
   "SuccessiveAbortable", "XPCOMUtils",  "getProfileDir", "getSpecialDir", "getOS",
   "parseURLQueryString", "createURLQueryString",
-  "arrayRemove", "arrayContains", "deepCopy", "getErrorText",
+  "arrayRemove", "arrayContains", "deepCopy", "getErrorText", "convertException",
   "errorInBackend", "kDebug", "debug", "debugObject", "dumpObject" ];
 
 // to not pullute Firefox global namespace, load into a scope using subscriptloader
@@ -440,36 +440,6 @@ function makeNSIURI(uriStr)
 }
 
 
-/**
- * @param nsresult {Integer}  an XPCOM error code
- * @returns {String} an error message
- *     Mostly based on the C++ macro constants, so
- *     may be very technical and in English.
- *     If no name found, returns the error code in hex.
- * @see <https://developer.mozilla.org/en/Table_Of_Errors>
- */
-function getErrorText(nsresult)
-{
-  assert(typeof(nsresult) == "number");
-  // name is the C++ macro name of the error
-  // code is the numeric error code
-  for (let name in Components.results)
-  {
-    let code = Components.results[name];
-    if (code == nsresult)
-    {
-      // Just base the text on the C++ macro name.
-      // If we wanted to make a nice human-readable, translated error msg,
-      // we could insert a string bundle read right here.
-      let text = name.toString().replace("NS_ERROR_", "")
-          .replace("_", " ").toLowerCase();
-      return text;
-    }
-  }
-  // Just return error code as hex code
-  return "0x" + nsresult.toString(16).toUpperCase();
-}
-
 
 /**
  * Reads UTF8 data from a URL.
@@ -840,6 +810,7 @@ function dumpObject(obj, name, maxDepth, curDepth)
  */
 function errorInBackend(e)
 {
+  e = convertException(e);
   debug("ERROR (from backend): " + e);
   debug("Stack:\n" + (e.stack ? e.stack : "none"));
   {
@@ -851,6 +822,105 @@ function errorInBackend(e)
       reporter.sendErrorToServer(e);
   }
 }
+
+/**
+ * Cleans up exceptions into a common format
+ * @param e {Error or Exception or nsIException or String}
+ * @param Exception
+ */
+function convertException(e) {
+  // Convert native C++ exceptions to the same format as JS ex
+  if (e instanceof Ci.nsIException) {
+    var e2 = new Exception(e.message);
+    e2.code = e.result;
+    e2.stack = e.location
+        ? _convertStackFrameToString(e.location)
+        : Error().stack;
+    e2.rootErrorMsg = e.inner ? e.inner.message : null;
+    e = e2;
+  }
+  // If we didn't get an Exception object (but e.g. a string),
+  // create one and give it a stack
+  if (typeof e != "object") {
+    e = new Exception(e);
+  }
+  if ( !e.stack) {
+    e.stack = Error().stack;
+  }
+  e.stack = _cleanupStack(e.stack);
+  return e;
+}
+
+
+/**
+ * Convert an XPCOM error stack into format of JS stacks
+ * @param frame {nsIStackFrame}
+ * @returns {String} multi-line, same format as Error().stack
+ */
+function _convertStackFrameToString(frame) {
+  if ( !frame.name && !frame.filename) {
+    return "";
+  }
+  var result = frame.name + "@" + frame.filename + ":" + frame.lineNumber + "\n";
+  if (frame.caller) {
+    result += _convertStackFrameToString(frame.caller);
+  }
+  return result;
+}
+
+/**
+ * Remove any functions from the stack that are related to
+ * showing or sending the error.
+ */
+function _cleanupStack(s) {
+  assert(typeof(s) == "string");
+  return s.split(/\n/).filter(function(element) {
+    if (element.match(/^sendErrorToServer/) ||
+        element.match(/^_showErrorDialog/) ||
+        element.match(/^convertException/) ||
+        element.match(/^UserError/) ||
+        element.match(/^Exception/) ||
+        element.match(/^NotReached/) ||
+        element.match(/^assert/) ||
+        element.match(/^errorCritical/) ||
+        element.match(/^errorNonCritical/) ||
+        element.match(/^errorInBackend/))
+      return false;
+    return true;
+    }).join("\n");
+}
+
+/**
+ * @param nsresult {Integer}  an XPCOM error code
+ * @returns {String} an error message
+ *     Mostly based on the C++ macro constants, so
+ *     may be very technical and in English.
+ *     If no name found, returns the error code in hex.
+ * @see <https://developer.mozilla.org/en/Table_Of_Errors>
+ */
+function getErrorText(nsresult)
+{
+  assert(typeof(nsresult) == "number");
+  // name is the C++ macro name of the error
+  // code is the numeric error code
+  for (let name in Components.results)
+  {
+    let code = Components.results[name];
+    if (code == nsresult)
+    {
+      // Just base the text on the C++ macro name.
+      // If we wanted to make a nice human-readable, translated error msg,
+      // we could insert a string bundle read right here.
+      let text = name.toString().replace("NS_ERROR_", "")
+          .replace("_", " ").toLowerCase();
+      return text;
+    }
+  }
+  // Just return error code as hex code
+  return "0x" + nsresult.toString(16).toUpperCase();
+}
+
+
 
 /**
  * Parses a URL query string into an object.
@@ -866,9 +936,14 @@ function parseURLQueryString(queryString)
     queryString = queryString.substr(1); // remove leading "?", if it exists
   var queries = queryString.split("&");
   for (var i = 0; i < queries.length; i++) {
-    var querySplit = queries[i].split("=");
-    var value = querySplit[1].replace(/\+/g, " "); // "+" is space, before decoding
-    queryParams[querySplit[0]] = decodeURIComponent(value);
+    try {
+      var querySplit = queries[i].split("=");
+      var value = querySplit[1].replace(/\+/g, " "); // "+" is space, before decoding
+      queryParams[querySplit[0]] = decodeURIComponent(value);
+    } catch (e) {
+      // Errors parsing the query string are not fatal, we should just continue
+      errorInBackend(e);
+    }
   }
   return queryParams;
 }

@@ -46,11 +46,7 @@
 
 const EXPORTED_SYMBOLS = [ "UnitedInternetMailCheckAccount" ];
 
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/util/fetchhttp.js");
-Components.utils.import("resource://unitedtb/util/observer.js");
-Components.utils.import("resource://unitedtb/util/JXON.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/email/login-logic.js");
 
 var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/email.properties");
@@ -89,7 +85,7 @@ UnitedInternetMailCheckAccount.prototype =
     return this._loginAccount.loginContext.weblogin.mailbox;
   },
 
-  logout : function(successCallback, errorCallback)
+  _logoutClearAccountInfo: function()
   {
     if (this._poller)
       this._poller.cancel();
@@ -98,6 +94,11 @@ UnitedInternetMailCheckAccount.prototype =
     this._friendsNewMailCount = -1;
     this._unknownNewMailCount = -1;
     this._eTag = null;
+  },
+
+  logout : function(successCallback, errorCallback)
+  {
+    this._logoutClearAccountInfo();
     UnitedInternetLoginAccount.prototype.logout.apply(this, arguments);
   },
 
@@ -181,6 +182,7 @@ function onLoginStateChange(msg, obj)
   }
   else if (msg == "logged-out")
   {
+    acc._logoutClearAccountInfo();
     notifyGlobalObservers("mail-check", { account : acc });
   }
 }

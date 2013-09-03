@@ -25,12 +25,7 @@
 
 const EXPORTED_SYMBOLS = [ "UnitedInternetLoginAccount" ];
 
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/util/fetchhttp.js");
-Components.utils.import("resource://unitedtb/util/observer.js");
-Components.utils.import("resource://unitedtb/util/JXON.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/email/account-base.js");
 var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/login.properties");
 
@@ -508,7 +503,7 @@ function getNewLoginToken(loginTokenServerURL,
         {
           identifierUrn : "urn:identifier:mailto:" + emailAddress,
           password : password,
-          durationType : longSession ? "LONG" : "SHORT",
+          durationType : longSession ? "PERMANENT" : "SHORT",
           loginClientType : "toolbar",
         },
         headers : { Accept: "text/plain; charset=iso-8859-15" },

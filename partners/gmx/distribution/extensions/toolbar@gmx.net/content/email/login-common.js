@@ -169,8 +169,8 @@ function verifyEmailAddressAndPassword(emailAddress, password,
       return verifyEmailAddressDomain(emailAddress,
       function(config) {
         if (brandOnly && config.providerID != brand.login.providerID) {
-          errorCallback(gStringBundle.get("error.domain.brand",
-              [ brand.login.providerName, exampleDomain, domains.join(", ") ]));
+          errorCallback(new UserError(gStringBundle.get("error.domain.brand",
+              [ brand.login.providerName, exampleDomain, domains.join(", ") ])));
         } else {
           successCallback();
         }
@@ -178,9 +178,9 @@ function verifyEmailAddressAndPassword(emailAddress, password,
       function (e) {
         errorInBackend(e);
         // Just tell user that it's not supported
-        errorCallback(gStringBundle.get(
+        errorCallback(new UserError(gStringBundle.get(
             "error.domain" + (brandOnly ? ".brand" : ""),
-            [ brand.login.providerName, exampleDomain, domains.join(", ") ]));
+            [ brand.login.providerName, exampleDomain, domains.join(", ") ])));
       });
     }
   } catch (e) { errorInBackend(e); errorCallback(e); return new Abortable(); }

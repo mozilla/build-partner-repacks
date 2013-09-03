@@ -3,15 +3,17 @@
  */
 function onButton(event)
 {
-  getPostalCode(
-  function(postalcode)
-  {
-    loadPage(brand.weather.regionalURL + postalcode, "united-weather");
-  },
-  function() // got no postal code
-  {
-    loadPage(brand.weather.normalURL, "united-weather");
-  });
+  try {
+    getPostalCode(
+    function(postalcode)
+    {
+      loadPage(brand.weather.regionalURL + postalcode, "united-weather");
+    },
+    function() // got no postal code
+    {
+      loadPage(brand.weather.normalURL, "united-weather");
+    });
+  } catch(e) { errorCritical(e); }
 };
 
 /**
@@ -19,8 +21,8 @@ function onButton(event)
  *
 function onDropdown(event)
 {
-  var panel = document.getElementById("united-weather-panel");
-  var browser = document.getElementById("united-weather-panel-iframe");
+  var panel = E("united-weather-panel");
+  var browser = E("united-weather-panel-iframe");
   new BlockContentListener(function(url) {
         return url == brand.weather.popupNormalURL || // iframe
           url == brand.weather.popupRegionalURL ||
@@ -54,7 +56,7 @@ function onDropdown(event)
 function old_onPageLoad()
 {
   debug("on page load");
-  var browser = document.getElementById("united-weather-panel-iframe");
+  var browser = E("united-weather-panel-iframe");
   var doc = browser.contentDocument;
   var nodes = doc.getElementsByClassName("image center");
   if (nodes.length != 1)

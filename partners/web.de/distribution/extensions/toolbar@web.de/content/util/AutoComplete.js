@@ -277,13 +277,16 @@ AutocompleteWidget.prototype =
       if (this.isShowingSuggestions() && this.currentItem())
       {
         this._onItemSelected(this.currentItem());
+        event.preventDefault();
       }
       else
       {
-        this._onTextEntered(event);
+        var handled = this._onTextEntered(event);
+        if (handled) {
+          event.preventDefault();
+        }
       }
       this.cancel();
-      event.preventDefault();
     }
   },
 
@@ -565,13 +568,16 @@ AutocompleteWidget.prototype =
    * Called when the user pressed enter in the textfield,
    * not in the popup.
    * Calls the event handler
+   * Returns true if we handled the event, false if we didn't
    */
   _onTextEntered : function(event)
   {
     var handler = this._textfield.getAttribute("ontextentered");
-    if (!handler)
-      return;
-    eval(handler);
+    if (handler) {
+      eval(handler);
+      return true;
+    }
+    return false;
   },
 
   /**

@@ -1,5 +1,5 @@
-Components.utils.import("resource://unitedtb/util/util.js", this);
 Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 
 function redirectToSearch()
 {

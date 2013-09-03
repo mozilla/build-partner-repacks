@@ -43,10 +43,7 @@
 const EXPORTED_SYMBOLS = [ "Account", "BaseStandardAccount" ];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/util/observer.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/email/account-list.js"); // _removeAccount()
 var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/login.properties");
 

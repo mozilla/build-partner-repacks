@@ -12,43 +12,52 @@ var gStringBundle = new StringBundle(
 // <copied from="uiutil.js ">
 function onMenuitem(event)
 {
-  if (event.target.hasAttribute("aboutextdialog"))
-    openAboutDialog();
-  else if (event.target.hasAttribute("uninstall"))
-    uninstall();
-  else if (event.target.hasAttribute("checkforupdates"))
-    unitedinternet.updates.check();
-  else
-  {
-    var url = event.target.getAttribute("url");
-    if (!url)
-      throw new NotReached("expected url attribute");
-    loadPage(url);
-  }
-  event.stopPropagation(); // prevent from bubbling to main <button>
+  try {
+    if (event.target.hasAttribute("aboutextdialog"))
+      openAboutDialog();
+    else if (event.target.hasAttribute("uninstall"))
+      uninstall();
+    else if (event.target.hasAttribute("checkforupdates"))
+      unitedinternet.updates.check();
+    else
+    {
+      var url = event.target.getAttribute("url");
+      if (!url)
+        throw new NotReached("expected url attribute");
+      loadPage(url);
+    }
+    event.stopPropagation(); // prevent from bubbling to main <button>
+  } catch (e) { errorCritical(e); }
 };
 
 var gMenuInited = false;
 function initMenus()
 {
-  if (gMenuInited)
-    return;
-  initMenuitems("united-pref-button-dropdown");
-  initMenuitems("united-help-submenu");
-  initMenuitems("united-helpbutton-submenu");
-  gMenuInited = true;
+  try {
+    if (gMenuInited)
+      return;
+    initMenuitems("united-pref-button-dropdown", "united-pref-button-menuitem");
+    initMenuitems("united-help-submenu");
+    initMenuitems("united-helpbutton-submenu");
+    gMenuInited = true;
+  } catch (e) { errorCritical(e); }
 }
 
-function initMenuitems(containerID)
+function initMenuitems(containerID, insertAfterID)
 {
   // create <menuitem label="Foobar" url="..."/>, url attr used above
-  var container = document.getElementById(containerID);
+  var container = E(containerID);
   if (!container) // "united-help-submenu" in Firefox menu doesn't exist on Mac
     return;
+  // |insertAfterE| will be changed (below) while we insert new elements
+  var insertAfterE = null;
+  if (insertAfterID) {
+    insertAfterE = E(insertAfterID);
+  }
   for each (let entry in brand.toolbar.helpMenuURLEntries)
   {
     if (entry.separator) {
-      container.appendChild(document.createElement("menuseparator"));
+      insertAfterE = insertAfter(container, document.createElement("menuseparator"), insertAfterE);
       continue;
     }
     let item = document.createElement("menuitem");
@@ -64,7 +73,7 @@ function initMenuitems(containerID)
       item.setAttribute("url", entry.url);
     item.setAttribute("label", entry.label);
     item.addEventListener("command", onMenuitem, false);
-    container.appendChild(item);
+    insertAfterE = insertAfter(container, item, insertAfterE);
   }
 }
 // </copied>

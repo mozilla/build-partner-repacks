@@ -2,6 +2,10 @@
 {
   list-style-image: url("chrome://unitedtb/skin/ebay/ebay.png");
 }
+#united-ebay-button[icon="shoppingbag"]
+{
+  list-style-image: url("chrome://unitedtb/skin/ebay/shoppingbag.png");
+}
 #united-lastminute-button
 {
   list-style-image: url("chrome://unitedtb/skin/ebay/lastminute.png");

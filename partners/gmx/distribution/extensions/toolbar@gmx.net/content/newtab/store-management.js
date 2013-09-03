@@ -33,13 +33,15 @@ var sb;
 
 function onLoad()
 {
-  sb = new StringBundle("chrome://unitedtb/locale/newtab/store-management.properties");
-  var mode = document.location.href.match(/\?mode=(.*)/)[1];
-  addModule(new PSHModule());
-  // may throw
-  switchModule(gModules[mode]);
-  changeEditMode(gIsEditing);
-  initBrand();
+  try {
+    sb = new StringBundle("chrome://unitedtb/locale/newtab/store-management.properties");
+    var mode = document.location.href.match(/\?mode=(.*)/)[1];
+    addModule(new PSHModule());
+    // may throw
+    switchModule(gModules[mode]);
+    changeEditMode(gIsEditing);
+    initBrand();
+  } catch (e) { errorCritical(e); }
 }
 
 window.addEventListener("load", onLoad, false);
@@ -68,7 +70,7 @@ function addModule(module)
 function addButton(module)
 {
   debug("adding button for module: " + module.label);
-  var buttons = document.getElementById("buttonlist");
+  var buttons = E("buttonlist");
   var newButton = document.createElement("a");
   newButton.setAttribute("class", "mode-toggle");
   newButton.appendChild(document.createTextNode(module.label));
@@ -83,7 +85,7 @@ function addButton(module)
  */
 function resetList()
 {
-  var list = document.getElementById("items-list");
+  var list = E("items-list");
   cleanElement(list);
 }
 
@@ -127,7 +129,7 @@ function addEntries(entries)
 {
   entries.sort(function(a, b) { return b.date - a.date; });
   assert(entries, "addEntries method needs argument");
-  var list = document.getElementById("items-list");
+  var list = E("items-list");
   /**
    * Sort |entries| into days.
    * Each day gets an array with all the |Entry|s for that day.
@@ -205,7 +207,9 @@ function addEntries(entries)
  */
 function refreshUI()
 {
-  switchModule(gCurrentModule);
+  try {
+    switchModule(gCurrentModule);
+  } catch (e) { errorNonCritical(e); }
 }
 
 /**
@@ -239,8 +243,10 @@ function onSwitchModule(event)
  */
 function onToggleEdit()
 {
+  try {
     gIsEditing = ! gIsEditing;
     changeEditMode(gIsEditing);
+  } catch (e) { errorCritical(e); }
 }
 
 /**
@@ -248,7 +254,7 @@ function onToggleEdit()
  */
 function changeEditMode(isEditing)
 {
-    var editButton = document.getElementById("edit-button");
+    var editButton = E("edit-button");
     cleanElement(editButton);
     var text = editButton.getAttribute(isEditing ? "exit-string" : "edit-string");
     editButton.appendChild(document.createTextNode(text));
@@ -269,12 +275,14 @@ function changeEditMode(isEditing)
  */
 function onDeleteAll()
 {
-  for each (let checkBox in gCheckBoxes)
-  {
-    assert(checkBox.entry, "checkBox needs entry field");
-    checkBox.entry.delete(function() {}, errorCritical);
-  }
-  refreshUI();
+  try {
+    for each (let checkBox in gCheckBoxes)
+    {
+      assert(checkBox.entry, "checkBox needs entry field");
+      checkBox.entry.delete(function() {}, errorCritical);
+    }
+    refreshUI();
+  } catch (e) { errorCritical(e); }
 }
 
 /**
@@ -283,25 +291,27 @@ function onDeleteAll()
  */
 function onDeleteSelection()
 {
-  for each (let checkBox in gCheckBoxes)
-  {
-    if (!checkBox.checked)
-      continue;
-    if (checkBox.entry.duplicate)
-      continue;
-    assert(checkBox.entry);
-    checkBox.entry.delete(function() {}, errorCritical);
-  }
-  // TODO: do not refresh UI completely, just delete items we deleted from the UI
-  refreshUI();
+  try {
+    for each (let checkBox in gCheckBoxes)
+    {
+      if (!checkBox.checked)
+        continue;
+      if (checkBox.entry.duplicate)
+        continue;
+      assert(checkBox.entry);
+      checkBox.entry.delete(function() {}, errorCritical);
+    }
+    // TODO: do not refresh UI completely, just delete items we deleted from the UI
+    refreshUI();
+  } catch (e) { errorCritical(e); }
 }
 
 // copied from newtab-page.js
 function initBrand()
 {
-  document.getElementById("logo").setAttribute("href",
+  E("logo").setAttribute("href",
       brand.toolbar.homepageURL);
-  document.getElementById("logo").setAttribute("target", "_blank");
+  E("logo").setAttribute("target", "_blank");
 }
 
 function doneClicked()

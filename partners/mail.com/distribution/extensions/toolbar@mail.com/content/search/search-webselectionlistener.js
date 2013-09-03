@@ -31,7 +31,7 @@ function onHandleContentDoubleClick(event)
 
 function onLoad()
 {
-  var tabbrowser = document.getElementById("content");
+  var tabbrowser = E("content");
   tabbrowser.addEventListener("dblclick", onHandleContentDoubleClick, false);
 }
 window.addEventListener("load", onLoad, false);

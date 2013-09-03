@@ -5,7 +5,7 @@ var gStringBundle = new StringBundle(
 
 function webappsInitNewTab() {
   try {
-    makeWebAppsButton("webapps-inbox", "openmail", "inbox-128.png",
+    makeWebAppsButton("webapps-inbox", "open_mail", "inbox-128.png",
         gStringBundle.get("inbox"));
     makeWebAppsButton("webapps-compose", "new_mail", "compose-128.png",
         gStringBundle.get("compose"));

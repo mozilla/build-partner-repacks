@@ -1,5 +1,4 @@
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/util/util.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 
 var gPrefElements = [];
 

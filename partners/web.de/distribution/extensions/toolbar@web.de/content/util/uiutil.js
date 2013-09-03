@@ -3,15 +3,23 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 const kBundleURL = "chrome://unitedtb/locale/util.properties";
 
 /**
- * shortcut for getElementById()
+ * Minor errors.
+ * This should include all errors in code that is automatic (on startup, on timer).
+ * Also any errors that do not block the main purpose of the action.
+ *
+ * The current implementation does not show the error to the
+ * end user at all, but only on the error console.
+ * Future implementations may show it in a non-obtrusive way, e.g.
+ * as an icon somewhere.
+ *
+ * If in doubt, use errorCritical(), not errorNonCritical().
+ *
+ * @param e {Exception or String}   the error message
+ * @param parentWindow {window} (Optional)
  */
-function E(id)
+function errorNonCritical(e, parentWindow)
 {
-  return document.getElementById(id);
-}
-
-function errorNonCritical(e)
-{
+  e = convertException(e); // util.js
   _error(e);
 
   {
@@ -25,10 +33,24 @@ function errorNonCritical(e)
 };
 const error = errorNonCritical; // old alias, see #955
 
-function errorCritical(e)
+/**
+ * Show error message to end user.
+ * This should include all errors that are in response to actions that
+ * the user requested immediately before, and that block the proper
+ * execution of that action.
+ * It should not be used for code that is automatic (on startup, on timer).
+ * If in doubt, we assume the error is fatal.
+ *
+ * Current implementation shows a dialog to the end user.
+ *
+ * @param e {Exception or String}   the error message
+ * @param parentWindow {window} (Optional)
+ */
+function errorCritical(e, parentWindow)
 {
+  e = convertException(e); // util.js
   _error(e);
-  _showErrorDialog(e);
+  _showErrorDialog(e, parentWindow);
 };
 
 function _error(e)
@@ -37,12 +59,15 @@ function _error(e)
   debug("Stack:\n" + (e.stack ? e.stack : "none"));
 };
 
-function _showErrorDialog(e)
+function _showErrorDialog(e, parentWindow)
 {
+  if (!parentWindow)
+    parentWindow = window;
   var sb = Services.strings.createBundle(kBundleURL);
   var args = {};
   args.title = sb.GetStringFromName("errorDialog.title");
   args.text = e.toString();
+  args.checked = false;
 
   if ( !e.causedByUser) {
     if (ourPref.isSet("util.reportError.enabled")) {
@@ -61,9 +86,9 @@ function _showErrorDialog(e)
   args.moreInfo.title = sb.GetStringFromName("errorDialog.moreInfo.title");
   args.moreInfo.content = sb.GetStringFromName("errorDialog.moreInfo.content");
 
-  window.openDialog("chrome://unitedtb/content/util/errorDialog.xul",
-                    "united-error",
-                    "centerscreen,chrome,modal,titlebar", args);
+  parentWindow.openDialog("chrome://unitedtb/content/util/errorDialog.xul",
+                 "united-error",
+                 "centerscreen,chrome,modal,titlebar", args);
 
   if (args.checkLabel && !args.cancel)
     ourPref.set("util.reportError.enabled", args.checked);
@@ -385,7 +410,7 @@ function checkDisabledModules(win)
         continue;
       let e = win.document.getElementById(entry.el);
       if (!e)
-        e = getToolbarItemE(entry.el, win.document);
+        e = E(entry.el, win.document);
       if (!e)
       {
         debug("warning: element ID " + entry.el + " (to be disabled) not found");
@@ -426,7 +451,7 @@ function appendBrandedMenuitems(modulename, iconpath, initedCallback, itemClicke
   // because it gets re-created by brand-var-loader.js on region change.
   this.modulename = sanitize.nonemptystring(modulename);
   this.iconpath = sanitize.nonemptystring(iconpath);
-  this.container = getToolbarItemE(
+  this.container = E(
       "united-" + modulename + "-button-dropdown");
   assert(!initedCallback || typeof(initedCallback) == "function");
   assert(typeof(itemClickedCallback) == "function", "need an itemClickedCallback");
@@ -621,6 +646,29 @@ function focusDialogIfOpen(name) {
   return false;
 }
 
+
+
+/**
+ * Shortcut for document.getElementById()
+ *
+ * If a toolbar button or item is not on the toolbar, getting it by ID will
+ * fail. This is because the toolbar palette is removed from the document
+ * via removeChild, but still used to hold items in the palette.
+ * This function checks to see if it is in the current window and if
+ * not, it grabs it from the toolbar palette.
+ * This can be any item that is a child of a toolbar element
+ */
+function E(id) {
+  var element = document.getElementById(id);
+  if (element)
+    return element;
+  var toolbox = document.getElementById("navigator-toolbox");
+  if (toolbox && toolbox.palette)
+    element = toolbox.palette.querySelector("#" + id);
+  // Will be either the element or null if no element was found
+  return element;
+}
+
 /**
  * createElement()
  * @param tagname {String} <tagname>
@@ -644,22 +692,35 @@ function cTN(text) {
 }
 
 /**
- * If a toolbar button or item is not on the toolbar, getting it by ID will
- * fail. This is because the toolbar palette is removed from the document
- * via removeChild, but still used to hold items in the palette.
- * This function checks to see if it is in the current window and if
- * not, it grabs it from the toolbar palette.
- * This can be any item that is a child of a toolbar element
+ * Like parentElement.insertBefore(newElement, insertBefore), just insert
+ * after some other element.
+ *
+ * @param parentElement {node} Insert |newElement| as child of |parentElement|.
+ * @param newElement {node} new node that you want to insert
+ * @param insertAfterInfo {String or DOMElement}  Element or ID of the node
+ *     that should be before (left to) |newElement|.
+ *     This must be a child of |parentElement|.
+ *     If it does not exist, the |newElement| is added to the end.
+ * @returns {node} the node that was inserted
  */
-function getToolbarItemE(id, doc) {
-  if (!doc)
-    doc = document;
-  var element = doc.getElementById(id);
-  if (element)
-    return element;
-  var toolbox = doc.getElementById("navigator-toolbox");
-  if (toolbox)
-    element = toolbox.palette.querySelector("#" + id);
-  // Will be either the element or null if no element was found
-  return element;
+function insertAfter(parentElement, newElement, insertAfterInfo) {
+  var afterEl = null;
+  if (insertAfterInfo) {
+    if (typeof(insertAfterInfo) == "string") {
+      afterEl = parentElement.ownerDocument.getElementById(insertAfterInfo);
+    } else if (insertAfterInfo.ownerDocument) {
+      afterEl = insertAfterInfo;
+    } else {
+      throw new NotReached("insertAfterInfo has the wrong type");
+    }
+    if (afterEl.parentNode != parentElement) {
+      throw new NotReached("insertAfterInfo has the wrong parent element");
+    }
+  }
+  if (afterEl && afterEl.nextSibling) {
+    parentElement.insertBefore(newElement, afterEl.nextSibling);
+  } else {
+    parentElement.appendChild(newElement);
+  }
+  return newElement;
 }

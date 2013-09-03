@@ -63,24 +63,26 @@ var gAutocomplete = null;
 
 function onLoad(event)
 {
-  clearButton = document.getElementById("united-search-clear-button");
-  searchField = document.getElementById("united-search-field");
-  clearButton.hidden = true;
+  try {
+    clearButton = E("united-search-clear-button");
+    searchField = E("united-search-field");
+    clearButton.hidden = true;
   
-  // must use capture and parent node, to prevent the Mozilla ac widget from interfering :(
-  searchField.parentNode.addEventListener("keypress", onKeyPressTab, true);
+    // must use capture and parent node, to prevent the Mozilla ac widget from interfering :(
+    searchField.parentNode.addEventListener("keypress", onKeyPressTab, true);
 
-  gAutocomplete = new AutocompleteWidget(searchField, { xul: true });
-  gAutocomplete.addSource(new mCollectAutocompleteSource(gAutocomplete, window));
+    gAutocomplete = new AutocompleteWidget(searchField, { xul: true });
+    gAutocomplete.addSource(new mCollectAutocompleteSource(gAutocomplete, window));
 
-  // add splitter to allow user to resize search field
-  // (which is positioned dynamically by toolbar.js)
-  var splitter = document.createElement("splitter");
-  splitter.setAttribute("resizebefore", "flex");
-  splitter.setAttribute("resizeafter", "grow");
-  var toolbar = document.getElementById("united-toolbar");
-  var toolbaritem = document.getElementById("united-search-box");
-  toolbar.insertBefore(splitter, toolbaritem.nextSibling);
+    // add splitter to allow user to resize search field
+    // (which is positioned dynamically by toolbar.js)
+    var splitter = document.createElement("splitter");
+    splitter.setAttribute("resizebefore", "flex");
+    splitter.setAttribute("resizeafter", "flex");
+    var toolbar = E("united-toolbar");
+    var toolbaritem = E("united-search-box");
+    toolbar.insertBefore(splitter, toolbaritem.nextSibling);
+  } catch(e) { errorCritical(e); }
 };
 window.addEventListener("load", onLoad, false);
 
@@ -90,6 +92,13 @@ autoregisterWindowObserver("do-search-suggestions", function(obj)
 });
 autoregisterWindowObserver("search-term", function(obj)
 {
+  setSearchText(obj.searchTerm);
+});
+autoregisterWindowObserver("search-started", function(obj)
+{
+  if (obj.source == 1) {
+    return;
+  }
   setSearchText(obj.searchTerm);
 });
 
@@ -406,7 +415,7 @@ function getLocalmCollectAutocompleteLabels(term, successCallback)
 
 function onURLBarButton(event)
 {
-  var searchTerm = document.getElementById("urlbar").value;
+  var searchTerm = E("urlbar").value;
   try {
     var uriFixup = Cc["@mozilla.org/docshell/urifixup;1"].getService(Ci.nsIURIFixup);
     var fixupURI = uriFixup.createFixupURI(searchTerm, Ci.nsIURIFixup.FIXUP_FLAG_USE_UTF8);

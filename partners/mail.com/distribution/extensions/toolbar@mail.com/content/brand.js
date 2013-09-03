@@ -45,7 +45,6 @@ toolbar : {
     // Appears in toolbar "Settings" button dropdown,
     // *and* in Firefox Help submenu
     helpMenuURLEntries : [
-      { separator: true },
       { label : "$TR help.faq", url : "%GOTB%helpfaq" },
       { separator: true },
       { label : "$TR help.checkforupdates", checkForUpdates : true },

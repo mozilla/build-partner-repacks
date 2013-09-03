@@ -105,9 +105,9 @@ function autoLoginIfPossible()
 
 function updateUI()
 {
-  var loggedinE = getToolbarItemE("united-logged-in-button");
-  var loggedinMenuitemE = getToolbarItemE("united-logged-in-menuitem");
-  var loggedoutE = getToolbarItemE("united-logged-out-button");
+  var loggedinE = E("united-logged-in-button");
+  var loggedinMenuitemE = E("united-logged-in-menuitem");
+  var loggedoutE = E("united-logged-out-button");
 
   var primaryAcc = getPrimaryAccount();
   // Show "logged in", if any account is logged in
@@ -313,7 +313,7 @@ function tryLogin(usecase, acc, allowAutoLogin, parentWindow,
     function(e) // error handler, e.g. wrong password
     {
       e.causedByUser = true;
-      errorCritical(e); // explicit user action, so notify user of errors
+      errorCritical(e, parentWindow); // explicit user action, so notify user of errors
       if (usecase == 2)
       {
         acc.deleteAccount();
@@ -413,7 +413,8 @@ function onCommandDoLogout()
   for each (let acc in gAccs)
   {
     try {
-      logoutPerUsecase(acc); // log out web app, too (must happen before toolbar logout)
+      if (acc.config && acc.config.type == "unitedinternet")
+        logoutPerUsecase(acc); // log out web app, too (must happen before toolbar logout)
     } catch (e) { errorCritical(e) };
 
     if ( !acc.isLoggedIn)

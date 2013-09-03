@@ -15,7 +15,7 @@ Components.utils.import("resource://unitedtb/util/util.js", this);
 Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js", this);
 Components.utils.import("resource://unitedtb/util/fetchhttp.js", this);
 Components.utils.import("resource://unitedtb/util/observer.js", this);
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
+Components.utils.import("resource://unitedtb/util/brand-var-loader.js", this);
 Components.utils.import("resource://unitedtb/build.js", this);
 Components.utils.import("resource://gre/modules/Services.jsm", this);
 loadJS("chrome://unitedtb/content/util/observerOnWindow.js", this);

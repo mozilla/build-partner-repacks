@@ -33,9 +33,11 @@
       </h2>
       <form id="searchform" onsubmit="onSearchButtonClicked(); return false;">
         <fieldset>
-          <input name="q" id="searchterm" class="searchterm" autocomplete="off" type="text"
+          <input type="text"
+                 name="q" id="searchterm" class="searchterm"
+                 autocomplete="off"
                  oninput="onSearchTextChanged(event);"
-                 ontextentered="onSearchTextEntered(event);"/>
+                 />
         </fieldset>
         <input id="search-button" name="search" class="searchbutton"
                type="submit" value="&search.button.label;"/>

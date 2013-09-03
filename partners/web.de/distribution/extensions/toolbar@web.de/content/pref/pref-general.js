@@ -1,7 +1,7 @@
 function onLoad()
 {
   try {
-    new HomepageSelector(document.getElementById("general-homepage-dropdown"));
+    new HomepageSelector(E("general-homepage-dropdown"));
     regionOnLoad();
   } catch (e) { errorCritical(e); }
 }
@@ -12,7 +12,7 @@ function regionOnLoad()
   if (brand.regions.list.length < 2 ||
       !ourPref.get("pref.show.regions"))
   {
-    var regionPage = document.getElementById("general-region-box");
+    var regionPage = E("general-region-box");
     regionPage.hidden = true;
   }
 }

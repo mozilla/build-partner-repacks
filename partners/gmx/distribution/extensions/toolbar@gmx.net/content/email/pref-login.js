@@ -42,13 +42,12 @@ var gStringBundle = new StringBundle(
 function onLoad()
 {
   populateList();
-  checkForDesktopNotifications();
 }
 
 function populateList()
 {
   try {
-    var listbox = document.getElementById("accounts-list");
+    var listbox = E("accounts-list");
     var listboxStyle = window.getComputedStyle(listbox, null);
     var width = parseInt(listboxStyle.getPropertyValue("width"));
     var height = parseInt(listboxStyle.getPropertyValue("height"));
@@ -79,29 +78,8 @@ function populateList()
       new RememberMe(listcellPw, account);
     }
 
-    document.getElementById("remove-account").disabled =
-        getAllExistingAccounts().length == 0;
+    E("remove-account").disabled = getAllExistingAccounts().length == 0;
   } catch (e) { errorCritical(e); }
-}
-
-function checkForDesktopNotifications()
-{
-  try
-  {
-    var alerts = Cc["@mozilla.org/alerts-service;1"].getService(Ci.nsIAlertsService);
-  }
-  catch (ex)
-  {
-    document.getElementById("desktop-notification").disabled = true;
-    if (getOS() == "mac")
-    {
-      document.getElementById("growl").hidden = false;
-      document.getElementById("growl").addEventListener("click", function()
-      {
-        loadPage("http://growl.info/", "tab");
-      }, false);
-    }
-  }
 }
 
 window.addEventListener("load", onLoad, false);
@@ -154,33 +132,35 @@ function edit()
 
 function remove()
 {
-  var acc = getSelectedAccount();
+  try {
+    var acc = getSelectedAccount();
 
-  // If this is the last brand account, don't let it be deleted
-  // (unless it's the last account)
-  if (acc.providerID == brand.login.providerID) {
-    var allAccounts = getAllExistingAccounts();
-    var numBrandAccounts = allAccounts.filter(function (acc) {
-      return acc.providerID == brand.login.providerID;
-    }).length;
-    if (numBrandAccounts == 1 && allAccounts.length > 1) {
-      errorCritical(new UserError(gStringBundle.get("remove.brand",
-                    [ brand.login.providerName ])));
+    // If this is the last brand account, don't let it be deleted
+    // (unless it's the last account)
+    if (acc.providerID == brand.login.providerID) {
+      var allAccounts = getAllExistingAccounts();
+      var numBrandAccounts = allAccounts.filter(function (acc) {
+        return acc.providerID == brand.login.providerID;
+      }).length;
+      if (numBrandAccounts == 1 && allAccounts.length > 1) {
+        errorCritical(new UserError(gStringBundle.get("remove.brand",
+                      [ brand.login.providerName ])));
+        return;
+      }
+    }
+
+    var ok = promptService.confirm(window,
+        gStringBundle.get("remove.title"),
+        gStringBundle.get("remove.confirm", [ acc.emailAddress ]));
+    if (!ok) {
       return;
     }
-  }
 
-  var ok = promptService.confirm(window,
-      gStringBundle.get("remove.title"),
-      gStringBundle.get("remove.confirm", [ acc.emailAddress ]));
-  if (!ok) {
-    return;
-  }
+    // delete this account from backend and prefs
+    acc.deleteAccount();
 
-  // delete this account from backend and prefs
-  acc.deleteAccount();
-
-  // main window menu items and pref listbox observe pref
+    // main window menu items and pref listbox observe pref
+  } catch(e) { errorCritical(e); }
 }
 
 /**
@@ -189,7 +169,7 @@ function remove()
  */
 function getSelectedAccount()
 {
-  var listbox = document.getElementById("accounts-list");
+  var listbox = E("accounts-list");
   // Workaround Firefox bug
   // selectedItem has a value when nothing is selected
   var listitem;
@@ -197,8 +177,7 @@ function getSelectedAccount()
     listitem = listbox.selectedItem;
   if (!listitem)
   {
-    errorCritical(new UserError(gStringBundle.get("error.noselection")));
-    throw "no selection";
+    throw new UserError(gStringBundle.get("error.noselection"));
   }
   return listitem.backendAccount;
 }

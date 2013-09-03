@@ -18,7 +18,7 @@ function onLoad()
     if (window.arguments && typeof(window.arguments[0]) == "object")
       initWithParams(window.arguments[0]);
 
-    hookupAllPreferencesElements(document.getElementById("tabpanels"), generalPref);
+    hookupAllPreferencesElements(E("tabpanels"), generalPref);
 
     checkDisabledModules(window); // uiuils.js
     window.sizeToContent();
@@ -35,9 +35,9 @@ function initWithParams(args)
 {
   if (args.module) // see openPrefWindow() param |module|
   {
-    var tabbox = document.getElementById("tabbox");
-    tabbox.selectedPanel = document.getElementById(args.module + "-panel");
-    tabbox.selectedTab = document.getElementById(args.module + "-tab");
+    var tabbox = E("tabbox");
+    tabbox.selectedPanel = E(args.module + "-panel");
+    tabbox.selectedTab = E(args.module + "-tab");
   }
 }
 
@@ -139,7 +139,7 @@ function validateElementWithUI(prefElement, save)
   if (errorMsg)
   {
     try {
-      document.getElementById("tabbox").selectedPanel =
+      E("tabbox").selectedPanel =
           findParentTagForElement("tabpanel", prefElement.element); // from uiutil.js
     } catch (e) { errorNonCritical(new Exception("when trying to switch pane to " + pane.id + ": " + e)); }
     errorCritical(errorMsg);

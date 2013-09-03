@@ -9,18 +9,24 @@
  */
 function home(event)
 {
-  var url = event.target.getAttribute("url"); // dropdown entries
-  if (!url) // no dropdown
-    url = brand.homebutton.homepageURL;
-  loadPage(url);
+  try {
+    var url = event.target.getAttribute("url"); // dropdown entries
+    if (!url) // no dropdown
+      url = brand.homebutton.homepageURL;
+    loadPage(url);
+  } catch (e) { errorCritical(e); }
 };
 
 function onLoad()
 {
-  new appendBrandedMenuitems("homebutton", "homebutton", null,
-  function(entry)
-  {
-    loadPage(entry.url, "tab");
-  });
+  try {
+    new appendBrandedMenuitems("homebutton", "homebutton", null,
+    function(entry)
+    {
+      try {
+        loadPage(entry.url, "tab");
+      } catch (e) { errorCritical(e); }
+    });
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);

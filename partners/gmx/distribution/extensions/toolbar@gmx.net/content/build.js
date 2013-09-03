@@ -1,6 +1,6 @@
 const EXPORTED_SYMBOLS = ["version", "EMID", "kDebug", "kVariant", "ourEMIDs", ];
 
-const version = "2.6.4";
+const version = "2.7.1";
 const EMID = "toolbar@gmx.net";
 // show debug dump statement on OS console and JS console
 const kDebug = false;
@@ -13,5 +13,5 @@ const ourEMIDs = [
   "toolbar@gmx.net",
   "toolbar@mail.com",
   "toolbar@1und1.de",
-  "toolbar@gmx.net"
+  "united.toolbar@mara.beonex.com"
 ];

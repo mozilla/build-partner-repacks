@@ -6,14 +6,16 @@ var searchField;
 
 function onLoad()
 {
-  var firefoxWindow = getTopLevelWindowContext(window);
-  unitedFromAbove = firefoxWindow.unitedinternet;
+  try {
+    var firefoxWindow = getTopLevelWindowContext(window);
+    unitedFromAbove = firefoxWindow.unitedinternet;
 
-  searchField = document.getElementById("searchterm");
+    searchField = E("searchterm");
 
-  setSearchTerm();
-  initBrand();
-  fillUserSearchTerms();
+    setSearchTerm();
+    initBrand();
+    fillUserSearchTerms();
+  } catch (e) { errorCritical(e); }
 }
 //window.setTimeout(onLoad, 1000);
 //window.setTimeout)addEventListener("load", onLoad, false);
@@ -27,7 +29,7 @@ function setSearchTerm()
 
   var uri = Services.io.newURI(badurl, null, null);
 
-  document.getElementById("badurl").textContent = uri.host;
+  E("badurl").textContent = uri.host;
 
   // Turn the URL into search parameters
   if (u != -1)
@@ -36,7 +38,7 @@ function setSearchTerm()
     badurl = badurl.replace(/^www\./,'');
     badurl = badurl.replace(/\/$/,'');
     badurl = badurl.replace(/\./g,' ').replace(/\//g,' ');
-    document.getElementById("searchterm").value = badurl;
+    E("searchterm").value = badurl;
   }
 }
 
@@ -61,7 +63,7 @@ function fillUserSearchTerms()
  */
 function fillSearchTerms(terms, listID, sourceID)
 {
-  var listE = document.getElementById(listID);
+  var listE = E(listID);
   cleanElement(listE);
   for each (let term in terms)
   {
@@ -96,8 +98,7 @@ function fillSearchTerms(terms, listID, sourceID)
 
 function initBrand()
 {
-  document.getElementById("logo").setAttribute("href",
-      brand.toolbar.homepageURL);
+  E("logo").setAttribute("href", brand.toolbar.homepageURL);
 }
 // </copied>
 
@@ -109,21 +110,17 @@ function initBrand()
 
 function onSearchTextChanged(event)
 {
-  unitedFromAbove.common.notifyWindowObservers("search-keypress",
-      { searchTerm : event.target.value, source : 8 });
-};
-
-/**
- * Fired when the user presses RETURN in the text box.
- */
-function onSearchTextEntered()
-{
-  startSearch(searchField.value);
+  try {
+    unitedFromAbove.common.notifyWindowObservers("search-keypress",
+        { searchTerm : event.target.value, source : 8 });
+  } catch (e) { errorNonCritical(e); }
 };
 
 function onSearchButtonClicked()
 {
-  startSearch(searchField.value);
+  try {
+    startSearch(searchField.value);
+  } catch (e) { errorCritical(e); }
 };
 
 /**

@@ -35,7 +35,7 @@ var gStringBundle = new StringBundle(
 function onLoad()
 {
   try {
-    gMenuE = getToolbarItemE("united-ticker-popup");
+    gMenuE = E("united-ticker-popup");
     gMenuE.addEventListener("popupshown", onDropdownOpened, false);
     if (kLazyLoad)
       reset();

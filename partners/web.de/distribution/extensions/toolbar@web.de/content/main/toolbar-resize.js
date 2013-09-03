@@ -29,21 +29,23 @@ window.addEventListener("load", onLoadResize, false);
 
 function onWindowResize()
 {
-  var buttons = getButtonsToShrink();
-  for (let [,button] in Iterator(buttons))
-    button.removeAttribute("crowded");
-  // scroll width is the natural size it wants to have
-  if (!gWantWidth)
-    gWantWidth = tb.scrollWidth;
-  //debug("on overflow: want width " + gWantWidth + ", now natural (scroll) width " + tb.scrollWidth + ", have (client) width " + tb.clientWidth);
-  for (let [,button] in Iterator(buttons))
-  {
-    if (tb.scrollWidth <= tb.clientWidth)
-      return;
-    button.setAttribute("crowded", "true");
-    window.getComputedStyle(tb, null); // force reflow/update
-    //debug("after button " + button.id + ": natural width " + tb.scrollWidth + ", have width " + tb.clientWidth);
-  }
+  try {
+    var buttons = getButtonsToShrink();
+    for (let [,button] in Iterator(buttons))
+      button.removeAttribute("crowded");
+    // scroll width is the natural size it wants to have
+    if (!gWantWidth)
+      gWantWidth = tb.scrollWidth;
+    //debug("on overflow: want width " + gWantWidth + ", now natural (scroll) width " + tb.scrollWidth + ", have (client) width " + tb.clientWidth);
+    for (let [,button] in Iterator(buttons))
+    {
+      if (tb.scrollWidth <= tb.clientWidth)
+        return;
+      button.setAttribute("crowded", "true");
+      window.getComputedStyle(tb, null); // force reflow/update
+      //debug("after button " + button.id + ": natural width " + tb.scrollWidth + ", have width " + tb.clientWidth);
+    }
+  } catch (e) { errorNonCritical(e); }
 }
 
 /**

@@ -5,7 +5,7 @@
  * Use this when you need to use the same object across all Firefox windows.
  */
 
-var EXPORTED_SYMBOLS = [ "setGlobalObject", "getGlobalObject", "haveGlobalObject" ];
+var EXPORTED_SYMBOLS = [ "setGlobalObject", "getGlobalObject" ];
 
 var objects = [];
 
@@ -19,12 +19,6 @@ function getGlobalObject(namespace, name)
 {
   var id = namespace + "-" + name;
   if (typeof(objects[id]) == "undefined")
-    throw "object " + name + " in namespace " + namespace + " does not exist";
+    return null;
   return objects[id];
-}
-
-function haveGlobalObject(namespace, name)
-{
-  var id = namespace + "-" + name;
-  return typeof(objects[id]) != "undefined";
 }

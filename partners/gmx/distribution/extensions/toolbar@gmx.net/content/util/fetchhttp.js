@@ -179,6 +179,8 @@ FetchHTTP.prototype =
     request.channel.loadFlags |= Ci.nsICachingChannel.LOAD_BYPASS_LOCAL_CACHE;
 
     // Headers
+    request.setRequestHeader("User-Agent",
+        "UnitedInternet-MailCheck Firefox");
     if (mimetype)
       request.setRequestHeader("Content-Type", mimetype);
     for (var name in this._headers)

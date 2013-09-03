@@ -42,11 +42,10 @@ const EXPORTED_SYMBOLS = [ "updateTaskbarIcon" ];
 // This code is copied from https://github.com/sid0/overlay-extension
 // except for the last function (hasTaskbarIcon)
 
-Components.utils.import("resource://unitedtb/util/util.js");
-
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/NetUtil.jsm");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 
 XPCOMUtils.defineLazyServiceGetter(this, "gImageToolsService",
                                    "@mozilla.org/image/tools;1",

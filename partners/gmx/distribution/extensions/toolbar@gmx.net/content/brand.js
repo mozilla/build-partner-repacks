@@ -64,7 +64,6 @@ toolbar : {
     // Appears in toolbar "Settings" button dropdown,
     // *and* in Firefox Help submenu
     helpMenuURLEntries : [
-      { separator: true },
       { label : "$TR help.center", url : "%GOTB%help_center" }, 
       { label : "$TR help.email", url : "%GOTB%faq" }, 
       { label : "$TR help.toolbar", url : "%GOTB%help" },
@@ -106,7 +105,7 @@ homebutton : {
     homepageURL : "%GOTB%home",
     dropdownURLEntries : [
       // normal button press is homepageURL above
-      { label : "$TR homebutton.topics", icon: "brand", url : "%GOTB%portal" },
+      { label : "$TR homebutton.lotto", icon: "lotto.png", url : "%GOTB%lotto" },
       { label : "$TR homebutton.cars", icon: "car.png", url : "%GOTB%auto" },
       { label : "$TR homebutton.games", icon: "games.png", url : "%GOTB%games" },
       { label : "$TR homebutton.entertainment", icon: "entertainment.png", url : "%GOTB%unterhaltung" },
@@ -241,9 +240,7 @@ weather : {
 },
 horoscope : {
   defaultlocale : {
-    horoscopeURL : "%GOTB%horoskop/{TYPE}/{SIGN}",
-    partnertestURL : "http://www.gmx.net/themen/lifestyle/horoskop/partnertest/stier/",
-    moreURL : "%GOTB%horoskop/more"
+    horoscopeURL : "%GOTB%horoskop/tag/",
   },
 },
 newtab : {

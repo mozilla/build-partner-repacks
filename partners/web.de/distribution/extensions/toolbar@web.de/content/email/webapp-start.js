@@ -14,10 +14,7 @@
 const EXPORTED_SYMBOLS = [ "startUsecase", "logoutPerUsecase", "goToWebmailOld" ];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/util/observer.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/email/account-base.js");
 Components.utils.import("resource://unitedtb/email/login-logic.js");
 
@@ -63,13 +60,13 @@ function startUsecase(account, usecase, parameters, win)
   assert(account instanceof UnitedInternetLoginAccount,
       "account is an Account, but not a UnitedInternetLoginAccount");
   assert(account.isLoggedIn); // in toolbar
-  if (usecase == "homepage-logged-in" && brand.toolbar.pay) {
+  var existingTabData = findExistingTab(account, false);
+  if (usecase == "homepage-logged-in" && (existingTabData || brand.toolbar.pay)) {
     // see below
-    usecase = "openmail";
+    usecase = "open_mail";
   }
   var payload = makePayload(usecase, parameters);
 
-  var existingTabData = findExistingTab(account, false);
   if (existingTabData)
   {
     focusTabAndWindow(existingTabData);

@@ -1,6 +1,6 @@
 function onLoad()
 {
-  new HighlightColor(document.getElementById("highlight-color"));
+  new HighlightColor(E("highlight-color"));
 }
 window.addEventListener("load", onLoad, false);
 

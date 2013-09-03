@@ -12,12 +12,8 @@
 const EXPORTED_SYMBOLS = ["checkURI", "downloadBlacklist"];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/fetchhttp.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/util/globalobject.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
-
 
 const PHISHING_DB_FILE = "phishing-blacklist.sqlite";
 const PHISHING_DB_FILE_OLD = "phishing-blacklist-temp.sqlite";
@@ -162,9 +158,11 @@ function checkURI(anURI, successCallback, errorCallback)
     return;
   }
   //debug("domain is " + hostname);
-  if (! haveGlobalObject("united", "whitelist"))
-    setGlobalObject("united", "whitelist", []);
   var whitelist = getGlobalObject("united", "whitelist");
+  if (!whitelist) {
+    whitelist = [];
+    setGlobalObject("united", "whitelist", whitelist);
+  }
   if (arrayContains(whitelist, hostname))
   {
     debug("hostname is whitelisted.");
@@ -318,7 +316,7 @@ function downloadBlacklist()
   {
     //debug("phish: Got response from webserver");
     assert(typeof(response) == "string");
-    var parsedResults = parse(response);
+    var parsedResults = parse(response.trim());
     updateDB_Start(parsedResults);
   }, errorInBackend);
   fetcher.start();
@@ -338,7 +336,8 @@ function downloadBlacklist()
  */
 function parse(blacklist)
 {
-  assert(blacklist, "blacklist is null");
+  if (!blacklist)
+    return;
   var parsed = { E : [], P : [], D : []};
   var entries = blacklist.split("\r\n");
   // If we have too many entries (too slow), bail

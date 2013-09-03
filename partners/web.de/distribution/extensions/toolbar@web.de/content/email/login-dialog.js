@@ -17,8 +17,7 @@
  * @returns ok {Boolean} true = User clicked OK button, false = user aborted
  */
 
-Components.utils.import("resource://unitedtb/util/util.js", this);
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/email/account-list.js", this);
 var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/email/login.properties");
@@ -37,10 +36,10 @@ var gVerifyAbortable = new Abortable();
 
 function onLoad()
 {
-  eEmailAddress = document.getElementById("emailaddress");
-  ePassword = document.getElementById("password");
-  eLongSession = document.getElementById("long-session");
-  eErrorMsg = document.getElementById("error-msg");
+  eEmailAddress = E("emailaddress");
+  ePassword = E("password");
+  eLongSession = E("long-session");
+  eErrorMsg = E("error-msg");
 
   gInParams = window.arguments[0];
   gOutParams = window.arguments[1];
@@ -57,8 +56,8 @@ function onLoad()
   gBrandOnly = getAllExistingAccounts().length == 0;
 
   // modify dialog title, message and OK button for setup and edit use cases
-  var introE = document.getElementById("intro");
-  var stringsE = document.getElementById("intro-box");
+  var introE = E("intro");
+  var stringsE = E("intro-box");
   var dialog = document.documentElement;
   var okButton = dialog.getButton("accept");
   if (gBrandOnly)
@@ -86,7 +85,7 @@ function onLoad()
     okButton.setAttribute("label", stringsE.getAttribute("editOKLabel"));
     okButton.setAttribute("accesskey", stringsE.getAttribute("editOKKey"));
   }
-  document.getElementById("forgot-password").setAttribute("href", brand.login.forgotPasswordURL);
+  E("forgot-password").setAttribute("href", brand.login.forgotPasswordURL);
 }
 
 function onLeaveEmailaddress()

@@ -41,20 +41,24 @@ login.defaultlocale.configs =
     serviceID : "mailcom.toolbar.live",
   },
 ]
+login.defaultlocale.mozillaISPDBURL = "https://autoconfig.thunderbird.net/v1.1/";
+login.defaultlocale.mozillaMXURL = "https://mx.thunderbird.net/dns/mx/";
 
 search.defaultlocale.competitorlist =
 {
   "www.google.com": { "query": "q" },
   "www.google.de": { "query": "q" },
+  "www.google.at": { "query": "q" },
+  "www.google.ch": { "query": "q" },
   "www.bing.com": { "query": "q" },
   "suche.t-online.de": { "query": "q" },
   "de.ask.com": { "query": "q" },
   "ask.com": { "query": "q" },
   "de.search.yahoo.com": { "query": "p" },
   "search.yahoo.com": { "query": "p" },
-  "suche.gmx.net": { "query": "q" },
-  "suche.web.de": { "query": "q" },
-  "search.1und1.de": { "query": "q" },
+  "suche.gmx.net": [ { "query": "q" }, { "query": "su" } ],
+  "suche.web.de": [ { "query": "q" }, { "query": "su" } ],
+  "search.1und1.de": [ { "query": "q" }, { "query": "su" } ],
 
   "www.ebay.de": { "query": "_nkw" },
   "www.amazon.de": { "query": "field-keywords" },
@@ -68,5 +72,6 @@ search.defaultlocale.googlelist =
   "www.google.de": true,
   "www.google.at": true,
   "www.google.it": true,
+  "www.google.ch": true,
   "www.google.co.uk": true,
 }

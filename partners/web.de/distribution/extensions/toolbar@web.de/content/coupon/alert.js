@@ -49,43 +49,47 @@ var gCoupons = null;
 /* If the coupon alert has been hidden for a given domain, that domain
  * is added to this array with a true. When the button is clicked to redisplay
  * the alert, the domain is removed from the array */
-var gMinimizedShopDomains = [];
+var gMinimizedShopDomains;
 
 function initCoupons() {
   downloadCouponsIfNecessary();
   if (!gCouponButton)
   {
-    gCouponButton = document.getElementById("united-coupon-button");
+    gCouponButton = E("united-coupon-button");
     gBrowser.addEventListener("DOMTitleChanged", onPageShow, true);
     gBrowser.tabContainer.addEventListener("TabSelect", onTabChange, true);
-    if (!haveGlobalObject("coupon", "minimizedShopDomains")) {
+    gMinimizedShopDomains = getGlobalObject("coupon", "minimizedShopDomains");
+    if (!gMinimizedShopDomains) {
+      gMinimizedShopDomains = [];
       setGlobalObject("coupon", "minimizedShopDomains", gMinimizedShopDomains);
-    } else {
-      gMinimizedShopDomains = getGlobalObject("coupon", "minimizedShopDomains");
     }
   }
 }
 
 function onLoad()
 {
-  // Pref to disable module
-  ourPref.observeAuto(window, "coupon.enabled", function(newValue)
-  {
-    if (newValue)
+  try {
+    // Pref to disable module
+    ourPref.observeAuto(window, "coupon.enabled", function(newValue)
+    {
+      try {
+        if (newValue)
+        {
+          gCouponEnabled = true;
+          initCoupons();
+          checkToAlert();
+        } else {
+          gCouponEnabled = false;
+          closeAllCouponDisplay();
+        }
+      } catch (e) { errorNonCritical(e); }
+    });
+    if (ourPref.get("coupon.enabled"))
     {
       gCouponEnabled = true;
       initCoupons();
-      checkToAlert();
-    } else {
-      gCouponEnabled = false;
-      closeAllCouponDisplay();
     }
-  });
-  if (ourPref.get("coupon.enabled"))
-  {
-    gCouponEnabled = true;
-    initCoupons();
-  }
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -108,7 +112,9 @@ function onPageShow(event)
 
 function onTabChange(event)
 {
-  checkToAlert();
+  try {
+    checkToAlert();
+  } catch (e) { errorNonCritical(e); }
 }
 
 /**
@@ -195,8 +201,8 @@ function showAlert(coupons)
   var hasRegularCoupon = false;
   var hasRewardsCoupon = false;
 
-  var rewardsAlert = document.getElementById("united-coupon-alert-rewards");
-  var regularAlert = document.getElementById("united-coupon-alert");
+  var rewardsAlert = E("united-coupon-alert-rewards");
+  var regularAlert = E("united-coupon-alert");
 
   // We can't rely on coupons.length to get the number of coupons since
   // there are rewards mixed in. Loop through once to get the number of coupons
@@ -211,8 +217,8 @@ function showAlert(coupons)
       if ( !ourPref.get("coupon.rewards.show") || hasRewardsCoupon) {
         continue;
       }
-      var textGeneratedE = document.getElementById("united-coupon-alert-text-generated-rewards");
-      var buttonE = document.getElementById("united-coupon-alert-button-rewards");
+      var textGeneratedE = E("united-coupon-alert-text-generated-rewards");
+      var buttonE = E("united-coupon-alert-button-rewards");
       buttonE.coupon = coupon;
       textGeneratedE.setAttribute("value", sb.get("alert.coupons.rewards")
           .replace("%DOMAIN%", coupon.shopDomain));
@@ -221,8 +227,8 @@ function showAlert(coupons)
       if ( !ourPref.get("coupon.coupons.show") || hasRegularCoupon) {
         continue;
       }
-      var textGeneratedE = document.getElementById("united-coupon-alert-text-generated");
-      var buttonE = document.getElementById("united-coupon-alert-button");
+      var textGeneratedE = E("united-coupon-alert-text-generated");
+      var buttonE = E("united-coupon-alert-button");
       buttonE.coupon = coupon;
       //textDescriptionE.textContent = coupon.description;
       textGeneratedE.setAttribute("value", PluralForm.get(numCoupons,
@@ -239,7 +245,7 @@ function showAlert(coupons)
   regularAlert.hidden = !hasRegularCoupon;
   rewardsAlert.hidden = !hasRewardsCoupon;
 
-  var alertContainer = document.getElementById("united-coupon-notificationbox");
+  var alertContainer = E("united-coupon-notificationbox");
   if (hasRegularCoupon && hasRewardsCoupon)
   {
     alertContainer.setAttribute("both", "true");
@@ -256,57 +262,61 @@ function showAlert(coupons)
 
 function applyButtonClicked(target)
 {
-  hideAlertForURL();
-  useCoupon(target.coupon);
+  try {
+    hideAlertForURL();
+    useCoupon(target.coupon);
+  } catch (e) { errorCritical(e); }
 }
 
 function closeButtonClicked() {
-  hideAlertForURL();
-  closeAlert();
-  checkToAlert(function() {
-    /* We only show the tooltip box three times */
-    var tooltipBoxShown = ourPref.get("coupon.tooltipbox.shown", 0);
-    if (tooltipBoxShown >= 1)
-      return;
+  try {
+    hideAlertForURL();
+    closeAlert();
+    checkToAlert(function() {
+      /* We only show the tooltip box three times */
+      var tooltipBoxShown = ourPref.get("coupon.tooltipbox.shown", 0);
+      if (tooltipBoxShown >= 1)
+        return;
 
-    var hasRegularCoupon = false;
-    var hasRewardsCoupon = false;
+      var hasRegularCoupon = false;
+      var hasRewardsCoupon = false;
 
-    // Loop through the coupons so we can find out if we are rewards/discounts
-    for each (let coupon in gCoupons)
-    {
-      if (coupon.rewards)
-        hasRewardsCoupon = true;
-      else
-        hasRegularCoupon = true;
-    }
+      // Loop through the coupons so we can find out if we are rewards/discounts
+      for each (let coupon in gCoupons)
+      {
+        if (coupon.rewards)
+          hasRewardsCoupon = true;
+        else
+          hasRegularCoupon = true;
+      }
 
-    var reminderType = "coupon";
-    if (hasRewardsCoupon && hasRegularCoupon)
-      reminderType = "both";
-    else if (hasRewardsCoupon)
-      reminderType = "rewards";
+      var reminderType = "coupon";
+      if (hasRewardsCoupon && hasRegularCoupon)
+        reminderType = "both";
+      else if (hasRewardsCoupon)
+        reminderType = "rewards";
 
-    document.getElementById("united-coupon-tooltipbox-description-1").textContent =
-      sb.get("united." + reminderType + ".button.tooltipbox1");
-    document.getElementById("united-coupon-tooltipbox-description-2").textContent =
-      sb.get("united." + reminderType + ".button.tooltipbox2");
+      E("united-coupon-tooltipbox-description-1").textContent =
+        sb.get("united." + reminderType + ".button.tooltipbox1");
+      E("united-coupon-tooltipbox-description-2").textContent =
+        sb.get("united." + reminderType + ".button.tooltipbox2");
 
-    ourPref.set("coupon.tooltipbox.shown", tooltipBoxShown + 1);
-    var panel = document.getElementById("united-coupon-button-tooltipbox");
-    panel.setAttribute("type", reminderType);
-    var buttonRect = gCouponButton.getBoundingClientRect();
-    var panelRect = panel.getBoundingClientRect();
-    /* On first open, the panel has a width of 0. So we open it offscreen, */
-    /* measure it, and then hide and reopen */
-    if (panelRect.width == 0) {
-      panel.openPopup(gCouponButton, 'after_start', -1000, -1000, false, false);
-      panelRect = panel.getBoundingClientRect();
-      panel.hidePopup();
-    }
-    /* The math here centers the popup on the center of the button */
-    panel.openPopup(gCouponButton, 'after_start', buttonRect.width / 2 - panelRect.width / 2, 0, false, false);
+      ourPref.set("coupon.tooltipbox.shown", tooltipBoxShown + 1);
+      var panel = E("united-coupon-button-tooltipbox");
+      panel.setAttribute("type", reminderType);
+      var buttonRect = gCouponButton.getBoundingClientRect();
+      var panelRect = panel.getBoundingClientRect();
+      /* On first open, the panel has a width of 0. So we open it offscreen, */
+      /* measure it, and then hide and reopen */
+      if (panelRect.width == 0) {
+        panel.openPopup(gCouponButton, 'after_start', -1000, -1000, false, false);
+        panelRect = panel.getBoundingClientRect();
+        panel.hidePopup();
+      }
+      /* The math here centers the popup on the center of the button */
+      panel.openPopup(gCouponButton, 'after_start', buttonRect.width / 2 - panelRect.width / 2, 0, false, false);
     });
+  } catch (e) { errorCritical(e); }
 }
 
 function closeAllCouponDisplay()
@@ -326,9 +336,9 @@ function closeAlert()
     clearTimeout(gAlertTimer);
   gAlertTimer = null;
 
-  document.getElementById("united-coupon-alert-rewards").hidden = true;
-  document.getElementById("united-coupon-alert").hidden = true;
-  document.getElementById("united-coupon-notificationbox").removeAttribute("both");
+  E("united-coupon-alert-rewards").hidden = true;
+  E("united-coupon-alert").hidden = true;
+  E("united-coupon-notificationbox").removeAttribute("both");
 }
 
 /**
@@ -356,9 +366,11 @@ function useCoupon(coupon)
 
 function onButton()
 {
-  restoreAlertForURL();
-  closeButton();
-  checkToAlert();
+  try {
+    restoreAlertForURL();
+    closeButton();
+    checkToAlert();
+  } catch (e) { errorCritical(e); }
 }
 
 

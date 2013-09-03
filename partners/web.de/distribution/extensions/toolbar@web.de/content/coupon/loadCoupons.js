@@ -12,11 +12,7 @@
 const EXPORTED_SYMBOLS = [ "downloadCouponsIfNecessary", "haveCouponsForURL", "getDomain" ];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/util/fetchhttp.js");
-Components.utils.import("resource://unitedtb/util/JXON.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/util/Auth.js"); // for encodeEmailAddress()
 //var sb = new united.StringBundle("chrome://unitedtb/locale/coupon/coupon.properties");
 

@@ -10,7 +10,9 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 
 function onload()
 {
-  initBrand();
+  try {
+    initBrand();
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onload, false);
 
@@ -19,10 +21,8 @@ function initBrand()
   // We do not seem to have an URL which will take us
   // directly to the search page, so use the value
   // of the placeholder which is just what we want.
-  document.getElementById("search-button").setAttribute("href",
-      brand.search.netErrorURL);
-  document.getElementById("home-anchor").setAttribute("href",
-      brand.toolbar.homepageURL);
+  E("search-button").setAttribute("href", brand.search.netErrorURL);
+  E("home-anchor").setAttribute("href", brand.toolbar.homepageURL);
 
 }
 

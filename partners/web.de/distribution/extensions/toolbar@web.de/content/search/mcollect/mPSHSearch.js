@@ -31,7 +31,7 @@ mPSHSearch.prototype =
         // check whether a hit
         for each (let term in terms)
         {
-          let pos = term.indexOf(self._searchTerm);
+          let pos = term.toLowerCase().indexOf(self._searchTerm.toLowerCase());
           if (pos == -1)
             continue;
           //debug("PSH hit for " + self._searchTerm + " in " + term + " at pos " + pos);

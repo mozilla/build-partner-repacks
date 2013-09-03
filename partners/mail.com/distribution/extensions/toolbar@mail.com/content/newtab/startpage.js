@@ -1,7 +1,4 @@
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/util/observer.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/search/search-store.js");
 
 
@@ -18,7 +15,7 @@ function onLoad()
   gFirefoxWindow = getTopLevelWindowContext(window);
   gUnitedFromAbove = gFirefoxWindow.unitedinternet;
 
-  gSearchField = document.getElementById("searchterm");
+  gSearchField = E("searchterm");
   if (ourPref.get("newtab.setFocus"))
     gSearchField.focus();
 
@@ -46,14 +43,6 @@ function onSearchTextChanged(event)
 {
   gUnitedFromAbove.common.notifyWindowObservers("search-keypress",
       { searchTerm : event.target.value, source : 4 });
-};
-
-/**
- * Fired when the user presses RETURN in the text box.
- */
-function onSearchTextEntered()
-{
-  startSearch(gSearchField.value);
 };
 
 function onSearchButtonClicked()

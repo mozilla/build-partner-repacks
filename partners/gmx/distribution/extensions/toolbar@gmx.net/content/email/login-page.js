@@ -15,43 +15,49 @@ var confirmClose = true;
 
 function onLoginLoad()
 {
-  window.onbeforeunload = function(e) {
-    if (confirmClose)
-      return confirmClose;
-    else
-      return;
-  };
+  try {
+    window.onbeforeunload = function(e) {
+      if (confirmClose)
+        return confirmClose;
+      else
+        return;
+    };
 
-  eEmailAddress = document.getElementById("emailaddress");
-  ePassword = document.getElementById("password");
-  eLongSession = document.getElementById("long-session");
-  eErrorMsg = document.getElementById("error-msg");
-  eLoginButton = document.getElementById("login-button");
-  eFinishButton = document.getElementById("finish-button");
+    eEmailAddress = E("emailaddress");
+    ePassword = E("password");
+    eLongSession = E("long-session");
+    eErrorMsg = E("error-msg");
+    eLoginButton = E("login-button");
+    eFinishButton = E("finish-button");
 
-  document.getElementById("forgot-password").setAttribute("href", brand.login.forgotPasswordURL);
-  document.getElementById("create-account").setAttribute("href", brand.login.createAccountURLWeb);
+    E("forgot-password").setAttribute("href", brand.login.forgotPasswordURL);
+    E("create-account").setAttribute("href", brand.login.createAccountURLWeb);
 
-  updateLoginButton();
+    updateLoginButton();
 
-  // Allow enter key to work
-  document.addEventListener("keypress", function(event) {
-    if (event.keyCode == 13)
-      document.getElementById("finish-button").click();
-  }, false);
+    // Allow enter key to work
+    document.addEventListener("keypress", function(event) {
+      if (event.keyCode == 13)
+        E("finish-button").click();
+    }, false);
 
-  eEmailAddress.focus();
+    eEmailAddress.focus();
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoginLoad, false);
 
 function onEmailaddressChanged()
 {
-  updateLoginButton();
+  try {
+    updateLoginButton();
+  } catch (e) { errorNonCritical(e); }
 }
 
 function onPasswordChanged()
 {
-  updateLoginButton();
+  try {
+    updateLoginButton();
+  } catch (e) { errorNonCritical(e); }
 }
 
 function updateLoginButton()
@@ -96,10 +102,10 @@ function verifyAndShowError(needPassword, successCallback) {
   successCallback, showErrorInline);
 }
 
-function showErrorInline(errorMsg)
+function showErrorInline(e)
 {
-  debug("fail: " + errorMsg);
-  eErrorMsg.textContent = errorMsg;
+  errorNonCritical(e);
+  eErrorMsg.textContent = e.toString();
   eEmailAddress.focus();
 }
 
@@ -107,12 +113,12 @@ function showErrorInline(errorMsg)
 
 function onLogin(closeCallback)
 {
-  assert(typeof(closeCallback) == "function");
-  if (!eEmailAddress.value && !ePassword.value) {
-    closePage(closeCallback);
-    return;
-  }
   try {
+    assert(typeof(closeCallback) == "function");
+    if (!eEmailAddress.value && !ePassword.value) {
+      closePage(closeCallback);
+      return;
+    }
     verifyAndShowError(false, function() { onLoginStep2(closeCallback); });
   } catch (e) { showErrorInline(e); }
 }
@@ -155,12 +161,14 @@ function onLoginStep2(closeCallback)
 
 function onCloseButton(closeCallback)
 {
-  assert(typeof(closeCallback) == "function");
-  // If confirmClose is false, don't show the nag screen
-  if (confirmClose)
-    optinConfirmClose(function() { closePage(closeCallback); });
-  else
-    closePage(closeCallback);
+  try {
+    assert(typeof(closeCallback) == "function");
+    // If confirmClose is false, don't show the nag screen
+    if (confirmClose)
+      optinConfirmClose(function() { closePage(closeCallback); });
+    else
+      closePage(closeCallback);
+  } catch (e) { errorCritical(e); }
 }
 
 function closePage(closeCallback)

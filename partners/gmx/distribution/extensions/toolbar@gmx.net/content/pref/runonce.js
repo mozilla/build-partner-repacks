@@ -1,5 +1,5 @@
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
+Components.utils.import("resource://unitedtb/util/brand-var-loader.js", this);
 
 function showFirstRun()
 {

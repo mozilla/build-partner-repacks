@@ -102,7 +102,6 @@
             label="&notifySound.label;"/>
         <checkbox id="desktop-notification" preference="extensions.unitedinternet.email.notification.desktop.enabled"
             label="&notifyAlert.label;"/>
-        <image id="growl" tooltiptext="&growl.tooltip;" hidden="true"/>
       </hbox>
 
     </tabpanel>

@@ -7,10 +7,7 @@
 const EXPORTED_SYMBOLS = [];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
-var build = {}
-Components.utils.import("resource://unitedtb/build.js", build);
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 
 /**
  * Listen to all HTTP requests
@@ -77,6 +74,6 @@ var AddHeaders =
                                    gVariant, false);
       httpChannel.setRequestHeader("X-UnitedInternet-Branded-Browser",
                                    gBrandedBrowser, false);
-    } catch (e) { errorInBackend(e); }
+    } catch (e) { e.doNotSendToServer = true; errorInBackend(e); } // avoid loop
   }
 }

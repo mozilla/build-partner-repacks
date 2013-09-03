@@ -15,8 +15,7 @@ function onLoad()
 {
   window.removeEventListener("DOMContentLoaded", onLoad, false);
 
-  document.getElementById("appcontent")
-      .addEventListener("DOMContentLoaded", pageLoaded, false);
+  E("appcontent").addEventListener("DOMContentLoaded", pageLoaded, false);
 }
 window.addEventListener("DOMContentLoaded", onLoad, false);
 

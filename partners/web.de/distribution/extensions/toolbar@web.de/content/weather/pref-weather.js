@@ -1,10 +1,10 @@
 function onLoad()
 {
   try {
-    new PostalCode(document.getElementById("postalcode"));
+    new PostalCode(E("postalcode"));
   } catch (e) { debug(e); }
-  if (isValidPostalCode(document.getElementById("postalcode").value))
-    document.getElementById("no-nag").hidden = true;
+  if (isValidPostalCode(E("postalcode").value))
+    E("no-nag").hidden = true;
   gOldRegionalURL = brand.weather.regionalURL;
   autoregisterGlobalObserver("region-changed", regionChanged);
 }

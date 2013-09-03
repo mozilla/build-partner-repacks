@@ -4,9 +4,7 @@
 
 const EXPORTED_SYMBOLS = [];
 
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/observer.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 
 var ourNewTabURL;
 

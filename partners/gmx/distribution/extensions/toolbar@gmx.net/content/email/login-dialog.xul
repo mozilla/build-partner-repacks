@@ -17,8 +17,10 @@
     buttonpack="center"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+    <script type="application/javascript"
+            src="chrome://unitedtb/content/util/common.js"/>
     <script type="application/x-javascript">
-      var unitedinternet = window.opener.unitedinternet;
+      unitedinternet.common.mixInto(unitedinternet.common, this);
       unitedinternet.loadJS("chrome://unitedtb/content/email/login-common.js", this);
       unitedinternet.loadJS("chrome://unitedtb/content/email/login-dialog.js", this);
     </script>

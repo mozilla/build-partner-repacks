@@ -1,5 +1,3 @@
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/build.js");
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
 var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/pref/pref-updates.properties");

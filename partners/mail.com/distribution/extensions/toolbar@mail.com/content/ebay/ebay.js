@@ -6,20 +6,46 @@
  *       Also, for testing: Display the search term.
  */
 
+var gIconName;
+
+/**
+ * Use statistic class to change icon
+ */
+function onLoad()
+{
+  // Test which of 2 icons works better -- #1166
+  if (brand.tracking &&
+      (brand.tracking.brand == "webde" || brand.tracking.brand == "gmx") &&
+      ourPref.get("tracking.statisticclass") < 25) {
+    gIconName = "shoppingbag";
+  } else {
+    gIconName = "ebay";
+  }
+  E("united-ebay-button").setAttribute("icon", gIconName);
+}
+window.addEventListener("load", onLoad, false);
+
 /**
  * User clicked on EBay button
  */
 function onButton(event)
 {
-  if (false && currentSearchTerm) // #702
-  {
-    notifyWindowObservers("search-started",
-      { searchTerm : currentSearchTerm, source : 1 });
-    loadPage(brand.ebay.searchURL +
-        encodeURIComponent(currentSearchTerm), "united-ebay");
-  }
-  else
-    loadPage(brand.ebay.portalURL, "united-ebay");
+  try {
+    if (false && currentSearchTerm) // #702
+    {
+      notifyWindowObservers("search-started",
+        { searchTerm : currentSearchTerm, source : 1 });
+      loadPage(brand.ebay.searchURL +
+          encodeURIComponent(currentSearchTerm), "united-ebay");
+    }
+    else {
+      var url = brand.ebay.portalURL;
+      if (gIconName) {
+        url += "?" + gIconName;
+      }
+      loadPage(url, "united-ebay");
+    }
+  } catch (e) { errorCritical(e); }
 };
 
 /**
@@ -28,16 +54,18 @@ function onButton(event)
  */
 function onLastMinuteButton(event)
 {
-  if (false && currentSearchTerm) // #702
-  {
-    notifyWindowObservers("search-started",
-      { searchTerm : currentSearchTerm, source : 1 });
-    // NOTE: not encodeURIComponent() = UTF-(), but escape() = ISO-8859-1
-    loadPage(brand.ebay.lastminuteSearchURL +
-        window.escape(currentSearchTerm), "tab");
-  }
-  else
-    loadPage(brand.ebay.lastminutePortalURL, "tab");
+  try {
+    if (false && currentSearchTerm) // #702
+    {
+      notifyWindowObservers("search-started",
+        { searchTerm : currentSearchTerm, source : 1 });
+      // NOTE: not encodeURIComponent() = UTF-(), but escape() = ISO-8859-1
+      loadPage(brand.ebay.lastminuteSearchURL +
+          window.escape(currentSearchTerm), "tab");
+    }
+    else
+      loadPage(brand.ebay.lastminutePortalURL, "tab");
+  } catch (e) { errorCritical(e); }
 };
 
 // <copied from="amazon.js">
@@ -59,5 +87,7 @@ autoregisterWindowObserver("search-keypress", saveSearchTerm);
  */
 function onAmazonButton(event)
 {
-  loadPage(brand.amazon.portalURL, "tab");
+  try {
+    loadPage(brand.amazon.portalURL, "tab");
+  } catch (e) { errorCritical(e); }
 };

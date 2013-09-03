@@ -15,11 +15,7 @@
 
 const EXPORTED_SYMBOLS = [ "getFeedsList", "getFeedURL", ];
 
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/util/fetchhttp.js");
-Components.utils.import("resource://unitedtb/util/JXON.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 
 const kFeedListRefreshInterval = 24*60*60; // 1 day
 const kPrefBranch = "ticker.feedsListCache.";

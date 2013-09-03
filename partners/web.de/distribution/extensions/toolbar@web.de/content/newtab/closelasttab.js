@@ -12,8 +12,10 @@ var theirRemoveTab;
 
 function onLoad(event)
 {
-  theirRemoveTab = gBrowser.removeTab;
-  gBrowser.removeTab = ourRemoveTab;
+  try {
+    theirRemoveTab = gBrowser.removeTab;
+    gBrowser.removeTab = ourRemoveTab;
+  } catch (e) { errorNonCritical(e); }
 };
 window.addEventListener("load", onLoad, false);
 

@@ -36,43 +36,45 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 
 function onOptinLoad()
 {
-  if (brand.regions.list.length < 2)
-    document.getElementById("region-label").hidden = true;
-  if (ourPref.get("brandedbrowser", false))
-  {
-    document.getElementById("container").setAttribute("brandedbrowser", "true");
-    confirmClose = false;
-  }
-  else
-  {
-    // Only optin if we are not branded browser
-    document.getElementById("finish-button").addEventListener("click", onOptin, true);
-  }
-  if (kVariant == "amo")
-  {
-    document.getElementById("container").setAttribute("amo", "true");
-    confirmClose = false;
-    var finishButton = document.getElementById("finish-button")
-    // See comment in login-page.js
-    // For AMO, we were required to add a second button that allows the user to login
-    // without opting in. We show the new button via CSS, but we have to modify the
-    // labels for the finish button to have opt-in text.
-    finishButton.setAttribute("finish-label", finishButton.getAttribute("finish-amo-label"));
-    finishButton.setAttribute("login-label", finishButton.getAttribute("login-amo-label"));
-    // For AMO, we have to default new tab to false
-    ourPref.set("newtab.enabled", false);
-  }
-  document.getElementById("login-button").addEventListener("click", function () { onLogin(showFirstRun); }, true);
-  // finish-button also has click handler onOptin() added above.
-  // onLogin must be called after onOptin()
-  document.getElementById("finish-button").addEventListener("click", function () { onLogin(showFirstRun); }, true);
-  document.getElementById("close-button").addEventListener("click", function () { onCloseButton(showFirstRun); }, true);
+  try {
+    if (brand.regions.list.length < 2)
+      E("region-label").hidden = true;
+    if (ourPref.get("brandedbrowser", false))
+    {
+      E("container").setAttribute("brandedbrowser", "true");
+      confirmClose = false;
+    }
+    else
+    {
+      // Only optin if we are not branded browser
+      E("finish-button").addEventListener("click", onOptin, true);
+    }
+    if (kVariant == "amo")
+    {
+      E("container").setAttribute("amo", "true");
+      confirmClose = false;
+      var finishButton = E("finish-button")
+      // See comment in login-page.js
+      // For AMO, we were required to add a second button that allows the user to login
+      // without opting in. We show the new button via CSS, but we have to modify the
+      // labels for the finish button to have opt-in text.
+      finishButton.setAttribute("finish-label", finishButton.getAttribute("finish-amo-label"));
+      finishButton.setAttribute("login-label", finishButton.getAttribute("login-amo-label"));
+      // For AMO, we have to default new tab to false
+      ourPref.set("newtab.enabled", false);
+    }
+    E("login-button").addEventListener("click", function () { onLogin(showFirstRun); }, true);
+    // finish-button also has click handler onOptin() added above.
+    // onLogin must be called after onOptin()
+    E("finish-button").addEventListener("click", function () { onLogin(showFirstRun); }, true);
+    E("close-button").addEventListener("click", function () { onCloseButton(showFirstRun); }, true);
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onOptinLoad, false);
 
 function onOptin()
 {
-  var searchengine = document.getElementById("searchengine").checked;
+  var searchengine = E("searchengine").checked;
 
   var startpageSelectedID;
   var startpageRadioButtons = document.getElementsByName("startpage");
@@ -82,7 +84,7 @@ function onOptin()
       break;
     }
   }
-  var newtab = document.getElementById("newtab").checked;
+  var newtab = E("newtab").checked;
 
   //<copied from="pref-general.js (with modifications">
   if (searchengine)

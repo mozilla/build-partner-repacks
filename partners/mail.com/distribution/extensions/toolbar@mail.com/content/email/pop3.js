@@ -53,9 +53,7 @@
 
 const EXPORTED_SYMBOLS = [ "POP3Account" ];
 
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/util/observer.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/util/Socket.js");
 Components.utils.import("resource://unitedtb/util/Auth.js");
 Components.utils.import("resource://unitedtb/email/MIME.js");

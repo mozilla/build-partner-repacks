@@ -4,14 +4,8 @@
 
 const EXPORTED_SYMBOLS = [];
 
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-Components.utils.import("resource://unitedtb/util/fetchhttp.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/tracking/campaign-id.js");
-var build = {}
-Components.utils.import("resource://unitedtb/build.js", build);
-Components.utils.import("resource://unitedtb/util/observer.js");
 var accounts = {};
 Components.utils.import("resource://unitedtb/email/account-list.js", accounts);
 

@@ -31,25 +31,11 @@
 
 const EXPORTED_SYMBOLS = [];
 
-Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/observer.js");
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js");
-Components.utils.import("resource://unitedtb/build.js");
+Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 var gStringBundle = new StringBundle(
     "chrome://unitedtb/locale/main/extension.properties");
-
-// these are the various brands of this toolbar, and they conflict
-// they are here for now because they can't be in brand.js because
-// it replaces the mara toolbar ID with another ID
-const ourEMIDs = [
-  "toolbar@web.de",
-  "toolbar@gmx.net",
-  "toolbar@mail.com",
-  "toolbar@1und1.de",
-  "united.toolbar@mara.beonex.com"
-];
 
 /**
  * Runs when new browser window opens (because that loads this JS module),
@@ -125,7 +111,7 @@ var emAction =
 
   onUninstalling: function(addon) {
     try {
-      if (addon.id == EMID) {
+      if (addon.id == build.EMID) {
         this._uninstall = true;
         onUninstall();
       }
@@ -134,14 +120,14 @@ var emAction =
 
   onDisabling: function(addon) {
     try {
-      if (addon.id == EMID) {
+      if (addon.id == build.EMID) {
         this._disable = true;
       }
     } catch (e) { errorInBackend(e); }
   },
 
   onOperationCancelled: function(addon) {
-    if (addon.id == EMID) {
+    if (addon.id == build.EMID) {
       if (this._uninstall)
         this._uninstall = false;
       else if (this._disable)
@@ -150,7 +136,7 @@ var emAction =
   },
   onInstalling: function(addon) {
     // The user is installing the same version of the extension over itself
-    if (addon.id == EMID) {
+    if (addon.id == build.EMID) {
       if (addon.version == getExtensionFullVersion()) {
         notifyGlobalObservers("reinstall", {});
       }
@@ -161,7 +147,25 @@ var emAction =
 function onUninstall()
 {
   notifyGlobalObservers("uninstall", {});
-  findSomeBrowserWindow().unitedinternet.common.loadPage(brand.toolbar.uninstallURL, "tab");
+  var brandSearch = Services.search.currentEngine.name == brand.search.engineName;
+  var currentHomepage = generalPref.get("browser.startup.homepage");
+  var brandHomepage = currentHomepage == brand.toolbar.startpageURL ||
+                      currentHomepage == brand.toolbar.startpageHomepageURL;
+  var url = brand.toolbar.uninstallURL;
+  // 0 = Nothing
+  // 1 = Startpage
+  // 2 = Search
+  // 3 = Startpage and search
+  var prefValue = 0;
+  if (brandHomepage) {
+    prefValue += 1;
+  }
+  if (brandSearch) {
+    prefValue += 2;
+  }
+  url += "?prefs=" + prefValue;
+
+  findSomeBrowserWindow().unitedinternet.common.loadPage(url, "tab");
 }
 
 function onInstall()
@@ -232,7 +236,7 @@ function onInstall()
  */
 function checkMultipleToolbars()
 {  
-  AddonManager.getAddonsByIDs(ourEMIDs, function(addons)
+  AddonManager.getAddonsByIDs(build.ourEMIDs, function(addons)
   {
     try {
       var numAddons = 0;
@@ -253,7 +257,7 @@ function checkMultipleToolbars()
         if (!addon) {
           return;
         }
-        if (addon.id == EMID) // me
+        if (addon.id == build.EMID) // me
         {
           myName = addon.name;
       }
@@ -263,7 +267,7 @@ function checkMultipleToolbars()
           conflIDs.push(addon.id);
         }
       });
-      assert(myName, "Couldn't find myself. ourEMIDs is missing my ID " + EMID);
+      assert(myName, "Couldn't find myself. ourEMIDs is missing my ID " + build.EMID);
 
       var aButtonFlags = (promptService.BUTTON_POS_0) * (promptService.BUTTON_TITLE_IS_STRING) +
                          (promptService.BUTTON_POS_1) * (promptService.BUTTON_TITLE_IS_STRING) +
@@ -284,7 +288,7 @@ function checkMultipleToolbars()
       if (confirm == 1) {
         addonToUninstall = conflIDs[0];
       } else {
-        addonToUninstall = EMID;
+        addonToUninstall = build.EMID;
       }
       addons.forEach(function(addon) {
         if (!addon) {
@@ -314,7 +318,7 @@ function checkMultipleToolbars()
 function checkForBrandedBrowser()
 {
   var brandedBrowser = ourPref.get("brandedbrowser", false);
-  var bundledToolbar = (kVariant == "browser");
+  var bundledToolbar = (build.kVariant == "browser");
   if (bundledToolbar && !brandedBrowser) {
     var browser = findSomeBrowserWindow();
     var noCoexistenceWarning = ourPref.get("noCoexistenceWarning", false);

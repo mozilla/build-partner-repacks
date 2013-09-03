@@ -3,7 +3,7 @@ Components.utils.import("resource://unitedtb/build.js", build);
 
 function onLoad()
 {
-  new OurEngineCheckbox(document.getElementById("search-ourengine-checkbox"));
+  new OurEngineCheckbox(E("search-ourengine-checkbox"));
 }
 window.addEventListener("load", onLoad, false);
 

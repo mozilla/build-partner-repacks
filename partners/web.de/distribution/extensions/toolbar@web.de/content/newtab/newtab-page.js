@@ -16,40 +16,42 @@ var gAutocomplete;
 
 function onLoad()
 {
-  // We need to access the global unitedinternet.newtab object, so that our
-  // observer notifications happen at the window level, but we can't,
-  // because we are not in the browser scope. Get it from the browser window.
-  firefoxWindow = getTopLevelWindowContext(window);
-  unitedFromAbove = firefoxWindow.unitedinternet;
+  try {
+    // We need to access the global unitedinternet.newtab object, so that our
+    // observer notifications happen at the window level, but we can't,
+    // because we are not in the browser scope. Get it from the browser window.
+    firefoxWindow = getTopLevelWindowContext(window);
+    unitedFromAbove = firefoxWindow.unitedinternet;
 
-  searchField = document.getElementById("searchterm");
-  if (ourPref.get("newtab.setFocus"))
-    searchField.focus();
+    searchField = E("searchterm");
+    if (ourPref.get("newtab.setFocus"))
+      searchField.focus();
 
-  initAutocomplete();
-  initBrand();
-  fillUserSearchTerms();
-  getRecommendedSites(fillRecommendedSites);
-  var firefoxThumbnailsIFrame = document.getElementById("firefoxThumbnails");
-  firefoxThumbnailsIFrame.addEventListener("load", function(event) {
-    var doc = event.target.contentDocument;
-    // Add a custom attribute for our CSS. I investigated loading our CSS
-    // dynamically, but it caused a flash. Better to load via chrome.manifest
-    doc.getElementById('newtab-scrollbox').setAttribute('united-toolbar','true');
-    // Make sure our new tab page is never disabled
-    doc.getElementById('newtab-grid').removeAttribute('page-disabled');
-    doc.getElementById('newtab-scrollbox').removeAttribute('page-disabled');
-    // Reinitialize page just in case it was disabled
-    event.target.contentWindow.gPage._init();
-    // Use favicons for sites where we have no thumbnail
-    addSitePlaceholders(doc);
-  }, false);
-  // The Firefox new tab page doesn't refresh, so we force it.
-  // Load the page only after the cache is populated.
-  NewTabUtils.links.populateCache(function () {
-    firefoxThumbnailsIFrame.contentDocument.location.replace("chrome://browser/content/newtab/newTab.xul");
-    },
-    true);
+    initAutocomplete();
+    initBrand();
+    fillUserSearchTerms();
+    getRecommendedSites(fillRecommendedSites);
+    var firefoxThumbnailsIFrame = E("firefoxThumbnails");
+    firefoxThumbnailsIFrame.addEventListener("load", function(event) {
+      var doc = event.target.contentDocument;
+      // Add a custom attribute for our CSS. I investigated loading our CSS
+      // dynamically, but it caused a flash. Better to load via chrome.manifest
+      doc.getElementById('newtab-scrollbox').setAttribute('united-toolbar','true');
+      // Make sure our new tab page is never disabled
+      doc.getElementById('newtab-grid').removeAttribute('page-disabled');
+      doc.getElementById('newtab-scrollbox').removeAttribute('page-disabled');
+      // Reinitialize page just in case it was disabled
+      event.target.contentWindow.gPage._init();
+      // Use favicons for sites where we have no thumbnail
+      addSitePlaceholders(doc);
+    }, false);
+    // The Firefox new tab page doesn't refresh, so we force it.
+    // Load the page only after the cache is populated.
+    NewTabUtils.links.populateCache(function () {
+      firefoxThumbnailsIFrame.contentDocument.location.replace("chrome://browser/content/newtab/newTab.xul");
+      },
+      true);
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -70,11 +72,10 @@ function addSitePlaceholders(doc) {
 
       // Check whether Firefox has a thumbnail, see above.
       var file;
-      // This API was removed in Firefox 22
-      if (PageThumbsStorage.getFileForURL) {
-        file = PageThumbsStorage.getFileForURL(url);
-      } else if (PageThumbsStorage.getFilePathForURL) {
+      if (PageThumbsStorage.getFilePathForURL) { // Added in FF22, bug 753768
         file = new FileUtils.File(PageThumbsStorage.getFilePathForURL(url));
+      } else if (PageThumbsStorage.getFileForURL) { // Old API, deprecated in FF22
+        file = PageThumbsStorage.getFileForURL(url);
       }
       if (!file || !file.exists()) {
         displayFaviconForThumbnail(url, cell.querySelector(".newtab-thumbnail"));
@@ -132,7 +133,7 @@ function initAutocomplete()
 
 function fillUserSearchTerms()
 {
-  var manageE = document.getElementById("last-searches-manage");
+  var manageE = E("last-searches-manage");
   manageE.setAttribute("have-results", "false");
   getLastSearches(20, function(terms) // search-store.js
   {
@@ -149,7 +150,7 @@ function fillUserSearchTerms()
  */
 function fillSearchTerms(terms, listID, sourceID)
 {
-  var listE = document.getElementById(listID);
+  var listE = E(listID);
   cleanElement(listE);
   for each (let term in terms)
   {
@@ -185,13 +186,12 @@ function fillSearchTerms(terms, listID, sourceID)
     listE.appendChild(item);
   }
 }
-// </copied>
 
 function initBrand()
 {
-  document.getElementById("logo").setAttribute("href",
-      brand.toolbar.homepageURL);
+  E("logo").setAttribute("href", brand.toolbar.homepageURL);
 }
+// </copied>
 
 /**
  * Fetch the data for fillRecommendedSites() from server XML,
@@ -236,7 +236,7 @@ const maxRecommendedItems = 9;
 function fillRecommendedSites(xml)
 {
   var launchitems = JXON.build(xml).launchitems;
-  var listE = document.getElementById("recommended-list");
+  var listE = E("recommended-list");
   cleanElement(listE);
   var i = 0;
   for each (let entry in launchitems.$launchitem)
@@ -280,17 +280,11 @@ function onSearchTextChanged(event)
       { searchTerm : event.target.value, source : 4 });
 };
 
-/**
- * Fired when the user presses RETURN in the text box.
- */
-function onSearchTextEntered()
-{
-  startSearch(searchField.value);
-};
-
 function onSearchButtonClicked()
 {
-  startSearch(searchField.value);
+  try {
+    startSearch(searchField.value);
+  } catch (e) { errorCritical(e); }
 };
 
 /**
@@ -311,9 +305,11 @@ function startSearch(searchTerm)
 
 function onHistoryCleanButton()
 {
-  Cc['@mozilla.org/browser/browserglue;1']
-    .getService(Ci.nsIBrowserGlue)
-    .sanitize(window);
+  try {
+    Cc['@mozilla.org/browser/browserglue;1']
+      .getService(Ci.nsIBrowserGlue)
+      .sanitize(window);
+  } catch (e) { errorCritical(e); }
 }
 
 // When history is deleted, update the user terms

@@ -16,8 +16,8 @@ window.addEventListener("load", onLoad, false);
 
 function buildFeedMenu()
 {
-  var dropdown = document.getElementById("channel")
-  var menu = document.getElementById("channel-menu");
+  var dropdown = E("channel")
+  var menu = E("channel-menu");
   var pref = dropdown.value; // ourPref.get("ticker.channel");
   // clear first
   cleanElement(menu);

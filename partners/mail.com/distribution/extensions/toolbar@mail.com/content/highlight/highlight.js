@@ -23,7 +23,7 @@ gHighlightImage.src = "chrome://unitedtb/skin/highlight/highlight-small.png";
  */
 function getMyButton()
 {
-  var outerButton = document.getElementById("united-highlight-button")
+  var outerButton = E("united-highlight-button")
   if ( !outerButton)
     return null;
   return document.getAnonymousElementByAttribute(outerButton, "anonid", "button");
@@ -31,19 +31,23 @@ function getMyButton()
 
 function onLoad()
 {
-  ourPref.observeAuto(window, "highlight.color", function(newValue)
-  {
-    updateColor(newValue);
-    turnOnOff();
-  });
-  gBrowser.tabContainer.addEventListener("TabSelect", onTabChanged, false);
+  try {
+    ourPref.observeAuto(window, "highlight.color", function(newValue)
+    {
+      try {
+        updateColor(newValue);
+        turnOnOff();
+      } catch (e) { errorNonCritical(e); }
+    });
+    gBrowser.tabContainer.addEventListener("TabSelect", onTabChanged, false);
 
-  updateColor();
-  var button = getMyButton();
-  if (!button)
-    return;
-  button.checked = ourPref.get("highlight.enableOnNewWindow");
-  turnOnOff();
+    updateColor();
+    var button = getMyButton();
+    if (!button)
+      return;
+    button.checked = ourPref.get("highlight.enableOnNewWindow");
+    turnOnOff();
+  } catch(e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -52,7 +56,7 @@ function updateColor(newValue)
   if (!newValue) {
     newValue = ourPref.get("highlight.color");
   }
-  var canvas = document.getElementById("united-highlight-canvas");
+  var canvas = E("united-highlight-canvas");
   if (!canvas)
   {
     canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
@@ -82,13 +86,15 @@ function updateColor(newValue)
  */
 function onButton(event)
 {
-  var button = getMyButton()
-  button.checked = !button.checked;
+  try {
+    var button = getMyButton()
+    button.checked = !button.checked;
 
-  notifyWindowObservers("do-search-suggestions",
-      { enable: !button.checked });
+    notifyWindowObservers("do-search-suggestions",
+        { enable: !button.checked });
 
-  turnOnOff();
+    turnOnOff();
+  } catch (e) { errorCritical(e); }
 };
 
 /**
@@ -97,7 +103,9 @@ function onButton(event)
  */
 function onTextChanged()
 {
-  turnOnOff();
+  try {
+    turnOnOff();
+  } catch (e) { errorNonCritical(e); }
 }
 
 /**
@@ -106,14 +114,18 @@ function onTextChanged()
 function onColorChanged(event)
 {
   window.setTimeout(function(cp) {
-    ourPref.set('highlight.color', cp.color);
-    cp.parentNode.hidePopup();
+    try {
+      ourPref.set('highlight.color', cp.color);
+      cp.parentNode.hidePopup();
+  } catch (e) { errorNonCritical(e); }
   }, 0, event.target)
 }
 
 function onTabChanged()
 {
-  turnOnOff();
+  try {
+    turnOnOff();
+  } catch (e) { errorNonCritical(e); }
 }
 
 function turnOnOff()
@@ -286,13 +298,15 @@ function nodeListToArray(nodeList)
  */
 function onPageLoad(event)
 {
-  var doc = event.target; // document that was loaded
-  var win = doc.defaultView; // the |window| for the doc
-  if ( !doc instanceof HTMLDocument)
-    return;
-  if (win != win.top) // only top window
-    return;
-  if (!gTurnedOn)
-    return;
-  highlightPerDOMPoking(currentSearchTerm, doc);
+  try {
+    var doc = event.target; // document that was loaded
+    var win = doc.defaultView; // the |window| for the doc
+    if ( !doc instanceof HTMLDocument)
+      return;
+    if (win != win.top) // only top window
+      return;
+    if (!gTurnedOn)
+      return;
+    highlightPerDOMPoking(currentSearchTerm, doc);
+  } catch (e) { errorNonCritical(e); }
 }

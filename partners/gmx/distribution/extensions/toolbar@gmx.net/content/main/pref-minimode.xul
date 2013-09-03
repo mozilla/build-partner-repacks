@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay SYSTEM "chrome://unitedtb/locale/main/pref-minimode.dtd">
+
+<overlay id="united-pref-minimode-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript">
+    unitedinternet.initModule(unitedinternet, "minimode");
+    unitedinternet.loadJS("chrome://unitedtb/content/main/pref-minimode.js", unitedinternet.minimode);
+  </script>
+
+  <tabpanel id="buttons-tabpanel">
+    <groupbox id="minimode-groupbox"
+        insertafter="buttons-list-box"
+        >
+      <caption label="&minimode.groupbox;" />
+      <checkbox  id="enable-minimode" label="&minimode.label;"/>
+  </groupbox>
+  </tabpanel>
+</overlay>

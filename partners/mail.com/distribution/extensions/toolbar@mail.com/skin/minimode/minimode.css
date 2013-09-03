@@ -1,0 +1,11 @@
+#united-email-minimode-start-menuitem,
+#united-pref-minimode-start-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/minimode/minimode-open.png");
+}
+
+#united-email-minimode-end-menuitem,
+#united-pref-minimode-end-menuitem
+{
+  list-style-image: url("chrome://unitedtb/skin/minimode/minimode-close.png");
+}

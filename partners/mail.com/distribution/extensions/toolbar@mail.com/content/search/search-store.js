@@ -18,8 +18,8 @@ const EXPORTED_SYMBOLS = [
  *    Effect: Clean up sensitive data on uninstall
  */
 
-Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/observer.js");
+Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 
 //////////////////////////////////////////////////////////////////////////
 // Store searches
@@ -54,6 +54,7 @@ function getLastSearches(amount, resultCallback, errorCallback)
       addedTerms[searchitem.searchterm] = true;
     }
   }
+  terms.reverse(); // last search is first
   if (amount < terms.length)
     terms = terms.slice(0, amount);
   resultCallback(terms);

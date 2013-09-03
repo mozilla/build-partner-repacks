@@ -27,8 +27,9 @@ function loadIfNecessary(object)
 
   // Ensure that it shows only once, even if several windows are open,
   // e.g. due to session restore.
-  if (haveGlobalObject("united", "optin-shown"))
+  if (getGlobalObject("united", "optin-shown")) {
     return;
+  }
   setGlobalObject("united", "optin-shown", true);
 
   loadChromePage(firstrunPage, "tab");

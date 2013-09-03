@@ -38,7 +38,7 @@ function ourHandleSearchCommand(aEvent)
 
 function onLoad()
 {
-    gFirefoxSearchbar = document.getElementById("searchbar");
+    gFirefoxSearchbar = E("searchbar");
     origHandleSearchCommand = gFirefoxSearchbar.handleSearchCommand;
     gFirefoxSearchbar.handleSearchCommand = ourHandleSearchCommand;
 }

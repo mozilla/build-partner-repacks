@@ -4,7 +4,9 @@ function onLoad()
 {
   var args = window.arguments[0];
 
-  E("info.body").value = args.text;
+  // For description tags to format properly, you need to
+  // set their textContent, not their value.
+  E("info.body").textContent = args.text;
   document.title = args.title;
   E("info.title").value = args.title;
   if (args.checkLabel)
@@ -40,6 +42,6 @@ function onOK()
 
 function showMoreInfo(event)
 {
-  var panel = document.getElementById("moreInfoPanel");
+  var panel = E("moreInfoPanel");
   panel.openPopup(event.target, "after_start", 0, 0, false, false, event);
 }

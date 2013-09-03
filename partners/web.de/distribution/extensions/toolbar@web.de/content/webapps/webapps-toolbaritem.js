@@ -25,7 +25,9 @@ function startUsecase(usecase)
 
 function onLoad(event)
 {
-  if (brand.toolbar.pay)
-    document.loadOverlay("chrome://unitedtb/content/webapps/webapps-pay.xul", null);
+  try {
+    if (brand.toolbar.pay)
+      document.loadOverlay("chrome://unitedtb/content/webapps/webapps-pay.xul", null);
+  } catch(e) { errorCritical(e); }
 };
 window.addEventListener("load", onLoad, false);

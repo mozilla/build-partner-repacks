@@ -3,7 +3,7 @@ Components.utils.import("resource://unitedtb/util/util.js", this);
 
 function startSearch()
 {
-  var searchField = document.getElementById("searchfield");
+  var searchField = E("searchfield");
   var searchTerm = searchField.value;
   var engine = new mMetaSearch(searchTerm);
   engine.addObserver(function() // may be called many times per search
@@ -17,7 +17,7 @@ function showResults(results)
 {
   //debug("---results:---");
   //debugObject(results, "results", 1);
-  var container = document.getElementById("results");
+  var container = E("results");
   cleanElement(container);
   for each (let result in results)
   {

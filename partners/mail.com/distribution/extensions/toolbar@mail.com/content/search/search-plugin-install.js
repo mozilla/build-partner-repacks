@@ -18,10 +18,7 @@
 const EXPORTED_SYMBOLS = [];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/util/util.js", this);
-Components.utils.import("resource://unitedtb/util/observer.js", this);
-Components.utils.import("resource://unitedtb/main/brand-var-loader.js", this);
-Components.utils.import("resource://unitedtb/build.js", this);
+Components.utils.import("resource://unitedtb/util/common-jsm.js");
 
 /**
  * Use addEngine() API.
@@ -49,16 +46,12 @@ function copySearchPlugins(makeDefault)
   {
     let sourceURL = "chrome://unitedtb-searchplugins/content/" + entry.filename;
     let preexisting = Services.search.getEngineByName(entry.name) != null;
-    if (ourPref.isSet("search.enginePreexising." + entry.name))
-    {
-      /* The pref is not enough. We should verify that the search engine exists */
-      if (Services.search.getEngineByName(entry.name))
-      {
-        Services.search.getEngineByName(entry.name).hidden = false;
-        continue; // already copied (we are also called from region-changed)
-      }
-    }
+    // Save pre-install status for de-install
     ourPref.set("search.enginePreexising." + entry.name, preexisting);
+    if (preexisting) {
+      Services.search.getEngineByName(entry.name).hidden = false;
+      continue; // already copied (we are also called from region-changed)
+    }
     Services.search.addEngine(sourceURL, Ci.nsISearchEngine.DATA_XML, false, null,
     function(engine, success) // callback depends on bug 493051
     {
@@ -86,13 +79,11 @@ function removeAddedEngines()
 {
   debug("uninstall engines");
   //for each (let entry in brand.search.searchPlugins)
-  for each (let prefname in ourPref.branch("search.enginePreexising.").childPrefNames())
+  for each (let engineName in ourPref.branch("search.enginePreexising.").childPrefNames())
   {
-    debug("search engine " + prefname);
-    let preexisting = ourPref.get(prefname);
+    let preexisting = ourPref.get("search.enginePreexising." + engineName);
     if (preexisting)
       continue;
-    let engineName = prefname.substr("search.enginePreexising.".length);
     let engine = Services.search.getEngineByName(engineName);
     Services.search.removeEngine(engine);
   }
@@ -157,13 +148,13 @@ function searchInitRun(func)
 function install()
 {
   if ( !ourPref.get("brandedbrowser", false) &&
-      kVariant != "browser")
+      build.kVariant != "browser")
     searchInitRun(copySearchPlugins);
 }
 
 function uninstall()
 {
-  if (kVariant == "amo")
+  if (build.kVariant == "amo")
     removeAddedEngines();
 }
 
@@ -189,7 +180,7 @@ var globalObserver =
             ourPref.set("search.opt-in", true);
         });
         if ( !ourPref.get("brandedbrowser", false) &&
-            kVariant != "browser") {
+            build.kVariant != "browser") {
           searchInitRun(upgradeSearchPlugins);
         } else {
           searchInitRun(unhideSearchPlugins);
