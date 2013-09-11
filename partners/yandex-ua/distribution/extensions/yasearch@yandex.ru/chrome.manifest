@@ -1,0 +1,47 @@
+resource   yasearch-mod    modules/
+resource   yasearch-app    cbapp/
+
+content    yasearch        jar:chrome/yasearch.jar!/content/
+
+overlay    chrome://browser/content/browser.xul                        chrome://yasearch/content/overlay/browser.xul
+
+locale     yasearch    en-US    jar:chrome/yasearch.jar!/locale/en-US/
+locale     yasearch    ru       jar:chrome/yasearch.jar!/locale/ru/
+locale     yasearch    be       jar:chrome/yasearch.jar!/locale/be/
+locale     yasearch    kk       jar:chrome/yasearch.jar!/locale/kk/
+locale     yasearch    uk       jar:chrome/yasearch.jar!/locale/uk/
+
+skin       yasearch    classic/1.0    jar:chrome/yasearch.jar!/skin/classic/
+
+style      chrome://global/content/customizeToolbar.xul    chrome://yasearch/content/overlay/customizeToolbar.css
+overlay    chrome://global/content/customizeToolbar.xul    chrome://yasearch/content/overlay/customizeToolbar.xul
+
+
+
+
+
+component {F25B83DE-5817-11DE-8EB3-C9A656D89593} components/core.js
+contract @yandex.ru/custombarcore;yasearch {F25B83DE-5817-11DE-8EB3-C9A656D89593}
+category profile-after-change CustomYandexBarCore @yandex.ru/custombarcore;yasearch
+
+component {3F79261A-508E-47a3-B61C-D1F29E2068F3} components/nsYaSearch.js
+contract @yandex.ru/yasearch;1 {3F79261A-508E-47a3-B61C-D1F29E2068F3}
+category profile-after-change nsYaSearch @yandex.ru/yasearch;1
+
+component {e33692d2-393d-11e0-9117-377b34918f2a} components/nsSearchSuggestions.js
+contract @mozilla.org/autocomplete/search;1?name=yasearch-autocomplete {e33692d2-393d-11e0-9117-377b34918f2a}
+
+component {6BA7D0A8-A115-11DE-8D96-029555D89593} components/xbProtocol.js
+contract @mozilla.org/network/protocol;1?name=xb {6BA7D0A8-A115-11DE-8D96-029555D89593}
+
+
+
+
+
+interfaces components/nsIYaSearch.xpt
+
+
+
+
+
+
