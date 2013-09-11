@@ -6,3 +6,6 @@ scripts/original_builds
 scripts/repacked_builds
 scripts/nonce
 scripts/token
+
+# copied from mozilla-central
+.DS_Store
