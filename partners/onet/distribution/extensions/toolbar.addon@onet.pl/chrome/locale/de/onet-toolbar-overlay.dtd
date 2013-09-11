@@ -1,0 +1,37 @@
+<!ENTITY OnetToolbar.ToolbarButton.label "OnetToolbar">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip "Anzeigen / ausblenden OnetToolbar">
+<!ENTITY OnetToolbar.Toolbar.name  "OnetToolbar">
+<!ENTITY OnetToolbar.Toolbar.name.ak "O">
+<!ENTITY OnetToolbar.Toolbar.label "OnetToolbar">
+<!ENTITY OnetToolbar.ToolbarButton.label.0 "Onet.pl">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip.0 "Onet.pl">
+<!ENTITY OnetToolbar.ToolbarButton.label.S "Suche">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip.S "Suche">
+<!ENTITY OnetToolbar.ToolbarButton.label.1 "Horoskop">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip.1 "Horoskop">
+<!ENTITY OnetToolbar.ToolbarButton.label.2 "Kino">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip.2 "Kino">
+<!ENTITY OnetToolbar.ToolbarButton.label.3 "Börse">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip.3 "Börse">
+<!ENTITY OnetToolbar.ToolbarButton.label.4 "Wechselkurse">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip.4 "Wechselkurse">
+<!ENTITY OnetToolbar.ToolbarButton.label.5 "Wetter">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip.5 "Wetter">
+<!ENTITY OnetToolbar.ToolbarButton.label.D "OnetDisc">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip.D "OnetDisc">
+<!ENTITY OnetToolbar.ToolbarButton.label.6 "Onet E-Mail">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip.6 "E-Mail abrufen">
+<!ENTITY OnetToolbar.ToolbarButton.label.N "Nachrichten">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip.N "Nachrichten">
+<!ENTITY OnetToolbar.Sidebar.title  "Onet Nachrichten">
+<!ENTITY OnetToolbar.Sidebar.label  "Onet">
+<!ENTITY OnetToolbar.Sidebar.page.title  "Onet Nachrichten">
+<!ENTITY OnetToolbar.newtab.wiadomosci "Nachrichten">
+<!ENTITY OnetToolbar.newtab.sympatia "Sympatia.pl – Online Dating Service">
+<!ENTITY OnetToolbar.newtab.vod "VOD – Filme und Serien Online">
+<!ENTITY OnetToolbar.ToolbarMenu.logout.label "Abmelden">
+<!ENTITY OnetToolbar.ToolbarMenu.disconnect.label "Benachrichtigungen stoppen">
+<!ENTITY OnetToolbar.Email.tooltip.text "Anmelden OnetPoczta um E-Mail Benachrichtigungen zu erhalten.">
+<!ENTITY OnetToolbar.Email.tooltip.login "E-Mail Anmelden">
+<!ENTITY OnetToolbar.Email.tooltip.notnow "Nicht jetzt">
+<!ENTITY OnetToolbar.Email.tooltip.never "Bitte nicht mehr erinnern, Danke!">

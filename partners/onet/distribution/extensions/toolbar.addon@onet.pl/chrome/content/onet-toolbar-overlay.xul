@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://pl.onet.toolbar/skin/onet-toolbar-overlay.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://pl.onet.toolbar/locale/onet-toolbar-overlay.dtd">
+
+<overlay id="pl-onet-addon-toolbar-overlay"
+				 xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	
+	<script type="application/x-javascript" src="chrome://pl.onet.toolbar/content/onet-toolbar-overlay.js" />
+
+	<!-- toolbar button -->
+	<toolbarpalette id="BrowserToolbarPalette">
+		<toolbarbutton id="pl-onet-addon-toolbar-toolbarButton"
+									 class="toolbarbutton-1 chromeclass-toolbar-additional"
+									 label="&OnetToolbar.ToolbarButton.label;"
+									 tooltiptext="&OnetToolbar.ToolbarButton.tooltip;"
+									 oncommand="OnetToolbar.onToolbarButtonCommand()" />
+	</toolbarpalette>
+
+	<!-- onet sidebar -->
+	<menupopup id="viewSidebarMenu">
+		<menuitem observes="pl-onet-addon-toolbar-sidebar-id" />
+	</menupopup>
+	<broadcasterset id="mainBroadcasterSet">
+		<broadcaster id="pl-onet-addon-toolbar-sidebar-id"
+								 label="&OnetToolbar.Sidebar.label;"
+								 autoCheck="false"
+								 type="checkbox"
+								 group="sidebar"
+								 sidebarurl="chrome://pl.onet.toolbar/content/onet-sidebar.xul"
+								 sidebartitle="&OnetToolbar.Sidebar.title;"
+								 oncommand="toggleSidebar('pl-onet-addon-toolbar-sidebar-id');" />
+	</broadcasterset>
+
+	<!-- onet search -->
+	<commandset>
+		<command id="pl-onet-addon-toolbar-cmd-search"
+						 oncommand="OnetToolbar.openTab('http://szukaj.onet.pl/wyniki.html?qt='+document.getElementById('pl-onet-addon-toolbar-search-tf').value);" />
+		<command id="pl-onet-addon-toolbar-cmd-email-logout"
+						 label="&OnetToolbar.ToolbarMenu.logout.label;"
+						 oncommand="OnetToolbar.openTab('https://authorisation.grupaonet.pl/logout.html?app_id=poczta.onet.pl.front.onetapi.pl', 'onet-toolbar-email', true)" />
+		<command id="pl-onet-addon-toolbar-cmd-email-disconnect"
+						 label="&OnetToolbar.ToolbarMenu.disconnect.label;"
+						 oncommand="OnetToolbar.disconnect()" />
+		<command id="pl-onet-addon-toolbar-emailalert-never-cmd"
+						 label="&OnetToolbar.Email.tooltip.never;"
+						 oncommand="OnetToolbar.setEmailalertShownever(document.getElementById('pl-onet-addon-toolbar-emailalert-never-cb').hasAttribute('checked'));" />
+	</commandset>
+
+	<!-- one toolbar -->
+	<toolbox id="navigator-toolbox">
+		<toolbar id="pl-onet-addon-toolbar-toolbar"
+						 mode="icons"
+						 class="chromeclass-toolbar"
+						 toolbarname="&OnetToolbar.Toolbar.name;"
+						 accesskey="&OnetToolbar.Toolbar.name.ak;">
+			<!-- Onet HOME -->
+			<toolbarbutton id="pl-onet-addon-toolbar-button-0"
+										 tabindex="1"
+										 label="&OnetToolbar.ToolbarButton.label.0;"
+										 tooltiptext="&OnetToolbar.ToolbarButton.tooltip.0;"
+										 accesskey="0"
+										 class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
+										 oncommand="OnetToolbar.openTab('http://www.onet.pl/?utm_source=onetbrotab&amp;utm_medium=onetbrowser&amp;utm_campaign=onetsg_browser')" />
+			<toolbaritem id="pl-onet-addon-toolbar-search-container"
+									 align="center" combined="true"
+									 class="chromeclass-location">
+				<hbox id="pl-onet-addon-toolbar-search-box">
+					<textbox id="pl-onet-addon-toolbar-search-tf"
+									 tabindex="2"
+									 class="plain"
+									 type="autocomplete"
+									 value=""
+									 autocompletesearch="search-autocomplete"
+									 ontextentered="OnetToolbar.openTab('http://szukaj.onet.pl/wyniki.html?qt='+this.value+'&amp;so=tb&amp;utm_source=os&amp;utm_medium=pv&amp;utm_campaign=onetfirefox');" />
+					<spacer width="7" />
+					<button id="pl-onet-addon-toolbar-search-button"
+									tabindex="3"
+									label="&OnetToolbar.ToolbarButton.label.S;"
+									tooltiptext="&OnetToolbar.ToolbarButton.tooltip.S;"
+									command="pl-onet-addon-toolbar-cmd-search" />
+				</hbox>
+			</toolbaritem>
+			<spacer width="7" />
+			<toolbarbutton id="pl-onet-addon-toolbar-button-1"
+										 tabindex="4"
+										 label="&OnetToolbar.ToolbarButton.label.1;"
+										 tooltiptext="&OnetToolbar.ToolbarButton.tooltip.1;"
+										 accesskey="1"
+										 class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
+										 oncommand="OnetToolbar.openTab('http://magia.onet.pl/horoskop/?utm_source=magiabrotoolbar&amp;utm_medium=onetbrowser&amp;utm_campaign=onetsg_browser')" />
+			<toolbarbutton id="pl-onet-addon-toolbar-button-2"
+										 tabindex="5"
+										 label="&OnetToolbar.ToolbarButton.label.2;"
+										 tooltiptext="&OnetToolbar.ToolbarButton.tooltip.2;"
+										 accesskey="2"
+										 class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
+										 oncommand="OnetToolbar.openTab('http://repertuar.onet.pl/?utm_source=repertuarbrotoolbar&amp;utm_medium=onetbrowser&amp;utm_campaign=onetsg_browser')" />
+			<toolbarbutton id="pl-onet-addon-toolbar-button-3"
+										 tabindex="6"
+										 label="&OnetToolbar.ToolbarButton.label.3;"
+										 tooltiptext="&OnetToolbar.ToolbarButton.tooltip.3;"
+										 accesskey="3"
+										 class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
+										 oncommand="OnetToolbar.openTab('http://gielda.onet.pl/?utm_source=gieldabrotoolbar&amp;utm_medium=onetbrowser&amp;utm_campaign=onetsg_browser')" />
+			<toolbarbutton id="pl-onet-addon-toolbar-button-4"
+										 tabindex="7"
+										 label="&OnetToolbar.ToolbarButton.label.4;"
+										 tooltiptext="&OnetToolbar.ToolbarButton.tooltip.4;"
+										 accesskey="4"
+										 class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
+										 oncommand="OnetToolbar.openTab('http://waluty.onet.pl/?utm_source=walutybrotoolbar&amp;utm_medium=onetbrowser&amp;utm_campaign=onetsg_browser')" />
+			<toolbarbutton id="pl-onet-addon-toolbar-button-5"
+										 tabindex="8"
+										 label="&OnetToolbar.ToolbarButton.label.5;"
+										 tooltiptext="&OnetToolbar.ToolbarButton.tooltip.5;"
+										 accesskey="5"
+										 class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
+										 oncommand="OnetToolbar.openTab('http://pogoda.onet.pl/?utm_source=pogodabrotoolbar&amp;utm_medium=onetbrowser&amp;utm_campaign=onetsg_browser')" />
+			<toolbarbutton id="pl-onet-addon-toolbar-button-D"
+										 tabindex="9"
+										 label="&OnetToolbar.ToolbarButton.label.D;"
+										 tooltiptext="&OnetToolbar.ToolbarButton.tooltip.D;"
+										 accesskey="6"
+										 class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
+										 oncommand="OnetToolbar.openTab('http://dysk.onet.pl/?utm_source=dyskbrotoolbar&amp;utm_medium=onetbrowser&amp;utm_campaign=onetsg_browser', 'onet-toolbar-dysk')" />
+			<toolbaritem id="pl-onet-addon-toolbar-email-container"
+									 align="center"
+									 persist="height"
+									 combined="true"
+									 class="chromeclass-location">
+				<stack flex="0">
+					<toolbarbutton id="pl-onet-addon-toolbar-button-6"
+												 tabindex="10"
+												 label="&OnetToolbar.ToolbarButton.label.6;"
+												 type="menu-button"
+												 tooltiptext="&OnetToolbar.ToolbarButton.tooltip.6;"
+												 accesskey="7" class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
+												 oncommand="OnetToolbar.openTab('http://poczta.onet.pl', 'onet-toolbar-email', !OnetToolbar.hasAuthCookie()); event.stopPropagation();">
+						<menupopup id="pl-onet-addon-toolbar-menu-popup"
+											 position="after_end"
+											 oncommand="event.stopPropagation();">
+							<menuitem command="pl-onet-addon-toolbar-cmd-email-logout" />
+						</menupopup>
+					</toolbarbutton>
+					<label id="pl-onet-addon-toolbar-email-mailObserver" top="0" left="10">
+						<span id="pl-onet-addon-toolbar-email-mailObserverValue"></span>
+					</label>
+				</stack>
+			</toolbaritem>
+			<toolbarbutton id="pl-onet-addon-toolbar-button-N"
+										 tabindex="11"
+										 label="&OnetToolbar.ToolbarButton.label.N;"
+										 tooltiptext="&OnetToolbar.ToolbarButton.tooltip.N;"
+										 accesskey="8" class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
+										 oncommand="toggleSidebar('pl-onet-addon-toolbar-sidebar-id');">
+			</toolbarbutton>
+		</toolbar>
+		<!-- email tooltip -->
+		<panel id="pl-onet-addon-toolbar-emailtooltip"
+					 orient="vertical"
+					 backdrag="true"
+					 fade="none"
+					 type="arrow"
+					 pack="center">
+			<label>&OnetToolbar.Email.tooltip.text;</label>
+			<separator class="thin" />
+			<hbox pack="center">
+				<button label="&OnetToolbar.Email.tooltip.login;"
+								oncommand="OnetToolbar.emailAlert(false); OnetToolbar.openTab('http://poczta.onet.pl', 'onet-toolbar-email', !OnetToolbar.hasAuthCookie());" />
+				<button label="&OnetToolbar.Email.tooltip.notnow;"
+								oncommand="OnetToolbar.emailAlert(false);" />
+			</hbox>
+			<separator class="thin" />
+			<checkbox id="pl-onet-addon-toolbar-emailalert-never-cb"
+								command="pl-onet-addon-toolbar-emailalert-never-cmd" />
+		</panel>
+	</toolbox>
+</overlay>

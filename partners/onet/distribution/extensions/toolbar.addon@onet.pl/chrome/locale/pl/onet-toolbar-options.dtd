@@ -1,0 +1,18 @@
+<!ENTITY OnetToolbar.options.dialog.title "Optymalizacja przeglądarki">
+<!ENTITY OnetToolbar.options.title "Zainstalowano dodatek optymalizujący dla Onetu przeglądarkę Firefox.">
+<!ENTITY OnetToolbar.options.title1 "Wybierz ustawienia">
+<!ENTITY OnetToolbar.options.homepage.caption "Strona startowa">
+<!ENTITY OnetToolbar.options.homepage.label.1 "onet.pl">
+<!ENTITY OnetToolbar.options.homepage.label.2 "szukaj.onet.pl">
+<!ENTITY OnetToolbar.options.homepage.label.3 "dotychczasowa">
+<!ENTITY OnetToolbar.options.homepage.label.reset "ustawiona przed instalacją dodatku">
+<!ENTITY OnetToolbar.options.search.caption "Domyślna wyszukiwarka">
+<!ENTITY OnetToolbar.options.search.label "Google z onet.pl">
+<!ENTITY OnetToolbar.options.newtab.caption "Nowa karta">
+<!ENTITY OnetToolbar.options.newtab.label "Zawiera treści z onet.pl">
+<!ENTITY OnetToolbar.options.email.caption "Powiadamiaj o nowej poczcie">
+<!ENTITY OnetToolbar.options.email.login.label "Mam konto w OnetPoczcie">
+<!ENTITY OnetToolbar.options.email.register.label "Zakładam konto w OnetPoczcie">
+<!ENTITY OnetToolbar.options.email.nop.label "Nie teraz">
+<!ENTITY OnetToolbar.options.button.accept "Rozpocznij">
+<!ENTITY OnetToolbar.options.button.close "Zamknij okno">

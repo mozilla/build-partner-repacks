@@ -1,0 +1,18 @@
+<!ENTITY OnetToolbar.options.dialog.title "Optimize browser">
+<!ENTITY OnetToolbar.options.title "You have installed add-on optimizing Firefox browser for Onet.pl!">
+<!ENTITY OnetToolbar.options.title1 "Choose preferences">
+<!ENTITY OnetToolbar.options.homepage.caption "Home Page">
+<!ENTITY OnetToolbar.options.homepage.label.1 "onet.pl">
+<!ENTITY OnetToolbar.options.homepage.label.2 "szukaj.onet.pl">
+<!ENTITY OnetToolbar.options.homepage.label.3 "keep current">
+<!ENTITY OnetToolbar.options.homepage.label.reset "reset to homepage before add-on installation">
+<!ENTITY OnetToolbar.options.search.caption "Default searchengine">
+<!ENTITY OnetToolbar.options.search.label "Google from Onet.pl">
+<!ENTITY OnetToolbar.options.newtab.caption "New tab">
+<!ENTITY OnetToolbar.options.newtab.label "Include content from Onet.pl">
+<!ENTITY OnetToolbar.options.email.caption "New e-mail notification">
+<!ENTITY OnetToolbar.options.email.login.label "I have e-mail account in OnetPoczta">
+<!ENTITY OnetToolbar.options.email.register.label "I want to create e-mail account in OnetPoczta">
+<!ENTITY OnetToolbar.options.email.nop.label "Not now">
+<!ENTITY OnetToolbar.options.button.accept "Start now…">
+<!ENTITY OnetToolbar.options.button.close "Close window">

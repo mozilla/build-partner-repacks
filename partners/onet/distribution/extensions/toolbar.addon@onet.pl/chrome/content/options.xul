@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://pl.onet.toolbar/locale/onet-toolbar-options.dtd">
+
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<setting type="bool"
+					 pref="extensions.pl.onet.addon.toolbar.optin.newtab"
+					 title="&OnetToolbar.options.newtab.label;"
+					 desc="&OnetToolbar.options.newtab.caption;" />
+	<setting type="bool"
+					 pref="extensions.pl.onet.addon.toolbar.optin.search"
+					 title="&OnetToolbar.options.search.label;"
+					 desc="&OnetToolbar.options.search.caption;" />
+	<setting type="menulist" 
+					 pref="extensions.pl.onet.addon.toolbar.optin.homepage"
+					 title="&OnetToolbar.options.homepage.caption;">
+		<menulist>
+			<menupopup>
+				<menuitem value="1" label="&OnetToolbar.options.homepage.label.1;" />
+				<menuitem value="2" label="&OnetToolbar.options.homepage.label.2;" />
+				<menuitem value="3" label="&OnetToolbar.options.homepage.label.reset;" />
+			</menupopup>
+		</menulist>
+	</setting>
+</vbox>

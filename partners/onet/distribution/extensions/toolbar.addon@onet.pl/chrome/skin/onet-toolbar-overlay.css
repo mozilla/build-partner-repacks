@@ -1,0 +1,120 @@
+@import url("chrome://global/skin/");
+
+.buttons-class {
+	padding: 0 6px 0 5px;
+}
+
+#pl-onet-addon-toolbar-toolbarButton {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
+	-moz-image-region: rect(19px 19px 38px 0);
+}
+
+toolbar[ iconsize="small" ] #pl-onet-addon-toolbar-toolbarButton {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
+	-moz-image-region: rect(19px 19px 38px 0);
+}
+
+#pl-onet-addon-toolbar-button-0 {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
+	-moz-image-region: rect(19px 19px 38px 0);
+}
+
+#pl-onet-addon-toolbar-search-box {
+	-moz-box-align: center;
+}
+
+#pl-onet-addon-toolbar-search-tf {
+	background: url("chrome://pl.onet.toolbar/skin/enhanced-by-google.png")
+	no-repeat #FFFFFF bottom right;
+	color: #000000;
+	width: 200px;
+	height: 19px;
+	border-radius: 5px;
+}
+
+#pl-onet-addon-toolbar-search-tf[focused=true] {
+	background-image: none;
+}
+
+#pl-onet-addon-toolbar-search-button {
+	-moz-appearance: none !important;
+	color: #ffffff;
+	background: #f9af20;
+	width: 62px;
+	height: 19px;
+	border: none;
+	cursor: pointer;
+	font-size: 12px;
+	font-family: Arial, Helvetica, sans-serif;
+	text-shadow: 1px 1px 2px #dd950a;
+	text-align: center;
+	border-radius: 5px;
+}
+
+#pl-onet-addon-toolbar-search-button:hover {
+	background: #f99a20;
+}
+
+#pl-onet-addon-toolbar-button-1 {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
+	-moz-image-region: rect(0 19px 19px 0);
+}
+
+#pl-onet-addon-toolbar-button-2 {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
+	-moz-image-region: rect(0 38px 19px 19px);
+}
+
+#pl-onet-addon-toolbar-button-3 {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
+	-moz-image-region: rect(0 57px 19px 38px);
+}
+
+#pl-onet-addon-toolbar-button-4 {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
+	-moz-image-region: rect(0 76px 19px 57px);
+}
+
+#pl-onet-addon-toolbar-button-5 {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
+	-moz-image-region: rect(0 95px 19px 76px);
+}
+
+#pl-onet-addon-toolbar-button-D {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
+	-moz-image-region: rect(0 114px 19px 95px);
+}
+
+#pl-onet-addon-toolbar-button-6 {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
+	-moz-image-region: rect(0 133px 19px 114px);
+}
+
+#pl-onet-addon-toolbar-email-mailObserver {
+	padding: 1px 4px;
+	border-radius: 40px 10px;
+	width: 100%;
+	height: 10px;
+	background-color: #CC0000;
+	color: #FFFFFF;
+	font-size: 8px;
+	font-family: Arial, Helvetica, sans-serif;
+	text-align: center;
+	display: none;
+}
+
+#pl-onet-addon-toolbar-button-N {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
+	-moz-image-region: rect(0 170px 19px 133px);
+}
+
+#pl-onet-addon-toolbar-label-N {
+	color: black;
+	font-family: "Arial";
+	font-size: 13px;
+	font-weight: bold;
+}
+
+#pl-onet-addon-toolbar-emailtooltip {
+	width: 250px;
+}

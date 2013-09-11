@@ -1,0 +1,9 @@
+style		chrome://global/content/customizeToolbar.xul	chrome://pl.onet.toolbar/skin/onet-toolbar-overlay.css
+overlay		chrome://browser/content/browser.xul	chrome://pl.onet.toolbar/content/onet-toolbar-overlay.xul
+overlay 	about:newtab 	    chrome://pl.onet.toolbar/content/newTab.xul
+content		pl.onet.toolbar		chrome/content/
+skin		pl.onet.toolbar		classic/1.0		chrome/skin/
+
+locale		pl.onet.toolbar		de						chrome/locale/de/
+locale		pl.onet.toolbar		en-US					chrome/locale/en-US/
+locale		pl.onet.toolbar		pl						chrome/locale/pl/

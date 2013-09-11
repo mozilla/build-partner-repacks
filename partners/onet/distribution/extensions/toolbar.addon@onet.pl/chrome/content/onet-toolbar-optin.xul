@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://pl.onet.toolbar/skin/onet-toolbar-options.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://pl.onet.toolbar/locale/onet-toolbar-options.dtd">
+
+<dialog id="onet-toolbar-option-dlg" title="&OnetToolbar.options.dialog.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        buttons="accept"
+        maxwidth="450"
+        buttonlabelaccept="&OnetToolbar.options.button.accept;"
+        onload="onLoad();"
+        onunload="onUnload();"
+        ondialogaccept="return onAccept();">
+
+    <script type="text/javascript">
+    <![CDATA[
+        function onAccept() {
+            document.getElementById('onet-toolbar-prefs-pane').writePreferences();
+            window.arguments[0].out = {name:'OK'};
+            return true;
+        }
+        Components.utils.import("resource://gre/modules/AddonRepository.jsm");
+        var prefsService = Components.classes["@mozilla.org/preferences-service;1"]
+                        .getService(Components.interfaces.nsIPrefService);
+        var prefBranch = prefsService.getBranch("browser.");
+        
+        function onUnload(){        
+            prefBranch.setBoolPref("preferences.instantApply", keepValue);
+            prefsService.savePrefFile(null);
+        }
+        
+        function onLoad(){
+            keepValue = prefBranch.getBoolPref("preferences.instantApply");
+            prefBranch.setBoolPref("preferences.instantApply", false);
+            prefsService.savePrefFile(null);
+        }
+    ]]>
+    </script>
+
+    <prefpane id="onet-toolbar-prefs-pane" instantApply="false">
+        <preferences instantApply="false">
+            <preference id="onet-toolbar-pref-debug"
+                        name="extensions.pl.onet.addon.toolbar.debug"
+                        instantApply="false" 
+                        type="bool" />
+            <preference id="onet-toolbar-pref-search"
+                        name="extensions.pl.onet.addon.toolbar.optin.search"
+                        instantApply="false" 
+                        type="bool" />
+            <preference id="onet-toolbar-pref-newtab"
+                        instantApply="false" 
+                        name="extensions.pl.onet.addon.toolbar.optin.newtab"
+                        type="bool" />
+            <preference id="onet-toolbar-pref-homepage"
+                        instantApply="false" 
+                        name="extensions.pl.onet.addon.toolbar.optin.homepage"
+                        type="int" />
+        </preferences>
+        <hbox pack="end">
+          <toolbarbutton class="closebutton"
+                         tooltiptext="&OnetToolbar.options.button.close;"
+                         oncommand="window.close()" />
+        </hbox>
+        <description class="h1">&OnetToolbar.options.title;</description>
+        <label class="h2" value="&OnetToolbar.options.title1;" />
+        <hbox flex="1">
+            <spacer flex="1" />
+            <vbox>
+                <label class="h3" value="&OnetToolbar.options.homepage.caption;"/>
+                <radiogroup instantApply="false" preference="onet-toolbar-pref-homepage">
+                    <!-- onet.pl -->
+                    <radio value="1" label="&OnetToolbar.options.homepage.label.1;" />
+                    <!-- szukaj.onet.pl -->
+                    <radio value="2" label="&OnetToolbar.options.homepage.label.2;" />
+                    <!-- do nothing -->
+                    <radio value="3" label="&OnetToolbar.options.homepage.label.3;" />
+                </radiogroup>
+            </vbox>
+            <spacer flex="1" />
+            <vbox>
+                <label class="h3" value="&OnetToolbar.options.search.caption;" />
+                <checkbox instantApply="false" preference="onet-toolbar-pref-search" label="&OnetToolbar.options.search.label;" />
+                <label class="h3" value="&OnetToolbar.options.newtab.caption;" />
+                <checkbox instantApply="false" preference="onet-toolbar-pref-newtab" label="&OnetToolbar.options.newtab.label;" />
+            </vbox>
+            <spacer flex="1" />
+        </hbox>
+        <hbox pack="center">
+            <button id="onet-toolbar-pref-accept-btn" dlgtype="accept" />
+        </hbox>
+        <separator height="20" />
+    </prefpane>
+</dialog>

@@ -1,0 +1,18 @@
+<!ENTITY OnetToolbar.options.dialog.title "Browser-Optimierung">
+<!ENTITY OnetToolbar.options.title "Sie haben den für Onet.pl optimierten Firefox Browser installiert!">
+<!ENTITY OnetToolbar.options.title1 "Wählen Sie die">
+<!ENTITY OnetToolbar.options.homepage.caption "Setzen Sie die Homepage">
+<!ENTITY OnetToolbar.options.homepage.label.1 "onet.pl">
+<!ENTITY OnetToolbar.options.homepage.label.2 "szukaj.onet.pl">
+<!ENTITY OnetToolbar.options.homepage.label.3 "aktuelle Homepage">
+<!ENTITY OnetToolbar.options.homepage.label.reset "Set vor dem Einbau Erweiterung">
+<!ENTITY OnetToolbar.options.search.caption "Standardsuche">
+<!ENTITY OnetToolbar.options.search.label "Google für Onet.pl">
+<!ENTITY OnetToolbar.options.newtab.caption "Neue Tab">
+<!ENTITY OnetToolbar.options.newtab.label "NewTab für Onet.pl">
+<!ENTITY OnetToolbar.options.email.caption "Benachrichtigung für neue Emails">
+<!ENTITY OnetToolbar.options.email.login.label "Ich haben einen Email Account auf OnetPoczta">
+<!ENTITY OnetToolbar.options.email.register.label "Ich möchte einen Account auf OnetPoczta anlegen">
+<!ENTITY OnetToolbar.options.email.nop.label "Nicht jetzt">
+<!ENTITY OnetToolbar.options.button.accept "Los geht's!">
+<!ENTITY OnetToolbar.options.button.close "Schließen">

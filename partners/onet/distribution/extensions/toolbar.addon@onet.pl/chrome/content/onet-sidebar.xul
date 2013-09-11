@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type"text/css" ?>
+<?xml-stylesheet href="chrome://pl.onet.toolbar/skin/onet-toolbar-overlay.css" type="text/css"?>
+
+<!DOCTYPE page SYSTEM "chrome://pl.onet.toolbar/locale/onet-toolbar-overlay.dtd">
+
+<page id="pl-onet-addon-toolbar-sidebar-page" title="&OnetToolbar.Sidebar.page.title;"
+			xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<vbox flex="1">
+		<iframe src="http://m.onet.pl/?firefox" id="pl-onet-addon-toolbar-sidebar-iframe"
+						type="content-targetable" flex="1" />
+	</vbox>
+</page>

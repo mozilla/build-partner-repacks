@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+		 xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+	<Description about="urn:mozilla:install-manifest">
+
+		<em:id>toolbar.addon@onet.pl</em:id>
+		<em:version>0.99.12</em:version>
+		<em:type>2</em:type>
+		<em:name>OnetToolbar</em:name>
+		<em:description>OnetToolbar add-on optimize Firefox for Onet.pl </em:description>
+		<em:creator>Onet.pl SA Group</em:creator>
+		<em:homepageURL>http://pliki.onet.pl/firefox/</em:homepageURL>
+		<em:optionsURL>chrome://pl.onet.toolbar/content/options.xul</em:optionsURL>
+		<em:optionsType>2</em:optionsType>
+
+		<em:localized>
+			<Description>
+				<em:locale>de-DE</em:locale>
+				<em:name>OnetToolbar DE</em:name>
+				<em:description>Add-on OnetToolbar optimierte Firefox Browser für Onet.pl.</em:description>
+				<em:translator></em:translator>
+			</Description>
+			<Description>
+				<em:locale>pl</em:locale>
+				<em:name>Pasek narzędzi Onet</em:name>
+				<em:description>Dodatek OnetToolbar optymalizuje przeglądarkę Firefox dla portalu Onet.pl.</em:description>
+				<em:translator></em:translator>
+			</Description>
+		</em:localized>
+
+		<!-- Firefox -->
+		<em:targetApplication>
+			<Description>
+				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+				<em:minVersion>20.0</em:minVersion>
+				<em:maxVersion>25.0</em:maxVersion>
+			</Description>
+		</em:targetApplication>
+
+	</Description>
+</RDF>
