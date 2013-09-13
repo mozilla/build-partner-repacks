@@ -4,6 +4,6 @@
 	<Description>Рамблер - поиск по-новому</Description>
     <Image width="16" height="16" type="image/x-icon">http://i.rl0.ru/2011/icons/rambler.ico</Image>
     <InputEncoding>UTF-8</InputEncoding>
-    <Url type="text/html" template="http://nova.rambler.ru/search?query={searchTerms}&amp;osd=1" />
+    <Url type="text/html" template="http://nova.rambler.ru/search?utm_source=r07&amp;utm_medium=distribution&amp;utm_content=e09&amp;utm_campaign=a11&amp;query={searchTerms}" />
     <Url type="application/x-suggestions+json" template="http://nova.rambler.ru/suggest?v=3&amp;query={searchTerms}"/>
 </OpenSearchDescription>
