@@ -5,7 +5,7 @@
 	<Description about="urn:mozilla:install-manifest">
 
 		<em:id>toolbar.addon@onet.pl</em:id>
-		<em:version>0.99.12</em:version>
+		<em:version>1.0</em:version>
 		<em:type>2</em:type>
 		<em:name>OnetToolbar</em:name>
 		<em:description>OnetToolbar add-on optimize Firefox for Onet.pl </em:description>

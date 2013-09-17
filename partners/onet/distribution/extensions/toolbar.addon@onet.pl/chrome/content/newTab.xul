@@ -12,7 +12,7 @@
 		<div id="onet-toolbar-newtab-row" class="newtab-row" position="1">
 			<!-- wiadomosci -->
 			<div class="newtab-cell">
-				<div class="newtab-site" draggable="true">
+				<div class="newtab-site">
 					<a class="newtab-link"
 						href='http://wiadomosci.onet.pl/?utm_source%3Dwiadomoscibrotab%26utm_medium%3Donetbrowser%26utm_campaign%3Donetsg_browser'>
 						<!-- 2013-06-20 http://wiadomosci.onet.pl/?utm_source=wiadomoscibrotab&utm_medium=onetbrowser&utm_campaign=onetsg_browser -->
@@ -25,7 +25,7 @@
 			</div>
 			<!-- sympatia -->
 			<div class="newtab-cell">
-				<div class="newtab-site" draggable="true">
+				<div class="newtab-site">
 					<a class="newtab-link"
 						href="http://sympatia.onet.pl/?utm_source%3Dsympatiabrotab%26utm_medium%3Donetbrowser%26utm_campaign%3Donetsg_browser">
 						<!-- 2013-06-20 http://sympatia.onet.pl/?utm_source=sympatiabrotab&utm_medium=onetbrowser&utm_campaign=onetsg_browser -->
@@ -38,7 +38,7 @@
 			</div>
 			<!-- vod -->
 			<div class="newtab-cell">
-				<div class="newtab-site" draggable="true">
+				<div class="newtab-site">
 					<a class="newtab-link"
 						href="http://vod.pl/?utm_source%3Dvodbrotab%26utm_medium%3Donetbrowser%26utm_campaign%3Donetsg_browser">
 						<!-- 2013-06-20 http://vod.pl/?utm_source=vodbrotab&utm_medium=onetbrowser&utm_campaign=onetsg_browser -->

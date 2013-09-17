@@ -219,9 +219,7 @@ var OnetToolbar = {
 	    OnetToolbar.prefService.setCharPref("browser.newtab.url",
 		    "about:newtab");
 	    OnetToolbar.prefService.setIntPref("browser.newtabpage.rows", 2);
-	    OnetToolbar.prefService.setBoolPref("browser.newtabpage.enabled",
-		    true);
-
+	    OnetToolbar.prefService.setBoolPref("browser.newtabpage.enabled", true);
 	} else {
 	    this.newTabShutdown();
 	}
@@ -336,7 +334,7 @@ var OnetToolbar = {
 		    var alias = "onet.pl";
 		    var description = "Wyszukiwarka Onet.pl";
 		    var method = "get";
-		    var url = "http://szukaj.onet.pl/wyniki.html?qt={searchTerms}";
+		    var url = "http://szukaj.onet.pl/wyniki.html?utm_source=os&utm_medium=pv&utm_campaign=onetfirefox&qt={searchTerms}";
 		    this.search.addEngineWithDetails(name, icon, alias,
 			    description, method, url);
 		    szukaj = this.search.getEngineByName(name);
@@ -962,7 +960,7 @@ var OnetToolbar = {
                     },
                     out : null
                     };
-                window.openDialog("chrome://pl.onet.toolbar/content/onet-toolbar-optin.xul","", "chrome,centerscreen,dialog,resizable=no,close=no,toolbar=no,scrollbars=no,titlebar=no,status=no,alwaysRaised", params).focus();
+                window.openDialog("chrome://pl.onet.toolbar/content/onet-toolbar-optin.xul","", "chrome,centerscreen,dialog,resizable=no,close=yes,toolbar=no,scrollbars=no,titlebar=yes,status=no,alwaysRaised", params).focus();
                 OnetToolbar.prefService.getBranch(OnetToolbar.prefPrefix).setBoolPref('optin.show', false);
             }
             OnetToolbar.openTab(OnetToolbar.forward_addon_page);
@@ -1088,6 +1086,120 @@ OnetToolbar.PrefsObserver.prototype = {
     unregister : function() {
 	this.service.removeObserver(this.branch, this);
     }
+};
+
+OnetToolbar.APE = function(options) {
+    //constructor
+    this.freq = options.freq || 0;
+    this.protocol = options.protocol || 'http';
+    this.host = options.host;
+    this.domain = options.domain;
+    this.updateCallback = options.update;
+    this.identifier = options.identifier || 'ape';
+    this.sessid = '';
+    this.transport = 'longPolling'; //right now only this is implemented explict and implict
+    this.interval = options.interval || 25000;
+    this.intervalHandle = null;
+    this.cookieName = options.cookieName || 'ape';
+    this.cookieManager = options.cookieManager || new APE.CookieManager.normal();
+
+    var cookie = this.cookieManager.read(this.cookieName);
+    var tmp = JSON.parse(cookie);
+    if (tmp) {
+        this.freq = tmp.frequency + 1;
+    } else {
+        cookie = '{"frequency":0}';
+    }
+    var reg = new RegExp('"frequency":([ 0-9]+)', "g");
+    cookie = cookie.replace(reg, '"frequency":' + this.freq);
+    this.cookieManager.write(this.cookieName, cookie);
+    //this.cookie.read(this.cookieName);
+};
+OnetToolbar.APE.prototype.buildRequestUrl = function() {
+    return APE.Transport[this.transport].getProtocol() + '://'+this.freq+'.' + this.host + '/'+APE.Transport[this.transport].id+'/?';
+};
+OnetToolbar.APE.prototype.error = function(message) {
+    if (arguments.length > 1) {
+
+        for (var i = 1; i < arguments.length; i++) {
+            //console.error(arguments[i]);
+        }
+    }
+    // console.debug(this);
+};
+OnetToolbar.APE.prototype.send = function send(data, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', this.buildRequestUrl(), true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                try {
+                    callback(null, JSON.parse(xhr.responseText));
+                } catch (e) {
+                    callback(e, null);
+                }
+            } else {
+                callback(new Error(xhr.status), null);
+            }
+        }
+    };
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.setRequestHeader('Accept', 'text/javascript, text/html, application/xml, text/xml, */*');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8');
+    xhr.send(JSON.stringify(data));
+    return xhr;
+};
+OnetToolbar.APE.prototype.join = function() {
+    var self = this;
+    this.send([{"cmd": "JOIN", "chl": 3, "params": {"channels": "*" + this.channel}, "sessid": this.sessid}], function(err, data) {
+        if (err === null) {
+            self.check();
+            self.intervalHandle = setInterval(function() {
+                self.check();
+            }, self.interval);
+        } else {
+            self.error('join error', err, data);
+        }
+
+    });
+};
+OnetToolbar.APE.prototype.check = function() {
+    var self = this;
+    this.send([{"cmd": "CHECK", "chl": 4, "sessid": this.sessid}], function(err, data) {
+        if (err === null) {
+            if (data && data[0].raw === 'notifyuser') {
+                self.updateCallback(data[0].data.counter);
+            }
+        } else {
+            self.error('check error', err, data);
+        }
+    });
+};
+OnetToolbar.APE.prototype.setSession = function(sessid) {
+    var self = this;
+    this.sessid = sessid;
+    this.send([{"cmd": "SESSION", "chl": 2, "params": {"action": "set", "values": {"sessid": this.channel}}, "sessid": this.sessid}], function(err, data) {
+        if (err === null) {
+            self.join();
+        } else {
+            self.error('session error', err, data);
+        }
+    });
+};
+OnetToolbar.APE.prototype.connect = function() {
+    var self = this;
+    this.send([{"cmd": "CONNECT", "chl": 1, "params": {"name": this.channel + (+new Date()).toString()}}], function(err, data) {
+        if (err === null) {
+            self.setSession(data[0].data.sessid);
+        } else {
+            self.error('connect error', err, data);
+        }
+    });
+};
+OnetToolbar.APE.prototype.disconnect = function() {
+    //this..send('QUIT');
+    this.sessid = null;
+    clearInterval(this.intervalHandle);
 };
 
 /**

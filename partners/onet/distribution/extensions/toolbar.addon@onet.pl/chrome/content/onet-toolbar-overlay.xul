@@ -35,7 +35,7 @@
 	<!-- onet search -->
 	<commandset>
 		<command id="pl-onet-addon-toolbar-cmd-search"
-						 oncommand="OnetToolbar.openTab('http://szukaj.onet.pl/wyniki.html?qt='+document.getElementById('pl-onet-addon-toolbar-search-tf').value);" />
+						 oncommand="OnetToolbar.openTab('http://szukaj.onet.pl/wyniki.html?qt='+encodeURIComponent(document.getElementById('pl-onet-addon-toolbar-search-tf').value)+'&amp;so=tb&amp;utm_source=tb&amp;utm_medium=pv&amp;utm_campaign=onetfirefox');" />
 		<command id="pl-onet-addon-toolbar-cmd-email-logout"
 						 label="&OnetToolbar.ToolbarMenu.logout.label;"
 						 oncommand="OnetToolbar.openTab('https://authorisation.grupaonet.pl/logout.html?app_id=poczta.onet.pl.front.onetapi.pl', 'onet-toolbar-email', true)" />
@@ -72,7 +72,7 @@
 									 type="autocomplete"
 									 value=""
 									 autocompletesearch="search-autocomplete"
-									 ontextentered="OnetToolbar.openTab('http://szukaj.onet.pl/wyniki.html?qt='+this.value+'&amp;so=tb&amp;utm_source=os&amp;utm_medium=pv&amp;utm_campaign=onetfirefox');" />
+									 ontextentered="OnetToolbar.openTab('http://szukaj.onet.pl/wyniki.html?qt='+encodeURIComponent(this.value)+'&amp;so=tb&amp;utm_source=tb&amp;utm_medium=pv&amp;utm_campaign=onetfirefox');" />
 					<spacer width="7" />
 					<button id="pl-onet-addon-toolbar-search-button"
 									tabindex="3"
