@@ -203,6 +203,10 @@ def parseRepackConfig(filename, platforms):
             if value.lower() == 'true':
                 config['migrationWizardDisabled'] = True
             continue
+        if key == 'oem':
+            if value.lower() == 'true':
+                config['oem'] = True
+            continue
         if key == 'deb_section':
             config['deb_section'] = re.sub('/', '\/', value)
             continue
@@ -554,6 +558,10 @@ if __name__ == '__main__':
         help="Use Windows builds that have already been signed"
     )
     parser.add_option(
+        "--include-oem", action="store_true", dest="include_oem", default=False,
+        help="Process partners marked as OEM (these are usually one-offs)"
+    )
+    parser.add_option(
         "--hgroot", dest="hgroot", default=HGROOT,
         help="Set the root URL for retrieving files from hg"
     )
@@ -698,6 +706,9 @@ if __name__ == '__main__':
             continue
         repack_info = parseRepackConfig(repack_cfg, options.platforms)
         if not repack_info:
+            continue
+        if repack_info.has_key('oem') and options.include_oem is False:
+            log.info("Skipping partner: %s  - marked as OEM and --include-oem was not set" % partner)
             continue
 
         partner_repack_dir = path.join(repacked_builds_dir,
