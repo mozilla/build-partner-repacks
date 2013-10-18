@@ -2,11 +2,11 @@ function onLoad()
 {
   try {
     new PostalCode(E("postalcode"));
-  } catch (e) { debug(e); }
-  if (isValidPostalCode(E("postalcode").value))
-    E("no-nag").hidden = true;
-  gOldRegionalURL = brand.weather.regionalURL;
-  autoregisterGlobalObserver("region-changed", regionChanged);
+    if (isValidPostalCode(E("postalcode").value))
+      E("weather-no-nag").hidden = true;
+    gOldRegionalURL = brand.weather.regionalURL;
+    autoregisterGlobalObserver("region-changed", regionChanged);
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 

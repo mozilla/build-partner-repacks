@@ -11,8 +11,10 @@ Components.utils.import("resource://unitedtb/phish/database.js", this);
 
 function onLoad()
 {
-  window.removeEventListener("DOMContentLoaded", onLoad, false);
-  top.gBrowser.addTabsProgressListener(webTabProgressListener);
+  try {
+    window.removeEventListener("DOMContentLoaded", onLoad, false);
+    top.gBrowser.addTabsProgressListener(webTabProgressListener);
+  } catch (e) { errorCritical(e); }
 }
 // on load fires too late for URLs passed on the firefox commandline
 // This is an important use-case for phishing links from email apps.

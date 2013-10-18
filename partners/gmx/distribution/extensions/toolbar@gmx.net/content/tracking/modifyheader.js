@@ -50,8 +50,9 @@ var AddHeaders =
       if (topic != "http-on-modify-request")
         return;
       var httpChannel = subject.QueryInterface(Ci.nsIHttpChannel);
-      if (!httpChannel.URI.host)
-        return;
+      if (! (httpChannel.URI instanceof Ci.nsIStandardURL)) {
+       return;
+      }
       var host = httpChannel.URI.host;
       var hit = brand.tracking.identifyMyselfToSites.some(function(domain)
       {

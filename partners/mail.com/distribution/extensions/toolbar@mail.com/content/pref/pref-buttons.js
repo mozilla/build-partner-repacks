@@ -58,8 +58,10 @@ ButtonEnable.prototype =
       var self = this;
       checkbox.addEventListener("command", function(event)
       {
-        var checkbox = event.target;
-        self.enableButton(checkbox.buttonID, checkbox.checked);
+        try {
+          var checkbox = event.target;
+          self.enableButton(checkbox.buttonID, checkbox.checked);
+        } catch (e) { errorCritical(e); }
       }, false);
     }
   },

@@ -33,17 +33,19 @@ function onLoad()
     getRecommendedSites(fillRecommendedSites);
     var firefoxThumbnailsIFrame = E("firefoxThumbnails");
     firefoxThumbnailsIFrame.addEventListener("load", function(event) {
-      var doc = event.target.contentDocument;
-      // Add a custom attribute for our CSS. I investigated loading our CSS
-      // dynamically, but it caused a flash. Better to load via chrome.manifest
-      doc.getElementById('newtab-scrollbox').setAttribute('united-toolbar','true');
-      // Make sure our new tab page is never disabled
-      doc.getElementById('newtab-grid').removeAttribute('page-disabled');
-      doc.getElementById('newtab-scrollbox').removeAttribute('page-disabled');
-      // Reinitialize page just in case it was disabled
-      event.target.contentWindow.gPage._init();
-      // Use favicons for sites where we have no thumbnail
-      addSitePlaceholders(doc);
+      try {
+        var doc = event.target.contentDocument;
+        // Add a custom attribute for our CSS. I investigated loading our CSS
+        // dynamically, but it caused a flash. Better to load via chrome.manifest
+        doc.getElementById('newtab-scrollbox').setAttribute('united-toolbar','true');
+        // Make sure our new tab page is never disabled
+        doc.getElementById('newtab-grid').removeAttribute('page-disabled');
+        doc.getElementById('newtab-scrollbox').removeAttribute('page-disabled');
+        // Reinitialize page just in case it was disabled
+        event.target.contentWindow.gPage._init();
+        // Use favicons for sites where we have no thumbnail
+        addSitePlaceholders(doc);
+      } catch (e) { errorCritical(e); }
     }, false);
     // The Firefox new tab page doesn't refresh, so we force it.
     // Load the page only after the cache is populated.

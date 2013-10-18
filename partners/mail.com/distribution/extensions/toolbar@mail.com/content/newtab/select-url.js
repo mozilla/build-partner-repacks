@@ -6,8 +6,10 @@
  */
 
 function onLoad()
- {
-   hookupSelectURLinURLbar();
+{
+  try {
+    hookupSelectURLinURLbar();
+  } catch (e) { errorNonCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 

@@ -1,6 +1,7 @@
 
 var logic = {}
 Components.utils.import("resource://unitedtb/email/webapp-start.js", logic);
+Components.utils.import("resource://unitedtb/webapps/mailto-setting.js");
 
 /**
  * User clicked on Weather button

@@ -59,6 +59,7 @@ search.defaultlocale.competitorlist =
   "suche.gmx.net": [ { "query": "q" }, { "query": "su" } ],
   "suche.web.de": [ { "query": "q" }, { "query": "su" } ],
   "search.1und1.de": [ { "query": "q" }, { "query": "su" } ],
+  "search.mail.com": [ { "query": "q" }, { "query": "su" } ],
 
   "www.ebay.de": { "query": "_nkw" },
   "www.amazon.de": { "query": "field-keywords" },
@@ -66,12 +67,11 @@ search.defaultlocale.competitorlist =
   "www.youtube.com": { "query": "search_query" },
 }
 
+// If you add a domain here, it must be in the competitorlist as well
 search.defaultlocale.googlelist =
 {
   "www.google.com": true,
   "www.google.de": true,
   "www.google.at": true,
-  "www.google.it": true,
   "www.google.ch": true,
-  "www.google.co.uk": true,
 }

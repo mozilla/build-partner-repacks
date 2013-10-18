@@ -10,7 +10,7 @@ function onLoad()
   buildFeedMenu();
   // update labels to new region and feeds
   autoregisterGlobalObserver("region-changed", buildFeedMenu);
-  } catch (e) { debug(e); } // TODO
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -39,6 +39,7 @@ function buildFeedMenu()
       let menuitem = document.createElement("menuitem");
       menuitem.setAttribute("value", feed.id);
       menuitem.setAttribute("label", feed.label);
+      menuitem.setAttribute("tooltiptext", feed.label);
       menu.appendChild(menuitem);
       if (feed.id == pref)
         dropdown.selectedItem = menuitem;

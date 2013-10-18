@@ -74,42 +74,45 @@ window.addEventListener("load", onOptinLoad, false);
 
 function onOptin()
 {
-  var searchengine = E("searchengine").checked;
+  try {
+    var searchengine = E("searchengine").checked;
 
-  var startpageSelectedID;
-  var startpageRadioButtons = document.getElementsByName("startpage");
-  for (var i = 0; i < startpageRadioButtons.length; i++) {
-    if (startpageRadioButtons[i].checked) {
-      startpageSelectedID = startpageRadioButtons[i].id;
-      break;
+    var startpageSelectedID;
+    var startpageRadioButtons = document.getElementsByName("startpage");
+    for (var i = 0; i < startpageRadioButtons.length; i++) {
+      if (startpageRadioButtons[i].checked) {
+        startpageSelectedID = startpageRadioButtons[i].id;
+        break;
+      }
     }
-  }
-  var newtab = E("newtab").checked;
+    var newtab = E("newtab").checked;
 
-  //<copied from="pref-general.js (with modifications">
-  if (searchengine)
-  {
-    // sets pref "browser.search.selectedEngine" and notifies app
-    try {
-      // nsIBrowserSearchService
-      Services.search.currentEngine = Services.search.getEngineByName(brand.search.engineName);
-    } catch (ex) {
+    //<copied from="pref-general.js (with modifications">
+    if (searchengine)
+    {
+      // sets pref "browser.search.selectedEngine" and notifies app
+      try {
+        // nsIBrowserSearchService
+        Services.search.currentEngine = Services.search.getEngineByName(brand.search.engineName);
+      } catch (ex) {
       // Fails on Mara
+      }
+      ourPref.set("search.opt-in", true);
     }
-    ourPref.set("search.opt-in", true);
-  }
 
-  switch (startpageSelectedID) {
-    case "startpage-search":
-      generalPref.set("browser.startup.homepage",
-          brand.toolbar.startpageURL);
-      break;
-    case "startpage-brand":
-      generalPref.set("browser.startup.homepage",
-          brand.toolbar.startpageHomepageURL);
-      break;
-  }
-  //</copied>
+    switch (startpageSelectedID) {
+      case "startpage-search":
+        generalPref.set("browser.startup.homepage",
+            brand.toolbar.startpageURL);
+        break;
+      case "startpage-brand":
+        generalPref.set("browser.startup.homepage",
+            brand.toolbar.startpageHomepageURL);
+        break;
+    }
+    //</copied>
 
-  ourPref.set("newtab.enabled", newtab);
+    ourPref.set("newtab.enabled", newtab);
+    ourPref.set("newtab.opt-in", newtab);
+  } catch (e) { errorCritical(e); }
 }

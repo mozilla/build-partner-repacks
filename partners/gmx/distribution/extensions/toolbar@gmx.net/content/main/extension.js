@@ -190,7 +190,9 @@ function onInstall()
         var lastVersion = ourPref.get("ext.currentversion");
         if (currentVersion != lastVersion)
         {
-          findSomeBrowserWindow().unitedinternet.common.loadPage(brand.toolbar.upgradeURL, "tab");
+          if (brand.toolbar.upgradeURL) {
+            findSomeBrowserWindow().unitedinternet.common.loadPage(brand.toolbar.upgradeURL, "tab");
+          }
           notifyGlobalObservers("upgrade", {
               lastVersion : lastVersion,
               currentVersion : currentVersion,

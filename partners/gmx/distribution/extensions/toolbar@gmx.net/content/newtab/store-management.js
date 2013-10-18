@@ -107,14 +107,16 @@ function discardTime(datetime)
 }
 
 function checkOtherBoxes(event) {
-  var entry = event.target.entry;
-  for each (let checkBox in gCheckBoxes)
-  {
-    if (checkBox.entry.label == entry.label && checkBox.entry != entry) {
-      checkBox.checked = event.target.checked;
-      checkBox.duplicate = checkBox.checked;
+  try {
+    var entry = event.target.entry;
+    for each (let checkBox in gCheckBoxes)
+    {
+      if (checkBox.entry.label == entry.label && checkBox.entry != entry) {
+        checkBox.checked = event.target.checked;
+        checkBox.duplicate = checkBox.checked;
+      }
     }
-  }
+  } catch (e) { errorNonCritical(e); }
 }
 
 /**
@@ -232,10 +234,12 @@ function switchModule(module)
  */
 function onSwitchModule(event)
 {
+  try {
     if (!event)
       return;
     var module = event.target.module;
     switchModule(module);
+  } catch (e) { errorCritical(e); }
 }
 
 /**

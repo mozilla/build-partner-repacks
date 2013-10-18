@@ -60,39 +60,40 @@ window.addEventListener("DOMContentLoaded", onLoad, false);
  */
 function pageLoaded(event)
 {
-  var doc = event.target;
-  assert(doc instanceof Ci.nsIDOMDocument);
-  var browser = top.gBrowser.getBrowserForDocument(doc);
-  if (! browser) // happens a lot, probably sub-frames and chrome events
-    return;
-  var uri = browser.currentURI;
-  if (! (uri &&
-          (uri.scheme == "http" || uri.scheme == "https") &&
-          uri.host))
-    return;
-  var host = uri.host; // TODO throws
-  //debug("loaded page from " + browser.currentURI.host);
-  var hit = brand.tracking.identifyMyselfToSites.some(function(domain)
-  {
-    return domain == host ||
-        host.substr(host.length - domain.length - 1) == "." + domain;
-  });
-  if (! hit)
-    return;
+  try {
+    var doc = event.target;
+    assert(doc instanceof Ci.nsIDOMDocument);
+    var uri = doc.documentURIObject;
+    // Ignore about URLs
+    if (! (uri instanceof Ci.nsIStandardURL))
+      return;
+    // Ignore chrome URLs
+    if (uri.scheme != "http" && uri.scheme != "https")
+      return;
+    var host = uri.host;
+    //debug("loaded page from " + uri.host);
+    var hit = brand.tracking.identifyMyselfToSites.some(function(domain)
+    {
+      return domain == host ||
+          host.substr(host.length - domain.length - 1) == "." + domain;
+    });
+    if (! hit)
+      return;
 
-  var el = doc.documentElement;
-  // some protection, against unexpectedly breaking stuff:
-  // site needs to already have the attribute with dummy content,
-  // before we set the attributes
-  if ( !el.hasAttribute("united-toolbar-brand"))
-    return;
-  if (!gCampaignID) {
-    gCampaignID = ourPref.get("tracking.campaignid", 0);
-  }
+    var el = doc.documentElement;
+    // some protection, against unexpectedly breaking stuff:
+    // site needs to already have the attribute with dummy content,
+    // before we set the attributes
+    if ( !el || !el.hasAttribute("united-toolbar-brand"))
+      return;
+    if (!gCampaignID) {
+      gCampaignID = ourPref.get("tracking.campaignid", 0);
+    }
 
-  el.setAttribute("united-toolbar-brand", gBrand);
-  el.setAttribute("united-toolbar-version", gVersion);
-  el.setAttribute("united-toolbar-variant", gVariant);
-  el.setAttribute("united-toolbar-branded-browser", gBrandedBrowser);
-  el.setAttribute("united-toolbar-campaignid", gCampaignID);
+    el.setAttribute("united-toolbar-brand", gBrand);
+    el.setAttribute("united-toolbar-version", gVersion);
+    el.setAttribute("united-toolbar-variant", gVariant);
+    el.setAttribute("united-toolbar-branded-browser", gBrandedBrowser);
+    el.setAttribute("united-toolbar-campaignid", gCampaignID);
+  } catch (e) { errorNonCritical(e); }
 }

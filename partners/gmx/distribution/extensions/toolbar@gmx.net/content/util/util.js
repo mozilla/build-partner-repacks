@@ -927,9 +927,10 @@ function getErrorText(nsresult)
  *
  * @param queryString {String} query ("?foo=bar&baz=3") part of the URL,
  *     with or without the leading question mark
+ * @param paramCallback({ name {String}, value {String}, allParams {Array, like result})
  * @returns {Object} JS map { name1 : "value", name2: "othervalue" }
  */
-function parseURLQueryString(queryString)
+function parseURLQueryString(queryString, paramCallback)
 {
   var queryParams = {};
   if (queryString.charAt(0) == "?")
@@ -938,8 +939,14 @@ function parseURLQueryString(queryString)
   for (var i = 0; i < queries.length; i++) {
     try {
       var querySplit = queries[i].split("=");
-      var value = querySplit[1].replace(/\+/g, " "); // "+" is space, before decoding
-      queryParams[querySplit[0]] = decodeURIComponent(value);
+      var p = { name : querySplit[0] , value : querySplit[1] };
+      p.value = p.value.replace(/\+/g, " "); // "+" is space, before decoding
+      p.value = decodeURIComponent(p.value);
+      if (typeof(paramCallback) == "function") {
+        p.allParams = queryParams;
+        paramCallback(p);
+      }
+      queryParams[p.name] = p.value;
     } catch (e) {
       // Errors parsing the query string are not fatal, we should just continue
       errorInBackend(e);

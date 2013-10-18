@@ -1,6 +1,8 @@
 function onLoad()
 {
-  new HighlightColor(E("highlight-color"));
+  try {
+    new HighlightColor(E("highlight-color"));
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 

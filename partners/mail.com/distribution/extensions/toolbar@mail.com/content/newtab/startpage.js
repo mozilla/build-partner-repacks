@@ -9,17 +9,19 @@ var gAutocomplete;
 
 function onLoad()
 {
-  // We need to access the global unitedinternet.newtab object, so that our
-  // observer notifications happen at the window level, but we can't,
-  // because we are not in the browser scope. Get it from the browser window.
-  gFirefoxWindow = getTopLevelWindowContext(window);
-  gUnitedFromAbove = gFirefoxWindow.unitedinternet;
+  try {
+    // We need to access the global unitedinternet.newtab object, so that our
+    // observer notifications happen at the window level, but we can't,
+    // because we are not in the browser scope. Get it from the browser window.
+    gFirefoxWindow = getTopLevelWindowContext(window);
+    gUnitedFromAbove = gFirefoxWindow.unitedinternet;
 
-  gSearchField = E("searchterm");
-  if (ourPref.get("newtab.setFocus"))
-    gSearchField.focus();
+    gSearchField = E("searchterm");
+    if (ourPref.get("newtab.setFocus"))
+      gSearchField.focus();
 
-  initAutocomplete();
+    initAutocomplete();
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -47,7 +49,9 @@ function onSearchTextChanged(event)
 
 function onSearchButtonClicked()
 {
-  startSearch(gSearchField.value);
+  try {
+    startSearch(gSearchField.value);
+  } catch (e) { errorCritical(e); }
 };
 
 /**

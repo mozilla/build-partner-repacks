@@ -36,56 +36,58 @@ var gVerifyAbortable = new Abortable();
 
 function onLoad()
 {
-  eEmailAddress = E("emailaddress");
-  ePassword = E("password");
-  eLongSession = E("long-session");
-  eErrorMsg = E("error-msg");
+  try {
+    eEmailAddress = E("emailaddress");
+    ePassword = E("password");
+    eLongSession = E("long-session");
+    eErrorMsg = E("error-msg");
 
-  gInParams = window.arguments[0];
-  gOutParams = window.arguments[1];
-  debug("usecase " + gInParams.usecase);
-  eEmailAddress.value = gInParams.emailAddress;
-  eLongSession.checked = gInParams.wantStoredLogin;
-  (gInParams.emailAddress ? ePassword : eEmailAddress).focus();
+    gInParams = window.arguments[0];
+    gOutParams = window.arguments[1];
+    debug("usecase " + gInParams.usecase);
+    eEmailAddress.value = gInParams.emailAddress;
+    eLongSession.checked = gInParams.wantStoredLogin;
+    (gInParams.emailAddress ? ePassword : eEmailAddress).focus();
 
-  // don't allow to edit email address, unless it's create account
-  eEmailAddress.disabled = gInParams.usecase != 2;
+    // don't allow to edit email address, unless it's create account
+    eEmailAddress.disabled = gInParams.usecase != 2;
 
-  // Per PM, when we create the first account, the dialog must appear
-  // to be a "Login" dialog. Also, the account added must be a brand account.
-  gBrandOnly = getAllExistingAccounts().length == 0;
+    // Per PM, when we create the first account, the dialog must appear
+    // to be a "Login" dialog. Also, the account added must be a brand account.
+    gBrandOnly = getAllExistingAccounts().length == 0;
 
-  // modify dialog title, message and OK button for setup and edit use cases
-  var introE = E("intro");
-  var stringsE = E("intro-box");
-  var dialog = document.documentElement;
-  var okButton = dialog.getButton("accept");
-  if (gBrandOnly)
-  {
-    // (pretend to be) login case, already in XUL attributes
-    introE.textContent = stringsE.getAttribute("loginBrandIntro");
-  }
-  else if (gInParams.usecase == 1)
-  {
-    // login case, already in XUL attributes
-    if (isOurBrand(gInParams.emailAddress)) // login-common.js
+    // modify dialog title, message and OK button for setup and edit use cases
+    var introE = E("intro");
+    var stringsE = E("intro-box");
+    var dialog = document.documentElement;
+    var okButton = dialog.getButton("accept");
+    if (gBrandOnly)
+    {
+      // (pretend to be) login case, already in XUL attributes
       introE.textContent = stringsE.getAttribute("loginBrandIntro");
-  }
-  else if (gInParams.usecase == 2) // setup account
-  {
-    dialog.setAttribute("title", stringsE.getAttribute("setupTitle"));
-    introE.textContent = stringsE.getAttribute("setupIntro");
-    okButton.setAttribute("label", stringsE.getAttribute("setupOKLabel"));
-    okButton.setAttribute("accesskey", stringsE.getAttribute("setupOKKey"));
-  }
-  else if (gInParams.usecase == 3) // edit account
-  {
-    dialog.setAttribute("title", stringsE.getAttribute("editTitle"));
-    introE.textContent = stringsE.getAttribute("editIntro");
-    okButton.setAttribute("label", stringsE.getAttribute("editOKLabel"));
-    okButton.setAttribute("accesskey", stringsE.getAttribute("editOKKey"));
-  }
-  E("forgot-password").setAttribute("href", brand.login.forgotPasswordURL);
+    }
+    else if (gInParams.usecase == 1)
+    {
+      // login case, already in XUL attributes
+      if (isOurBrand(gInParams.emailAddress)) // login-common.js
+        introE.textContent = stringsE.getAttribute("loginBrandIntro");
+    }
+    else if (gInParams.usecase == 2) // setup account
+    {
+      dialog.setAttribute("title", stringsE.getAttribute("setupTitle"));
+      introE.textContent = stringsE.getAttribute("setupIntro");
+      okButton.setAttribute("label", stringsE.getAttribute("setupOKLabel"));
+      okButton.setAttribute("accesskey", stringsE.getAttribute("setupOKKey"));
+    }
+    else if (gInParams.usecase == 3) // edit account
+    {
+      dialog.setAttribute("title", stringsE.getAttribute("editTitle"));
+      introE.textContent = stringsE.getAttribute("editIntro");
+      okButton.setAttribute("label", stringsE.getAttribute("editOKLabel"));
+      okButton.setAttribute("accesskey", stringsE.getAttribute("editOKKey"));
+    }
+    E("forgot-password").setAttribute("href", brand.login.forgotPasswordURL);
+  } catch (ex) {errorCritical()}
 }
 
 function onLeaveEmailaddress()
@@ -123,14 +125,16 @@ function verifyAndShowError(needPassword, successCallback, errorCallback) {
 
 function onOK()
 {
-  verifyAndShowError(true, function() {
-    gOutParams.emailAddress = eEmailAddress.value.toLowerCase();
-    gOutParams.password = ePassword.value;
-    gOutParams.wantStoredLogin = eLongSession.checked;
-    gOutParams.ok = true;
-    window.close();
-  }, function() {}); // Don't close on error, force user to correct or click Cancel
-  return false; // Wait for verification
+  try {
+    verifyAndShowError(true, function() {
+      gOutParams.emailAddress = eEmailAddress.value.toLowerCase();
+      gOutParams.password = ePassword.value;
+      gOutParams.wantStoredLogin = eLongSession.checked;
+      gOutParams.ok = true;
+      window.close();
+    }, function() {}); // Don't close on error, force user to correct or click Cancel
+    return false; // Wait for verification
+  } catch (ex) {errorCritical()}
 }
 
 function onCancel()

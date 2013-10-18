@@ -13,9 +13,11 @@ Components.utils.import("resource://unitedtb/search/search-store.js", this);
 
 function onLoad()
 {
-  window.removeEventListener("DOMContentLoaded", onLoad, false);
+  try {
+    window.removeEventListener("DOMContentLoaded", onLoad, false);
 
-  E("appcontent").addEventListener("DOMContentLoaded", pageLoaded, false);
+    E("appcontent").addEventListener("DOMContentLoaded", pageLoaded, false);
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("DOMContentLoaded", onLoad, false);
 
@@ -24,40 +26,41 @@ window.addEventListener("DOMContentLoaded", onLoad, false);
  */
 function pageLoaded(event)
 {
-  var doc = event.target;
-  assert(doc instanceof Ci.nsIDOMDocument);
-  var browser = top.gBrowser.getBrowserForDocument(doc);
-  if (! browser) // happens a lot, probably sub-frames and chrome events
-    return;
-  var uri = browser.currentURI;
-  if (! (uri &&
-          (uri.scheme == "http" || uri.scheme == "https") &&
-          uri.host))
-    return;
-  var host = uri.host; // TODO throws
-  //debug("loaded page from " + browser.currentURI.host);
-  var hit = brand.tracking.identifyMyselfToSites.some(function(domain)
-  {
-    return domain == host ||
-        host.substr(host.length - domain.length - 1) == "." + domain;
-  });
-  if (! hit)
-    return;
-  var unitedPSHContainer = doc.getElementById("united-toolbar-psh-container");
-  if (!unitedPSHContainer)
-    return;
-  getLastSearches(10, function(terms) // search-store.js
-  {
-    for each (let term in terms)
+  try {
+    var doc = event.target;
+    assert(doc instanceof Ci.nsIDOMDocument);
+    var uri = doc.documentURIObject;
+    // Ignore about URLs
+    if (! (uri instanceof Ci.nsIStandardURL))
+      return;
+    // Ignore chrome URLs
+    if (uri.scheme != "http" && uri.scheme != "https")
+      return;
+    var host = uri.host;
+    //debug("loaded page from " + uri.host);
+    var hit = brand.tracking.identifyMyselfToSites.some(function(domain)
     {
-      var item = doc.createElement("li");
-      var link = doc.createElement("a");
-      var url = brand.search.injectPSHURL + encodeURIComponent(term);
-      link.setAttribute("href", url);
-      link.appendChild(doc.createTextNode(term));
-      item.appendChild(link);
-      unitedPSHContainer.appendChild(item);
-    }
-  },
-  error);
+      return domain == host ||
+          host.substr(host.length - domain.length - 1) == "." + domain;
+    });
+    if (! hit)
+      return;
+    var unitedPSHContainer = doc.getElementById("united-toolbar-psh-container");
+    if (!unitedPSHContainer)
+      return;
+    getLastSearches(10, function(terms) // search-store.js
+    {
+      for each (let term in terms)
+      {
+        var item = doc.createElement("li");
+        var link = doc.createElement("a");
+        var url = brand.search.injectPSHURL + encodeURIComponent(term);
+        link.setAttribute("href", url);
+        link.appendChild(doc.createTextNode(term));
+        item.appendChild(link);
+        unitedPSHContainer.appendChild(item);
+      }
+    },
+    error);
+  } catch (e) { errorNonCritical(e); }
 }

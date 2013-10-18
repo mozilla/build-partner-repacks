@@ -128,7 +128,8 @@ function loadPageInSpecificTab(url, tabName)
     var tabToUse = tabRef.get();
     var uri = Services.io.newURI(url, null, null);
     // Only use the same tab if the hosts are the same
-    if (tabToUse.linkedBrowser.currentURI.host == uri.host)
+    if (tabToUse.linkedBrowser.currentURI instanceof Ci.nsIStandardURL &&
+        tabToUse.linkedBrowser.currentURI.host == uri.host)
     {
       gBrowser.selectedTab = tabToUse;
       loadChromePage(url, "current");
@@ -461,7 +462,9 @@ function appendBrandedMenuitems(modulename, iconpath, initedCallback, itemClicke
   var self = this;
   this.container.addEventListener("popupshowing", function ()
   {
-    self.populate();
+    try {
+      self.populate();
+    } catch (e) { errorCritical(e); }
   }, false);
   autoregisterGlobalObserver("region-changed", function()
   {
@@ -477,9 +480,11 @@ appendBrandedMenuitems.prototype =
   // static function, cannot use |this|
   onCommand : function(event)
   {
-    var item = event.target;
-    item.itemClickedCallback(item.entry, item, event);
-    event.stopPropagation(); // prevent from bubbling to main <button>
+    try {
+      var item = event.target;
+      item.itemClickedCallback(item.entry, item, event);
+      event.stopPropagation(); // prevent from bubbling to main <button>
+    } catch (e) { errorCritical(e); }
   },
 
   populate : function()

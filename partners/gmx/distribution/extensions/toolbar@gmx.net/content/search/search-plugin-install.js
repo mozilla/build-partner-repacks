@@ -52,15 +52,18 @@ function copySearchPlugins(makeDefault)
       Services.search.getEngineByName(entry.name).hidden = false;
       continue; // already copied (we are also called from region-changed)
     }
-    Services.search.addEngine(sourceURL, Ci.nsISearchEngine.DATA_XML, false, null,
-    function(engine, success) // callback depends on bug 493051
-    {
-      if (success)
-        debug("added search engine " + engine.name);
-      else
-        errorNonCritical(new Exception("could not add search engine " + engine.name));
-      if (engine.name != entry.name)
-        debug("brand.js has engine name " + entry.name + ", but OSD file has name " + engine.name);
+    Services.search.addEngine(sourceURL, Ci.nsISearchEngine.DATA_XML, false, null, {
+      onSuccess: function (engine) {
+        if (engine.name != entry.name) {
+          errorNonCritical(new Exception("brand.js has engine name " +
+              entry.name + ", but OSD file has name " + engine.name +
+              ". This will break search in a subtle way, we must fix this."));
+        }
+      },
+      onError: function (errorCode) {
+        errorNonCritical(new Exception("Search engine " + entry.name +
+            " install failed with error code " + errorCode));
+      }
     });
   }
 
@@ -103,7 +106,6 @@ function upgradeSearchPlugins()
     if (engine) {
       let sourceURL = "chrome://unitedtb-searchplugins/content/" + entry.filename;
       Services.search.removeEngine(engine);
-      Services.search.addEngine(sourceURL, Ci.nsISearchEngine.DATA_XML, null, false);
     }
   }
   Services.search.currentEngine = oldDefault;
@@ -174,11 +176,6 @@ var globalObserver =
       generalPref.reset("keyword.URL"); // now set in our default prefs
 
       try {
-        searchInitRun(function() {
-          // Migration: add pref. Just for 2.5, remove in 2.6.
-          if (Services.search.currentEngine == brand.search.engineName)
-            ourPref.set("search.opt-in", true);
-        });
         if ( !ourPref.get("brandedbrowser", false) &&
             build.kVariant != "browser") {
           searchInitRun(upgradeSearchPlugins);

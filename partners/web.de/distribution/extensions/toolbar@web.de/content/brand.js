@@ -37,7 +37,7 @@ toolbar : {
     startpageHomepageURL : "%GOTB%startpage_homepage", // Firefox start goes to portal
     // extension.js
     firstrunURL : "%GOTB%runonce",
-    upgradeURL : "%GOTB%addon",
+    // upgradeURL : "%GOTB%addon",
     uninstallURL : "%GOTB%uninstall_runonce",
     sslErrorExitURL: "%GOTB%ssl_error",
     browserInstallURL: "%GOTB%browser_install",
@@ -249,15 +249,5 @@ coupon: {
     enableViaKidStartValues : [ "6", "7" ], // if campaignID (kid) starts with these, enable coupon automatically
   },
 },
-minimode: {
-  defaultlocale : {
-    disabled: true,
-    disabledIDs : [
-      { win : "main-window", el: "united-email-minimode-start-menuitem" },
-      { win : "main-window", el: "united-email-minimode-end-menuitem" },
-      { win : "main-window", el: "united-pref-minimode-start-menuitem" },
-      { win : "united-pref-window", el: "minimode-groupbox" },
-    ],
-  },
-},
+
 }

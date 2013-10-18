@@ -25,6 +25,20 @@ Components.utils.import("resource://unitedtb/util/common-jsm.js");
 // Store searches
 //////////////////////////////////////////////////////////////////////////
 
+function getLastSearchesInternal() {
+  var searchitems;
+  try {
+    searchitems = JSON.parse(ourPref.get("search.termsJSON"));
+  } catch (e) {
+    // The parse failed for some reason
+    // Report the error and just reset search
+    errorInBackend(e);
+    ourPref.reset("search.termsJSON")
+    searchitems = [];
+  }
+  return searchitems;
+}
+
 /**
  * Returns the last n search terms the user searched for.
  *
@@ -40,7 +54,7 @@ Components.utils.import("resource://unitedtb/util/common-jsm.js");
  */
 function getLastSearches(amount, resultCallback, errorCallback)
 {
-  var searchitems = JSON.parse(ourPref.get("search.termsJSON"));
+  var searchitems = getLastSearchesInternal();
 
   // This was the easiest way to imitate GROUP BY so we can remove dupes
   // without sorting
@@ -69,7 +83,7 @@ function getLastSearches(amount, resultCallback, errorCallback)
  */
 function getLastSearchesWithDate(amount, resultCallback, errorCallback)
 {
-  var searchitems = JSON.parse(ourPref.get("search.termsJSON"));
+  var searchitems = getLastSearchesInternal();
 
   var terms = []
   for each (let searchitem in searchitems)
@@ -104,7 +118,7 @@ function deleteSearchTerm(term, successCallback, errorCallback)
   // multiple entries with the given search term might exist, delete them all
   // this mimicks the behaviour of getLastSearches which
   // collapses multiple occurences of the same searchterm
-  var searchitems = JSON.parse(ourPref.get("search.termsJSON"));
+  var searchitems = getLastSearchesInternal();
 
   searchitems = searchitems.filter(function(e) {return e.searchterm != term});
 
@@ -135,7 +149,7 @@ function saveSearchTerm(searchTerm)
   term.searchterm = searchTerm;
   term.visited = new Date().toISOString();
 
-  var searchitems = JSON.parse(ourPref.get("search.termsJSON"));
+  var searchitems = getLastSearchesInternal();
   searchitems.push(term);
   if (searchitems.length > amountToRemember)
     searchitems.splice(0, searchitems.length - amountToRemember);

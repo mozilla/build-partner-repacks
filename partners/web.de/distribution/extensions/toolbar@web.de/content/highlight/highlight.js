@@ -177,6 +177,9 @@ const kHighlightCSS = "united-highlight-term { display: inline; background-color
  */
 function highlightPerDOMPoking(term, doc)
 {
+  if (!doc || !doc.body) {
+    return;
+  }
   //debug("before replacement:\n" + doc.body.innerHTML);
   //debug("highlight " + term);
   var style = doc.createElement("style");

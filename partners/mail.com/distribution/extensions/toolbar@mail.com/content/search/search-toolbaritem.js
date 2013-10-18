@@ -133,18 +133,22 @@ function setSearchText(text)
 
 function onTextChanged(event)
 {
-  debug("on text changed in textfield");
-  var searchTerm = searchField.value;
-  notifyWindowObservers("search-keypress",
-      { searchTerm : searchTerm, source : 1 });
-  clearButton.hidden = !searchTerm;
+  try {
+    debug("on text changed in textfield");
+    var searchTerm = searchField.value;
+    notifyWindowObservers("search-keypress",
+        { searchTerm : searchTerm, source : 1 });
+    clearButton.hidden = !searchTerm;
+  } catch (e) { errorNonCritical(e); }
 }
 
 function onButton(event)
 {
-  var term = startSearchOrURL(searchField.value);
-  if (term)
-    startRealSearch(term, brand.search.toolbarURL, 1);
+  try {
+    var term = startSearchOrURL(searchField.value);
+    if (term)
+      startRealSearch(term, brand.search.toolbarURL, 1);
+  } catch (e) { errorNonCritical(e); }
 };
 
 /**
@@ -154,9 +158,11 @@ function onButton(event)
  */
 function onTextEntered()
 {
-  var term = startSearchOrURL(searchField.value);
-  if (term)
-    startRealSearch(term, brand.search.toolbarURL, 1);
+  try {
+    var term = startSearchOrURL(searchField.value);
+    if (term)
+      startRealSearch(term, brand.search.toolbarURL, 1);
+  } catch (e) { errorNonCritical(e); }
 }
 
 /**
@@ -303,32 +309,34 @@ var gSearchCompleteHandler = null;
  */
 function onKeyPressTab(event)
 {
-  if (!gDidAutocomplete &&
-      event.keyCode == event.DOM_VK_TAB)
-  {
-    gDidAutocomplete = true;
-    var curText = searchField.value;
-    debug("waiting for search for " + curText);
-    getLocalmCollectAutocompleteLabels(curText, function(results)
+  try {
+    if (!gDidAutocomplete &&
+        event.keyCode == event.DOM_VK_TAB)
     {
-      debug("search completed " + curText);
-      if (searchField.value != curText)
-        return; // user modified before search completed
-      var completed = getAutocompleteText(curText, results);
-      debug("autocomplete text " + completed);
-      if (!completed)
-        return;
-      setSearchText(completed);
-      searchField.setSelectionRange(curText.length, completed.length);
-    });
-    event.preventDefault();
-  }
-  // a real letter
-  // <http://mdn.beonex.com/en/DOM/event.charCode>
-  if (event.charCode)
-  {
-    gDidAutocomplete = false;
-  }
+      gDidAutocomplete = true;
+      var curText = searchField.value;
+      debug("waiting for search for " + curText);
+      getLocalmCollectAutocompleteLabels(curText, function(results)
+      {
+        debug("search completed " + curText);
+        if (searchField.value != curText)
+          return; // user modified before search completed
+        var completed = getAutocompleteText(curText, results);
+        debug("autocomplete text " + completed);
+        if (!completed)
+          return;
+        setSearchText(completed);
+        searchField.setSelectionRange(curText.length, completed.length);
+      });
+      event.preventDefault();
+    }
+    // a real letter
+    // <http://mdn.beonex.com/en/DOM/event.charCode>
+    if (event.charCode)
+    {
+      gDidAutocomplete = false;
+    }
+  } catch (e) { errorNonCritical(e); }
 }
 
 function getAutocompleteText(userTyped, labels)
@@ -415,19 +423,21 @@ function getLocalmCollectAutocompleteLabels(term, successCallback)
 
 function onURLBarButton(event)
 {
-  var searchTerm = E("urlbar").value;
   try {
-    var uriFixup = Cc["@mozilla.org/docshell/urifixup;1"].getService(Ci.nsIURIFixup);
-    var fixupURI = uriFixup.createFixupURI(searchTerm, Ci.nsIURIFixup.FIXUP_FLAG_USE_UTF8);
-    // If the current URL is the same as the search URL, just reload the page
-    if (fixupURI.spec == content.document.location.href) {
-      loadPage(fixupURI.spec);
-      return;
+    var searchTerm = E("urlbar").value;
+    try {
+      var uriFixup = Cc["@mozilla.org/docshell/urifixup;1"].getService(Ci.nsIURIFixup);
+      var fixupURI = uriFixup.createFixupURI(searchTerm, Ci.nsIURIFixup.FIXUP_FLAG_USE_UTF8);
+      // If the current URL is the same as the search URL, just reload the page
+      if (fixupURI.spec == content.document.location.href) {
+        loadPage(fixupURI.spec);
+        return;
+      }
+    } catch (ex) {
+      // Not a fatal error - just means URI Fixup couldn't fix up the URL
     }
-  } catch (ex) {
-    // Not a fatal error - just means URI Fixup couldn't fix up the URL
-  }
-  var term = startSearchOrURL(searchTerm, true);
-  if (term)
-    startRealSearch(term, brand.search.urlbarURL, 11);
+    var term = startSearchOrURL(searchTerm, true);
+    if (term)
+      startRealSearch(term, brand.search.urlbarURL, 11);
+  } catch (e) { errorNonCritical(e); }
 }

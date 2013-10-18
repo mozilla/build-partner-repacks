@@ -95,7 +95,7 @@
               type="link"
               />
       </hbox-->
-      <separator/>
+      <separator id="login-separator"/>
       <label value="&notifyHeader.label;"/>
       <hbox>
         <checkbox preference="extensions.unitedinternet.email.notification.sound.enabled"

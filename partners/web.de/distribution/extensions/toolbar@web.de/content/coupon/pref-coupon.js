@@ -1,6 +1,8 @@
 function onLoad()
 {
-  new CouponCheckbox();
+  try {
+    new CouponCheckbox();
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 

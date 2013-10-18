@@ -13,25 +13,29 @@
 
 function onHandleContentDoubleClick(event)
 {
-  if ( !ourPref.get("search.webpageDoubleclick"))
-    return;
-  var sel = event.view.getSelection();
-  var selText = sel.toString()
-  debug("selection " + selText);
-  if (!sel.containsNode(event.target, true))
-    return;
-  // MS Windows selects "foo ", so strip trailing and leading whitespace
-  selText = selText.replace(/[ ]+$/, "").replace(/^[ ]+/, "");
-  if (selText.indexOf(" ") != -1) // only single words
-    return;
-  var searchTerm = selText;
-  notifyWindowObservers("search-term",
-      { searchTerm : searchTerm, source : 7 });
+  try {
+    if ( !ourPref.get("search.webpageDoubleclick"))
+      return;
+    var sel = event.view.getSelection();
+    var selText = sel.toString()
+    debug("selection " + selText);
+    if (!sel.containsNode(event.target, true))
+      return;
+    // MS Windows selects "foo ", so strip trailing and leading whitespace
+    selText = selText.replace(/[ ]+$/, "").replace(/^[ ]+/, "");
+    if (selText.indexOf(" ") != -1) // only single words
+      return;
+    var searchTerm = selText;
+    notifyWindowObservers("search-term",
+        { searchTerm : searchTerm, source : 7 });
+  } catch (e) { errorNonCritical(e); }
 }
 
 function onLoad()
 {
-  var tabbrowser = E("content");
-  tabbrowser.addEventListener("dblclick", onHandleContentDoubleClick, false);
+  try {
+    var tabbrowser = E("content");
+    tabbrowser.addEventListener("dblclick", onHandleContentDoubleClick, false);
+  } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);

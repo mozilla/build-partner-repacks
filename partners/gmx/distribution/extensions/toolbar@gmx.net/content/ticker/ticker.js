@@ -184,11 +184,13 @@ function reset()
  */
 function onDropdownOpened(event)
 {
-  if (!kLazyRefresh)
-    return;
-  if (gLastLoad > new Date().getTime() - kRefreshInterval)
-    return;
-  fetchFeed();
+  try {
+    if (!kLazyRefresh)
+      return;
+    if (gLastLoad > new Date().getTime() - kRefreshInterval)
+      return;
+    fetchFeed();
+  } catch (e) { errorNonCritical(e); }
 }
 
 /**
@@ -198,5 +200,7 @@ function onDropdownOpened(event)
  */
 function onButton(event)
 {
-  loadPage(event.target.url ? event.target.url : brand.ticker.portalURL, "united-ticker");
+  try {
+    loadPage(event.target.url ? event.target.url : brand.ticker.portalURL, "united-ticker");
+  } catch (e) { errorCritical(e); }
 };

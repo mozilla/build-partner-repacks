@@ -88,22 +88,24 @@ autoregisterGlobalObserver("account-removed", populateList);
 
 function setup()
 {
-  /* for POP3/IMAP support
-  window.openDialog("chrome://unitedtb/content/email/accountcreation/emailWizard.xul",
-      "united-accountcreation",
+  try {
+    /* for POP3/IMAP support
+    window.openDialog("chrome://unitedtb/content/email/accountcreation/emailWizard.xul",
+        "united-accountcreation",
       "chrome=yes,dialog,titlebar,toolbar,modal,centerscreen");
-  */
+    */
 
-  // Short-term workaround until POP3/IMAP and the above wizard is integrated
-  // 2 = create account
-  var ffWin;
-  if (window.opener && window.opener.unitedinternet)
-    ffWin = window.opener;
-  else
-    ffWin = findSomeBrowserWindow();
-  ffWin.unitedinternet.login.tryLogin(2, null, false, window,
-      function() {}, errorCritical, function() {});
-  // list refreshes automatically due to listeners
+    // Short-term workaround until POP3/IMAP and the above wizard is integrated
+    // 2 = create account
+    var ffWin;
+    if (window.opener && window.opener.unitedinternet)
+      ffWin = window.opener;
+    else
+      ffWin = findSomeBrowserWindow();
+    ffWin.unitedinternet.login.tryLogin(2, null, false, window,
+        function() {}, errorCritical, function() {});
+    // list refreshes automatically due to listeners
+  } catch (e) { errorCritical(e); }
 }
 
 /*

@@ -6,25 +6,6 @@
  *       Also, for testing: Display the search term.
  */
 
-var gIconName;
-
-/**
- * Use statistic class to change icon
- */
-function onLoad()
-{
-  // Test which of 2 icons works better -- #1166
-  if (brand.tracking &&
-      (brand.tracking.brand == "webde" || brand.tracking.brand == "gmx") &&
-      ourPref.get("tracking.statisticclass") < 25) {
-    gIconName = "shoppingbag";
-  } else {
-    gIconName = "ebay";
-  }
-  E("united-ebay-button").setAttribute("icon", gIconName);
-}
-window.addEventListener("load", onLoad, false);
-
 /**
  * User clicked on EBay button
  */
@@ -39,11 +20,7 @@ function onButton(event)
           encodeURIComponent(currentSearchTerm), "united-ebay");
     }
     else {
-      var url = brand.ebay.portalURL;
-      if (gIconName) {
-        url += "?" + gIconName;
-      }
-      loadPage(url, "united-ebay");
+      loadPage(brand.ebay.portalURL, "united-ebay");
     }
   } catch (e) { errorCritical(e); }
 };

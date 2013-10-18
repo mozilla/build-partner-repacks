@@ -1,8 +1,11 @@
 Components.utils.import("resource://gre/modules/Services.jsm");
+var accounts = {};
+Components.utils.import("resource://unitedtb/email/account-list.js", accounts);
 
 var gToolbar;
 var gMailMiniModeEndMenuitem;
 var gMailMiniModeStartMenuitem;
+var gMailMiniModeLogoffMenuitem;
 
 function onLoad()
 {
@@ -10,10 +13,12 @@ function onLoad()
     gToolbar = E("united-toolbar");
     gMailMiniModeStartMenuitem = E("united-email-minimode-start-menuitem");
     gMailMiniModeEndMenuitem = E("united-email-minimode-end-menuitem");
+    gMailMiniModeLogoffMenuitem = E("united-email-minimode-logoff-menuitem");
     if (gToolbar.hasAttribute("minimode") &&
         gToolbar.getAttribute("minimode") == "true") {
       gMailMiniModeStartMenuitem.hidden = true;
       gMailMiniModeEndMenuitem.hidden = false;
+      gMailMiniModeLogoffMenuitem.hidden = false;
     }
     // We need to catch when the toolbar is displayed via the toolbar view
     // menu so we can drop out of mini mode.
@@ -24,17 +29,26 @@ function onLoad()
       E("appmenu_customizeMenu").addEventListener("command",
           onViewToolbarCommand, false);
     }
+    updateUI();
   } catch (e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
+function updateUI() {
+  var allAccounts = accounts.getAllExistingAccounts();
+  var loggedin = allAccounts.some(function(acc) { return acc.isLoggedIn; });
+  gMailMiniModeLogoffMenuitem.disabled = !loggedin;
+}
+
 function onViewToolbarCommand(event) {
-  if (event.originalTarget.getAttribute("toolbarId") == "united-toolbar") {
-    var isVisible = event.originalTarget.getAttribute("checked") == "true";
-    if (isVisible) {
-      end();
+  try {
+    if (event.originalTarget.getAttribute("toolbarId") == "united-toolbar") {
+      var isVisible = event.originalTarget.getAttribute("checked") == "true";
+      if (isVisible) {
+        end();
+      }
     }
-  }
+  } catch (e) { errorCritical(e); }
 }
 
 function setDefaultSearchEngine() {
@@ -58,11 +72,15 @@ function start() {
     unitedinternet.toolbar.addButton("nav-bar", emailButton, "search-container");
     gMailMiniModeStartMenuitem.hidden = true;
     gMailMiniModeEndMenuitem.hidden = false;
+    gMailMiniModeLogoffMenuitem.hidden = false;
     gToolbar.collapsed = true;
     document.persist("united-toolbar", "collapsed");
     gToolbar.setAttribute("minimode", "true");
     document.persist("united-toolbar", "minimode");
     setDefaultSearchEngine();
+    if (ourPref.get("newtab.opt-in", false)) {
+      ourPref.set("newtab.enabled", true);
+    }
   } catch (e) { errorCritical(e); }}
 
 /**
@@ -76,6 +94,7 @@ function end(showToolbar) {
     unitedinternet.toolbar.addButton("united-toolbar", emailButton);
     gMailMiniModeStartMenuitem.hidden = false;
     gMailMiniModeEndMenuitem.hidden = true;
+    gMailMiniModeLogoffMenuitem.hidden = true;
     gToolbar.collapsed = false;
     document.persist("united-toolbar", "collapsed");
     gToolbar.setAttribute("minimode", "false");
@@ -90,3 +109,27 @@ autoregisterGlobalObserver("minimode", function(obj) {
     end();
   }
 });
+
+var globalObserver =
+{
+  notification : function(msg, obj)
+  {
+    if (msg == "logged-in" || msg == "logged-out")
+      updateUI();
+  },
+}
+registerGlobalObserver(globalObserver);
+
+window.addEventListener("aftercustomization", function() {
+  // If the toolbar thinks it is in minimode, but the email button is on our
+  // toolbar, end mini mode.
+  // This can happen if the user clicks "Restore default" or
+  // drags the button back to our toolbar while customizing.
+  if (gToolbar.hasAttribute("minimode") &&
+    gToolbar.getAttribute("minimode") == "true") {
+    var emailButton = E("united-email-button");
+    if (emailButton && emailButton.parentNode == gToolbar) {
+      end();
+    }
+  }
+}, false);

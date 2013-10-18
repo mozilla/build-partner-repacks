@@ -118,7 +118,14 @@ POP3Account.prototype =
     this._deleteStoredPassword();
 
     this._stopCheckingInterval();
+
+    this._newMailCount = -1;
+    this._previousNewMailCount = -1;
+
     successCallback();
+    var self = this;
+    notifyGlobalObservers("mail-check", { account: self });
+    notifyGlobalObservers("logged-out", { account: self });
   },
 
   /**

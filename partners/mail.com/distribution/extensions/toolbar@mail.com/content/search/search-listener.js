@@ -38,9 +38,11 @@ function ourHandleSearchCommand(aEvent)
 
 function onLoad()
 {
+  try {
     gFirefoxSearchbar = E("searchbar");
     origHandleSearchCommand = gFirefoxSearchbar.handleSearchCommand;
     gFirefoxSearchbar.handleSearchCommand = ourHandleSearchCommand;
+  } catch (e) { errorNonCritical(e); }
 }
 
 window.addEventListener("load", onLoad, false);

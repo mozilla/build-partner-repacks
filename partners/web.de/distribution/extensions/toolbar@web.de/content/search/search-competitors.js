@@ -20,12 +20,14 @@
  */
 function onLoad()
 {
-  var appcontent = E("appcontent");
-  if (appcontent)
-    appcontent.addEventListener("DOMContentLoaded", onPageLoad, false);
-  // Special case for Google sites which don't reload the page, they
-  // just change the hash on the URL
-  window.addEventListener("hashchange", onHashChange, false);
+  try {
+    var appcontent = E("appcontent");
+    if (appcontent)
+      appcontent.addEventListener("DOMContentLoaded", onPageLoad, false);
+    // Special case for Google sites which don't reload the page, they
+    // just change the hash on the URL
+    window.addEventListener("hashchange", onHashChange, false);
+  } catch(e) { errorNonCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
 
@@ -42,7 +44,7 @@ function onPageLoad(event)
   }
 
   try {
-    if (!doc.location.hostname || !doc.location.search ||
+    if (!doc.location || !doc.location.hostname || !doc.location.search ||
         !brand.search.competitorlist[doc.location.hostname])
       return;
 
