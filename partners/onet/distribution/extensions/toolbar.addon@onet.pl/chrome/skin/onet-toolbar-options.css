@@ -1,8 +1,8 @@
 @import url("chrome://global/skin/");
 
 #onet-toolbar-option-dlg {
-	-moz-appearance: none;
-	background: linear-gradient(to bottom, #FAC721, #FF846D);
+/*	-moz-appearance: none;*/
+	background: #e9e9e9; /*linear-gradient(to bottom, #FAC721, #FF846D);*/
 	border: 2px solid #BBBBBB;
 }
 
@@ -47,7 +47,7 @@
 	-moz-appearance: none;
 	width: 150px;
 	height: 30px;
-	background: rgb(206,131,136);
+	background: orange /*rgb(206,131,136)*/;
 	border: none;
 	cursor: pointer;
 	font-size: 14px;

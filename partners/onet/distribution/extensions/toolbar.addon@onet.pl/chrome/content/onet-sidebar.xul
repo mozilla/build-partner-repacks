@@ -5,10 +5,9 @@
 <!DOCTYPE page SYSTEM "chrome://pl.onet.toolbar/locale/onet-toolbar-overlay.dtd">
 
 <page id="pl-onet-addon-toolbar-sidebar-page" title="&OnetToolbar.Sidebar.page.title;"
-			xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+      xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-	<vbox flex="1">
-		<iframe src="http://m.onet.pl/?firefox" id="pl-onet-addon-toolbar-sidebar-iframe"
-						type="content-targetable" flex="1" />
-	</vbox>
+    <vbox flex="1">
+        <iframe src="http://m.onet.pl/?firefox" id="pl-onet-addon-toolbar-sidebar-iframe" type="content-targetable" flex="1" />
+    </vbox>
 </page>

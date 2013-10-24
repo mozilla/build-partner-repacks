@@ -4,7 +4,7 @@ pref("extensions.pl.onet.addon.toolbar.uninstall", false);
 pref("extensions.pl.onet.addon.toolbar.disable", false);
 pref("extensions.pl.onet.addon.toolbar.mailCounter", "0");
 pref("extensions.pl.onet.addon.toolbar.channelId", "");
-pref("extensions.pl.onet.addon.toolbar.interval", 60000);
+pref("extensions.pl.onet.addon.toolbar.interval", 30000);
 pref("extensions.pl.onet.addon.toolbar.brandedbrowser", true);
 pref("extensions.pl.onet.addon.toolbar.tracking", ".666.");
 pref("extensions.pl.onet.addon.toolbar.emailalert.x", 15);

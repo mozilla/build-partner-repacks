@@ -4,51 +4,44 @@
 <!DOCTYPE overlay SYSTEM "chrome://pl.onet.toolbar/locale/onet-toolbar-overlay.dtd">
 
 <overlay id="newtab-window-overlay" xmlns="http://www.w3.org/1999/xhtml"
-				 xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+         xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-	<script type="application/x-javascript" src="chrome://pl.onet.toolbar/content/onet-toolbar-newtab.js" />
-
-	<div id="newtab-grid">
-		<div id="onet-toolbar-newtab-row" class="newtab-row" position="1">
-			<!-- wiadomosci -->
-			<div class="newtab-cell">
-				<div class="newtab-site">
-					<a class="newtab-link"
-						href='http://wiadomosci.onet.pl/?utm_source%3Dwiadomoscibrotab%26utm_medium%3Donetbrowser%26utm_campaign%3Donetsg_browser'>
-						<!-- 2013-06-20 http://wiadomosci.onet.pl/?utm_source=wiadomoscibrotab&utm_medium=onetbrowser&utm_campaign=onetsg_browser -->
-						<span class="newtab-thumbnail onet"
-							style="background-image: url(chrome://pl.onet.toolbar/skin/thumbnail-wiadomosci.png);"></span>
-						<span class="newtab-title onet">&OnetToolbar.newtab.wiadomosci;
-						</span>
-					</a>
-				</div>
-			</div>
-			<!-- sympatia -->
-			<div class="newtab-cell">
-				<div class="newtab-site">
-					<a class="newtab-link"
-						href="http://sympatia.onet.pl/?utm_source%3Dsympatiabrotab%26utm_medium%3Donetbrowser%26utm_campaign%3Donetsg_browser">
-						<!-- 2013-06-20 http://sympatia.onet.pl/?utm_source=sympatiabrotab&utm_medium=onetbrowser&utm_campaign=onetsg_browser -->
-						<span class="newtab-thumbnail onet"
-							style="background-image: url(chrome://pl.onet.toolbar/skin/thumbnail-sympatia.png);"></span>
-						<span class="newtab-title onet">&OnetToolbar.newtab.sympatia;
-						</span>
-					</a>
-				</div>
-			</div>
-			<!-- vod -->
-			<div class="newtab-cell">
-				<div class="newtab-site">
-					<a class="newtab-link"
-						href="http://vod.pl/?utm_source%3Dvodbrotab%26utm_medium%3Donetbrowser%26utm_campaign%3Donetsg_browser">
-						<!-- 2013-06-20 http://vod.pl/?utm_source=vodbrotab&utm_medium=onetbrowser&utm_campaign=onetsg_browser -->
-						<span class="newtab-thumbnail onet"
-							style="background-image: url(chrome://pl.onet.toolbar/skin/thumbnail-vod.png);"></span>
-						<span class="newtab-title onet">&OnetToolbar.newtab.vod;
-						</span>
-					</a>
-				</div>
-			</div>
-		</div>
-	</div>
+    <script type="application/x-javascript" src="chrome://pl.onet.toolbar/content/onet-toolbar-newtab.js" />
+    <div id="newtab-vertical-margin">    
+        <div id="o-newtab-horizontal-margin" position="3">
+            <div class="newtab-side-margin"></div>
+            <div id="o-newtab-grid">
+                <div id="onet-toolbar-newtab-row" class="o-newtab-row">
+                    <!-- wiadomosci -->
+                    <div class="o-newtab-cell">
+                        <div class="o-newtab-site" draggable="false">
+                            <a class="o-newtab-link" href='http://wiadomosci.onet.pl/?utm_source%3Dwiadomoscibrotab%26utm_medium%3Donetbrowser%26utm_campaign%3Donetsg_browser'>
+                                <span class="newtab-thumbnail onet"	style="background-image: url(chrome://pl.onet.toolbar/skin/thumbnail-wiadomosci.png);"></span>
+                                <span class="o-newtab-title onet">&OnetToolbar.newtab.wiadomosci;</span>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- sympatia -->
+                    <div class="o-newtab-cell">
+                        <div class="o-newtab-site" draggable="false">
+                            <a class="o-newtab-link" href="http://sympatia.onet.pl/?utm_source%3Dsympatiabrotab%26utm_medium%3Donetbrowser%26utm_campaign%3Donetsg_browser">
+                                <span class="newtab-thumbnail onet"	style="background-image: url(chrome://pl.onet.toolbar/skin/thumbnail-sympatia.png);"></span>
+                                <span class="o-newtab-title onet">&OnetToolbar.newtab.sympatia;</span>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- vod -->
+                    <div class="o-newtab-cell">
+                        <div class="o-newtab-site" draggable="false">
+                            <a class="o-newtab-link" href="http://vod.pl/?utm_source%3Dvodbrotab%26utm_medium%3Donetbrowser%26utm_campaign%3Donetsg_browser">
+                                <span class="newtab-thumbnail onet"	style="background-image: url(chrome://pl.onet.toolbar/skin/thumbnail-vod.png);"></span>
+                                <span class="o-newtab-title onet">&OnetToolbar.newtab.vod;</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="newtab-side-margin"></div>
+        </div>
+    </div>
 </overlay>

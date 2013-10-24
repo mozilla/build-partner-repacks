@@ -102,6 +102,9 @@ toolbar[ iconsize="small" ] #pl-onet-addon-toolbar-toolbarButton {
 	text-align: center;
 	display: none;
 }
+#pl-onet-addon-toolbar-email-mailObserver:hover {
+	background-color: #ee0000;
+}
 
 #pl-onet-addon-toolbar-button-N {
 	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");

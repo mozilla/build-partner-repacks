@@ -1,16 +1,107 @@
-/* disable toggel button, so that user must see the tab-grid!
-Note: moved to newTab.xul to enable opt-in feature */
-
-/* #newtab-toggle { 
- 	display: none;
- } */
-
-/* do not display "title" - icon is more important */
-.newtab-title.onet {
-	display: none;
+#o-newtab-grid {
+    display: -moz-box;
+    -moz-box-flex: 5;
+    -moz-box-orient: vertical;
+    min-width: 600px;
+    min-height: 133px;
+    transition: opacity 100ms ease-out 0s;
+}
+#newtab-grid {
+    min-height: 266px !important;
 }
 
-/* always display full icon centered */
-.newtab-thumbnail.onet {
-	background-position: 0 0;
+.o-newtab-row {
+    display: -moz-box;
+    -moz-box-orient: horizontal;
+    -moz-box-direction: normal;
+    -moz-box-flex: 1;
+    margin-bottom: 20px;
 }
+.o-newtab-cell {
+    -moz-margin-end: 20px;
+    display: -moz-box;
+    -moz-box-flex: 1;
+    background-color: rgba(255,255,255,.2);
+    border: 1px solid;
+    border-color: rgba(8,22,37,.12) rgba(8,22,37,.14) rgba(8,22,37,.16);
+    border-radius: 1px;
+    transition: border-color 100ms ease-out;
+}
+
+.o-newtab-cell:last-child {
+    -moz-margin-end: 0;
+}
+
+.o-newtab-cell:hover:not(:empty):not([dragged]) {
+    border-color: rgba(8,22,37,.25) rgba(8,22,37,.27) rgba(8,22,37,.3);
+}
+
+.o-newtab-site {
+    position: relative;
+    -moz-box-flex: 1;
+    transition: 100ms ease-out;
+    transition-property: top, left, opacity;
+}
+
+.o-newtab-site[frozen] {
+    position: absolute;
+    pointer-events: none;
+}
+
+.o-newtab-site[dragged] {
+    transition-property: none;
+    z-index: 10;
+}
+
+
+.o-newtab-site:hover, .o-newtab-site[dragged] {
+    box-shadow: 0 0 10px rgba(8,22,37,.3);
+}
+
+.o-newtab-link, .o-newtab-thumbnail {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.o-newtab-thumbnail {
+    opacity: .8;
+    transition: opacity 100ms ease-out;
+}
+
+.o-newtab-thumbnail[dragged], .o-newtab-link:-moz-focusring > .o-newtab-thumbnail, .o-newtab-site:hover > .o-newtab-link > .o-newtab-thumbnail {
+    opacity: 1;
+}
+
+.o-newtab-thumbnail.onet {
+    background-position: 0 0;
+}
+
+/* TITLES */
+.o-newtab-title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.o-newtab-title.onet {
+    background: url('chrome://pl.onet.toolbar/skin/logo.png') no-repeat scroll 10px center #FFFDE9;
+    text-indent: 65px;
+    padding: 4px 0;
+}
+
+
+
+#o-newtab-horizontal-margin {
+    display: -moz-box;
+    visibility: collapse;
+    -moz-box-flex: 5;
+}
+
+
