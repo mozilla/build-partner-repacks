@@ -111,7 +111,10 @@ this._logger.debug(e.stack);
 }
 
 if (this._disposable)
-this.destroy();
+{
+let timer = new sysutils.Timer(this.destroy.bind(this), 250);
+}
+
 }
 ,
 _createXULBrowser: function Slice__createXULBrowser() {

@@ -351,6 +351,11 @@ listener.observe(null,aTopic,aData);
 }
 catch (e) {
 this._logger.error("Notify listener error: " + e);
+if (e.stack)
+{
+this._logger.debug(e.stack);
+}
+
 }
 
 }

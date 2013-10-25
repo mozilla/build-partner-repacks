@@ -14,12 +14,12 @@ this._database = new Database(this._dbFile);
 ,
 finalize: function UsageHistory_finalize(finalCleanup, callback) {
 Services.obs.removeObserver(this,this._application.core.eventTopics.THUMBS_STRUCTURE_READY_EVENT);
-var dbClosedCallback = function () {
+var dbClosedCallback = (function () {
 this._database = null;
 this._application = null;
 this._logger = null;
 }
-.bind(this);
+).bind(this);
 if (this._database)
 {
 this._database.close(function () {
@@ -103,9 +103,9 @@ info: JSON.stringify(info)});
 ,
 _sendUsageStat: function UsageHistory__sendUsageStat() {
 const SECONDS_IN_WEEK = 7 * 86400;
-var makeRequest = function makeRequest() {
+var makeRequest = (function makeRequest() {
 this._logger.debug("Perform barnavig request with week usage stat...");
-this.getDataForPeriod(undefined,function (statData) {
+this.getDataForPeriod(undefined,(function (statData) {
 var prefs = this._application.preferences;
 var appInstallTime = prefs.get("general.install.time",0);
 var now = Math.round(Date.now() / 1000);
@@ -117,10 +117,10 @@ this._logger.debug("Sending week usage data to bar-navig: " + JSON.stringify(bar
 this._application.barnavig.sendRequest(barNavigSendData);
 prefs.set(this._consts.LAST_SENT_PREF_TS,now);
 }
-.bind(this));
+).bind(this));
 new sysutils.Timer(this._sendUsageStat, SECONDS_IN_WEEK * 1000);
 }
-.bind(this);
+).bind(this);
 var lastCheckTime = this._application.preferences.get(this._consts.LAST_SENT_PREF_TS,0);
 lastCheckTime = parseInt(lastCheckTime,10) || 0;
 if (lastCheckTime === 0)

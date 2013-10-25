@@ -242,6 +242,56 @@ defender.changesTime = null;
 
 }
 
+if (! (aData && aData.stat) || aData.stat === "dayuse")
+{
+let syncPlugin;
+try {
+let syncPluginId = "http://bar-widgets.yandex.ru/packages/approved/284/manifest.xml#esync";
+syncPlugin = this._application.widgetLibrary.getPlugin(syncPluginId);
+}
+catch (e) {
+
+}
+
+if (syncPlugin)
+{
+let authorized = false;
+let syncService;
+if (syncPlugin.enabled)
+{
+try {
+syncService = Cc["@yandex.ru/esync;1"].getService().wrappedJSObject;
+authorized = ! ! syncService.authorized;
+}
+catch (ex) {
+Cu.reportError(ex);
+}
+
+}
+
+let syncStatData = [authorized ? 1 : 0];
+if (authorized)
+{
+["Pinned", "Bookmarks", "TypedURLs", "Passwords", "Autofill"].forEach(function (engineName) {
+var enabled = 0;
+try {
+if (syncService.getEngine(engineName).enabled)
+enabled = 1;
+}
+catch (e) {
+
+}
+
+syncStatData.push(enabled);
+}
+);
+}
+
+data.esync = syncStatData.join("-");
+}
+
+}
+
 if (aData)
 {
 for(let [propName, propValue] in Iterator(aData)) data[propName] = propValue;

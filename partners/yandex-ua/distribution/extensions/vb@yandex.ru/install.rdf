@@ -1,10 +1,10 @@
-<?xml version='1.0'?>
-<RDF xmlns:em='http://www.mozilla.org/2004/em-rdf#' xmlns='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
-    <Description about='urn:mozilla:install-manifest'>
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+    <Description about="urn:mozilla:install-manifest">
         <em:id>vb@yandex.ru</em:id>
         <em:type>2</em:type>
         <em:unpack>true</em:unpack>
-        <em:version>2.5.0</em:version>
+        <em:version>2.7.0</em:version>
 
         <em:localized>
             <Description>
@@ -15,7 +15,9 @@
 
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Владимир Старков</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
+                <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
                 <em:contributor>Денис Чистяков</em:contributor>
                 <em:contributor>Дмитрий Сорин</em:contributor>
@@ -37,8 +39,10 @@
                 <em:contributor>Danil Ivanov</em:contributor>
                 <em:contributor>Denis Chistyakov</em:contributor>
                 <em:contributor>Dmitriy Sorin</em:contributor>
+                <em:contributor>Guro Bokum</em:contributor>
                 <em:contributor>Maxim Breev</em:contributor>
                 <em:contributor>Pavel Gorobtsov</em:contributor>
+                <em:contributor>Vladimir Starkov</em:contributor>
             </Description>
         </em:localized>
 
@@ -51,7 +55,9 @@
 
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Владимир Старков</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
+                <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
                 <em:contributor>Денис Чистяков</em:contributor>
                 <em:contributor>Дмитрий Сорин</em:contributor>
@@ -69,7 +75,9 @@
 
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Владимир Старков</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
+                <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
                 <em:contributor>Денис Чистяков</em:contributor>
                 <em:contributor>Дмитрий Сорин</em:contributor>
@@ -91,8 +99,10 @@
                 <em:contributor>Danil Ivanov</em:contributor>
                 <em:contributor>Denis Chistyakov</em:contributor>
                 <em:contributor>Dmitriy Sorin</em:contributor>
+                <em:contributor>Guro Bokum</em:contributor>
                 <em:contributor>Maxim Breev</em:contributor>
                 <em:contributor>Pavel Gorobtsov</em:contributor>
+                <em:contributor>Vladimir Starkov</em:contributor>
             </Description>
         </em:localized>
 
@@ -105,7 +115,9 @@
 
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Владимир Старков</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
+                <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
                 <em:contributor>Денис Чистяков</em:contributor>
                 <em:contributor>Дмитрий Сорин</em:contributor>
@@ -120,7 +132,9 @@
 
         <em:contributor>Алексей Рыбаков</em:contributor>
         <em:contributor>Анатолий Островский</em:contributor>
+        <em:contributor>Владимир Старков</em:contributor>
         <em:contributor>Галина Митричева</em:contributor>
+        <em:contributor>Гуро Бокум</em:contributor>
         <em:contributor>Данил Иванов</em:contributor>
         <em:contributor>Денис Чистяков</em:contributor>
         <em:contributor>Дмитрий Сорин</em:contributor>
@@ -130,7 +144,7 @@
         <em:iconURL>yafd://branding/about/logo-fx-small.png</em:iconURL>
         <em:icon64URL>yafd://branding/about/logo-fx-large.png</em:icon64URL>
         <em:homepageURL>http://visual.yandex.ru</em:homepageURL>
-        <em:updateURL>https://vb-update.yandex.ru/update-ua.xml</em:updateURL>
+        <em:updateURL>https://vb-update.yandex.ru/update.xml</em:updateURL>
 
         <em:targetApplication>
             <Description>

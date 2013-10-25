@@ -4,7 +4,7 @@
         <em:id>vb@yandex.ru</em:id>
         <em:type>2</em:type>
         <em:unpack>true</em:unpack>
-        <em:version>2.5.0</em:version>
+        <em:version>2.7.0</em:version>
 
         <em:localized>
             <Description>
@@ -15,7 +15,9 @@
 
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Владимир Старков</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
+                <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
                 <em:contributor>Денис Чистяков</em:contributor>
                 <em:contributor>Дмитрий Сорин</em:contributor>
@@ -37,8 +39,10 @@
                 <em:contributor>Danil Ivanov</em:contributor>
                 <em:contributor>Denis Chistyakov</em:contributor>
                 <em:contributor>Dmitriy Sorin</em:contributor>
+                <em:contributor>Guro Bokum</em:contributor>
                 <em:contributor>Maxim Breev</em:contributor>
                 <em:contributor>Pavel Gorobtsov</em:contributor>
+                <em:contributor>Vladimir Starkov</em:contributor>
             </Description>
         </em:localized>
 
@@ -51,7 +55,9 @@
 
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Владимир Старков</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
+                <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
                 <em:contributor>Денис Чистяков</em:contributor>
                 <em:contributor>Дмитрий Сорин</em:contributor>
@@ -69,7 +75,9 @@
 
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Владимир Старков</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
+                <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
                 <em:contributor>Денис Чистяков</em:contributor>
                 <em:contributor>Дмитрий Сорин</em:contributor>
@@ -91,8 +99,10 @@
                 <em:contributor>Danil Ivanov</em:contributor>
                 <em:contributor>Denis Chistyakov</em:contributor>
                 <em:contributor>Dmitriy Sorin</em:contributor>
+                <em:contributor>Guro Bokum</em:contributor>
                 <em:contributor>Maxim Breev</em:contributor>
                 <em:contributor>Pavel Gorobtsov</em:contributor>
+                <em:contributor>Vladimir Starkov</em:contributor>
             </Description>
         </em:localized>
 
@@ -105,7 +115,9 @@
 
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Владимир Старков</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
+                <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
                 <em:contributor>Денис Чистяков</em:contributor>
                 <em:contributor>Дмитрий Сорин</em:contributor>
@@ -120,7 +132,9 @@
 
         <em:contributor>Алексей Рыбаков</em:contributor>
         <em:contributor>Анатолий Островский</em:contributor>
+        <em:contributor>Владимир Старков</em:contributor>
         <em:contributor>Галина Митричева</em:contributor>
+        <em:contributor>Гуро Бокум</em:contributor>
         <em:contributor>Данил Иванов</em:contributor>
         <em:contributor>Денис Чистяков</em:contributor>
         <em:contributor>Дмитрий Сорин</em:contributor>

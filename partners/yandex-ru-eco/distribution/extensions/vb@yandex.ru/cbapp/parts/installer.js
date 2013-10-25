@@ -27,7 +27,7 @@ this._application.preferences.set("general.install.time",Math.round(Date.now() /
 
 if (addonManagerInfo.addonVersionChanged && ! addonManagerInfo.isFreshAddonInstall && addonManagerInfo.addonUpgraded)
 {
-this._onAddonUpdate();
+this._onAddonUpdated();
 }
 
 this._application.branding.addListener(PKG_UPD_TOPIC,this);
@@ -66,13 +66,11 @@ const ADDON_INSTALL_EVENTS = {
 onInstalling: 1,
 onInstalled: 1};
 if (aAddon.id == this._application.addonManager.addonId && aEventType in ADDON_DISABLE_EVENTS)
-this._onAddonUninstall();
+this._onAddonDisabling();
+if (aAddon.id == this._application.addonManager.addonId && aEventType === "onUninstalling")
+this._onAddonUninstalling();
 if (aAddon.id == this._application.addonManager.addonId && aEventType === "onOperationCancelled")
-{
-this.setBrowserNewTabUrl();
-this._application.preferences.reset("disabled");
-}
-
+this._onAddonDisablingCancelled();
 if (aAddon.id == "yasearch@yandex.ru" && aEventType in ADDON_INSTALL_EVENTS)
 {
 this._logger.config("Yandex.Bar installed. Disabling its visual bookmarks...");
@@ -104,6 +102,8 @@ break;
 closeTabs: function Installer_closeTabs(url) {
 if (! url)
 return;
+var cropURL = function cropURL(str) str.split(/[?&#]/)[0].replace(/\/$/,"");
+url = cropURL(url);
 misc.getBrowserWindows().forEach(function (chromeWin) {
 var tabBrowser = chromeWin.gBrowser;
 var tabs = tabBrowser && tabBrowser.tabContainer && Array.slice(tabBrowser.tabContainer.childNodes);
@@ -111,7 +111,7 @@ if (! Array.isArray(tabs))
 return;
 tabs.forEach(function (tab) {
 try {
-if (tab.linkedBrowser.currentURI.spec === url)
+if (cropURL(tab.linkedBrowser.currentURI.spec) === url)
 tabBrowser.removeTab(tab);
 }
 catch (e) {
@@ -234,13 +234,13 @@ appStartup.quit(appStartup.eForceQuit | appStartup.eRestart);
 return false;
 }
 
-new sysutils.Timer(function () {
+new sysutils.Timer((function () {
 var selectedEngineName = this._getLocalizedPref("browser.search.selectedEngine",null);
 var defaultEngineName = this._getLocalizedPref("browser.search.defaultenginename",null);
 if ((! selectedEngineName || /^chrome:/.test(selectedEngineName)) && defaultEngineName)
 Preferences.set("browser.search.selectedEngine",defaultEngineName);
 }
-.bind(this), 5 * 1000);
+).bind(this), 5 * 1000);
 return true;
 }
 ,
@@ -268,11 +268,15 @@ hiddenWizard: true,
 License: {
 display: false,
 checked: false,
-text: ""},
+text: "",
+url: branding.brandPackage.resolvePath("/license/fx/license.xhtml")},
 HomePage: {
 display: false,
 checked: false,
-text: ""},
+text: "",
+title: "",
+url: "",
+force: false},
 DefaultSearch: {
 display: false,
 checked: false,
@@ -281,16 +285,18 @@ UsageStat: {
 display: false,
 checked: false,
 multipack: false,
-text: ""}};
-let setupElement;
+text: ""},
+GoodbyePage: {
+url: ""}};
+let productXML;
 try {
-let productXML = branding.brandPackage.getXMLDocument("/about/product.xml");
-setupElement = productXML.querySelector("Product > Setup");
+productXML = branding.brandPackage.getXMLDocument("/about/product.xml");
 }
 catch (e) {
 Cu.reportError(e);
 }
 
+let setupElement = productXML && productXML.querySelector("Product > Setup");
 if (setupElement)
 {
 ["License", "HomePage", "DefaultSearch", "UsageStat"].forEach(function (aElementName) {
@@ -298,6 +304,8 @@ var el = setupElement.querySelector(aElementName);
 if (el)
 {
 for(let [prop, val] in Iterator(data[aElementName])) {
+if (! el.hasAttribute(prop))
+continue;
 let attrValue = el.getAttribute(prop);
 if (typeof val == "boolean")
 attrValue = attrValue == "true";
@@ -312,10 +320,17 @@ data.hiddenWizard = false;
 );
 }
 
-data.License.url = branding.brandPackage.resolvePath("/license/fx/license.xhtml");
-data.HomePage.title = "";
-data.HomePage.url = "";
-data.HomePage.force = false;
+let fxProductXML;
+try {
+fxProductXML = branding.brandPackage.getXMLDocument("/fx/about/product.xml");
+}
+catch (e) {
+
+}
+
+let goodbyePageElement = fxProductXML && fxProductXML.querySelector("Product > GoodbyeUrl");
+if (goodbyePageElement)
+data.GoodbyePage.url = branding.expandBrandTemplatesEscape(goodbyePageElement.textContent);
 try {
 let configXML = branding.brandPackage.getXMLDocument("/browser/browserconf.xml");
 let configHPElement = configXML.querySelector("Browser > HomePage");
@@ -452,11 +467,11 @@ Preferences.set(vbPrefName,setupData.UsageStat.checked);
 
 }
 ,
-_onAddonUpdate: function Installer__onAddonUpdate() {
+_onAddonUpdated: function Installer__onAddonUpdated() {
 
 }
 ,
-_onAddonUninstall: function Installer__onAddonUninstall() {
+_onAddonDisabling: function Installer__onAddonDisabling() {
 const ftabAddress = this._application.protocolSupport.url;
 const BROWSER_HOMEPAGE_PREFNAME = "browser.startup.homepage";
 this.closeTabs(ftabAddress);
@@ -467,6 +482,26 @@ Preferences.reset("extensions.tabmix.newtab.url");
 this._application.preferences.set("disabled",true);
 if (Preferences.get(BROWSER_HOMEPAGE_PREFNAME) === ftabAddress)
 Preferences.reset(BROWSER_HOMEPAGE_PREFNAME);
+}
+,
+_onAddonDisablingCancelled: function Installer__onAddonDisablingCancelled() {
+this.setBrowserNewTabUrl();
+this._application.preferences.reset("disabled");
+var goodbyeURL = this.setupData.GoodbyePage.url;
+if (goodbyeURL)
+this.closeTabs(goodbyeURL);
+}
+,
+_onAddonUninstalling: function Installer__onAddonUninstalling() {
+var goodbyeURL = this.setupData.GoodbyePage.url;
+if (goodbyeURL)
+{
+misc.navigateBrowser({
+url: goodbyeURL,
+target: "new tab",
+loadInBackground: true});
+}
+
 }
 ,
 _cachedBrandTplMap: null,
@@ -851,11 +886,11 @@ this._logger.debug("Yandex.Bar extension data was successfully migrated!");
 }
 ,
 _showLicenseWindow: function Installer__showLicenseWindow() {
-var windowURL = "chrome://" + barApp.name + "/content/dialogs/license/wizard.xul";
 var args = [sysutils.platformInfo.os.name, this.setupData];
 args.wrappedJSObject = args;
+var windowURL = "chrome://" + barApp.name + "/content/dialogs/license/wizard.xul";
 try {
-let setupWin = Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher).openWindow(null,windowURL,null,"centerscreen,modal,resizable",args);
+let setupWin = Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher).openWindow(null,windowURL,null,"centerscreen,modal,popup=yes",args);
 let accepted = this.setupData.License.checked;
 if (accepted)
 this._logLicenseWindowStatistics();

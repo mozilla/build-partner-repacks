@@ -113,6 +113,14 @@ database.execQuery("CREATE TABLE IF NOT EXISTS unsafe_domains (domain TEXT UNIQU
 5: function schema_fastdial_5(database) {
 database.execQuery("ALTER TABLE cloud_data ADD COLUMN user_supplied INTEGER");
 }
+,
+6: function schema_fastdial_6(database) {
+database.execQuery("ALTER TABLE thumbs_shown ADD COLUMN syncInstance TEXT");
+database.execQuery("ALTER TABLE thumbs_shown ADD COLUMN syncId TEXT");
+database.execQuery("ALTER TABLE thumbs_shown ADD COLUMN syncTimestamp INTEGER");
+database.execQuery("UPDATE thumbs SET backgroundColor = NULL WHERE backgroundColor = ''");
+database.execQuery("UPDATE thumbs SET backgroundColor = NULL, favicon = NULL WHERE favicon LIKE 'http://favicon.yandex.net/favicon/%'");
+}
 },
 usageHistory: {
 1: function schema_usageHistory_1(database) {

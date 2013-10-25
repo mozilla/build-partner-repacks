@@ -329,10 +329,10 @@ this._windowTitle = null;
 }
 ,
 notifyListeners: function WindowListener_notifyListeners(aTopic, aData) {
-var WindowListener_notifyListeners_timed = function WindowListener_notifyListeners_timed() {
+var WindowListener_notifyListeners_timed = (function WindowListener_notifyListeners_timed() {
 this._notifyListeners.apply(this,arguments);
 }
-.bind(this,aTopic,aData);
+).bind(this,aTopic,aData);
 var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
 timer.initWithCallback({
 notify: WindowListener_notifyListeners_timed},0,Ci.nsITimer.TYPE_ONE_SHOT);
@@ -351,6 +351,11 @@ listener.observe(null,aTopic,aData);
 }
 catch (e) {
 this._logger.error("Notify listener error: " + e);
+if (e.stack)
+{
+this._logger.debug(e.stack);
+}
+
 }
 
 }

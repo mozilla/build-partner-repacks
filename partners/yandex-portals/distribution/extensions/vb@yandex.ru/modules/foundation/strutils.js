@@ -2,7 +2,7 @@
 EXPORTED_SYMBOLS.push("strutils");
 const strutils = {
 insertBreaksInString: function StrUtils_insertBreaksInString(s) {
-return ("" + s || "").replace(/^\s+/,"").replace(/\s+$/,"").replace(/([\/\-&\?\.])/g,"$1").replace(/(\S{5})(\S{5})/g,"$1$2");
+return ("" + s || "").replace(/^\s+/,"").replace(/\s+$/,"").replace(/([\/\-&\?\.])/g,"$1\u200b").replace(/(\S{5})(\S{5})/g,"$1\u200b$2");
 }
 ,
 normalizeString: function StrUtils_normalizeString(s) {
@@ -163,7 +163,7 @@ _ESCAPE_RE: /([.*+?^=!:${}()|[\]\/\\])/g,
 _STR_LOCALE_DECIMAL_SEPARATOR: 1.1.toLocaleString()[1],
 get _STR_LOCALE_GROUP_SEPARATOR_RE() {
 delete this._STR_LOCALE_GROUP_SEPARATOR_RE;
-var separator = " ";
+var separator = "\u00a0";
 var nmbLocaleStr = Number(1000).toLocaleString();
 if (nmbLocaleStr.length > 4 && nmbLocaleStr[1] != "0")
 separator = nmbLocaleStr[1];

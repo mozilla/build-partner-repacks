@@ -272,11 +272,11 @@ return this._responseData.bodyText || undefined;
 }
 ,
 get contentAsXML() {
-return this._responseData.bodyText && fileutils.xmlDocFromStream(strutils.utf8Converter.convertToInputStream(this._responseData.bodyText),null,null,null,"utf-8") || undefined;
+return this.contentAsText && fileutils.xmlDocFromStream(strutils.utf8Converter.convertToInputStream(this.contentAsText),null,null,null,"utf-8") || undefined;
 }
 ,
 get contentAsJSON() {
-return this._responseData.bodyText && JSON.parse(this._responseData.bodyText) || undefined;
+return this.contentAsText && JSON.parse(this.contentAsText) || undefined;
 }
 ,
 get headers() this._responseData.headers || undefined,

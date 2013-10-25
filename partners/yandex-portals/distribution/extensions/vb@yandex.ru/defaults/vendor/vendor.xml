@@ -1,16 +1,15 @@
-<?xml version='1.0' encoding='UTF-8'?><vendor name="firefox-portals" setup="bar-only">
-    <clid1>1923030</clid1>
-    <clid2>1923031</clid2>
-    <clid3>0</clid3>
-    <clid4>1923032</clid4>
-    <clid5>1923033</clid5>
-    <clid6>1923034</clid6>
-    <clid7>1923035</clid7>
-    <clid8>1923036</clid8>
-    <clid9>1923037</clid9>
-    <clid10>1923038</clid10>
-    <clid11>1923039</clid11>
-    <clid12>1923040</clid12>
-    <clid13>1923041</clid13>
-    <clid14>1923042</clid14>
+<?xml version='1.0' encoding='UTF-8'?><vendor name="yandex-element-ff" setup="bar-only">
+    <clid1>1917055</clid1>
+    <clid2>1917056</clid2>
+    <clid4>1917057</clid4>
+    <clid5>1917058</clid5>
+    <clid6>1917059</clid6>
+    <clid7>1917060</clid7>
+    <clid8>1917061</clid8>
+    <clid9>1917062</clid9>
+    <clid10>1917063</clid10>
+    <clid11>1917064</clid11>
+    <clid12>1917065</clid12>
+    <clid13>1917066</clid13>
+    <clid14>1917067</clid14>
   </vendor>

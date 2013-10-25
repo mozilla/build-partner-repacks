@@ -42,11 +42,11 @@ this._application.barnavig.addDataProvider(dataProvider);
 Services.obs.addObserver(this,WINDOW_DESTROY_EVENT,false);
 Services.obs.addObserver(this,this._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT,false);
 this._initFileSystem();
-this._clearHistoryThumbsTimer = new sysutils.Timer(function () {
+this._clearHistoryThumbsTimer = new sysutils.Timer((function () {
 this._historyThumbs = {
 };
 }
-.bind(this), CLEAR_HISTORY_THUMBS_INTERVAL * 1000, true);
+).bind(this), CLEAR_HISTORY_THUMBS_INTERVAL * 1000, true);
 }
 ,
 finalize: function Fastdial_finalize(doCleanup, callback) {
@@ -96,14 +96,9 @@ break;
 }
 ,
 setListenersForWindow: function Fastdial_setListenersForWindow(outerWindowId, command, callback) {
-if (arguments.length === 1)
-{
-this._registeredListeners[outerWindowId] = {
+this._registeredListeners[outerWindowId] = this._registeredListeners[outerWindowId] || {
 };
-this._startDecision[outerWindowId] = Date.now();
-return;
-}
-
+this._startDecision[outerWindowId] = this._startDecision[outerWindowId] || Date.now();
 var listeners = this._registeredListeners[outerWindowId];
 if (! listeners[command])
 return listeners[command] = [callback];
@@ -160,8 +155,19 @@ data[lastThumbIndex] = {
 pinned: true};
 }
 
-this._logger.trace("SendRequest @" + Date.now() + " " + JSON.stringify(data,null,"\t"));
-listeners[command].forEach(function (callback) callback(data));
+this._logger.trace("SendRequest [" + command + "]: outer_window_id " + outerWindowId + ": " + JSON.stringify(data));
+listeners[command].forEach(function (callback) {
+if (! (outerWindowId in this._registeredListeners))
+return;
+try {
+callback(data);
+}
+catch (ex) {
+
+}
+
+}
+,this);
 }
 ,
 openExternalWindow: function Fastdial_openExternalWindow(externalWindowName, window) {
@@ -192,7 +198,7 @@ organizer.focus();
 
 }
 ,
-requestInit: function Fastdial_requestInit(outerWindowId) {
+requestInit: function Fastdial_requestInit(outerWindowId, ignoreBookmarks) {
 var self = this;
 var backboneXY = this._application.layout.getThumbsNumXY();
 var maxThumbIndex = backboneXY[0] * backboneXY[1];
@@ -265,7 +271,14 @@ alt: brandingLogo.getAttribute("alt"),
 title: brandingLogo.getAttribute("title")},
 search: {
 url: searchURL,
-placeholder: brandingSearch.getAttribute("placeholder")}};
+placeholder: brandingSearch.getAttribute("placeholder"),
+example: this._application.searchExample.current,
+navigateTitle: brandingSearch.getAttribute("navigate_title") || ""}};
+requestData.sync = {
+status: this._application.sync.state,
+login: this._application.sync.login,
+advert: this._application.sync.showAdvert,
+offer: this._application.sync.showOffer};
 if (outerWindowId !== undefined)
 {
 this.sendRequestToTab(outerWindowId,"init",requestData);
@@ -275,7 +288,7 @@ this.sendRequestToTab(outerWindowId,"init",requestData);
 this.sendRequest("init",requestData);
 }
 
-if (showBookmarks)
+if (showBookmarks && ! ignoreBookmarks)
 {
 this._application.bookmarks.requestBranch("",function (bookmarks) {
 if (outerWindowId !== undefined)
@@ -305,7 +318,7 @@ this._logTabShowFlag = true;
 
 }
 ,
-getSettings: function Fastdial_getSettings() {
+requestSettings: function Fastdial_requestSettings(callback) {
 var maxLayoutNum = this._application.layout.getMaxThumbLayout();
 var productInfo = this._application.branding.productInfo;
 var bgImagesDir = this._application.core.rootDir;
@@ -335,7 +348,7 @@ bgImages.push(path);
 var layouts = this._application.layout.getPossibleLayouts();
 var selectedBgImage = bgImagesDir.clone();
 selectedBgImage.append(this._application.preferences.get("ftabs.backgroundImage"));
-return {
+callback({
 bgImages: bgImages,
 userImage: userImage,
 showBookmarks: this._application.preferences.get("ftabs.showBookmarks"),
@@ -351,7 +364,7 @@ licenseURL: productInfo.LicenseURL.fx,
 copyright: productInfo.Copyright.fx,
 rev: this._application.addonManager.addonVersion,
 build: this._application.core.CONFIG.BUILD.REVISION,
-buildDate: Math.round((new Date(this._application.core.CONFIG.BUILD.DATE)).getTime() / 1000)};
+buildDate: Math.round((new Date(this._application.core.CONFIG.BUILD.DATE)).getTime() / 1000)});
 }
 ,
 getLocalizedString: function Fastdial_getLocalizedString(key) {
@@ -365,14 +378,21 @@ return this.expandBrandingURL(node.getAttribute("value"));
 }
 ,
 applySettings: function Fastdial_applySettings(layout, showBookmarks, sendStat, showSearchForm, bgImage) {
-if (this._applyingThumbsSettings)
-return this._applyThumbsSettingsQueue.push(["applySettings", arguments]);
-this._applyingThumbsSettings = true;
 var self = this;
 var maxNum = this._application.layout.getMaxThumbLayout();
 var oldThumbsNum = this._application.layout.getThumbsNum();
 var layoutXY = this._application.layout.getThumbsXYOfThumbsNum(layout);
 var pickupNeeded = this._application.layout.layoutX !== layoutXY[0] || this._application.layout.layoutY !== layoutXY[1];
+var ignoreBookmarks;
+if (! this._application.preferences.get("ftabs.showBookmarks") && showBookmarks)
+{
+ignoreBookmarks = false;
+}
+ else
+{
+ignoreBookmarks = true;
+}
+
 this._application.preferences.set("ftabs.showBookmarks",showBookmarks);
 this._application.preferences.set("stat.usage.send",sendStat);
 var bgImageFile = this._application.core.rootDir;
@@ -405,45 +425,16 @@ this._logger.error("Wrong background image path needs to be set: " + bgImage);
 
 }
 
-var onApplyReady = function () {
-this._applyingThumbsSettings = false;
-if (this._applyThumbsSettingsQueue.length)
-{
-let args = this._applyThumbsSettingsQueue.shift();
-this[args[0]].apply(this,args[1]);
-}
-
-}
-.bind(this);
 var searchStatusOldValue = this._application.preferences.get("ftabs.searchStatus");
 var onStatusGot = function Fastdial_saveSettings_onStatusGot(status) {
 self._application.preferences.set("ftabs.searchStatus",status);
-if (! pickupNeeded)
-{
-self.requestInit();
-return onApplyReady();
-}
-
 if (pickupNeeded)
 {
 self._application.layout.layoutX = layoutXY[0];
 self._application.layout.layoutY = layoutXY[1];
-let newThumbsNum = self._application.layout.getThumbsNum();
-if (newThumbsNum > oldThumbsNum)
-{
-self.requestInit();
-return self._application.thumbs.pickupThumbs(null,onApplyReady);
 }
 
-self._application.thumbs.cutShownThumbsTail(function (storageError) {
-if (storageError)
-throw new Error(storageError);
-onApplyReady();
-}
-);
-self.requestInit();
-}
-
+self.requestInit(undefined,ignoreBookmarks);
 }
 ;
 if (showSearchForm)
@@ -461,59 +452,6 @@ onStatusGot(searchStatusNewValue);
 );
 }
 
-}
-,
-saveThumbs: function Fastdial_saveThumbs(thumbs, startPickup) {
-thumbs = sysutils.copyObj(thumbs,true);
-for(let [index, thumbData] in Iterator(thumbs)) {
-if (! thumbData.url && ! thumbData.pinned)
-{
-delete thumbs[index];
-}
-
-}
-
-if (this._applyingThumbsSettings)
-return this._applyThumbsSettingsQueue.push(["saveThumbs", [thumbs, startPickup]]);
-this._applyingThumbsSettings = true;
-var self = this;
-var thumbsNum = this._application.layout.layoutX * this._application.layout.layoutY;
-if (this._application.preferences.get("ftabs.emptyLastThumb",false))
-{
-if (! thumbs[thumbsNum - 1] || thumbs[thumbsNum - 1].url)
-{
-this._application.preferences.set("ftabs.emptyLastThumb",false);
-}
- else
-{
-thumbs[thumbsNum - 1] = this._application.thumbs.structure.get(thumbsNum - 1);
-}
-
-}
-
-var onThumbsSaved = function () {
-this._applyingThumbsSettings = false;
-if (this._applyThumbsSettingsQueue.length)
-{
-let args = this._applyThumbsSettingsQueue.shift();
-this[args[0]].apply(this,args[1]);
-}
-
-}
-.bind(this);
-this._application.thumbs.save(thumbs,startPickup,function Fastdial_saveThumbs_onSaved(fakeThumbsFilled) {
-self.sendRequest("thumbChanged",self._application.thumbs.fullStructure);
-if (startPickup && ! fakeThumbsFilled)
-{
-self._application.thumbs.pickupThumbs(null,onThumbsSaved);
-}
- else
-{
-onThumbsSaved();
-}
-
-}
-);
 }
 ,
 requestRecentlyClosedTabs: function Fastdial_requestRecentlyClosedTabs(callback) {
@@ -593,7 +531,7 @@ return SESSION_STORE_SVC.undoCloseTab(aWindow,id);
 
 }
 ,
-uploadUserBackground: function Fastdial_uploadUserBackground(aWindow) {
+uploadUserBackground: function Fastdial_uploadUserBackground(aWindow, callback) {
 var filepickerBundle = new this._application.appStrings.StringBundle("chrome://global/locale/filepicker.properties");
 var filterTitle = filepickerBundle.tryGet("imageTitle");
 if (filterTitle.length === 0)
@@ -606,29 +544,33 @@ filePicker.init(aWindow,null,filePicker.modeOpen);
 filePicker.appendFilter(filterTitle,"*.jpg; *.jpeg; *.gif; *.png");
 var modalDialog = filePicker.show();
 if (modalDialog !== filePicker.returnOK)
-return "";
+return callback("");
 bgImagesURLHelper.randomize();
 var bgImagesDir = this._application.core.rootDir;
 bgImagesDir.append("backgroundImages");
 var resultFile = bgImagesDir.clone();
 resultFile.append(USER_FILE_LEAFNAME);
 fileutils.removeFileSafe(resultFile);
+var output = "";
 try {
 filePicker.file.copyTo(bgImagesDir,USER_FILE_LEAFNAME);
-return bgImagesURLHelper.getURLForFile(resultFile);
+output = bgImagesURLHelper.getURLForFile(resultFile);
 }
 catch (e) {
 this._logger.error("Could not copy user image: " + strutils.formatError(e));
 this._logger.debug(e.stack);
 }
 
-return "";
+callback(output);
 }
 ,
 requestLastVisited: function Fastdial_requestLastVisited(offset, callback) {
 var self = this;
 async.parallel({
-blacklist: self._application.thumbs.requestLocalBlacklist.bind(self._application.thumbs),
+blacklist: function (callback) {
+self._application.blacklist.getAll(callback);
+}
+,
 tabs: function Fastdial_requestLastVisited_tabs(callback) {
 var urls = [];
 misc.getBrowserWindows().forEach(function (chromeWin) {
@@ -640,7 +582,7 @@ tabs.forEach(function (tab) {
 try {
 let browser = tabBrowser.getBrowserForTab(tab);
 let currentURI = browser.currentURI.spec;
-if (/^(chrome|about|yafd):/.test(currentURI))
+if (/^(chrome|about|yafd|bar):/.test(currentURI))
 return;
 urls.push({
 url: currentURI,
@@ -738,7 +680,7 @@ continue;
 (function (pageData, pageURI) {
 if (self._historyThumbs[pageData.url])
 return sysutils.copyProperties(self._historyThumbs[pageData.url],pageData);
-pageData.isIndexPage = pageURI.path === "/";
+pageData.isIndexPage = self.isIndexPage(pageURI);
 self._historyThumbs[pageData.url] = pageData;
 self._application.thumbs.searchUrlInLocalDB(pageData.url,function (storageError, rowsData) {
 if (storageError)
@@ -856,6 +798,19 @@ async.nextTick(function Fastdial_thumbOpened_openSpeculativeConnect() {
 this.openSpeculativeConnect(url);
 }
 ,this);
+}
+,
+isIndexPage: function Fastdial_isIndexPage(uri) {
+try {
+if (! this._application.isYandexHost(uri.asciiHost))
+return uri.path === "/";
+uri.QueryInterface(Ci.nsIURL);
+return uri.filePath === "/";
+}
+catch (ex) {
+return true;
+}
+
 }
 ,
 openSpeculativeConnect: function Fastdial_openSpeculativeConnect(url) {
@@ -1066,22 +1021,48 @@ _dataContainer: null},
 requestTitleForURL: function Fastdial_requestTitleForURL(url, callback) {
 var self = this;
 var uri = netutils.newURI(url);
-var historyTitle = PlacesUtils.history.getPageTitle(uri);
-if (historyTitle)
-return callback(null,historyTitle);
+var seriesTasks = {
+};
+var titleFound;
+seriesTasks.history = function Fastdial_requestTitleForURL_historySeriesTask(callback) {
 try {
-uri.QueryInterface(Ci.nsIURL);
+PlacesUtils.asyncHistory.getPlacesInfo(uri,{
+handleResult: function handleResult(aPlaceInfo) {
+titleFound = aPlaceInfo.title;
+if (titleFound)
+return callback("stop");
+callback();
+}
+,
+handleError: function handleError(aResultCode, aPlaceInfo) {
+if (aResultCode !== Cr.NS_ERROR_NOT_AVAILABLE)
+self._logger.error("Error in asyncHistory.getPlacesInfo (" + JSON.stringify(uri) + "): " + aResultCode);
+callback();
+}
+});
 }
 catch (ex) {
-this._logger.error("URI is not URL: " + uri.spec);
-return callback("Not URL");
+titleFound = PlacesUtils.history.getPageTitle(uri);
+if (titleFound)
+return callback("stop");
+callback();
 }
 
-if (this._application.isYandexHost(uri.host))
+}
+;
+seriesTasks.request = function Fastdial_requestTitleForURL_requestSeriesTask(callback) {
+if (self._application.isYandexHost(uri.host))
 {
+try {
+uri.QueryInterface(Ci.nsIURL);
 let parsedQuery = netutils.querystring.parse(uri.query);
-parsedQuery.nugt = "vbff-" + this._application.addonManager.addonVersion;
+parsedQuery.nugt = "vbff-" + self._application.addonManager.addonVersion;
 uri.query = netutils.querystring.stringify(parsedQuery);
+}
+catch (ex) {
+self._logger.error("URI is not URL: " + uri.spec);
+}
+
 }
 
 var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
@@ -1149,6 +1130,16 @@ callback(e.type);
 xhr.addEventListener("error",errorHandler,false);
 xhr.addEventListener("abort",errorHandler,false);
 xhr.send();
+}
+;
+async.series(seriesTasks,function Fastdial_requestTitleForURL_onSeriesTasksRun(err, results) {
+if (titleFound)
+return callback(null,titleFound);
+if (results && results.request)
+return callback(null,results.request);
+callback(err);
+}
+);
 }
 ,
 expandBrandingURL: function Fastdial_expandBrandingURL(url) {

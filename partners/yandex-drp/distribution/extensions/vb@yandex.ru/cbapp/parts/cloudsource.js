@@ -22,15 +22,19 @@ this._initDatabase();
 ,
 finalize: function CloudSource_finalize(doCleanup, callback) {
 this.removeAllListeners();
+this._pendingRequests.forEach(function (request) {
+request.abort();
+}
+);
 this._cloudDataDomainsQueue = null;
 this._pagesLoadQueue = null;
 this._manifestLoadQueue = null;
-var dbClosedCallback = function _dbClosedCallback() {
+var dbClosedCallback = (function _dbClosedCallback() {
 this._database = null;
 this._application = null;
 this._logger = null;
 }
-.bind(this);
+).bind(this);
 if (this._database)
 {
 this._database.close(function () {
@@ -48,8 +52,15 @@ observe: function CloudSource_observe(aSubject, aTopic, aData) {
 switch (aTopic) {
 case API_DATA_RECEIVED_EVENT:
 let self = this;
-this.requestExistingTile(aData.domain,function CloudSource_observe_onAPIDataReceived(err, cloudData) {
-if (err || cloudData)
+this._database.execQueryAsync("SELECT domain, logo, backgroundColor FROM cloud_data WHERE domain = :domain AND user_supplied = 1",{
+domain: aData.domain},function (rowsData, storageError) {
+if (storageError)
+{
+let msg = strutils.formatString("DB error while selecting local cloud data: %1 (code %2)",[storageError.message, storageError.result]);
+throw new Error(msg);
+}
+
+if (rowsData.length)
 return;
 var newData = {
 backgroundImage: aData.logo,
@@ -60,7 +71,7 @@ self._database.execQueryAsync("INSERT INTO cloud_data (domain, logo, backgroundC
 domain: aData.domain,
 logo: aData.logo,
 color: aData.color});
-Services.obs.notifyObservers(this,self._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT,JSON.stringify(newData));
+Services.obs.notifyObservers(self,self._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT,JSON.stringify(newData));
 }
 );
 break;
@@ -106,9 +117,7 @@ return;
 this._pagesLoadQueue[uri.spec] = 1;
 var self = this;
 uri = uri.clone();
-var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
-xhr.mozBackgroundRequest = true;
-xhr.QueryInterface(Ci.nsIDOMEventTarget);
+var xhr = this._createXHR();
 try {
 uri.QueryInterface(Ci.nsIURL);
 }
@@ -164,9 +173,7 @@ if (this._manifestLoadQueue[url])
 return;
 this._manifestLoadQueue[url] = 1;
 var self = this;
-var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
-xhr.mozBackgroundRequest = true;
-xhr.QueryInterface(Ci.nsIDOMEventTarget);
+var xhr = this._createXHR();
 xhr.open("GET",url,true);
 xhr.responseType = "json";
 var timer = new sysutils.Timer(function () {
@@ -230,10 +237,8 @@ if (this._cloudDataDomainsQueue[uri.asciiHost])
 return;
 this._cloudDataDomainsQueue[uri.asciiHost] = 1;
 var self = this;
-var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
-xhr.mozBackgroundRequest = true;
-xhr.QueryInterface(Ci.nsIDOMEventTarget);
 var cloudURL = CLOUD_API_URL + encodeURIComponent(uri.asciiHost) + "&brandID=" + this._application.branding.productInfo.BrandID + "&lang=" + this._application.locale.language;
+var xhr = this._createXHR();
 xhr.open("GET",cloudURL,true);
 xhr.responseType = "json";
 var timer = new sysutils.Timer(function () {
@@ -262,6 +267,22 @@ xhr.addEventListener("abort",errorHandler,false);
 xhr.send();
 }
 ,
+_createXHR: function CloudSource__createXHR() {
+var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+xhr.mozBackgroundRequest = true;
+xhr.QueryInterface(Ci.nsIDOMEventTarget);
+var dropFromQueue = (function () {
+var pos = this._pendingRequests.indexOf(xhr);
+this._pendingRequests.splice(pos,1);
+}
+).bind(this);
+xhr.addEventListener("load",dropFromQueue,false);
+xhr.addEventListener("error",dropFromQueue,false);
+xhr.addEventListener("abort",dropFromQueue,false);
+this._pendingRequests.push(xhr);
+return xhr;
+}
+,
 _initDatabase: function CloudSource__initDatabase() {
 var dbFile = this._application.core.rootDir;
 dbFile.append(DB_FILENAME);
@@ -271,6 +292,7 @@ this._database = new Database(dbFile);
 _database: null,
 _application: null,
 _logger: null,
+_pendingRequests: [],
 _cloudDataDomainsQueue: {
 },
 _pagesLoadQueue: {

@@ -142,6 +142,9 @@ throw new CustomErrors.EArgRange("url", "URL", url);
 url = uri.spec;
 var postData = "postData" in aNavigateData ? aNavigateData.postData : null;
 var referrer = "referrer" in aNavigateData ? aNavigateData.referrer : null;
+var loadInBackground = "loadInBackground" in aNavigateData ? aNavigateData.loadInBackground : false;
+if (typeof loadInBackground !== "boolean")
+throw new CustomErrors.EArgRange("loadInBackground", "Boolean", loadInBackground);
 if (typeof referrer == "string")
 {
 try {
@@ -158,7 +161,7 @@ if (! sourceWindow)
 return this.openNewBrowser(url,referrer,postData);
 switch (aNavigateData.target) {
 case "new tab":
-sourceWindow.gBrowser.loadOneTab(url,referrer,null,postData,false);
+sourceWindow.gBrowser.loadOneTab(url,referrer,null,postData,loadInBackground);
 break;
 case "new window":
 sourceWindow.openNewWindowWith(url,null,postData,false,referrer);
@@ -227,10 +230,14 @@ return [trueList, falseList];
 get CryptoHash() {
 var CryptoHash = {
 getFromString: function CryptoHash_getFromString(aString, aAlgorithm) {
+return this._binaryToHex(this.getBinaryFromString(aString,aAlgorithm));
+}
+,
+getBinaryFromString: function CryptoHash_getBinaryFromString(aString, aAlgorithm) {
 var hash = this._createHash(aAlgorithm);
 var stream = strutils.utf8Converter.convertToInputStream(aString);
 this._updateHashFromStream(hash,stream);
-return this._binaryToHex(hash.finish(false));
+return hash.finish(false);
 }
 ,
 _createHash: function CryptoHash__createHash(aAlgorithm) {

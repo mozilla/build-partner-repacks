@@ -565,7 +565,9 @@ file: "migration.js"}, {
 name: "autoinstaller",
 file: "autoinst.js"}, {
 name: "slices",
-file: "slices.js"}],
+file: "slices.js"}, {
+name: "anonymousStatistic",
+file: "anonymousStatistic.js"}],
 _PREV_BUILTIN_WIDS: ["http://bar.yandex.ru/packages/yandexbar#logo", "http://bar.yandex.ru/packages/yandexbar#search", "http://bar.yandex.ru/packages/yandexbar#cy", "http://bar.yandex.ru/packages/yandexbar#spam", "http://bar.yandex.ru/packages/yandexbar#opinions", "http://bar.yandex.ru/packages/yandexbar#spellchecker", "http://bar.yandex.ru/packages/yandexbar#translator", "http://bar.yandex.ru/packages/yandexbar#pagetranslator", "http://bar.yandex.ru/packages/yandexbar#login", "http://bar.yandex.ru/packages/yandexbar#mail", "http://bar.yandex.ru/packages/yandexbar#fotki", "http://bar.yandex.ru/packages/yandexbar#yaru", "http://bar.yandex.ru/packages/yandexbar#moikrug", "http://bar.yandex.ru/packages/yandexbar#lenta", "http://bar.yandex.ru/packages/yandexbar#zakladki", "http://bar.yandex.ru/packages/yandexbar#widget-news", "http://bar.yandex.ru/packages/yandexbar#settings"],
 get _blackListFile() {
 var blFile = this.directories.appRootDir;

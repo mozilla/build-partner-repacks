@@ -1,7 +1,8 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<RDF xmlns:em='http://www.mozilla.org/2004/em-rdf#' xmlns='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+<?xml version="1.0" encoding="utf-8" ?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
-  <Description about='urn:mozilla:install-manifest'>
+  <Description about="urn:mozilla:install-manifest">
 
     <em:localized>
         <Description>
@@ -70,7 +71,7 @@
     <em:name>Yandex Elements</em:name>
     <em:type>2</em:type>
     <em:unpack>true</em:unpack>
-    <em:version>7.7.1</em:version>
+    <em:version>7.9</em:version>
     <em:description>Quick access to all Yandex features</em:description>
     <em:creator>Yandex</em:creator>
     <em:contributor>Aleksey Rybakov</em:contributor>
@@ -94,14 +95,14 @@
     <em:aboutURL>chrome://yasearch/content/preferences/preferences.xul#about</em:aboutURL>
     <em:optionsURL>chrome://yasearch/content/preferences/preferences.xul</em:optionsURL>
 
-    <em:homepageURL>http://bar.yandex.ua/</em:homepageURL>
-    <em:updateURL>https://ye-update.yandex.ru/update-fx-ua.xml</em:updateURL>
+    <em:homepageURL>http://element.yandex.ru</em:homepageURL>
+    <em:updateURL>https://ye-update.yandex.ru/update-fx.xml</em:updateURL>
 
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>10.0</em:minVersion>
-        <em:maxVersion>23.*</em:maxVersion>
+        <em:maxVersion>24.*</em:maxVersion>
       </Description>
     </em:targetApplication>
 

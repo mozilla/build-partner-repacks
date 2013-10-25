@@ -17,6 +17,7 @@ application.core.Lib.sysutils.copyProperties(application.core.Lib,GLOBAL);
 }
 ,
 finalize: function searchSuggest_finalize() {
+searchEngines.finalize();
 this._application = null;
 this._logger = null;
 }
@@ -26,7 +27,7 @@ var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.ns
 request.mozBackgroundRequest = true;
 request.open("GET",this._makeURLForQuery(queryString),true);
 request.setRequestHeader("Cache-Control","no-cache");
-var listenerCallback = function listenerCallback(data) callback(data || [queryString, []]);
+var listenerCallback = function listenerCallback(data) callback(data || JSON.stringify([queryString, []]));
 var timer = new this._application.core.Lib.sysutils.Timer(function abortOnTimeout() request.abort(), this.SUGGEST_TIMEOUT);
 var listener = new searchRequestListener(request, timer, listenerCallback);
 if (PrivateBrowsingUtils && request.channel instanceof Ci.nsIPrivateBrowsingChannel)
@@ -99,6 +100,7 @@ get isFormVisible() {
 return [0, 2].indexOf(this._application.preferences.get("ftabs.searchStatus")) !== - 1;
 }
 ,
+get alternativeEngines() searchEngines.list,
 _makeURLForQuery: function searchSuggest__makeURLForQuery(queryString) {
 return this._application.branding.expandBrandTemplatesEscape(this._brandingSuggestURL,{
 "searchTerms": queryString});
@@ -142,47 +144,48 @@ this._request.removeEventListener("load",this,false);
 handleEvent: function searchRequestListener_handleEvent(event) {
 this._removeEventListeners();
 this._timer.cancel();
-var data;
-switch (event.type) {
-case "load":
-{
-let text = this._request.responseText;
-if (/^suggest\.apply\(/.test(text))
-{
-let stringForEval = "output = []; " + "suggest = {apply: function() output = Array.slice(arguments, 0, 2)}; " + text + "; output;";
-let sandbox = new Cu.Sandbox("about:blank");
-data = Cu.evalInSandbox(stringForEval,sandbox);
-}
- else
-{
-try {
-data = JSON.parse(text);
-}
-catch (e) {
-
-}
-
-}
-
-if (data && Array.isArray(data[1]))
-{
-data[1].forEach(function (el) {
-if (Array.isArray(el) && el[0] === "nav" && el[3])
-el[3] = el[3].replace(/&amp;/g,"&");
-}
-);
-}
-
-break;
-}
-
-case "error":
-
-case "abort":
-break;
-}
-
+var data = event.type === "load" ? this._request.responseText : "";
 this._callback(data);
 this._finalize();
 }
 };
+const searchEngines = {
+finalize: function searchEngines_finalize() {
+if (this._browserEnginesObserverAdded)
+Services.obs.removeObserver(this,"browser-search-engine-modified");
+}
+,
+get list() {
+if (! this._cachedList)
+this._cachedList = this._createEnginesList();
+return [].concat(this._cachedList);
+}
+,
+observe: function searchEngines_observe(subject, topic, data) {
+if (topic === "browser-search-engine-modified")
+this._cachedList = null;
+}
+,
+_createEnginesList: function searchEngines__createEnginesList() {
+var getEngineSubmissionURL = function getEngineSubmissionURL(engine) {
+var engineSubmission = engine.getSubmission("NevermindQueryString","text/html");
+return engineSubmission && engineSubmission.uri.spec && engineSubmission.uri.spec.replace("NevermindQueryString","{searchTerms}") || null;
+}
+;
+if (! this._browserEnginesObserverAdded)
+{
+Services.obs.addObserver(this,"browser-search-engine-modified",false);
+this._browserEnginesObserverAdded = true;
+}
+
+return Services.search.getVisibleEngines({
+}).map(function (engine) {
+return {
+title: engine.name,
+url: getEngineSubmissionURL(engine)};
+}
+).filter(function (engine) engine.url && ! /^https?:\/\/yandex\.[a-z.]+\/yandsearch/.test(engine.url));
+}
+,
+_browserEnginesObserverAdded: false,
+_cachedList: null};

@@ -20,7 +20,7 @@ var tasksTotalNum = tasksKeys.length;
 (function processTasks() {
 if (! tasksKeys.length || concurrency && concurrency <= tasksBeingProcessed)
 return;
-var taskIndex = tasksKeys.pop() || tasksKeys.length;
+var taskIndex = tasksKeys.shift() || tasks.length - tasksKeys.length - 1;
 tasksBeingProcessed += 1;
 tasks[taskIndex](function (err, data) {
 tasksBeingProcessed -= 1;

@@ -72,12 +72,12 @@ throw new Error("AddonManager: can't get addon id from install.rdf");
 }
 ,
 disableAddonByID: function AM_disableAddonByID(aAddonId, aCallback) {
-this.gre_AddonManager.getAddonByID(aAddonId,function AM_disableAddonByID_callback(aAddon) {
+this.gre_AddonManager.getAddonByID(aAddonId,(function AM_disableAddonByID_callback(aAddon) {
 if (aAddon)
 aAddon.userDisabled = true;
 this._applyCallback(aCallback);
 }
-.bind(this));
+).bind(this));
 }
 ,
 uninstallAddonsByIDs: function AM_uninstallAddonsByIDs(aAddonIds, aRestartBrowser, aCallback) {
@@ -99,7 +99,7 @@ catch (e) {
 
 var trash = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("TmpD",Ci.nsIFile);
 trash.append("trash");
-trash.createUnique(Ci.nsIFile.DIRECTORY_TYPE,this.PERMS_DIRECTORY);
+trash.createUnique(Ci.nsIFile.DIRECTORY_TYPE,parseInt("0755",8));
 try {
 addonDir.moveTo(trash,addonDir.leafName);
 }
@@ -118,7 +118,7 @@ catch (e) {
 );
 }
 ;
-var onUninstall = function onUninstall(addons, restart) {
+var onUninstall = (function onUninstall(addons, restart) {
 removeAddonsDirs();
 this._applyCallback(aCallback);
 if (! ! aRestartBrowser && (restart || addons && addons.length))
@@ -133,7 +133,7 @@ Cc["@mozilla.org/toolkit/app-startup;1"].getService(nsIAppStartup).quit(nsIAppSt
 }
 
 }
-.bind(this);
+).bind(this);
 var addonsUninstallCallback = false;
 try {
 AddonManager.getAddonsByIDs(aAddonIds,function (addons) {

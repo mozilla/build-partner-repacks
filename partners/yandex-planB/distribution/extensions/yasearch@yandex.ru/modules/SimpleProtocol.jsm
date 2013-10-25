@@ -175,7 +175,7 @@ Cu.reportError(this._readableName + " _findChannel: " + e + ". Spec: " + uri.spe
 
 }
 
-throw new Error("None of " + this._dataProviders.length + " prividers could serve the resource: " + uri.spec);
+throw new Error("None of " + this._dataProviders.length + " providers could serve the resource: " + uri.spec);
 }
 };
 var proxyHandlerMaker = function proxyHandlerMaker(obj) {

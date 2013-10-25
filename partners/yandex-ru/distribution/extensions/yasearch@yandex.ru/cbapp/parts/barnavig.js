@@ -4,24 +4,52 @@ const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 if ("nsIPrivateBrowsingChannel" in Ci)
-XPCOMUtils.defineLazyModuleGetter(this,"PrivateBrowsingUtils","resource://gre/modules/PrivateBrowsingUtils.jsm"); else
-this.PrivateBrowsingUtils = null;
-function isWindowPrivate(aWindow) PrivateBrowsingUtils && PrivateBrowsingUtils.isWindowPrivate(aWindow)
-function isTopWindowWebProgress(aWebProgress) {
-try {
-let reqWindow = aWebProgress.DOMWindow;
-return reqWindow === reqWindow.top;
+{
+XPCOMUtils.defineLazyModuleGetter(this,"PrivateBrowsingUtils","resource://gre/modules/PrivateBrowsingUtils.jsm");
+this.isWindowPrivate = function _isWindowPrivate(aWindow) PrivateBrowsingUtils.isWindowPrivate(aWindow);
 }
-catch (ex) {
-
+ else
+{
+this.isWindowPrivate = function _isWindowPrivateEmpty(aWindow) false;
 }
 
-return false;
+XPCOMUtils.defineLazyGetter(this,"stemmer",function () {
+var Stemmer = Cu.import("resource://" + barnavig._application.name + "-mod/Stemmer.jsm",{
+}).Stemmer;
+return new Stemmer("russian");
 }
-
+);
+XPCOMUtils.defineLazyGetter(this,"SimpleHTMLParser",function () {
+return Cu.import("resource://" + barnavig._application.name + "-mod/SimpleHTMLParser.jsm",{
+}).SimpleHTMLParser;
+}
+);
 function isErrorRequest(aReq) ! ! (! aReq || aReq.type == "error" || ! aReq.target || aReq.target.status != 200)
-const IOService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
-const ABOUT_BLANK_URI = IOService.newURI("about:blank",null,null);
+function getWindowListenerForWindow(window) {
+var controllerName = barnavig._application.name + "OverlayController";
+return controllerName in window ? window[controllerName].windowListener : null;
+}
+
+function getTabDataForTab(tab, key) {
+var winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
+return winListener && winListener.getTabData(tab,key) || null;
+}
+
+const ABOUT_BLANK_URI = Services.io.newURI("about:blank",null,null);
+var unfreezeCurrentThread = (function () {
+const TIME_IN = 15;
+const TIME_TOTAL = TIME_IN + 3;
+var start = Date.now();
+return function unfreezeCurrentThread() {
+var t = Date.now();
+if (t - start < TIME_IN)
+return;
+while (Date.now() - start < TIME_TOTAL) Services.tm.currentThread.processNextEvent(false);
+start = Date.now();
+}
+;
+}
+)();
 const barnavig = {
 init: function BarNavig_init(application) {
 this._application = application;
@@ -36,9 +64,11 @@ catch (e) {
 this._logger.debug(e);
 }
 
+Services.obs.addObserver(linkClickListener,"http-on-modify-request",false);
 }
 ,
 finalize: function BarNavig_finalize(aDoCleanup) {
+Services.obs.removeObserver(linkClickListener,"http-on-modify-request");
 this.listenStatEventsEnabled = false;
 this.transmissionEnabled = false;
 if (aDoCleanup)
@@ -46,6 +76,10 @@ this._application.core.Lib.fileutils.removeFileSafe(this._barnavigR1File);
 this._dataProviders = [];
 this._logger = null;
 this._application = null;
+}
+,
+get application() {
+return this._application;
 }
 ,
 get transmissionEnabled() {
@@ -193,7 +227,7 @@ for(let [key, value] in Iterator(aRequestParams)) params.barNavigParams[key] = v
 
 }
 
-this._appendOtherStatParams(params);
+this._appendOtherStatParams(params,false);
 params._callbacks = aCallback ? [].concat(aCallback) : [];
 this._sendRequest(this.BARNAVIG_URL_PATH,params);
 }
@@ -304,8 +338,7 @@ if (! ip)
 url = url.replace(this.BARNAVIG_URL_PATH,this.BARNAVIG_BACKUP_URL_PATH);
 }
 
-var isHttpsURL = /^https:/i.test(aParams.barNavigParams.url || "");
-url = (isHttpsURL ? "https" : "http") + "://" + url;
+url = "https://" + url;
 var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
 request.mozBackgroundRequest = true;
 request.open("POST",url,true);
@@ -348,7 +381,7 @@ catch (e) {
 return [uri, url];
 }
 ,
-_appendOtherStatParams: function BarNavig__appendOtherStatParams(aParams) {
+_appendOtherStatParams: function BarNavig__appendOtherStatParams(aParams, onPageLoad) {
 if (this.alwaysSendUsageStat === false)
 return;
 var params = aParams.barNavigParams;
@@ -363,7 +396,6 @@ params.dle = downloadData.extension;
 params.dls = downloadData.size;
 }
 
-pageStat.appendTimesData(aParams);
 pageStat.appendYammData(aParams);
 params.hip = DNSInfo.getHIPString(aParams.url) || null;
 params.target = "c";
@@ -397,6 +429,12 @@ let browserUsage = app.browserUsage.readUsageStat();
 for (let i = 0, len = browserUsage.length;i < len;i++) params["k" + (i + 1)] = browserUsage[i];
 }
 
+linkClickListener.appendLinkData(aParams);
+if (! onPageLoad)
+return;
+pageStat.appendTimesData(aParams);
+pageStat.appendCheckSumData(aParams);
+searchPersonalization.appendBarNavigParam(aParams);
 }
 ,
 _makeParamsForNotification: function BarNavig__makeParamsForNotification(aWindowListenerData) {
@@ -431,14 +469,6 @@ this._logger.error("Notify provider error \"onWindowLocationChange\": " + e);
 
 }
 ,this);
-if (! params.barNavigParams)
-return;
-callbacks = callbacks.filter(function (c) ! ! c);
-if (! callbacks.length)
-return;
-this._appendOtherStatParams(params);
-params._callbacks = callbacks.filter(function (c) typeof c == "object" || typeof c == "function");
-this._sendRequest(this.BARNAVIG_URL_PATH,params);
 }
 ,
 onPageLoad: function BarNavig_onPageLoad(aWindowListenerData) {
@@ -469,7 +499,7 @@ if (! /^https?/.test(url))
 return;
 }
 
-this._appendOtherStatParams(params);
+this._appendOtherStatParams(params,true);
 params._callbacks = callbacks.filter(function (c) typeof c == "object" || typeof c == "function");
 this._sendRequest(this.BARNAVIG_URL_PATH,params);
 }
@@ -571,11 +601,11 @@ return this._brandId = this._application.branding.productInfo.BrandID.toString()
 };
 const windowMediatorListener = {
 enable: function WML_enable() {
-this._WW.registerNotification(this);
+Services.ww.registerNotification(this);
 }
 ,
 disable: function WML_disable() {
-this._WW.unregisterNotification(this);
+Services.ww.unregisterNotification(this);
 }
 ,
 observe: function WML_observe(aSubject, aTopic, aData) {
@@ -587,30 +617,135 @@ var win = aEvent.target.defaultView;
 switch (aEvent.type) {
 case "load":
 win.removeEventListener("load",this,false);
-let winListener = this._getWindowListenerForWindow(win);
+let winListener = getWindowListenerForWindow(win);
 if (winListener)
 {
 win.addEventListener("unload",function WML_win_onUnload() {
 win.removeEventListener("unload",WML_win_onUnload,false);
+win.removeEventListener("click",linkClickListener,true);
 winListener.removeListener("WindowLocationChange",windowEventsListener);
 winListener.removeListener("PageLoad",windowEventsListener);
 }
 ,false);
 winListener.addListener("WindowLocationChange",windowEventsListener);
 winListener.addListener("PageLoad",windowEventsListener);
+win.addEventListener("click",linkClickListener,true);
 }
 
 break;
 }
 
 }
-,
-_getWindowListenerForWindow: function WML__getWindowListenerForWindow(aWindow) {
-var controllerName = barnavig._application.name + "OverlayController";
-return controllerName in aWindow ? aWindow[controllerName].windowListener : null;
+};
+const linkClickListener = {
+appendLinkData: function linkClickListener_appendLinkData({browser: tab, uri: uri, barNavigParams: barNavigParams}) {
+if (! (uri && /^https?/.test(uri.scheme)))
+return;
+var winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
+if (! winListener)
+return;
+var tabData = winListener.getTabData(tab,"linkClick");
+if (! tabData)
+return;
+if (tabData.linkText)
+barNavigParams.lt = tabData.linkText;
+winListener.removeTabData(tab,"linkClick");
 }
 ,
-_WW: Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher)};
+handleEvent: function linkClickListener_handleEvent(event) {
+if (! barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false)
+return;
+switch (event.type) {
+case "click":
+this._lastActionText = this._getLinkText(event);
+this._lastActionTimestamp = Date.now();
+break;
+}
+
+}
+,
+observe: function linkClickListener_observe(subject, topic, data) {
+if (! this._lastActionText)
+return;
+if (Date.now() - this._lastActionTimestamp > this.ACTION_LIVE_TIME)
+{
+this._lastActionText = null;
+return;
+}
+
+if (topic !== "http-on-modify-request")
+return;
+try {
+subject.QueryInterface(Ci.nsIHttpChannel);
+if (! (subject.loadFlags & Ci.nsIHttpChannel.LOAD_DOCUMENT_URI))
+return;
+}
+catch (e) {
+
+}
+
+var tabData = this._getTabDataForChannel(subject);
+if (! tabData)
+return;
+tabData.linkText = this._lastActionText;
+this._lastActionText = null;
+}
+,
+ACTION_LIVE_TIME: 1000,
+_lastActionTimestamp: null,
+_lastActionText: null,
+_getLinkText: function linkClickListener__getLinkText(event) {
+var protocol = event.view.location.protocol;
+var target = event.originalTarget;
+if (protocol === "chrome:")
+{
+return target.localName === "menuitem" && target.parentNode && target.parentNode.id === "contentAreaContextMenu" && this._lastActionText || null;
+}
+
+if (protocol !== "http:")
+return null;
+while (target && target.localName !== "a") target = target.parentNode;
+return target && target.textContent.trim().substr(0,500) || null;
+}
+,
+_getTabDataForChannel: function linkClickListener__getTabDataForChannel(channel) {
+var win = this._getDOMWindowForChannel(channel);
+if (! (win && win === win.parent))
+return null;
+return this._getTabDataForDOMWindow(win);
+}
+,
+_getDOMWindowForChannel: function linkClickListener__getDOMWindowForChannel(channel) {
+try {
+return channel.loadGroup.groupObserver.QueryInterface(Ci.nsIWebProgress).DOMWindow;
+}
+catch (e) {
+
+}
+
+return null;
+}
+,
+_getTabDataForDOMWindow: function linkClickListener__getTabDataForDOMWindow(window) {
+var docShellTree = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIWebNavigation).QueryInterface(Ci.nsIDocShellTreeItem);
+if (docShellTree.itemType !== Ci.nsIDocShellTreeItem.typeContent)
+return null;
+try {
+let chromeWindow = docShellTree.rootTreeItem.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow).wrappedJSObject;
+if (! chromeWindow)
+return null;
+let tab = chromeWindow.getBrowser().getBrowserForDocument(window.document);
+if (! tab)
+return null;
+return getTabDataForTab(tab,"linkClick");
+}
+catch (e) {
+
+}
+
+return null;
+}
+};
 const windowEventsListener = {
 observe: function WindowEventsListener_observe(aSubject, aTopic, aData) {
 if (! barnavig.listenStatEventsEnabled)
@@ -670,7 +805,7 @@ try {
 let url = strURL;
 if (! /^https?:\/\//.test(strURL))
 url = "http://" + url;
-host = IOService.newURI(url,null,null).host;
+host = Services.io.newURI(url,null,null).host;
 }
 catch (e) {
 
@@ -810,6 +945,146 @@ break;
 
 }
 ,
+appendCheckSumData: function pageStat_appendCheckSumData(aParams) {
+if (! aParams.browser)
+return;
+var contentDocument = aParams.browser.contentDocument;
+if (! contentDocument)
+return;
+const MAX_DOCUMENT_SIZE = 512 * 1024 - 1;
+try {
+let str = doParse(contentDocument.documentElement,MAX_DOCUMENT_SIZE);
+unfreezeCurrentThread();
+let apiCrypto = barnavig.application.core.Lib.misc.CryptoHash;
+let hash = fnv1a_32(apiCrypto.getBinaryFromString(str,"MD5"));
+unfreezeCurrentThread();
+aParams.barNavigParams.psu = hash;
+}
+catch (e) {
+barnavig.application._logger.error("Can not get hash of the current page.");
+barnavig.application._logger.trace(e.stack);
+}
+
+function parseAttributes(match, p1, offset, string) {
+var result = "";
+var buf = "";
+var i = - 1;
+var dict = Object.create(null);
+var startSym = null;
+var lastKey = null;
+while (p1[++i]) {
+if (p1[i].search(/\s/) > - 1)
+{
+if (! startSym)
+{
+if (buf.length > 0)
+{
+dict[buf] = "";
+buf = "";
+}
+
+if (lastKey)
+{
+dict[lastKey] = "";
+lastKey = null;
+}
+
+continue;
+}
+
+}
+
+if (p1[i] == "=")
+{
+if (! startSym)
+{
+if (buf.length > 0)
+{
+lastKey = buf;
+buf = "";
+continue;
+}
+
+}
+
+}
+
+if (p1[i] == "\\")
+{
+let ch = p1[i];
+if (p1[i + 1] && (p1[i + 1] == "\"" || p1[i] == "'"))
+{
+ch = p1[++i];
+}
+
+buf += ch;
+continue;
+}
+
+if ((p1[i] == "\"" || p1[i] == "'") && ! startSym)
+{
+startSym = p1[i];
+continue;
+}
+
+if (startSym && p1[i] == startSym)
+{
+if (lastKey)
+{
+dict[lastKey] = buf;
+lastKey = null;
+}
+
+buf = "";
+startSym = null;
+continue;
+}
+
+buf += p1[i];
+}
+
+if (lastKey)
+{
+dict[lastKey] = buf;
+lastKey = null;
+}
+
+buf = "";
+startSym = null;
+Object.keys(dict).sort().forEach(function (key) {
+result += key + dict[key];
+}
+);
+return result;
+}
+
+function doParse(node, limit) {
+var htmlSource = node.innerHTML;
+if (limit && limit < htmlSource.length)
+{
+htmlSource = htmlSource.substr(0,limit);
+}
+
+var result = htmlSource.replace(/<script[^>]*>[\s\S]*?<\/script>/gi,"").replace(/<style[^>]*>[\s\S]*?<\/style>/gi,"");
+unfreezeCurrentThread();
+result = result.replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/gi,"").replace(/<(?:a|meta)([^>]*)>/gi,parseAttributes);
+unfreezeCurrentThread();
+result = result.replace(/<\/?[^>]*>/gi,"").replace(/\s|\d/g,"");
+return result;
+}
+
+function fnv1a_32(aString) {
+var hash = 2166136261;
+for (let i = 0;i < aString.length;i++) {
+hash ^= aString.charCodeAt(i);
+hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+}
+
+return hash >>> 0;
+}
+
+}
+,
 _hostQuickRe: /(^|\.)((yandex|ya|moikrug)\.(com(\.tr)?|ru|ua|by|kz)|(google)\.(com|ru)|(mail|rambler)\.ru)$/i,
 _hostYaRe: new RegExp("(^|\\.)(yandex\\.(?:com(\\.tr)?|ru|ua|by|kz)|(ya|moikrug)\\.ru)$", "i"),
 _hostOnlyRe: new RegExp("(^|www\\.)(yandex|ya|moikrug|google|mail|rambler)\\.", "i"),
@@ -867,8 +1142,18 @@ Services.obs.addObserver(this,"final-ui-startup",true);
 }
 ,
 finalize: function DlStat_finalize() {
+try {
+let {Downloads: Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
+if (! ("getList" in Downloads))
+throw new Error("Old 'Downloads' module");
+let that = this;
+Downloads.getList(Downloads.PUBLIC).then(function (list) list.removeView(that));
+}
+catch (e) {
 const DownloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
 DownloadManager.removeListener(this);
+}
+
 this._activeDownloads = Object.create(null);
 this._downloadsData = [];
 this.__httpCacheSession = null;
@@ -905,7 +1190,7 @@ mimes: " application/pdf                           application/msword           
 extensions: " torrent ",
 mimes: " application/x-bittorrent "}},
 _getIdForDownload: function DlStat__getIdForDownload(aDownload) {
-return [aDownload.id, aDownload.startTime, aDownload.source.spec].join("|");
+return [aDownload.source.spec, aDownload.target.spec].join("|");
 }
 ,
 __httpCacheSession: null,
@@ -1010,7 +1295,7 @@ var prePath = downloadURI.prePath;
 var userName = downloadURI.userName;
 if (userName)
 prePath = prePath.split(userName + "@").join("");
-var referrer = downloadData.referrer;
+var referrerURL = downloadData.referrerURL;
 var extensionType;
 var mimeType = aDownload.MIMEInfo && aDownload.MIMEInfo.type || this._getMIMETypeFromRequest(aRequest) || this._getMIMETypeFromCacheEntry(url) || null;
 if (mimeType)
@@ -1042,7 +1327,7 @@ extensionType = extension ? this._getExtensionTypeForExtension(extension) || 8 :
 
 this._downloadsData.push({
 prePath: prePath,
-referrer: referrer,
+referrer: referrerURL,
 size: aDownload.size,
 extension: extensionType});
 }
@@ -1052,11 +1337,77 @@ observe: function DlStat_observe(aSubject, aTopic, aData) {
 switch (aTopic) {
 case "final-ui-startup":
 Services.obs.removeObserver(this,"final-ui-startup",true);
+try {
+let {Downloads: Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
+if (! ("getList" in Downloads))
+throw new Error("Old 'Downloads' module");
+let that = this;
+Downloads.getList(Downloads.PUBLIC).then(function (list) list.addView(that));
+}
+catch (e) {
 const DownloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
 DownloadManager.addListener(this);
+}
+
 break;
 }
 
+}
+,
+_wrapDownloadObject: function DlStat__wrapDownloadObject(download) {
+var sourceURI = barnavig.application.core.Lib.misc.tryCreateFixupURI(download.source.url);
+if (! sourceURI)
+return null;
+var targetURI = barnavig.application.core.Lib.misc.tryCreateFixupURI(download.target.path);
+if (! targetURI)
+return null;
+var referrerURI = barnavig.application.core.Lib.misc.tryCreateFixupURI(download.source.referrer);
+return {
+id: download.source.url + "|" + download.target.path,
+source: sourceURI,
+target: targetURI,
+referrer: referrerURI,
+size: download.currentBytes,
+MIMEInfo: {
+type: download.contentType}};
+}
+,
+_setReferrerForDownload: function DlStat__setReferrerForDownload(download) {
+var downloadId = this._getIdForDownload(download);
+if (downloadId in this._activeDownloads)
+return;
+var referrerURL = download.referrer && download.referrer.spec;
+if (! referrerURL)
+{
+try {
+let win = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
+let ref = win.gBrowser.mCurrentBrowser.currentURI.spec;
+if (/^(http|ftp)s?:\/\//.test(ref))
+referrerURL = ref;
+}
+catch (e) {
+
+}
+
+}
+
+if (referrerURL)
+this._activeDownloads[downloadId] = {
+referrerURL: referrerURL};
+}
+,
+onDownloadAdded: function DlStat_onDownloadAdded(download) {
+var wrappedDownload = this._wrapDownloadObject(download);
+if (wrappedDownload)
+this._setReferrerForDownload(wrappedDownload);
+}
+,
+onDownloadChanged: function DlStat_onDownloadChanged(download) {
+if (! download.succeeded)
+return;
+var wrappedDownload = this._wrapDownloadObject(download);
+if (wrappedDownload)
+this._collectDownloadData(wrappedDownload);
 }
 ,
 onDownloadStateChange: function DlStat_onDownloadStateChange(aState, aDownload) {
@@ -1066,29 +1417,7 @@ const nsIDM = Ci.nsIDownloadManager;
 var state = aDownload.state;
 switch (state) {
 case nsIDM.DOWNLOAD_QUEUED:
-let downloadId = this._getIdForDownload(aDownload);
-if (! (downloadId in this._activeDownloads))
-{
-let referrer = aDownload.referrer && aDownload.referrer.spec;
-if (! referrer)
-{
-try {
-let win = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
-let ref = win.gBrowser.mCurrentBrowser.currentURI.spec;
-if (/^(http|ftp)s?:\/\//.test(ref))
-referrer = ref;
-}
-catch (e) {
-
-}
-
-}
-
-if (referrer)
-this._activeDownloads[downloadId] = {
-referrer: referrer};
-}
-
+this._setReferrerForDownload(aDownload);
 break;
 case nsIDM.DOWNLOAD_BLOCKED_POLICY:
 
@@ -1117,5 +1446,169 @@ onStateChange: function DlStat_onStateChange(aWebProgress, aRequest, aState, aSt
 ,
 onSecurityChange: function DlStat_onSecurityChange(aWebProgress, aRequest, aState, aDownload) {
 
+}
+};
+const searchPersonalization = {
+appendBarNavigParam: function searchPersonalization_appendBarNavigParam(aParams) {
+if (! searchDictionary.version)
+return;
+if (! aParams.browser)
+return;
+var contentDocument = aParams.browser.contentDocument;
+if (! contentDocument)
+return;
+if (! /^http:\/\//.test(contentDocument.location))
+return;
+var documentInnerHTML;
+try {
+documentInnerHTML = contentDocument.documentElement.innerHTML;
+}
+catch (e) {
+barnavig._logger.debug("searchPersonalization.appendBarNavigParam, innerHTML error: " + e);
+}
+
+if (! documentInnerHTML)
+return;
+var statHash = Object.create(null);
+var startTime = Date.now();
+const MAX_PARSE_TIME = 10000;
+var unfreezeWhileParsing = function unfreezeWhileParsing() {
+unfreezeCurrentThread();
+if (Date.now() - startTime < MAX_PARSE_TIME)
+return false;
+htmlParser.cancel();
+return true;
+}
+;
+var contentHandler = {
+startElement: function contentHandler_startElement(tagName, attrs) {
+unfreezeWhileParsing();
+switch (tagName.toLowerCase()) {
+case "script":
+
+case "style":
+this._ignoreText = true;
+break;
+case "body":
+this._ignoreText = false;
+break;
+}
+
+}
+,
+endElement: function contentHandler_endElement(tagName) {
+unfreezeWhileParsing();
+switch (tagName.toLowerCase()) {
+case "script":
+
+case "style":
+if (this._ignoreText)
+this._ignoreText = false;
+break;
+case "body":
+htmlParser.cancel();
+break;
+}
+
+}
+,
+characters: function contentHandler_characters(text) {
+unfreezeWhileParsing();
+if (this._ignoreText)
+return;
+var startPosition = htmlParser.currentPosition;
+text.toLowerCase().replace(/[\u0430-\u044f\u0451\-]{3,}/gm,(function (word, offset) {
+if (unfreezeWhileParsing())
+return;
+var stemmedWord = stemmer.stem(word);
+if (! stemmedWord)
+return;
+if (! (stemmedWord in statHash))
+{
+let indexInDictionary = searchDictionary.getWordPosition(stemmedWord);
+if (indexInDictionary === null)
+return;
+statHash[stemmedWord] = {
+indexInDictionary: indexInDictionary,
+positions: []};
+}
+
+statHash[stemmedWord].positions.push(startPosition + offset);
+}
+).bind(this));
+}
+,
+_ignoreText: true};
+var htmlParser = new SimpleHTMLParser();
+htmlParser.contentHandler = contentHandler;
+htmlParser.tryParseFromString(documentInnerHTML);
+if (htmlParser.canceled)
+return;
+var stat = [v for each (v in statHash)].sort(function (a, b) b.positions.length - a.positions.length);
+unfreezeCurrentThread();
+stat = stat.map((function (v) {
+return [v.indexInDictionary, v.positions.join(this.POSITION_DELIMITER)].join(this.WORD_DELIMITER);
+}
+).bind(this)).join(this.STATISTIC_DELIMITER);
+unfreezeCurrentThread();
+if (! stat.length)
+return;
+stat = searchDictionary.version + this.VERSION_DELIMITER + stat;
+if (stat.length > this.MAX_RESULT_STRING_LENGTH)
+{
+stat = stat.substring(0,this.MAX_RESULT_STRING_LENGTH);
+let lastDelimiterIndex = stat.lastIndexOf(this.STATISTIC_DELIMITER);
+if (lastDelimiterIndex === - 1)
+lastDelimiterIndex = stat.lastIndexOf(this.POSITION_DELIMITER);
+if (lastDelimiterIndex !== - 1)
+stat = stat.substring(0,lastDelimiterIndex);
+}
+
+aParams.barNavigParams.body = stat;
+}
+,
+VERSION_DELIMITER: "/",
+STATISTIC_DELIMITER: ";",
+WORD_DELIMITER: ":",
+POSITION_DELIMITER: ",",
+MAX_RESULT_STRING_LENGTH: 3000};
+const searchDictionary = {
+get version() {
+this._dictionaryHash;
+return this.version;
+}
+,
+getWordPosition: function searchDictionary_getWordPosition(word) {
+var position = this._dictionaryHash[word];
+return position >= 0 ? position : null;
+}
+,
+get _dictionaryHash() {
+delete this._dictionaryHash;
+delete this.version;
+this.version = null;
+var dictionaryHash = Object.create(null);
+var dictionaryFile = barnavig._application.branding.brandPackage.findFile("/search/dictionary.txt");
+if (dictionaryFile)
+{
+let fis = barnavig._application.core.Lib.fileutils.openFile(dictionaryFile);
+let is = Cc["@mozilla.org/intl/converter-input-stream;1"].createInstance(Ci.nsIConverterInputStream);
+is.init(fis,"UTF-8",1024,Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
+is.QueryInterface(Components.interfaces.nsIUnicharLineInputStream);
+let line = {
+};
+is.readLine(line);
+this.version = line.value;
+let cont;
+let wordRaiting = 0;
+do {
+cont = is.readLine(line);
+dictionaryHash[line.value] = wordRaiting;
+wordRaiting++;
+}
+ while (cont);
+}
+
+return this._dictionaryHash = dictionaryHash;
 }
 };

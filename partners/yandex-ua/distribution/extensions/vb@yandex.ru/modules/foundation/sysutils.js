@@ -410,10 +410,10 @@ var expirationTime = aContainerProperties && aContainerProperties.expirationTime
 this._expirationTime = typeof expirationTime == "number" && expirationTime > 0 ? expirationTime : 24 * 60 * 60 * 1000;
 if (this._expirationTime)
 {
-let DataContainer_cleanup = function DataContainer_cleanup() {
+let DataContainer_cleanup = (function DataContainer_cleanup() {
 this._checkExpiredAll();
 }
-.bind(this);
+).bind(this);
 let cleanup = {
 notify: DataContainer_cleanup};
 let timerPeriod = Math.max(parseInt(this._expirationTime / 2,10),10 * 60 * 1000);

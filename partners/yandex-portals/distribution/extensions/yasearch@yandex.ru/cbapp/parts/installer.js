@@ -21,36 +21,29 @@ ObserverService.addObserver(this,"sessionstore-windows-restored",false);
 var addonManagerInfo = barApp.addonManager.info;
 if (addonManagerInfo.addonVersionChanged && ! addonManagerInfo.isFreshAddonInstall && addonManagerInfo.addonUpgraded)
 {
-this._onAddonUpdate();
+this._onAddonUpdated();
 }
 
+AddonManager.addAddonListener(this);
 if (addonManagerInfo.isFreshAddonInstall)
-{
 this._application.preferences.set("general.install.time",Math.round(Date.now() / 1000));
-if (this._application.core.CONFIG.APP.TYPE == "barff" && this.isYandexFirefoxDistribution)
-{
-let threeDays = 3 * 24 * 60 * 60;
-new sysutils.Timer((function () {
-if (! this.anonymousStatistic)
-return;
-var overlayControllerName = this._application.name + "OverlayController";
-misc.getBrowserWindows().forEach(function (browser) {
-var overlayController = browser[overlayControllerName];
-if (overlayController)
-overlayController.askAnonymousStatistic();
-}
-);
-}
-).bind(this), threeDays * 1000);
-}
-
-}
-
 this._application.branding.addListener(PKG_UPD_TOPIC,this);
 }
 ,
 finalize: function Installer_finalize(doCleanup) {
 this._application.branding.removeListener(PKG_UPD_TOPIC,this);
+}
+,
+onAddonEvent: function Installer_onAddonEvent(aEventType, aAddon, aPendingRestart) {
+const ADDON_DISABLE_EVENTS = {
+onUninstalling: 1,
+onDisabling: 1};
+if (aAddon.id == this._application.addonManager.addonId && aEventType in ADDON_DISABLE_EVENTS)
+this._onAddonDisabling();
+if (aAddon.id == this._application.addonManager.addonId && aEventType === "onUninstalling")
+this._onAddonUninstalling();
+if (aAddon.id == this._application.addonManager.addonId && aEventType === "onOperationCancelled")
+this._onAddonDisablingCancelled();
 }
 ,
 observe: function Installer_observe(aSubject, aTopic, aData) {
@@ -64,6 +57,31 @@ this._onBrandPkgUpdated();
 break;
 }
 
+}
+,
+closeTabs: function Installer_closeTabs(url) {
+if (! url)
+return;
+var cropURL = function cropURL(str) str.split(/[?&#]/)[0].replace(/\/$/,"");
+url = cropURL(url);
+misc.getBrowserWindows().forEach(function (chromeWin) {
+var tabBrowser = chromeWin.gBrowser;
+var tabs = tabBrowser && tabBrowser.tabContainer && Array.slice(tabBrowser.tabContainer.childNodes);
+if (! Array.isArray(tabs))
+return;
+tabs.forEach(function (tab) {
+try {
+if (cropURL(tab.linkedBrowser.currentURI.spec) === url)
+tabBrowser.removeTab(tab);
+}
+catch (e) {
+
+}
+
+}
+);
+}
+);
 }
 ,
 _onBrandPkgUpdated: function Installer__onBrandPkgUpdated() {
@@ -105,7 +123,7 @@ if (! Preferences.get(acceptedPrefName,false))
 let sendUsageStat = this._showOfferWindow();
 if (sendUsageStat !== null)
 {
-this.setStatUsageSend(sendUsageStat);
+this._setStatUsageSend(sendUsageStat);
 }
  else
 if (! this.setupData.hiddenWizard)
@@ -304,11 +322,15 @@ hiddenWizard: true,
 License: {
 display: false,
 checked: false,
-text: ""},
+text: "",
+url: branding.brandPackage.resolvePath("/license/fx/license.xhtml")},
 HomePage: {
 display: false,
 checked: false,
-text: ""},
+text: "",
+title: "",
+url: "",
+force: false},
 DefaultSearch: {
 display: false,
 checked: false,
@@ -317,16 +339,18 @@ UsageStat: {
 display: false,
 checked: false,
 multipack: false,
-text: ""}};
-let setupElement;
+text: ""},
+GoodbyePage: {
+url: ""}};
+let productXML;
 try {
-let productXML = branding.brandPackage.getXMLDocument("/about/product.xml");
-setupElement = productXML.querySelector("Product > Setup");
+productXML = branding.brandPackage.getXMLDocument("/about/product.xml");
 }
 catch (e) {
 Cu.reportError(e);
 }
 
+let setupElement = productXML && productXML.querySelector("Product > Setup");
 if (setupElement)
 {
 ["License", "HomePage", "DefaultSearch", "UsageStat"].forEach(function (aElementName) {
@@ -334,6 +358,8 @@ var el = setupElement.querySelector(aElementName);
 if (el)
 {
 for(let [prop, val] in Iterator(data[aElementName])) {
+if (! el.hasAttribute(prop))
+continue;
 let attrValue = el.getAttribute(prop);
 if (typeof val == "boolean")
 attrValue = attrValue == "true";
@@ -348,10 +374,17 @@ data.hiddenWizard = false;
 );
 }
 
-data.License.url = branding.brandPackage.resolvePath("/license/fx/license.xhtml");
-data.HomePage.title = "";
-data.HomePage.url = "";
-data.HomePage.force = false;
+let fxProductXML;
+try {
+fxProductXML = branding.brandPackage.getXMLDocument("/fx/about/product.xml");
+}
+catch (e) {
+
+}
+
+let goodbyePageElement = fxProductXML && fxProductXML.querySelector("Product > GoodbyeUrl");
+if (goodbyePageElement)
+data.GoodbyePage.url = branding.expandBrandTemplatesEscape(goodbyePageElement.textContent);
 try {
 let configXML = branding.brandPackage.getXMLDocument("/browser/browserconf.xml");
 let configHPElement = configXML.querySelector("Browser > HomePage");
@@ -401,6 +434,8 @@ if (! isYandexDistrib)
 let curProcDir;
 try {
 curProcDir = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("CurProcD",Ci.nsIFile);
+if (curProcDir.leafName === "browser")
+curProcDir = curProcDir.parent;
 }
 catch (e) {
 
@@ -416,36 +451,6 @@ isYandexDistrib = curProcDir.exists();
 
 this.__defineGetter__("isYandexFirefoxDistribution",function () isYandexDistrib);
 return this.isYandexFirefoxDistribution;
-}
-,
-get anonymousStatistic() {
-var isStatPrefSet = this._application.preferences.get("distr.statChosen",false);
-if (! this.isYandexFirefoxDistribution || isStatPrefSet)
-return false;
-var sendStatPrefSet = this._application.preferences.get("stat.usage.send");
-if (sendStatPrefSet)
-{
-this._application.preferences.set("distr.statChosen",true);
-return false;
-}
-
-var installTime = this._application.preferences.get("general.install.time") * 1000;
-var threeDays = 3 * 60 * 60 * 24 * 1000;
-if (Date.now() < installTime + threeDays)
-return false;
-return true;
-}
-,
-set anonymousStatistic(aEnable) {
-this._application.barnavig.forceRequest({
-statsend: aEnable ? 1 : 0});
-this._application.preferences.set("stat.usage.send",aEnable);
-this._application.preferences.set("distr.statChosen",true);
-if (this.setupData.UsageStat.multipack && this._application.core.CONFIG.APP.TYPE == "barff")
-{
-Preferences.set("extensions.vb@yandex.ru.stat.usage.send",aEnable);
-}
-
 }
 ,
 getBrowserHomePage: function Installer_getBrowserHomePage() {
@@ -499,10 +504,17 @@ return;
 }
 
 new sysutils.Timer(function Installer__showWelcomePageOnStartup_timed() {
-misc.navigateBrowser({
-url: "bar:welcome",
-target: "new tab"});
 wpPrefs.set("version.introduced",wpCurrentVersion);
+var wpURL = branding.productInfo.WelcomePage.url;
+if (! wpURL)
+return;
+wpURL += "?lang=" + barApp.locale.language;
+var overlayController = misc.getTopBrowserWindow()[barApp.name + "OverlayController"];
+if (overlayController.chevronButton.isHidden)
+wpURL += "&clear";
+misc.navigateBrowser({
+url: wpURL,
+target: "new tab"});
 }
 , 500);
 }
@@ -544,8 +556,30 @@ Preferences.set(vbPrefName,setupData.UsageStat.checked);
 
 }
 ,
-_onAddonUpdate: function Installer__onAddonUpdate() {
+_onAddonUpdated: function Installer__onAddonUpdated() {
 barApp.distribution.onUpdate(this._getDataForDistribution());
+}
+,
+_onAddonDisabling: function Installer__onAddonDisabling() {
+
+}
+,
+_onAddonDisablingCancelled: function Installer__onAddonDisablingCancelled() {
+var goodbyeURL = this.setupData.GoodbyePage.url;
+if (goodbyeURL)
+this.closeTabs(goodbyeURL);
+}
+,
+_onAddonUninstalling: function Installer__onAddonUninstalling() {
+var goodbyeURL = this.setupData.GoodbyePage.url;
+if (goodbyeURL)
+{
+misc.navigateBrowser({
+url: goodbyeURL,
+target: "new tab",
+loadInBackground: true});
+}
+
 }
 ,
 _cachedBrandTplMap: null,
@@ -850,7 +884,7 @@ var args = [sysutils.platformInfo.os.name, this.setupData];
 args.wrappedJSObject = args;
 var windowURL = "chrome://" + barApp.name + "/content/dialogs/license/wizard.xul";
 try {
-let setupWin = Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher).openWindow(null,windowURL,null,"centerscreen,modal",args);
+let setupWin = Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher).openWindow(null,windowURL,null,"centerscreen,modal,popup=yes",args);
 let accepted = this.setupData.License.checked;
 if (accepted)
 this._logLicenseWindowStatistics();
@@ -932,6 +966,16 @@ this.setupData.HomePage.checked = true;
 }
 
 return result;
+}
+,
+_setStatUsageSend: function Installer__setStatUsageSend(aEnable) {
+this._application.preferences.set("stat.usage.send",aEnable);
+this._application.preferences.set("distr.statChosen",true);
+if (this._application.installer.setupData.UsageStat.multipack && this._application.core.CONFIG.APP.TYPE == "barff")
+{
+this._application.core.Lib.Preferences.set("extensions.vb@yandex.ru.stat.usage.send",aEnable);
+}
+
 }
 ,
 _setBarNavigRequests: function Installer__setBarNavigRequests(aType, aData) {

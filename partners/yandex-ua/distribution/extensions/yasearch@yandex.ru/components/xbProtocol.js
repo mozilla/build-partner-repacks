@@ -157,11 +157,10 @@ return this._host;
 set host(aHost) {
 this._host = aHost;
 this._constructSpec();
-this._provider = null;
 }
 ,
 get port() {
-return this._port || "";
+return this._port;
 }
 ,
 set port(aPort) {
@@ -273,15 +272,6 @@ this._filePath = aFilePath;
 this._constructPath();
 }
 ,
-get param() {
-return this._param || "";
-}
-,
-set param(aParam) {
-this._param = aParam;
-this._constructPath();
-}
-,
 get query() {
 return this._query || "";
 }
@@ -326,7 +316,7 @@ _username: "",
 _password: "",
 _hostPort: "",
 _host: "",
-_port: "",
+_port: - 1,
 _path: "",
 _filePath: "",
 _directory: "",
@@ -335,40 +325,23 @@ _fileBaseName: "",
 _fileExtension: "",
 _query: "",
 _ref: "",
-_param: "",
-_re: /^((\w+)\:\/\/(?:((\w*)\:?(\w*))\@)?(([\w\.\-]*)(?:\:(\d+))?))((([^\?\#\;]+?)?(([^\/\?\#\;]*?)?(?:\.([^\.\?\#\;]+))?)?)(?:\?([^\#\;]+))?(?:\#([^\;]*))?(?:\;(.+))?)?$/,
 _parse: function XBURI__parse() {
 if (! this._spec)
 {
-Cu.reportError(this._ERR_MALFORMED_URI + this._spec);
+Cu.reportError(this._ERR_MALFORMED_URI);
 throw Cr.NS_ERROR_MALFORMED_URI;
 }
 
-var components = this._spec.match(this._re);
-if (! components || components[2] != SCHEME)
+var standardURL = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIStandardURL);
+standardURL.init(standardURL.URLTYPE_STANDARD,- 1,this._spec,null,null);
+standardURL = standardURL.QueryInterface(Ci.nsIURL);
+["prePath", "scheme", "userPass", "username", "password", "hostPort", "host", "port", "path", "filePath", "directory", "fileName", "fileBaseName", "fileExtension", "query", "ref"].forEach(function (p) this["_" + p] = standardURL[p],this);
+if (this._scheme !== SCHEME)
 {
 Cu.reportError(this._ERR_MALFORMED_URI + this._spec);
 throw Cr.NS_ERROR_MALFORMED_URI;
 }
 
-this._prePath = components[1];
-this._scheme = components[2];
-this._userPass = components[3];
-this._username = components[4];
-this._password = components[5];
-this._hostPort = components[6];
-this._host = components[7];
-this._port = components[8];
-this._path = components[9];
-this._filePath = components[10];
-this._directory = components[11];
-this._fileName = components[12];
-this._fileBaseName = components[13];
-this._fileExtension = components[14];
-this._query = components[15];
-this._ref = components[16];
-this._param = components[17];
-this._provider = null;
 }
 ,
 _constructFileName: function XBURI__constructFileName() {
@@ -382,7 +355,7 @@ this._constructPath();
 }
 ,
 _constructPath: function XBURI__constructPath() {
-this._path = this._filePath + (this._query ? "?" + this._query : "") + (this._ref ? "#" + this._ref : "") + (this._param ? ";" + this._param : "");
+this._path = this._filePath + (this._query ? "?" + this._query : "") + (this._ref ? "#" + this._ref : "");
 this._constructSpec();
 }
 ,

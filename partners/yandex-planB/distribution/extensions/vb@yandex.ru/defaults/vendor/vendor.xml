@@ -1,16 +1,15 @@
-<?xml version='1.0' encoding='UTF-8'?><vendor name="planb" setup="bar-only">
-    <clid1>1857372</clid1>
-    <clid2>1857373</clid2>
-    <clid3>0</clid3>
-    <clid4>1857374</clid4>
-    <clid5>1857375</clid5>
-    <clid6>1857376</clid6>
-    <clid7>1857377</clid7>
-    <clid8>1857378</clid8>
-    <clid9>1857379</clid9>
-    <clid10>1857380</clid10>
-    <clid11>1857381</clid11>
-    <clid12>1857382</clid12>
-    <clid13>1857383</clid13>
-    <clid14>1857384</clid14>
+<?xml version='1.0' encoding='UTF-8'?><vendor name="yandex-element-ff" setup="bar-only">
+    <clid1>1917055</clid1>
+    <clid2>1917056</clid2>
+    <clid4>1917057</clid4>
+    <clid5>1917058</clid5>
+    <clid6>1917059</clid6>
+    <clid7>1917060</clid7>
+    <clid8>1917061</clid8>
+    <clid9>1917062</clid9>
+    <clid10>1917063</clid10>
+    <clid11>1917064</clid11>
+    <clid12>1917065</clid12>
+    <clid13>1917066</clid13>
+    <clid14>1917067</clid14>
   </vendor>

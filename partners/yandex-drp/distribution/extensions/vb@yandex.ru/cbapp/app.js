@@ -14,7 +14,7 @@ this.addonManager.saveBuildDataToPreferences();
 finalize: function VBApp_finalize(callback) {
 var doFinalCleanup = this.addonManager.isAddonUninstalling;
 var addonId = this.addonManager.addonId;
-var partsFinalizedCallback = function partsFinalizedCallback() {
+var partsFinalizedCallback = (function partsFinalizedCallback() {
 this._logger.debug("Finalize process finished.");
 if (doFinalCleanup)
 {
@@ -25,7 +25,7 @@ this._logger = null;
 this._barCore = null;
 callback();
 }
-.bind(this);
+).bind(this);
 this._finalizeParts(doFinalCleanup,partsFinalizedCallback);
 }
 ,
@@ -274,11 +274,11 @@ get userDir() {
 var isWindowsOS = sysutils.platformInfo.os.name == "windows";
 var userDir = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get(isWindowsOS ? "AppData" : "Home",Ci.nsIFile);
 userDir.append(isWindowsOS ? "Yandex" : ".yandex");
-this.__defineGetter__("userDir",function _userDir() {
+this.__defineGetter__("userDir",(function _userDir() {
 this._forceDir(userDir);
 return userDir.clone();
 }
-.bind(this));
+).bind(this));
 return this.userDir;
 }
 ,
@@ -314,7 +314,7 @@ var resource = netutils.ioService.getProtocolHandler("resource").QueryInterface(
 var alias = netutils.ioService.newFileURI(this.core.rootDir);
 resource.setSubstitution("vb-profile-data",alias);
 Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService).addObserver(this,"final-ui-startup",false);
-var disableBarnavigIfYBarIsActive = function (aBarAddon) {
+var disableBarnavigIfYBarIsActive = (function (aBarAddon) {
 if (aBarAddon && aBarAddon.isActive)
 {
 this._logger.config("Yandex.Bar is active. Will turn off barnavig events (page load, downloads, etc.) listening...");
@@ -322,7 +322,7 @@ this.barnavig.listenStatEventsEnabled = false;
 }
 
 }
-.bind(this);
+).bind(this);
 AddonManager.gre_AddonManager.getAddonByID("yasearch@yandex.ru",disableBarnavigIfYBarIsActive);
 this.addonStatus.onApplicationInitialized();
 }
@@ -373,11 +373,11 @@ if (part && typeof part.finalize == "function")
 {
 this._logger.debug("Finalizing " + partName + " part");
 try {
-let finalizeIsAsync = part.finalize(doCleanup,function () {
+let finalizeIsAsync = part.finalize(doCleanup,(function () {
 delete asyncFinalizingParts[partName];
 callback();
 }
-.bind(this));
+).bind(this));
 if (finalizeIsAsync === true)
 asyncFinalizingParts[partName] = true;
 }
@@ -449,12 +449,22 @@ _partNames: [{
 "file": "databaseMigration.js"}, {
 "name": "migration",
 "file": "migration.js"}, {
+"name": "blacklist",
+"file": "blacklist.js"}, {
+"name": "tasksRunner",
+"file": "tasksRunner.js"}, {
 "name": "usageHistory",
 "file": "usageHistory.js"}, {
 "name": "protocolSupport",
 "file": "protocolSupport.js"}, {
 "name": "layout",
 "file": "layout.js"}, {
+"name": "syncTopHistory",
+"file": "syncTopHistory.js"}, {
+"name": "syncPinned",
+"file": "syncPinned.js"}, {
+"name": "sync",
+"file": "sync.js"}, {
 "name": "safebrowsing",
 "file": "safebrowsing.js"}, {
 "name": "colors",
@@ -471,7 +481,7 @@ _partNames: [{
 "file": "fastdial.js"}, {
 "name": "thumbs",
 "file": "thumbs.js"}, {
-"name": "BEMHTML",
-"file": "bemhtml.js"}],
+"name": "searchExample",
+"file": "searchExample.js"}],
 _delayMultiplier: 0,
 _lastGeneratedDelay: 0};

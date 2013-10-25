@@ -791,6 +791,10 @@ this._createdDataContainers.push(dc);
 return dc;
 }
 ,
+copyProperties: function SysUtils_copyProperties(from, to, filter) {
+return sysutils.copyProperties(from,to,filter);
+}
+,
 _createdDataContainers: null,
 _finalize: function SysUtils__finalize() {
 for each(let dc in this._createdDataContainers) {

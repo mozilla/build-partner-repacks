@@ -122,16 +122,15 @@ this.__localeLang = this.getString("locale.lang");
 return this.__localeLang;
 }
 ,
-isYandexHost: function (aHost) {
-return /(^|\.)(yandex\.(ru|ua|by|kz|net|com(\.tr)?)|(ya|narod|moikrug)\.ru)$/i.test(aHost);
-}
-,
 observe: function (aSubject, aTopic, aData) {
 switch (aTopic) {
 case "http-on-modify-request":
 aSubject.QueryInterface(Ci.nsIHttpChannel);
-if (this.isYandexHost(aSubject.URI.host))
-{
+switch (aSubject.URI.host) {
+case "bar.yandex.ru":
+if (! /bar\.yandex\.ru\/library/.test(aSubject.URI.spec))
+return;
+case "bar-widgets.yandex.ru":
 try {
 var ua = aSubject.getRequestHeader("User-Agent");
 if (! this.barPrefReg.test(ua))
@@ -141,6 +140,7 @@ catch (e) {
 
 }
 
+break;
 }
 
 break;

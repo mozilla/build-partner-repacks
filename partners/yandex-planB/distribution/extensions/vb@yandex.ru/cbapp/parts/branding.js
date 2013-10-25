@@ -260,7 +260,11 @@ let sameAddresses = String(currentProductInfo.BrandingURL) == String(internalPro
 if (sameAddresses)
 this._logger.debug("Package addresses are the same: " + currentProductInfo.BrandingURL); else
 this._logger.debug(strutils.formatString("Package addresses are: %1, %2",[currentProductInfo.BrandingURL, internalProductInfo.BrandingURL]));
-canUpdatePackage = sameAddresses;
+let currentIsBarless = strutils.xmlAttrToBool(currentProductInfo.Barless && currentProductInfo.Barless.enabled);
+let internalIsBarless = strutils.xmlAttrToBool(internalProductInfo.Barless && internalProductInfo.Barless.enabled);
+let viewModeChanged = currentIsBarless != internalIsBarless;
+this._logger.debug(strutils.formatString("Barless modes are: %1, %2",[currentIsBarless, internalIsBarless]));
+canUpdatePackage = sameAddresses || viewModeChanged;
 }
 
 if (canUpdatePackage)

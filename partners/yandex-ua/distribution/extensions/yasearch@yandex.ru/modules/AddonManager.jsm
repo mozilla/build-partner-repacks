@@ -99,7 +99,7 @@ catch (e) {
 
 var trash = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("TmpD",Ci.nsIFile);
 trash.append("trash");
-trash.createUnique(Ci.nsIFile.DIRECTORY_TYPE,this.PERMS_DIRECTORY);
+trash.createUnique(Ci.nsIFile.DIRECTORY_TYPE,parseInt("0755",8));
 try {
 addonDir.moveTo(trash,addonDir.leafName);
 }

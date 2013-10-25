@@ -208,7 +208,15 @@ onCompletion(this._result,this._error);
 _createStatement: function Database__createStatement(query, parameters, asyncStatement) {
 if (! this._connection)
 throw new Error("Can't create statement. Database is closed.");
-var statement = this._connection.createStatement(query);
+var statement;
+try {
+statement = this._connection.createStatement(query);
+}
+catch (e) {
+Cu.reportError(["Error: " + e, "Query: " + query, "Last error string: " + this._connection.lastErrorString].join("\n  ----\n"));
+throw e;
+}
+
 if (parameters)
 {
 if (Array.isArray(parameters))
@@ -240,11 +248,11 @@ this.eraseOldRecords();
 Database.DatedValues.prototype = {
 get storageFile() this._connection && this._connection.databaseFile,
 close: function DatedValues_close(callback) {
-this._database.close(function () {
+this._database.close((function () {
 this._database = null;
 callback();
 }
-.bind(this));
+).bind(this));
 }
 ,
 store: function DatedValues_store(key, value) {

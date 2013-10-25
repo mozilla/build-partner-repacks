@@ -212,11 +212,11 @@ return logsFile;
 ,
 _logData: function addonStatus__logData(aData) {
 this._lastCollectTime = Date.now();
-var onDataInserted = function onDataInserted() {
+var onDataInserted = (function onDataInserted() {
 this._cleanupLoggedData();
 this._setRequestTimer();
 }
-.bind(this);
+).bind(this);
 this._database.execQueryAsync("INSERT INTO queries (query, timeCreated, sendAttempts)                                        VALUES (:query, :timeCreated, :sendAttempts)",{
 query: this._collectData(aData),
 timeCreated: Date.now(),
@@ -231,7 +231,6 @@ sendAttempts: 5});
 ,
 _collectData: function addonStatus__collectData(aData) {
 var data = this._versionData;
-data.searchFormVisible = [0, 2].indexOf(this._application.preferences.get("ftabs.searchStatus")) !== - 1;
 var rows = this.fetchAddonEvents();
 if (rows && rows.length)
 {

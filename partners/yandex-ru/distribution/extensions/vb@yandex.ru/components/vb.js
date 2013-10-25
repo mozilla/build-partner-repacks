@@ -31,7 +31,6 @@ if (window.location.href !== app.protocolSupport.url)
 return;
 var utils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
 var outerWindowId = utils.outerWindowID;
-app.fastdial.setListenersForWindow(outerWindowId);
 return new VBDOMObject(aWindow, outerWindowId);
 }
 };
@@ -43,15 +42,16 @@ this._window = aWindow;
 
 VBDOMObject.prototype = {
 navigator: "firefox",
-osName: app.core.Lib.sysutils.platformInfo.os.name,
-navigatorMajorVersion: parseInt(app.core.Lib.sysutils.platformInfo.browser.version,10),
+get osName() app.core.Lib.sysutils.platformInfo.os.name,
+get navigatorMajorVersion() parseInt(app.core.Lib.sysutils.platformInfo.browser.version,10),
 getLocalizedString: function VBDOMObject_getLocalizedString(key) {
 typesCheck(arguments,["string"]);
 return app.fastdial.getLocalizedString(key);
 }
 ,
-getSettings: function VBDOMObject_getSettings() {
-return app.fastdial.getSettings();
+requestSettings: function VBDOMObject_requestSettings(callback) {
+typesCheck(arguments,["function"]);
+return app.fastdial.requestSettings(callback);
 }
 ,
 pinThumb: function VBDOMObject_pinThumb(index) {
@@ -62,6 +62,14 @@ app.thumbs.changePinnedState(index,true);
 unpinThumb: function VBDOMObject_unpinThumb(index) {
 typesCheck(arguments,["number"]);
 app.thumbs.changePinnedState(index,false);
+}
+,
+requestAppsList: function VBDOMObject_requestAppsList(callback) {
+
+}
+,
+launchApp: function VBDOMObject_launchApp(id) {
+
 }
 ,
 requestClosedPagesList: function VBDOMObject_requestClosedPagesList(callback) {
@@ -84,17 +92,28 @@ typesCheck(arguments,["string", "boolean", "boolean", "boolean", "string"]);
 return app.fastdial.applySettings(layout,showBookmarks,sendStat,showSearchForm,bgImage);
 }
 ,
-saveThumbs: function VBDOMObject_saveThumbs(thumbs, startPickup) {
-typesCheck(arguments,["object", "boolean"]);
-return app.fastdial.saveThumbs(thumbs,startPickup);
+saveThumb: function VBDOMObject_saveThumb(index, data) {
+typesCheck(arguments,["number", "object"]);
+app.thumbs.save(index,data);
+}
+,
+removeThumb: function VBDOMObject_removeThumb(index) {
+typesCheck(arguments,["number"]);
+app.thumbs.remove(index);
+}
+,
+swapThumbs: function VBDOMObject_swapThumb(oldIndex, newIndex) {
+typesCheck(arguments,["number", "number"]);
+app.thumbs.swap(oldIndex,newIndex);
 }
 ,
 requestInit: function VBDOMObject_requestInit() {
 app.fastdial.requestInit(this._outerWindowId);
 }
 ,
-uploadUserBackground: function VBDOMObject_uploadUserBackground() {
-return app.fastdial.uploadUserBackground(this._window);
+uploadUserBackground: function VBDOMObject_uploadUserBackground(callback) {
+typesCheck(arguments,["function"]);
+app.fastdial.uploadUserBackground(this._window,callback);
 }
 ,
 requestBookmarksBranch: function VBDOMObject_requestBookmarksBranch(id, callback) {
@@ -154,7 +173,8 @@ useExample: function VBDOMObject_search_useExample(query) {
 typesCheck(arguments,["string"]);
 app.searchSuggest.useExample(query);
 }
-},
+,
+get alternativeEngines() app.searchSuggest.alternativeEngines},
 sync: {
 openWP: function VBDOMObject_sync_openWP() {
 app.sync.openWP();
@@ -196,13 +216,18 @@ __exposedProps__: {
 navigator: "r",
 osName: "r",
 getLocalizedString: "r",
-getSettings: "r",
+requestSettings: "r",
 pinThumb: "r",
 unpinThumb: "r",
+requestAppsList: "r",
+launchApp: "r",
 requestClosedPagesList: "r",
 restoreTab: "r",
 requestLastVisited: "r",
 applySettings: "r",
+saveThumb: "r",
+removeThumb: "r",
+swapThumbs: "r",
 requestInit: "r",
 uploadUserBackground: "r",
 openExternalWindow: "r",

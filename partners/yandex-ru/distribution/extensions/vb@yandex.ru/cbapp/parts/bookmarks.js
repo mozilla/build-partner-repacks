@@ -17,7 +17,13 @@ this._logger = application.getLogger("Bookmarks");
 }
 ,
 finalize: function Bookmarks_finalize(doCleanup, callback) {
+try {
 Services.obs.removeObserver(this,UI_STARTED_EVENT);
+}
+catch (e) {
+
+}
+
 PlacesUtils.bookmarks.removeObserver(this._changesObserver);
 if (this._bookmarksStateTimer)
 this._bookmarksStateTimer.cancel();
@@ -28,14 +34,15 @@ this._logger = null;
 observe: function Bookmarks_observe(aSubject, aTopic, aData) {
 switch (aTopic) {
 case UI_STARTED_EVENT:
-const BOOKMARKS_TOOLBAR_ID = "PersonalToolbar";
 let appInfo = this._application.addonManager.info;
 if (appInfo.isFreshAddonInstall)
 {
+const BOOKMARKS_TOOLBAR_ID = "PersonalToolbar";
 let topWindow = misc.getTopBrowserWindow();
 let bookmarksBrowserToolbar = topWindow && topWindow.document.querySelector("#" + BOOKMARKS_TOOLBAR_ID);
 if (bookmarksBrowserToolbar)
 {
+let prefOldValue = this._application.preferences.get("ftabs.showBookmarks",false);
 if (bookmarksBrowserToolbar.collapsed)
 {
 this._application.preferences.set("ftabs.showBookmarks",false);
@@ -44,14 +51,16 @@ this._application.preferences.set("ftabs.showBookmarks",false);
 {
 this._application.preferences.set("ftabs.showBookmarks",true);
 bookmarksBrowserToolbar.collapsed = true;
-}
-
 topWindow.document.persist(BOOKMARKS_TOOLBAR_ID,"collapsed");
 }
 
+if (prefOldValue !== this._application.preferences.get("ftabs.showBookmarks",false))
 this._application.fastdial.requestInit();
 }
 
+}
+
+Services.obs.removeObserver(this,UI_STARTED_EVENT);
 break;
 }
 
