@@ -7,7 +7,6 @@ style	chrome://browser/content/browser.xul	chrome://ytoolbar/skin/ytoolbar.css
 style	chrome://global/content/customizeToolbar.xul	chrome://ytoolbar/skin/ytoolbar.css
 
 interfaces components/nsIYahooEventTipManager.xpt
-interfaces components/nsIYahooInjectoManager.xpt
 interfaces components/nsIYahooUrlProbe.xpt
 interfaces components/nsYLogger.xpt
 interfaces components/nsYLogFileAppender.xpt
@@ -30,10 +29,6 @@ interfaces components/nsYahooPluginManager.xpt
 interfaces components/nsYahooSearchIndexer.xpt
 interfaces components/nsYahooTickerManager.xpt
 interfaces components/nsYahooToolbarManager.xpt
-
-component {86944522-4715-49d7-8666-6C2818B14114} components/nsIYahooInjectoManager.js
-contract @yahoo.com/injectomanager;1 {86944522-4715-49d7-8666-6C2818B14114}
-category profile-after-change yInjectoManager @yahoo.com/injectomanager;1
 
 component {F753E8BB-EB63-4487-BA4D-1DB514C7C1E3} components/nsIYahooEventTipManager.js
 contract @yahoo.com/eventtipmanager;1 {F753E8BB-EB63-4487-BA4D-1DB514C7C1E3}

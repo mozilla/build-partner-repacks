@@ -16,7 +16,7 @@
 		<em:id>{635abd67-4fe9-1b23-4f01-e679fa7484c1}</em:id>
 		<em:name>Yahoo! Toolbar</em:name>
 		<em:optionsURL>chrome://ytoolbar/content/option.xul</em:optionsURL>
-		<em:version>3.1.0.20130818030116</em:version>				
+		<em:version>2.6.1.20130511125033</em:version>				
 		<em:unpack>true</em:unpack>				
 		<em:updateURL>https://us.data.toolbar.yahoo.com/dl/toolbar//yhoo/v1/yhoo/update.rdf</em:updateURL>		
 		<em:file>
@@ -30,8 +30,8 @@
 		<em:targetApplication>
 			<Description>
 				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-				<em:minVersion>10.0</em:minVersion>
-				<em:maxVersion>15.0a1</em:maxVersion>
+				<em:minVersion>3.0</em:minVersion>
+				<em:maxVersion>14.0a1</em:maxVersion>
 			</Description>
 		</em:targetApplication>
 		
