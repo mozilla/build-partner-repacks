@@ -1,15 +1,15 @@
-<?xml version='1.0' encoding='UTF-8'?><vendor name="yandex-element-ff" setup="bar-only">
-    <clid1>1917055</clid1>
-    <clid2>1917056</clid2>
-    <clid4>1917057</clid4>
-    <clid5>1917058</clid5>
-    <clid6>1917059</clid6>
-    <clid7>1917060</clid7>
-    <clid8>1917061</clid8>
-    <clid9>1917062</clid9>
-    <clid10>1917063</clid10>
-    <clid11>1917064</clid11>
-    <clid12>1917065</clid12>
-    <clid13>1917066</clid13>
-    <clid14>1917067</clid14>
+<?xml version='1.0' encoding='UTF-8'?><vendor name="firefox-eco" setup="bar-only">
+    <clid1>2063922</clid1>
+    <clid2>2063923</clid2>
+    <clid4>2063924</clid4>
+    <clid5>2063925</clid5>
+    <clid6>2063926</clid6>
+    <clid7>2063927</clid7>
+    <clid8>2063928</clid8>
+    <clid9>2063929</clid9>
+    <clid10>2063930</clid10>
+    <clid11>2063931</clid11>
+    <clid12>2063932</clid12>
+    <clid13>2063933</clid13>
+    <clid14>2063934</clid14>
   </vendor>

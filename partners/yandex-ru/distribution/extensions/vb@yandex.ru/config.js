@@ -8,8 +8,8 @@ TYPE: "vbff",
 COOKIE: "vb.ff",
 PROTOCOL: "yafd"},
 BUILD: {
-DATE: "Tue Oct 08 2013 08:20:02 GMT+0000",
-REVISION: "51082_14"},
+DATE: "Mon Oct 28 2013 14:23:17 GMT+0000",
+REVISION: "57615_14"},
 CORE: {
 CONTRACT_ID: "@yandex.ru/vb-core;1",
 CLASS_ID: Components.ID("{1ad918b4-4729-11e1-ab8a-dff4577f00a5}")}};

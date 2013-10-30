@@ -52,6 +52,24 @@ this._setAlienNewTabUrls();
 
 }
 
+if (addonManagerInfo.addonVersionChanged && addonManagerInfo.addonUpgraded)
+{
+if (this._application.core.CONFIG.APP.TYPE == "vbff")
+{
+Cu.import("resource://gre/modules/AddonManager.jsm",{
+}).AddonManager.getAddonByID("yasearch@yandex.ru",function (barAddon) {
+if (! barAddon)
+return;
+if (! barAddon.userDisabled && ! barAddon.appDisabled)
+return;
+barAddon.userDisabled = false;
+barAddon.appDisabled = false;
+}
+);
+}
+
+}
+
 }
 ,
 finalize: function Installer_finalize(doCleanup) {

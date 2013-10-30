@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 
 Name: config.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 5nCg8pT1LT3ciXban2Y6XQ==
-SHA1-Digest: bGgeDKhXQ683zRcGNNgVJ1Vtpr8=
+MD5-Digest: O8MLTcc+yOA04tFgCD9YkQ==
+SHA1-Digest: 9ryf2XNTg3MNGae+BFRoWYn3Oqw=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -12,8 +12,8 @@ SHA1-Digest: 6uKf/4cm6jtYQ+NZ0CSQtw8FszE=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: ivZQhK8DTPr/AdsNQeaUyg==
-SHA1-Digest: IH4x07JASfdLDdkruKGHSE3oBk8=
+MD5-Digest: W+ELyDJSU1YUClRyT8XBgQ==
+SHA1-Digest: tpfi3zRb+u0h0nTFQwEoPRE3NAM=
 
 Name: components/nsIYaSearch.xpt
 Digest-Algorithms: MD5 SHA1
@@ -52,8 +52,8 @@ SHA1-Digest: 6TfOfXfRhc0mFmJ1FfrhmkbZtmg=
 
 Name: cbapp/parts/barnavig.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: lx12bPaCWGp5VGlNhVhWmw==
-SHA1-Digest: ojdJLdB1Ie/XxAo7N7hJl3stEoU=
+MD5-Digest: +HRRkva9yGhUbTChTxbs5w==
+SHA1-Digest: pvy1OLHOrDvMtOXX8vCJzloVHw8=
 
 Name: cbapp/parts/strbundle.js
 Digest-Algorithms: MD5 SHA1
@@ -427,8 +427,8 @@ SHA1-Digest: hjQ2F4eDu0ySNq2m1qymdqKb/3g=
 
 Name: chrome/yasearch.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: tq24acUdsZLYiqw/vDSiyw==
-SHA1-Digest: 6syjgbCWxcfB2fuhFhfli7VOjhw=
+MD5-Digest: 4Qooj9DvpIMrgh05wMgiuQ==
+SHA1-Digest: 1I9hR8re17B+ZzjQdUyXCIrz4oo=
 
 Name: defaults/dynamic-preferences/safebrowsing.js
 Digest-Algorithms: MD5 SHA1
@@ -442,8 +442,8 @@ SHA1-Digest: XdDu7ytRBpDz70s+nXATuUwccVU=
 
 Name: defaults/vendor/vendor.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: IkMNNz6q60EdpjmkVLRMbw==
-SHA1-Digest: 0j7GtzocC2hGOX2gAeaYWzU6U9c=
+MD5-Digest: fC8BD7uyDCxBnkjaz0tcQw==
+SHA1-Digest: AgELfFxBUew1z/B6nbly3pOKuUM=
 
 Name: defaults/presets/http%3A%2F%2Fbar.yandex.ru%2Fpresets%2Fdefault-partner.xml
 Digest-Algorithms: MD5 SHA1
@@ -459,6 +459,21 @@ Name: defaults/presets/http%3A%2F%2Fbar.yandex.ru%2Fpresets%2Fua.xml
 Digest-Algorithms: MD5 SHA1
 MD5-Digest: U69YO3H56ttKcBvIEBBcog==
 SHA1-Digest: /Z+lOYococ5OAceJmoMvQPcmGZo=
+
+Name: defaults/personas-skin/footer.jpg
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: SiiF/Y28dv+9j1jFhH5x4A==
+SHA1-Digest: M9hAGC65zTnUrcWuwBWg1jTWx7M=
+
+Name: defaults/personas-skin/data.json
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: J22nohLSSmLBF0oKHCB+1w==
+SHA1-Digest: k4YYw3jUsfykNCiyUg57Fj0K3fA=
+
+Name: defaults/personas-skin/header.jpg
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: IImZIbd3kQdqfkge35x+xQ==
+SHA1-Digest: ymO0T072uH6z4J1ZnR9tCon557Q=
 
 Name: defaults/preferences/yasearch.js
 Digest-Algorithms: MD5 SHA1
@@ -502,8 +517,8 @@ SHA1-Digest: tO2KtVIOfiAeXjJmp+62f4RjF08=
 
 Name: modules/Stemmer.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: nEJzqpUcG3fFHdf73S5bag==
-SHA1-Digest: Lbsdzo/dE6BMiD/R/qobF5z/m8E=
+MD5-Digest: OQHsRhdWeE6YOohC4wgyXQ==
+SHA1-Digest: t1IGKXLTvmFCwyGlSfQYIvYl5wY=
 
 Name: modules/WinReg.jsm
 Digest-Algorithms: MD5 SHA1
@@ -512,8 +527,8 @@ SHA1-Digest: RWr305eyG9yrzU+HS8YtQiG1Ids=
 
 Name: modules/Log4Moz.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 1QFXBKhsHqlak7KZRDTXtQ==
-SHA1-Digest: TzbSGlBJ/Yw9LU5kF13LSqLrz+o=
+MD5-Digest: qFTnHLCA2k/qlf8bWVI2Ug==
+SHA1-Digest: 7hRvZJyJO5jwA7mS2JP8vME+pMQ=
 
 Name: modules/WindowListener.jsm
 Digest-Algorithms: MD5 SHA1

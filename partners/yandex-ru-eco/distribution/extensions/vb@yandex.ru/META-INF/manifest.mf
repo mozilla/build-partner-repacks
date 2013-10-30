@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 
 Name: config.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: HJFUnTU5F/zhZ2ybILyedg==
-SHA1-Digest: nKm9JJ/ZSy4Sl0APpOo6ujMifgk=
+MD5-Digest: DB72JcQtCyOzGDxQs95TMA==
+SHA1-Digest: f+aUBBxKwk0ll0SsSdyrWZcY/FI=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -12,8 +12,8 @@ SHA1-Digest: +/B6SJvfyMMtPeex1txRvVkmurI=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: nuHWSw8oJOWyIw0+rInaxA==
-SHA1-Digest: KJ4l9G+lK0tMH0UkhrbViLDdkoc=
+MD5-Digest: j5W7ALntlWCyUotIaaUXiw==
+SHA1-Digest: jrA1UxNdqkOERRhrVR6lS/tGMIY=
 
 Name: components/core.js
 Digest-Algorithms: MD5 SHA1
@@ -42,8 +42,8 @@ SHA1-Digest: mW1eOTECGgpnd6jezi3of3iaSWE=
 
 Name: cbapp/parts/barnavig.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: lx12bPaCWGp5VGlNhVhWmw==
-SHA1-Digest: ojdJLdB1Ie/XxAo7N7hJl3stEoU=
+MD5-Digest: +HRRkva9yGhUbTChTxbs5w==
+SHA1-Digest: pvy1OLHOrDvMtOXX8vCJzloVHw8=
 
 Name: cbapp/parts/strbundle.js
 Digest-Algorithms: MD5 SHA1
@@ -127,8 +127,8 @@ SHA1-Digest: hgzoD0JWKmg/l6JrexClUlaucKw=
 
 Name: cbapp/parts/installer.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: YPfnxMG0hFOXeWeOR5oWoQ==
-SHA1-Digest: TCAs1Ph50oCTXykmtzaI6cl4StE=
+MD5-Digest: e/BnKnL5pXbR+xAfi5bIjw==
+SHA1-Digest: 6bZvHVIOZCrSABnDtAUTnYlBC0U=
 
 Name: cbapp/parts/syncPinned.js
 Digest-Algorithms: MD5 SHA1
@@ -202,13 +202,13 @@ SHA1-Digest: 8NreYpRklcnFADNvVckwCqY243Q=
 
 Name: chrome/yandex-vb.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: +p+WOREETTRnI1YtqDYIFg==
-SHA1-Digest: bXl1ek5YIqpl7r1dpsqvWGGmRWY=
+MD5-Digest: EJhJQ8DSAj0LKTzerMtjYQ==
+SHA1-Digest: oVmUb2KgF82qH73rgwvwm5oQfDQ=
 
 Name: defaults/vendor/vendor.xml
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: IkMNNz6q60EdpjmkVLRMbw==
-SHA1-Digest: 0j7GtzocC2hGOX2gAeaYWzU6U9c=
+MD5-Digest: fC8BD7uyDCxBnkjaz0tcQw==
+SHA1-Digest: AgELfFxBUew1z/B6nbly3pOKuUM=
 
 Name: defaults/preferences/yandex-vb.js
 Digest-Algorithms: MD5 SHA1
@@ -252,8 +252,8 @@ SHA1-Digest: tO2KtVIOfiAeXjJmp+62f4RjF08=
 
 Name: modules/Stemmer.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Roly2GB1AdPNhl+CTGyAog==
-SHA1-Digest: jcqfxEU/polvIFZNjQC5OycUavM=
+MD5-Digest: OQHsRhdWeE6YOohC4wgyXQ==
+SHA1-Digest: t1IGKXLTvmFCwyGlSfQYIvYl5wY=
 
 Name: modules/WinReg.jsm
 Digest-Algorithms: MD5 SHA1

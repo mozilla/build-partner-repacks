@@ -1470,6 +1470,7 @@ barnavig._logger.debug("searchPersonalization.appendBarNavigParam, innerHTML err
 if (! documentInnerHTML)
 return;
 var statHash = Object.create(null);
+var positionsCounter = 0;
 var startTime = Date.now();
 const MAX_PARSE_TIME = 10000;
 var unfreezeWhileParsing = function unfreezeWhileParsing() {
@@ -1516,8 +1517,7 @@ characters: function contentHandler_characters(text) {
 unfreezeWhileParsing();
 if (this._ignoreText)
 return;
-var startPosition = htmlParser.currentPosition;
-text.toLowerCase().replace(/[\u0430-\u044f\u0451\-]{3,}/gm,(function (word, offset) {
+text.toLowerCase().replace(/[\u0430-\u044f\u0451\-]{3,}/gm,(function (word) {
 if (unfreezeWhileParsing())
 return;
 var stemmedWord = stemmer.stem(word);
@@ -1533,7 +1533,7 @@ indexInDictionary: indexInDictionary,
 positions: []};
 }
 
-statHash[stemmedWord].positions.push(startPosition + offset);
+statHash[stemmedWord].positions.push(positionsCounter++);
 }
 ).bind(this));
 }

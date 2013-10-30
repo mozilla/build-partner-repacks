@@ -320,7 +320,9 @@ this._dateFormat = format;
 ,
 format: function BF_format(message) {
 var pad = function BF__pad(str, len, chr) str + (new Array(Math.max((len || 20) - str.length + 1,0))).join(chr || " ");
-var dateStr = (new Date(message.time)).toLocaleFormat(this.dateFormat);
+var messageDate = new Date(message.time);
+var msec = messageDate.getMilliseconds();
+var dateStr = messageDate.toLocaleFormat(this.dateFormat) + "." + (msec < 100 ? msec < 10 ? "00" + msec : "0" + msec : msec);
 return dateStr + "\t" + pad(message.loggerName) + " " + message.levelDesc + "\t" + message.message + "\n";
 }
 };

@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-    <Description about="urn:mozilla:install-manifest">
+<?xml version='1.0'?>
+<RDF xmlns:em='http://www.mozilla.org/2004/em-rdf#' xmlns='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+    <Description about='urn:mozilla:install-manifest'>
         <em:id>vb@yandex.ru</em:id>
         <em:type>2</em:type>
         <em:unpack>true</em:unpack>
-        <em:version>2.7.0</em:version>
+        <em:version>2.7.2</em:version>
 
         <em:localized>
             <Description>
@@ -144,7 +144,7 @@
         <em:iconURL>yafd://branding/about/logo-fx-small.png</em:iconURL>
         <em:icon64URL>yafd://branding/about/logo-fx-large.png</em:icon64URL>
         <em:homepageURL>http://visual.yandex.ru</em:homepageURL>
-        <em:updateURL>https://vb-update.yandex.ru/update.xml</em:updateURL>
+        <em:updateURL>https://vb-update.yandex.ru/update-ua.xml</em:updateURL>
 
         <em:targetApplication>
             <Description>
