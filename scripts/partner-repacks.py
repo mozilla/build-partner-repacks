@@ -213,6 +213,9 @@ def parseRepackConfig(filename, platforms):
         if key == 'output_dir':
             config['output_dir'] = value
             continue
+        if key == 'padding':
+            config['padding'] = int(value)
+            continue
         if isValidPlatform(key):
             ftp_platform = getFtpPlatform(key)
             if ftp_platform in [getFtpPlatform(p)
@@ -321,6 +324,9 @@ class RepackBase(object):
                     copytree(full_path, path.join(platform_dir, i))
             self.createOverrideIni(platform_dir)
 
+    def addPadding(self):
+        pass
+
     def repackBuild(self):
         pass
 
@@ -347,6 +353,7 @@ class RepackBase(object):
         os.chdir(self.working_dir)
         self.unpackBuild()
         self.copyFiles()
+        self.addPadding()
         self.repackBuild()
         if self.signing_command:
             self.signBuild()
@@ -442,14 +449,23 @@ class RepackWin(RepackBase):
     def copyFiles(self):
         super(RepackWin, self).copyFiles(WINDOWS_DEST_DIR)
 
+    def addPadding(self):
+        if 'padding' in self.repack_info:
+            f = open('padding', 'wb')
+            f.write(os.urandom(self.repack_info['padding']))
+            f.close()
+
     def repackBuild(self):
         if options.quiet:
             zip_redirect = ">/dev/null"
         else:
             zip_redirect = ""
+        targets = WINDOWS_DEST_DIR
+        if 'padding' in self.repack_info:
+            targets += ' padding'
         zip_cmd = "%s a \"%s\" %s %s" % (SEVENZIP_BIN,
                                          self.build,
-                                         WINDOWS_DEST_DIR,
+                                         targets,
                                          zip_redirect)
         shellCommand(zip_cmd)
 
