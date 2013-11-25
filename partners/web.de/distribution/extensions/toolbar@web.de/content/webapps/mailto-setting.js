@@ -182,7 +182,7 @@ var globalObserver =
     if (msg == "uninstall") {
       uninstallOurMailtoHandler();
     } else if (msg == "first-run" || msg == "upgrade") {
-      installOurMailtoHandler();
+      setOurMailtoHandler();
     }
   }
 }

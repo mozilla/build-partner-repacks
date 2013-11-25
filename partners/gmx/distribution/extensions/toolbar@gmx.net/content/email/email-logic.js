@@ -21,10 +21,10 @@
  * ContextService (= PACS = trinity-toolbar-rest):
  *   takes URL + token
  *   creates session
- *   returns session cookie and URL for RESTfulMail and
+ *   returns session ID and URL for RESTfulMail and
  *       URL+params for Webmail login
  * getFolderStats() (= RESTfulMail = folderQuota):
- *   takes session cookie
+ *   takes session ID
  *   returns list of folders with number of unread mail etc.
  * Webmail:
  *   takes params for login
@@ -232,11 +232,12 @@ function getFolderStats(mailCheckBaseURL, ignoreFolderTypes,
     lastUnknownNewMailCount, successCallback, errorCallback)
 {
   assert(ignoreFolderTypes);
-  assert(sessionCookie);
   var headers = {
-    Cookie : sessionCookie,   
     __proto__ : kStandardHeaders,
   };
+  if (sessionCookie) {
+    headers.Cookie = sessionCookie;
+  }
   if (eTag)
     headers["If-None-Match"] = eTag;
   var fetch = new FetchHTTP(

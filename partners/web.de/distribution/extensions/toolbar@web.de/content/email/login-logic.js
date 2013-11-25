@@ -370,7 +370,7 @@ UnitedInternetLoginAccount.prototype =
     this._clearLoginToken();
     var self = this;
     notifyGlobalObservers("logged-out", { account : self });
-    // TODO removes and invalidates contextService session cookie?
+    // TODO removes and invalidates contextService session?
     invalidateLoginToken(this.config.loginTokenServerURL, loginToken,
         successCallback, errorCallback);
   },
@@ -628,7 +628,12 @@ function uasLogin(uasURL, serviceID, loginToken,
           {
             obj.ignoreFolderTypes = sanitize.string(service.ignoredFolders).split(",");
             obj.interval = sanitize.integer(service.pollIntervalSec);
-            obj.sessionCookie = fetch.getResponseHeader("Set-Cookie"); // HACK bug 163861
+            // HACK bug 163861 = CAMCBR-119; see also #1299
+            var cookie = fetch.getResponseHeader("Set-Cookie");
+            // cookie will be null, if cookie and header not set
+            if (cookie) {
+              obj.sessionCookie = cookie;
+            }
           }
         } catch (e) {
           errorInBackend(e);

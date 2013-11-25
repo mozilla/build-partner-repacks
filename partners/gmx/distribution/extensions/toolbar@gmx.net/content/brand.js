@@ -125,7 +125,7 @@ search : {
     historyNetErrorURL : "%GOTB%search_hsty_404/?su=",
     injectPSHURL : "%GOTB%psh/?su=",
     urlbarURL: "%GOTB%searchicon/?su=",
-    suggestURL : "http://suggestplugin.ui-portal.de/suggest_json/?origin=tb_sbox_ff&brand=gmx&su=",
+    suggestURL : "http://suggestplugin.ui-portal.de/s?origin=tb_sbox_ff_sg&brand=gmx&su=",
     suggestName : "%BRAND%",
     engineName : "GMX Suche", // main -- do not translate, must match OSD
     searchPlugins : [ // name in OSD file, filename in our searchplugins/ ext dir

@@ -94,7 +94,7 @@ search : {
     historyNetErrorURL : "%GOTB%search_hsty_404/?su=",
     injectPSHURL : "%GOTB%psh/?su=",
     urlbarURL: "%GOTB%searchicon/?su=",
-    suggestURL : "http://search.mail.com/SuggestSearch/suggest_json/?origin=tb_sbox_ff&mc=tb_sbox_ff@suche@ffox.suche@web&brand=mailcom&su=",
+    suggestURL : "http://search.mail.com/SuggestSearch/s?origin=tb_sbox_ff_sg&brand=mailcom&q=",
     suggestName : "%BRAND%",
     engineName : "mail.com search", // main -- do not translate, must match OSD
     searchPlugins : [ // name in OSD file, filename in our searchplugins/ ext dir

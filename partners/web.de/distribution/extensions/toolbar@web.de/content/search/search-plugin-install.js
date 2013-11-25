@@ -42,30 +42,29 @@ function copySearchPlugins(makeDefault)
       break;
     }
 
-  for each (let entry in brand.search.searchPlugins)
-  {
+  brand.search.searchPlugins.forEach(function (entry) {
     let sourceURL = "chrome://unitedtb-searchplugins/content/" + entry.filename;
     let preexisting = Services.search.getEngineByName(entry.name) != null;
     // Save pre-install status for de-install
     ourPref.set("search.enginePreexising." + entry.name, preexisting);
     if (preexisting) {
       Services.search.getEngineByName(entry.name).hidden = false;
-      continue; // already copied (we are also called from region-changed)
+      return; // already copied (we are also called from region-changed)
     }
     Services.search.addEngine(sourceURL, Ci.nsISearchEngine.DATA_XML, false, null, {
       onSuccess: function (engine) {
         if (engine.name != entry.name) {
-          errorNonCritical(new Exception("brand.js has engine name " +
+          errorInBackend(new Exception("brand.js has engine name " +
               entry.name + ", but OSD file has name " + engine.name +
               ". This will break search in a subtle way, we must fix this."));
         }
       },
       onError: function (errorCode) {
-        errorNonCritical(new Exception("Search engine " + entry.name +
+        errorInBackend(new Exception("Search engine " + entry.name +
             " install failed with error code " + errorCode));
       }
     });
-  }
+  });
 
   runAsync(function() { // workaround, @see function description above
     // on region-change, change to our region engine

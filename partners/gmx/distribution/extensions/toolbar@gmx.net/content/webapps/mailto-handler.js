@@ -61,10 +61,17 @@ function handleMailTo() {
 
     // We're on chrome://.../mailto-handler.xul. Go back to webpage,
     // in all cases, and immediately, before the login dialog is done
-    // TODO: This will only work until FF26. See #1259
-    try {
-      document.location.replace(document.defaultView.history.previous);
-    } catch (e) {} // This can fail on a new tab with no previous
+    // This won't work in cases where the page is not in history, like
+    // about:blank and about:newtab.
+    // This is essentially |sessionHistory.previous|,
+    // ported from removed pre-FF26  C++ code.
+    var sh = firefoxWindow.gBrowser.webNavigation.sessionHistory;
+    if (sh.index > 0) {
+      var she = sh.getEntryAtIndex(sh.index - 1, false);
+      if (she) {
+        document.location.replace(she.URI.spec);
+      }
+    }
   } catch (e) { errorCritical(e); }
 }
 

@@ -107,7 +107,7 @@ search : {
     historyNetErrorURL : "%GOTB%search_hsty_404/?su=",
     injectPSHURL : "%GOTB%psh/?su=",
     urlbarURL: "%GOTB%searchicon/?su=",
-    suggestURL : "http://suggestplugin.ui-portal.de/suggest_json/?origin=tb_sbox_ff&brand=webde&su=",
+    suggestURL : "http://suggestplugin.ui-portal.de/s?origin=tb_sbox_ff_sg&brand=webde&su=",
     suggestName : "%BRAND%",
     engineName : "WEB.DE Suche", // main -- do not translate, must match OSD
     searchPlugins : [ // name in OSD file, filename in our searchplugins/ ext dir
