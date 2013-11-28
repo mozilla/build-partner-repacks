@@ -8,10 +8,10 @@ NAME: APP_NAME,
 TYPE: "barff",
 COOKIE: "bar.ff"},
 BUILD: {
-DATE: "Tue Oct 29 2013 15:04:14 GMT+0000",
-REVISION: 57606},
+DATE: "Thu Nov 28 2013 09:47:14 GMT+0000",
+REVISION: 57787},
 PLATFORM: {
-VERSION: 15,
+VERSION: 16,
 BLACKLIST_URL: "http://export.yandex.ru/bar/blacklist.xml"},
 CORE: {
 CONTRACT_ID: "@yandex.ru/custombarcore;" + APP_NAME,

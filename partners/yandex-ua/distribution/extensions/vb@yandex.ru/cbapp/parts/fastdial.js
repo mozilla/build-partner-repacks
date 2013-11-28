@@ -60,7 +60,6 @@ this._application.barnavig.removeDataProvider(this._barnavigDataProvider);
 this._registeredListeners = null;
 this._startDecision = null;
 this._historyThumbs = null;
-this._domainsCache = null;
 this._application = null;
 this._logger = null;
 }
@@ -80,12 +79,11 @@ break;
 case this._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT:
 aData = JSON.parse(aData);
 for(let [url, historyThumbData] in Iterator(this._historyThumbs)) {
-let historyThumbURI = this.url2nsIURI(url);
-if (historyThumbURI.asciiHost !== aData.domain)
+let historyThumbHost = this.getDecodedUrlHost(url);
+if (! historyThumbHost || historyThumbHost !== aData.domain)
 continue;
-delete aData.domain;
-sysutils.copyProperties(aData,historyThumbData);
-this.sendRequest("historyThumbChanged",historyThumbData);
+sysutils.copyProperties(aData,historyThumbData.cloud);
+this.sendRequest("historyThumbChanged",this._application.frontendHelper.getDataForThumb(historyThumbData));
 }
 
 break;
@@ -143,22 +141,13 @@ this.sendRequestToTab(outerWindowId,command,data);
 ,
 sendRequestToTab: function Fastdial_sendRequestToTab(outerWindowId, command, data) {
 var listeners = this._registeredListeners[outerWindowId];
-if (! listeners || ! listeners[command] || this._application.thumbs.muteFrontendMessages && command === "thumbChanged")
+if (! listeners || ! listeners[command])
 return;
-data = sysutils.copyObj(data,true);
-if (command === "thumbChanged")
-{
-let lastThumbIndex = this._application.layout.getThumbsNum() - 1;
-let emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb",false);
-if (data[lastThumbIndex] && emptyLastThumb)
-data[lastThumbIndex] = {
-pinned: true};
-}
-
 this._logger.trace("SendRequest [" + command + "]: outer_window_id " + outerWindowId + ": " + JSON.stringify(data));
 listeners[command].forEach(function (callback) {
 if (! (outerWindowId in this._registeredListeners))
 return;
+data = sysutils.copyObj(data,true);
 try {
 callback(data);
 }
@@ -227,14 +216,8 @@ this._application.preferences.set("ftabs.backgroundImage",backgroundImage);
 
 }
 
-var thumbs = this._application.thumbs.muteFrontendMessages ? {
-} : this._application.thumbs.fullStructure;
 var searchStatusPref = this._application.preferences.get("ftabs.searchStatus");
 var searchStatus;
-var emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb",false);
-if (emptyLastThumb)
-thumbs[maxThumbIndex - 1] = {
-pinned: true};
 switch (searchStatusPref) {
 case 0:
 
@@ -255,7 +238,10 @@ y: backboneXY[1],
 showBookmarks: showBookmarks,
 searchStatus: searchStatus,
 backgroundImage: backgroundImage,
-thumbs: thumbs};
+thumbs: this._application.frontendHelper.fullStructure,
+hasClosedTabs: this._recentlyClosedTabs.length > 0,
+hasApps: false,
+sync: this._application.sync.state};
 var brandingLogo = this.brandingXMLDoc.querySelector("logo");
 var brandingSearch = this.brandingXMLDoc.querySelector("search");
 var brandingSearchURL = brandingSearch.getAttribute("url");
@@ -274,11 +260,6 @@ url: searchURL,
 placeholder: brandingSearch.getAttribute("placeholder"),
 example: this._application.searchExample.current,
 navigateTitle: brandingSearch.getAttribute("navigate_title") || ""}};
-requestData.sync = {
-status: this._application.sync.state,
-login: this._application.sync.login,
-advert: this._application.sync.showAdvert,
-offer: this._application.sync.showOffer};
 if (outerWindowId !== undefined)
 {
 this.sendRequestToTab(outerWindowId,"init",requestData);
@@ -364,7 +345,8 @@ licenseURL: productInfo.LicenseURL.fx,
 copyright: productInfo.Copyright.fx,
 rev: this._application.addonManager.addonVersion,
 build: this._application.core.CONFIG.BUILD.REVISION,
-buildDate: Math.round((new Date(this._application.core.CONFIG.BUILD.DATE)).getTime() / 1000)});
+buildDate: Math.round((new Date(this._application.core.CONFIG.BUILD.DATE)).getTime() / 1000),
+sync: this._application.sync.state});
 }
 ,
 getLocalizedString: function Fastdial_getLocalizedString(key) {
@@ -377,7 +359,7 @@ throw new Error("Unknown i18n key: " + key);
 return this.expandBrandingURL(node.getAttribute("value"));
 }
 ,
-applySettings: function Fastdial_applySettings(layout, showBookmarks, sendStat, showSearchForm, bgImage) {
+applySettings: function Fastdial_applySettings(layout, showBookmarks, showSearchForm, bgImage) {
 var self = this;
 var maxNum = this._application.layout.getMaxThumbLayout();
 var oldThumbsNum = this._application.layout.getThumbsNum();
@@ -394,7 +376,6 @@ ignoreBookmarks = true;
 }
 
 this._application.preferences.set("ftabs.showBookmarks",showBookmarks);
-this._application.preferences.set("stat.usage.send",sendStat);
 var bgImageFile = this._application.core.rootDir;
 bgImageFile.append("backgroundImages");
 if (bgImage === "user")
@@ -439,14 +420,13 @@ self.requestInit(undefined,ignoreBookmarks);
 ;
 if (showSearchForm)
 {
-let searchStatusNewValue = searchStatusOldValue === 0 ? 0 : 2;
-onStatusGot(searchStatusNewValue);
+onStatusGot(0);
 }
  else
 {
 AddonManager.gre_AddonManager.getAddonByID(BAR_EXTENSION_ID,function (addonData) {
 var isBarInstalled = addonData !== null && addonData.installDate && addonData.isActive;
-var searchStatusNewValue = isBarInstalled && [0, 1].indexOf(searchStatusOldValue) !== - 1 ? 1 : 3;
+var searchStatusNewValue = isBarInstalled ? 1 : 3;
 onStatusGot(searchStatusNewValue);
 }
 );
@@ -456,60 +436,30 @@ onStatusGot(searchStatusNewValue);
 ,
 requestRecentlyClosedTabs: function Fastdial_requestRecentlyClosedTabs(callback) {
 var self = this;
-var tabsData = [];
-try {
-let tabsDataJSON = SESSION_STORE_SVC.getClosedTabData(misc.getTopBrowserWindow());
-tabsData = JSON.parse(tabsDataJSON);
-}
-catch (e) {
-
-}
-
-if (Preferences.get("browser.startup.page",1) !== 3)
-tabsData.push(this._sessionStoreFileData);
 var tasks = [];
-for (let i = 0;i < tabsData.length;i++) {
-if (! tabsData[i].state || ! tabsData[i].state.entries)
-continue;
-let lastTabEntry = tabsData[i].state.entries.pop();
-if (lastTabEntry.url === this._application.protocolSupport.url)
-continue;
-try {
-let uri = netutils.newURI(lastTabEntry.url);
-uri.QueryInterface(Ci.nsIURL);
-}
-catch (ex) {
-continue;
-}
-
-let bookmark = {
-id: NATIVE_RESTORETAB_PREFIX + i,
-title: lastTabEntry.title || lastTabEntry.url};
-(function (bookmarkData, url, icon) {
+this._recentlyClosedTabs.forEach(function (tabData) {
 tasks.push(function (callback) {
-if (icon)
+var output = {
+id: NATIVE_RESTORETAB_PREFIX + tabData.index,
+title: tabData.tab.title || tabData.tab.url};
+if (tabData.tab.image)
 {
-bookmarkData.favicon = icon;
-return callback(null,bookmarkData);
+output.favicon = tabData.tab.image;
+callback(null,output);
+}
+ else
+{
+self._application.favicons.requestFaviconForURL(tabData.uri,function (faviconData, dominantColor) {
+output.favicon = faviconData || "";
+callback(null,output);
+}
+);
 }
 
-var uri = self.url2nsIURI(url);
-self._application.favicons.requestFaviconForURL(uri,function (faviconData, dominantColor) {
-bookmarkData.favicon = faviconData || "";
-callback(null,bookmarkData);
 }
 );
 }
 );
-}
-)(bookmark,lastTabEntry.url,tabsData[i].image);
-if (tasks.length === RECENTLY_CLOSED_TABS)
-{
-break;
-}
-
-}
-
 async.parallel(tasks,function (err, results) {
 callback(results);
 }
@@ -526,9 +476,16 @@ if (isNativeTab)
 {
 if (id >= SESSION_STORE_SVC.getClosedTabCount(aWindow))
 throw new Error("Tab doesn't exist: #" + id);
-return SESSION_STORE_SVC.undoCloseTab(aWindow,id);
+SESSION_STORE_SVC.undoCloseTab(aWindow,id);
 }
 
+this.sendRequest("closedTabsListChanged",{
+empty: this._recentlyClosedTabs.length === 0});
+}
+,
+onTabClose: function Fastdial_onTabClose() {
+this.sendRequest("closedTabsListChanged",{
+empty: this._recentlyClosedTabs.length === 0});
 }
 ,
 uploadUserBackground: function Fastdial_uploadUserBackground(aWindow, callback) {
@@ -606,19 +563,25 @@ domains: {
 },
 pinned: []};
 var maxThumbIndex = self._application.layout.getThumbsNum();
-self._application.thumbs.structure.iterate({
+self._application.internalStructure.iterate({
 nonempty: true},function (thumbData, i) {
 if (i < maxThumbIndex)
 {
-let thumbHost = self.url2nsIURI(thumbData.url).host;
-output.domains[thumbHost] = 1;
+try {
+let host = thumbData.location.asciiHost.replace(/^www\./,"");
+output.domains[host] = 1;
+}
+catch (ex) {
+
+}
+
 }
  else
 {
 let pushData = {
-url: thumbData.url};
-if (thumbData.title)
-pushData.title = thumbData.title;
+url: thumbData.source};
+if (thumbData.thumb.title)
+pushData.title = thumbData.thumb.title;
 if (thumbData.pinned)
 {
 output.pinned.push(pushData);
@@ -674,103 +637,38 @@ sysutils.copyProperties(page,pages[page.url]);
 }
 );
 for(let [, page] in Iterator(pages)) {
-let pageURI = self.url2nsIURI(page.url);
-if (results.blacklist.indexOf(pageURI.host) !== - 1 || excludeDomains[pageURI.host])
+let pageHost = self.getDecodedUrlHost(page.url);
+if (pageHost && (results.blacklist.domains.indexOf(pageHost) !== - 1 || excludeDomains[pageHost]))
 continue;
-(function (pageData, pageURI) {
-if (self._historyThumbs[pageData.url])
-return sysutils.copyProperties(self._historyThumbs[pageData.url],pageData);
-pageData.isIndexPage = self.isIndexPage(pageURI);
-self._historyThumbs[pageData.url] = pageData;
-self._application.thumbs.searchUrlInLocalDB(pageData.url,function (storageError, rowsData) {
-if (storageError)
-throw new Error(storageError);
-if (rowsData.length)
-{
-if (! pageData.favicon && rowsData[0].favicon)
-pageData.favicon = rowsData[0].favicon;
-if (rowsData[0].backgroundColor)
-{
-pageData.backgroundColor = rowsData[0].backgroundColor;
-pageData.fontColor = self._application.colors.getFontColorByBackgroundColor(rowsData[0].backgroundColor);
-}
-
-if (pageURI.asciiHost)
-{
-self._application.cloudSource.requestExistingTile(pageURI,function (err, cloudData) {
-if (err)
-throw new Error(err);
-if (! cloudData)
-return;
-sysutils.copyProperties(cloudData,pageData);
-sysutils.copyProperties(pageData,self._historyThumbs[pageData.url]);
-self.sendRequest("historyThumbChanged",pageData);
+let isDeniedByRegexp = results.blacklist.regexps.some(function (regexpString) {
+var regex = new RegExp(regexpString);
+return regex.test(page.url);
 }
 );
+if (isDeniedByRegexp)
+continue;
+if (pageHost)
+{
+excludeDomains[pageHost] = 1;
 }
 
-sysutils.copyProperties(pageData,self._historyThumbs[pageData.url]);
-self.sendRequest("historyThumbChanged",pageData);
+if (! self._historyThumbs[page.url])
+{
+self._historyThumbs[page.url] = self._application.internalStructure.convertDbRow(page,false);
+self._application.thumbs.getMissingData(self._historyThumbs[page.url],{
+historyOnly: true});
 }
  else
 {
-let onFaviconDataReady = function (faviconData) {
-pageData.favicon = faviconData;
-sysutils.copyProperties(pageData,self._historyThumbs[pageData.url]);
-self.sendRequest("historyThumbChanged",pageData);
-if (self._historyThumbs[pageData.url].backgroundColor)
-return;
-self._application.colors.requestImageDominantColor(faviconData,function (err, color) {
-if (err || color === null)
-return;
-if (self._historyThumbs[pageData.url].backgroundColor)
-return;
-pageData.backgroundColor = color;
-pageData.fontColor = self._application.colors.getFontColorByBackgroundColor(color);
-sysutils.copyProperties(pageData,self._historyThumbs[pageData.url]);
-self.sendRequest("historyThumbChanged",pageData);
-}
-);
-}
-;
-if (pageData.favicon)
-{
-onFaviconDataReady(pageData.favicon);
-}
- else
-{
-self._application.favicons.requestFaviconForURL(pageURI,function (faviconData, dominantColor) {
-if (! faviconData)
-return;
-onFaviconDataReady(faviconData);
-}
-);
+sysutils.copyProperties(page,self._historyThumbs[page.url].thumb);
 }
 
-if (pageURI.asciiHost)
-{
-self._application.cloudSource.requestExistingTile(pageURI,function (err, cloudData) {
-if (err)
-throw new Error(err);
-if (! cloudData)
-return self._application.cloudSource.fetchTileFromWeb(pageURI);
-sysutils.copyProperties(cloudData,pageData);
-sysutils.copyProperties(pageData,self._historyThumbs[pageData.url]);
-self.sendRequest("historyThumbChanged",pageData);
-}
-);
-}
-
-}
-
-}
-);
-}
-)(page,pageURI);
-output.push(page);
-excludeDomains[pageURI.host] = 1;
+output.push(page.url);
 if (output.length >= MAX_VISITED_NUM)
+{
 break;
+}
+
 }
 
 if (offset)
@@ -782,7 +680,12 @@ output = output.splice(offset,9);
 output.length = Math.min(output.length,9);
 }
 
-callback(output);
+var outputData = output.map(function (url) {
+var cacheData = self._historyThumbs[url];
+return self._application.frontendHelper.getDataForThumb(cacheData);
+}
+);
+callback(outputData);
 }
 );
 }
@@ -800,45 +703,28 @@ this.openSpeculativeConnect(url);
 ,this);
 }
 ,
-isIndexPage: function Fastdial_isIndexPage(uri) {
-try {
-if (! this._application.isYandexHost(uri.asciiHost))
-return uri.path === "/";
-uri.QueryInterface(Ci.nsIURL);
-return uri.filePath === "/";
-}
-catch (ex) {
-return true;
-}
-
-}
-,
 openSpeculativeConnect: function Fastdial_openSpeculativeConnect(url) {
 if (! ("nsISpeculativeConnect" in Ci))
 return;
 var uri;
 try {
-uri = netutils.newURI(this._application.thumbs.fixURL(url));
+uri = netutils.newURI(url);
 }
 catch (e) {
 
 }
 
 if (! uri)
-{
-this._logger.error("Can not create URI for '" + url + "'");
 return;
-}
-
 Services.io.QueryInterface(Ci.nsISpeculativeConnect).speculativeConnect(uri,null,null);
 }
 ,
 onShortcutPressed: function Fastdial_onShortcutPressed(thumbIndex) {
-var thumb = this._application.thumbs.structure.get(thumbIndex);
-if (thumb && thumb.url)
+var thumb = this._application.internalStructure.getItem(thumbIndex);
+if (thumb && thumb.source)
 {
 misc.navigateBrowser({
-url: thumb.url,
+url: thumb.source,
 target: "current tab"});
 }
 
@@ -895,51 +781,43 @@ break;
 
 }
 ,
-url2nsIURI: function Fastdial_url2nsIURI(url, initialUrl) {
-if (this._domainsCache[initialUrl || url])
-return this._domainsCache[initialUrl || url];
+getDecodedUrlHost: function Fastdial_getDecodedUrlHost(url) {
+var decodedURL = this._decodeURL(url);
 var uri;
 try {
-uri = netutils.newURI(url);
-if (uri.host !== "clck.yandex.ru")
-{
-uri.host = uri.host.replace(/^www\./,"");
-return this._domainsCache[initialUrl || url] = uri;
+uri = netutils.newURI(decodedURL);
+}
+catch (ex) {
+
+}
+
+return uri ? uri.asciiHost.replace(/^www\./,"") : null;
+}
+,
+getDecodedLocation: function Fastdial_getDecodedLocation(url) {
+var decodedURL = this._decodeURL(url);
+var uriObj;
+try {
+uriObj = netutils.newURI(decodedURL);
+try {
+uriObj.QueryInterface(Ci.nsIURL);
+}
+catch (ex) {
+
 }
 
 }
 catch (ex) {
-this._logger.error("Could not parse URL: " + strutils.formatError(ex));
-this._logger.debug(ex.stack);
-return this._domainsCache[initialUrl || url] = {
-};
+
 }
 
-var clickrMatches = uri.path.match(/.+?\*(.+)/);
-if (uri.host === "clck.yandex.ru")
-{
-if (clickrMatches)
-{
-let regexFromOld = new RegExp("\\?from=vb-fx$");
-let regexFromNew = new RegExp("\\?from=" + this._application.core.CONFIG.APP.TYPE + "$");
-clickrMatches[1] = clickrMatches[1].replace(/[?&]clid=[^&]+/,"").replace(regexFromOld,"").replace(regexFromNew,"");
-return this.url2nsIURI(clickrMatches[1],url);
+return {
+source: url,
+location: uriObj || null};
 }
-
-let clckrItem = this.brandingClckrDoc.querySelector("item[url='" + url + "']");
-if (clckrItem)
-{
-let host = clckrItem.getAttribute("domain");
-this._domainsCache[initialUrl || url] = netutils.newURI("http://" + host);
-}
- else
-{
-this._domainsCache[initialUrl || url] = uri;
-}
-
-return this._domainsCache[url];
-}
-
+,
+get cachedHistoryThumbs() {
+return this._historyThumbs;
 }
 ,
 get brandingXMLDoc() {
@@ -975,6 +853,39 @@ return tabsData;
 
 return tabsData;
 return tabsData;
+}
+,
+get _recentlyClosedTabs() {
+var tabsData = [];
+var output = [];
+try {
+let tabsDataJSON = SESSION_STORE_SVC.getClosedTabData(misc.getTopBrowserWindow());
+tabsData = JSON.parse(tabsDataJSON);
+}
+catch (e) {
+
+}
+
+if (Preferences.get("browser.startup.page",1) !== 3)
+tabsData.push(this._sessionStoreFileData);
+for (let i = 0;i < tabsData.length;i++) {
+if (! tabsData[i].state || ! tabsData[i].state.entries)
+continue;
+let lastTabEntry = tabsData[i].state.entries.pop();
+if (lastTabEntry.url === this._application.protocolSupport.url)
+continue;
+output.push({
+index: i,
+uri: netutils.newURI(lastTabEntry.url),
+tab: lastTabEntry});
+if (output.length === RECENTLY_CLOSED_TABS)
+{
+break;
+}
+
+}
+
+return output;
 }
 ,
 _barnavigDataProvider: {
@@ -1020,13 +931,15 @@ onBarNavigResponse: function Fastdial_BNDP_onBarNavigResponse() {
 _dataContainer: null},
 requestTitleForURL: function Fastdial_requestTitleForURL(url, callback) {
 var self = this;
-var uri = netutils.newURI(url);
 var seriesTasks = {
 };
+var locationObj = this.getDecodedLocation(url);
 var titleFound;
+if (! locationObj.location)
+return callback("URL is not valid: " + url);
 seriesTasks.history = function Fastdial_requestTitleForURL_historySeriesTask(callback) {
 try {
-PlacesUtils.asyncHistory.getPlacesInfo(uri,{
+PlacesUtils.asyncHistory.getPlacesInfo(locationObj.location,{
 handleResult: function handleResult(aPlaceInfo) {
 titleFound = aPlaceInfo.title;
 if (titleFound)
@@ -1036,13 +949,13 @@ callback();
 ,
 handleError: function handleError(aResultCode, aPlaceInfo) {
 if (aResultCode !== Cr.NS_ERROR_NOT_AVAILABLE)
-self._logger.error("Error in asyncHistory.getPlacesInfo (" + JSON.stringify(uri) + "): " + aResultCode);
+self._logger.error("Error in asyncHistory.getPlacesInfo (" + JSON.stringify(locationObj.location) + "): " + aResultCode);
 callback();
 }
 });
 }
 catch (ex) {
-titleFound = PlacesUtils.history.getPageTitle(uri);
+titleFound = PlacesUtils.history.getPageTitle(locationObj.location);
 if (titleFound)
 return callback("stop");
 callback();
@@ -1051,16 +964,26 @@ callback();
 }
 ;
 seriesTasks.request = function Fastdial_requestTitleForURL_requestSeriesTask(callback) {
-if (self._application.isYandexHost(uri.host))
-{
+var isStandardURL = true;
 try {
-uri.QueryInterface(Ci.nsIURL);
-let parsedQuery = netutils.querystring.parse(uri.query);
-parsedQuery.nugt = "vbff-" + self._application.addonManager.addonVersion;
-uri.query = netutils.querystring.stringify(parsedQuery);
+locationObj.location.QueryInterface(Ci.nsIURL);
 }
 catch (ex) {
-self._logger.error("URI is not URL: " + uri.spec);
+isStandardURL = false;
+}
+
+if (! isStandardURL || ! locationObj.location.host)
+return callback("Not a valid nsIURL: " + url);
+if (self._application.isYandexHost(locationObj.location.host))
+{
+try {
+locationObj.location.QueryInterface(Ci.nsIURL);
+let parsedQuery = netutils.querystring.parse(locationObj.location.query);
+parsedQuery.nugt = "vbff-" + self._application.addonManager.addonVersion;
+locationObj.location.query = netutils.querystring.stringify(parsedQuery);
+}
+catch (ex) {
+self._logger.error("URI is not URL: " + url);
 }
 
 }
@@ -1069,7 +992,7 @@ var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXML
 xhr.overrideMimeType("text/plain; charset=x-user-defined");
 xhr.mozBackgroundRequest = true;
 xhr.QueryInterface(Ci.nsIDOMEventTarget);
-xhr.open("GET",uri.spec,true);
+xhr.open("GET",locationObj.location.spec,true);
 var timer = new sysutils.Timer(function () {
 xhr.abort();
 }
@@ -1147,6 +1070,40 @@ return this._application.branding.expandBrandTemplates(url,{
 vbID: this._application.core.CONFIG.APP.TYPE});
 }
 ,
+_decodeURL: function Fastdial__decodeURL(url) {
+var outputURL;
+try {
+let uri = netutils.newURI(url);
+if (uri.host === "clck.yandex.ru")
+{
+let clickrMatches = uri.path.match(/.+?\*(.+)/);
+if (clickrMatches)
+{
+let regexFromOld = new RegExp("\\?from=vb-fx$");
+let regexFromNew = new RegExp("\\?from=" + this._application.core.CONFIG.APP.TYPE + "$");
+clickrMatches[1] = clickrMatches[1].replace(/[?&]clid=[^&]+/,"").replace(regexFromOld,"").replace(regexFromNew,"");
+outputURL = clickrMatches[1];
+}
+ else
+{
+let clckrItem = this.brandingClckrDoc.querySelector("item[url='" + url + "']");
+outputURL = clckrItem ? "http://" + clckrItem.getAttribute("domain") : url;
+}
+
+}
+ else
+{
+outputURL = url;
+}
+
+}
+catch (ex) {
+outputURL = url;
+}
+
+return outputURL;
+}
+,
 _initFileSystem: function Fastdial__initFileSystem() {
 var bgImagesDir = this._application.core.rootDir;
 bgImagesDir.append("backgroundImages");
@@ -1159,10 +1116,11 @@ var appInfo = this._application.addonManager.info;
 if (appInfo.isFreshAddonInstall || appInfo.addonUpgraded)
 {
 const BACKGROUND_IMAGE_PREF = "ftabs.backgroundImage";
+let backgroundImagePref = this._application.preferences.get(BACKGROUND_IMAGE_PREF,"");
 let files = bgImagesDir.directoryEntries;
 while (files.hasMoreElements()) {
 let imgFile = files.getNext().QueryInterface(Ci.nsIFile);
-if (/^\./.test(imgFile.leafName) || imgFile.leafName === USER_FILE_LEAFNAME)
+if (/^\./.test(imgFile.leafName) || imgFile.leafName === USER_FILE_LEAFNAME || imgFile.leafName === backgroundImagePref)
 {
 continue;
 }
@@ -1178,11 +1136,16 @@ if (/^\./.test(imgFile.leafName))
 continue;
 }
 
+try {
 imgFile.copyTo(bgImagesDir,imgFile.leafName);
+}
+catch (ex) {
+
+}
+
 }
 
 let forceChangeBg = false;
-let backgroundImagePref = this._application.preferences.get(BACKGROUND_IMAGE_PREF,"");
 if (backgroundImagePref)
 {
 let bgImage = bgImagesDir.clone();
@@ -1221,6 +1184,4 @@ _clearHistoryThumbsTimer: null,
 _outerWindowIdList: {
 },
 _logTabShowFlag: true,
-_tabsShownCounter: 0,
-_domainsCache: {
-}};
+_tabsShownCounter: 0};

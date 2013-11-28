@@ -1,6 +1,7 @@
 "use strict";
 const EXPORTED_SYMBOLS = ["cloudSource"];
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
+Cu.import("resource://gre/modules/Services.jsm");
 const GLOBAL = this;
 const DB_FILENAME = "fastdial.sqlite";
 const API_DATA_RECEIVED_EVENT = "ftabs-api-data-received";
@@ -8,7 +9,7 @@ const SELF_DATA_RECEIVED_EVENT = "ftabs-self-data-received";
 const CLOUD_API_URL = "http://api.browser.yandex.ru/dashboard/v2/get/?nodes=";
 const MAX_LOGO_WIDTH = 150;
 const MAX_LOGO_HEIGHT = 60;
-Cu.import("resource://gre/modules/Services.jsm");
+var cachedCloudData = Object.create(null);
 const cloudSource = {
 init: function CloudSource_init(application) {
 application.core.Lib.sysutils.copyProperties(application.core.Lib,GLOBAL);
@@ -26,7 +27,6 @@ this._pendingRequests.forEach(function (request) {
 request.abort();
 }
 );
-this._cloudDataDomainsQueue = null;
 this._pagesLoadQueue = null;
 this._manifestLoadQueue = null;
 var dbClosedCallback = (function _dbClosedCallback() {
@@ -65,8 +65,10 @@ return;
 var newData = {
 backgroundImage: aData.logo,
 backgroundColor: aData.color,
-fontColor: self._application.colors.getFontColorByBackgroundColor(aData.color),
 domain: aData.domain};
+cachedCloudData[aData.domain] = {
+backgroundColor: aData.color,
+backgroundImage: aData.logo};
 self._database.execQueryAsync("INSERT INTO cloud_data (domain, logo, backgroundColor, user_supplied) VALUES (:domain, :logo, :color, 0)",{
 domain: aData.domain,
 logo: aData.logo,
@@ -79,52 +81,69 @@ case SELF_DATA_RECEIVED_EVENT:
 let newData = {
 backgroundImage: aData.logo,
 backgroundColor: aData.color,
-fontColor: this._application.colors.getFontColorByBackgroundColor(aData.color),
 domain: aData.domain};
 this._database.execQueryAsync("INSERT OR REPLACE INTO cloud_data (domain, logo, backgroundColor, user_supplied) VALUES (:domain, :logo, :color, 1)",{
 domain: aData.domain,
 logo: aData.logo,
 color: aData.color});
+cachedCloudData[aData.domain] = {
+backgroundColor: aData.color,
+backgroundImage: aData.logo};
 Services.obs.notifyObservers(this,this._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT,JSON.stringify(newData));
 break;
 }
 
 }
 ,
-requestExistingTile: function CloudSource_requestExistingTile(uri, callback) {
-var self = this;
-var domain = typeof uri === "string" ? uri : uri.asciiHost;
+getCachedExistingData: function CloudSource_getCachedData(host) {
+return cachedCloudData[host] || {
+};
+}
+,
+requestExistingTile: function CloudSource_requestExistingTile(host, callback) {
+if (cachedCloudData[host])
+return callback(null,cachedCloudData[host]);
 this._database.execQueryAsync("SELECT domain, logo, backgroundColor FROM cloud_data WHERE domain = :domain",{
-domain: domain},function CloudSource_requestTileFromDatabase_onDataReady(rowsData, storageError) {
+domain: host},function CloudSource_requestTileFromDatabase_onDataReady(rowsData, storageError) {
 if (storageError || ! rowsData.length)
 return callback(storageError);
-callback(null,{
+cachedCloudData[host] = {
 backgroundImage: rowsData[0].logo,
-backgroundColor: rowsData[0].backgroundColor,
-fontColor: self._application.colors.getFontColorByBackgroundColor(rowsData[0].backgroundColor)});
+backgroundColor: rowsData[0].backgroundColor};
+callback(null,cachedCloudData[host]);
 }
 );
 }
 ,
-fetchTileFromWeb: function CloudSource_fetchTileFromWeb(uri) {
+fetchTileFromWeb: function CloudSource_fetchTileFromWeb(uri, useBothSources) {
+var host;
+try {
+uri.QueryInterface(Ci.nsIURL);
+host = uri.asciiHost.replace(/^www\./,"");
+}
+catch (ex) {
+
+}
+
+if (! host)
+return;
+uri.host = uri.host.replace(/^www\./,"");
 this._requestAPI(uri);
+if (useBothSources)
+{
 this._requestPageManifest(uri);
+}
+
 }
 ,
 _requestPageManifest: function CloudSource__requestPageManifest(uri) {
-if (this._pagesLoadQueue[uri.spec] || ! uri.spec)
+if (! uri.spec || this._pagesLoadQueue[uri.spec])
 return;
 this._pagesLoadQueue[uri.spec] = 1;
 var self = this;
-uri = uri.clone();
 var xhr = this._createXHR();
-try {
+uri = uri.clone();
 uri.QueryInterface(Ci.nsIURL);
-}
-catch (ex) {
-return this._logger.error("URI is not URL: " + uri.spec);
-}
-
 if (this._application.isYandexHost(uri.host))
 {
 let parsedQuery = netutils.querystring.parse(uri.query);
@@ -233,11 +252,22 @@ image.src = imgSource;
 }
 ,
 _requestAPI: function CloudSource__requestAPI(uri) {
-if (this._cloudDataDomainsQueue[uri.asciiHost])
+var host;
+try {
+uri.QueryInterface(Ci.nsIURL);
+host = uri.asciiHost.replace(/^www\./,"");
+}
+catch (ex) {
+
+}
+
+if (! host)
 return;
-this._cloudDataDomainsQueue[uri.asciiHost] = 1;
+if (this._cloudDataDomainsQueue[host])
+return;
+this._cloudDataDomainsQueue[host] = 1;
 var self = this;
-var cloudURL = CLOUD_API_URL + encodeURIComponent(uri.asciiHost) + "&brandID=" + this._application.branding.productInfo.BrandID + "&lang=" + this._application.locale.language;
+var cloudURL = CLOUD_API_URL + encodeURIComponent(host) + "&brandID=" + this._application.branding.productInfo.BrandID + "&lang=" + this._application.locale.language;
 var xhr = this._createXHR();
 xhr.open("GET",cloudURL,true);
 xhr.responseType = "json";
@@ -247,19 +277,19 @@ xhr.abort();
 , 25000);
 xhr.addEventListener("load",function () {
 timer.cancel();
-delete self._cloudDataDomainsQueue[uri.asciiHost];
+delete self._cloudDataDomainsQueue[host];
 if (! xhr.response)
 return self._logger.error("Server response is not a valid JSON: " + xhr.responseText);
 if (xhr.response.error || ! xhr.response[0].color || ! xhr.response[0].resources.logo)
 return;
 self._notifyListeners(API_DATA_RECEIVED_EVENT,{
-domain: uri.asciiHost,
+domain: host,
 color: xhr.response[0].color.replace(/^#/,""),
 logo: xhr.response[0].resources.logo.url});
 }
 );
 var errorHandler = function errorHandler(e) {
-delete self._cloudDataDomainsQueue[uri.asciiHost];
+delete self._cloudDataDomainsQueue[host];
 }
 ;
 xhr.addEventListener("error",errorHandler,false);

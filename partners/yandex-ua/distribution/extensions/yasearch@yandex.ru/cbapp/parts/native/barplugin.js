@@ -38,11 +38,17 @@ return this._enabled;
 ,
 set enabled(value) {
 if (! ! value)
-this.enable(); else
-this.disable();
+this.enable(false); else
+this.disable(false);
 }
 ,
-enable: function NativePlugin_enable() {
+set enabledManually(value) {
+if (! ! value)
+this.enable(true); else
+this.disable(true);
+}
+,
+enable: function NativePlugin_enable(manually) {
 if (this._enabled)
 return;
 this._tryNotify(appCore.eventTopics.EVT_PLUGIN_BEFORE_ENABLED,null);
@@ -54,7 +60,8 @@ type: "plugin",
 id: this._id,
 package_: this._package,
 component: this}, this._logger);
-pluginCore.init(this._nativeAPIInst);
+pluginCore.init(this._nativeAPIInst,{
+stateSwitchedManually: manually});
 }
 
 this._obsService.addObserver(this,appCore.eventTopics.EVT_BEFORE_GLOBAL_RESET,false);
@@ -64,7 +71,7 @@ this._logger.debug("Plugin enabled: " + this._id);
 this._tryNotify(appCore.eventTopics.EVT_PLUGIN_ENABLED,null);
 }
 ,
-disable: function NativePlugin_disable() {
+disable: function NativePlugin_disable(manually) {
 if (! this._enabled)
 return;
 this._tryNotify(appCore.eventTopics.EVT_PLUGIN_BEFORE_DISABLED,null);
@@ -72,7 +79,8 @@ var pluginCore = this._module.core;
 if (pluginCore && typeof pluginCore.finalize == "function")
 {
 try {
-pluginCore.finalize();
+pluginCore.finalize({
+stateSwitchedManually: manually});
 }
 catch (e) {
 this._logger.error("Error finalizing plugin core. " + strutils.formatError(e));

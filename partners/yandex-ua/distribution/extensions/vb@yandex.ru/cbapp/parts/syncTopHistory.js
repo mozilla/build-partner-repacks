@@ -84,7 +84,7 @@ return this._application.sync.svc.getEngine("TopHistory");
 }
 ,
 set initFinished(val) {
-this._engineInitFinished = true;
+this._engineInitFinished = val;
 }
 ,
 _application: null,
