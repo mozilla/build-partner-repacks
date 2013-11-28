@@ -185,8 +185,9 @@ return calcNode;
 }
 ,
 _perform: function UIBuilder__perform(widgetIID, valUID, eventInfo) {
+var procNode;
 try {
-var procNode = this._getCalcNode(widgetIID,valUID);
+procNode = this._getCalcNode(widgetIID,valUID);
 }
 catch (e) {
 throw new UI.Builder.ENoActionHandler(e.message);

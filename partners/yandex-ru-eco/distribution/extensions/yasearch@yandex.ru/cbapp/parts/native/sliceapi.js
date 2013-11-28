@@ -162,6 +162,7 @@ this.__defineGetter__("logger",function () logger);
 return this.logger;
 }
 ,
+get Notifications() this._api.Notifications,
 __exposedProps__: {
 "logger": "r",
 "sliceID": "r",
@@ -180,7 +181,8 @@ __exposedProps__: {
 "brandID": "r",
 "navigate": "r",
 "logCustomAction": "r",
-"XMLHttpRequest": "r"}};
+"XMLHttpRequest": "r",
+"Notifications": "r"}};
 function Messager(sliceEnv) {
 this._env = sliceEnv;
 this._listeners = [];

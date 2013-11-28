@@ -62,7 +62,18 @@ vadd: 0,
 vdel: 0,
 vshow: 0,
 vpinned: 0,
-vsearchform: Number(self._application.searchSuggest.isFormVisible)};
+vsearchform: Number(self._application.searchSuggest.isFormVisible),
+vbookmarkson: Number(self._application.preferences.get("ftabs.showBookmarks")),
+vbookmarksclck: 0,
+vsearchlogo: 0,
+vsearchenter: 0,
+vsearchbutton: 0,
+vsearchsuggest: 0,
+vlinkstabs: 0,
+vlinkshistory: 0,
+vlinksdown: 0,
+vlinksbm: 0,
+vlinkssett: 0};
 rowsData.forEach(function (row) {
 switch (row.action) {
 case "add":
@@ -73,6 +84,27 @@ output.vdel = row.total;
 break;
 case "show":
 output.vshow = row.total;
+break;
+case "vbookmarksclck":
+
+case "vsearchlogo":
+
+case "vsearchenter":
+
+case "vsearchbutton":
+
+case "vsearchsuggest":
+
+case "vlinkstabs":
+
+case "vlinkshistory":
+
+case "vlinksdown":
+
+case "vlinksbm":
+
+case "vlinkssett":
+output[row.action] = row.total;
 break;
 }
 

@@ -82,11 +82,7 @@ let daysPassedAfterInstall = Math.floor((now - installTime) / 86400);
 if (daysPassedAfterInstall >= 1 && aData > 3)
 {
 this._application.preferences.set("sync.advert",false);
-this._application.fastdial.sendRequest("sync",{
-status: this.status,
-login: this.login,
-advert: this.showAdvert,
-offer: this.showOffer});
+this._application.fastdial.sendRequest("sync",this.state);
 }
 
 break;
@@ -102,11 +98,7 @@ return;
 
 if ([LOGIN_STATES.AUTH, LOGIN_STATES.NO_AUTH, LOGIN_STATES.CREDENTIALS_ERROR, LOGIN_STATES.EXPIRED].indexOf(aData.state) !== - 1)
 {
-this._application.fastdial.sendRequest("sync",{
-status: this.state,
-login: this.login,
-advert: this.showAdvert,
-offer: this.showOffer});
+this._application.fastdial.sendRequest("sync",this.state);
 if (aData.state === LOGIN_STATES.AUTH)
 {
 this._application.preferences.reset("sync.showButton");
@@ -117,21 +109,13 @@ this._application.preferences.reset("sync.showButton");
 break;
 case this._application.core.eventTopics.SYNC_COMPONENT_ENABLED:
 async.nextTick(function () {
-this._application.fastdial.sendRequest("sync",{
-status: this.state,
-login: this.login,
-advert: this.showAdvert,
-offer: this.showOffer});
+this._application.fastdial.sendRequest("sync",this.state);
 }
 ,this);
 break;
 case this._application.core.eventTopics.SYNC_COMPONENT_READY:
 this._application.syncPinned.engine.addListener("data",this);
-this._application.fastdial.sendRequest("sync",{
-status: this.state,
-login: this.login,
-advert: this.showAdvert,
-offer: this.showOffer});
+this._application.fastdial.sendRequest("sync",this.state);
 break;
 case this._application.core.eventTopics.SYNC_COMPONENT_DISABLED:
 this._application.syncPinned.engine.removeListener("data",this);
@@ -155,14 +139,14 @@ this._application.syncTopHistory.initFinished = true;
 this._application.thumbs.pickupThumbs();
 break;
 case this._application.core.eventTopics.SYNC_SERVICE_TOPHISTORY_DISABLED:
-
-case this._application.core.eventTopics.SYNC_SERVICE_PINNED_DISABLED:
+this._application.syncTopHistory.initFinished = false;
 this._application.preferences.set("sync.enabled",false);
-this._application.fastdial.sendRequest("sync",{
-status: this.state,
-login: this.login,
-advert: this.showAdvert,
-offer: this.showOffer});
+this._application.fastdial.sendRequest("sync",this.state);
+break;
+case this._application.core.eventTopics.SYNC_SERVICE_PINNED_DISABLED:
+this._application.syncPinned.initFinished = false;
+this._application.preferences.set("sync.enabled",false);
+this._application.fastdial.sendRequest("sync",this.state);
 break;
 case "data":
 if (this._enabledStarted)
@@ -208,73 +192,94 @@ return syncSvc;
 }
 ,
 get state() {
+var output = {
+status: null,
+login: null,
+offer: null,
+view: null,
+enabled: null};
 if (! this.svc)
-return STATES.NO_SYNC_COMPONENT;
+{
+output.status = STATES.NO_SYNC_COMPONENT;
+}
+ else
+{
 if (this.svc.expired)
-return STATES.TOKEN_EXPIRED;
+{
+output.status = STATES.TOKEN_EXPIRED;
+}
+ else
+{
 if (this.svc.authorized)
-return STATES.SYNCING;
-return this._application.preferences.get("sync.showButton",true) ? STATES.NOT_AUTHORIZED : STATES.NO_SYNC_COMPONENT;
+{
+output.status = STATES.SYNCING;
+output.enabled = this._application.syncPinned.engine.enabled && this._application.syncTopHistory.engine.enabled;
+output.offer = output.enabled || ! this._application.preferences.get("sync.offer") ? 0 : 1;
+output.login = this.svc.username;
 }
-,
-get login() {
-return this.state === STATES.SYNCING ? this.svc.username : null;
+ else
+{
+output.status = STATES.NOT_AUTHORIZED;
+if (! this._application.preferences.get("sync.showButton"))
+{
+output.view = 1;
 }
-,
-get showAdvert() {
-if (this.state !== STATES.NOT_AUTHORIZED || ! this._application.preferences.get("sync.advert",true))
-return false;
-var now = Math.round(Date.now() / 1000);
-var installTime = this._application.preferences.get("general.install.time");
-var daysPassedAfterInstall = Math.floor((now - installTime) / 86400);
-return daysPassedAfterInstall >= 1;
+ else
+{
+let showAdvertPref = this._application.preferences.get("sync.advert");
+let now = Math.round(Date.now() / 1000);
+let installTime = this._application.preferences.get("general.install.time");
+let daysPassedAfterInstall = Math.floor((now - installTime) / 86400);
+output.view = showAdvertPref && daysPassedAfterInstall >= 1 ? 3 : 2;
 }
-,
-get showOffer() {
-var bothEnginesEnabled = this.svc && this._application.syncPinned.engine.enabled && this._application.syncTopHistory.engine.enabled;
-if (this.state !== STATES.SYNCING || bothEnginesEnabled)
-return 0;
-return Number(this._application.preferences.get("sync.offer",true));
+
+}
+
+}
+
+}
+
+return output;
 }
 ,
 suppressAdvert: function Sync_suppressAdvert() {
 this._application.preferences.set("sync.advert",false);
-this._application.fastdial.sendRequest("sync",{
-status: this.state,
-login: this.login,
-advert: false,
-offer: this.showOffer});
+this._application.fastdial.sendRequest("sync",this.state);
 }
 ,
 suppressOffer: function Sync_suppressOffer() {
 this._application.preferences.set("sync.offer",false);
-this._application.fastdial.sendRequest("sync",{
-status: this.state,
-login: this.login,
-advert: false,
-offer: this.showOffer});
+this._application.fastdial.sendRequest("sync",this.state);
 }
 ,
 hideBlockUI: function Sync_hideBlockUI() {
 this._application.preferences.set("sync.showButton",false);
-this._application.fastdial.sendRequest("sync",{
-status: this.state,
-login: this.login,
-advert: this.showAdvert,
-offer: this.showOffer});
+this._application.fastdial.sendRequest("sync",this.state);
 }
 ,
 prepareUrlForServer: function Sync_prepareUrlForServer(url) {
 var uri;
+var host;
 try {
 uri = netutils.newURI(url);
 }
 catch (ex) {
-return url;
+
 }
 
-if (uri.host !== "clck.yandex.ru")
-return this._application.isYandexHost(uri.host) ? this._cutFromParam(url) : url;
+if (! uri)
+return url;
+try {
+host = uri.host;
+}
+catch (ex) {
+
+}
+
+if (! host)
+return url;
+if (host !== "clck.yandex.ru")
+return this._application.isYandexHost(host) ? this._cutFromParam(url) : url;
 var clickrMatches = uri.path.match(/.+?\*(.+)/);
 if (clickrMatches)
 return this._cutFromParam(clickrMatches[1]);
@@ -283,8 +288,20 @@ return clckrItem ? "http://" + clckrItem.getAttribute("domain") : url;
 }
 ,
 prepareUrlForSave: function Sync_prepareUrlForSave(url) {
-var uri = netutils.newURI(url);
+var uri;
+try {
+uri = netutils.newURI(url);
 if (! this._application.isYandexHost(uri.host))
+{
+return url;
+}
+
+}
+catch (ex) {
+
+}
+
+if (! uri)
 return url;
 try {
 uri.QueryInterface(Ci.nsIURL);
@@ -318,20 +335,14 @@ if (this._application.preferences.get("sync.enabled",false))
 return;
 this._application.preferences.set("sync.enabled",true);
 this._application.preferences.set("sync.offer",false);
-this._application.fastdial.sendRequest("sync",{
-status: this.state,
-login: this.login,
-advert: this.showAdvert,
-offer: 0});
+var evtData = this.state;
+evtData.offer = 0;
+this._application.fastdial.sendRequest("sync",evtData);
 }
 ,
 _onAnyEngineFinishedLoading: function Sync__onAnyEngineFinishedLoading() {
 this._enabledStarted = false;
-this._application.fastdial.sendRequest("sync",{
-status: this.state,
-login: this.login,
-advert: this.showAdvert,
-offer: this.showOffer});
+this._application.fastdial.sendRequest("sync",this.state);
 }
 ,
 _cutFromParam: function Sync__cutFromParam(url) {
