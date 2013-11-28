@@ -21,9 +21,9 @@ component {1ad918b4-4729-11e1-ab8a-dff4577f00a5} components/core.js
 contract @yandex.ru/vb-core;1 {1ad918b4-4729-11e1-ab8a-dff4577f00a5}
 category profile-after-change YandexVBCore @yandex.ru/vb-core;1
 
-component {64845B2B-DA10-4AC8-981C-BE0A3283EB7C} components/vb.js
-contract @mozilla.org/vb-api;1 {64845B2B-DA10-4AC8-981C-BE0A3283EB7C}
-category JavaScript-global-property vb @mozilla.org/vb-api;1
+# component {64845B2B-DA10-4AC8-981C-BE0A3283EB7C} components/vb.js
+# contract @mozilla.org/vb-api;1 {64845B2B-DA10-4AC8-981C-BE0A3283EB7C}
+# category JavaScript-global-property vb @mozilla.org/vb-api;1
 
 ####################################################################
 

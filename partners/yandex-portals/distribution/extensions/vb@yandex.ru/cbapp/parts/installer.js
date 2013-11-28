@@ -3,6 +3,7 @@ const EXPORTED_SYMBOLS = ["installer"];
 const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 const GLOBAL = this;
 const PKG_UPD_TOPIC = "package updated";
+const BROWSER_NTP_PREFNAME = "browser.newtab.url";
 var branding = null;
 var barApp = null;
 const installer = {
@@ -16,6 +17,7 @@ branding = application.branding;
 if (! this.checkLicenseAccepted())
 throw new Error("License agreement rejected");
 this._loadDefaultBrowserPreferences();
+Preferences.observe(BROWSER_NTP_PREFNAME,this);
 const ObserverService = Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);
 ObserverService.addObserver(this,"sessionstore-windows-restored",false);
 var addonManagerInfo = barApp.addonManager.info;
@@ -25,8 +27,11 @@ this._migrateYandexBarData();
 this._application.preferences.set("general.install.time",Math.round(Date.now() / 1000));
 }
 
-if (addonManagerInfo.addonVersionChanged && ! addonManagerInfo.isFreshAddonInstall && addonManagerInfo.addonUpgraded)
+if (addonManagerInfo.addonVersionChanged && addonManagerInfo.addonUpgraded)
 {
+if (this.isYandexURL(Preferences.get("keyword.URL","")))
+Preferences.reset("keyword.URL");
+if (! addonManagerInfo.isFreshAddonInstall)
 this._onAddonUpdated();
 }
 
@@ -52,28 +57,11 @@ this._setAlienNewTabUrls();
 
 }
 
-if (addonManagerInfo.addonVersionChanged && addonManagerInfo.addonUpgraded)
-{
-if (this._application.core.CONFIG.APP.TYPE == "vbff")
-{
-Cu.import("resource://gre/modules/AddonManager.jsm",{
-}).AddonManager.getAddonByID("yasearch@yandex.ru",function (barAddon) {
-if (! barAddon)
-return;
-if (! barAddon.userDisabled && ! barAddon.appDisabled)
-return;
-barAddon.userDisabled = false;
-barAddon.appDisabled = false;
-}
-);
-}
-
-}
-
 }
 ,
 finalize: function Installer_finalize(doCleanup) {
 this._application.branding.removeListener(PKG_UPD_TOPIC,this);
+Preferences.ignore(BROWSER_NTP_PREFNAME,this);
 }
 ,
 onAddonEvent: function Installer_onAddonEvent(aEventType, aAddon, aPendingRestart) {
@@ -110,6 +98,18 @@ new sysutils.Timer(this.closeTabs.bind(this,"bar:tabs"), 1000);
 this._showWelcomePageOnStartup();
 Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService).removeObserver(this,aTopic,false);
 break;
+case "nsPref:changed":
+switch (aData) {
+case BROWSER_NTP_PREFNAME:
+if (! Preferences.isSet(BROWSER_NTP_PREFNAME))
+{
+Preferences.set(BROWSER_NTP_PREFNAME,this._application.core.CONFIG.APP.PROTOCOL + ":tabs");
+}
+
+break;
+}
+
+break;
 case PKG_UPD_TOPIC:
 this._onBrandPkgUpdated();
 break;
@@ -118,28 +118,7 @@ break;
 }
 ,
 closeTabs: function Installer_closeTabs(url) {
-if (! url)
-return;
-var cropURL = function cropURL(str) str.split(/[?&#]/)[0].replace(/\/$/,"");
-url = cropURL(url);
-misc.getBrowserWindows().forEach(function (chromeWin) {
-var tabBrowser = chromeWin.gBrowser;
-var tabs = tabBrowser && tabBrowser.tabContainer && Array.slice(tabBrowser.tabContainer.childNodes);
-if (! Array.isArray(tabs))
-return;
-tabs.forEach(function (tab) {
-try {
-if (cropURL(tab.linkedBrowser.currentURI.spec) === url)
-tabBrowser.removeTab(tab);
-}
-catch (e) {
-
-}
-
-}
-);
-}
-);
+tabsHelper.closeByURL(url);
 }
 ,
 get anonymousStatistic() {
@@ -394,7 +373,7 @@ return this._setupData;
 get isDefaultNewTabUrl() {
 var ftabUrl = this._application.core.CONFIG.APP.PROTOCOL + ":tabs";
 var values = [ftabUrl, "about:blank", "about:newtab"];
-var pref = Preferences.get("browser.newtab.url","about:blank");
+var pref = Preferences.get(BROWSER_NTP_PREFNAME,"about:blank");
 if (~ values.indexOf(pref))
 return true;
 return false;
@@ -436,7 +415,7 @@ return ["/=45:A", "Yandex", "Seznam", "Bozzon"].indexOf(aQSName) == - 1;
 }
 ,
 _setAlienNewTabUrls: function Installer__setAlienNewTabUrls() {
-var pref = Preferences.get("browser.newtab.url");
+var pref = Preferences.get(BROWSER_NTP_PREFNAME);
 this._application.preferences.set("browser.alien.newtab.url",pref);
 }
 ,
@@ -494,8 +473,12 @@ const ftabAddress = this._application.protocolSupport.url;
 const BROWSER_HOMEPAGE_PREFNAME = "browser.startup.homepage";
 this.closeTabs(ftabAddress);
 var ftabUrl = this._application.core.CONFIG.APP.PROTOCOL + ":tabs";
-if (Preferences.get("browser.newtab.url") === ftabUrl)
-Preferences.reset("browser.newtab.url");
+if (Preferences.get(BROWSER_NTP_PREFNAME) === ftabUrl)
+{
+Preferences.ignore(BROWSER_NTP_PREFNAME,this);
+Preferences.reset(BROWSER_NTP_PREFNAME);
+}
+
 Preferences.reset("extensions.tabmix.newtab.url");
 this._application.preferences.set("disabled",true);
 if (Preferences.get(BROWSER_HOMEPAGE_PREFNAME) === ftabAddress)
@@ -503,6 +486,7 @@ Preferences.reset(BROWSER_HOMEPAGE_PREFNAME);
 }
 ,
 _onAddonDisablingCancelled: function Installer__onAddonDisablingCancelled() {
+Preferences.observe(BROWSER_NTP_PREFNAME,this);
 this.setBrowserNewTabUrl();
 this._application.preferences.reset("disabled");
 var goodbyeURL = this.setupData.GoodbyePage.url;
@@ -947,7 +931,7 @@ AddonManager.uninstallAddonsByIDs(addonsToUninstall,true);
 ,
 setBrowserNewTabUrl: function Installer_setBrowserNewTabUrl() {
 var ftabUrl = this._application.core.CONFIG.APP.PROTOCOL + ":tabs";
-Preferences.set("browser.newtab.url",ftabUrl);
+Preferences.set(BROWSER_NTP_PREFNAME,ftabUrl);
 Preferences.set("extensions.tabmix.newtab.url",ftabUrl);
 }
 ,
@@ -965,5 +949,39 @@ this._application.preferences.loadFromFile(safeBrowsingFile);
 
 }
 
+}
+};
+const tabsHelper = {
+closeByURL: function TabsHelper_closeByURL(url) {
+this._applyFunctionOnTabsByURL(url,function closeTabFn(tabBrowser, tab) tabBrowser.removeTab(tab));
+}
+,
+selectByURL: function TabsHelper_selectByURL(url) {
+this._applyFunctionOnTabsByURL(url,function selectTabFn(tabBrowser, tab) tabBrowser.selectedTab = tab);
+}
+,
+_applyFunctionOnTabsByURL: function TabsHelper__applyFunctionOnTabsByURL(url, functionToApply) {
+if (! url)
+return;
+var cropURL = function cropURL(str) str.split(/[?&#]/)[0].replace(/\/$/,"");
+url = cropURL(url);
+misc.getBrowserWindows().forEach(function (chromeWin) {
+var tabBrowser = chromeWin.gBrowser;
+var tabs = tabBrowser && tabBrowser.tabContainer && Array.slice(tabBrowser.tabContainer.childNodes);
+if (! Array.isArray(tabs))
+return;
+tabs.forEach(function (tab) {
+try {
+if (cropURL(tab.linkedBrowser.currentURI.spec) === url)
+functionToApply(tabBrowser,tab);
+}
+catch (e) {
+
+}
+
+}
+);
+}
+);
 }
 };

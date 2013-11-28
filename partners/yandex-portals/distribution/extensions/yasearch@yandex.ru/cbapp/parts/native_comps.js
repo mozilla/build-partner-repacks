@@ -3,8 +3,12 @@ const EXPORTED_SYMBOLS = ["NativeComponents"];
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 const GLOBAL = this;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-const BRAND_SVC_COMPONENT_ID = "ru.yandex.custombar.branding", BRAND_SVC_NAME = "package", BRAND_SVC_PKG_UPD_TOPIC = "package updated";
-var application, appCore, BarPlatform;
+const BRAND_SVC_COMPONENT_ID = "ru.yandex.custombar.branding";
+const BRAND_SVC_NAME = "package";
+const BRAND_SVC_PKG_UPD_TOPIC = "package updated";
+var application;
+var appCore;
+var BarPlatform;
 const NativeComponents = {
 init: function NativeComponents_init(barApplication) {
 this._application = application = barApplication;

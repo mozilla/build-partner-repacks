@@ -98,6 +98,20 @@ set listenStatEventsEnabled(val) {
 if (! ! val == this._listenStatEvents)
 return;
 this._listenStatEvents = ! ! val;
+if (this._application.core.CONFIG.APP.TYPE === "vbff")
+{
+try {
+let barAppBarNavig = Cc["@yandex.ru/custombarcore;yasearch"].getService().wrappedJSObject.application.barnavig;
+if (! this._listenStatEvents)
+barAppBarNavig.addDataProvider(this._barAppDataProvider); else
+barAppBarNavig.removeDataProvider(this._barAppDataProvider);
+}
+catch (e) {
+
+}
+
+}
+
 if (this._listenStatEvents)
 {
 downloadsStat.init();
@@ -111,6 +125,43 @@ windowMediatorListener.disable();
 
 }
 ,
+_barAppDataProvider: {
+onWindowLocationChange: function BarNavig__barAppDataProvider_onWindowLocationChange() {
+
+}
+,
+onPageLoad: function BarNavig__barAppDataProvider_onPageLoad(barAppParams) {
+if (! barnavig.transmissionEnabled)
+return;
+if (barnavig.alwaysSendUsageStat === false)
+return;
+var barNavigParamsLength = Object.keys(barAppParams.barNavigParams).length;
+var [params, callbacks] = barnavig._callDataProviders("onPageLoad",barAppParams);
+if (barNavigParamsLength < Object.keys(barAppParams.barNavigParams).length)
+{
+let emptyParams = barnavig._emptyBarNavigParamsObject;
+["ver", "clid", "yasoft", "brandID"].forEach(function (paramName) barAppParams.barNavigParams["vb" + paramName] = emptyParams[paramName]);
+}
+
+if (! callbacks.length)
+return;
+return function BarNavig__barAppDataProvider_onPageLoadCallback(params) {
+callbacks.filter(function (callback) typeof callback == "object" || typeof callback == "function").forEach(function (callback) {
+try {
+if (typeof callback == "function")
+callback(params); else
+callback.onBarNavigResponse(params);
+}
+catch (e) {
+barnavig._logger.error("Notify provider error \"onBarNavigResponse\": " + e);
+}
+
+}
+);
+}
+;
+}
+},
 addDataProvider: function BarNavig_addDataProvider(aProvider) {
 if (! this._dataProviders.some(function (provider) provider === aProvider))
 this._dataProviders.push(aProvider);
@@ -456,19 +507,7 @@ if (isWindowPrivate(aWindowListenerData.tab.contentWindow))
 return;
 if (! this._dataProviders.length)
 return;
-var params = this._makeParamsForNotification(aWindowListenerData);
-var callbacks = [];
-this._dataProviders.forEach(function BarNavig_onWindowLocationChange_NotificatorFunc(provider) {
-try {
-if (this._dataProviders.indexOf(provider) != - 1)
-callbacks.push(provider.onWindowLocationChange(params));
-}
-catch (e) {
-this._logger.error("Notify provider error \"onWindowLocationChange\": " + e);
-}
-
-}
-,this);
+var [params, callbacks] = this._callDataProviders("onWindowLocationChange",aWindowListenerData);
 }
 ,
 onPageLoad: function BarNavig_onPageLoad(aWindowListenerData) {
@@ -476,20 +515,7 @@ if (isWindowPrivate(aWindowListenerData.tab.contentWindow))
 return;
 if (! this._dataProviders.length && this.alwaysSendUsageStat !== true)
 return;
-var params = this._makeParamsForNotification(aWindowListenerData);
-var callbacks = [];
-this._dataProviders.forEach(function BarNavig_onPageLoad_NotificatorFunc(provider) {
-try {
-if (this._dataProviders.indexOf(provider) != - 1)
-callbacks.push(provider.onPageLoad(params));
-}
-catch (e) {
-this._logger.error("Notify provider error \"onPageLoad\": " + e);
-}
-
-}
-,this);
-callbacks = callbacks.filter(function (c) ! ! c);
+var [params, callbacks] = this._callDataProviders("onPageLoad",aWindowListenerData);
 if (! callbacks.length)
 {
 if (this.alwaysSendUsageStat !== true)
@@ -502,6 +528,24 @@ return;
 this._appendOtherStatParams(params,true);
 params._callbacks = callbacks.filter(function (c) typeof c == "object" || typeof c == "function");
 this._sendRequest(this.BARNAVIG_URL_PATH,params);
+}
+,
+_callDataProviders: function BarNavig__callDataProviders(eventType, windowListenerData) {
+var params = typeof windowListenerData === "object" && "windowListenerData" in windowListenerData ? windowListenerData : this._makeParamsForNotification(windowListenerData);
+var callbacks = [];
+this._dataProviders.forEach(function BarNavig__callDataProviders_NotificatorFunc(provider) {
+try {
+if (this._dataProviders.indexOf(provider) != - 1)
+callbacks.push(provider[eventType](params));
+}
+catch (e) {
+this._logger.error("Notify provider error \"" + eventType + "\": " + e);
+}
+
+}
+,this);
+callbacks = callbacks.filter(function (c) ! ! c);
+return [params, callbacks];
 }
 ,
 onBarNavigResponse: function BarNavig_onBarNavigResponse(aParams, aRequest, aIP) {
@@ -623,12 +667,14 @@ if (winListener)
 win.addEventListener("unload",function WML_win_onUnload() {
 win.removeEventListener("unload",WML_win_onUnload,false);
 win.removeEventListener("click",linkClickListener,true);
+winListener.removeListener("PageStateStart",linkClickListener);
 winListener.removeListener("WindowLocationChange",windowEventsListener);
 winListener.removeListener("PageLoad",windowEventsListener);
 }
 ,false);
 winListener.addListener("WindowLocationChange",windowEventsListener);
 winListener.addListener("PageLoad",windowEventsListener);
+winListener.addListener("PageStateStart",linkClickListener);
 win.addEventListener("click",linkClickListener,true);
 }
 
@@ -665,33 +711,19 @@ break;
 }
 ,
 observe: function linkClickListener_observe(subject, topic, data) {
-if (! this._lastActionText)
-return;
-if (Date.now() - this._lastActionTimestamp > this.ACTION_LIVE_TIME)
-{
-this._lastActionText = null;
-return;
+switch (topic) {
+case "PageStateStart":
+this._onPageStateStart(data);
+break;
+case "http-on-modify-request":
+this._onModifyRequest(subject);
+break;
 }
 
-if (topic !== "http-on-modify-request")
-return;
-try {
-subject.QueryInterface(Ci.nsIHttpChannel);
-if (! (subject.loadFlags & Ci.nsIHttpChannel.LOAD_DOCUMENT_URI))
-return;
-}
-catch (e) {
-
-}
-
-var tabData = this._getTabDataForChannel(subject);
-if (! tabData)
-return;
-tabData.linkText = this._lastActionText;
-this._lastActionText = null;
 }
 ,
 ACTION_LIVE_TIME: 1000,
+PAGE_START_WAIT_TIME: 10000,
 _lastActionTimestamp: null,
 _lastActionText: null,
 _getLinkText: function linkClickListener__getLinkText(event) {
@@ -706,6 +738,47 @@ if (protocol !== "http:")
 return null;
 while (target && target.localName !== "a") target = target.parentNode;
 return target && target.textContent.trim().substr(0,500) || null;
+}
+,
+_onPageStateStart: function linkClickListener__onPageStateStart({tab: tab, request: request}) {
+if (Date.now() - this._lastActionTimestamp > this.PAGE_START_WAIT_TIME)
+return;
+if (! barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false)
+return;
+var winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
+if (! winListener)
+return;
+var tabData = winListener.getTabData(tab,"linkClick");
+if (! tabData)
+return;
+if (tabData.lastURL !== request.URI.spec)
+winListener.removeTabData(tab,"linkClick");
+}
+,
+_onModifyRequest: function linkClickListener__onModifyRequest(channel) {
+if (! this._lastActionText)
+return;
+if (Date.now() - this._lastActionTimestamp > this.ACTION_LIVE_TIME)
+{
+this._lastActionText = null;
+return;
+}
+
+try {
+channel.QueryInterface(Ci.nsIHttpChannel);
+if (! (channel.loadFlags & Ci.nsIHttpChannel.LOAD_INITIAL_DOCUMENT_URI))
+return;
+}
+catch (e) {
+return;
+}
+
+var tabData = this._getTabDataForChannel(channel);
+if (! tabData)
+return;
+tabData.linkText = this._lastActionText;
+tabData.lastURL = channel.URI.spec;
+this._lastActionText = null;
 }
 ,
 _getTabDataForChannel: function linkClickListener__getTabDataForChannel(channel) {

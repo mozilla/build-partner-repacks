@@ -23,16 +23,16 @@ if (! this._application.sync.svc || ! this.engine.enabled || ! this._engineInitF
 return;
 var records = {
 };
-this._application.thumbs.structure.iterate({
+this._application.internalStructure.iterate({
 pinned: true,
 nonempty: true},function (thumbData, index) {
-var syncId = thumbData.syncId || this._application.sync.generateId();
+var syncId = thumbData.sync.id || this._application.sync.generateId();
 records[PREFIX + syncId] = JSON.stringify({
-id: thumbData.id || this._application.sync.generateId(),
-url: this._application.sync.prepareUrlForServer(thumbData.url),
+id: thumbData.sync.id || this._application.sync.generateId(),
+url: this._application.sync.prepareUrlForServer(thumbData.source),
 index: parseInt(index,10),
-timestamp: thumbData.syncTimestamp || Math.round(Date.now() / 1000),
-instance: thumbData.syncInstance || this._application.name});
+timestamp: thumbData.sync.timestamp || Math.round(Date.now() / 1000),
+instance: thumbData.sync.instance || this._application.name});
 }
 ,this);
 this._logger.trace("Saving pinned: " + JSON.stringify(records));
@@ -46,7 +46,7 @@ return this._application.sync.svc.getEngine("Pinned");
 }
 ,
 set initFinished(val) {
-this._engineInitFinished = true;
+this._engineInitFinished = val;
 }
 ,
 processInitial: function SyncPinned_processInitial() {
@@ -57,10 +57,14 @@ var minTimestamp = Math.round(Date.now() / 1000);
 var currentThumbsNum = this._application.layout.getThumbsNum();
 var localThumbs = {
 };
-this._application.thumbs.structure.iterate({
+this._application.internalStructure.iterate({
 pinned: true,
-nonempty: true},function (thumb, index) {
-localThumbs[index] = sysutils.copyObj(thumb);
+nonempty: true},function (thumbData, index) {
+localThumbs[index] = {
+url: thumbData.source,
+syncId: thumbData.sync.id,
+syncInstance: thumbData.sync.instance,
+syncTimestamp: thumbData.sync.timestamp};
 }
 ,this);
 this._logger.trace("Initial thumbs on server: " + JSON.stringify(records));
@@ -103,13 +107,14 @@ delete records[key];
 var output = {
 };
 Object.keys(localThumbs).forEach(function (position) {
-var syncId = localThumbs[position].syncId || this._application.sync.generateId();
+var localThumb = localThumbs[position];
+var syncId = localThumb.syncId || this._application.sync.generateId();
 output[PREFIX + syncId] = {
 id: this._application.sync.generateId(),
-url: localThumbs[position].url,
+url: localThumb.url,
 index: parseInt(position,10),
 timestamp: minTimestamp - 1,
-instance: localThumbs[position].syncInstance || this._application.name};
+instance: localThumb.syncInstance || this._application.name};
 }
 ,this);
 sysutils.copyProperties(records,output);
@@ -122,16 +127,24 @@ return;
 this._logger.trace("Engine initialized. Processing data");
 if (this._fastPickupTimer)
 this._fastPickupTimer.cancel();
-this._application.tasksRunner.pseudoSync(function (done) {
 this._logger.trace("Process data: " + JSON.stringify(records));
 var localPinnedThumbs = {
 };
-this._application.thumbs.structure.iterate({
+this._application.internalStructure.iterate({
 nonempty: true,
 pinned: true},function (thumbData, index) {
 localPinnedThumbs[index] = thumbData;
 }
 ,this);
+var fastPickupSet = {
+};
+this._application.internalStructure.iterate({
+nonempty: true},function (thumbData, index) {
+if (thumbData.pinned)
+return;
+fastPickupSet[index] = thumbData;
+}
+);
 var self = this;
 var pinnedThumbsRegex = new RegExp("^" + PREFIX + "(.+)$");
 var serverPinnedThumbs = [];
@@ -177,12 +190,9 @@ wereChangesMade = true;
 }
  else
 {
-this._logger.trace("This temporary resolved position is empty");
-this._logger.trace("Check thumbs for equality: " + JSON.stringify({
-local: localPinnedThumbs[currentIndex],
-server: serverThumb}));
-if (localPinnedThumbs[currentIndex] && this._isEqualURL(serverThumb.url,localPinnedThumbs[currentIndex].url))
-serverThumb.title = localPinnedThumbs[currentIndex].title || "";
+this._logger.trace("This temporary resolved position is empty. Check thumbs for equality");
+if (localPinnedThumbs[currentIndex] && localPinnedThumbs[currentIndex].source && this._isEqualURL(serverThumb.url,localPinnedThumbs[currentIndex].source))
+serverThumb.title = localPinnedThumbs[currentIndex].thumb.title || "";
 if (this._wereChangesMade(localPinnedThumbs,serverThumb))
 {
 this._logger.trace("Thumbs differ");
@@ -199,7 +209,7 @@ var saveData = {
 };
 var saveEngineData = {
 };
-this._application.thumbs.structure.iterate({
+this._application.internalStructure.iterate({
 nonempty: true,
 pinned: true},function (thumbData, index) {
 removePositions.push(index);
@@ -241,48 +251,38 @@ instance: resolvedPinnedThumbs[position].instance});
 if (! wereChangesMade)
 {
 this._logger.trace("No changes were made. Quit");
-done();
 return;
 }
 
-this._application.thumbs.updateCurrentSet(removePositions,saveData,function () {
-if (! isInitialSync)
-{
-done();
-return;
-}
-
-self._logger.trace("Save resolved data: " + JSON.stringify(saveEngineData));
-self.engine.set(saveEngineData);
-done();
+this._application.thumbs.updateCurrentSet(removePositions,saveData);
 self._fastPickupTimer = new sysutils.Timer(function () {
-self._application.thumbs.fastPickup();
+self._application.thumbs.fastPickup(fastPickupSet);
 }
 , THRESHOLD_FASTPICKUP);
+if (isInitialSync)
+{
+self._logger.trace("Save resolved data: " + JSON.stringify(saveEngineData));
+self.engine.set(saveEngineData);
 }
-);
-}
-,this);
+
 }
 ,
 _isEqualURL: function SyncPinned__isEqualURL(url1, url2) {
-var uri1 = this._application.fastdial.url2nsIURI(this._application.sync.prepareUrlForServer(url1));
-var uri2 = this._application.fastdial.url2nsIURI(this._application.sync.prepareUrlForServer(url2));
-if (sysutils.isEmptyObject(uri1) || sysutils.isEmptyObject(uri2))
+var locationObj1 = this._application.fastdial.getDecodedLocation(url1);
+var locationObj2 = this._application.fastdial.getDecodedLocation(url2);
+if (! locationObj1.location || ! locationObj2.location)
 return false;
-uri1 = uri1.clone();
-uri2 = uri2.clone();
 try {
-uri1.QueryInterface(Ci.nsIURL);
-uri2.QueryInterface(Ci.nsIURL);
+locationObj1.location.QueryInterface(Ci.nsIURL);
+locationObj2.location.QueryInterface(Ci.nsIURL);
 }
 catch (ex) {
 return url1 === url2;
 }
 
-this._cutParams(uri1);
-this._cutParams(uri2);
-return uri1.spec === uri2.spec;
+this._cutParams(locationObj1.location);
+this._cutParams(locationObj2.location);
+return locationObj1.location.spec === locationObj2.location.spec;
 }
 ,
 _cutParams: function SyncPinned__cutParams(uri) {
@@ -323,10 +323,10 @@ _wereChangesMade: function SyncPinned__wereChangesMade(currentPinnedThumbs, serv
 var thumb = currentPinnedThumbs[serverThumb.index];
 if (! thumb)
 return true;
-var urlsAreEqual = this._isEqualURL(thumb.url,serverThumb.url);
-var entriesKeysAreEqual = serverThumb.key === thumb.syncId;
-var instancesAreEqual = serverThumb.instance === thumb.syncInstance;
-var timestampsAreEqual = serverThumb.timestamp === thumb.syncTimestamp;
+var urlsAreEqual = this._isEqualURL(serverThumb.url,thumb.source);
+var entriesKeysAreEqual = serverThumb.key === thumb.sync.id;
+var instancesAreEqual = serverThumb.instance === thumb.sync.instance;
+var timestampsAreEqual = serverThumb.timestamp === thumb.sync.timestamp;
 return ! (urlsAreEqual && entriesKeysAreEqual && instancesAreEqual && timestampsAreEqual);
 }
 ,

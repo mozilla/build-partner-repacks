@@ -19,8 +19,11 @@ this._loadDefaultBrowserPreferences();
 const ObserverService = Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);
 ObserverService.addObserver(this,"sessionstore-windows-restored",false);
 var addonManagerInfo = barApp.addonManager.info;
-if (addonManagerInfo.addonVersionChanged && ! addonManagerInfo.isFreshAddonInstall && addonManagerInfo.addonUpgraded)
+if (addonManagerInfo.addonVersionChanged && addonManagerInfo.addonUpgraded)
 {
+if (this.isYandexURL(Preferences.get("keyword.URL","")))
+Preferences.reset("keyword.URL");
+if (! addonManagerInfo.isFreshAddonInstall)
 this._onAddonUpdated();
 }
 
@@ -60,28 +63,7 @@ break;
 }
 ,
 closeTabs: function Installer_closeTabs(url) {
-if (! url)
-return;
-var cropURL = function cropURL(str) str.split(/[?&#]/)[0].replace(/\/$/,"");
-url = cropURL(url);
-misc.getBrowserWindows().forEach(function (chromeWin) {
-var tabBrowser = chromeWin.gBrowser;
-var tabs = tabBrowser && tabBrowser.tabContainer && Array.slice(tabBrowser.tabContainer.childNodes);
-if (! Array.isArray(tabs))
-return;
-tabs.forEach(function (tab) {
-try {
-if (cropURL(tab.linkedBrowser.currentURI.spec) === url)
-tabBrowser.removeTab(tab);
-}
-catch (e) {
-
-}
-
-}
-);
-}
-);
+tabsHelper.closeByURL(url);
 }
 ,
 _onBrandPkgUpdated: function Installer__onBrandPkgUpdated() {
@@ -567,7 +549,7 @@ _onAddonDisabling: function Installer__onAddonDisabling() {
 _onAddonDisablingCancelled: function Installer__onAddonDisablingCancelled() {
 var goodbyeURL = this.setupData.GoodbyePage.url;
 if (goodbyeURL)
-this.closeTabs(goodbyeURL);
+tabsHelper.closeByURL(goodbyeURL);
 }
 ,
 _onAddonUninstalling: function Installer__onAddonUninstalling() {
@@ -1035,5 +1017,39 @@ loadPrefs("safebrowsing.js");
 loadPrefs("locale/" + this._application.locale.language + "/safebrowsing.js");
 loadPrefs("brand/" + branding.brandID + "/safebrowsing.js");
 Preferences.reset(this._application.preferencesBranch + "safebrowsing.installed");
+}
+};
+const tabsHelper = {
+closeByURL: function TabsHelper_closeByURL(url) {
+this._applyFunctionOnTabsByURL(url,function closeTabFn(tabBrowser, tab) tabBrowser.removeTab(tab));
+}
+,
+selectByURL: function TabsHelper_selectByURL(url) {
+this._applyFunctionOnTabsByURL(url,function selectTabFn(tabBrowser, tab) tabBrowser.selectedTab = tab);
+}
+,
+_applyFunctionOnTabsByURL: function TabsHelper__applyFunctionOnTabsByURL(url, functionToApply) {
+if (! url)
+return;
+var cropURL = function cropURL(str) str.split(/[?&#]/)[0].replace(/\/$/,"");
+url = cropURL(url);
+misc.getBrowserWindows().forEach(function (chromeWin) {
+var tabBrowser = chromeWin.gBrowser;
+var tabs = tabBrowser && tabBrowser.tabContainer && Array.slice(tabBrowser.tabContainer.childNodes);
+if (! Array.isArray(tabs))
+return;
+tabs.forEach(function (tab) {
+try {
+if (cropURL(tab.linkedBrowser.currentURI.spec) === url)
+functionToApply(tabBrowser,tab);
+}
+catch (e) {
+
+}
+
+}
+);
+}
+);
 }
 };
