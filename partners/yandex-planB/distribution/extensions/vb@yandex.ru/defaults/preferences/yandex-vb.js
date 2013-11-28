@@ -7,6 +7,7 @@ pref("extensions.vb@yandex.ru.sync.advert",true);
 pref("extensions.vb@yandex.ru.sync.offer",true);
 pref("extensions.vb@yandex.ru.sync.showButton",true);
 pref("extensions.vb@yandex.ru.sync.enabled",false);
+pref("extensions.vb@yandex.ru.metrika.counter",22883260);
 pref("yandex-vb.core.logging.console.level",50);
 pref("yandex-vb.core.logging.file.level",20);
 
