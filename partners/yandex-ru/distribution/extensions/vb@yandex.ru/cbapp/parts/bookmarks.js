@@ -184,12 +184,21 @@ bookmark.favicon = node.icon;
 return callback(null,bookmark);
 }
 
-var uri = self._application.fastdial.url2nsIURI(node.uri);
-self._application.favicons.requestFaviconForURL(uri,function (faviconData) {
+var locationObj = self._application.fastdial.getDecodedLocation(node.uri);
+if (locationObj.location)
+{
+self._application.favicons.requestFaviconForURL(locationObj.location,function (faviconData) {
 bookmark.favicon = faviconData || "";
 return callback(null,bookmark);
 }
 );
+}
+ else
+{
+bookmark.favicon = "";
+callback(null,bookmark);
+}
+
 }
 );
 }
@@ -258,11 +267,19 @@ onIconReady(livemark,node.icon);
 }
  else
 {
-let uri = self._application.fastdial.url2nsIURI(node.uri);
-self._application.favicons.requestFaviconForURL(uri,function (faviconData) {
+let locationObj = self._application.fastdial.getDecodedLocation(node.uri);
+if (locationObj.location)
+{
+self._application.favicons.requestFaviconForURL(locationObj.location,function (faviconData) {
 onIconReady(livemark,faviconData || "");
 }
 );
+}
+ else
+{
+onIconReady(livemark,"");
+}
+
 }
 
 }

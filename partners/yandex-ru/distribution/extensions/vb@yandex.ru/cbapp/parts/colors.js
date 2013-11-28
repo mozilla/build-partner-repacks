@@ -2,7 +2,7 @@
 const EXPORTED_SYMBOLS = ["colors"];
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 const GLOBAL = this;
-const DEFAULT_BGCOLOR = "e5e5e5";
+const DEFAULT_BGCOLOR = "f2f2f2";
 const FONT_COLOR_THRESHOLD = 170;
 const MAX_THRESHOLD = 238;
 const MIN_THRESHOLD = 20;
@@ -41,7 +41,6 @@ return callback(null,null);
 var canvas = hiddenWindowDoc.createElementNS("http://www.w3.org/1999/xhtml","canvas");
 var ctx = canvas.getContext("2d");
 ctx.mozImageSmoothingEnabled = false;
-var toRGB = function toRGB(num) (num < 16 ? "0" : "") + num.toString(16);
 canvas.setAttribute("width",image.width);
 canvas.setAttribute("height",image.height);
 ctx.drawImage(image,0,0);
@@ -53,15 +52,12 @@ var pixelColorData = new Array(4);
 for (let y = 0;y < imgPixels.height;y++) {
 for (let x = 0;x < imgPixels.width;x++) {
 let index = y * 4 * imgPixels.width + x * 4;
-if (imgPixels.data[index + 3] === 0)
-{
-continue;
-}
-
 pixelColorData[0] = imgPixels.data[index];
 pixelColorData[1] = imgPixels.data[index + 1];
 pixelColorData[2] = imgPixels.data[index + 2];
 pixelColorData[3] = imgPixels.data[index + 3];
+if (isAlmostTransparent(pixelColorData[3]))
+continue;
 if (pixelColorData[3] !== 255)
 {
 for (let z = 0;z < 3;z++) {
@@ -71,6 +67,8 @@ pixelColorData[z] = Math.round(255 - colorStep * pixelColorData[3]);
 
 }
 
+if (isAlmostWhite(pixelColorData) || isAlmostBlack(pixelColorData) || isLightGrey(pixelColorData))
+continue;
 let color = toRGB(pixelColorData[0]) + toRGB(pixelColorData[1]) + toRGB(pixelColorData[2]);
 colorsContainer[color] = colorsContainer[color] || 0;
 colorsContainer[color] += 1;
@@ -116,5 +114,29 @@ return true;
 if (sum <= MAX_THRESHOLD + MIN_THRESHOLD * 2 && (red >= MAX_THRESHOLD || green >= MAX_THRESHOLD || blue >= MAX_THRESHOLD))
 return true;
 return false;
+}
+
+function toRGB(num) {
+return (num < 16 ? "0" : "") + num.toString(16);
+}
+
+function isAlmostTransparent(opacity) {
+return opacity < 230;
+}
+
+function isAlmostWhite(rgb) {
+var [red, green, blue] = rgb;
+return red > 253 && green > 253 && blue > 253;
+}
+
+function isAlmostBlack(rgb) {
+var [red, green, blue] = rgb;
+return red < 10 && green < 10 & blue < 10;
+}
+
+function isLightGrey(rgb) {
+var [red, green, blue] = rgb;
+var meanValue = (red + green + blue) / 3;
+return Math.abs(meanValue - red) + Math.abs(meanValue - green) + Math.abs(meanValue - blue) < 15;
 }
 

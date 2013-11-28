@@ -1162,9 +1162,10 @@ this._notifyDeps();
 }
 ,
 _calculate: function FNetworkData__calculate(changedArgs) {
+var netResource;
 try {
-var reqData = this._argManager.getValByName("request","ResDescriptor");
-var netResource = BarPlatform.CachedResources.getResource(reqData);
+let reqData = this._argManager.getValByName("request","ResDescriptor");
+netResource = BarPlatform.CachedResources.getResource(reqData);
 }
 catch (e) {
 this._notNeeded();

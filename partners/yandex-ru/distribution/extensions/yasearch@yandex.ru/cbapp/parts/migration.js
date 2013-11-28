@@ -123,7 +123,9 @@ file: "l-7_6_0.js"}, {
 name: "l-7.8.0",
 file: "l-7_8_0.js"}, {
 name: "l-7.8.1",
-file: "l-7_8_1.js"}],
+file: "l-7_8_1.js"}, {
+name: "l-8.0.0",
+file: "l-8_0_0.js"}],
 _migrationConfig: {
 ge: function (a) a >= 0,
 le: function (a) a <= 0,
