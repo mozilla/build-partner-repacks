@@ -534,6 +534,8 @@ name: "distribution",
 file: "distribution.js"}, {
 name: "installer",
 file: "installer.js"}, {
+name: "notifications",
+file: "notifications.js"}, {
 name: "defender",
 file: "defender.js"}, {
 name: "vendorCookie",

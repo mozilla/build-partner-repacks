@@ -149,7 +149,7 @@ insertIndex = ids.indexOf("window-controls");
 if (insertIndex == - 1)
 insertIndex = ids.length - 1;
 let currentSetsIds = this._getAllIdsFromCurrentSets();
-["home-button", "search-container"].forEach(function (id) {
+["home-button"].forEach(function (id) {
 if (currentSetsIds.indexOf(id) == - 1)
 ids.splice(insertIndex,0,id);
 }

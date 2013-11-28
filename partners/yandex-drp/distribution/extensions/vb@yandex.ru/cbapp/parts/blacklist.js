@@ -17,9 +17,9 @@ this._initServerSync();
 }
 ,
 finalize: function Blacklist_finalize(doCleanup, callback) {
-if (this._timer)
+if (this._timer && this._timer.isRunning)
 this._timer.cancel();
-var dbClosedCallback = (function Blacklist_finalize_dbClosedCallback() {
+var dbClosedCallback = (function Backup_finalize_dbClosedCallback() {
 this._database = null;
 this._application = null;
 this._logger = null;
@@ -29,25 +29,38 @@ callback();
 if (this._database)
 {
 this._database.close(dbClosedCallback);
-}
- else
-{
-dbClosedCallback();
+return true;
 }
 
+dbClosedCallback();
 }
 ,
 getAll: function Blacklist_getAll(callback) {
-var output = [];
 var serverFile = this._serverFile;
+var output = {
+domains: [],
+regexps: []};
+var itemNodeProcess = function Blacklist_getAll_itemNodeProcess(item) {
+var domain = item.getAttribute("domain");
+var regexp = item.getAttribute("url_regex");
+if (domain)
+{
+output.domains.push(domain);
+}
+ else
+if (regexp)
+{
+output.regexps.push(regexp);
+}
+
+}
+;
+Array.forEach(this._brandingDoc.querySelectorAll("list > item"),itemNodeProcess);
 if (serverFile.exists() && serverFile.isFile() && serverFile.isReadable())
 {
 try {
 let serverXML = fileutils.xmlDocFromFile(serverFile);
-Array.forEach(serverXML.querySelectorAll("list > item[domain]"),function (item) {
-output.push(item.getAttribute("domain"));
-}
-);
+Array.forEach(serverXML.querySelectorAll("list > item"),itemNodeProcess);
 }
 catch (ex) {
 this._logger.error("Error while reading synced XML: " + strutils.formatError(ex));
@@ -64,7 +77,11 @@ let errorMsg = strutils.formatString("DB error while fetching blacklist: %1 (cod
 throw new Error(errorMsg);
 }
 
-callback(null,output.concat(rowsData.map(function (row) row.domain)));
+rowsData.forEach(function (row) {
+output.domains.push(row.domain);
+}
+);
+callback(null,output);
 }
 );
 }
@@ -97,9 +114,9 @@ callback && callback();
 );
 }
 ,
-get brandingDoc() {
-delete this.brandingDoc;
-return this.brandingDoc = this._application.branding.brandPackage.getXMLDocument("fastdial/blacklist.xml");
+get _brandingDoc() {
+delete this._brandingDoc;
+return this._brandingDoc = this._application.branding.brandPackage.getXMLDocument("fastdial/blacklist.xml");
 }
 ,
 get _serverFile() {
@@ -112,25 +129,6 @@ _initDatabase: function Blacklist__initDatabase() {
 var dbFile = this._application.core.rootDir;
 dbFile.append(DB_FILENAME);
 this._database = new Database(dbFile);
-var appInfo = this._application.addonManager.info;
-if (appInfo.addonVersionChanged && appInfo.addonDowngraded === false)
-{
-let unionParts = [];
-let placeholders = {
-};
-Array.forEach(this.brandingDoc.querySelectorAll("item"),function (item, i) {
-var domain = item.getAttribute("domain");
-if (! domain)
-return;
-unionParts.push("SELECT :domain" + i + " AS domain");
-placeholders["domain" + i] = domain;
-}
-);
-if (! unionParts.length)
-return;
-this._database.execQuery("INSERT OR REPLACE INTO blacklist (domain) " + unionParts.join(" UNION "),placeholders);
-}
-
 }
 ,
 _initServerSync: function Blacklist__initServerSync() {

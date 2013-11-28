@@ -1,4 +1,9 @@
 "use strict";
+XPCOMUtils.defineLazyGetter(this,"WinRegObject",function WinRegObjectGetter() {
+return Cu.import("resource://" + application.name + "-mod/WinReg.jsm",{
+}).WinReg;
+}
+);
 function NativeBarAPI(componentInfo, logger) {
 if (! componentInfo || ! (componentInfo.package_ instanceof BarPlatform.ComponentPackage))
 throw new CustomErrors.EArgType("componentInfo", "ComponentInfo", componentInfo);
@@ -6,7 +11,7 @@ this._componentInfo = componentInfo;
 if (! logger)
 throw new CustomErrors.EArgType("logger", "Object", logger);
 this._logger = logger;
-["Async", "Autocomplete", "Browser", "Controls", "Database", "DistrData", "Environment", "Files", "Localization", "Network", "Package", "Promise", "Protocols", "Services", "Settings", "Statistics", "StrUtils", "SysUtils", "Task", "XMLUtils"].forEach(function inst(apiName) {
+["Async", "Autocomplete", "Browser", "Controls", "Database", "DistrData", "Environment", "Files", "Localization", "Network", "Notifications", "Package", "Promise", "Protocols", "Services", "Settings", "Statistics", "StrUtils", "SysUtils", "Task", "WinReg", "XMLUtils"].forEach(function inst(apiName) {
 sysutils.defineLazyGetter(this,apiName,function lazyGetter() {
 return new NativeBarAPI[apiName](this._componentInfo, this._logger, this);
 }
@@ -931,3 +936,46 @@ removeBarHandler: function NativeAPI_Protocols_removeBarHandler(protocolHandler)
 appCore.protocols.bar.removeDataProvider(protocolHandler);
 }
 };
+NativeBarAPI.WinReg = function WinReg() {
+
+}
+;
+NativeBarAPI.WinReg.prototype = {
+read: function NativeAPI_WinReg_read() WinRegObject.read.apply(WinRegObject,arguments),
+write: function NativeAPI_WinReg_write() WinRegObject.write.apply(WinRegObject,arguments),
+remove: function NativeAPI_WinReg_remove() WinRegObject.remove.apply(WinRegObject,arguments)};
+NativeBarAPI.Notifications = function Notifications(componentInfo) {
+this._componentId = componentInfo.id;
+}
+;
+NativeBarAPI.Notifications.prototype = {
+create: function NativeAPI_Notifications_create(notificationData) {
+return application.notifications.create(this._componentId,notificationData,false);
+}
+,
+erase: function NativeAPI_Notifications_erase(onlyHidden) {
+application.notifications.erase(this._componentId,onlyHidden);
+}
+,
+update: function NativeAPI_Notifications_update(notificationId, notificationData) {
+application.notifications.update(this._componentId,notificationId,notificationData);
+}
+,
+group: function NativeAPI_Notifications_group(queryId, notificationData) {
+return application.notifications.group(this._componentId,queryId,notificationData);
+}
+,
+addListener: function NativeAPI_Notifications_addListener(listener) {
+application.notifications.addListener(this._componentId,listener);
+}
+,
+removeListener: function NativeAPI_Notifications_removeListener(listener) {
+application.notifications.removeListener(this._componentId,listener);
+}
+};
+for(let p in application.notifications) {
+if (! /^(CLICK_TARGET_|CLOSE_REASON_|TEMPLATE_)/.test(p))
+continue;
+NativeBarAPI.Notifications.prototype[p] = application.notifications[p];
+}
+

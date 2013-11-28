@@ -217,16 +217,6 @@ isYandexHost: function VBApp_isYandexHost(hostName) {
 return /(^|\.)(yandex\.(ru|ua|by|kz|net|com(\.tr)?)|(ya|narod|moikrug)\.ru)$/i.test(hostName);
 }
 ,
-observe: function uiStartupObserver_observe(aSubject, aTopic, aData) {
-switch (aTopic) {
-case "final-ui-startup":
-Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService).removeObserver(this,"final-ui-startup",false);
-break;
-}
-
-;
-}
-,
 _consts: {
 DOWNLOAD_HOST_NAME: "download.yandex.ru",
 BARQA_HOST_NAME: "bar.qa.yandex.net",
@@ -313,14 +303,20 @@ throw e;
 var resource = netutils.ioService.getProtocolHandler("resource").QueryInterface(Ci.nsIResProtocolHandler);
 var alias = netutils.ioService.newFileURI(this.core.rootDir);
 resource.setSubstitution("vb-profile-data",alias);
-Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService).addObserver(this,"final-ui-startup",false);
 var disableBarnavigIfYBarIsActive = (function (aBarAddon) {
-if (aBarAddon && aBarAddon.isActive)
-{
-this._logger.config("Yandex.Bar is active. Will turn off barnavig events (page load, downloads, etc.) listening...");
-this.barnavig.listenStatEventsEnabled = false;
+if (! aBarAddon || ! aBarAddon.isActive)
+return;
+try {
+let barAppBarNavig = Cc["@yandex.ru/custombarcore;yasearch"].getService().wrappedJSObject.application.barnavig;
+if (barAppBarNavig.alwaysSendUsageStat === false)
+return;
+}
+catch (e) {
+
 }
 
+this._logger.config("Yandex.Bar is active. Will turn off barnavig events (page load, downloads, etc.) listening...");
+this.barnavig.listenStatEventsEnabled = false;
 }
 ).bind(this);
 AddonManager.gre_AddonManager.getAddonByID("yasearch@yandex.ru",disableBarnavigIfYBarIsActive);
@@ -429,6 +425,10 @@ _partNames: [{
 "file": "strbundle.js"}, {
 "name": "FilePackage",
 "file": "package.js"}, {
+"name": "frontendHelper",
+"file": "frontendHelper.js"}, {
+"name": "internalStructure",
+"file": "internalStructure.js"}, {
 "name": "clids",
 "file": "clids.js"}, {
 "name": "branding",
@@ -445,14 +445,14 @@ _partNames: [{
 "file": "aboutSupport.js"}, {
 "name": "barnavig",
 "file": "barnavig.js"}, {
+"name": "metrika",
+"file": "metrika.js"}, {
 "name": "databaseMigration",
 "file": "databaseMigration.js"}, {
 "name": "migration",
 "file": "migration.js"}, {
 "name": "blacklist",
 "file": "blacklist.js"}, {
-"name": "tasksRunner",
-"file": "tasksRunner.js"}, {
 "name": "usageHistory",
 "file": "usageHistory.js"}, {
 "name": "protocolSupport",
@@ -482,6 +482,8 @@ _partNames: [{
 "name": "thumbs",
 "file": "thumbs.js"}, {
 "name": "searchExample",
-"file": "searchExample.js"}],
+"file": "searchExample.js"}, {
+"name": "backup",
+"file": "backup.js"}],
 _delayMultiplier: 0,
 _lastGeneratedDelay: 0};

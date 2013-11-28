@@ -18,23 +18,29 @@ this._initDatabase();
 ,
 finalize: function Safebrowsing_finalize(doCleanup, callback) {
 Services.obs.removeObserver(this,IDLE_DAILY_EVENT);
-var dbClosedCallback = (function _dbClosedCallback() {
+var dbClosedCallback = (function Backup_finalize_dbClosedCallback() {
 this._database = null;
 this._application = null;
 this._logger = null;
+callback();
 }
 ).bind(this);
 if (this._database)
 {
-this._database.close(function () {
-dbClosedCallback();
-callback();
-}
-);
+this._database.close(dbClosedCallback);
 return true;
 }
 
 dbClosedCallback();
+}
+,
+observe: function Safebrowsing_observe(aSubject, aTopic, aData) {
+switch (aTopic) {
+case IDLE_DAILY_EVENT:
+this._maintenanceDatabaseOnIdle();
+break;
+}
+
 }
 ,
 listUnsafeDomains: function Safebrowsing_listUnsafeDomains(callback) {
@@ -47,19 +53,21 @@ callback(null,rowsData.map(function (row) row.domain));
 );
 }
 ,
-checkPinnedDomains: function Safebrowsing_checkPinnedDomains(pickupNum, topHistory) {
+checkUnpinnedDomains: function Safebrowsing_checkUnpinnedDomains(pickupNum, topHistory) {
 var self = this;
 var domains = {
 };
 var totalThumbsNum = this._application.layout.getThumbsNum();
-this._application.thumbs.structure.iterate({
+this._application.internalStructure.iterate({
 nonempty: true},function (thumbData) {
 if (thumbData.pinned)
 return;
-var thumbURI = this._application.fastdial.url2nsIURI(thumbData.url);
-if (! thumbURI.asciiHost)
-return;
-domains[thumbURI.asciiHost] = 1;
+var host = this._application.fastdial.getDecodedUrlHost(thumbData.source);
+if (host)
+{
+domains[host] = 1;
+}
+
 }
 ,this);
 this._checkDomains(Object.keys(domains),function Fastdial__checkUnsafeDomains_onFinished(unsafeDomainsList) {
@@ -70,8 +78,8 @@ num: ++pickupNum});
 }
  else
 {
-self._application.thumbs.muteFrontendMessages = false;
-self._application.fastdial.sendRequest("thumbChanged",self._application.thumbs.fullStructure);
+self._application.frontendHelper.mute = false;
+self._application.fastdial.sendRequest("thumbChanged",self._application.frontendHelper.fullStructure);
 self._application.syncTopHistory.saveCurrentState(topHistory);
 }
 
@@ -135,15 +143,6 @@ callback(domains);
 xhr.addEventListener("error",onFinished,false);
 xhr.addEventListener("abort",onFinished,false);
 xhr.send();
-}
-,
-observe: function Safebrowsing_observe(aSubject, aTopic, aData) {
-switch (aTopic) {
-case IDLE_DAILY_EVENT:
-this._maintenanceDatabaseOnIdle();
-break;
-}
-
 }
 ,
 _maintenanceDatabaseOnIdle: function Safebrowsing__maintenanceDatabaseOnIdle() {

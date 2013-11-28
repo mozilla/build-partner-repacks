@@ -196,7 +196,7 @@ return null;
 }
 ,
 __isYandexHomepage: function Defender___isYandexHomepage(aHost) {
-return /(^|www\.)(yandex\.(ru|ua|kz|by|net|com(\.tr)?)|ya\.ru)$/i.test(aHost);
+return /(^|www\.)(yandex\.(ru|ua|kz|by|net|com(\.tr)?)|ya\.ru|yafd:tabs)$/i.test(aHost);
 }
 ,
 _isYandexHost: function Defender__isYandexHost(aHost) {

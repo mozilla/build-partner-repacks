@@ -25,10 +25,10 @@ classID: Components.ID("{64845B2B-DA10-4AC8-981C-BE0A3283EB7C}"),
 QueryInterface: XPCOMUtils.generateQI([Ci.nsIDOMGlobalPropertyInitializer]),
 init: function vbAPI_init(aWindow) {
 if (! app)
-return;
+return null;
 var window = XPCNativeWrapper.unwrap(aWindow);
 if (window.location.href !== app.protocolSupport.url)
-return;
+return null;
 var utils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
 var outerWindowId = utils.outerWindowID;
 return new VBDOMObject(aWindow, outerWindowId);
@@ -87,9 +87,14 @@ typesCheck(arguments,["number", "function"]);
 app.fastdial.requestLastVisited(offset,callback);
 }
 ,
-applySettings: function VBDOMObject_applySettings(layout, showBookmarks, sendStat, showSearchForm, bgImage) {
-typesCheck(arguments,["string", "boolean", "boolean", "boolean", "string"]);
-return app.fastdial.applySettings(layout,showBookmarks,sendStat,showSearchForm,bgImage);
+applySettings: function VBDOMObject_applySettings(layout, showBookmarks, showSearchForm, bgImage) {
+typesCheck(arguments,["string", "boolean", "boolean", "string"]);
+return app.fastdial.applySettings(layout,showBookmarks,showSearchForm,bgImage);
+}
+,
+setSendStatistics: function VBDOMObject_setSendStatistics(sendStat) {
+typesCheck(arguments,["boolean"]);
+app.preferences.set("stat.usage.send",sendStat);
 }
 ,
 saveThumb: function VBDOMObject_saveThumb(index, data) {
@@ -145,13 +150,19 @@ setAsHomePage: function VBDOMObject_setAsHomePage() {
 app.fastdial.setAsHomePage();
 }
 ,
+log: function VBDOMObject_log(level, msg, url, line, trace) {
+typesCheck(arguments,["string", "string"]);
+app.frontendHelper.logMessage(level,msg,url,line,trace);
+}
+,
 openExternalWindow: function VBDOMObject_openExternalWindow(windowName) {
 typesCheck(arguments,["string"]);
 app.fastdial.openExternalWindow(windowName,this._window);
 }
 ,
-stat: function VBDOMObject_stat() {
-
+stat: function VBDOMObject_stat(param) {
+typesCheck(arguments,["string"]);
+app.usageHistory.logAction(param);
 }
 ,
 search: {

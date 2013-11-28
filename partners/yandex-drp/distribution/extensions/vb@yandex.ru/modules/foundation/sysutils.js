@@ -366,15 +366,9 @@ this.maxTimes = typeof aMaxTimes == "number" && aMaxTimes > 0 ? aMaxTimes : null
 this.timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
 var type = aRepeating ? this.timer.TYPE_REPEATING_SLACK : this.timer.TYPE_ONE_SHOT;
 this.timer.initWithCallback(this,aDelay,type);
-Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService).addObserver(this,"quit-application",false);
 }
 ;
 sysutils.Timer.prototype = {
-observe: function Timer_observe(aSubject, aTopic, aData) {
-if (aTopic === "quit-application")
-this.cancel();
-}
-,
 get isRunning() {
 return ! ! this.timer;
 }
@@ -385,10 +379,9 @@ return;
 this.timer.cancel();
 this.timer = null;
 this.callback = null;
-Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService).removeObserver(this,"quit-application",false);
 }
 ,
-notify: function Timer_notify(aTimer) {
+notify: function Timer_notify() {
 var result = this.callback();
 this.timesCounter++;
 if (this.timesCounter == 1 && this.repeatingDelay)
