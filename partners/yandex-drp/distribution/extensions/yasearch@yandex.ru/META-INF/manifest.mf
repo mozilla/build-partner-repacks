@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 
 Name: config.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: hHZLx3N+F8slpXM/3ZLrVA==
-SHA1-Digest: eXJs3hTcW3GL+EIPi0mWXG7hugg=
+MD5-Digest: pLZ6zhNfuacM4JHozWNgcQ==
+SHA1-Digest: zRDpKuxpz8HNvnWHdMUAEpwkMy0=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -12,8 +12,8 @@ SHA1-Digest: 6uKf/4cm6jtYQ+NZ0CSQtw8FszE=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: WP1z2B1OUy0woU5kbD9QBQ==
-SHA1-Digest: bd2r+NdOQfvoo1c2kuMdFz+xlMo=
+MD5-Digest: cQKDZVThuUxBg1+iECf5lg==
+SHA1-Digest: ZcR0h7REEEiH6bdnQAd6OrcVBBc=
 
 Name: components/nsIYaSearch.xpt
 Digest-Algorithms: MD5 SHA1
@@ -132,8 +132,8 @@ SHA1-Digest: hIKf+SBMm7h5QE0IjsO+4nsSSVU=
 
 Name: cbapp/parts/installer.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: WzBaviHqz5IHFbaMkhMJ6Q==
-SHA1-Digest: Qm5DiMpU3rKt2LrgoLTrm+AKXfI=
+MD5-Digest: HpuOmc6zfFw+0xo9aY1k3Q==
+SHA1-Digest: PwdFt+ouTyvJQQ6oS3oGtQw73SE=
 
 Name: cbapp/parts/update.js
 Digest-Algorithms: MD5 SHA1
@@ -147,8 +147,8 @@ SHA1-Digest: MIQj4kqT+a9D8qRR5wGlTNfNV+E=
 
 Name: cbapp/parts/notifications.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: y/r7VLqAT6H5Dk6pEhUYTA==
-SHA1-Digest: Ly0zVXoXW0rcHON16pQbRFqUza8=
+MD5-Digest: 5o83BY6NvCSPvGkWHdNQgA==
+SHA1-Digest: TjsgNeLtKawQlfntNFxkhsAL83A=
 
 Name: cbapp/parts/clids.js
 Digest-Algorithms: MD5 SHA1
@@ -437,8 +437,8 @@ SHA1-Digest: hjQ2F4eDu0ySNq2m1qymdqKb/3g=
 
 Name: chrome/yasearch.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Qqtm5rrhPF4AeBWjxax02A==
-SHA1-Digest: p06oC63SGoG3xvK7YS5fS+mBd+s=
+MD5-Digest: Y1E0PWx9inNoMn4D9rWOjA==
+SHA1-Digest: V6/uQ8vN2StD42HfRfm7ZvJC9qk=
 
 Name: defaults/dynamic-preferences/safebrowsing.js
 Digest-Algorithms: MD5 SHA1
