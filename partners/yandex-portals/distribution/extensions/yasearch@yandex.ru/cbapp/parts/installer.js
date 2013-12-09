@@ -755,6 +755,7 @@ Preferences.set("browser.search.selectedEngine",shortName); else
 this._brandPrefs.set("qsEngineNameForSelect",shortName);
 this._logger.debug("Changed browser QS to '" + shortName + "'");
 Preferences.set("browser.search.defaultenginename",shortName);
+Preferences.set("yasearch.native_comps.http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox.all.settings.searchName",shortName);
 }
 
 }
