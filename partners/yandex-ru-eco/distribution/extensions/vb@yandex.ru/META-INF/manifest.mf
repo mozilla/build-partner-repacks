@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 
 Name: config.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 3eieAC0IS605rfweon4CDQ==
-SHA1-Digest: 1mpSdz6TBCytT5BejnRmy8njn4Y=
+MD5-Digest: tHNKMR8e5kOtYFK30OLN7A==
+SHA1-Digest: vduxBiSfWLsBcIxNFQ2a2wVLqGU=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -217,8 +217,8 @@ SHA1-Digest: 8NreYpRklcnFADNvVckwCqY243Q=
 
 Name: chrome/yandex-vb.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: X2r3WQ5WerbnSqMTCSFkTA==
-SHA1-Digest: qKS7qZqId/qgDIcdp5gK9EocMrg=
+MD5-Digest: SNKSTx4xVwp2HhulvaUQFw==
+SHA1-Digest: I3s2kT6HtoGTcD3BpodyODDV5Vw=
 
 Name: defaults/vendor/vendor.xml
 Digest-Algorithms: MD5 SHA1
