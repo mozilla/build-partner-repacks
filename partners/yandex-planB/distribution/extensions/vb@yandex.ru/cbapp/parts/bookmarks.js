@@ -169,7 +169,7 @@ return callback();
 var id = isFolder ? node.itemId + "" : "";
 var bookmark = {
 url: isFolder ? "" : node.uri,
-title: node.title || node.uri.replace(/^http:\/\/(www\.)?/,"").replace(/\/$/,""),
+title: node.title || "",
 id: id,
 isFolder: isFolder};
 if (isFolder)
@@ -256,7 +256,7 @@ var onLivemarkReady = function Bookmarks__fetchLivemarkChildren_onLivemarkReady(
 var isFolder = node.type === node.RESULT_TYPE_FOLDER;
 var livemark = {
 url: isFolder ? "" : node.uri,
-title: node.title || node.uri.replace(/^http:\/\/(www\.)?/,"").replace(/\/$/,""),
+title: node.title || "",
 id: node.itemId,
 isFolder: isFolder};
 if (! isFolder)

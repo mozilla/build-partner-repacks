@@ -451,6 +451,8 @@ _partNames: [{
 "file": "databaseMigration.js"}, {
 "name": "migration",
 "file": "migration.js"}, {
+"name": "backgroundImages",
+"file": "backgroundImages.js"}, {
 "name": "blacklist",
 "file": "blacklist.js"}, {
 "name": "usageHistory",
