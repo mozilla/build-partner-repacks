@@ -115,7 +115,9 @@ _migrationScripts: [{
 name: "l-2.0",
 file: "l-2_0.js"}, {
 name: "l-2.3",
-file: "l-2_3.js"}],
+file: "l-2_3.js"}, {
+name: "l-2.9",
+file: "l-2_9.js"}],
 _migrationConfig: {
 ge: function (a) a >= 0,
 le: function (a) a <= 0,

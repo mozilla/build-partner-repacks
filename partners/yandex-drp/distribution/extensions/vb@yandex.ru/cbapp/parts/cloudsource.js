@@ -129,7 +129,7 @@ if (! host)
 return;
 uri.host = uri.host.replace(/^www\./,"");
 this._requestAPI(uri);
-if (useBothSources)
+if (useBothSources && ! this._application.isYandexHost(uri.host))
 {
 this._requestPageManifest(uri);
 }

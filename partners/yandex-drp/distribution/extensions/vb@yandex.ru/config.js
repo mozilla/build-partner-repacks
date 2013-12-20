@@ -3,13 +3,14 @@ const EXPORTED_SYMBOLS = ["VB_CONFIG"];
 const VB_CONFIG = (function () {
 var config = {
 APP: {
+ID: "vb@yandex.ru",
 NAME: "yandex-vb",
 TYPE: "vbff",
 COOKIE: "vb.ff",
 PROTOCOL: "yafd"},
 BUILD: {
-DATE: "Mon Dec 09 2013 13:16:21 GMT+0000",
-REVISION: "48431_29"},
+DATE: "Thu Dec 19 2013 13:11:10 GMT+0000",
+REVISION: "48402_26"},
 CORE: {
 CONTRACT_ID: "@yandex.ru/vb-core;1",
 CLASS_ID: Components.ID("{1ad918b4-4729-11e1-ab8a-dff4577f00a5}")}};
