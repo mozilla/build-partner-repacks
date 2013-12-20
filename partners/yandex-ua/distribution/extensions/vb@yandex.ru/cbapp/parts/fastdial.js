@@ -9,29 +9,9 @@ Cu.import("resource://gre/modules/Services.jsm");
 const FILE_PROTOCOL_HANDLER = Services.io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
 const WINDOW_DESTROY_EVENT = "dom-window-destroyed";
 const CLEAR_HISTORY_THUMBS_INTERVAL = 3600;
-const USER_FILE_LEAFNAME = "user.jpg";
-const USER_TEMPFILE_LEAFNAME = "temp_user.jpg";
 const RECENTLY_CLOSED_TABS = 15;
 const BAR_EXTENSION_ID = "yasearch@yandex.ru";
-const BG_IMAGES_BASEPATH = "resource://vb-profile-data/backgroundImages/";
 const NATIVE_RESTORETAB_PREFIX = "current-";
-const bgImagesURLHelper = {
-getURLForFile: function bgImagesURLHelper_getURLForFile(aFile) {
-var uri = BG_IMAGES_BASEPATH + aFile.leafName;
-if ((aFile.leafName === USER_FILE_LEAFNAME || aFile.leafName === USER_TEMPFILE_LEAFNAME) && this._randomString)
-uri += "?rnd=" + this._randomString;
-return uri;
-}
-,
-getFileNameFromURL: function bgImagesURLHelper_getFileNameFromURL(aURL) {
-return aURL.split("/").pop().replace(/\?rnd=.*$/,"");
-}
-,
-randomize: function bgImagesURLHelper_randomize() {
-this._randomString = Math.floor(Math.random() * Date.now());
-}
-,
-_randomString: ""};
 const fastdial = {
 init: function Fastdial_init(application) {
 application.core.Lib.sysutils.copyProperties(application.core.Lib,GLOBAL);
@@ -41,7 +21,6 @@ var dataProvider = this._barnavigDataProvider.init(this._application);
 this._application.barnavig.addDataProvider(dataProvider);
 Services.obs.addObserver(this,WINDOW_DESTROY_EVENT,false);
 Services.obs.addObserver(this,this._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT,false);
-this._initFileSystem();
 this._clearHistoryThumbsTimer = new sysutils.Timer((function () {
 this._historyThumbs = {
 };
@@ -58,7 +37,6 @@ this._clearHistoryThumbsTimer.cancel();
 this._barnavigDataProvider.finalize();
 this._application.barnavig.removeDataProvider(this._barnavigDataProvider);
 this._registeredListeners = null;
-this._startDecision = null;
 this._historyThumbs = null;
 this._application = null;
 this._logger = null;
@@ -72,7 +50,6 @@ if (String(aSubject.vb) == "[object Object]")
 let utils = aSubject.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
 let outerWindowID = utils.outerWindowID;
 delete this._registeredListeners[outerWindowID];
-delete this._startDecision[outerWindowID];
 }
 
 break;
@@ -96,7 +73,6 @@ break;
 setListenersForWindow: function Fastdial_setListenersForWindow(outerWindowId, command, callback) {
 this._registeredListeners[outerWindowId] = this._registeredListeners[outerWindowId] || {
 };
-this._startDecision[outerWindowId] = this._startDecision[outerWindowId] || Date.now();
 var listeners = this._registeredListeners[outerWindowId];
 if (! listeners[command])
 return listeners[command] = [callback];
@@ -191,53 +167,13 @@ requestInit: function Fastdial_requestInit(outerWindowId, ignoreBookmarks) {
 var self = this;
 var backboneXY = this._application.layout.getThumbsNumXY();
 var maxThumbIndex = backboneXY[0] * backboneXY[1];
-var backgroundImage = this._application.preferences.get("ftabs.backgroundImage");
 var showBookmarks = this._application.preferences.get("ftabs.showBookmarks");
-var bgImageFile = this._application.core.rootDir;
-bgImageFile.append("backgroundImages");
-try {
-bgImageFile.append(backgroundImage);
-backgroundImage = bgImagesURLHelper.getURLForFile(bgImageFile);
-}
-catch (e) {
-let backgroundElem = this.brandingXMLDoc.querySelector("background[force='true']");
-if (backgroundElem !== null)
-{
-backgroundImage = backgroundElem.getAttribute("file");
-this._application.preferences.set("ftabs.backgroundImage",backgroundImage);
-bgImageFile.append(backgroundImage);
-backgroundImage = bgImagesURLHelper.getURLForFile(bgImageFile);
-}
- else
-{
-backgroundImage = "";
-this._application.preferences.set("ftabs.backgroundImage",backgroundImage);
-}
-
-}
-
-var searchStatusPref = this._application.preferences.get("ftabs.searchStatus");
-var searchStatus;
-switch (searchStatusPref) {
-case 0:
-
-case 2:
-searchStatus = 2;
-break;
-case 1:
-searchStatus = 3;
-break;
-default:
-searchStatus = 1;
-}
-
 var requestData = {
 debug: this._application.preferences.get("ftabs.debug",false),
 x: backboneXY[0],
 y: backboneXY[1],
 showBookmarks: showBookmarks,
-searchStatus: searchStatus,
-backgroundImage: backgroundImage,
+backgroundImage: this._application.backgroundImages.currentSelectedURL,
 thumbs: this._application.frontendHelper.fullStructure,
 hasClosedTabs: this._recentlyClosedTabs.length > 0,
 hasApps: false,
@@ -260,6 +196,8 @@ url: searchURL,
 placeholder: brandingSearch.getAttribute("placeholder"),
 example: this._application.searchExample.current,
 navigateTitle: brandingSearch.getAttribute("navigate_title") || ""}};
+var onSearchStatusReady = (function Fastdial_requestInit_onSearchStatusReady(searchStatus) {
+requestData.searchStatus = searchStatus;
 if (outerWindowId !== undefined)
 {
 this.sendRequestToTab(outerWindowId,"init",requestData);
@@ -298,48 +236,43 @@ this._logTabShowFlag = true;
 }
 
 }
+).bind(this);
+var searchStatusInternal = this._application.preferences.get("ftabs.searchStatus") === 1 ? false : true;
+var searchStudyOmni = this._application.preferences.get("ftabs.searchStudyOmnibox");
+if (searchStatusInternal)
+{
+onSearchStatusReady(2);
+return;
+}
+
+if (! searchStudyOmni)
+{
+onSearchStatusReady(1);
+return;
+}
+
+AddonManager.gre_AddonManager.getAddonByID(BAR_EXTENSION_ID,function (addonData) {
+var isBarInstalled = addonData !== null && addonData.installDate && addonData.isActive;
+onSearchStatusReady(isBarInstalled ? 3 : 1);
+}
+);
+}
 ,
 requestSettings: function Fastdial_requestSettings(callback) {
 var maxLayoutNum = this._application.layout.getMaxThumbLayout();
 var productInfo = this._application.branding.productInfo;
-var bgImagesDir = this._application.core.rootDir;
-bgImagesDir.append("backgroundImages");
-var bgImagesDirEntries = bgImagesDir.directoryEntries;
-var bgImages = [];
-var userImage = "";
-while (bgImagesDirEntries.hasMoreElements()) {
-let imgFile = bgImagesDirEntries.getNext().QueryInterface(Ci.nsIFile);
-if (/^\./.test(imgFile.leafName) || imgFile.leafName === USER_TEMPFILE_LEAFNAME)
-{
-continue;
-}
-
-let path = bgImagesURLHelper.getURLForFile(imgFile);
-if (imgFile.leafName === USER_FILE_LEAFNAME)
-{
-userImage = path;
-}
- else
-{
-bgImages.push(path);
-}
-
-}
-
-var layouts = this._application.layout.getPossibleLayouts();
-var selectedBgImage = bgImagesDir.clone();
-selectedBgImage.append(this._application.preferences.get("ftabs.backgroundImage"));
+var possibleLayouts = this._application.layout.getPossibleLayouts();
 callback({
-bgImages: bgImages,
-userImage: userImage,
+bgImages: this._application.backgroundImages.list,
+userImage: this._application.backgroundImages.userImageURL,
 showBookmarks: this._application.preferences.get("ftabs.showBookmarks"),
 sendStat: this._application.preferences.get("stat.usage.send",false),
 isHomePage: Preferences.get("browser.startup.homepage").split("|").indexOf(this._application.protocolSupport.url) !== - 1,
 showSearchForm: [0, 2].indexOf(this._application.preferences.get("ftabs.searchStatus")) !== - 1,
-selectedBgImage: bgImagesURLHelper.getURLForFile(selectedBgImage),
+selectedBgImage: this._application.backgroundImages.currentSelectedURL,
 maxLayoutX: maxLayoutNum,
-layouts: layouts.layouts,
-currentLayout: layouts.current,
+layouts: possibleLayouts.layouts,
+currentLayout: possibleLayouts.current,
 maxLayoutY: maxLayoutNum,
 licenseURL: productInfo.LicenseURL.fx,
 copyright: productInfo.Copyright.fx,
@@ -376,62 +309,15 @@ ignoreBookmarks = true;
 }
 
 this._application.preferences.set("ftabs.showBookmarks",showBookmarks);
-var bgImageFile = this._application.core.rootDir;
-bgImageFile.append("backgroundImages");
-if (bgImage === "user")
-{
-bgImageFile.append(USER_FILE_LEAFNAME);
-if (bgImageFile.exists() && bgImageFile.isFile() && bgImageFile.isReadable())
-{
-this._application.preferences.set("ftabs.backgroundImage",USER_FILE_LEAFNAME);
-}
- else
-{
-this._logger.error("User-uploaded image needs to be set as background, but it does not exist");
-}
-
-}
- else
-{
-bgImage = bgImagesURLHelper.getFileNameFromURL(bgImage);
-bgImageFile.append(bgImage);
-if (bgImageFile.exists() && bgImageFile.isFile() && bgImageFile.isReadable())
-{
-this._application.preferences.set("ftabs.backgroundImage",bgImage);
-}
- else
-{
-this._logger.error("Wrong background image path needs to be set: " + bgImage);
-}
-
-}
-
-var searchStatusOldValue = this._application.preferences.get("ftabs.searchStatus");
-var onStatusGot = function Fastdial_saveSettings_onStatusGot(status) {
-self._application.preferences.set("ftabs.searchStatus",status);
+this._application.backgroundImages.select(bgImage);
+this._application.preferences.set("ftabs.searchStatus",showSearchForm ? 0 : 1);
 if (pickupNeeded)
 {
-self._application.layout.layoutX = layoutXY[0];
-self._application.layout.layoutY = layoutXY[1];
+this._application.layout.layoutX = layoutXY[0];
+this._application.layout.layoutY = layoutXY[1];
 }
 
-self.requestInit(undefined,ignoreBookmarks);
-}
-;
-if (showSearchForm)
-{
-onStatusGot(0);
-}
- else
-{
-AddonManager.gre_AddonManager.getAddonByID(BAR_EXTENSION_ID,function (addonData) {
-var isBarInstalled = addonData !== null && addonData.installDate && addonData.isActive;
-var searchStatusNewValue = isBarInstalled ? 1 : 3;
-onStatusGot(searchStatusNewValue);
-}
-);
-}
-
+this.requestInit(undefined,ignoreBookmarks);
 }
 ,
 requestRecentlyClosedTabs: function Fastdial_requestRecentlyClosedTabs(callback) {
@@ -486,39 +372,6 @@ empty: this._recentlyClosedTabs.length === 0});
 onTabClose: function Fastdial_onTabClose() {
 this.sendRequest("closedTabsListChanged",{
 empty: this._recentlyClosedTabs.length === 0});
-}
-,
-uploadUserBackground: function Fastdial_uploadUserBackground(aWindow, callback) {
-var filepickerBundle = new this._application.appStrings.StringBundle("chrome://global/locale/filepicker.properties");
-var filterTitle = filepickerBundle.tryGet("imageTitle");
-if (filterTitle.length === 0)
-{
-this._logger.warn("Can not find \"imageTitle\" key in the filepicker.properties");
-}
-
-var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
-filePicker.init(aWindow,null,filePicker.modeOpen);
-filePicker.appendFilter(filterTitle,"*.jpg; *.jpeg; *.gif; *.png");
-var modalDialog = filePicker.show();
-if (modalDialog !== filePicker.returnOK)
-return callback("");
-bgImagesURLHelper.randomize();
-var bgImagesDir = this._application.core.rootDir;
-bgImagesDir.append("backgroundImages");
-var resultFile = bgImagesDir.clone();
-resultFile.append(USER_FILE_LEAFNAME);
-fileutils.removeFileSafe(resultFile);
-var output = "";
-try {
-filePicker.file.copyTo(bgImagesDir,USER_FILE_LEAFNAME);
-output = bgImagesURLHelper.getURLForFile(resultFile);
-}
-catch (e) {
-this._logger.error("Could not copy user image: " + strutils.formatError(e));
-this._logger.debug(e.stack);
-}
-
-callback(output);
 }
 ,
 requestLastVisited: function Fastdial_requestLastVisited(offset, callback) {
@@ -691,16 +544,14 @@ callback(outputData);
 }
 ,
 thumbOpened: function Fastdial_thumbOpened(outerWindowId, url, index, navigateCode) {
-if (this._application.barnavig.alwaysSendUsageStat === false)
-return;
-var decisionTime = Date.now() - this._startDecision[outerWindowId];
-this._barnavigDataProvider.addURLData(url,{
-decisionTime: decisionTime,
-vtbNum: index + 1});
 async.nextTick(function Fastdial_thumbOpened_openSpeculativeConnect() {
 this.openSpeculativeConnect(url);
 }
 ,this);
+if (this._application.barnavig.alwaysSendUsageStat === false)
+return;
+this._barnavigDataProvider.addURLData(url,{
+vtbNum: index + 1});
 }
 ,
 openSpeculativeConnect: function Fastdial_openSpeculativeConnect(url) {
@@ -755,16 +606,6 @@ Preferences.set("browser.startup.homepage",currentHomePages.join("|"));
 Preferences.set("browser.startup.homepage",this._application.protocolSupport.url);
 }
 
-}
-,
-onTabSelect: function Fastdial_onTabSelect(outerWindowId) {
-if (this._startDecision[outerWindowId] !== undefined)
-this._startDecision[outerWindowId] = Date.now();
-}
-,
-onTabLeave: function Fastdial_onTabLeave(outerWindowId) {
-delete this._registeredListeners[outerWindowId];
-delete this._startDecision[outerWindowId];
 }
 ,
 onHiddenTabAction: function Fastdial_onHiddenTabAction(action) {
@@ -916,7 +757,6 @@ var thumbData = url && this._dataContainer.get(url);
 if (thumbData)
 {
 this._dataContainer.remove(url);
-aParams.barNavigParams.decisionTime = thumbData.decisionTime;
 aParams.barNavigParams.vtbNum = thumbData.vtbNum;
 return this;
 }
@@ -1104,78 +944,11 @@ outputURL = url;
 return outputURL;
 }
 ,
-_initFileSystem: function Fastdial__initFileSystem() {
-var bgImagesDir = this._application.core.rootDir;
-bgImagesDir.append("backgroundImages");
-if (! bgImagesDir.exists())
-{
-bgImagesDir.create(Ci.nsIFile.DIRECTORY_TYPE,fileutils.PERMS_DIRECTORY);
-}
-
-var appInfo = this._application.addonManager.info;
-if (appInfo.isFreshAddonInstall || appInfo.addonUpgraded)
-{
-const BACKGROUND_IMAGE_PREF = "ftabs.backgroundImage";
-let backgroundImagePref = this._application.preferences.get(BACKGROUND_IMAGE_PREF,"");
-let files = bgImagesDir.directoryEntries;
-while (files.hasMoreElements()) {
-let imgFile = files.getNext().QueryInterface(Ci.nsIFile);
-if (/^\./.test(imgFile.leafName) || imgFile.leafName === USER_FILE_LEAFNAME || imgFile.leafName === backgroundImagePref)
-{
-continue;
-}
-
-fileutils.removeFileSafe(imgFile);
-}
-
-let brandingBgImages = this._application.branding.brandPackage.findFile("fastdial/backgrounds/").directoryEntries;
-while (brandingBgImages.hasMoreElements()) {
-let imgFile = brandingBgImages.getNext().QueryInterface(Ci.nsIFile);
-if (/^\./.test(imgFile.leafName))
-{
-continue;
-}
-
-try {
-imgFile.copyTo(bgImagesDir,imgFile.leafName);
-}
-catch (ex) {
-
-}
-
-}
-
-let forceChangeBg = false;
-if (backgroundImagePref)
-{
-let bgImage = bgImagesDir.clone();
-bgImage.append(backgroundImagePref);
-if (! bgImage.exists() || ! bgImage.isFile() || ! bgImage.isReadable())
-{
-forceChangeBg = true;
-}
-
-}
-
-let backgroundElem = this.brandingXMLDoc.querySelector("background");
-let hasJustMigrated = appInfo.isFreshAddonInstall && this._application.preferences.get("yabar.migrated",false) || appInfo.addonUpgraded && /^1\./.test(appInfo.addonLastVersion);
-let force = forceChangeBg || backgroundElem.getAttribute("force") === "true" || hasJustMigrated && this._application.preferences.get(BACKGROUND_IMAGE_PREF).length === 0;
-if (force || appInfo.isFreshAddonInstall && this._application.preferences.get("yabar.migrated",false) === false)
-{
-this._application.preferences.set(BACKGROUND_IMAGE_PREF,backgroundElem.getAttribute("file"));
-}
-
-}
-
-}
-,
 _application: null,
 _logger: null,
 _applyingThumbsSettings: false,
 _applyThumbsSettingsQueue: [],
 _registeredListeners: {
-},
-_startDecision: {
 },
 _historyThumbs: {
 },

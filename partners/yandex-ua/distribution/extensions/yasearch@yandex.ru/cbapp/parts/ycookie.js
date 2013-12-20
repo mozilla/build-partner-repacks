@@ -38,7 +38,7 @@ break;
 
 let match = yCookieValue.match(reg);
 if (match)
-return match[1];
+return decodeURIComponent(match[1]);
 }
 
 return null;
@@ -59,7 +59,7 @@ _getYCookie: function YCookie__getYCookie(aCookieName, aDomain) {
 var domain = aDomain || ".yandex.ru";
 var allCookiesStr = this._cookieService.getCookieString(this._makeCookieURI(domain),null) || "";
 var cookieMatch = allCookiesStr.match("(?:^|;)\\s*" + aCookieName + "=([^;]*)");
-return cookieMatch ? decodeURIComponent(cookieMatch[1]) : null;
+return cookieMatch && cookieMatch[1] || null;
 }
 ,
 _setYCookie: function YCookie__setYCookie(aCookieName, aFieldName, aFieldValue, aFieldExpire) {
@@ -72,7 +72,7 @@ this._setYCookieOnDomain(aDomain,aCookieName,aFieldName,aFieldValue,aFieldExpire
 _setYCookieOnDomain: function YCookie__setYCookieOnDomain(aDomain, aCookieName, aFieldName, aFieldValue, aFieldExpire) {
 var yCookieValue = this._getYCookie(aCookieName,aDomain);
 var newCookieValue = this._parseAndSetFieldValue(yCookieValue,aFieldName,aFieldValue,aFieldExpire);
-var cookieStr = aCookieName + "=" + encodeURIComponent(newCookieValue);
+var cookieStr = aCookieName + "=" + newCookieValue;
 if (! newCookieValue.length)
 cookieStr += ";expires=" + new Date(0);
 if (aDomain.charAt(0) == ".")

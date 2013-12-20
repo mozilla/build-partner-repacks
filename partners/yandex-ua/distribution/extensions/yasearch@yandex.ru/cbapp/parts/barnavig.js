@@ -241,7 +241,7 @@ if (this.__emptyBarNavigParamsObject === null)
 {
 this.__emptyBarNavigParamsObject = {
 ver: this._application.addonManager.addonVersion,
-clid: this._application.clids.vendorData.clid1.clidAndVid || "",
+clid: "",
 yasoft: this._application.core.CONFIG.APP.TYPE,
 brandID: this._application.branding.productInfo.BrandID.toString(),
 ui: this._guidString,
@@ -250,6 +250,9 @@ post: 0,
 urlinfo: 0,
 referer: null,
 oldurl: null};
+let clidData = this._application.clids.vendorData.clid1;
+if (clidData && clidData.clidAndVid)
+this.__emptyBarNavigParamsObject.clid = clidData.clidAndVid;
 }
 
 var cloned = this._application.core.Lib.sysutils.copyObj(this.__emptyBarNavigParamsObject);
