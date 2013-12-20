@@ -3,7 +3,6 @@ const EXPORTED_SYMBOLS = ["syncPinned"];
 const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 const GLOBAL = this;
 const PREFIX = "entries.entry-";
-const THRESHOLD_FASTPICKUP = 1000;
 const syncPinned = {
 init: function SyncPinned_init(application) {
 application.core.Lib.sysutils.copyProperties(application.core.Lib,GLOBAL);
@@ -12,8 +11,6 @@ this._logger = application.getLogger("SyncPinned");
 }
 ,
 finalize: function SyncPinned_finalize(doCleanup, callback) {
-if (this._fastPickupTimer)
-this._fastPickupTimer.cancel();
 this._logger = null;
 this._application = null;
 }
@@ -28,7 +25,7 @@ pinned: true,
 nonempty: true},function (thumbData, index) {
 var syncId = thumbData.sync.id || this._application.sync.generateId();
 records[PREFIX + syncId] = JSON.stringify({
-id: thumbData.sync.id || this._application.sync.generateId(),
+id: thumbData.sync.internalId || this._application.sync.generateId(),
 url: this._application.sync.prepareUrlForServer(thumbData.source),
 index: parseInt(index,10),
 timestamp: thumbData.sync.timestamp || Math.round(Date.now() / 1000),
@@ -64,7 +61,8 @@ localThumbs[index] = {
 url: thumbData.source,
 syncId: thumbData.sync.id,
 syncInstance: thumbData.sync.instance,
-syncTimestamp: thumbData.sync.timestamp};
+syncTimestamp: thumbData.sync.timestamp,
+syncInternalId: thumbData.sync.internalId};
 }
 ,this);
 this._logger.trace("Initial thumbs on server: " + JSON.stringify(records));
@@ -110,7 +108,7 @@ Object.keys(localThumbs).forEach(function (position) {
 var localThumb = localThumbs[position];
 var syncId = localThumb.syncId || this._application.sync.generateId();
 output[PREFIX + syncId] = {
-id: this._application.sync.generateId(),
+id: localThumb.syncInternalId || this._application.sync.generateId(),
 url: localThumb.url,
 index: parseInt(position,10),
 timestamp: minTimestamp - 1,
@@ -125,8 +123,6 @@ processData: function SyncPinned_processData(records, isInitialSync) {
 if (! this._engineInitFinished)
 return;
 this._logger.trace("Engine initialized. Processing data");
-if (this._fastPickupTimer)
-this._fastPickupTimer.cancel();
 this._logger.trace("Process data: " + JSON.stringify(records));
 var localPinnedThumbs = {
 };
@@ -237,6 +233,7 @@ Object.keys(resolvedPinnedThumbs).forEach(function (position) {
 saveData[position] = {
 url: self._application.sync.prepareUrlForSave(resolvedPinnedThumbs[position].url),
 title: "",
+internalId: resolvedPinnedThumbs[position].id,
 id: resolvedPinnedThumbs[position].key,
 instance: resolvedPinnedThumbs[position].instance,
 timestamp: resolvedPinnedThumbs[position].timestamp};
@@ -255,10 +252,7 @@ return;
 }
 
 this._application.thumbs.updateCurrentSet(removePositions,saveData);
-self._fastPickupTimer = new sysutils.Timer(function () {
-self._application.thumbs.fastPickup(fastPickupSet);
-}
-, THRESHOLD_FASTPICKUP);
+this._application.thumbs.fastPickup(fastPickupSet);
 if (isInitialSync)
 {
 self._logger.trace("Save resolved data: " + JSON.stringify(saveEngineData));
@@ -332,5 +326,4 @@ return ! (urlsAreEqual && entriesKeysAreEqual && instancesAreEqual && timestamps
 ,
 _application: null,
 _logger: null,
-_fastPickupTimer: null,
 _engineInitFinished: false};

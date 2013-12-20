@@ -11,6 +11,9 @@ application.core.Lib.sysutils.copyProperties(application.core.Lib,GLOBAL);
 this._application = application;
 this._logger = application.getLogger("Metrika");
 this._guidString = this._application.addonStatus.guidString;
+this._addonVersion = this._application.addonManager.addonVersion;
+this._locale = this._application.localeString;
+this._counterId = this._application.preferences.get("metrika.counter");
 this.__proto__ = new patterns.NotificationSource();
 var self = this;
 this._timer = new sysutils.Timer(function () {
@@ -90,11 +93,11 @@ this._paramsQueue[serializedData] += 1;
 }
 ,
 _sendParamRequest: function Metrika__sendParamRequest(data, totalEvents, callback) {
-var addonVersion = this._application.addonManager.addonVersion;
-var msgWithLine = data.msg + (data.line ? ":" + data.line : "");
+var addonVersion = this._addonVersion;
+var msgWithLine = data.msg.replace(this._appBasePath,"") + (data.line ? ":" + data.line : "");
 var paramData = JSON.stringify({
 id: this._guidString,
-lang: this._application.localeString,
+lang: this._locale,
 os: sysutils.platformInfo.os.name,
 bv: sysutils.platformInfo.browser.version.toString(),
 module: data.module || "",
@@ -108,7 +111,7 @@ siteInfo[addonVersion][msgWithLine] = {
 };
 siteInfo[addonVersion][msgWithLine][paramData] = totalEvents;
 var postData = {
-"browser-info": ["ar:1", "en:utf-8", "i:" + strutils.formatDate(new Date(),"%Y%M%D%H%N%S"), "js:1", "la:" + this._application.localeString, "rn:" + Math.round(Math.random() * 100000), "wmode:1"].join(":"),
+"browser-info": ["ar:1", "en:utf-8", "i:" + strutils.formatDate(new Date(),"%Y%M%D%H%N%S"), "js:1", "la:" + this._locale, "rn:" + Math.round(Math.random() * 100000), "wmode:1"].join(":"),
 "site-info": JSON.stringify(siteInfo)};
 var sendData = [];
 for(let [key, value] in Iterator(postData)) {
@@ -118,7 +121,7 @@ sendData.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
 var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
 request.mozBackgroundRequest = true;
 request.QueryInterface(Ci.nsIDOMEventTarget);
-request.open("POST","http://mc.yandex.ru/watch/" + this._application.preferences.get("metrika.counter") + "/1?" + sendData.join("&"),true);
+request.open("POST","http://mc.yandex.ru/watch/" + this._counterId + "/1?" + sendData.join("&"),true);
 var timer = new sysutils.Timer(function () {
 request.abort();
 }
@@ -157,6 +160,15 @@ metrika.param(aMessage.msg,0,aMessage);
 ;
 appender.level = Log4Moz.Level.Error;
 return this._logAppender = appender;
+}
+,
+get _appBasePath() {
+var appBasePath = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("ProfD",Ci.nsIFile);
+appBasePath.append("extensions");
+appBasePath.append(this._application.core.CONFIG.APP.ID);
+var appBaseURI = netutils.ioService.newFileURI(appBasePath);
+delete this._appBasePath;
+return this._appBasePath = appBaseURI.spec;
 }
 ,
 _application: null,
