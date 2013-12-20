@@ -5,8 +5,8 @@ SHA1-Digest: d/6Z68ulBRyiureYHLr1x/FPYaw=
 
 Name: config.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: fE+wPps8hPk1fabMZds3qg==
-SHA1-Digest: WHqHAj37UyyF6WSLd3tmo8hKTN0=
+MD5-Digest: rLhev2wlNa+r6mRQo3maRQ==
+SHA1-Digest: bf8oygqmgPJTGvyZG1dxcUwEwXY=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -15,8 +15,8 @@ SHA1-Digest: 6J/SqRiCvm758DUadHN3/bIK76U=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: iOigXlKdlqTDtsU6QndjNA==
-SHA1-Digest: CFEB069uqMbOX8EUyNJmCRHE18c=
+MD5-Digest: JiqY+T15aWrDFU6aRsZJVg==
+SHA1-Digest: PTjDU2ZLNCoQhMhhafw5RkMxqRw=
 
 Name: components/nsIYaSearch.xpt
 Digest-Algorithms: MD5 SHA1
@@ -55,8 +55,8 @@ SHA1-Digest: INTD2eiYu+a4UYwaWfmJrQX2fKM=
 
 Name: cbapp/parts/barnavig.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: PQJuQHAmG5gA0TjvSttDGw==
-SHA1-Digest: vcy3yiFP8TRUcS3ZsbqLTCzgdvY=
+MD5-Digest: HhihmzrG3WooIRQOGbfB2A==
+SHA1-Digest: 3jOqv1oQ5/47LUz9mJ38DjRiq8E=
 
 Name: cbapp/parts/strbundle.js
 Digest-Algorithms: MD5 SHA1
@@ -135,8 +135,8 @@ SHA1-Digest: QbP64sihHNfFsqtJf/IXryq2SSc=
 
 Name: cbapp/parts/installer.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: hyWEfUKVUHhPURH5wDikjQ==
-SHA1-Digest: Wmf6yT5m29+1SwddqjcQoVUUQ1o=
+MD5-Digest: e9kaplCwHp6AVk/S+Ft/wg==
+SHA1-Digest: H5j02AAyDIKoN8jdx5nVwWzzF8M=
 
 Name: cbapp/parts/update.js
 Digest-Algorithms: MD5 SHA1
@@ -180,8 +180,8 @@ SHA1-Digest: UY+fzzEbu6f/puPSXilKeHZMUaU=
 
 Name: cbapp/parts/ycookie.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: EWSWOUWFzxop9S8P77Jnig==
-SHA1-Digest: jg0h764ndHVekNMzI0aOMfp1hUE=
+MD5-Digest: G/6O40D+7ZBcm0PxTZ0QsQ==
+SHA1-Digest: q3RLJNp1wAm7v3nJ2tPuDR4h6XY=
 
 Name: cbapp/parts/compsusage.js
 Digest-Algorithms: MD5 SHA1
@@ -210,8 +210,8 @@ SHA1-Digest: zbODgQ5kwmkfoMAyixUWuwSJU80=
 
 Name: cbapp/parts/native/sliceapi.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: qsugM5kHgT6UXLxVgcP7sQ==
-SHA1-Digest: bzTWuRVbvJYudi9l9N5IxCphSWc=
+MD5-Digest: GXe79bgG2IV53hbvAzN5fg==
+SHA1-Digest: z+Kzo6arOjAo/soZx6txZEYNTEw=
 
 Name: cbapp/parts/native/ncparser.js
 Digest-Algorithms: MD5 SHA1
@@ -440,8 +440,8 @@ SHA1-Digest: /byaUlCewKeIIAxZMqE/Z8A+y2o=
 
 Name: chrome/yasearch.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 0VccRIEcL7FOlEVluEq+2A==
-SHA1-Digest: cr8fLsXW4GoMIsMUmVdwT8MgcTc=
+MD5-Digest: fAX5r5VwnikivOd78PW9iQ==
+SHA1-Digest: l5XiyrlIAGJKDos/+TSH+4RVY18=
 
 Name: defaults/dynamic-preferences/safebrowsing.js
 Digest-Algorithms: MD5 SHA1

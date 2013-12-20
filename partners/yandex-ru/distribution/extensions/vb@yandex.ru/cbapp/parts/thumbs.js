@@ -180,8 +180,25 @@ this._application.blacklist.upsertDomain(thumbHost);
 }
 
 this._application.syncPinned.save();
-var compactedNum = this._compactUnpinned(aIndex);
-if (! compactedNum)
+this._compactUnpinned(aIndex);
+var holesExist = false;
+var emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb",false);
+var currentThumbsNum = this._application.layout.getThumbsNum();
+if (emptyLastThumb)
+{
+currentThumbsNum -= 1;
+}
+
+for (let i = 0;i < currentThumbsNum;i++) {
+if (! this._application.internalStructure.getItem(i))
+{
+holesExist = true;
+break;
+}
+
+}
+
+if (holesExist)
 {
 this._application.fastdial.sendRequest("thumbChanged",this._application.frontendHelper.fullStructure);
 this.pickupThumbs();
@@ -206,7 +223,7 @@ try {
 uri = netutils.newURI(data.url);
 }
 catch (ex) {
-this._logger.error("Saved URL is not valid: " + originalURL);
+this._logger.warn("Saved URL is not valid: " + originalURL);
 }
 
 }
@@ -266,6 +283,7 @@ var dbRecord = {
 url: data.url,
 title: data.title || null,
 syncId: this._application.sync.generateId(),
+syncInternalId: this._application.sync.generateId(),
 syncInstance: this._application.name,
 syncTimestamp: Math.round(Date.now() / 1000)};
 this._application.internalStructure.iterate({
@@ -289,7 +307,8 @@ this.getMissingData(internalThumbData,{
 force: true});
 }
 ,
-updateCurrentSet: function Thumbs_updateCurrentSet(removePositions, saveData, callback) {
+updateCurrentSet: function Thumbs_updateCurrentSet(removePositions, saveData) {
+this._logger.trace("Update current set with data: " + JSON.stringify([removePositions, saveData]));
 var currentThumbsNum = this._application.layout.getThumbsNum();
 var requestData = {
 };
@@ -309,12 +328,14 @@ var dbRecord = {
 url: saveData[index].url,
 title: saveData[index].title.trim() || null,
 syncId: saveData[index].id,
+syncInternalId: saveData[index].internalId,
 syncInstance: saveData[index].instance,
 syncTimestamp: saveData[index].timestamp};
 var internalThumbData = this._application.internalStructure.convertDbRow(dbRecord,true);
 this._application.internalStructure.overwriteItem(index,internalThumbData);
 requestData[index] = this._application.frontendHelper.getDataForIndex(index);
-this.getMissingData(internalThumbData);
+this.getMissingData(internalThumbData,{
+force: true});
 }
 ,this);
 this._application.fastdial.sendRequest("thumbChanged",requestData);
@@ -323,7 +344,7 @@ this._application.fastdial.sendRequest("thumbChanged",requestData);
 changePinnedState: function Thumbs_changePinnedState(index, isPinned) {
 var current = this._application.internalStructure.getItem(index);
 var structureNeedsChanges = true;
-var syncId, syncInstance, syncTimestamp;
+var syncId, syncInstance, syncTimestamp, syncInternalId;
 var needSync;
 var logMessage = strutils.formatString("%1 thumb #%2",[isPinned ? "Pin" : "Unpin", index]);
 this._logger.trace(logMessage);
@@ -332,10 +353,11 @@ if (isPinned && current && current.source)
 syncId = this._application.sync.generateId();
 syncInstance = this._application.name;
 syncTimestamp = Math.round(Date.now() / 1000);
+syncInternalId = this._application.sync.generateId();
 }
  else
 {
-syncId = syncInstance = syncTimestamp = null;
+syncId = syncInstance = syncTimestamp = syncInternalId = null;
 }
 
 var lastThumbIndex = this._application.layout.getThumbsNum() - 1;
@@ -375,6 +397,7 @@ current.pinned = isPinned;
 if (current.source)
 {
 current.sync.id = syncId;
+current.sync.internalId = syncInternalId;
 current.sync.timestamp = syncTimestamp;
 current.sync.instance = syncInstance;
 }
@@ -423,13 +446,14 @@ callback(null,self._application.syncTopHistory.requestData());
 unsafe: function Thumbs_pickupThumbs_unsafe(callback) {
 self._application.safebrowsing.listUnsafeDomains(callback);
 }
-,
-pinned: function Thumbs_pickupThumbs_pinned(callback) {
-var output = {
+},function Thumbs_pickupThumbs_onDataReceived(err, results) {
+if (err)
+throw new Error(err);
+results.pinned = {
 };
 self._application.internalStructure.iterate({
 pinned: true},function (thumbData, index) {
-output[index] = {
+results.pinned[index] = {
 url: thumbData.source,
 title: thumbData.thumb ? thumbData.thumb.title : null,
 backgroundColor: thumbData.thumb ? thumbData.thumb.backgroundColor : null,
@@ -438,26 +462,17 @@ position: index,
 fixed: 1};
 }
 );
-callback(null,output);
-}
-,
-branded: function Thumbs_pickupThumbs_branded(callback) {
-var brandedThumbs = [];
+results.branded = [];
 Array.forEach(self._application.fastdial.brandingXMLDoc.querySelectorAll("pages > page"),function (page) {
 var boost = page.getAttribute("boost");
 boost = boost === null ? BRANDING_PAGES_BOOST : parseInt(boost,10);
-brandedThumbs.push({
+results.branded.push({
 url: self._application.fastdial.expandBrandingURL(page.getAttribute("url")),
 title: page.getAttribute("custom_title"),
 fixed: 0,
 boost: boost});
 }
 );
-callback(null,brandedThumbs);
-}
-},function Thumbs_pickupThumbs_onDataReceived(err, results) {
-if (err)
-throw new Error(err);
 self._logger.trace("Start data: " + JSON.stringify(results));
 var blockedDomains = Array.concat(results.unsafe,results.blacklist.domains);
 var existingPinnedThumbs = results.pinned;
@@ -558,7 +573,8 @@ this._application.internalStructure.iterate({
 nonempty: true,
 pinned: true},function (thumbData, index) {
 try {
-blockedDomains.push(thumbData.location.asciiHost);
+let domain = thumbData.location.asciiHost.replace(/^www\./,"");
+blockedDomains.push(domain);
 }
 catch (ex) {
 
@@ -575,7 +591,7 @@ var dropPositions = [];
 var unpinnedList = [];
 for(let [index, thumbData] in Iterator(unpinned)) {
 try {
-let domain = thumbData.location.host;
+let domain = thumbData.location.asciiHost.replace(/^www\./,"");
 if (blockedDomains.indexOf(domain) !== - 1)
 {
 structureNeedsChanges = true;
@@ -599,6 +615,7 @@ var bVisits = b.thumbData.thumb.visits || 0;
 return bVisits - aVisits;
 }
 );
+this._logger.trace("Unpinned list: " + JSON.stringify(unpinnedList));
 unpinnedList.forEach(function (unpinnedItem) {
 while (true) {
 let positionThumb = this._application.internalStructure.getItem(emptyPositionIndex);
@@ -630,6 +647,7 @@ this._application.internalStructure.removeItem(index);
 
 }
 ,this);
+this._logger.trace("Set records: " + JSON.stringify(setRecords));
 this._application.internalStructure.overwriteItem(setRecords);
 this._application.fastdial.sendRequest("thumbChanged",this._application.frontendHelper.fullStructure);
 }

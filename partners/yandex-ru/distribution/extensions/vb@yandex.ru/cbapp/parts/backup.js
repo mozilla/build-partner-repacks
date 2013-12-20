@@ -29,7 +29,7 @@ new sysutils.Timer(this._dumpCurrentData.bind(this), timeoutMs, INTERVAL_SEC * 1
 }
 ,
 finalize: function Backup_finalize(doCleanup, callback) {
-if (this._throttleTimer)
+if (this._throttleTimer && this._throttleTimer.isRunning)
 {
 this.addListener(SYNC_THROTTLE_PROCESS_FINISH,this);
 this._finalizeDoCleanup = doCleanup;
@@ -294,17 +294,12 @@ self._cleanOldFiles();
 }
 ,
 _cleanOldFiles: function Backup__cleanOldFiles() {
-var dirEntries = this._backupsDir.directoryEntries;
-var dropFilesBeforeTime = Date.now() - FILES_MAX_NUMBER * INTERVAL_SEC * 1000;
-while (dirEntries.hasMoreElements()) {
-let file = dirEntries.getNext().QueryInterface(Ci.nsIFile);
-if (file.lastModifiedTime < dropFilesBeforeTime)
-{
+this.list.slice(FILES_MAX_NUMBER).forEach(function (fileData) {
+var file = this._backupsDir;
+file.append(fileData.name);
 fileutils.removeFileSafe(file);
 }
-
-}
-
+,this);
 }
 ,
 get _backupsDir() {

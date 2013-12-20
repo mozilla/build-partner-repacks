@@ -127,11 +127,18 @@ let now = Math.round(Date.now() / 1000);
 let dbFile = app.core.rootDir;
 dbFile.append("fastdial.sqlite");
 let database = new Database(dbFile);
-let gridPrefValue = prefs.get("ftabs.gridLayout");
-let backbonePrefValue = JSON.parse(gridPrefValue);
-let backbone = [backbonePrefValue[0].length, backbonePrefValue.length];
 let defaultXY = this._getDefaultThumbsNumXY();
 let numThumbsDefault = defaultXY[0] * defaultXY[1];
+let gridPrefValue = prefs.get("ftabs.gridLayout");
+let backbone;
+try {
+let backbonePrefValue = JSON.parse(gridPrefValue);
+backbone = [backbonePrefValue[0].length, backbonePrefValue.length];
+}
+catch (ex) {
+backbone = defaultXY;
+}
+
 let newLayoutX, newLayoutY, maxAvailableIncreased = false;
 let filledPages = xmlDoc.querySelectorAll("pages > page:not([url=''])");
 let filledPagesNum = 0;

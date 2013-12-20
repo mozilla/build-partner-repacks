@@ -342,6 +342,7 @@ this._application.fastdial.sendRequest("sync",evtData);
 ,
 _onAnyEngineFinishedLoading: function Sync__onAnyEngineFinishedLoading() {
 this._enabledStarted = false;
+this._application.preferences.set("ftabs.emptyLastThumb",false);
 this._application.fastdial.sendRequest("sync",this.state);
 }
 ,

@@ -88,10 +88,15 @@ application.slices.findSliceByID(this.sliceID).sizeTo(width,height);
 }
 ,
 getOption: function PlatformEnvironment_getOption(aKey) {
-return this._api.Settings.getValue(aKey,this._WIID);
+var value = this._api.Settings.getValue(aKey,this._WIID);
+if (typeof value === "undefined")
+value = "";
+return String(value);
 }
 ,
 setOption: function PlatformEnvironment_setOption(aKey, aValue) {
+if (typeof aValue !== "string")
+throw new TypeError("Option value must be a string.");
 this._api.Settings.setValue(aKey,aValue,this._WIID);
 }
 ,
