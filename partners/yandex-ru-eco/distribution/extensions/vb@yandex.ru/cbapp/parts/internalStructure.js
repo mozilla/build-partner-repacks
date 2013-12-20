@@ -28,9 +28,10 @@ nonempty: true},function (thumbData, index) {
 try {
 if (thumbData.location.asciiHost !== aData.domain)
 return;
-delete aData.domain;
+let cloudData = sysutils.copyObj(aData);
+delete cloudData.domain;
 this.setItem(index,{
-cloud: aData});
+cloud: cloudData});
 let requestData = {
 };
 requestData[index] = this._application.frontendHelper.getDataForIndex(index);
@@ -135,7 +136,7 @@ output.thumb[fieldName] = thumbData[fieldName];
 let host = locationObj.location ? locationObj.location.asciiHost : null;
 output.cloud = host ? this._application.cloudSource.getCachedExistingData(host) : {
 };
-["Id", "Instance", "Timestamp"].forEach(function (fieldName) {
+["Id", "Instance", "Timestamp", "InternalId"].forEach(function (fieldName) {
 var dbField = "sync" + fieldName;
 if (thumbData[dbField])
 {

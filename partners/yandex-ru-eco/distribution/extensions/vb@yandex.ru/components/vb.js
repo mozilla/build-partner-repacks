@@ -118,7 +118,7 @@ app.fastdial.requestInit(this._outerWindowId);
 ,
 uploadUserBackground: function VBDOMObject_uploadUserBackground(callback) {
 typesCheck(arguments,["function"]);
-app.fastdial.uploadUserBackground(this._window,callback);
+app.backgroundImages.upload(this._window,callback);
 }
 ,
 requestBookmarksBranch: function VBDOMObject_requestBookmarksBranch(id, callback) {

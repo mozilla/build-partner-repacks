@@ -92,7 +92,7 @@ self._logger.error(e.message);
 }
 ,
 suppressTutorial: function searchSuggest_suppressTutorial() {
-this._application.preferences.set("ftabs.searchStatus",3);
+this._application.preferences.set("ftabs.searchStudyOmnibox",false);
 this._application.fastdial.requestInit();
 }
 ,

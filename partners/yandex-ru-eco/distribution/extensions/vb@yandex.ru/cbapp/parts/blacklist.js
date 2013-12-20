@@ -154,9 +154,15 @@ request.setRequestHeader("If-Modified-Since",lastModified);
 var timer = new sysutils.Timer(request.abort.bind(request), 5000);
 request.addEventListener("load",function () {
 timer.cancel();
+var setLastSyncTime = function setLastSyncTime() {
+var now = Math.round(Date.now() / 1000);
+self._application.preferences.set("blacklist.lastSyncTime",now);
+}
+;
 if (request.status === 304)
 {
 self._logger.debug("XML file on server has not yet changed, status = 304");
+setLastSyncTime();
 return;
 }
 
@@ -170,8 +176,7 @@ try {
 let serializedXML = xmlutils.serializeXML(request.responseXML);
 fileutils.writeTextFile(self._serverFile,serializedXML);
 self._logger.debug("XML is valid, saved into filesystem");
-let now = Math.round(Date.now() / 1000);
-self._application.preferences.set("blacklist.lastSyncTime",now);
+setLastSyncTime();
 let lastModified = request.getResponseHeader("last-modified");
 if (lastModified)
 {

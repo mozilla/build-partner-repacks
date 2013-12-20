@@ -366,7 +366,14 @@ catch (e) {
 
 let goodbyePageElement = fxProductXML && fxProductXML.querySelector("Product > GoodbyeUrl");
 if (goodbyePageElement)
-data.GoodbyePage.url = branding.expandBrandTemplatesEscape(goodbyePageElement.textContent);
+{
+let goodbyeURL = branding.expandBrandTemplatesEscape(goodbyePageElement.textContent);
+let ui = this._application.addonStatus.guidString;
+if (ui)
+goodbyeURL += (/\?/.test(goodbyeURL) ? "&" : "?") + "ui=" + encodeURIComponent(ui);
+data.GoodbyePage.url = goodbyeURL;
+}
+
 try {
 let configXML = branding.brandPackage.getXMLDocument("/browser/browserconf.xml");
 let configHPElement = configXML.querySelector("Browser > HomePage");
