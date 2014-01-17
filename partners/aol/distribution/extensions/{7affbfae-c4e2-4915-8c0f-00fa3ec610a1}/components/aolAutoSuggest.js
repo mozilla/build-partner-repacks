@@ -5,24 +5,17 @@ g=C.ID("87c57a2d-6812-4ce1-9242-a1656bbe0d1e"),
 Ci=C.interfaces,
 Cc=C.classes,
 Cg=Ci.nsIComponentRegistrar;
-
-
 const PROPS = "chrome://aoltoolbar/locale/toolbar_props.properties";
-
 var log = function(msg) {
     var lg = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
     lg.logStringMessage(msg);
 }
-
 function gS(){};
-
 gS.prototype={
-
     log:function(msg){
         var lg = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
         lg.logStringMessage(msg);
     },
-
 	getStrings : function()
 	{
 	    var sbSvc = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
@@ -80,13 +73,9 @@ gS.prototype={
    stopSearch:function(){},
    QueryInterface:function(a){return this}
 }
-
-
 function gR(z,r){this._z=z;this._r=r;}
-
 gR.prototype={
    _z:0,_r:[],
-
   get searchString() {
     return this._z;
   },
@@ -109,9 +98,7 @@ gR.prototype={
 	   }
    }
 }
-
 var gF={createInstance:function(o,i){return new gS().QueryInterface(i)}}
-
 var gM={
    registerSelf:function(c,f,l,t){c.QueryInterface(Cg).registerFactoryLocation(g,"aol Search Suggest",
       "@mozilla.org/autocomplete/search;1?name=aol-search-suggest",f,l,t)},
@@ -119,13 +106,10 @@ var gM={
    getClassObject:function(c,a,i){return gF},
    canUnload:function(c){return true}
 }
-
 function NSGetModule(c,f){return gM}
-
 function NSGetFactory(cid) {
   if (cid.toString().toUpperCase() != g.toString().toUpperCase()) {
     throw Components.results.NS_ERROR_FACTORY_NOT_REGISTERED;
   }
-
   return gF;
 }

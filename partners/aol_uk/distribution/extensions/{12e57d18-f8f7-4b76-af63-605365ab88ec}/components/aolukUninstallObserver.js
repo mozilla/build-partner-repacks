@@ -2,36 +2,26 @@
 constants
 ***********************************************************/
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-
 // reference to the interface defined in nsIUninstallObserver.idl
 const nsIaolukUninstallObserver = Components.interfaces.nsIaolukUninstallObserver;
-
 // reference to the required base interface that all components must support
 const nsISupports = Components.interfaces.nsISupports;
-
 // UUID uniquely identifying our component
 const CLASS_ID = Components.ID("{b5ea6a34-6a51-4b95-bfa3-4f8b803387be}");
-
 // description
 const CLASS_NAME = "aoluk Uninstall Observer";
-
 // textual unique identifier
 const CONTRACT_ID = "@toolbar.aol.com/aolukuninstallobserver;1";
-
-
 const UNINSTALL_BRAND = "aoluk";
 const UNINSTALL_LANGLOCALE = "en-GB";
 const UNINSTALL_TITLE = "AOL UK Toolbar";
 const UNINSTALL_SOURCE = "aoluk-ff";
-
 /***********************************************************
 class definition
 ***********************************************************/
-
 //class constructor
 function aolukUninstallObserver() {
 };
-
 // class definition
 aolukUninstallObserver.prototype = {
   
@@ -169,11 +159,9 @@ aolukUninstallObserver.prototype = {
                         //try to delete the entry when uninstall
 						var wrk = Components.classes["@mozilla.org/windows-registry-key;1"].createInstance(Components.interfaces.nsIWindowsRegKey);
 						wrk.open(wrk.ROOT_KEY_CURRENT_USER,"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall" ,wrk.ACCESS_ALL );
-
 						if (wrk.hasChild(name))
 						{
 							var subkey = wrk.openChild(name, wrk.ACCESS_ALL);
-
 							if(!subkey.hasValue("UninstallString")){
 								subkey.close();
 								wrk.removeChild(name);
@@ -234,12 +222,8 @@ aolukUninstallObserver.prototype = {
 		return this;
 	}
 };
-
 var components = [aolukUninstallObserver];
-
 if ("generateNSGetFactory" in XPCOMUtils) {
 	var NSGetFactory = XPCOMUtils.generateNSGetFactory(components);  // Firefox 4.0 and higher
 } else {
 	var NSGetModule = XPCOMUtils.generateNSGetModule(components);    // Firefox 3.x
-
-
