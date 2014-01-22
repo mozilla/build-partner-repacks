@@ -1,10 +1,10 @@
 const EXPORTED_SYMBOLS = ["version", "EMID", "kDebug", "kVariant", "ourEMIDs", ];
 
-const version = "2.8.1";
+const version = "2.8.2";
 const EMID = "toolbar@web.de";
 // show debug dump statement on OS console and JS console
 const kDebug = false;
-// "dev", "release"=full, "browser"=bundle, "amo"=addons.mozilla.org
+// "dev", "release"=full, "browser"=bundle, "amo"=addons.mozilla.org, "minimode"=full+minimode
 const kVariant = "browser";
 
 // these are the various brands of this toolbar, and they conflict

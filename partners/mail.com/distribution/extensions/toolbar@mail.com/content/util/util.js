@@ -63,7 +63,8 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://unitedtb/util/Preferences.js");
 Cu.import("resource://unitedtb/util/StringBundle.js");
-Cu.import("resource://unitedtb/build.js");
+var build = {};
+Cu.import("resource://unitedtb/build.js", build);
 try {
   Components.utils.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
 } catch (ex) {
@@ -575,7 +576,7 @@ function splitLines(content)
  */
 function getExtensionFullVersion()
 {
-  return version; // build.js
+  return build.version; // build.js
 }
 
 /**
@@ -741,7 +742,7 @@ var kDebugAlsoOnErrorConsole = true;
  */
 function debug(text)
 {
-  if (!kDebug)
+  if (!build.kDebug)
     return;
   dump(text + "\n");
   if (!kDebugAlsoOnErrorConsole)

@@ -21,7 +21,8 @@ if (!unitedinternet)
   Components.utils.import("resource://unitedtb/util/fetchhttp.js", unitedinternet.common);
   Components.utils.import("resource://unitedtb/util/observer.js", unitedinternet.common);
   Components.utils.import("resource://unitedtb/util/brand-var-loader.js", unitedinternet.common);
-  Components.utils.import("resource://unitedtb/build.js", unitedinternet.common);
+  unitedinternet.common.build = {};
+  Components.utils.import("resource://unitedtb/build.js", unitedinternet.common.build);
   Components.utils.import("resource://gre/modules/Services.jsm", unitedinternet.common);
   unitedinternet.common.loadJS("chrome://unitedtb/content/util/observerOnWindow.js", unitedinternet.common);
   unitedinternet.common.loadJS("chrome://unitedtb/content/util/uiutil.js", unitedinternet.common);

@@ -4,10 +4,12 @@
 
 const EXPORTED_SYMBOLS = [];
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/tracking/campaign-id.js");
 var accounts = {};
 Components.utils.import("resource://unitedtb/email/account-list.js", accounts);
+Components.utils.import("resource://unitedtb/util/globalobject.js");
 
 var aibTimer;
 
@@ -42,6 +44,8 @@ function aib(prefname, event, intervalMS)
   paramsStr += "&loggedin=" + (loggedIn ? "1": "0");
   paramsStr += "&rememberme=" + (rememberMe ? "1": "0");
   paramsStr += "&errorlogging=" + (ourPref.get("util.reportError.enabled", false) ? "1": "0");
+  paramsStr += "&browserversion=ff" + Services.appinfo.platformVersion;
+  paramsStr += "&mode=" + (getGlobalObject("united", "minimode") ? "minimized" : "maximized");
 
   pingTrackingServer(event, paramsStr, function() {
     ourPref.set("tracking.aib." + prefname, Math.round(new Date().getTime() / 1000));

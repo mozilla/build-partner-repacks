@@ -49,7 +49,7 @@ function onOptinLoad()
       // Only optin if we are not branded browser
       E("finish-button").addEventListener("click", onOptin, true);
     }
-    if (kVariant == "amo")
+    if (build.kVariant == "amo")
     {
       E("container").setAttribute("amo", "true");
       confirmClose = false;

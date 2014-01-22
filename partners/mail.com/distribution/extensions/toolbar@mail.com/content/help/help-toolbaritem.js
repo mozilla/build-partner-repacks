@@ -80,7 +80,7 @@ function initMenuitems(containerID, insertAfterID)
 
 function openAboutDialog()
 {
-  AddonManager.getAddonByID(EMID, function(addon)
+  AddonManager.getAddonByID(build.EMID, function(addon)
   {
     window.openDialog("chrome://mozapps/content/extensions/about.xul",
         "", "chrome,centerscreen,modal", addon);
@@ -103,7 +103,7 @@ function uninstall()
   if (confirm != 0)
     return;
 
-  AddonManager.getAddonByID(EMID, function(addon)
+  AddonManager.getAddonByID(build.EMID, function(addon)
   {
     addon.uninstall();
   });

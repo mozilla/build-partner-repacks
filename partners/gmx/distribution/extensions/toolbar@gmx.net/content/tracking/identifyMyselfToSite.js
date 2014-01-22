@@ -9,7 +9,7 @@
  * on the document element, i.e. <html
  * united-toolbar-brand="webde" / "gmx"
  * united-toolbar-version="1.6.1"
- * united-toolbar-variant="full" / "bundle" / "amo" / "dev"
+ * united-toolbar-variant="maximized" / "minimized" / "bundle" / "amo" / "dev"
  * united-toolbar-branded-browser="true" / "false"
  * >
  *
@@ -43,7 +43,9 @@ function onLoad()
     if (gVariant == "browser")
       gVariant = "bundle";
     else if (gVariant == "release")
-      gVariant = "full";
+      gVariant = "maximized";
+    else if (gVariant == "minimode")
+      gVariant = "minimized";
     gBrandedBrowser = ourPref.get("brandedbrowser", false);
     debug("brand " + gBrand + ", version " + gVersion +
         ", variant " + gVariant + ", branded browser " + gBrandedBrowser);

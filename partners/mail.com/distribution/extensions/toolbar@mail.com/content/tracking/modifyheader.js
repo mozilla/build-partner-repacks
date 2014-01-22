@@ -37,7 +37,7 @@ function getValues()
   gVariant = build.kVariant;
   if (gVariant == "browser")
     gVariant = "bundle";
-  else if (gVariant == "release")
+  else if (gVariant == "release" || gVariant == "minimode")
     gVariant = "full";
   gBrandedBrowser = ourPref.get("brandedbrowser", false);
 }

@@ -4,7 +4,7 @@ var gStringBundle = new StringBundle(
 
 function check()
 {
-  AddonManager.getAddonByID(EMID, function(addon)
+  AddonManager.getAddonByID(build.EMID, function(addon)
     {
       var listener = {
         onUpdateAvailable: function(aAddon, aInstall)

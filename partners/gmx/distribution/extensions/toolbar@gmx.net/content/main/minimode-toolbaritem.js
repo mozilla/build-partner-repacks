@@ -1,6 +1,7 @@
 Components.utils.import("resource://gre/modules/Services.jsm");
 var accounts = {};
 Components.utils.import("resource://unitedtb/email/account-list.js", accounts);
+Components.utils.import("resource://unitedtb/util/globalobject.js", this);
 
 var gToolbar;
 var gMailMiniModeEndMenuitem;
@@ -19,6 +20,9 @@ function onLoad()
       gMailMiniModeStartMenuitem.hidden = true;
       gMailMiniModeEndMenuitem.hidden = false;
       gMailMiniModeLogoffMenuitem.hidden = false;
+      setGlobalObject("united", "minimode", true);
+    } else {
+      setGlobalObject("united", "minimode", false);
     }
     // We need to catch when the toolbar is displayed via the toolbar view
     // menu so we can drop out of mini mode.
@@ -81,6 +85,7 @@ function start() {
     if (ourPref.get("newtab.opt-in", false)) {
       ourPref.set("newtab.enabled", true);
     }
+    setGlobalObject("united", "minimode", true);
   } catch (e) { errorCritical(e); }}
 
 /**
@@ -99,6 +104,7 @@ function end(showToolbar) {
     document.persist("united-toolbar", "collapsed");
     gToolbar.setAttribute("minimode", "false");
     document.persist("united-toolbar", "minimode");
+    setGlobalObject("united", "minimode", false);
   } catch (e) { errorCritical(e); }
 }
 
@@ -114,8 +120,16 @@ var globalObserver =
 {
   notification : function(msg, obj)
   {
-    if (msg == "logged-in" || msg == "logged-out")
+    if (msg == "logged-in" || msg == "logged-out") {
       updateUI();
+    } else if (msg == "first-run") {
+      // For web.de club, start mini mode by default
+      if (brand.toolbar.pay ||
+          build.kVariant == "amo" ||
+          build.kVariant == "minimode") {
+        start();
+      }
+    }
   },
 }
 registerGlobalObserver(globalObserver);
