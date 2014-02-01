@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 PARTNERS_DIR = path.join(path.dirname(__file__), path.join('..', 'partners'))
 BUILD_NUMBER = '1'
 STAGING_SERVER = 'stage.mozilla.org'
-HGROOT = 'http://hg.mozilla.org'
+HGROOT = 'https://hg.mozilla.org'
 REPO = 'releases/mozilla-release'
 DEFAULT_OUTPUT_DIR = 'partner-repacks/%(partner)s/%(platform)s/%(locale)s'
 

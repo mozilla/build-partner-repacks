@@ -4,7 +4,7 @@ signing_server="signing4.srv.releng.scl3.mozilla.com:9120"
 my_ip=`/sbin/ifconfig | grep inet | grep "10\." | cut -f2 -d" "`
 token_file="`pwd`/token"
 nonce_file="`pwd`/nonce"
-tools_repo="http://hg.mozilla.org/build/tools"
+tools_repo="https://hg.mozilla.org/build/tools"
 signing_dir="`pwd`/tools/release/signing"
 
 # Clear out the nonce. Invalid nonces will cause our newly created token to be
