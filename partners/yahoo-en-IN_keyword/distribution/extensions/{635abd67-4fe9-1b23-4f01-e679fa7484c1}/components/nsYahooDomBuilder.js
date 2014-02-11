@@ -152,7 +152,8 @@ if(popup){if(dom){try{popup.setAttribute("yhash",dom.getAttribute("yhash"));}cat
 dom=popup;}
 if(dom!=null){_collectAlertData(dom);}
 mdom=null;mpopup=null;popup=null;node=null;return dom;}
-this.buildImageUrl=function(image,iconSubDirectory){var iconHost="l.yimg.com";var iconDir="\/nt\/i\/tb\/icons";if(_mLocalStorage.getString("i")!=null){iconHost=_mLocalStorage.getString("i");}
+this.buildImageUrl=function(image,iconSubDirectory){if(image&&(image.indexOf("chrome://")===0)){return image;}
+var iconHost="l.yimg.com";var iconDir="\/nt\/i\/tb\/icons";if(_mLocalStorage.getString("i")!=null){iconHost=_mLocalStorage.getString("i");}
 if(_mLocalStorage.getString("iu")!=null){iconDir=_mLocalStorage.getString("iu");}
 if(iconSubDirectory&&image){imageUrl="http:\/\/"+iconHost+iconDir+"\/"+iconSubDirectory+"\/"+image;}else if(image){imageUrl="http:\/\/"+iconHost+iconDir+"\/"+image;}else{imageUrl="http:\/\/"+iconHost+iconDir+"\/";}
 return imageUrl;};this.setSkinParams=function(node){if(node){var hash=node.hash;hash=hash.replace(/%2F/g,"/");hash=hash.replace(/%23/g,"#");yahooDebug(hash);this.skinData=hash;var sk=yahooUtils.JSON.parse(hash);var skin_base=_self.buildImageUrl('','');if(sk.skin_bk!=""){_mContainer.style.background="url('"+skin_base+sk.skin_bk

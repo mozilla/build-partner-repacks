@@ -43,8 +43,8 @@ if(url){if(!this.isInBrowserCache(this.masterManifestURL)){return true;}
 var ysots=this.confMgr.getCharValue("ysots");if(ysots!=this.localstorage.getString("ysots")){return true;}}}catch(ex){yahooError(ex.message);}
 return false;},buildManifestURL:function(){var manifest_url="";try{var hash=this.localstorage.getObject("yahoo-toolbar-cacheldr.yhash");if(hash){hash=hash.wrappedJSObject.object;this.abortCacheloader=false;}
 else{this.abortCacheloader=true;}
-if(hash.mlurl){manifest_url=hash.mlurl;}
-if(hash.staledays){this.timetolive=hash.staledays*24*60;}}catch(ex){yahooError(" error in buildManifestURL :: **** "+ex.message);}
+if(!this.abortCacheloader){if(hash.mlurl){manifest_url=hash.mlurl;}
+if(hash.staledays){this.timetolive=hash.staledays*24*60;}}}catch(ex){yahooError(" error in buildManifestURL :: **** "+ex.message);}
 return manifest_url;},getCurrentDate:function(){var d=new Date();return d.toUTCString();},openCacheEntry:function(url,mode){try
 {var clientID="HTTP";var nsICache=Components.interfaces.nsICache;var nsCacheService=Components.classes["@mozilla.org/network/cache-service;1"];var service=nsCacheService.getService(Components.interfaces.nsICacheService);var session=service.createSession(clientID,nsICache.STORE_ON_DISK,true);var entry=session.openCacheEntry(url,mode,true);}catch(e){yahooError("openCacheEntry: "+e.message);}
 return entry;},writeToCache:function(url,data){try

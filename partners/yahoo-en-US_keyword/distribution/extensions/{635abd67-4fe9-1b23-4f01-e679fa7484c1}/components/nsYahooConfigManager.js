@@ -2,7 +2,7 @@
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");var CI=Components.interfaces;var CC=Components.classes;var loader=CC["@mozilla.org/moz/jssubscript-loader;1"].getService(CI.mozIJSSubScriptLoader);loader.loadSubScript("chrome://ytoolbar/content/logger.js");loader.loadSubScript("chrome://ytoolbar/content/installerVariables.js");loader.loadSubScript("chrome://ytoolbar/content/utils.js");function WrapperClass(object){this.wrappedJSObject=this;this.object=object;}
 WrapperClass.prototype={QueryInterface:function(iid){if(!iid.equals(Components.interfaces.nsISupports)){throw Components.results.NS_ERROR_NO_INTERFACE;}
 return this;}};function YahooConfigManager(){var _mPrefix="yahoo.ytff";var _mPrefBranch=CC["@mozilla.org/preferences-service;1"].getService(CI.nsIPrefBranch2);var _mPrefBranch1=CC["@mozilla.org/preferences-service;1"].getService(CI.nsIPrefBranch);var _mFileIO=CC["@yahoo.com/fileio;1"].getService(CI.nsIYahooFileIO2);var _mLocalStorage=CC["@yahoo.com/localstorage;1"].getService(CI.nsIYahooLocalStorage);var _self=this;var _mKeySource={'sc':'config','dc':'config','pc':'config','tc':'config'}
-var _mForceWrite="";var _mForceWriteSc=false;var _mForceWriteFr=false;var _mForceWritePc=false;var _mForceWriteTc=true;var _mYahooCodes={};_mYahooCodes.co=yahooInstallerVariables.country||"";_mYahooCodes.lang=yahooInstallerVariables.language||"";_mYahooCodes.sc=yahooInstallerVariables.sc||"";_mYahooCodes.dc=yahooInstallerVariables.dc||"";_mYahooCodes.pc=yahooInstallerVariables.pc||"";_mYahooCodes.sc=yahooInstallerVariables.sc||"";_mYahooCodes.fr=yahooInstallerVariables.fr||"";_mYahooCodes.verticals=yahooInstallerVariables.verticals||"";_mYahooCodes.activeVertical=yahooInstallerVariables.activeVertical||"";this.YCONF_BOOL=_mPrefBranch.PREF_BOOL;this.YCONF_INT=_mPrefBranch.PREF_INT;this.YCONF_STRING=_mPrefBranch.PREF_STRING;this.isYahooKey=true;function _setConfigValue(key,value,datatype,bOverride){var bSetValue=true;try{if((typeof value=='undefined')||(value===null)){_self.deleteKey(key);return true;}
+var _mForceWrite="";var _mForceWriteSc=false;var _mForceWriteFr=false;var _mForceWritePc=false;var _mForceWriteTc=true;var _mYahooCodes={};_mYahooCodes.co=yahooInstallerVariables.country||"";_mYahooCodes.lang=yahooInstallerVariables.language||"";_mYahooCodes.sc=yahooInstallerVariables.sc||"";_mYahooCodes.dc=yahooInstallerVariables.dc||"";_mYahooCodes.pc=yahooInstallerVariables.pc||"";_mYahooCodes.sc=yahooInstallerVariables.sc||"";_mYahooCodes.fr=yahooInstallerVariables.fr||"";_mYahooCodes.verticals=yahooInstallerVariables.verticals||"";_mYahooCodes.activeVertical=yahooInstallerVariables.activeVertical||"";this.YCONF_NOTFOUND=_mPrefBranch.PREF_INVALID;this.YCONF_BOOL=_mPrefBranch.PREF_BOOL;this.YCONF_INT=_mPrefBranch.PREF_INT;this.YCONF_STRING=_mPrefBranch.PREF_STRING;this.isYahooKey=true;function _setConfigValue(key,value,datatype,bOverride){var bSetValue=true;try{if((typeof value=='undefined')||(value===null)){_self.deleteKey(key);return true;}
 if(_self.isYahooKey){key=_mPrefix+'.'+key;}
 switch(_mPrefBranch.getPrefType(key)){case _mPrefBranch.PREF_BOOL:case _mPrefBranch.PREF_INT:case _mPrefBranch.PREF_STRING:bSetValue=bOverride;break;default:bSetValue=true;break;}
 if(bSetValue){switch(datatype){case _self.YCONF_BOOL:_mPrefBranch.setBoolPref(key,value);break;case _self.YCONF_INT:_mPrefBranch.setIntPref(key,value);break;case _self.YCONF_STRING:default:var str=value.toString();_mPrefBranch.setCharPref(key,str);break;}}}catch(e){yahooError(e);}
@@ -94,9 +94,9 @@ if(topic!="yahoo-toolbar-install-over")
 _self.setBoolValue("install.istracked",false,true);var toolbar_bucket=_self.getCharValue("toolbar.forcedbucket");if(toolbar_bucket!="")
 {_self.setCharValue("toolbar.forcedbucket",bucket,true);}}catch(e){yahooError(e);}}
 function _postToolbarInstall(topic){try{_initCodesPartner();_initCodesCPDL();_initFFConfig(topic);CC["@yahoo.com/partner/manager;1"].getService(CI.nsIYahooPartnerManager).init();}catch(e){yahooError(e);_mLocalStorage.putString("yahoo.ytff.installAction.showErrorLoading","true");}}
-this.setIntValue=function(key,value,bOverride){try{_setConfigValue(key,value,this.YCONF_INT,bOverride);}catch(e){yahooError(e);}}
-this.setBoolValue=function(key,value,bOverride){try{_setConfigValue(key,value,this.YCONF_BOOL,bOverride);}catch(e){yahooError(e);}}
-this.setCharValue=function(key,value,bOverride){try{_setConfigValue(key,value,this.YCONF_STRING,bOverride);}catch(e){yahooError(e);}}
+this.setIntValue=function(key,value,bOverride){try{_setConfigValue(key,value,this.YCONF_INT,bOverride);}catch(e){yahooError(e.message);}}
+this.setBoolValue=function(key,value,bOverride){try{_setConfigValue(key,value,this.YCONF_BOOL,bOverride);}catch(e){yahooError(e.message);}}
+this.setCharValue=function(key,value,bOverride){try{_setConfigValue(key,value,this.YCONF_STRING,bOverride);}catch(e){yahooError(e.message);}}
 this.deleteKey=function(key){if(this.isYahooKey){key=_mPrefix+'.'+key;}
 _mPrefBranch.clearUserPref(key);}
 this.getIntValue=function(key){var val=_getConfigValue(key);if(val==null){val=0;}
@@ -105,7 +105,9 @@ this.getBoolValue=function(key){var val=_getConfigValue(key);if(val==null){val=n
 return val;},this.getCharValue=function(key){var val=_getConfigValue(key);if(val==null){val="";}
 return val;}
 this.cleanUp=function(){try{_mPrefBranch1.deleteBranch("yahoo.ytff");_mPrefBranch1.deleteBranch("yahoo.installer");}catch(e){yahooError(e);}}
-this.isKeyPresent=function(key){var bKeyPresent=false;try{if(this.isYahooKey){key=_mPrefix+'.'+key;}
+this.getKeyType=function(key){var bKeyPresent=false;try{if(this.isYahooKey){key=_mPrefix+'.'+key;}
+var keyType=_mPrefBranch.getPrefType(key);switch(keyType){case _mPrefBranch.PREF_BOOL:case _mPrefBranch.PREF_INT:case _mPrefBranch.PREF_STRING:break;default:keyType=this.YCONF_NOTFOUND;break;}}catch(e){yahooError(e);}
+this.isYahooKey=true;return keyType;};this.isKeyPresent=function(key){var bKeyPresent=false;try{if(this.isYahooKey){key=_mPrefix+'.'+key;}
 switch(_mPrefBranch.getPrefType(key)){case _mPrefBranch.PREF_BOOL:case _mPrefBranch.PREF_INT:case _mPrefBranch.PREF_STRING:bKeyPresent=true;break;default:bKeyPresent=false;break;}}catch(e){yahooError(e);}
 this.isYahooKey=true;return bKeyPresent;};this.addOnChangeListener=function(key,observer){try{key=_mPrefix+'.'+key;_mPrefBranch.addObserver(key,observer,false);}catch(e){yahooError(e);}}
 this.getValuefromSqlLite=function(key){}
