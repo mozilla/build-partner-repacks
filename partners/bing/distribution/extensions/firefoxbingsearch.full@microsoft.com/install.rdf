@@ -7,7 +7,7 @@
     <homepageURL>http://www.bing.com/</homepageURL>
     <id>firefoxbingsearch.full@microsoft.com</id>
     <name>Bing Search for Firefox</name>
-    <version>1.2</version>
+    <version>1.3</version>
 
     <bootstrap>true</bootstrap>
     <type>2</type>

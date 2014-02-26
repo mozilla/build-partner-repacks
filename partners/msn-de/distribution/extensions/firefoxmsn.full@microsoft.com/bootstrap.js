@@ -123,6 +123,10 @@ function showLandingPage(window) {
   if (!justInstalled || showLandingPage.shown)
     return;
 
+  // MSN distribution already has this as the homepage, no reason to duplicate it
+  if (Services.prefs.getCharPref("distribution.id") == DISTRIBUTION_ID)
+    return;
+
   // Do the appropriate thing on each platform
   if (platform == "desktop") {
     // Try again after a short delay if session store is initializing

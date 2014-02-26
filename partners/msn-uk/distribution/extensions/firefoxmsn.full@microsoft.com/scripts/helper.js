@@ -36,6 +36,7 @@
 
 "use strict";
 
+const DISTRIBUTION_ID = "msnuk";
 const LANDING_PAGE = "http://uk.msn.com/?pc=MOZM";
 const PREF_HOME = "browser.startup.homepage";
 const PREF_HOME_RESET = "browser.startup.homepage_reset";
