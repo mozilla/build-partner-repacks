@@ -1,34 +1,27 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<preset format-version="2.2" version="7.4">
+<preset format-version="2.2" version="8.0">
     <url>http://bar.yandex.ru/presets/ua.xml</url>
-    
     <author lang="ru">Яндекс</author>
     <name lang="ru">Базовый</name>
-    
     <author lang="uk">Яндекс</author>
     <name lang="uk">Базовый</name>
-    
     <author lang="en">Yandex</author>
     <name lang="en">Basic</name>
-    
     <author lang="be">Яндекс</author>
     <name lang="be">Базавы</name>
-    
     <author lang="kk">Яндекс</author>
     <name lang="kk">Бастапқы</name>
     <packages>
-        <package file="mcff.zip" id="http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml" platform-min="4" version="1.3"/>
-        <package file="vkontakte_ff_611.zip" id="http://bar-widgets.yandex.ru/packages/approved/91/manifest.xml" platform-min="6" version="6.1"/>
-        <package file="notifier_ff_1007.zip" id="http://bar-widgets.yandex.ru/packages/approved/212/manifest.xml" platform-min="6" version="1.7"/>
-        <package file="odnoklassniki.zip" id="http://bar-widgets.yandex.ru/packages/approved/140/manifest.xml" platform-min="5" version="1.3"/>
-        <package file="facebook_ff_1.3.zip" id="http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml" platform-min="5" version="3.0"/>
-        <package file="mailru_ff_3.zip" id="http://bar-widgets.yandex.ru/packages/approved/82/manifest.xml" platform-min="5" version="3.1"/>
-        <package file="gmail3008.zip" id="http://bar-widgets.yandex.ru/packages/approved/97/manifest.xml" platform-min="3" version="3.8"/>
-        <package file="twitter_ff_2.zip" id="http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml" platform-min="5" version="2.0"/>
-        <package file="rambler_1002.zip" id="http://bar-widgets.yandex.ru/packages/approved/75/manifest.xml" platform-min="4" version="2.1"/>
-        <package file="radio.zip" id="http://bar-widgets.yandex.ru/packages/approved/118/manifest.xml" platform-min="6" version="2.4"/>
+        <package browser="firefox" file="radio.zip" id="http://bar-widgets.yandex.ru/packages/approved/118/manifest.xml" platform-min="6" version="2.4"/>
+        <package file="rambler_ie.zip" id="http://bar-widgets.yandex.ru/packages/approved/75/manifest.xml" platform-min="4" version="2.2"/>
+        <package browser="firefox" file="mailru.zip" id="http://bar-widgets.yandex.ru/packages/approved/82/manifest.xml" platform-min="7" version="4.0.0"/>
+        <package browser="firefox" file="vkontakte.zip" id="http://bar-widgets.yandex.ru/packages/approved/91/manifest.xml" platform-min="7" version="8.0.0"/>
+        <package browser="firefox" file="gmail.zip" id="http://bar-widgets.yandex.ru/packages/approved/97/manifest.xml" platform-min="7" version="5.0.0"/>
+        <package browser="firefox" file="facebook.zip" id="http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml" platform-min="7" version="4.1.0"/>
+        <package browser="firefox" file="odnoklassniki.zip" id="http://bar-widgets.yandex.ru/packages/approved/140/manifest.xml" platform-min="7" version="3.0.0"/>
+        <package browser="firefox" file="safe-browsing.zip" id="http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml" platform-min="13" version="3.0.0"/>
+        <package browser="firefox" file="twitter.zip" id="http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml" platform-min="10" version="4.0.0"/>
     </packages>
-    
     <widget id="http://bar.yandex.ru/packages/yandexbar#logo" important="true" visible="true"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#mail" important="true" visible="true"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#town" important="true" visible="true">
@@ -70,13 +63,13 @@
     <widget id="http://bar.yandex.ru/packages/yandexbar#zakladki" visible="false"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#lenta" visible="false"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#cy" visible="false"/>
-    
     <plugin id="http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/284/manifest.xml#esync"/>
     <plugin id="http://bar.yandex.ru/packages/yandexbar#translator"/>
     <plugin id="http://bar.yandex.ru/packages/yandexbar#pagetranslator"/>
     <plugin id="http://bar-widgets.yandex.ru/packages/approved/283/manifest.xml#altsearch"/>
     <plugin enabled="false" id="http://bar.yandex.ru/packages/yandexbar#textonly"/>
     <plugin id="http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml#mc"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml#typosquatting"/>
     <plugin id="http://bar.yandex.ru/packages/yandexbar#geolocation"/>
-    <plugin id="http://bar-widgets.yandex.ru/packages/approved/212/manifest.xml#notifier"/>
 </preset>

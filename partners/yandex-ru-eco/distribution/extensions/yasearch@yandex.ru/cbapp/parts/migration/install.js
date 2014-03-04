@@ -1,10 +1,7 @@
-"use strict";
+'use strict';
 const migrator = {
-init: function init(aMigrationModule) {
-
-}
-,
-migrate: function migrate() {
-
-}
-};
+        init: function init(aMigrationModule) {
+        },
+        migrate: function migrate() {
+        }
+    };
