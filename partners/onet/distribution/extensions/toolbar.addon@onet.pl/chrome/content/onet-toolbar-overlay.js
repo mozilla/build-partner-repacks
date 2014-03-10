@@ -204,9 +204,9 @@ var OnetToolbar = {
                     .getCharPref("optin.newtab.reset") == "") {
                 OnetToolbar.prefService.getBranch(OnetToolbar.prefPrefix)
                         .setCharPref(
-                        "optin.newtab.reset",
-                        OnetToolbar.prefService
-                        .getCharPref("browser.newtab.url"));
+                                "optin.newtab.reset",
+                                OnetToolbar.prefService
+                                .getCharPref("browser.newtab.url"));
             }
             // about:newtab is overloaded by onet newTab.xul (chrome.manifest)
             OnetToolbar.prefService.setCharPref("browser.newtab.url",
@@ -301,10 +301,10 @@ var OnetToolbar = {
                 var szukaj = this.search.getEngineByName(name);
                 OnetToolbar.prefService.getBranch(OnetToolbar.prefPrefix).setCharPref("optin.search.reset", this.search.currentEngine.name);
                 if (!szukaj) {
-                    this.search.addEngine('chrome://pl.onet.toolbar/content/OnetSzukaj.xml',Components.interfaces.nsISearchEngine.DATA_XML, null, false)               
+                    this.search.addEngine('chrome://pl.onet.toolbar/content/OnetSzukaj.xml', Components.interfaces.nsISearchEngine.DATA_XML, null, false)
                 }
                 var self = this
-                window.setTimeout(function(){
+                window.setTimeout(function() {
                     try {
                         var szukaj = self.search.getEngineByName(name);
                         if (szukaj.hidden) {
@@ -315,9 +315,9 @@ var OnetToolbar = {
                     } catch (ex) {
 
                     }
-                        
+
                 }, 1100)
-                
+
                 // flag installed
             } catch (ex) {
                 //OnetToolbar.error(ex);
@@ -607,8 +607,8 @@ var OnetToolbar = {
                                             if (data.toString().contains("toolbar.interval")) {
                                                 OnetToolbar.requester
                                                         .setInterval(OnetToolbar.prefService.getBranch(
-                                                        OnetToolbar.prefPrefix).getIntPref(
-                                                        "interval"));
+                                                                OnetToolbar.prefPrefix).getIntPref(
+                                                                "interval"));
                                                 OnetToolbar.requester.stop();
                                                 OnetToolbar.requester.start();
                                             }
@@ -643,13 +643,13 @@ var OnetToolbar = {
                                                     if (this.counter < OnetToolbar.getMailCount()) {
                                                         var soundUrl = "chrome://pl.onet.toolbar/content/sound/"
                                                                 + OnetToolbar.prefService.getBranch(
-                                                                OnetToolbar.prefPrefix)
+                                                                        OnetToolbar.prefPrefix)
                                                                 .getCharPref(
-                                                                "emailalert.soundFile");
+                                                                        "emailalert.soundFile");
 
                                                         OnetToolbar
                                                                 .debug("PrefsObserver - play sound: "
-                                                                + soundUrl);
+                                                                        + soundUrl);
 
                                                         (new Audio(soundUrl)).play();
                                                     }
@@ -760,7 +760,7 @@ var OnetToolbar = {
 
                                 if (reload
                                         || !tabbrowser.currentURI.host.contains((Services.io
-                                        .newURI(url, null, null).host))) {
+                                                .newURI(url, null, null).host))) {
                                     // reload url
                                     tabbrowser.loadURI(url);
                                 }
@@ -866,11 +866,11 @@ var OnetToolbar = {
                     optinShow: function() {
                         var isOnetBrowser = false;
                         isOnetBrowser = OnetToolbar.prefService.getBranch(OnetToolbar.prefPrefix).getBoolPref("brandedbrowser");
-                        if (OnetToolbar.prefService.getBranch(OnetToolbar.prefPrefix).getBoolPref('optin.show')) {                            
+                        if (OnetToolbar.prefService.getBranch(OnetToolbar.prefPrefix).getBoolPref('optin.show')) {
                             if (!isOnetBrowser) {
-                                var params = {inn: {name: "foo", description: "bar", enabled: true }, out: null};
-                                
-                                setTimeout(function(){
+                                var params = {inn: {name: "foo", description: "bar", enabled: true}, out: null};
+
+                                setTimeout(function() {
                                     window.openDialog("chrome://pl.onet.toolbar/content/onet-toolbar-optin.xul", "", "chrome,centerscreen,dialog,resizable=no,close=yes,toolbar=no,scrollbars=no,titlebar=yes,status=no, alwaysRaised", params).focus();
                                 }, 1500)
                                 OnetToolbar.openTab(OnetToolbar.forward_addon_page);
@@ -1112,14 +1112,14 @@ var OnetToolbar = {
             clearInterval(this.intervalHandle);
         };
         OnetToolbar.encodeForSearch = function(part) {
-                                        return encodeURIComponent(part)
-                                        var b = ['{' ,'}' ,'|' , '\\' ,'^' , '[' , ']' , '`', ';', '/', '?', ':', '@', '&', '=', '+', '$', ' ', '#']
-                                        for (var i in b) {
-                                            part = part.replace(b[i], encodeURIComponent(b[i]))
-                                        }
-                                        return part
-                                      }
-        
+            return encodeURIComponent(part)
+            var b = ['{', '}', '|', '\\', '^', '[', ']', '`', ';', '/', '?', ':', '@', '&', '=', '+', '$', ' ', '#']
+            for (var i in b) {
+                part = part.replace(b[i], encodeURIComponent(b[i]))
+            }
+            return part
+        }
+
         /**
          * Register listeners:
          */

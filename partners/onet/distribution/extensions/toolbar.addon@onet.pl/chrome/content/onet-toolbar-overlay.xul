@@ -124,6 +124,13 @@
                            accesskey="6"
                            class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
                            oncommand="OnetToolbar.openTab('http://dysk.onet.pl/?utm_source=dyskbrotoolbar&amp;utm_medium=onetbrowser&amp;utm_campaign=onetsg_browser', 'onet-toolbar-dysk')" />
+            <toolbarbutton id="pl-onet-addon-toolbar-button-8"
+                           tabindex="8"
+                           label="&OnetToolbar.ToolbarButton.label.8;"
+                           tooltiptext="&OnetToolbar.ToolbarButton.tooltip.8;"
+                           accesskey="8"
+                           class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
+                           oncommand="OnetToolbar.openTab('http://bistro24.pl/?utm_source=repertuarbrotoolbar&amp;utm_medium=onetbrowser&amp;utm_campaign=onetsg_browser')" />
             <toolbaritem id="pl-onet-addon-toolbar-email-container"
                          align="center"
                          persist="height"
@@ -136,7 +143,7 @@
                                    type="menu-button"
                                    tooltiptext="&OnetToolbar.ToolbarButton.tooltip.6;"
                                    accesskey="7" class="toolbarbutton-1 chromeclass-toolbar-additional buttons-class"
-                                   oncommand="OnetToolbar.openTab('http://poczta.onet.pl', 'onet-toolbar-email', !OnetToolbar.hasAuthCookie()); event.stopPropagation();">
+                                   oncommand="OnetToolbar.openTab('http://poczta.onet.pl/?utm_source=pocztabrotoolbar&amp;utm_medium=onetbrowser&amp;utm_campaign=onetsg_browser', 'onet-toolbar-email', !OnetToolbar.hasAuthCookie()); event.stopPropagation();">
                         <menupopup id="pl-onet-addon-toolbar-menu-popup"
                                    position="after_end"
                                    oncommand="event.stopPropagation();">

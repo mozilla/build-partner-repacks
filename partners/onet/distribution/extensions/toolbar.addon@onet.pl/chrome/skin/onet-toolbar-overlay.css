@@ -15,8 +15,13 @@ toolbar[ iconsize="small" ] #pl-onet-addon-toolbar-toolbarButton {
 }
 
 #pl-onet-addon-toolbar-button-0 {
+	list-style-image: url("chrome://pl.onet.toolbar/skin/logo.png");
+	width:52px;
+}
+
+#pl-onet-addon-toolbar-button-8 {
 	list-style-image: url("chrome://pl.onet.toolbar/skin/toolbar-icons.png");
-	-moz-image-region: rect(19px 19px 38px 0);
+	-moz-image-region: rect(19px 38px 38px 19px);
 }
 
 #pl-onet-addon-toolbar-search-box {
@@ -27,7 +32,7 @@ toolbar[ iconsize="small" ] #pl-onet-addon-toolbar-toolbarButton {
 	background: url("chrome://pl.onet.toolbar/skin/enhanced-by-google.png")
 	no-repeat #FFFFFF bottom right;
 	color: #000000;
-	width: 200px;
+	width: 350px;
 	height: 19px;
 	border-radius: 5px;
 }

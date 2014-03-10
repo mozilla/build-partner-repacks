@@ -19,6 +19,8 @@
 <!ENTITY OnetToolbar.ToolbarButton.tooltip.5 "Pogoda">
 <!ENTITY OnetToolbar.ToolbarButton.label.D "OnetDysk">
 <!ENTITY OnetToolbar.ToolbarButton.tooltip.D "OnetDysk">
+<!ENTITY OnetToolbar.ToolbarButton.label.8 "Bistro24">
+<!ENTITY OnetToolbar.ToolbarButton.tooltip.8 "Bistro24">
 <!ENTITY OnetToolbar.ToolbarButton.label.6 "Poczta">
 <!ENTITY OnetToolbar.ToolbarButton.tooltip.6 "Sprawdź pocztę">
 <!ENTITY OnetToolbar.ToolbarButton.label.N "Wiadomości">

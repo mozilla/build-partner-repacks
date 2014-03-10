@@ -5,7 +5,7 @@
     <Description about="urn:mozilla:install-manifest">
 
         <em:id>toolbar.addon@onet.pl</em:id>
-        <em:version>1.0.11</em:version>
+        <em:version>1.0.21</em:version>
         <em:type>2</em:type>
         <em:name>OnetToolbar</em:name>
         <em:description>OnetToolbar add-on optimize Firefox for Onet.pl </em:description>
@@ -16,7 +16,7 @@
 
         <em:localized>
             <Description>
-                <em:locale>de-DE</em:locale>
+                <em:locale>de</em:locale>
                 <em:name>OnetToolbar DE</em:name>
                 <em:description>Add-on OnetToolbar optimierte Firefox Browser für Onet.pl.</em:description>
                 <em:translator></em:translator>
@@ -34,7 +34,7 @@
             <Description>
                 <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
                 <em:minVersion>20.0</em:minVersion>
-                <em:maxVersion>25.0</em:maxVersion>
+                <em:maxVersion>30.0</em:maxVersion>
             </Description>
         </em:targetApplication>
 
