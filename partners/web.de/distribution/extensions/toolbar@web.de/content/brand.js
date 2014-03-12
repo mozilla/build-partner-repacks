@@ -37,7 +37,7 @@ toolbar : {
     startpageHomepageURL : "%GOTB%startpage_homepage", // Firefox start goes to portal
     // extension.js
     firstrunURL : "%GOTB%runonce",
-    // upgradeURL : "%GOTB%addon",
+    upgradeURL : "%GOTB%addon",
     uninstallURL : "%GOTB%uninstall_runonce",
     sslErrorExitURL: "%GOTB%ssl_error",
     browserInstallURL: "%GOTB%browser_install",
@@ -48,6 +48,7 @@ toolbar : {
       { label : "$TR help.freemail", url : "%GOTB%faq" }, 
       { label : "$TR help.toolbar", url : "%GOTB%help" },
       { label : "$TR help.customerservice", url : "%GOTB%help_center" },
+      { label : "$TR help.feedback", url : "%GOTB%feedback" },
       { separator: true },
       { label : "$TR help.checkforupdates", checkForUpdates : true },
       { label : "$TR help.uninstall", uninstall : true },
@@ -229,6 +230,11 @@ login : {
     enableXXLTooltip : false,
     trackXXLTooltipClickedURL : null,
     forgotPasswordURL : "%GOTB%help_password",
+    // Homepages for which we try to switch to the logged-in version from PACS
+    homepageHostnames: {
+      "www.web.de": true,
+      "web.de": true,
+    },
   },
 },
 email : {

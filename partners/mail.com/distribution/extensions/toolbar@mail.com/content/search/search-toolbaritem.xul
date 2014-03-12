@@ -24,6 +24,9 @@
     unitedinternet.initModule(unitedinternet.search, "searchcompetitor");
     unitedinternet.loadJS("chrome://unitedtb/content/search/search-competitors.js",
         unitedinternet.search.searchcompetitor);
+    unitedinternet.initModule(unitedinternet.search, "searchsetonwebpage");
+    unitedinternet.loadJS("chrome://unitedtb/content/search/search-set-on-webpage.js",
+        unitedinternet.search.searchsetonwebpage);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->

@@ -71,6 +71,13 @@ function handleMailTo() {
       if (she) {
         document.location.replace(she.URI.spec);
       }
+    } else if (sh.count == 1 && firefoxWindow.gBrowser.tabs.length > 1 &&
+               document.location.href.match("chrome://unitedtb/content/webapps/mailto-handler.xul")) {
+      // If we're the only entry in the history, and we're not the only tab
+      // open, close the tab.
+      // Side effect: This will close the tab if you enter a mailto: url
+      // from about:blank or about:newtab
+      window.close();
     }
   } catch (e) { errorCritical(e); }
 }

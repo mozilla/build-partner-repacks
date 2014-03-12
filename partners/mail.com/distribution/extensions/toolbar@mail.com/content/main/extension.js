@@ -5,6 +5,10 @@
 
 /**
  * Messages sent by this module, app-global:
+ * "startup"
+ *    Means: Extension is starting up
+ *    When: shortly after sessionstore-windows-restored.
+ *    Parameter: null
  * "first-run"
  *    Means: First installation of extension.
  *       Really the very first time. Not on upgrade and not on re-installs.
@@ -20,13 +24,30 @@
  *    Means: Same as "first-run", but Firefox is ready to load webpages
  *      This is used for the opt-in page. Make sure not to overlay that.
  *    When: Firefox is settled
+ * "disable"
+ *   Means: Application is being disabled
+ *   When: At shutdown of application when user has requested disable
+ * "disable-requested"
+ *   Means: User has requested disable via the Extension Manager
+ *   When: User clicks the Disable button in the Extension Manager
  * "uninstall"
- *   Means: Application is removed via Extension Manager
- *   When: User removes Application via Extension Manager
+ *   Means: Application is actually being uninstalled
+ *   When: At shutdown of application when user has requested uninstall
+ * "uninstall-requested"
+ *   Means: User has requested uninstall via the Extension Manager
+ *   When: User clicks the Uninstall button in the Extension Manager
  * "reinstall"
  *   Means: The same version of the extension has been installed over itself
  *   When: The user clicked to install the extension, but before he restarts
  *         the browser to complete the install.
+ * "reenable"
+ *   Means: Application has been re-enabled (after having been disabled)
+ *   When: At startup after the extension has been re-enabled
+ *
+ * Messages reacted to by this module:
+ * "startup"
+ *    Effect:
+ *    Run various startup code
  */
 
 const EXPORTED_SYMBOLS = [];
@@ -40,42 +61,39 @@ var gStringBundle = new StringBundle(
 /**
  * Runs when new browser window opens (because that loads this JS module),
  * but only once per app instance (because this is a JS module).
- */
-function onLoadForInit()
-{
-  try {
-    debug("startup");
-    checkMultipleToolbars();
-    checkForBrandedBrowser();
-    waitForFirefox(); // calls onInstall()
-    hookupUninstall();
-  } catch (e) { errorInBackend(e); }
-}
-
-/**
- * onLoadForInit(), Firefox is not yet ready to load pages, so
- * we can't use doFirstRun() to load webpages,
- * but we have to wait for this event.
  *
- * Also, the runonce page wants information that the "first-run"
- * observers set, but the runonce page also needs to happen
- * before all other page loads in other observers, so
- * that is fixed by the separation of
- * "first-run" vs. "first-run-pageload" as well.
+ * However, at that time, Firefox is not yet ready to load pages,
+ * but we have to wait for the Firefox session-restore event.
  */
 function waitForFirefox()
 {
     sessionRestoreObserve =  {
         observe: function(subject, topic, data)
         {
-            try {
-                onInstall();
-            } catch (e) { errorInBackend(e); }
+          runAsync(function() { // Firefox bug 924456
+            debug("startup");
+            notifyGlobalObservers("startup", {});
+          });
         }
     }
     // nsIObserverService
     Services.obs.addObserver(sessionRestoreObserve, "sessionstore-windows-restored", false);
 }
+
+var globalObserver =
+{
+  notification : function(msg, obj)
+  {
+    if (msg == "startup") {
+      checkForReenabling();
+      onInstall();
+      hookupUninstall();
+      checkMultipleToolbars();
+      checkForBrandedBrowser();
+    }
+  }
+}
+registerGlobalObserver(globalObserver);
 
 function hookupUninstall()
 { 
@@ -94,10 +112,11 @@ var emAction =
       if (topic == "profile-before-change") {
         if (this._uninstall) {
           ourPref.reset("ext.firstrun");
-          notifyGlobalObservers("uninstalled", {});
+          notifyGlobalObservers("uninstall", {});
         }
         if (this._disable) {
-          notifyGlobalObservers("disabled", {});
+          notifyGlobalObservers("disable", {});
+          ourPref.set("ext.disabled", true);
         }
         this.unregister();
       }
@@ -122,6 +141,7 @@ var emAction =
     try {
       if (addon.id == build.EMID) {
         this._disable = true;
+        notifyGlobalObservers("disable-requested", {});
       }
     } catch (e) { errorInBackend(e); }
   },
@@ -144,11 +164,18 @@ var emAction =
   }
 }
 
+function checkForReenabling() {
+  if (ourPref.isSet("ext.disabled")) {
+    ourPref.reset("ext.disabled");
+    notifyGlobalObservers("reenable", {});
+  }
+}
+
 function onUninstall()
 {
-  notifyGlobalObservers("uninstall", {});
+  notifyGlobalObservers("uninstall-requested", {});
   var brandSearch = Services.search.currentEngine.name == brand.search.engineName;
-  var currentHomepage = generalPref.get("browser.startup.homepage");
+  var currentHomepage = generalPref.getLocalized("browser.startup.homepage");
   var brandHomepage = currentHomepage == brand.toolbar.startpageURL ||
                       currentHomepage == brand.toolbar.startpageHomepageURL;
   var url = brand.toolbar.uninstallURL;
@@ -181,6 +208,11 @@ function onInstall()
 
       notifyGlobalObservers("first-run", {});
 
+      /* The runonce page wants information that the "first-run"
+       * observers set, but the runonce page also needs to happen
+       * before all other page loads in other observers, so
+       * that is fixed by the separation of
+       * "first-run" vs. "first-run-pageload". */
       // this loads opt-in pages and then first run page
       notifyGlobalObservers("first-run-pageload", {});
     }
@@ -341,5 +373,4 @@ function checkForBrandedBrowser()
   }
 }
 
-
-runAsync(onLoadForInit);
+runAsync(waitForFirefox);

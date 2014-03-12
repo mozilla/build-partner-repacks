@@ -26,7 +26,7 @@ HomepageSelector.prototype =
 {
   get storeValue()
   {
-    var homepage = generalPref.get("browser.startup.homepage");
+    var homepage = generalPref.getLocalized("browser.startup.homepage");
     if (homepage == this._newTabURL)
       return "newtab";
     else if (homepage == brand.toolbar.startpageHomepageURL)

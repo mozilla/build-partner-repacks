@@ -66,7 +66,6 @@ UnitedInternetLoginAccount.prototype =
    *        that should not be counted for the new mail count.
    *        Match the content of FolderQuota response <folderType>
    *        against each array element.
-   *      sessionCookie {String} Cookie to set for requests.
    *    }
    *    weblogin.typename = { -- typename = "mailbox" or "iacUsecase"
    *      url {URL as String} Webpage with login, to load in main browser window.
@@ -370,7 +369,7 @@ UnitedInternetLoginAccount.prototype =
     this._clearLoginToken();
     var self = this;
     notifyGlobalObservers("logged-out", { account : self });
-    // TODO removes and invalidates contextService session?
+    // TODO removes and invalidates contextService session
     invalidateLoginToken(this.config.loginTokenServerURL, loginToken,
         successCallback, errorCallback);
   },
@@ -422,10 +421,16 @@ UnitedInternetLoginAccount.prototype =
    */
   _getStoredLoginToken : function()
   {
-    for each (let login in loginManager.findLogins({},
-        this.hostnameForLM, this.formSubmitURLForLM, this.httpRealmForLM))
-      if (login.username == this.emailAddress)
-         return login.password;
+    try {
+      for each (let login in loginManager.findLogins({},
+          this.hostnameForLM, this.formSubmitURLForLM, this.httpRealmForLM))
+        if (login.username == this.emailAddress)
+           return login.password;
+    } catch (e) {
+      if (!userCancelledMasterPasswordEntry(e)) {
+        errorInBackend(e);
+      }
+    }
     return null;
   },
 
@@ -438,11 +443,17 @@ UnitedInternetLoginAccount.prototype =
     assert(loginToken && typeof(loginToken) == "string");
     this._removeStoredLoginToken(); // loginManager can't just replace
 
-    loginManager.addLogin(new LoginInfo(
-        this.hostnameForLM, this.formSubmitURLForLM, this.httpRealmForLM,
-        this.emailAddress, // username
-        loginToken, // password
-        "", "")); // username and password field
+    try {
+      loginManager.addLogin(new LoginInfo(
+          this.hostnameForLM, this.formSubmitURLForLM, this.httpRealmForLM,
+          this.emailAddress, // username
+          loginToken, // password
+          "", "")); // username and password field
+    } catch (e) {
+      if (!userCancelledMasterPasswordEntry(e)) {
+        errorInBackend(e);
+      }
+    }
   },
 
   /**
@@ -450,10 +461,17 @@ UnitedInternetLoginAccount.prototype =
    */
   _removeStoredLoginToken : function()
   {
-    for each (let login in loginManager.findLogins({},
-        this.hostnameForLM, this.formSubmitURLForLM, this.httpRealmForLM))
-      if (login.username == this.emailAddress)
-         loginManager.removeLogin(login);
+    try {
+      for each (let login in loginManager.findLogins({},
+          this.hostnameForLM, this.formSubmitURLForLM, this.httpRealmForLM))
+        if (login.username == this.emailAddress) {
+          loginManager.removeLogin(login);
+        }
+    } catch (e) {
+      if (!userCancelledMasterPasswordEntry(e)) {
+        errorInBackend(e);
+      }
+    }
   },
 
   get hostnameForLM() { return this.config.loginTokenServerURL; },
@@ -476,7 +494,7 @@ const LoginInfo = new Components.Constructor(
 
 const kStandardHeaders =
     {
-      "Accept" : "application/xml",
+      "Accept" : "application/json",
       "X-UI-App" : "Firefox-Toolbar/" + getExtensionFullVersion(),
     };
 
@@ -538,7 +556,7 @@ function invalidateLoginToken(loginTokenServerURL, loginToken,
  * ContextService then returns user-dependent variables and URLs,
  * which we store in a loginContext object and return.
  * UAS or ContextService also create a login session on the server and
- * send an HTTP cookie for it.
+ * gives us the session ID as part of the URLs.
  *
  * @param uasURL {String}
  * @param serviceID {String}
@@ -558,37 +576,52 @@ function uasLogin(uasURL, serviceID, loginToken,
         },
         headers : kStandardHeaders,
   },
-  function(responseDOM) // success
+  function(responseJSON) // success
   {
     /* Does a HTTP redirect (which XMLHttpRequest follows) directly to the
        ContextService, which gives:
-    <ToolbarContext version="1.1">
-      <service name="mailbox">
-        <baseURI>https://.../primaryMailbox/</baseURI>
-        <ignoredFolders>SENT,DRAFTS,TRASH,SPAM,SPAM_UNKNOWN,VIRUS</ignoredFolders>
-        <pollIntervalSec>300</pollIntervalSec>
-      </service>
-      <service name="addressbook">
-        <baseURI>https://.../AddressBook/20075400</baseURI>
-      </service>
-      <service name="filestore">
-        <baseURI>https://.../primaryEmail/</baseURI>
-      </service>
-      <weblogin name="mailbox">
-        <loginFormParams>serviceID=hom...&amp;...@LOGIN_TOKEN@</loginFormParams>
-        <loginMethod>POST</loginMethod>
-        <loginURI>https://.../tokenlogin</loginURI>
-      </weblogin>
-      <weblogin name="iacUsecase">
-        <loginFormParams>service=freemail&amp;...token=@LOGIN_TOKEN@&amp;partnerdata=@IAC_USECASE@</loginFormParams>
-        <loginMethod>POST</loginMethod>
-        <loginURI>https://.../login/</loginURI>
-      </weblogin>
-    </ToolbarContext>
+    {
+      "@version": "1.1",
+      "mailNewMailCountIgnoredFolderTypes": "SENT,DRAFTS,TRASH,SPAM,VIRUS",
+      "mailServiceBaseURI": "https://.../primaryMailbox/",
+      "mailServicePollIntervalSec": "300",
+      "webMailerLoginFormParams": "serviceID=homepage.webde&origin=toolbar&logintoken=urn:password:toolbartoken:@LOGIN_TOKEN@",
+      "webMailerLoginMethod": "POST",
+      "webMailerLoginURI": "https://.../tokenlogin",
+      "service": [
+        {
+          "@name": "mailbox",
+          "baseURI": "https://.../primaryMailbox/",
+          "ignoredFolders": "SENT,DRAFTS,TRASH,SPAM,SPAM_UNKNOWN,VIRUS",
+          "pollIntervalSec": "300"
+        },
+        {
+          "@name": "addressbook",
+          "baseURI": "https://.../AddressBook/20075400"
+        },
+        {
+          "@name": "filestore",
+          "baseURI": "https://.../primaryEmail/"
+        }
+      ],
+      "weblogin": [
+        {
+          "@name": "mailbox",
+          "loginFormParams": "serviceID=hom...&amp;...@LOGIN_TOKEN@",
+          "loginMethod": "POST",
+          "loginURI": "https://.../tokenlogin"
+        },
+        {
+          "@name": "iacUsecase",
+          "loginFormParams": "service=freemail&amp;...token=@LOGIN_TOKEN@&amp;partnerdata=@IAC_USECASE@",
+          "loginMethod": "POST",
+          "loginURI": "https://.../login/"
+        }
+      ]
+    }
+    Note we have encountered cases where services is NOT an array.
     */
-    assert(responseDOM && responseDOM.firstChild.nodeName == "ToolbarContext", gStringBundle.get("error.notXML"));
-    //assert(response.mailServiceBaseURI, gStringBundle.get("error.badXML"));
-    //debug("contextservice response:\n" + fetch._request.response.replace(/>/g, ">\n"));
+    assert(responseJSON, gStringBundle.get("error.notJSON"));
 
     var fatalError = null;
 
@@ -597,9 +630,10 @@ function uasLogin(uasURL, serviceID, loginToken,
       weblogin : {},
     };
     //try {
-      var response = JXON.build(responseDOM).ToolbarContext;
-
-      for each (let weblogin in response.$weblogin)
+      var response = JSON.parse(responseJSON);
+      //debug("contextservice response:\n" + JSON.stringify(response, null, 2));
+      assert(response.mailServiceBaseURI, gStringBundle.get("error.badJSON"));
+      for each (let weblogin in ensureArray(response.weblogin))
       {
         try {
           let name = sanitize.alphanumdash(weblogin["@name"]);
@@ -614,7 +648,7 @@ function uasLogin(uasURL, serviceID, loginToken,
           };
         } catch (e) { errorInBackend(e); }
       }
-      for each (let service in response.$service)
+      for each (let service in ensureArray(response.service))
       {
         try {
           let name = sanitize.alphanumdash(service["@name"]);
@@ -628,12 +662,6 @@ function uasLogin(uasURL, serviceID, loginToken,
           {
             obj.ignoreFolderTypes = sanitize.string(service.ignoredFolders).split(",");
             obj.interval = sanitize.integer(service.pollIntervalSec);
-            // HACK bug 163861 = CAMCBR-119; see also #1299
-            var cookie = fetch.getResponseHeader("Set-Cookie");
-            // cookie will be null, if cookie and header not set
-            if (cookie) {
-              obj.sessionCookie = cookie;
-            }
           }
         } catch (e) {
           errorInBackend(e);
@@ -659,4 +687,15 @@ function replaceLoginParams(org, loginToken)
     .replace("@LOGIN_TOKEN@", loginToken)
     // TODO JS_ENABLED will not work with NoScript
     .replace("@JS_ENABLED@", generalPref.get("javascript.enabled"));
+}
+
+/*
+ * When the master password is dialog, we receive an ABORT error with
+ * the text "User canceled master password entry".
+ * This text is hardcoded in Firefox, so we can use it to find out what
+ * happened. In this case, we simply ignore the error.
+ * http://mxr.mozilla.org/mozilla-central/source/toolkit/components/passwordmgr/crypto-SDR.js#115
+ */
+function userCancelledMasterPasswordEntry(e) {
+  return e.message == "User canceled master password entry";
 }

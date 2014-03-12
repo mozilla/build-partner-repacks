@@ -16,6 +16,7 @@
 // Doesn't belong here, but don't know a better place
 Components.utils.import("resource://unitedtb/main/extension.js", this);
 Components.utils.import("resource://unitedtb/hotnews/hotnews.js", this);
+Components.utils.import("resource://unitedtb/main/startpage.js", this);
 
 var tb;
 

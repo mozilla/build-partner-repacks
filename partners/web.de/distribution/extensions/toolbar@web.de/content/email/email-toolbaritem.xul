@@ -19,6 +19,8 @@
     unitedinternet.loadJS("chrome://unitedtb/content/email/login.js", unitedinternet.login);
     unitedinternet.initModule(unitedinternet.login, "common");
     unitedinternet.loadJS("chrome://unitedtb/content/email/login-common.js", unitedinternet.login.common);
+    unitedinternet.initModule(unitedinternet, "redirect");
+    unitedinternet.loadJS("chrome://unitedtb/content/email/redirect-homepage.js", unitedinternet.redirect);
   </script>
 
   <!-- Overlay for Firefox browser/content/browser.xul -->

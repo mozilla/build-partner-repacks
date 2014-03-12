@@ -1,3 +1,12 @@
+/**
+ *
+ * Messages reacted to by this module:
+ * "uninstall", "disable"
+ *    Effect: Uninstall our mailto handler
+ * "first-run", "upgrade", "reinstall"
+ *    Effect: Set our mailto handler as the default
+ */
+
 const EXPORTED_SYMBOLS = [ "enableOurMailtoHandler", "isOurMailtoHandlerDefault"];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
@@ -179,9 +188,12 @@ var globalObserver =
 {
   notification : function(msg, obj)
   {
-    if (msg == "uninstall") {
+    if (msg == "uninstall" ||
+        msg == "disable") {
       uninstallOurMailtoHandler();
-    } else if (msg == "first-run" || msg == "upgrade") {
+    } else if (msg == "first-run" ||
+               msg == "upgrade" ||
+               nsg == "reenable") {
       setOurMailtoHandler();
     }
   }

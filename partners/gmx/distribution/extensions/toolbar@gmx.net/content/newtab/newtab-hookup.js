@@ -1,5 +1,11 @@
 /**
  * This sets our page as newtab page in Firefox prefs.
+ *
+ * Messages reacted to by this module:
+ * "uninstall"
+ * "disable"
+ *    Effect:
+ *      Set prefs back to the default new tab page
  */
 
 const EXPORTED_SYMBOLS = [];
@@ -68,7 +74,7 @@ var globalObserver =
 {
   notification : function(msg, obj)
   {
-    if (msg == "uninstalled" || msg == "disabled")
+    if (msg == "uninstall" || msg == "disable")
       cleanUpOnUninstall();
   }
 }

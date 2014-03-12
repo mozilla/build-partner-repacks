@@ -179,8 +179,6 @@ FetchHTTP.prototype =
     request.channel.loadFlags |= Ci.nsICachingChannel.LOAD_BYPASS_LOCAL_CACHE;
 
     // Headers
-    request.setRequestHeader("User-Agent",
-        "UnitedInternet-MailCheck Firefox");
     if (mimetype)
       request.setRequestHeader("Content-Type", mimetype);
     for (var name in this._headers)
@@ -229,7 +227,10 @@ FetchHTTP.prototype =
         if (mimetype == "text/xml" ||
             mimetype == "application/xml" ||
             mimetype == "text/rdf" ||
-            mimetype == "application/rss+xml")
+            // Match application/foo+xml
+            /^application\/[a-z0-9]+\+xml$/.test(mimetype) ||
+            // Match text/foo+xml
+            /^text\/[a-z0-9]+\+xml$/.test(mimetype))
         {
           this.result = this._request.responseXML;
         }
@@ -415,6 +416,7 @@ function UserCancelledException(msg)
   // for a message to that effect.
   if (!msg)
     msg = "";
+  this.causedByUser = true;
   Exception.call(this, msg);
 }
 UserCancelledException.prototype =

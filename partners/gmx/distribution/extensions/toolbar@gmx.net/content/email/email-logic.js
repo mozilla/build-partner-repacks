@@ -21,7 +21,7 @@
  * ContextService (= PACS = trinity-toolbar-rest):
  *   takes URL + token
  *   creates session
- *   returns session ID and URL for RESTfulMail and
+ *   returns URL for RESTfulMail incl. session ID and
  *       URL+params for Webmail login
  * getFolderStats() (= RESTfulMail = folderQuota):
  *   takes session ID
@@ -85,6 +85,20 @@ UnitedInternetMailCheckAccount.prototype =
     return this._loginAccount.loginContext.weblogin.mailbox;
   },
 
+  /**
+   * The logged-in (!) homepage for the brand
+   * @returns {
+   *    url {String}
+   *    httpMethod {String-enum} "GET" or "POST"
+   *    mimetype {String}   Content-Type header to set in request, as upload type
+   *    body {String}   body to send in request
+   *  }
+   */
+  getHomepage : function()
+  {
+    return this._loginAccount.loginContext.weblogin.homepage;
+  },
+
   _logoutClearAccountInfo: function()
   {
     if (this._poller)
@@ -134,7 +148,7 @@ UnitedInternetMailCheckAccount.prototype =
       var self = this;
       var lc = this._loginAccount.loginContext.service.mailbox;
       getFolderStats(lc.url, lc.ignoreFolderTypes,
-          lc.sessionCookie, this._eTag, this._newMailCount,
+          this._eTag, this._newMailCount,
           this._friendsNewMailCount, this._unknownNewMailCount,
           function(newMailCount, friendsNewMailCount, unknownNewMailCount, eTag)
           {
@@ -206,7 +220,7 @@ registerGlobalObserver(globalObserver);
 
 const kStandardHeaders =
     {
-      "Accept" : "application/xml",
+      "Accept" : "application/json",
       "X-UI-App" : "Firefox-Toolbar/" + getExtensionFullVersion(),
     };
 
@@ -216,7 +230,6 @@ const kStandardHeaders =
  *
  * @param mailCheckBaseURL {String}
  * @param ignoreFolderTypes {Array of String} @see loginContext
- * @param sessionCookie {String} @see loginContext
  * @param successCallback {Function(
  *           newMailCount {Integer}, friendsNewMailCount {Integer},
  *           unknownNewMailCount {Integer},
@@ -228,16 +241,13 @@ const kStandardHeaders =
  *
  */
 function getFolderStats(mailCheckBaseURL, ignoreFolderTypes,
-    sessionCookie, eTag, lastNewMailCount, lastFriendsNewMailCount,
+    eTag, lastNewMailCount, lastFriendsNewMailCount,
     lastUnknownNewMailCount, successCallback, errorCallback)
 {
   assert(ignoreFolderTypes);
   var headers = {
     __proto__ : kStandardHeaders,
   };
-  if (sessionCookie) {
-    headers.Cookie = sessionCookie;
-  }
   if (eTag)
     headers["If-None-Match"] = eTag;
   var fetch = new FetchHTTP(
@@ -246,26 +256,24 @@ function getFolderStats(mailCheckBaseURL, ignoreFolderTypes,
         method : "GET",
         headers : headers,
       },
-  function(responseDOM) // success
+  function(responseJSON) // success
   {
-    assert(responseDOM && responseDOM.firstChild.nodeName == "FolderQuotas", gStringBundle.get("error.notXML"));
-    //assert(response.folderQuota, gStringBundle.get("error.badXML"));
+    assert(responseJSON, gStringBundle.get("error.notJSON"));
     try {
       var newETag = fetch.getResponseHeader("ETag");
     } catch (e) { debug("Getting ETag failed: " + e); }
     //debug(response.toString());
 
-    var response = JXON.build(responseDOM).FolderQuotas;
+    var response = JSON.parse(responseJSON);
+    assert(response.folderQuota, gStringBundle.get("error.badJSON"));
 
-    var newMailCount = countNewMailsInFolder(response.$folderQuota,
-                                             ignoreFolderTypes);
+    var folderQuota = ensureArray(response.folderQuota);
+    var newMailCount = countNewMailsInFolder(folderQuota, ignoreFolderTypes);
     var ignoreUnknown = deepCopy(ignoreFolderTypes);
     ignoreUnknown.push("SPAM_UNKNOWN");
-    var friendsNewMailCount = countNewMailsInFolder(response.$folderQuota,
-                                                    ignoreUnknown);
-    var unknownNewMailCount = countNewMailsInFolder(response.$folderQuota,
-                                                    [],
-                                                    ["SPAM_UNKNOWN"]);
+    var friendsNewMailCount = countNewMailsInFolder(folderQuota, ignoreUnknown);
+    var unknownNewMailCount = countNewMailsInFolder(folderQuota, [],
+        ["SPAM_UNKNOWN"]);
 
     successCallback(newMailCount, friendsNewMailCount, unknownNewMailCount, newETag);
   },
@@ -290,7 +298,7 @@ function getFolderStats(mailCheckBaseURL, ignoreFolderTypes,
  * Recursive function for getFolderStats() that
  * adds up the number of new/unread mails in each folder,
  * including subfolders
- * @param xFolders {XML} A list of <folderQuota> elements
+ * @param xFolders {JSON} A list of |folderQuota| elements
  * @param ignoreFolderTypes {Array of String} blacklist @see LoginContext
  * @param allowedFolderTypes {Array of String} String-IDs of folder types
  *    that will be counted. This is a whitelist, so only these folders will
@@ -318,8 +326,10 @@ function countNewMailsInFolder(xFolders, ignoreFolderTypes, allowedFolderTypes)
       continue;
     }
     result += sanitize.integer(folder.unreadMessages);
-    if (folder.subFolders)
-      result += countNewMailsInFolder(folder.subFolders.$folderQuota, ignoreFolderTypes, allowedFolderTypes);
+    if (folder.subFolders) {
+      result += countNewMailsInFolder(ensureArray(folder.subFolders.folderQuota),
+                                      ignoreFolderTypes, allowedFolderTypes);
+    }
   }
   return result;
 }

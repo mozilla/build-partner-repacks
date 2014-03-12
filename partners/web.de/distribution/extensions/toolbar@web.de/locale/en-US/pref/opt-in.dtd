@@ -17,4 +17,4 @@
 <!ENTITY searchengine.label "Select your search engine">
 <!ENTITY configinfo.label "These settings can be changed at anytime.">
 <!ENTITY finish.button.label "Finish">
-<!ENTITY finish-amo.button.label "Finish &amp; Opt-in">
+<!ENTITY finish-amo.button.label "Login &amp; Opt-in">

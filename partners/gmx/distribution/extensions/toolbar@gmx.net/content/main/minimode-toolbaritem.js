@@ -126,6 +126,7 @@ var globalObserver =
       // For web.de club, start mini mode by default
       if (brand.toolbar.pay ||
           build.kVariant == "amo" ||
+          build.kVariant == "browser" ||
           build.kVariant == "minimode") {
         start();
       }

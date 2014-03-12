@@ -90,6 +90,8 @@ function onOptin()
     //<copied from="pref-general.js (with modifications">
     if (searchengine)
     {
+      ourPref.set("original.browser.search.selectedEngine",
+          Services.search.currentEngine.name);
       // sets pref "browser.search.selectedEngine" and notifies app
       try {
         // nsIBrowserSearchService
@@ -102,10 +104,14 @@ function onOptin()
 
     switch (startpageSelectedID) {
       case "startpage-search":
+        ourPref.set("original.browser.startup.homepage",
+            generalPref.getLocalized("browser.startup.homepage"));
         generalPref.set("browser.startup.homepage",
             brand.toolbar.startpageURL);
         break;
       case "startpage-brand":
+        ourPref.set("original.browser.startup.homepage",
+            generalPref.getLocalized("browser.startup.homepage"));
         generalPref.set("browser.startup.homepage",
             brand.toolbar.startpageHomepageURL);
         break;

@@ -4,22 +4,30 @@
  * Show them only once.
  */
 
+/**
+ * Messages reacted to by this module:
+ * "startup"
+ *    Effect:
+ *    If it is the first run, get hotnews
+ */
 const EXPORTED_SYMBOLS = [];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
 
-sessionRestoreObserve =  {
-  observe: function(subject, topic, data)
+var globalObserver =
+{
+  notification : function(msg, obj)
   {
-    if (!ourPref.get("hotnews.firstrun", true))
-      fetch();
-    else
-      ourPref.set("hotnews.firstrun", false);
+    if (msg == "startup") {
+      if (!ourPref.get("hotnews.firstrun", true))
+        fetch();
+      else
+        ourPref.set("hotnews.firstrun", false);
+    }
   }
 }
-// nsIObserverService
-Services.obs.addObserver(sessionRestoreObserve, "sessionstore-windows-restored", false);
+registerGlobalObserver(globalObserver);
 
 function fetch()
 {
@@ -31,7 +39,13 @@ function fetch()
     {
       // Use Fallback URL
       new FetchHTTP({ url : brand.hotnews.rssFallbackURL, method : "GET" },
-          parseRSS, errorInBackend).start();
+          parseRSS,
+          function (e) {
+            // Ignore 404 errors from fallback URL, e.g. unknown locales
+            if (e.code != 404) {
+              errorInBackend(e);
+            }
+          }).start();
     }
     else
       errorInBackend(e);

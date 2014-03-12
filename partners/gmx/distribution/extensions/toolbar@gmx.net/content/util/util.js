@@ -50,7 +50,7 @@ const EXPORTED_SYMBOLS = [ "Cc", "Ci", "Cu", "extend", "mixInto", "assert",
   "SuccessiveAbortable", "XPCOMUtils",  "getProfileDir", "getSpecialDir", "getOS",
   "parseURLQueryString", "createURLQueryString",
   "arrayRemove", "arrayContains", "deepCopy", "getErrorText", "convertException",
-  "errorInBackend", "kDebug", "debug", "debugObject", "dumpObject" ];
+  "errorInBackend", "kDebug", "debug", "debugObject", "dumpObject", "ensureArray" ];
 
 // to not pullute Firefox global namespace, load into a scope using subscriptloader
 // (same for util/*.js)
@@ -940,7 +940,7 @@ function parseURLQueryString(queryString, paramCallback)
   for (var i = 0; i < queries.length; i++) {
     try {
       var querySplit = queries[i].split("=");
-      var p = { name : querySplit[0] , value : querySplit[1] };
+      var p = { name : querySplit[0] , value : querySplit[1] || "" };
       p.value = p.value.replace(/\+/g, " "); // "+" is space, before decoding
       p.value = decodeURIComponent(p.value);
       if (typeof(paramCallback) == "function") {
@@ -971,4 +971,17 @@ function createURLQueryString(queryParams)
   }
   queryString = queryString.replace(/&$/, ""); // Remove trailing "&"
   return queryString;
+}
+
+/**
+ * Guarantee that passed in item is an array.
+ *
+ * @param {Object} Could be an array, could be a single item
+ * @returns array {Array} original Array or new Array item
+ */
+function ensureArray(item) {
+  if (!Array.isArray(item)) {
+    item = new Array(item);
+  }
+  return item;
 }

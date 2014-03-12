@@ -113,6 +113,19 @@ Preferences.prototype = {
   },
 
   /**
+   * Get the value of a localized complex pref
+   * @param   prefName {String}   which pref
+   * @returns the value of the pref
+   */
+  getLocalized: function(prefName) {
+    try {
+      return this._prefSvc.getComplexValue(prefName, Ci.nsIPrefLocalizedString).data;
+    } catch (ex) {
+      throw "Error getting pref " + prefName + ": it doesn't exist or is not a localized pref";
+    }
+  },
+
+  /**
    * Set a preference to a value.
    *
    * You can set multiple prefs by passing an object as the only parameter.

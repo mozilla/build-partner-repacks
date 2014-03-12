@@ -13,6 +13,12 @@
  *    Effect:
  *    1. all our search engines are installed
  *    2. We are set as the default
+ * "disable"
+ *    Effect:
+ *    Reset the search engine back to what it was before we were installed
+ * "reenable"
+ *    Effect:
+ *    If the user opted into our search, set it back
  */
 
 const EXPORTED_SYMBOLS = [];
@@ -48,7 +54,12 @@ function copySearchPlugins(makeDefault)
     // Save pre-install status for de-install
     ourPref.set("search.enginePreexising." + entry.name, preexisting);
     if (preexisting) {
-      Services.search.getEngineByName(entry.name).hidden = false;
+      var engine = Services.search.getEngineByName(entry.name)
+      engine.hidden = false;
+      // We still want to set ourselves as the default if we already exist
+      if (makeDefault && entry.name == brand.search.engineName) {
+        Services.search.currentEngine = engine;
+      }
       return; // already copied (we are also called from region-changed)
     }
     Services.search.addEngine(sourceURL, Ci.nsISearchEngine.DATA_XML, false, null, {
@@ -159,6 +170,31 @@ function uninstall()
     removeAddedEngines();
 }
 
+function disable() {
+  if (build.kVariant == "amo") {
+    var s = Services.search;
+    if (s.currentEngine == s.getEngineByName(brand.search.engineName)) {
+      var fallback = generalPref.defaults
+          .getLocalized("browser.search.defaultenginename");
+      var originalEngine = s.getEngineByName(
+          ourPref.get("original.browser.search.selectedEngine", fallback));
+      if ( !originalEngine) {
+        // if the user deleted the engine that was set when we were installed
+        originalEngine = s.getEngineByName(fallback);
+      }
+      s.currentEngine = originalEngine;
+    }
+  }
+}
+
+function reenable() {
+  if (build.kVariant == "amo") {
+    if (ourPref.isSet("original.browser.search.selectedEngine")) {
+      searchInitRun(function() { copySearchPlugins(true); });
+    }
+  }
+}
+
 function regionChanged()
 {
   install();
@@ -172,8 +208,6 @@ var globalObserver =
       install();
     else if (msg == "upgrade")
     {
-      generalPref.reset("keyword.URL"); // now set in our default prefs
-
       try {
         if ( !ourPref.get("brandedbrowser", false) &&
             build.kVariant != "browser") {
@@ -192,6 +226,10 @@ var globalObserver =
       regionChanged();
     else if (msg == "uninstall")
       uninstall();
+    else if (msg == "disable")
+      disable();
+    else if (msg == "reenable")
+      reenable();
   }
 }
 registerGlobalObserver(globalObserver);

@@ -1,5 +1,12 @@
 /**
  * Statistics about user population. Ping server regularly.
+ *
+ * Messages reacted to by this module:
+ * "first-run"
+ * "uninstall-requested"
+ * "disable-requested"
+ *    Effect:
+ *    Notify aib server of these events
  */
 
 const EXPORTED_SYMBOLS = [];
@@ -109,8 +116,11 @@ var globalObserver =
   {
     if (msg == "first-run")
       pingTrackingServer("install");
-    if (msg == "uninstall")
+    // We ping the server when the uninstall button is pressed
+    if (msg == "uninstall-requested")
       pingTrackingServer("uninstall");
+    if (msg == "disable-requested")
+      pingTrackingServer("disable");
   }
 }
 registerGlobalObserver(globalObserver);
