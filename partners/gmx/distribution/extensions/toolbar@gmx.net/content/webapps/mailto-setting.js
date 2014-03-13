@@ -193,7 +193,7 @@ var globalObserver =
       uninstallOurMailtoHandler();
     } else if (msg == "first-run" ||
                msg == "upgrade" ||
-               nsg == "reenable") {
+               msg == "reenable") {
       setOurMailtoHandler();
     }
   }
