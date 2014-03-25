@@ -13,8 +13,8 @@ SHA1-Digest: UQumasJhsH1coete3NQSwSKc1LA=
 
 Name: components/nsYahooFeedProcessor.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: w0CTe+OzA7dtMSLc6U0QYg==
-SHA1-Digest: 5RNdFVhPtYbWy3otZ1cgTIQSitI=
+MD5-Digest: P4rCgFmOXBsv3hiXtSO5kQ==
+SHA1-Digest: 5qFzEDmEb/fOaECIpyTyD0v3d5s=
 
 Name: components/nsYahoo404NavAssist.js
 Digest-Algorithms: MD5 SHA1
@@ -58,8 +58,8 @@ SHA1-Digest: ao5WK9UfV2LvkVzLQ0oktM9oyo0=
 
 Name: components/nsYahooFeedFetcher.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: f2i6SVuOiPb6rGfJA5yAtA==
-SHA1-Digest: Q78cWOL+EIz0cXZ/VM6Kh0XvHFs=
+MD5-Digest: cisiy+oBepfScvjLNYGaTg==
+SHA1-Digest: xnhIISsOufktwGo/XkGIIH0Rrqw=
 
 Name: components/nsYahooPluginManager.js
 Digest-Algorithms: MD5 SHA1
@@ -93,8 +93,8 @@ SHA1-Digest: NZbIJFaHeMgOn3AdULja4FVjZq8=
 
 Name: components/nsYahooDomBuilder.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: BohHEg58lRLwvFKKRq3hLA==
-SHA1-Digest: RPlYzvb6RmeBnYGDw+PGEdQ0zd8=
+MD5-Digest: JuMGJPeu2GZO9mIjfV6CAg==
+SHA1-Digest: rRkgE8u/1Sz7abXtGMvGXJCMmD0=
 
 Name: components/nsYahooTickerManager.js
 Digest-Algorithms: MD5 SHA1
@@ -108,13 +108,13 @@ SHA1-Digest: PLBa6u9w/+KQHLOWg/i5Us09Tjs=
 
 Name: components/nsYahooToolbarManager.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: mAXt1nEW5YGfGeqe9Ag2Sw==
-SHA1-Digest: ruZb8yYXXK4B6TFaTpFvDrM5IfQ=
+MD5-Digest: 1h+FA0Pkkt3K2HBLMTBv/w==
+SHA1-Digest: t0qCi7ggZ+rVmyzEysvaeP6BYH8=
 
 Name: components/nsIYahooEventTipManager.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: SIlpkQnI43tVX1WU9aFLtg==
-SHA1-Digest: iCEZktubFOHqhqcayQPmN975iCI=
+MD5-Digest: FR3CjZSOY9NV2D5U9IOIKQ==
+SHA1-Digest: wgDk8YiLMxjYveXT1NUCJyNyoFw=
 
 Name: components/nsYahooCache.xpt
 Digest-Algorithms: MD5 SHA1
@@ -258,8 +258,8 @@ SHA1-Digest: MNnow0M+zV3ELAsdLmLPNxTEkcU=
 
 Name: chrome/ytoolbar.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: rYuweqqd/aXbRhJkEEd2Gg==
-SHA1-Digest: YngeGNYtb7zvrBzGUM6TrmzZAE0=
+MD5-Digest: 1ora854mN4OL5IrizV6FXg==
+SHA1-Digest: FAkTRDhGAfyb/MXuwKfTW+GP0qo=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -268,8 +268,8 @@ SHA1-Digest: mEC3ArrDSkS05HtKa6FIPupq64c=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: kUOBrW2GeL4X7zgiwp71/w==
-SHA1-Digest: hfCcmgRkoURomDXfMIUIxr77BLk=
+MD5-Digest: cMS5M9FJPFEgAqSsSu5vAA==
+SHA1-Digest: RLA+OZ9/7tDVYZQHSZ3Qxpy/Yws=
 
 Name: defaults/preferences/yahoo.js
 Digest-Algorithms: MD5 SHA1
@@ -278,5 +278,5 @@ SHA1-Digest: EWyTKmkA8XlltpsCE3GtGqPbp4c=
 
 Name: defaults/preferences/Lightening.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: OdWU4w5cWPvavwln9a+kPw==
-SHA1-Digest: FfYHr2YiSHwjxplFLHjeNqh5id4=
+MD5-Digest: eIrK/Bn5Txi27NcQ0OMBtQ==
+SHA1-Digest: QdmS68G6kWO499h0s3U//H38Too=

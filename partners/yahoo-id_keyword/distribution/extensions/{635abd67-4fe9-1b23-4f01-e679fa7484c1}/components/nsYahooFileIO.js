@@ -25,31 +25,70 @@ return null;},readUnicodeFile:function(file){var data="";var fstream=Components.
 cstream.close();return data;},writeUnicodeFile:function(file,fileContents){var foStream=Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);foStream.init(file,0x02|0x08|0x20,0666,0);var converter=Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);converter.init(foStream,"UTF-8",0,0);converter.writeString(fileContents);converter.close();},writeFile:function(file,fileContents){if(!file.exists()){file.create(file.NORMAL_FILE_TYPE,0666);}
 var fileHandle=CC["@mozilla.org/network/file-output-stream;1"].createInstance(CI.nsIFileOutputStream);fileHandle.init(file,0x04|0x08|0x20,0666,0);fileHandle.write(fileContents,fileContents.length);fileHandle.flush();fileHandle.close();fileHandle=null;},writeCacheFile:function(fileName,fileContents){try{var file=this.getCacheFile(fileName);this.writeFile(file,fileContents);}catch(e){yahooToolbarDebug(e);throw'ERROR writing file '+fileName+': '+e;}
 return true;},removeCacheFile:function(fileName){try{var file=this.getCacheDir();if(fileName){file.appendRelativePath(fileName);}
-if(file.exists()){file.remove(true);}}catch(e){yahooToolbarDebug(e);throw"ERROR removing cache file ("+fileName+"): "+e;}},fetchNCacheData:function(url){var data="";try{data=CacheManager.getDataForKey(url);if(!data||data===""){var iosvc=CC["@mozilla.org/network/io-service;1"].getService(CI.nsIIOService);var channel=iosvc.newChannel(url,0,null);var stream=channel.open();var fh=CC["@mozilla.org/scriptableinputstream;1"].createInstance(CI.nsIScriptableInputStream);fh.init(stream);var size=0;while((size=stream.available())){data+=fh.read(size);}
+if(file.exists()){file.remove(true);}}catch(e){yahooToolbarDebug(e);throw"ERROR removing cache file ("+fileName+"): "+e;}},fetchFavicon:function(url){try{var ioService=CC["@mozilla.org/network/io-service;1"].getService(CI.nsIIOService2);var bmUrl=ioService.newURI(url,"",null);var image="http://"+bmUrl.host+"/favicon.ico";var imageUrl=ioService.newURI(image,"",null);icon=this.loadFromCache(bmUrl.spec,false);if(!icon)
+{if(this.urlsObj[bmUrl.spec]!=1)
+{var obj={mType:"img",mKey:bmUrl.spec,mDataUrl:imageUrl.spec};this.mFetchList.push(obj);this.fetchFromServer();this.urlsObj[bmUrl.spec]=1;}
+return imageUrl.spec;}}catch(e){yahooDebug(e.message);}
+return icon;},loadFromCache:function(url,defaultIcon){var icon=null;var date_appended=false;try{icon=CacheManager.getDataForKey(url);var timestamp;var lastIndex=icon.lastIndexOf(":-");if(lastIndex!=-1){timestamp=icon.substr(lastIndex+2);var date_appended=true;}
+if(timestamp){var currTime=new Date().getTime();if(currTime-timestamp>1814400000){CacheManager.changeDataForKey(url,'');this.urlsObj[url]=0;return null;}}
+if(!icon&&defaultIcon){icon=this.mDefaultIconUrl;}}catch(e){yahooToolbarDebug(e);}
+if(date_appended==false)
+{return icon;}
+else
+{return icon.substr(0,lastIndex);}},fetchNCacheData:function(url){var data="";try{data=CacheManager.getDataForKey(url);if(!data||data===""){var iosvc=CC["@mozilla.org/network/io-service;1"].getService(CI.nsIIOService);var channel=iosvc.newChannel(url,0,null);var stream=channel.open();var fh=CC["@mozilla.org/scriptableinputstream;1"].createInstance(CI.nsIScriptableInputStream);fh.init(stream);var size=0;while((size=stream.available())){data+=fh.read(size);}
 fh.close();fh=null;stream=null;}}catch(e){yahooToolbarDebug(e);}
-return data},mCountRead:null,mBytes:[],mStream:null,mFetchList:[],mFetchObj:null,mCacheNotifiers:[],mDefaultIconUrl:"chrome://"+YahooExtConfig.mName+"/skin/placeholder_favicon.png",registerNotifier:function(message){this.mCacheNotifiers.push(message);},onStartRequest:function(request,context){this.mStream=CC['@mozilla.org/binaryinputstream;1'].createInstance(CI.nsIBinaryInputStream);this.mBytes=[];this.mCountRead=0;},onDataAvailable:function(aRequest,aContext,aInputStream,aOffset,aCount){this.mStream.setInputStream(aInputStream);var chunk=this.mStream.readByteArray(aCount);this.mBytes=this.mBytes.concat(chunk);this.mCountRead+=aCount;},onStopRequest:function(req,context,statusCode){try{if(this.mFetchObj.mType==="img"){var key=this.mFetchObj.mKey;var dataUrl=this.mFetchObj.mDataUrl;var nodes=this.mFetchObj.mNodes;var mimeType=null;if(this.mCountRead>0){mimeType=yahooUtils.getMimeType(this.mBytes,this.mCountRead);}
-var icon=dataUrl;if(key!=dataUrl){icon=this.mDefaultIconUrl;}
-if(mimeType){icon="data:"+mimeType+";base64,"+yahooUtils.convertToBase64(this.mBytes);}
-CacheManager.changeDataForKey(key,icon);for(var idx=0;idx<nodes.length;idx++){if(nodes[idx]&&nodes[idx].setAttribute){nodes[idx].setAttribute("image",icon);}}}else{var data=""+this.mBytes;CacheManager.changeDataForKey(this.mFetchObj.mDataUrl,data);}}catch(e){yahooToolbarDebug(e);}
+return data},mCountRead:null,mBytes:[],mStream:null,mFetchList:[],mFetchObj:null,urlsObj:{},mCacheNotifiers:[],mDefaultIconUrl:"http://l.yimg.com/a/i/us/soc/updts/y_bookmarks.png",registerNotifier:function(message){this.mCacheNotifiers.push(message);},onStartRequest:function(request,context){this.mStream=CC['@mozilla.org/binaryinputstream;1'].createInstance(CI.nsIBinaryInputStream);this.mBytes=[];this.mCountRead=0;},onDataAvailable:function(aRequest,aContext,aInputStream,aOffset,aCount){this.mStream.setInputStream(aInputStream);var chunk=this.mStream.readByteArray(aCount);this.mBytes=this.mBytes.concat(chunk);this.mCountRead+=aCount;},onStopRequest:function(req,context,statusCode){try{if(this.mFetchObj.mType==="img"){var key=this.mFetchObj.mKey;var dataUrl=this.mFetchObj.mDataUrl;var nodes=this.mFetchObj.mNodes;var mimeType=null;if(this.mCountRead>0){mimeType=yahooUtils.getMimeType(this.mBytes,this.mCountRead);}
+var icon=dataUrl;var downloadedDate=new Date().getTime();if(key!=dataUrl){icon=this.mDefaultIconUrl+":-"+downloadedDate;}
+if(mimeType){icon="data:"+mimeType+";base64,"+yahooUtils.convertToBase64(this.mBytes)+":-"+downloadedDate;}
+CacheManager.changeDataForKey(key,icon);}else{var data=""+this.mBytes;CacheManager.changeDataForKey(this.mFetchObj.mDataUrl,data);}}catch(e){yahooToolbarDebug(e);}
 req=null;context=null;this.mFetchObj=null;this.fetchFromServer();},fetchFromServer:function(){if(this.mFetchObj){return;}
-while(!this.mFetchObj&&this.mFetchList.length>0){try{this.mFetchObj=this.mFetchList.pop();var IOSVC=CC["@mozilla.org/network/io-service;1"].getService(CI.nsIIOService);var chan=IOSVC.newChannel(this.mFetchObj.mDataUrl,0,null);chan.asyncOpen(this,null);}catch(e){yahooToolbarDebug(this.mFetchObj);this.mFetchObj=null;}}
-if(this.mFetchList.length===0&&this.mFetchObj===null&&this.mCacheNotifiers.length>0){var message=this.mCacheNotifiers.pop();var notifier=CC["@mozilla.org/observer-service;1"].getService(CI.nsIObserverService);notifier.notifyObservers(null,message,null);yahooToolbarDebug("Sending notification :"+message,2);}},isDownloading:function(){return this.mFetchObj!==null;},addImageForDownload:function(key,url,node){function removeNodeIfPresent(nodeList,childNode){for(var idx=0;idx<nodeList.length;idx++){if(nodeList[idx]==node){nodeList.splice(idx,1);}}}
+while(!this.mFetchObj&&this.mFetchList.length>0){try{this.mFetchObj=this.mFetchList.pop();var IOSVC=CC["@mozilla.org/network/io-service;1"].getService(CI.nsIIOService);var chan=IOSVC.newChannel(this.mFetchObj.mDataUrl,0,null);chan.asyncOpen(this,null);}catch(e){yahooToolbarDebug(this.mFetchObj);this.mFetchObj=null;}}},isDownloading:function(){return this.mFetchObj!==null;},addImageForDownload:function(key,url,node){function removeNodeIfPresent(nodeList,childNode){for(var idx=0;idx<nodeList.length;idx++){if(nodeList[idx]==node){nodeList.splice(idx,1);}}}
 if(this.mFetchObj){removeNodeIfPresent(this.mFetchObj.mNodes,node);}
 for(var idx=0;idx<this.mFetchList.length;idx++){removeNodeIfPresent(this.mFetchList[idx].mNodes,node);}
 if(this.mFetchObj&&this.mFetchObj.mDataUrl==url){this.mFetchObj.mNodes.push(node);return null;}
 for(var idx=0;idx<this.mFetchList.length;idx++){if(this.mFetchList[idx].mDataUrl==url){this.mFetchList[idx].mNodes.push(node);return null;}}
-var obj={mType:"img",mKey:key,mDataUrl:url,mNodes:[]};obj.mNodes.push(node);this.mFetchList.push(obj);this.fetchFromServer();},fetchNCacheImage:function(imageUrl,node){try{var icon=this.getImageFromCache(imageUrl);if(node&&node.setAttribute){if(icon){node.setAttribute("image",icon);return null;}else{node.setAttribute("image",imageUrl);}}
+var obj={mType:"img",mKey:key,mDataUrl:url,mNodes:[]};obj.mNodes.push(node);this.mFetchList.push(obj);this.fetchFromServer();},fetchNCacheImage:function(imageUrl,node){try{var icon=this.loadFromCache(imageUrl);if(node&&node.setAttribute){if(icon){node.setAttribute("image",icon);return null;}else{node.setAttribute("image",imageUrl);}}
 if(imageUrl.indexOf("chrome://")==0){return;}
 this.addImageForDownload(imageUrl,imageUrl,node);}catch(e){yahooToolbarDebug(e);}
-return null;},fetchNCacheFavicon:function(url,node){try{var icon=this.getFaviconFromCache(url,false);if(node&&node.setAttribute){if(icon){node.setAttribute("image",icon);return;}else{node.setAttribute("image",this.mDefaultIconUrl);}}
+return null;},fetchNCacheImg:function(imageUrl,key,node){try{var icon=this.loadFromCache(imageUrl);if(node&&node.setAttribute){if(icon){node.setAttribute(key,icon);return null;}else{node.setAttribute(key,imageUrl);}}
+if(imageUrl.indexOf("chrome://")==0){return;}
+this.addImageForDownload(imageUrl,imageUrl,node);}catch(e){yahooToolbarDebug(e);}
+return null;},fetchNCacheFavicon:function(url,node){try{this.getFaviconFromCacheWithCallBack(url,false,function(icon){try
+{if(node&&node.setAttribute){if(icon){node.setAttribute("image",icon);return;}else{node.setAttribute("image",this.mDefaultIconUrl);}}
 if(url.indexOf("chrome://")==0){return;}
 var ioService=CC["@mozilla.org/network/io-service;1"].getService(CI.nsIIOService);var host=ioService.newURI(url,"",null).host;var imageUrl="http://"+host+"/favicon.ico";var imgRegExp=new RegExp('\.(bmp|jpg|ico|gif|png)$');if(url.match(imgRegExp)){imageUrl=url;}
-this.addImageForDownload(host,imageUrl,node);}catch(e){yahooToolbarDebug(url);yahooToolbarDebug(e);}
+this.addImageForDownload(host,imageUrl,node);}
+catch(e)
+{}});}catch(e){yahooToolbarDebug(url);yahooToolbarDebug(e);}
 return null;},getImageFromCache:function(url,defaultIcon){var icon=null;try{icon=CacheManager.getDataForKey(url);if(!icon&&defaultIcon){icon=this.mDefaultIconUrl;}}catch(e){yahooToolbarDebug(e);}
-return icon;},getFaviconFromCache:function(url,defaultIcon){var icon;try{if(url.indexOf("chrome://")==0){return this.mDefaultIconUrl;}
-var ioService=CC["@mozilla.org/network/io-service;1"].getService(CI.nsIIOService);var iconUri=ioService.newURI(url,"",null);icon=this.getImageFromCache(iconUri.host,false);if(!icon&&yahooUtils.mFFVersion>2){try{var faviconService=CC["@mozilla.org/browser/favicon-service;1"].getService(CI.nsIFaviconService);var fav=faviconService.getFaviconForPage(iconUri);var mimeType={},dataLen={},iconData=null;var iconData=faviconService.getFaviconData(fav,mimeType,dataLen);if(iconData){mimeType=mimeType.value;icon="data:"+mimeType+";"+"base64,"+
-btoa(String.fromCharCode.apply(null,iconData));CacheManager.changeDataForKey(iconUri.host,icon);}}catch(e){}}}catch(e){yahooToolbarDebug(url);yahooToolbarDebug(e);}
+return icon;},getFaviconFromCache:function(url,defaultIcon){try
+{if(url.indexOf("chrome://")==0){return this.mDefaultIconUrl;}
+if(yahooUtils.mFFVersion>=22)
+return this.getFaviconFromCacheForFF22Above(url,defaultIcon);else
+return this.getFaviconFromCacheForFF22below(url,defaultIcon);}
+catch(e)
+{return;}},getFaviconFromCacheWithCallBack:function(url,defaultIcon,cbFunc){try
+{var callBack=null;if(cbFunc&&cbFunc.wrappedJSObject&&cbFunc.wrappedJSObject.object)
+callBack=cbFunc.wrappedJSObject.object;else
+callBack=cbFunc;if(url.indexOf("chrome://")==0){if(callBack)
+callBack(this.mDefaultIconUrl);return;}
+if(yahooUtils.mFFVersion>=22)
+this.getFaviconFromCacheForFF22Above(url,defaultIcon,callBack);else{var icon=this.getFaviconFromCacheForFF22below(url,defaultIcon);if(callBack)
+{callBack(icon);}}}
+catch(e)
+{yahooToolbarDebug("getFaviconFromCacheWithCallBack"+e);}},getFaviconFromCacheForFF22below:function(url,defaultIcon){var icon;try{var ioService=CC["@mozilla.org/network/io-service;1"].getService(CI.nsIIOService);var iconUri=ioService.newURI(url,"",null);icon=this.loadFromCache(iconUri.host,false);if(!icon&&yahooUtils.mFFVersion>2){try{var faviconService=CC["@mozilla.org/browser/favicon-service;1"].getService(CI.nsIFaviconService);var fav=faviconService.getFaviconForPage(iconUri);var mimeType={},dataLen={},iconData=null;var iconData=faviconService.getFaviconData(fav,mimeType,dataLen);if(iconData){mimeType=mimeType.value;icon="data:"+mimeType+";"+"base64,"+
+btoa(String.fromCharCode.apply(null,iconData));CacheManager.changeDataForKey(iconUri.host,icon);}}catch(e){}}}catch(e){yahooToolbarDebug(url);yahooToolbarDebug("getFaviconFromCacheForFF22below::"+e);}
 if(!icon&&defaultIcon){icon=this.mDefaultIconUrl;}
+return icon;},getFaviconFromCacheForFF22Above:function(url,defaultIcon,callBack){var icon;try{var ioService=CC["@mozilla.org/network/io-service;1"].getService(CI.nsIIOService);var iconUri=ioService.newURI(url,"",null);var self=this;icon=this.loadFromCache(iconUri.host,false);if(!icon){try{var faviconService=CC["@mozilla.org/browser/favicon-service;1"].getService(CI.mozIAsyncFavicons);var aMimeType={},aDataLen={},aIconData=null;faviconService.getFaviconDataForPage(iconUri,function(aURI,aDataLen,aIconData,aMimeType)
+{if(aIconData){aMimeType=aMimeType.value;icon="data:"+aMimeType+";"+"base64,"+
+btoa(String.fromCharCode.apply(null,aIconData));CacheManager.changeDataForKey(iconUri.host,icon);}
+if(!icon&&defaultIcon){icon=this.mDefaultIconUrl;}
+if(callBack)
+{callBack(icon);}})}catch(e){if(callBack)
+{callBack(icon);yahooToolbarDebug("getFaviconFromCacheForFF22Above_1::"+e);}}}}catch(e){yahooToolbarDebug(url);yahooToolbarDebug("getFaviconFromCacheForFF22Above_2::"+e);}
+if(callBack&&icon)
+{callBack(icon);}
+else(!callBack)
 return icon;},classID:Components.ID("{e2214725-2af1-46cd-9952-4b4bf13994bf}"),contractID:"@yahoo.com/fileio;1",QueryInterface:XPCOMUtils.generateQI([Components.interfaces.nsIRunnable,Components.interfaces.nsIYahooFileIO2])};if(XPCOMUtils.generateNSGetFactory)
 var NSGetFactory=XPCOMUtils.generateNSGetFactory([YahooFileIO]);else
 var NSGetModule=XPCOMUtils.generateNSGetModule([YahooFileIO]);

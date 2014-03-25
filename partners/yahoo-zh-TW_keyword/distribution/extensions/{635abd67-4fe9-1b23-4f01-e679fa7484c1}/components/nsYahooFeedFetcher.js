@@ -64,7 +64,7 @@ raw=fileRaw;}}catch(e){raw="";loadedType=eLoadType.NOT_LOADED;yahooError(e.messa
 yahooStopTrace("LoadCachedFeed");return raw;}};this.pushLayoutToServer=function(userSave,layout,isGuestMode,cbFunc)
 {try{if(isGuestMode){return 0;}
 var intl=mConfigMgr.getCharValue("installer.language")||"us";var pc=mConfigMgr.getCharValue("toolbar.pc")||"";var port=mConfigMgr.getCharValue("layout.portable");var metroExp=localstorage.getString("metroexp");var cver=mConfigMgr.getCharValue("installer.version")||"2.0.0";var tipShown=localstorage.getString("tipshown");var udboffer=localstorage.getString("udboffer");if(cver!==""){cver=cver.split(".");if(cver.length>3)cver.length=3;cver=cver.join("_");}
-var lo=layout;var crumb=localstorage.getString("crumb");var yob=CC['@yahoo.com/feed/localbutton;1'].getService(CI.nsIYahooLocalButtonProcessor).getLocalButtonsJSON(layout);var syob="";var toolbarConfigServer=localstorage.getString("yahoo.ytff.configserver.url");var pslayURL="https:\/\/"+toolbarConfigServer
+var lo=layout;var crumb=localstorage.getString("crumb");var yob=CC['@yahoo.com/feed/localbutton;1'].getService(CI.nsIYahooLocalButtonProcessor).getLocalButtonsJSON(layout);var syob="";var toolbarConfigServer=localstorage.getString("yahoo.ytff.dataserver.url");var pslayURL="https:\/\/"+toolbarConfigServer
 +"/config/pslay/?"
 +"&.pc="+pc
 +"&.intl="+intl
