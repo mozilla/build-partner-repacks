@@ -44,8 +44,8 @@ const EXPORTED_SYMBOLS = [ "Account", "BaseStandardAccount" ];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
-Components.utils.import("resource://unitedtb/email/account-list.js"); // _removeAccount()
-var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/login.properties");
+importJSM("email/account-list.js", this); // _removeAccount()
+var gStringBundle = new StringBundle("email/login");
 
 /**
  * API for all accounts

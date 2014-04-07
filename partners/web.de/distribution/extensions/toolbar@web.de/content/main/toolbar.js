@@ -14,11 +14,20 @@
  */
 
 // Doesn't belong here, but don't know a better place
-Components.utils.import("resource://unitedtb/main/extension.js", this);
-Components.utils.import("resource://unitedtb/hotnews/hotnews.js", this);
-Components.utils.import("resource://unitedtb/main/startpage.js", this);
+importJSM("main/extension.js", this);
+importJSM("hotnews/hotnews.js", this);
+importJSM("main/startpage.js", this);
 
 var tb;
+var gAustralis = false;
+
+// Australis (Firefox 29+ toolbar customization) specific
+// This must be done before the toolbar is in DOM, so onLoad() is too late.
+try {
+  Components.utils.import("resource://app/modules/CustomizableUI.jsm");
+  gAustralis = true;
+  initAustralis();
+} catch (e) {} // catch for older Firefox
 
 function onLoad()
 {
@@ -47,6 +56,24 @@ function onLoad()
   } catch(e) { errorNonCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
+
+function initAustralis() {
+  var defaultset = [];
+  for (let i in brand.toolbar.items) {
+    if (i == "separator") {
+      defaultset.push("separator");
+    } else if (i == "spring") {
+      defaultset.push("spring");
+    } else {
+      defaultset.push("united-" + i);
+    }
+  }
+
+  CustomizableUI.registerArea("united-toolbar",
+      { type: CustomizableUI.TYPE_TOOLBAR,
+         legacy: true, // support defaultset XUL attribute etc.
+         defaultPlacements: defaultset});
+}
 
 /**
  * If you in your code change a button in a way that changes its size,
@@ -172,40 +199,50 @@ function setEnabledToolbarButtons()
  */
 function addButton(toolbarID, button, insertAfterID) {
   var toolbar = E(toolbarID);
-  // This is a little ugly, but there is no way to "unpersist" an attribute.
-  // So the attribute  could be empty. We also need to make sure the previous
-  // location exists and it's on the toolbar we're adding to
-  if (toolbar.hasAttribute(button.id + "-location") &&
-      toolbar.getAttribute(button.id + "-location") &&
-      E(toolbar.getAttribute(button.id + "-location")) &&
-      E(toolbar.getAttribute(button.id + "-location")).parentNode == toolbar) {
-    toolbar.insertBefore(button, E(toolbar.getAttribute(button.id + "-location")));
-  } else {
-    if (toolbar.id == "united-toolbar") {
-      // Go through the brand list and figure out a location for the button
-      // We work backwards from the buttons location in the array
-      var brandItems = [];
-      for (let i in brand.toolbar.items) {
-        brandItems.push("united-" + i);
+  if (toolbar.id == "united-toolbar") {
+    // Go through the brand list and figure out a location for the button
+    // We work backwards from the buttons location in the array
+    var brandItems = [];
+    for (let i in brand.toolbar.items) {
+      brandItems.push("united-" + i);
+    }
+    var itemIndex = brandItems.indexOf(button.id);
+    for (var i = itemIndex - 1; i >= 0; i--) {
+      if (toolbar.querySelector("#" + brandItems[i])) {
+        _insertAfter(toolbar, button, brandItems[i])
+        break;
       }
-      var itemIndex = brandItems.indexOf(button.id);
-      for (var i = itemIndex - 1; i >= 0; i--) {
-        if (toolbar.querySelector("#" + brandItems[i])) {
-          toolbar.insertBefore(button, toolbar.querySelector("#" + brandItems[i]).nextSibling)
-          break;
-        }
-      }
-      // If we couldn't find a place, just put it at the end.
-      if (i < 0) {
+    }
+    // If we couldn't find a place, just put it at the end.
+    if (i < 0) {
+      if (gAustralis) {
+        CustomizableUI.addWidgetToArea(button.id, toolbarID);
+      } else {
         toolbar.appendChild(button);
       }
-    } else {
-      insertAfter(toolbar, button, insertAfterID);
     }
+  } else {
+    _insertAfter(toolbar, button, insertAfterID);
   }
   // Add the button to currentset and persist it
   toolbar.setAttribute("currentset", toolbar.currentSet);
   document.persist(toolbarID, "currentset");
+}
+
+/**
+ * Helper function that abstracts insertAfter to work for Australis
+ */
+function _insertAfter(toolbar, button, insertAfterID) {
+  if (gAustralis) {
+    var buttonPlacement = CustomizableUI.getPlacementOfWidget(insertAfterID);
+    if (buttonPlacement) {
+      CustomizableUI.addWidgetToArea(button.id, toolbar.id, buttonPlacement.position+1);
+    } else {
+      CustomizableUI.addWidgetToArea(button.id, toolbar.id);
+    }
+  } else {
+    insertAfter(toolbar, button, insertAfterID);
+  }
 }
 
 /**
@@ -217,14 +254,18 @@ function addButton(toolbarID, button, insertAfterID) {
  */
 function removeButton(id) {
   var button = E(id);
-  var origToolbar = button.parentNode;
-  if  (button.nextSibling) {
-    origToolbar.setAttribute(id + "-location", button.nextSibling.id);
+  var origToolbar;
+  if (gAustralis) {
+    var buttonPlacement = CustomizableUI.getPlacementOfWidget(button.id);
+    if (!buttonPlacement) {
+      return button;
+    }
+    origToolbar = document.getElementById(buttonPlacement.area);
+    CustomizableUI.removeWidgetFromArea(button.id);
   } else {
-    origToolbar.removeAttribute(id + "-location");
+    origToolbar = button.parentNode;
+    origToolbar.removeChild(button);
   }
-  document.persist(origToolbar.id, id + "-location");
-  button.parentNode.removeChild(button);
   origToolbar.setAttribute("currentset", origToolbar.currentSet);
   document.persist(origToolbar.id, "currentset");
   return button;

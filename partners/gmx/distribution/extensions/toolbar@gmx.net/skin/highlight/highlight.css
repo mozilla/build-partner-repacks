@@ -2,3 +2,8 @@
 {
   list-style-image: url("chrome://unitedtb/skin/highlight/highlight-small.png");
 }
+#united-highlight-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-highlight-button
+{
+  list-style-image: url("chrome://unitedtb/skin/highlight/highlight-32.png");
+}

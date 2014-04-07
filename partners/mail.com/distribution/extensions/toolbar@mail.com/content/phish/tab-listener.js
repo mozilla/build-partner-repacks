@@ -7,7 +7,7 @@
 * and the user is sent to a warning page.
 */
 
-Components.utils.import("resource://unitedtb/phish/database.js", this);
+importJSM("phish/database.js", this);
 
 function onLoad()
 {

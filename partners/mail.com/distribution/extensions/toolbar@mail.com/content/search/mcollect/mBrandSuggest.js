@@ -36,7 +36,7 @@ mBrandSuggest.prototype =
         var responseJSON = JSON.parse(responseText);
         var terms = responseJSON[1] || [];
 
-        var sb = new StringBundle("chrome://unitedtb/locale/search/mcollect.properties");
+        var sb = new StringBundle("search/mcollect");
         var descr = sb.get("mBrandSuggest.descr")
             .replace(/\$brandname\$/, brand.search.suggestName);
         var icon = "chrome://unitedtb/skin/brand/icon-small.png";

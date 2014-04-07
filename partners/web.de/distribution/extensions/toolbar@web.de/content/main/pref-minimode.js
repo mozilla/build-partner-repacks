@@ -34,7 +34,7 @@ MiniModeCheckbox.prototype =
 
   get defaultValue()
   {
-    return false;
+    return build.kVariant == "minimode";
   },
 }
 extend(MiniModeCheckbox, SettingElement);

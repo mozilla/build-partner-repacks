@@ -38,8 +38,8 @@
 const EXPORTED_SYMBOLS = [ "Socket", "LineSocket", "RejectBadCert", ];
 
 Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
-var gStringBundle = new StringBundle("chrome://unitedtb/locale/util.properties");
+importJSM("util/sanitizeDatatypes.js", this);
+var gStringBundle = new StringBundle("util");
 
 /**
  * Generic socket implementation

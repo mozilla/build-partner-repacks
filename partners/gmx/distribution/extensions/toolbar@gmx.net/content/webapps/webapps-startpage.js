@@ -1,7 +1,6 @@
 var logic = {}
-Components.utils.import("resource://unitedtb/email/webapp-start.js", logic);
-var gStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/webapps/webapps.properties");
+importJSM("email/webapp-start.js", logic);
+var gStringBundle = new StringBundle("webapps/webapps");
 
 function webappsInitNewTab() {
   try {

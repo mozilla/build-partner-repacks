@@ -56,8 +56,7 @@
 Components.utils.import("resource://unitedtb/email/account-list.js", this);
 Components.utils.import("resource://unitedtb/email/webapp-start.js", this);
 
-var gStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/email/login.properties");
+var gStringBundle = new StringBundle("email/login");
 
 // All accounts
 // {Array of Account}

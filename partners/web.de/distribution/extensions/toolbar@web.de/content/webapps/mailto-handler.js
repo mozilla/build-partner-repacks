@@ -1,6 +1,6 @@
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
 var logic = {}
-Components.utils.import("resource://unitedtb/email/webapp-start.js", logic);
+importJSM("email/webapp-start.js", logic);
 
 function handleMailTo() {
   var firefoxWindow = getTopLevelWindowContext(window);

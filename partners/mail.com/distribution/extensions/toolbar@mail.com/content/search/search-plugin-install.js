@@ -37,16 +37,20 @@ Components.utils.import("resource://unitedtb/util/common-jsm.js");
  */
 function copySearchPlugins(makeDefault)
 {
-  // nsIBrowserSearchService, same below
-  var oldDefault = Services.search.currentEngine;
-  var oldDefaultWasUs = !!makeDefault;
-  var selectedEngine = generalPref.get("browser.search.selectedEngine");
-  for each (let entry in brand.search.allSearchPlugins)
-    if ((entry.name == oldDefault.name) || (entry.name == selectedEngine))
-    {
-      oldDefaultWasUs = true;
-      break;
+  var oldAPI = !("nsISearchInstallCallback" in Ci);
+  if (oldAPI) {
+    // nsIBrowserSearchService, same below
+    var oldDefault = Services.search.currentEngine;
+    var oldDefaultWasUs = !!makeDefault;
+    var selectedEngine = generalPref.get("browser.search.selectedEngine");
+    for each (let entry in brand.search.allSearchPlugins) {
+      if ((entry.name == oldDefault.name) || (entry.name == selectedEngine))
+      {
+        oldDefaultWasUs = true;
+        break;
+      }
     }
+  }
 
   brand.search.searchPlugins.forEach(function (entry) {
     let sourceURL = "chrome://unitedtb-searchplugins/content/" + entry.filename;
@@ -64,28 +68,36 @@ function copySearchPlugins(makeDefault)
     }
     Services.search.addEngine(sourceURL, Ci.nsISearchEngine.DATA_XML, false, null, {
       onSuccess: function (engine) {
+        if (makeDefault && engine.name == brand.search.engineName) {
+          Services.search.currentEngine = engine;
+        }
         if (engine.name != entry.name) {
           errorInBackend(new Exception("brand.js has engine name " +
               entry.name + ", but OSD file has name " + engine.name +
               ". This will break search in a subtle way, we must fix this."));
         }
       },
-      onError: function (errorCode) {
-        errorInBackend(new Exception("Search engine " + entry.name +
-            " install failed with error code " + errorCode));
+      onError: function (errorCode, errorMsg, errorTitle) {
+        var msg = errorMsg && errorTitle
+            ? errorTitle + ": " + errorMsg
+            : "Search engine " + entry.name +
+              " install failed with error code " + errorCode;
+        errorInBackend(new Exception(msg));
       }
     });
   });
 
-  runAsync(function() { // workaround, @see function description above
-    // on region-change, change to our region engine
-    if (oldDefaultWasUs)
-      Services.search.currentEngine = Services.search.getEngineByName(
-          brand.search.engineName);
-    // restore user choice after addEngine()
-    else
-      Services.search.currentEngine = oldDefault;
-  }, errorInBackend, 500);
+  if (oldAPI) {
+    runAsync(function() { // workaround, @see function description above
+      // on region-change, change to our region engine
+      if (oldDefaultWasUs)
+        Services.search.currentEngine = Services.search.getEngineByName(
+            brand.search.engineName);
+      // restore user choice after addEngine()
+      else
+        Services.search.currentEngine = oldDefault;
+    }, errorInBackend, 500);
+  }
 }
 
 function removeAddedEngines()

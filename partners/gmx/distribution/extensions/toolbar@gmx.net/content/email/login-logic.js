@@ -26,8 +26,8 @@
 const EXPORTED_SYMBOLS = [ "UnitedInternetLoginAccount" ];
 
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
-Components.utils.import("resource://unitedtb/email/account-base.js");
-var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/login.properties");
+importJSM("email/account-base.js", this);
+var gStringBundle = new StringBundle("email/login");
 
 /**
  * Holds and manages login state of one UnitedInternet account

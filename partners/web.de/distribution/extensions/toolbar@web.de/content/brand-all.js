@@ -5,7 +5,7 @@ login.defaultlocale.configs =
     domains : [ "web.de" ],
     type : "unitedinternet",
     loginTokenServerURL : "https://lts.web.de/logintokenserver-1.0",
-    uasURL : "https://uas2.uilogin.de/tokenlogin",
+    uasURL : "https://uas.web.de/tokenlogin",
     serviceID : "pacs.toolbar.webde",
   },
   {
@@ -22,10 +22,10 @@ login.defaultlocale.configs =
   {
     providerID : "1und1",
     domains : [ "online.de", "onlinehome.de", "sofortstart.de", "sofort-start.de", "go4more.de", "sofortsurf.de", "sofort-surf.de", ],
-    type : "imap",
-    hostname : "imap.1und1.de",
-    port : 993,
-    socketType : 2,
+    type : "unitedinternet",
+    loginTokenServerURL : "https://lts.1und1.de/logintokenserver-1.0",
+    uasURL : "https://uas2.uilogin.de/tokenlogin",
+    serviceID : "oneandone.toolbar.live"
   },
   {
     providerID : "mailcom",

@@ -2,3 +2,8 @@
 {
   list-style-image: url("chrome://unitedtb/skin/horoscope/horoscope-small.png");
 }
+#united-horoscope-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-horoscope-button
+{
+  list-style-image: url("chrome://unitedtb/skin/horoscope/horoscope-32.png");
+}

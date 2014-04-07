@@ -72,7 +72,7 @@ Components.utils.import("resource://unitedtb/search/search-store.js", this);
 
 function PSHModule()
 {
-  var sb = new StringBundle("chrome://unitedtb/locale/newtab/psh.properties");
+  var sb = new StringBundle("newtab/psh");
   var label = sb.get("label");
   Module.call(this, "psh", label);
 }

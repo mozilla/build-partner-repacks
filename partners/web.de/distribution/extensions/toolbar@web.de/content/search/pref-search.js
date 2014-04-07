@@ -1,5 +1,5 @@
 var build = {}
-Components.utils.import("resource://unitedtb/build.js", build);
+importJSM("build.js", build);
 
 function onLoad()
 {

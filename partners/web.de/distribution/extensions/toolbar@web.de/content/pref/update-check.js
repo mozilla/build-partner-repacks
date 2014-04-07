@@ -1,6 +1,5 @@
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
-var gStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/pref/pref-updates.properties");
+var gStringBundle = new StringBundle("pref/pref-updates");
 
 function check()
 {

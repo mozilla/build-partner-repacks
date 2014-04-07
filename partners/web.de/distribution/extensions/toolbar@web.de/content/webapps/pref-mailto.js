@@ -1,4 +1,4 @@
-Components.utils.import("resource://unitedtb/webapps/mailto-setting.js");
+importJSM("webapps/mailto-setting.js", this);
 
 function onLoad() {
   new MailToCheckbox(document.getElementById("webapps-mailto-checkbox"));

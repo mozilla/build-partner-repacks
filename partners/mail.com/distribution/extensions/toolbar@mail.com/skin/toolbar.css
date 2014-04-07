@@ -44,3 +44,11 @@ toolbar[mode="full"] toolbarbutton[id^="united-"] > label.toolbarbutton-text
   background: transparent;
   margin-left: -3px;
 }
+
+/* toolbarbutton-1 defaults to vertical orientation, so we need to override that.
+   To make sure we override, we have to use the same CSS specificity. */
+toolbar[mode="full"] .toolbarbutton-1[id^="united-"],
+toolbar[mode="icons"] .toolbarbutton-1[id^="united-"],
+toolbar[mode="full"] .toolbarbutton-1[id^="united-"][type="menu-button"] > toolbarbutton {
+  -moz-box-orient: horizontal;
+}

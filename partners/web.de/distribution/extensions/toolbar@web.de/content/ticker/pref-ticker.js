@@ -1,12 +1,11 @@
-Components.utils.import("resource://unitedtb/ticker/tickerList.js", this);
+importJSM("ticker/tickerList.js", this);
 
 var gStringBundle;
 
 function onLoad()
 {
   try {
-  gStringBundle = new StringBundle(
-      "chrome://unitedtb/locale/ticker/ticker.properties");
+  gStringBundle = new StringBundle("ticker/ticker");
   buildFeedMenu();
   // update labels to new region and feeds
   autoregisterGlobalObserver("region-changed", buildFeedMenu);

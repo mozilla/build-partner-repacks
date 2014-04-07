@@ -19,7 +19,7 @@
  * "first-run"
  */
 
-Cu.import("resource://unitedtb/util/globalobject.js", this);
+importJSM("util/globalobject.js", this);
 
 function loadIfNecessary(object)
 {

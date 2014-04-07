@@ -22,8 +22,7 @@
         label="&united.pref.button.label;"
         tooltiptext="&united.pref.button.tooltip;"
         oncommand="unitedinternet.openPrefWindow();"
-        orient="horizontal"
-        class="chromeclass-toolbar-additional toolbarbutton-1"
+        class="toolbarbutton-1"
         united-icon-only="true"
         removable="false"
         >

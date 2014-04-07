@@ -1,5 +1,5 @@
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://unitedtb/search/search-store.js", this);
+importJSM("search/search-store.js", this);
 
 var unitedFromAbove;
 var searchField;

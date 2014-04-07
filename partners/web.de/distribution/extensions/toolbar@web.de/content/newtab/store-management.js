@@ -34,7 +34,7 @@ var sb;
 function onLoad()
 {
   try {
-    sb = new StringBundle("chrome://unitedtb/locale/newtab/store-management.properties");
+    sb = new StringBundle("newtab/store-management");
     var mode = document.location.href.match(/\?mode=(.*)/)[1];
     addModule(new PSHModule());
     // may throw

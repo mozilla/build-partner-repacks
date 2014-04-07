@@ -20,7 +20,7 @@
         label="&united.horoscope.button.label;"
         tooltiptext="&united.horoscope.button.tooltip;"
         oncommand="unitedinternet.horoscope.onButton();"
-        class="chromeclass-toolbar-additional toolbarbutton-1"
+        class="toolbarbutton-1"
         united-removable="true"
         removable="true"
         united-icon-only="true"

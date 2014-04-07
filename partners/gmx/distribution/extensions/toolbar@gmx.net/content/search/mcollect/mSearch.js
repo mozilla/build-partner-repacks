@@ -84,7 +84,7 @@ mSearch.prototype =
   removeObserver : function(observer)
   {
     assert(typeof(observer) == "function");
-    ArrayRemove(this._observers, observer);
+    arrayRemove(this._observers, observer);
   },
   _notifyObserversOfResultChanges : function()
   {

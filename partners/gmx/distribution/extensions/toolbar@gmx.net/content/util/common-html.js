@@ -12,12 +12,12 @@
  */
 
 Components.utils.import("resource://unitedtb/util/util.js", this);
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js", this);
-Components.utils.import("resource://unitedtb/util/fetchhttp.js", this);
-Components.utils.import("resource://unitedtb/util/observer.js", this);
-Components.utils.import("resource://unitedtb/util/brand-var-loader.js", this);
+importJSM("util/sanitizeDatatypes.js", this);
+importJSM("util/fetchhttp.js", this);
+importJSM("util/observer.js", this);
+importJSM("util/brand-var-loader.js", this);
 this.build = {};
-Components.utils.import("resource://unitedtb/build.js", this.build);
+importJSM("build.js", this.build);
 Components.utils.import("resource://gre/modules/Services.jsm", this);
 loadJS("chrome://unitedtb/content/util/observerOnWindow.js", this);
 loadJS("chrome://unitedtb/content/util/uiutil.js", this);

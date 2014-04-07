@@ -55,8 +55,7 @@ const EXPORTED_SYMBOLS = [];
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
-var gStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/main/extension.properties");
+var gStringBundle = new StringBundle("main/extension");
 
 /**
  * Runs when new browser window opens (because that loads this JS module),
@@ -198,14 +197,11 @@ function onUninstall()
 function onInstall()
 {
     // Check first-run / update
-    var firstrun = ourPref.get("ext.firstrun");
-    if (firstrun !== false) // non-existing returns undefined
-      firstrun = true;
+    var firstrun = ourPref.get("ext.firstrun", true);
     var currentVersion = getExtensionFullVersion();
     if (firstrun)
     {
       ourPref.set("ext.firstrun", false);
-
       notifyGlobalObservers("first-run", {});
 
       /* The runonce page wants information that the "first-run"
@@ -218,8 +214,7 @@ function onInstall()
     }
     else
     {
-        // non-existing returns undefined
-        var lastVersion = ourPref.get("ext.currentversion");
+        var lastVersion = ourPref.get("ext.currentversion", null);
         if (currentVersion != lastVersion)
         {
           if (brand.toolbar.upgradeURL) {
@@ -355,8 +350,7 @@ function checkForBrandedBrowser()
   var bundledToolbar = (build.kVariant == "browser");
   if (bundledToolbar && !brandedBrowser) {
     var browser = findSomeBrowserWindow();
-    var noCoexistenceWarning = ourPref.get("noCoexistenceWarning", false);
-    if (noCoexistenceWarning)
+    if (ourPref.get("ext.noCoexistenceWarning", false))
       return;
     var check = {value: false};
     var result = promptService.confirmCheck(browser,
@@ -366,7 +360,7 @@ function checkForBrandedBrowser()
                    check);
     /* Save the value of the checkbox no matter what */
     if (check.value)
-      ourPref.set("noCoexistenceWarning", true);
+      ourPref.set("ext.noCoexistenceWarning", true);
     /* Only show the install page for the bundle if they clicked OK */
     if (result)
       findSomeBrowserWindow().unitedinternet.common.loadPage(brand.toolbar.browserInstallURL, "window");

@@ -64,11 +64,17 @@ Components.utils.import("resource://gre/modules/Services.jsm");
  *   for each (let string in strings.getAll())
  *     dump (string.key + " = " + string.value + "\n");
  *
- * @param url {String}
- *        the URL of the string bundle
+ * @param path {String}
+ *        Either the absolute the URL of the string bundle,
+ *        or the path without .../locale/ URL prefix and .properties suffix
+ *        e.g. "email/login" for locale/email/login.properties
  */
-function StringBundle(url) {
-  this.url = url;
+function StringBundle(path) {
+  if (path.indexOf("://") == -1) {
+    this.url = "chrome://unitedtb/locale/" + path + ".properties";
+  } else {
+    this.url = path;
+  }
 }
 
 StringBundle.prototype = {

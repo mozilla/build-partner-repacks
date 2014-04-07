@@ -1,7 +1,7 @@
-var build = {}
-Components.utils.import("resource://unitedtb/build.js", build);
 Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/fetchhttp.js");
+var build = {}
+importJSM("build.js", build);
+importJSM("util/fetchhttp.js", this);
 Components.utils.import("resource://gre/modules/Services.jsm");
 
 const EXPORTED_SYMBOLS = [ "sendErrorToServer", "shouldSendErrorToServer" ];

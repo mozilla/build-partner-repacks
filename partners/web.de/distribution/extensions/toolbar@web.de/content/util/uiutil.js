@@ -26,7 +26,7 @@ function errorNonCritical(e, parentWindow)
     // Can't import at top of file, because that would create a
     // circular dependency, which causes strange and subtle bugs
     var reporter = {};
-    Components.utils.import("resource://unitedtb/util/sendError.js", reporter);
+    importJSM("util/sendError.js", reporter);
     if (reporter.shouldSendErrorToServer(e))
       reporter.sendErrorToServer(e);
   }
@@ -97,7 +97,7 @@ function _showErrorDialog(e, parentWindow)
     // Can't import at top of file, because that would create a
     // circular dependency, which causes strange and subtle bugs
     var reporter = {};
-    Components.utils.import("resource://unitedtb/util/sendError.js", reporter);
+    importJSM("util/sendError.js", reporter);
     if (reporter.shouldSendErrorToServer(e))
       reporter.sendErrorToServer(e);
   }

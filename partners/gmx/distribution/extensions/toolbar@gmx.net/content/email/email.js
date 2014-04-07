@@ -18,16 +18,13 @@
  *    When: User clicks on mail button while we're offline.
  */
 
-Components.utils.import("resource://unitedtb/email/account-list.js", this);
-Components.utils.import("resource://unitedtb/email/webapp-start.js", this);
-//Components.utils.import("resource://unitedtb/email/taskbar.js", this);
-Components.utils.import("resource://gre/modules/PluralForm.jsm", this);
-Components.utils.import("resource://unitedtb/util/globalobject.js", this);
-Components.utils.import("resource://unitedtb/email/badge.js", this);
-var gStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/email/email.properties");
-var gBrandBundle = new StringBundle(
-    "chrome://unitedtb/locale/email/email-brand.properties");
+importJSM("email/account-list.js", this);
+importJSM("email/webapp-start.js", this);
+//importJSM("email/taskbar.js", this);
+importJSM("util/globalobject.js", this);
+importJSM("email/badge.js", this);
+var gStringBundle = new StringBundle("email/email");
+var gBrandBundle = new StringBundle("email/email-brand");
 
 var gEmailButton = null;
 var gEmailStatusBarImage = null;
@@ -230,11 +227,7 @@ function unreadText(acc, type)
 
   return acc
       ? (acc.isLoggedIn
-        ? (count > 0
-           ? PluralForm.get(count,
-               gBrandBundle.get("button.new" + bundleSuffix))
-               .replace("%S", count)
-           : gBrandBundle.get("button.nonew" + bundleSuffix))
+        ? pluralform(count, gBrandBundle.get("button.new" + bundleSuffix))
         : gStringBundle.get("button.disconnected"))
       : E("united-email-configure-menuitem")
           .getAttribute("tooltiptext");
@@ -272,11 +265,10 @@ function showDesktopNotification(acc)
       return;
     }
     var notification = new Notification(brand.toolbar.name, {
-      body: PluralForm.get(acc.newMailCount,
+      body: pluralform(acc.newMailCount,
                            gStringBundle.get("alert.message.pluralform"))
-                      .replace("%count%", acc.newMailCount)
-                      .replace("%account%", acc.emailAddress),
-      icon: "chrome://unitedtb/skin/email/email-new-small.png",
+                      .replace("%ACCOUNT%", acc.emailAddress),
+      icon: "chrome://unitedtb/skin/email/email-new-32.png",
       tag: acc.emailAddress, // replaces existing notifications for that acc
     });
     notification.onclick = function() {
@@ -347,7 +339,8 @@ function onCommandAccountMenuitem(event)
 
 function goToWebmail(acc)
 {
-  if (acc.type == "unitedinternet" && acc.providerID == "webde") {
+  if (acc.type == "unitedinternet" &&
+      "iacUsecase" in acc.loginContext.weblogin) {
     startUsecase(acc, "homepage-logged-in", [], window);
   } else if (acc.type == "unitedinternet") {
     goToWebmailOld(acc, window);

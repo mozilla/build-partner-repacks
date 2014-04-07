@@ -3,15 +3,31 @@
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-disconnect-small.png");
 }
+#united-email-button[status="disconnected"][cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-email-button[status="disconnected"]
+{
+  list-style-image: url("chrome://unitedtb/skin/email/email-disconnect-32.png");
+}
 #united-email-button[status="no-new"],
 #united-email-statusbar-image[status="no-new"]
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-nonew-small.png");
 }
+#united-email-button[status="no-new"][cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-email-button[status="no-new"]
+{
+  list-style-image: url("chrome://unitedtb/skin/email/email-nonew-32.png");
+}
 #united-email-button[status="new"],
 #united-email-statusbar-image[status="new"]
 {
   list-style-image: url("chrome://unitedtb/skin/email/email-new-small.png");
+}
+#united-email-button[status="new"][cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-email-button[status="new"]
+{
+  /* important overrides the badge that's setting list-style-image with higher specificity */
+  list-style-image: url("chrome://unitedtb/skin/email/email-new-32.png") !important;
 }
 #united-email-button[checking="true"],
 #united-email-statusbar-image[checking="true"]

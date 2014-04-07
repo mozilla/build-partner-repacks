@@ -36,8 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 Components.utils.import("resource://unitedtb/email/account-list.js", this);
-var gStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/email/login.properties");
+var gStringBundle = new StringBundle("email/login");
 
 function onLoad()
 {

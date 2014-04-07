@@ -18,9 +18,8 @@
  */
 
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
-Components.utils.import("resource://unitedtb/email/account-list.js", this);
-var gStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/email/login.properties");
+importJSM("email/account-list.js", this);
+var gStringBundle = new StringBundle("email/login");
 
 var gInParams = null;
 var gOutParams = null;

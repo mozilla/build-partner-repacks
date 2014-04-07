@@ -1,7 +1,6 @@
 /* TODO: Merge into login-page.js, the only caller */
 
-var gOptInBundle = new StringBundle(
-    "chrome://unitedtb/locale/pref/opt-in.properties");
+var gOptInBundle = new StringBundle("pref/opt-in");
 
 function optinConfirmClose(confirmedCallback)
 {

@@ -37,7 +37,7 @@ toolbar : {
     startpageHomepageURL : "%GOTB%startpage_homepage", // Firefox start goes to portal
     // extension.js
     firstrunURL : "%GOTB%runonce",
-    upgradeURL : "%GOTB%addon",
+    //upgradeURL : "%GOTB%addon",
     uninstallURL : "%GOTB%uninstall_runonce",
     sslErrorExitURL: "%GOTB%ssl_error",
     browserInstallURL: "%GOTB%browser_install",
@@ -185,7 +185,7 @@ login : {
     createAccountURLWeb : "%GOTB%signup",
     afterLogoutWebURL : "%GOTB%logout",
     // webpage shown when the user logs in for the very first time. null = deactivated.
-    runonceNewUsersWebURL : "%GOTB%firstlogin",
+    runonceNewUsersWebURL : null,
     forgotPasswordURL : "%GOTB%help_password",
   },
 },
@@ -196,7 +196,7 @@ email : {
 },
 phish: {
   defaultlocale : {
-    blacklist : "http://dl.web.de/backend/phish.txt", // web.de is correct
+    blacklist : "http://dl.web.de/backend/phishprotect.txt", // web.de is correct
     updateFrequency : 15 * 60, // in seconds
   },
 },

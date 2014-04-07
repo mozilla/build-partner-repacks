@@ -1,12 +1,13 @@
 var scope = {};
 Components.utils.import("resource://unitedtb/util/util.js", scope);
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js", scope);
-Components.utils.import("resource://unitedtb/util/observer.js", scope);
-Components.utils.import("resource://unitedtb/util/fetchhttp.js", scope);
-Components.utils.import("resource://unitedtb/util/JXON.js", scope);
-Components.utils.import("resource://unitedtb/util/brand-var-loader.js", scope);
+var importJSM = scope.importJSM;
+importJSM("util/sanitizeDatatypes.js", scope);
+importJSM("util/observer.js", scope);
+importJSM("util/fetchhttp.js", scope);
+importJSM("util/JXON.js", scope);
+importJSM("util/brand-var-loader.js", scope);
 scope.build = {}
-Components.utils.import("resource://unitedtb/build.js", scope.build);
+importJSM("build.js", scope.build);
 
 var EXPORTED_SYMBOLS = [];
 

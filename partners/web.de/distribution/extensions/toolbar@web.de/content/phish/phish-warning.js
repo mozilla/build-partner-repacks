@@ -5,7 +5,7 @@
  * by adding new entries as request by the user.
  */
 
-Components.utils.import("resource://unitedtb/util/globalobject.js", this);
+importJSM("util/globalobject.js", this);
 Components.utils.import("resource://gre/modules/Services.jsm");
 
 function onload()

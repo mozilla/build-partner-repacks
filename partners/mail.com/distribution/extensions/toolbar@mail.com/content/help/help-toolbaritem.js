@@ -1,7 +1,6 @@
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
 
-var gStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/help/help.properties");
+var gStringBundle = new StringBundle("help/help");
 
 /**
  * This implements the help menu for our toolbar.
@@ -24,7 +23,7 @@ function onMenuitem(event)
       var url = event.target.getAttribute("url");
       if (!url)
         throw new NotReached("expected url attribute");
-      loadPage(url);
+      loadPage(url, "tab");
     }
     event.stopPropagation(); // prevent from bubbling to main <button>
   } catch (e) { errorCritical(e); }

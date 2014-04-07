@@ -13,10 +13,10 @@ const EXPORTED_SYMBOLS = [];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
-Components.utils.import("resource://unitedtb/tracking/campaign-id.js");
+importJSM("tracking/campaign-id.js", this);
 var accounts = {};
-Components.utils.import("resource://unitedtb/email/account-list.js", accounts);
-Components.utils.import("resource://unitedtb/util/globalobject.js");
+importJSM("email/account-list.js", accounts);
+importJSM("util/globalobject.js", this);
 
 var aibTimer;
 
@@ -90,7 +90,8 @@ function saveInstallDate(object)
 function pingTrackingServer(event, addlParams, callback) {
   var url = brand.tracking.trackingURL;
   url = url.replace("%EVENT%", event);
-  url = url.replace("%TYPE%", build.kVariant == "release" ? "toolbar" : build.kVariant);
+  url = url.replace("%TYPE%", build.kVariant == "release" ||
+                              build.kVariant == "minimode" ? "toolbar" : build.kVariant);
   var installTime = new Date(ourPref.get("tracking.installtime") * 1000).toISOString();
   var installDate = installTime.substr(0, installTime.indexOf("T"));
   url = url.replace("%INSTALLDATE%", installDate);

@@ -1,5 +1,5 @@
-Components.utils.import("resource://unitedtb/search/search-store.js");
-Components.utils.import("resource://unitedtb/util/JXON.js");
+importJSM("search/search-store.js", this);
+importJSM("util/JXON.js", this);
 Components.utils.import("resource://gre/modules/NetUtil.jsm");
 Components.utils.import("resource://gre/modules/PageThumbs.jsm");
 Components.utils.import("resource://gre/modules/NewTabUtils.jsm");

@@ -50,7 +50,7 @@ mWebSuggest.prototype =
         // not an object with properties?
         var terms = responseJSON[1] || [];
 
-        var sb = new StringBundle("chrome://unitedtb/locale/search/mcollect.properties");
+        var sb = new StringBundle("search/mcollect");
         var descr = sb.get("mWebSuggest.descr").replace(/\$enginename\$/, engine.name);
         var icon = engine.iconURI ? engine.iconURI.spec : null;
 

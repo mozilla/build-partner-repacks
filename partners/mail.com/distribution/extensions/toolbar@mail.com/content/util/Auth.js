@@ -50,7 +50,7 @@ const EXPORTED_SYMBOLS = [ "AuthPLAIN", "AuthLOGIN",
     "atob", "btoa", ];
 
 Components.utils.import("resource://unitedtb/util/util.js");
-Components.utils.import("resource://unitedtb/util/sanitizeDatatypes.js");
+importJSM("util/sanitizeDatatypes.js", this);
 
 //<copied from="thunderbird-source/mailnews/test/fakeserver/auth.js" license="MPL 1.1">
 

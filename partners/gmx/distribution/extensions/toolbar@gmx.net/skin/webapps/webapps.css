@@ -6,6 +6,11 @@
 {
   list-style-image: url("chrome://unitedtb/skin/webapps/smartdrive-16.png");
 }
+#united-smartdrive-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-smartdrive-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/smartdrive-32.png");
+}
 #united-smartdrive-menuitem
 {
   list-style-image: url("chrome://unitedtb/skin/webapps/smartdrive-16.png");
@@ -13,6 +18,11 @@
 #united-photoalbum-button
 {
   list-style-image: url("chrome://unitedtb/skin/webapps/photoalbum-16.png");
+}
+#united-photoalbum-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-photoalbum-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/photoalbum-32.png");
 }
 #united-photoalbum-menuitem
 {
@@ -22,6 +32,11 @@
 {
   list-style-image: url("chrome://unitedtb/skin/webapps/sms-16.png");
 }
+#united-sms-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-sms-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/sms-32.png");
+}
 #united-sms-menuitem
 {
   list-style-image: url("chrome://unitedtb/skin/webapps/sms-16.png");
@@ -29,6 +44,11 @@
 #united-notes-button
 {
   list-style-image: url("chrome://unitedtb/skin/webapps/notes-16.png");
+}
+#united-notes-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-notes-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/notes-32.png");
 }
 #united-notes-menuitem
 {
@@ -42,6 +62,11 @@
 {
   list-style-image: url("chrome://unitedtb/skin/webapps/addressbook-16.png");
 }
+#united-addressbook-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-addressbook-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/addressbook-32.png");
+}
 #united-addressbook-email-menuitem
 {
   list-style-image: url("chrome://unitedtb/skin/webapps/addressbook-16.png");
@@ -50,6 +75,11 @@
 {
   list-style-image: url("chrome://unitedtb/skin/webapps/compose-16.png");
 }
+#united-composeemail-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-composeemail-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/compose-32.png");
+}
 #united-compose-email-menuitem
 {
   list-style-image: url("chrome://unitedtb/skin/webapps/compose-16.png");
@@ -57,4 +87,9 @@
 #united-start-button
 {
   list-style-image: url("chrome://unitedtb/skin/webapps/start-16.png");
+}
+#united-start-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-start-button
+{
+  list-style-image: url("chrome://unitedtb/skin/webapps/start-32.png");
 }

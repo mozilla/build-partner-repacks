@@ -21,7 +21,8 @@
  */
 
 var build = {}
-Components.utils.import("resource://unitedtb/build.js", build);
+importJSM("build.js", build);
+importJSM("util/globalobject.js", this);
 
 // cache
 var gBrand = null;
@@ -42,10 +43,8 @@ function onLoad()
     gVariant = build.kVariant;
     if (gVariant == "browser")
       gVariant = "bundle";
-    else if (gVariant == "release")
-      gVariant = "maximized";
-    else if (gVariant == "minimode")
-      gVariant = "minimized";
+    else if (gVariant == "release" || gVariant == "minimode")
+      gVariant = "toolbar";
     gBrandedBrowser = ourPref.get("brandedbrowser", false);
     debug("brand " + gBrand + ", version " + gVersion +
         ", variant " + gVariant + ", branded browser " + gBrandedBrowser);
@@ -95,6 +94,8 @@ function pageLoaded(event)
     el.setAttribute("united-toolbar-brand", gBrand);
     el.setAttribute("united-toolbar-version", gVersion);
     el.setAttribute("united-toolbar-variant", gVariant);
+    el.setAttribute("united-toolbar-mode",
+        getGlobalObject("united", "minimode") ? "minimized" : "maximized");
     el.setAttribute("united-toolbar-branded-browser", gBrandedBrowser);
     el.setAttribute("united-toolbar-campaignid", gCampaignID);
   } catch (e) { errorNonCritical(e); }

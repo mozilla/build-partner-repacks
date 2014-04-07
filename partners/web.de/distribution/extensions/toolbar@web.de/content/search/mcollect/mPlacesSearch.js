@@ -76,7 +76,7 @@ mPlacesSearch.prototype =
       }
       sqlQuery.executeAsync(new sqlCallback(function(rows)
       {
-        var sb = new StringBundle("chrome://unitedtb/locale/search/mcollect.properties");
+        var sb = new StringBundle("search/mcollect");
         var descr = sb.get("mPlacesSearch.descr");
         for each (let row in rows)
         {

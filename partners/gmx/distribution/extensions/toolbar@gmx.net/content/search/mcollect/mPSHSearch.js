@@ -1,5 +1,5 @@
 Components.utils.import("resource://unitedtb/search/search-store.js", this);
-var sb = new StringBundle("chrome://unitedtb/locale/search/mcollect.properties");
+var sb = new StringBundle("search/mcollect");
 
 /**
  * This searches in the user's previous searches, whether the user searched for

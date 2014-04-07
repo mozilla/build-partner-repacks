@@ -20,10 +20,9 @@ var brand = {};
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/util.js");
 var build = {};
-Components.utils.import("resource://unitedtb/build.js", build);
-Components.utils.import("resource://unitedtb/util/observer.js");
-var gBrandJsStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/brand.js.properties");
+importJSM("build.js", build);
+importJSM("util/observer.js", this);
+var gBrandJsStringBundle = new StringBundle("brand.js"); //brand.js.properties
 
 function load(isFirst)
 {

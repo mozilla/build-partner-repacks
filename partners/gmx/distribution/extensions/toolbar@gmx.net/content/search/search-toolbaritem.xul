@@ -63,7 +63,6 @@
               label="&united.search.button.label;"
               tooltiptext="&united.search.button.tooltip;"
               oncommand="unitedinternet.search.onButton(event);"
-              orient="horizontal"
               class="plain"
               />
         </hbox>
@@ -74,7 +73,6 @@
     <toolbarbutton
         id="united-search-urlbar-button"
         insertafter="urlbar-stop-button"
-        class="chromeclass-toolbar-additional"
         tooltiptext="&united.search.icon.label;"
         onclick="unitedinternet.search.onURLBarButton(event);"/>
   </textbox>

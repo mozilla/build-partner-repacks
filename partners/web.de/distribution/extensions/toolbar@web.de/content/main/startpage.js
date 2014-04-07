@@ -1,8 +1,8 @@
 /**
- * Messages sent by this module, app-global:
+ * Messages reacted to by this module, app-global:
  * "disable"
- *   Means: Application is being disabled
- *   When: At shutdown of application after user has requested disable
+ *    Effect:
+ *    Reset the homepage back to what it was before we were installed
  */
 
 const EXPORTED_SYMBOLS = [];

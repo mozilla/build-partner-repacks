@@ -1,7 +1,7 @@
 Components.utils.import("resource://gre/modules/Services.jsm");
 var accounts = {};
-Components.utils.import("resource://unitedtb/email/account-list.js", accounts);
-Components.utils.import("resource://unitedtb/util/globalobject.js", this);
+importJSM("email/account-list.js", accounts);
+importJSM("util/globalobject.js", this);
 
 var gToolbar;
 var gMailMiniModeEndMenuitem;
@@ -41,7 +41,11 @@ window.addEventListener("load", onLoad, false);
 function updateUI() {
   var allAccounts = accounts.getAllExistingAccounts();
   var loggedin = allAccounts.some(function(acc) { return acc.isLoggedIn; });
-  gMailMiniModeLogoffMenuitem.disabled = !loggedin;
+  if (loggedin) {  // .disabled property doesn't work reliably
+    gMailMiniModeLogoffMenuitem.removeAttribute("disabled");
+  } else {
+    gMailMiniModeLogoffMenuitem.setAttribute("disabled", "true");
+  }
 }
 
 function onViewToolbarCommand(event) {

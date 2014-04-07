@@ -60,12 +60,12 @@ const EXPORTED_SYMBOLS = [ "IMAPAccount" ];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
-Components.utils.import("resource://unitedtb/util/Socket.js");
-Components.utils.import("resource://unitedtb/util/Auth.js");
-Components.utils.import("resource://unitedtb/email/MIME.js");
-Components.utils.import("resource://unitedtb/email/account-base.js");
-Components.utils.import("resource://unitedtb/email/account-list.js"); // For getAllExistingAccounts
-var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/email.properties");
+importJSM("util/Socket.js", this);
+importJSM("util/Auth.js", this);
+importJSM("email/MIME.js", this);
+importJSM("email/account-base.js", this);
+importJSM("email/account-list.js", this); // For getAllExistingAccounts
+var gStringBundle = new StringBundle("email/email");
 
 
 /**

@@ -41,14 +41,14 @@
  */
 
 const EXPORTED_SYMBOLS = [ "Cc", "Ci", "Cu", "extend", "mixInto", "assert",
-  "makeCallback", "sqlCallback", "loadJS", "runAsync", "runPeriodically",
+  "makeCallback", "sqlCallback", "loadJS", "importJSM", "runAsync", "runPeriodically",
   "makeNSIURI", "readURLasUTF8", "readFile", "writeFile", "splitLines",
   "promptService", "ourPref", "generalPref", "privateBrowsing",
   "DOMParser", "XMLSerializer",
   "StringBundle", "getExtensionFullVersion", "findSomeBrowserWindow", "UserError",
   "Exception", "NotReached", "Abortable", "TimeoutAbortable", "IntervalAbortable",
   "SuccessiveAbortable", "XPCOMUtils",  "getProfileDir", "getSpecialDir", "getOS",
-  "parseURLQueryString", "createURLQueryString",
+  "parseURLQueryString", "createURLQueryString", "pluralform",
   "arrayRemove", "arrayContains", "deepCopy", "getErrorText", "convertException",
   "errorInBackend", "kDebug", "debug", "debugObject", "dumpObject", "ensureArray" ];
 
@@ -66,9 +66,26 @@ Cu.import("resource://unitedtb/util/StringBundle.js");
 var build = {};
 Cu.import("resource://unitedtb/build.js", build);
 try {
-  Components.utils.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
+  Cu.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
 } catch (ex) {
   // First available in Firefox 16
+}
+
+/**
+ * Wrapper for Components.utils.import() that hides the absolute URL.
+ * @param path {String} e.g. "email/account-list.js"
+ * @param scope {Object} where to import the symbols. Normally just |this|.
+ */
+function importJSM(path, scope) {
+  assert(scope, "Scope must be passed to importJSM");
+  if (path.indexOf("://") == -1) {
+    path = "chrome://unitedtb/content/" + path;
+  }
+  try {
+    Cu.import(path, scope);
+  } catch (e) {
+    errorInBackend(e);
+  }
 }
 
 XPCOMUtils.defineLazyServiceGetter(this, "promptService",
@@ -572,6 +589,31 @@ function splitLines(content)
 }
 
 /**
+ * 3-way plural form for 0, 1 and >1. Picks the corresponding UI string.
+ * Also replaces %COUNT% with the number.
+ *
+ * @param count {Integer}
+ * @param str {String} a;b;c
+ * @return {String}
+ *   if count = 0, use a
+ *   if count = 1, use b
+ *   if count > 1, use c
+ */
+function pluralform(count, str)
+{
+  var sp = str.split(";");
+  assert(sp.length == 3, "pluralform: expected 3 parts in str: " + str);
+  var index;
+  if (count == 0)
+    index = 0;
+  else if (count == 1)
+    index = 1;
+  else
+    index = 2;
+  return sp[index].replace("%COUNT%", count);
+}
+
+/**
  * Get our own version
  */
 function getExtensionFullVersion()
@@ -733,8 +775,8 @@ function deepCopy(org)
   return result;
 }
 
-//kDebug defined in build.js
 var kDebugAlsoOnErrorConsole = true;
+var kDebug = null;
 
 /**
  * Output some text on the console which helps in debugging,
@@ -742,8 +784,12 @@ var kDebugAlsoOnErrorConsole = true;
  */
 function debug(text)
 {
-  if (!build.kDebug)
+  if (kDebug === null) {
+    kDebug = ourPref.get("debug.enable", false);
+  }
+  if (!kDebug) {
     return;
+  }
   dump(text + "\n");
   if (!kDebugAlsoOnErrorConsole)
     return;

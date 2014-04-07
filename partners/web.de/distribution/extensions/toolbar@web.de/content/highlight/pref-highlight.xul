@@ -18,11 +18,6 @@
         >
       <caption label="&pane.title;" />
 
-    <checkbox id="highlight-enableOnNewWindow"
-        preference="extensions.unitedinternet.highlight.enableOnNewWindow"
-        label="&enableOnNewWindow.checkbox.label;"
-        tooltiptext="&enableOnNewWindow.checkbox.tooltip;"
-        />
     <hbox>
       <label value="&color.label;"/>
         <colorpicker preference="extensions.unitedinternet.highlight.color"

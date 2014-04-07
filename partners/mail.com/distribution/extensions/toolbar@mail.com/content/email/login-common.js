@@ -1,8 +1,7 @@
-Components.utils.import("resource://unitedtb/email/account-base.js", this); // just for getDomainForEmailAddress()
-Components.utils.import("resource://unitedtb/email/account-list.js", this); // just for verifyEmailAddressDomain()
-Components.utils.import("resource://unitedtb/util/StringBundle.js", this);
-var gStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/email/login.properties");
+importJSM("email/account-base.js", this); // just for getDomainForEmailAddress()
+importJSM("email/account-list.js", this); // just for verifyEmailAddressDomain()
+importJSM("util/StringBundle.js", this);
+var gStringBundle = new StringBundle("email/login");
 
 /**
  * @param emailAddress {String}
@@ -161,7 +160,7 @@ function verifyEmailAddressAndPassword(emailAddress, password,
     } else if ( ! emailAddressRegexp.test(emailAddress)) {
       throw new UserError(gStringBundle.get(
           "error.syntax" + (brandOnly ? ".brand" : ""),
-          [ brand.login.providerName, exampleDomain ]));
+          [ myBrand, exampleDomain ]));
     } else if (newAccount && getExistingAccountForEmailAddress(emailAddress)) {
       throw new UserError(gStringBundle.get("error.exists"));
     } else {
@@ -170,7 +169,7 @@ function verifyEmailAddressAndPassword(emailAddress, password,
       function(config) {
         if (brandOnly && config.providerID != brand.login.providerID) {
           errorCallback(new UserError(gStringBundle.get("error.domain.brand",
-              [ brand.login.providerName, exampleDomain, domains.join(", ") ])));
+              [ myBrand, exampleDomain, domains.join(", ") ])));
         } else {
           successCallback();
         }
@@ -180,7 +179,7 @@ function verifyEmailAddressAndPassword(emailAddress, password,
         // Just tell user that it's not supported
         errorCallback(new UserError(gStringBundle.get(
             "error.domain" + (brandOnly ? ".brand" : ""),
-            [ brand.login.providerName, exampleDomain, domains.join(", ") ])));
+            [ myBrand, exampleDomain, domains.join(", ") ])));
       });
     }
   } catch (e) { errorInBackend(e); errorCallback(e); return new Abortable(); }

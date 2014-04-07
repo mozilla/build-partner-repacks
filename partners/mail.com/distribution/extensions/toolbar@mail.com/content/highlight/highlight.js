@@ -45,8 +45,6 @@ function onLoad()
     var button = getMyButton();
     if (!button)
       return;
-    button.checked = ourPref.get("highlight.enableOnNewWindow");
-    turnOnOff();
   } catch(e) { errorCritical(e); }
 }
 window.addEventListener("load", onLoad, false);
@@ -225,6 +223,11 @@ function highlightPerDOMPoking(term, doc)
     textNode.parentNode.replaceChild(newNode, textNode);
   }
   //alert("after replacement:\n" + doc.body.innerHTML);
+  // Highlight in child iframes as well
+  var iframes = doc.getElementsByTagName("iframe");
+  for (var i=0; i < iframes.length; i++) {
+    highlightPerDOMPoking(currentSearchTerm, iframes[i].contentDocument)
+  }
 }
 
 const kSkipTags = [ "script", "style", "noscript", "embed", "option" ];
@@ -276,6 +279,11 @@ function unhighlightPerDOMPoking(doc)
     span.parentNode.replaceChild(textNode, span);
   }
   //debug("after unhighlight:\n" + doc.body.innerHTML);
+  // Unhighlight in child iframes as well
+  var iframes = doc.getElementsByTagName("iframe");
+  for (var i=0; i < iframes.length; i++) {
+    unhighlightPerDOMPoking(iframes[i].contentDocument)
+  }
 }
 
 /**

@@ -71,7 +71,8 @@ function isOurMailtoHandlerDefault() {
   try {
     var handlerInfo;
     handlerInfo = gExternalProtocolServ.getProtocolHandlerInfo("mailto");
-    if (handlerInfo && handlerInfo.preferredApplicationHandler) {
+    if (handlerInfo && handlerInfo.preferredApplicationHandler
+        && handlerInfo.preferredAction == 2) { // useHelperApp - workaround for bug 961233
       var handler = handlerInfo.preferredApplicationHandler
                                .QueryInterface(Ci.nsIWebHandlerApp);
       if (handler.uriTemplate == mailtoURI) {

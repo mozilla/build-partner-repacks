@@ -45,7 +45,7 @@ mAmazon.prototype =
       },
       function(xml)
       {
-        var sb = new StringBundle("chrome://unitedtb/locale/search/mcollect.properties");
+        var sb = new StringBundle("search/mcollect");
         var descr = sb.get("mAmazon.descr");
         var icon = null;
 

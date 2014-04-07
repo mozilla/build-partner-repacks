@@ -38,7 +38,7 @@ mEBay.prototype =
         // not an object with properties?
         var terms = responseJSON[1] || [];
 
-        var sb = new StringBundle("chrome://unitedtb/locale/search/mcollect.properties");
+        var sb = new StringBundle("search/mcollect");
         var engineName = "eBay";
         var descr = sb.get("mWebSuggest.descr").replace(/\$enginename\$/, engineName);
         var icon = "chrome://unitedtb/skin/ebay/ebay-small.png";

@@ -18,8 +18,7 @@ Components.utils.import("resource://unitedtb/util/common-jsm.js");
 Components.utils.import("resource://unitedtb/email/account-base.js");
 Components.utils.import("resource://unitedtb/email/login-logic.js");
 
-var gStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/email/login.properties");
+var gStringBundle = new StringBundle("email/login");
 
 // {Integer} Unique ID for each call. Just counted up.
 var gID = 0;

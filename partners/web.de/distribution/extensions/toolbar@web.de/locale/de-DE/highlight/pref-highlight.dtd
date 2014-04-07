@@ -1,4 +1,2 @@
-<!ENTITY enableOnNewWindow.checkbox.label "Suchbegriffe auf Webseiten automatisch hervorheben">
-<!ENTITY enableOnNewWindow.checkbox.tooltip "Aktiviere die Funktion 'Suchbegriffe auf Webseiten hervorheben' in allen neuen Fenstern. Sie läßt sich mit dem Hervorheben-Button auch manuell ein- und ausschalten.">
 <!ENTITY pane.title "Hervorheben">
 <!ENTITY color.label "Farbe:">

@@ -47,9 +47,9 @@
 const EXPORTED_SYMBOLS = [ "UnitedInternetMailCheckAccount" ];
 
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
-Components.utils.import("resource://unitedtb/email/login-logic.js");
+importJSM("email/login-logic.js", this);
 
-var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/email.properties");
+var gStringBundle = new StringBundle("email/email");
 
 function UnitedInternetMailCheckAccount(accountID, isNew)
 {

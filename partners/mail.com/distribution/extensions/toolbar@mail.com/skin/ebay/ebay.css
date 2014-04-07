@@ -2,11 +2,26 @@
 {
   list-style-image: url("chrome://unitedtb/skin/ebay/ebay.png");
 }
+#united-ebay-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-ebay-button
+{
+  list-style-image: url("chrome://unitedtb/skin/ebay/ebay-32.png");
+}
 #united-lastminute-button
 {
   list-style-image: url("chrome://unitedtb/skin/ebay/lastminute.png");
 }
+#united-lastminute-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-lastminute-button
+{
+/*  list-style-image: url("chrome://unitedtb/skin/ebay/lastminute-32.png"); */
+}
 #united-amazon-button
 {
   list-style-image: url("chrome://unitedtb/skin/ebay/amazon.png");
+}
+#united-amazon-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-amazon-button
+{
+  list-style-image: url("chrome://unitedtb/skin/ebay/amazon-32.png");
 }

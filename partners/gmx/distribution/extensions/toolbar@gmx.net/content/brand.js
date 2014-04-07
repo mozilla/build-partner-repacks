@@ -56,7 +56,7 @@ toolbar : {
     startpageHomepageURL : "%GOTB%startpage_homepage", // Firefox start goes to portal
     // extension.js
     firstrunURL : "%GOTB%runonce",
-    upgradeURL : "%GOTB%addon",
+    //upgradeURL : "%GOTB%addon",
     uninstallURL : "%GOTB%uninstall_runonce",
     sslErrorExitURL: "%GOTB%ssl_error",
     browserInstallURL: "%GOTB%browser_install",
@@ -299,7 +299,7 @@ email : {
 },
 phish: {
   defaultlocale : {
-    blacklist : "http://dl.web.de/backend/phish.txt",
+    blacklist : "http://dl.web.de/backend/phishprotect.txt", // web.de is correct
     updateFrequency : 15 * 60, // in seconds
   },
 },

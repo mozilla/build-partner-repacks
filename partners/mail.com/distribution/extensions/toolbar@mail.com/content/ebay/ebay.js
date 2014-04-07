@@ -26,7 +26,7 @@ function onButton(event)
 };
 
 /**
- * User clicked on LastMinute button
+ * User clicked on lastminute button
  * HACK
  */
 function onLastMinuteButton(event)

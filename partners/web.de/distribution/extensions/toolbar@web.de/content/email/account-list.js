@@ -69,11 +69,11 @@ const EXPORTED_SYMBOLS = [ "getAllExistingAccounts", "getExistingAccount",
 
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
-Components.utils.import("resource://unitedtb/email/account-base.js");
-Components.utils.import("resource://unitedtb/email/imap.js");
-Components.utils.import("resource://unitedtb/email/pop3.js");
-Components.utils.import("resource://unitedtb/email/email-logic.js");
-var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/login.properties");
+importJSM("email/account-base.js", this);
+importJSM("email/imap.js", this);
+importJSM("email/pop3.js", this);
+importJSM("email/email-logic.js", this);
+var gStringBundle = new StringBundle("email/login");
 
 /**
  * Contains all Account objected created.

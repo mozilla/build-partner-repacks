@@ -31,7 +31,7 @@
 Components.utils.import("resource://unitedtb/coupon/loadCoupons.js", this);
 Components.utils.import("resource://unitedtb/util/globalobject.js", this);
 Components.utils.import("resource://unitedtb/email/badge.js", this);
-var sb = new StringBundle("chrome://unitedtb/locale/coupon/coupon.properties");
+var sb = new StringBundle("coupon/coupon");
 
 var gAlertTimer = null;
 var gCouponButton = null;
@@ -231,9 +231,8 @@ function showAlert(coupons)
       var buttonE = E("united-coupon-alert-button");
       buttonE.coupon = coupon;
       //textDescriptionE.textContent = coupon.description;
-      textGeneratedE.setAttribute("value", PluralForm.get(numCoupons,
+      textGeneratedE.setAttribute("value", pluralform(numCoupons,
             sb.get("alert.coupons.pluralform"))
-            .replace("%S", numCoupons)
             .replace("%DOMAIN%", coupon.shopDomain));
       hasRegularCoupon = true;
     }

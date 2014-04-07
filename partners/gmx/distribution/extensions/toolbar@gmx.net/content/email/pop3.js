@@ -58,7 +58,7 @@ Components.utils.import("resource://unitedtb/util/Socket.js");
 Components.utils.import("resource://unitedtb/util/Auth.js");
 Components.utils.import("resource://unitedtb/email/MIME.js");
 Components.utils.import("resource://unitedtb/email/account-base.js");
-var gStringBundle = new StringBundle("chrome://unitedtb/locale/email/email.properties");
+var gStringBundle = new StringBundle("email/email");
 
 /**
  * Holds and manages login state of one POP3 account

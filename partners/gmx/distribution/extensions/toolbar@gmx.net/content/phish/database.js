@@ -13,7 +13,7 @@ const EXPORTED_SYMBOLS = ["checkURI", "downloadBlacklist"];
 
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
-Components.utils.import("resource://unitedtb/util/globalobject.js");
+importJSM("util/globalobject.js", this);
 
 const PHISHING_DB_FILE = "phishing-blacklist.sqlite";
 const PHISHING_DB_FILE_OLD = "phishing-blacklist-temp.sqlite";

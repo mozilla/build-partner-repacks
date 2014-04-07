@@ -2,3 +2,8 @@
 {
   list-style-image: url("chrome://unitedtb/skin/weather/weather-small.png");
 }
+#united-weather-button[cui-areatype="menu-panel"],
+toolbarpaletteitem[place="palette"] > #united-weather-button
+{
+  list-style-image: url("chrome://unitedtb/skin/weather/weather-32.png");
+}

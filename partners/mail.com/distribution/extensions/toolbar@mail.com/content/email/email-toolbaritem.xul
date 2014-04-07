@@ -32,10 +32,10 @@
         tooltiptext-for-item="&united.email.messages.tooltip;"
         status="disconnected"
         oncommand="unitedinternet.email.onCommandMailButton();"
-        orient="horizontal"
-        class="chromeclass-toolbar-additional toolbarbutton-1"
+        class="toolbarbutton-1"
         type="menu-button"
         removable="true"
+        overflows="false"
         >
       <menupopup id="united-email-button-dropdown">
           <menuitem id="united-email-checknow"
@@ -54,22 +54,19 @@
 
     <toolbaritem id="united-login-box" align="center"      
       status="disconnected"
-      removable="true"
       >
       <toolbarbutton id="united-logged-out-button"
           label="&united.logged-out.label;"
           tooltiptext="&united.logged-out.tooltip;"
           oncommand="unitedinternet.login.onCommandDoLogin();"
-          orient="horizontal"
-          class="chromeclass-toolbar-additional toolbarbutton-1"
+          class="toolbarbutton-1"
           remove-priority="300"
           />
       <toolbarbutton id="united-logged-in-button"
           label="&united.logged-in.label;"
           tooltiptext="&united.logged-in.tooltip;"
           hidden="true"
-          orient="horizontal"
-          class="chromeclass-toolbar-additional toolbarbutton-1"
+          class="toolbarbutton-1"
           remove-priority="300"
           type="menu">
         <menupopup>

@@ -20,8 +20,8 @@
  * usually 1-3 seconds after the user opened the dropdown.
  */
 
-Components.utils.import("resource://unitedtb/ticker/tickerList.js", this);
-Components.utils.import("resource://unitedtb/util/JXON.js", this);
+importJSM("ticker/tickerList.js", this);
+importJSM("util/JXON.js", this);
 
 const kRefreshInterval = 15*60*1000; // news feed is polled in a 15min interval, per spec
 const kLazyLoad = true; // false = load on startup
@@ -29,8 +29,7 @@ const kLazyRefresh = true; // don't refresh automatically in inttervals, only re
 
 var gLastLoad = 0; // Unixtime
 var gMenuE = null;
-var gStringBundle = new StringBundle(
-    "chrome://unitedtb/locale/ticker/ticker.properties");
+var gStringBundle = new StringBundle("ticker/ticker");
 
 function onLoad()
 {

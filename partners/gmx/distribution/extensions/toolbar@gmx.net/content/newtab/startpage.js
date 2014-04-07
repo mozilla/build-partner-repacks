@@ -1,5 +1,5 @@
 Components.utils.import("resource://unitedtb/util/common-jsm.js");
-Components.utils.import("resource://unitedtb/search/search-store.js");
+importJSM("search/search-store.js");
 
 
 var gUnitedFromAbove;
