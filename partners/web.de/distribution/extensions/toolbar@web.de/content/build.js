@@ -1,6 +1,6 @@
 const EXPORTED_SYMBOLS = ["version", "EMID", "kDebug", "kVariant", "ourEMIDs", ];
 
-const version = "2.10rc1";
+const version = "2.10";
 const EMID = "toolbar@web.de";
 // "dev", "release"=full, "browser"=bundle, "amo"=addons.mozilla.org, "minimode"=full+minimode
 const kVariant = "browser";
