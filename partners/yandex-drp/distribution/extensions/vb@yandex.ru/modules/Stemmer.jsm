@@ -1,5 +1,5 @@
-'use strict';
-var EXPORTED_SYMBOLS = ['Stemmer'];
+"use strict";
+var EXPORTED_SYMBOLS = ["Stemmer"];
 var Stemmer = function () {
         var snowballs = Object.create(null);
         function Stemmer(lang) {
@@ -14,12 +14,12 @@ var Stemmer = function () {
                         this.stem();
                         return this.getCurrent();
                     }.bind(snowballs[this._lang] || (snowballs[this._lang] = new Snowball(this._lang)));
-                this.__defineGetter__('_stemmer', function _stemmer() _stemmerFn);
+                this.__defineGetter__("_stemmer", function _stemmer() _stemmerFn);
                 return this._stemmer;
             }
         };
         function Snowball(lng) {
-            var stemName = lng.substring(0, 1).toUpperCase() + lng.substring(1).toLowerCase() + 'Stemmer';
+            var stemName = lng.substring(0, 1).toUpperCase() + lng.substring(1).toLowerCase() + "Stemmer";
             return new stemFactory[stemName]();
         }
         function Among(s, substring_i, result, method) {
@@ -228,14 +228,14 @@ var Stemmer = function () {
                 },
                 s_ch: function () {
                     if (this.b < 0 || this.b > this.k || this.k > this.l || this.l > current.length)
-                        throw 'faulty slice operation';
+                        throw "faulty slice operation";
                 },
                 s_f: function (s) {
                     this.s_ch();
                     this.r_s(this.b, this.k, s);
                 },
                 s_d: function () {
-                    this.s_f('');
+                    this.s_f("");
                 },
                 i_: function (c_bra, c_ket, s) {
                     var adjustment = this.r_s(c_bra, c_ket, s);
@@ -256,49 +256,49 @@ var Stemmer = function () {
         var stemFactory = {
                 DanishStemmer: function () {
                     var a_0 = [
-                            new Among('hed', -1, 1),
-                            new Among('ethed', 0, 1),
-                            new Among('ered', -1, 1),
-                            new Among('e', -1, 1),
-                            new Among('erede', 3, 1),
-                            new Among('ende', 3, 1),
-                            new Among('erende', 5, 1),
-                            new Among('ene', 3, 1),
-                            new Among('erne', 3, 1),
-                            new Among('ere', 3, 1),
-                            new Among('en', -1, 1),
-                            new Among('heden', 10, 1),
-                            new Among('eren', 10, 1),
-                            new Among('er', -1, 1),
-                            new Among('heder', 13, 1),
-                            new Among('erer', 13, 1),
-                            new Among('s', -1, 2),
-                            new Among('heds', 16, 1),
-                            new Among('es', 16, 1),
-                            new Among('endes', 18, 1),
-                            new Among('erendes', 19, 1),
-                            new Among('enes', 18, 1),
-                            new Among('ernes', 18, 1),
-                            new Among('eres', 18, 1),
-                            new Among('ens', 16, 1),
-                            new Among('hedens', 24, 1),
-                            new Among('erens', 24, 1),
-                            new Among('ers', 16, 1),
-                            new Among('ets', 16, 1),
-                            new Among('erets', 28, 1),
-                            new Among('et', -1, 1),
-                            new Among('eret', 30, 1)
+                            new Among("hed", -1, 1),
+                            new Among("ethed", 0, 1),
+                            new Among("ered", -1, 1),
+                            new Among("e", -1, 1),
+                            new Among("erede", 3, 1),
+                            new Among("ende", 3, 1),
+                            new Among("erende", 5, 1),
+                            new Among("ene", 3, 1),
+                            new Among("erne", 3, 1),
+                            new Among("ere", 3, 1),
+                            new Among("en", -1, 1),
+                            new Among("heden", 10, 1),
+                            new Among("eren", 10, 1),
+                            new Among("er", -1, 1),
+                            new Among("heder", 13, 1),
+                            new Among("erer", 13, 1),
+                            new Among("s", -1, 2),
+                            new Among("heds", 16, 1),
+                            new Among("es", 16, 1),
+                            new Among("endes", 18, 1),
+                            new Among("erendes", 19, 1),
+                            new Among("enes", 18, 1),
+                            new Among("ernes", 18, 1),
+                            new Among("eres", 18, 1),
+                            new Among("ens", 16, 1),
+                            new Among("hedens", 24, 1),
+                            new Among("erens", 24, 1),
+                            new Among("ers", 16, 1),
+                            new Among("ets", 16, 1),
+                            new Among("erets", 28, 1),
+                            new Among("et", -1, 1),
+                            new Among("eret", 30, 1)
                         ], a_1 = [
-                            new Among('gd', -1, -1),
-                            new Among('dt', -1, -1),
-                            new Among('gt', -1, -1),
-                            new Among('kt', -1, -1)
+                            new Among("gd", -1, -1),
+                            new Among("dt", -1, -1),
+                            new Among("gt", -1, -1),
+                            new Among("kt", -1, -1)
                         ], a_2 = [
-                            new Among('ig', -1, 1),
-                            new Among('lig', 0, 1),
-                            new Among('elig', 1, 1),
-                            new Among('els', -1, 1),
-                            new Among('l\xF8st', -1, 2)
+                            new Among("ig", -1, 1),
+                            new Among("lig", 0, 1),
+                            new Among("elig", 1, 1),
+                            new Among("els", -1, 1),
+                            new Among("løst", -1, 2)
                         ], g_v = [
                             17,
                             65,
@@ -414,9 +414,9 @@ var Stemmer = function () {
                     function r_other_suffix() {
                         var a_v, v_1 = sbp.l - sbp.c, v_2, v_3;
                         sbp.k = sbp.c;
-                        if (sbp.e_s_b(2, 'st')) {
+                        if (sbp.e_s_b(2, "st")) {
                             sbp.b = sbp.c;
-                            if (sbp.e_s_b(2, 'ig'))
+                            if (sbp.e_s_b(2, "ig"))
                                 sbp.s_d();
                         }
                         sbp.c = sbp.l - v_1;
@@ -436,7 +436,7 @@ var Stemmer = function () {
                                     sbp.c = sbp.l - v_3;
                                     break;
                                 case 2:
-                                    sbp.s_f('l\xF8s');
+                                    sbp.s_f("løs");
                                     break;
                                 }
                             }
@@ -475,43 +475,43 @@ var Stemmer = function () {
                 },
                 DutchStemmer: function () {
                     var a_0 = [
-                            new Among('', -1, 6),
-                            new Among('\xE1', 0, 1),
-                            new Among('\xE4', 0, 1),
-                            new Among('\xE9', 0, 2),
-                            new Among('\xEB', 0, 2),
-                            new Among('\xED', 0, 3),
-                            new Among('\xEF', 0, 3),
-                            new Among('\xF3', 0, 4),
-                            new Among('\xF6', 0, 4),
-                            new Among('\xFA', 0, 5),
-                            new Among('\xFC', 0, 5)
+                            new Among("", -1, 6),
+                            new Among("á", 0, 1),
+                            new Among("ä", 0, 1),
+                            new Among("é", 0, 2),
+                            new Among("ë", 0, 2),
+                            new Among("í", 0, 3),
+                            new Among("ï", 0, 3),
+                            new Among("ó", 0, 4),
+                            new Among("ö", 0, 4),
+                            new Among("ú", 0, 5),
+                            new Among("ü", 0, 5)
                         ], a_1 = [
-                            new Among('', -1, 3),
-                            new Among('I', 0, 2),
-                            new Among('Y', 0, 1)
+                            new Among("", -1, 3),
+                            new Among("I", 0, 2),
+                            new Among("Y", 0, 1)
                         ], a_2 = [
-                            new Among('dd', -1, -1),
-                            new Among('kk', -1, -1),
-                            new Among('tt', -1, -1)
+                            new Among("dd", -1, -1),
+                            new Among("kk", -1, -1),
+                            new Among("tt", -1, -1)
                         ], a_3 = [
-                            new Among('ene', -1, 2),
-                            new Among('se', -1, 3),
-                            new Among('en', -1, 2),
-                            new Among('heden', 2, 1),
-                            new Among('s', -1, 3)
+                            new Among("ene", -1, 2),
+                            new Among("se", -1, 3),
+                            new Among("en", -1, 2),
+                            new Among("heden", 2, 1),
+                            new Among("s", -1, 3)
                         ], a_4 = [
-                            new Among('end', -1, 1),
-                            new Among('ig', -1, 2),
-                            new Among('ing', -1, 1),
-                            new Among('lijk', -1, 3),
-                            new Among('baar', -1, 4),
-                            new Among('bar', -1, 5)
+                            new Among("end", -1, 1),
+                            new Among("ig", -1, 2),
+                            new Among("ing", -1, 1),
+                            new Among("lijk", -1, 3),
+                            new Among("baar", -1, 4),
+                            new Among("bar", -1, 5)
                         ], a_5 = [
-                            new Among('aa', -1, -1),
-                            new Among('ee', -1, -1),
-                            new Among('oo', -1, -1),
-                            new Among('uu', -1, -1)
+                            new Among("aa", -1, -1),
+                            new Among("ee", -1, -1),
+                            new Among("oo", -1, -1),
+                            new Among("uu", -1, -1)
                         ], g_v = [
                             17,
                             65,
@@ -585,19 +585,19 @@ var Stemmer = function () {
                                 sbp.k = sbp.c;
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('a');
+                                    sbp.s_f("a");
                                     continue;
                                 case 2:
-                                    sbp.s_f('e');
+                                    sbp.s_f("e");
                                     continue;
                                 case 3:
-                                    sbp.s_f('i');
+                                    sbp.s_f("i");
                                     continue;
                                 case 4:
-                                    sbp.s_f('o');
+                                    sbp.s_f("o");
                                     continue;
                                 case 5:
-                                    sbp.s_f('u');
+                                    sbp.s_f("u");
                                     continue;
                                 case 6:
                                     if (sbp.c >= sbp.l)
@@ -610,9 +610,9 @@ var Stemmer = function () {
                         }
                         sbp.c = v_1;
                         sbp.b = v_1;
-                        if (sbp.e_s(1, 'y')) {
+                        if (sbp.e_s(1, "y")) {
                             sbp.k = sbp.c;
-                            sbp.s_f('Y');
+                            sbp.s_f("Y");
                         } else
                             sbp.c = v_1;
                         while (true) {
@@ -620,17 +620,17 @@ var Stemmer = function () {
                             if (sbp.i_g(g_v, 97, 232)) {
                                 v_3 = sbp.c;
                                 sbp.b = v_3;
-                                if (sbp.e_s(1, 'i')) {
+                                if (sbp.e_s(1, "i")) {
                                     sbp.k = sbp.c;
                                     if (sbp.i_g(g_v, 97, 232)) {
-                                        sbp.s_f('I');
+                                        sbp.s_f("I");
                                         sbp.c = v_2;
                                     }
                                 } else {
                                     sbp.c = v_3;
-                                    if (sbp.e_s(1, 'y')) {
+                                    if (sbp.e_s(1, "y")) {
                                         sbp.k = sbp.c;
-                                        sbp.s_f('Y');
+                                        sbp.s_f("Y");
                                         sbp.c = v_2;
                                     } else if (habr1(v_2))
                                         break;
@@ -679,10 +679,10 @@ var Stemmer = function () {
                                 sbp.k = sbp.c;
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('y');
+                                    sbp.s_f("y");
                                     break;
                                 case 2:
-                                    sbp.s_f('i');
+                                    sbp.s_f("i");
                                     break;
                                 case 3:
                                     if (sbp.c >= sbp.l)
@@ -715,7 +715,7 @@ var Stemmer = function () {
                         var v_1;
                         B_e_found = false;
                         sbp.k = sbp.c;
-                        if (sbp.e_s_b(1, 'e')) {
+                        if (sbp.e_s_b(1, "e")) {
                             sbp.b = sbp.c;
                             if (r_R1()) {
                                 v_1 = sbp.l - sbp.c;
@@ -734,7 +734,7 @@ var Stemmer = function () {
                             v_1 = sbp.l - sbp.c;
                             if (sbp.o_g_b(g_v, 97, 232)) {
                                 sbp.c = sbp.l - v_1;
-                                if (!sbp.e_s_b(3, 'gem')) {
+                                if (!sbp.e_s_b(3, "gem")) {
                                     sbp.c = sbp.l - v_1;
                                     sbp.s_d();
                                     r_undouble();
@@ -751,7 +751,7 @@ var Stemmer = function () {
                             switch (a_v) {
                             case 1:
                                 if (r_R1())
-                                    sbp.s_f('heid');
+                                    sbp.s_f("heid");
                                 break;
                             case 2:
                                 r_en_ending();
@@ -766,15 +766,15 @@ var Stemmer = function () {
                         r_e_ending();
                         sbp.c = sbp.l - v_1;
                         sbp.k = sbp.c;
-                        if (sbp.e_s_b(4, 'heid')) {
+                        if (sbp.e_s_b(4, "heid")) {
                             sbp.b = sbp.c;
                             if (r_R2()) {
                                 v_2 = sbp.l - sbp.c;
-                                if (!sbp.e_s_b(1, 'c')) {
+                                if (!sbp.e_s_b(1, "c")) {
                                     sbp.c = sbp.l - v_2;
                                     sbp.s_d();
                                     sbp.k = sbp.c;
-                                    if (sbp.e_s_b(2, 'en')) {
+                                    if (sbp.e_s_b(2, "en")) {
                                         sbp.b = sbp.c;
                                         r_en_ending();
                                     }
@@ -792,11 +792,11 @@ var Stemmer = function () {
                                     sbp.s_d();
                                     v_3 = sbp.l - sbp.c;
                                     sbp.k = sbp.c;
-                                    if (sbp.e_s_b(2, 'ig')) {
+                                    if (sbp.e_s_b(2, "ig")) {
                                         sbp.b = sbp.c;
                                         if (r_R2()) {
                                             v_4 = sbp.l - sbp.c;
-                                            if (!sbp.e_s_b(1, 'e')) {
+                                            if (!sbp.e_s_b(1, "e")) {
                                                 sbp.c = sbp.l - v_4;
                                                 sbp.s_d();
                                                 break;
@@ -810,7 +810,7 @@ var Stemmer = function () {
                             case 2:
                                 if (r_R2()) {
                                     v_5 = sbp.l - sbp.c;
-                                    if (!sbp.e_s_b(1, 'e')) {
+                                    if (!sbp.e_s_b(1, "e")) {
                                         sbp.c = sbp.l - v_5;
                                         sbp.s_d();
                                     }
@@ -861,126 +861,126 @@ var Stemmer = function () {
                 },
                 EnglishStemmer: function () {
                     var a_0 = [
-                            new Among('arsen', -1, -1),
-                            new Among('commun', -1, -1),
-                            new Among('gener', -1, -1)
+                            new Among("arsen", -1, -1),
+                            new Among("commun", -1, -1),
+                            new Among("gener", -1, -1)
                         ], a_1 = [
-                            new Among('\'', -1, 1),
-                            new Among('\'s\'', 0, 1),
-                            new Among('\'s', -1, 1)
+                            new Among("'", -1, 1),
+                            new Among("'s'", 0, 1),
+                            new Among("'s", -1, 1)
                         ], a_2 = [
-                            new Among('ied', -1, 2),
-                            new Among('s', -1, 3),
-                            new Among('ies', 1, 2),
-                            new Among('sses', 1, 1),
-                            new Among('ss', 1, -1),
-                            new Among('us', 1, -1)
+                            new Among("ied", -1, 2),
+                            new Among("s", -1, 3),
+                            new Among("ies", 1, 2),
+                            new Among("sses", 1, 1),
+                            new Among("ss", 1, -1),
+                            new Among("us", 1, -1)
                         ], a_3 = [
-                            new Among('', -1, 3),
-                            new Among('bb', 0, 2),
-                            new Among('dd', 0, 2),
-                            new Among('ff', 0, 2),
-                            new Among('gg', 0, 2),
-                            new Among('bl', 0, 1),
-                            new Among('mm', 0, 2),
-                            new Among('nn', 0, 2),
-                            new Among('pp', 0, 2),
-                            new Among('rr', 0, 2),
-                            new Among('at', 0, 1),
-                            new Among('tt', 0, 2),
-                            new Among('iz', 0, 1)
+                            new Among("", -1, 3),
+                            new Among("bb", 0, 2),
+                            new Among("dd", 0, 2),
+                            new Among("ff", 0, 2),
+                            new Among("gg", 0, 2),
+                            new Among("bl", 0, 1),
+                            new Among("mm", 0, 2),
+                            new Among("nn", 0, 2),
+                            new Among("pp", 0, 2),
+                            new Among("rr", 0, 2),
+                            new Among("at", 0, 1),
+                            new Among("tt", 0, 2),
+                            new Among("iz", 0, 1)
                         ], a_4 = [
-                            new Among('ed', -1, 2),
-                            new Among('eed', 0, 1),
-                            new Among('ing', -1, 2),
-                            new Among('edly', -1, 2),
-                            new Among('eedly', 3, 1),
-                            new Among('ingly', -1, 2)
+                            new Among("ed", -1, 2),
+                            new Among("eed", 0, 1),
+                            new Among("ing", -1, 2),
+                            new Among("edly", -1, 2),
+                            new Among("eedly", 3, 1),
+                            new Among("ingly", -1, 2)
                         ], a_5 = [
-                            new Among('anci', -1, 3),
-                            new Among('enci', -1, 2),
-                            new Among('ogi', -1, 13),
-                            new Among('li', -1, 16),
-                            new Among('bli', 3, 12),
-                            new Among('abli', 4, 4),
-                            new Among('alli', 3, 8),
-                            new Among('fulli', 3, 14),
-                            new Among('lessli', 3, 15),
-                            new Among('ousli', 3, 10),
-                            new Among('entli', 3, 5),
-                            new Among('aliti', -1, 8),
-                            new Among('biliti', -1, 12),
-                            new Among('iviti', -1, 11),
-                            new Among('tional', -1, 1),
-                            new Among('ational', 14, 7),
-                            new Among('alism', -1, 8),
-                            new Among('ation', -1, 7),
-                            new Among('ization', 17, 6),
-                            new Among('izer', -1, 6),
-                            new Among('ator', -1, 7),
-                            new Among('iveness', -1, 11),
-                            new Among('fulness', -1, 9),
-                            new Among('ousness', -1, 10)
+                            new Among("anci", -1, 3),
+                            new Among("enci", -1, 2),
+                            new Among("ogi", -1, 13),
+                            new Among("li", -1, 16),
+                            new Among("bli", 3, 12),
+                            new Among("abli", 4, 4),
+                            new Among("alli", 3, 8),
+                            new Among("fulli", 3, 14),
+                            new Among("lessli", 3, 15),
+                            new Among("ousli", 3, 10),
+                            new Among("entli", 3, 5),
+                            new Among("aliti", -1, 8),
+                            new Among("biliti", -1, 12),
+                            new Among("iviti", -1, 11),
+                            new Among("tional", -1, 1),
+                            new Among("ational", 14, 7),
+                            new Among("alism", -1, 8),
+                            new Among("ation", -1, 7),
+                            new Among("ization", 17, 6),
+                            new Among("izer", -1, 6),
+                            new Among("ator", -1, 7),
+                            new Among("iveness", -1, 11),
+                            new Among("fulness", -1, 9),
+                            new Among("ousness", -1, 10)
                         ], a_6 = [
-                            new Among('icate', -1, 4),
-                            new Among('ative', -1, 6),
-                            new Among('alize', -1, 3),
-                            new Among('iciti', -1, 4),
-                            new Among('ical', -1, 4),
-                            new Among('tional', -1, 1),
-                            new Among('ational', 5, 2),
-                            new Among('ful', -1, 5),
-                            new Among('ness', -1, 5)
+                            new Among("icate", -1, 4),
+                            new Among("ative", -1, 6),
+                            new Among("alize", -1, 3),
+                            new Among("iciti", -1, 4),
+                            new Among("ical", -1, 4),
+                            new Among("tional", -1, 1),
+                            new Among("ational", 5, 2),
+                            new Among("ful", -1, 5),
+                            new Among("ness", -1, 5)
                         ], a_7 = [
-                            new Among('ic', -1, 1),
-                            new Among('ance', -1, 1),
-                            new Among('ence', -1, 1),
-                            new Among('able', -1, 1),
-                            new Among('ible', -1, 1),
-                            new Among('ate', -1, 1),
-                            new Among('ive', -1, 1),
-                            new Among('ize', -1, 1),
-                            new Among('iti', -1, 1),
-                            new Among('al', -1, 1),
-                            new Among('ism', -1, 1),
-                            new Among('ion', -1, 2),
-                            new Among('er', -1, 1),
-                            new Among('ous', -1, 1),
-                            new Among('ant', -1, 1),
-                            new Among('ent', -1, 1),
-                            new Among('ment', 15, 1),
-                            new Among('ement', 16, 1)
+                            new Among("ic", -1, 1),
+                            new Among("ance", -1, 1),
+                            new Among("ence", -1, 1),
+                            new Among("able", -1, 1),
+                            new Among("ible", -1, 1),
+                            new Among("ate", -1, 1),
+                            new Among("ive", -1, 1),
+                            new Among("ize", -1, 1),
+                            new Among("iti", -1, 1),
+                            new Among("al", -1, 1),
+                            new Among("ism", -1, 1),
+                            new Among("ion", -1, 2),
+                            new Among("er", -1, 1),
+                            new Among("ous", -1, 1),
+                            new Among("ant", -1, 1),
+                            new Among("ent", -1, 1),
+                            new Among("ment", 15, 1),
+                            new Among("ement", 16, 1)
                         ], a_8 = [
-                            new Among('e', -1, 1),
-                            new Among('l', -1, 2)
+                            new Among("e", -1, 1),
+                            new Among("l", -1, 2)
                         ], a_9 = [
-                            new Among('succeed', -1, -1),
-                            new Among('proceed', -1, -1),
-                            new Among('exceed', -1, -1),
-                            new Among('canning', -1, -1),
-                            new Among('inning', -1, -1),
-                            new Among('earring', -1, -1),
-                            new Among('herring', -1, -1),
-                            new Among('outing', -1, -1)
+                            new Among("succeed", -1, -1),
+                            new Among("proceed", -1, -1),
+                            new Among("exceed", -1, -1),
+                            new Among("canning", -1, -1),
+                            new Among("inning", -1, -1),
+                            new Among("earring", -1, -1),
+                            new Among("herring", -1, -1),
+                            new Among("outing", -1, -1)
                         ], a_10 = [
-                            new Among('andes', -1, -1),
-                            new Among('atlas', -1, -1),
-                            new Among('bias', -1, -1),
-                            new Among('cosmos', -1, -1),
-                            new Among('dying', -1, 3),
-                            new Among('early', -1, 9),
-                            new Among('gently', -1, 7),
-                            new Among('howe', -1, -1),
-                            new Among('idly', -1, 6),
-                            new Among('lying', -1, 4),
-                            new Among('news', -1, -1),
-                            new Among('only', -1, 10),
-                            new Among('singly', -1, 11),
-                            new Among('skies', -1, 2),
-                            new Among('skis', -1, 1),
-                            new Among('sky', -1, -1),
-                            new Among('tying', -1, 5),
-                            new Among('ugly', -1, 8)
+                            new Among("andes", -1, -1),
+                            new Among("atlas", -1, -1),
+                            new Among("bias", -1, -1),
+                            new Among("cosmos", -1, -1),
+                            new Among("dying", -1, 3),
+                            new Among("early", -1, 9),
+                            new Among("gently", -1, 7),
+                            new Among("howe", -1, -1),
+                            new Among("idly", -1, 6),
+                            new Among("lying", -1, 4),
+                            new Among("news", -1, -1),
+                            new Among("only", -1, 10),
+                            new Among("singly", -1, 11),
+                            new Among("skies", -1, 2),
+                            new Among("skis", -1, 1),
+                            new Among("sky", -1, -1),
+                            new Among("tying", -1, 5),
+                            new Among("ugly", -1, 8)
                         ], g_v = [
                             17,
                             65,
@@ -1014,15 +1014,15 @@ var Stemmer = function () {
                         var v_1 = sbp.c, v_2;
                         B_Y_found = false;
                         sbp.b = sbp.c;
-                        if (sbp.e_s(1, '\'')) {
+                        if (sbp.e_s(1, "'")) {
                             sbp.k = sbp.c;
                             sbp.s_d();
                         }
                         sbp.c = v_1;
                         sbp.b = v_1;
-                        if (sbp.e_s(1, 'y')) {
+                        if (sbp.e_s(1, "y")) {
                             sbp.k = sbp.c;
-                            sbp.s_f('Y');
+                            sbp.s_f("Y");
                             B_Y_found = true;
                         }
                         sbp.c = v_1;
@@ -1030,10 +1030,10 @@ var Stemmer = function () {
                             v_2 = sbp.c;
                             if (sbp.i_g(g_v, 97, 121)) {
                                 sbp.b = sbp.c;
-                                if (sbp.e_s(1, 'y')) {
+                                if (sbp.e_s(1, "y")) {
                                     sbp.k = sbp.c;
                                     sbp.c = v_2;
-                                    sbp.s_f('Y');
+                                    sbp.s_f("Y");
                                     B_Y_found = true;
                                     continue;
                                 }
@@ -1104,16 +1104,16 @@ var Stemmer = function () {
                             sbp.b = sbp.c;
                             switch (a_v) {
                             case 1:
-                                sbp.s_f('ss');
+                                sbp.s_f("ss");
                                 break;
                             case 2:
                                 var c = sbp.c - 2;
                                 if (sbp.lb > c || c > sbp.l) {
-                                    sbp.s_f('ie');
+                                    sbp.s_f("ie");
                                     break;
                                 }
                                 sbp.c = c;
-                                sbp.s_f('i');
+                                sbp.s_f("i");
                                 break;
                             case 3:
                                 do {
@@ -1135,7 +1135,7 @@ var Stemmer = function () {
                             switch (a_v) {
                             case 1:
                                 if (r_R1())
-                                    sbp.s_f('ee');
+                                    sbp.s_f("ee");
                                 break;
                             case 2:
                                 v_1 = sbp.l - sbp.c;
@@ -1153,7 +1153,7 @@ var Stemmer = function () {
                                     switch (a_v) {
                                     case 1:
                                         var c = sbp.c;
-                                        sbp.i_(sbp.c, sbp.c, 'e');
+                                        sbp.i_(sbp.c, sbp.c, "e");
                                         sbp.c = c;
                                         break;
                                     case 2:
@@ -1170,7 +1170,7 @@ var Stemmer = function () {
                                             if (r_shortv()) {
                                                 sbp.c = sbp.l - v_4;
                                                 var c = sbp.c;
-                                                sbp.i_(sbp.c, sbp.c, 'e');
+                                                sbp.i_(sbp.c, sbp.c, "e");
                                                 sbp.c = c;
                                             }
                                         }
@@ -1184,14 +1184,14 @@ var Stemmer = function () {
                     function r_Step_1c() {
                         var v_1 = sbp.l - sbp.c;
                         sbp.k = sbp.c;
-                        if (!sbp.e_s_b(1, 'y')) {
+                        if (!sbp.e_s_b(1, "y")) {
                             sbp.c = sbp.l - v_1;
-                            if (!sbp.e_s_b(1, 'Y'))
+                            if (!sbp.e_s_b(1, "Y"))
                                 return;
                         }
                         sbp.b = sbp.c;
                         if (sbp.o_g_b(g_v, 97, 121) && sbp.c > sbp.lb)
-                            sbp.s_f('i');
+                            sbp.s_f("i");
                     }
                     function r_Step_2() {
                         var a_v;
@@ -1202,50 +1202,50 @@ var Stemmer = function () {
                             if (r_R1()) {
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('tion');
+                                    sbp.s_f("tion");
                                     break;
                                 case 2:
-                                    sbp.s_f('ence');
+                                    sbp.s_f("ence");
                                     break;
                                 case 3:
-                                    sbp.s_f('ance');
+                                    sbp.s_f("ance");
                                     break;
                                 case 4:
-                                    sbp.s_f('able');
+                                    sbp.s_f("able");
                                     break;
                                 case 5:
-                                    sbp.s_f('ent');
+                                    sbp.s_f("ent");
                                     break;
                                 case 6:
-                                    sbp.s_f('ize');
+                                    sbp.s_f("ize");
                                     break;
                                 case 7:
-                                    sbp.s_f('ate');
+                                    sbp.s_f("ate");
                                     break;
                                 case 8:
-                                    sbp.s_f('al');
+                                    sbp.s_f("al");
                                     break;
                                 case 9:
-                                    sbp.s_f('ful');
+                                    sbp.s_f("ful");
                                     break;
                                 case 10:
-                                    sbp.s_f('ous');
+                                    sbp.s_f("ous");
                                     break;
                                 case 11:
-                                    sbp.s_f('ive');
+                                    sbp.s_f("ive");
                                     break;
                                 case 12:
-                                    sbp.s_f('ble');
+                                    sbp.s_f("ble");
                                     break;
                                 case 13:
-                                    if (sbp.e_s_b(1, 'l'))
-                                        sbp.s_f('og');
+                                    if (sbp.e_s_b(1, "l"))
+                                        sbp.s_f("og");
                                     break;
                                 case 14:
-                                    sbp.s_f('ful');
+                                    sbp.s_f("ful");
                                     break;
                                 case 15:
-                                    sbp.s_f('less');
+                                    sbp.s_f("less");
                                     break;
                                 case 16:
                                     if (sbp.i_g_b(g_valid_LI, 99, 116))
@@ -1264,16 +1264,16 @@ var Stemmer = function () {
                             if (r_R1()) {
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('tion');
+                                    sbp.s_f("tion");
                                     break;
                                 case 2:
-                                    sbp.s_f('ate');
+                                    sbp.s_f("ate");
                                     break;
                                 case 3:
-                                    sbp.s_f('al');
+                                    sbp.s_f("al");
                                     break;
                                 case 4:
-                                    sbp.s_f('ic');
+                                    sbp.s_f("ic");
                                     break;
                                 case 5:
                                     sbp.s_d();
@@ -1299,9 +1299,9 @@ var Stemmer = function () {
                                     break;
                                 case 2:
                                     v_1 = sbp.l - sbp.c;
-                                    if (!sbp.e_s_b(1, 's')) {
+                                    if (!sbp.e_s_b(1, "s")) {
                                         sbp.c = sbp.l - v_1;
-                                        if (!sbp.e_s_b(1, 't'))
+                                        if (!sbp.e_s_b(1, "t"))
                                             return;
                                     }
                                     sbp.s_d();
@@ -1328,7 +1328,7 @@ var Stemmer = function () {
                                 sbp.s_d();
                                 break;
                             case 2:
-                                if (!r_R2() || !sbp.e_s_b(1, 'l'))
+                                if (!r_R2() || !sbp.e_s_b(1, "l"))
                                     return;
                                 sbp.s_d();
                                 break;
@@ -1352,37 +1352,37 @@ var Stemmer = function () {
                             if (sbp.c >= sbp.l) {
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('ski');
+                                    sbp.s_f("ski");
                                     break;
                                 case 2:
-                                    sbp.s_f('sky');
+                                    sbp.s_f("sky");
                                     break;
                                 case 3:
-                                    sbp.s_f('die');
+                                    sbp.s_f("die");
                                     break;
                                 case 4:
-                                    sbp.s_f('lie');
+                                    sbp.s_f("lie");
                                     break;
                                 case 5:
-                                    sbp.s_f('tie');
+                                    sbp.s_f("tie");
                                     break;
                                 case 6:
-                                    sbp.s_f('idl');
+                                    sbp.s_f("idl");
                                     break;
                                 case 7:
-                                    sbp.s_f('gentl');
+                                    sbp.s_f("gentl");
                                     break;
                                 case 8:
-                                    sbp.s_f('ugli');
+                                    sbp.s_f("ugli");
                                     break;
                                 case 9:
-                                    sbp.s_f('earli');
+                                    sbp.s_f("earli");
                                     break;
                                 case 10:
-                                    sbp.s_f('onli');
+                                    sbp.s_f("onli");
                                     break;
                                 case 11:
-                                    sbp.s_f('singl');
+                                    sbp.s_f("singl");
                                     break;
                                 }
                                 return true;
@@ -1396,10 +1396,10 @@ var Stemmer = function () {
                             while (true) {
                                 v_1 = sbp.c;
                                 sbp.b = v_1;
-                                if (sbp.e_s(1, 'Y')) {
+                                if (sbp.e_s(1, "Y")) {
                                     sbp.k = sbp.c;
                                     sbp.c = v_1;
-                                    sbp.s_f('y');
+                                    sbp.s_f("y");
                                     continue;
                                 }
                                 sbp.c = v_1;
@@ -1437,103 +1437,103 @@ var Stemmer = function () {
                 },
                 FinnishStemmer: function () {
                     var a_0 = [
-                            new Among('pa', -1, 1),
-                            new Among('sti', -1, 2),
-                            new Among('kaan', -1, 1),
-                            new Among('han', -1, 1),
-                            new Among('kin', -1, 1),
-                            new Among('h\xE4n', -1, 1),
-                            new Among('k\xE4\xE4n', -1, 1),
-                            new Among('ko', -1, 1),
-                            new Among('p\xE4', -1, 1),
-                            new Among('k\xF6', -1, 1)
+                            new Among("pa", -1, 1),
+                            new Among("sti", -1, 2),
+                            new Among("kaan", -1, 1),
+                            new Among("han", -1, 1),
+                            new Among("kin", -1, 1),
+                            new Among("hän", -1, 1),
+                            new Among("kään", -1, 1),
+                            new Among("ko", -1, 1),
+                            new Among("pä", -1, 1),
+                            new Among("kö", -1, 1)
                         ], a_1 = [
-                            new Among('lla', -1, -1),
-                            new Among('na', -1, -1),
-                            new Among('ssa', -1, -1),
-                            new Among('ta', -1, -1),
-                            new Among('lta', 3, -1),
-                            new Among('sta', 3, -1)
+                            new Among("lla", -1, -1),
+                            new Among("na", -1, -1),
+                            new Among("ssa", -1, -1),
+                            new Among("ta", -1, -1),
+                            new Among("lta", 3, -1),
+                            new Among("sta", 3, -1)
                         ], a_2 = [
-                            new Among('ll\xE4', -1, -1),
-                            new Among('n\xE4', -1, -1),
-                            new Among('ss\xE4', -1, -1),
-                            new Among('t\xE4', -1, -1),
-                            new Among('lt\xE4', 3, -1),
-                            new Among('st\xE4', 3, -1)
+                            new Among("llä", -1, -1),
+                            new Among("nä", -1, -1),
+                            new Among("ssä", -1, -1),
+                            new Among("tä", -1, -1),
+                            new Among("ltä", 3, -1),
+                            new Among("stä", 3, -1)
                         ], a_3 = [
-                            new Among('lle', -1, -1),
-                            new Among('ine', -1, -1)
+                            new Among("lle", -1, -1),
+                            new Among("ine", -1, -1)
                         ], a_4 = [
-                            new Among('nsa', -1, 3),
-                            new Among('mme', -1, 3),
-                            new Among('nne', -1, 3),
-                            new Among('ni', -1, 2),
-                            new Among('si', -1, 1),
-                            new Among('an', -1, 4),
-                            new Among('en', -1, 6),
-                            new Among('\xE4n', -1, 5),
-                            new Among('ns\xE4', -1, 3)
+                            new Among("nsa", -1, 3),
+                            new Among("mme", -1, 3),
+                            new Among("nne", -1, 3),
+                            new Among("ni", -1, 2),
+                            new Among("si", -1, 1),
+                            new Among("an", -1, 4),
+                            new Among("en", -1, 6),
+                            new Among("än", -1, 5),
+                            new Among("nsä", -1, 3)
                         ], a_5 = [
-                            new Among('aa', -1, -1),
-                            new Among('ee', -1, -1),
-                            new Among('ii', -1, -1),
-                            new Among('oo', -1, -1),
-                            new Among('uu', -1, -1),
-                            new Among('\xE4\xE4', -1, -1),
-                            new Among('\xF6\xF6', -1, -1)
+                            new Among("aa", -1, -1),
+                            new Among("ee", -1, -1),
+                            new Among("ii", -1, -1),
+                            new Among("oo", -1, -1),
+                            new Among("uu", -1, -1),
+                            new Among("ää", -1, -1),
+                            new Among("öö", -1, -1)
                         ], a_6 = [
-                            new Among('a', -1, 8),
-                            new Among('lla', 0, -1),
-                            new Among('na', 0, -1),
-                            new Among('ssa', 0, -1),
-                            new Among('ta', 0, -1),
-                            new Among('lta', 4, -1),
-                            new Among('sta', 4, -1),
-                            new Among('tta', 4, 9),
-                            new Among('lle', -1, -1),
-                            new Among('ine', -1, -1),
-                            new Among('ksi', -1, -1),
-                            new Among('n', -1, 7),
-                            new Among('han', 11, 1),
-                            new Among('den', 11, -1, r_VI),
-                            new Among('seen', 11, -1, r_LONG),
-                            new Among('hen', 11, 2),
-                            new Among('tten', 11, -1, r_VI),
-                            new Among('hin', 11, 3),
-                            new Among('siin', 11, -1, r_VI),
-                            new Among('hon', 11, 4),
-                            new Among('h\xE4n', 11, 5),
-                            new Among('h\xF6n', 11, 6),
-                            new Among('\xE4', -1, 8),
-                            new Among('ll\xE4', 22, -1),
-                            new Among('n\xE4', 22, -1),
-                            new Among('ss\xE4', 22, -1),
-                            new Among('t\xE4', 22, -1),
-                            new Among('lt\xE4', 26, -1),
-                            new Among('st\xE4', 26, -1),
-                            new Among('tt\xE4', 26, 9)
+                            new Among("a", -1, 8),
+                            new Among("lla", 0, -1),
+                            new Among("na", 0, -1),
+                            new Among("ssa", 0, -1),
+                            new Among("ta", 0, -1),
+                            new Among("lta", 4, -1),
+                            new Among("sta", 4, -1),
+                            new Among("tta", 4, 9),
+                            new Among("lle", -1, -1),
+                            new Among("ine", -1, -1),
+                            new Among("ksi", -1, -1),
+                            new Among("n", -1, 7),
+                            new Among("han", 11, 1),
+                            new Among("den", 11, -1, r_VI),
+                            new Among("seen", 11, -1, r_LONG),
+                            new Among("hen", 11, 2),
+                            new Among("tten", 11, -1, r_VI),
+                            new Among("hin", 11, 3),
+                            new Among("siin", 11, -1, r_VI),
+                            new Among("hon", 11, 4),
+                            new Among("hän", 11, 5),
+                            new Among("hön", 11, 6),
+                            new Among("ä", -1, 8),
+                            new Among("llä", 22, -1),
+                            new Among("nä", 22, -1),
+                            new Among("ssä", 22, -1),
+                            new Among("tä", 22, -1),
+                            new Among("ltä", 26, -1),
+                            new Among("stä", 26, -1),
+                            new Among("ttä", 26, 9)
                         ], a_7 = [
-                            new Among('eja', -1, -1),
-                            new Among('mma', -1, 1),
-                            new Among('imma', 1, -1),
-                            new Among('mpa', -1, 1),
-                            new Among('impa', 3, -1),
-                            new Among('mmi', -1, 1),
-                            new Among('immi', 5, -1),
-                            new Among('mpi', -1, 1),
-                            new Among('impi', 7, -1),
-                            new Among('ej\xE4', -1, -1),
-                            new Among('mm\xE4', -1, 1),
-                            new Among('imm\xE4', 10, -1),
-                            new Among('mp\xE4', -1, 1),
-                            new Among('imp\xE4', 12, -1)
+                            new Among("eja", -1, -1),
+                            new Among("mma", -1, 1),
+                            new Among("imma", 1, -1),
+                            new Among("mpa", -1, 1),
+                            new Among("impa", 3, -1),
+                            new Among("mmi", -1, 1),
+                            new Among("immi", 5, -1),
+                            new Among("mpi", -1, 1),
+                            new Among("impi", 7, -1),
+                            new Among("ejä", -1, -1),
+                            new Among("mmä", -1, 1),
+                            new Among("immä", 10, -1),
+                            new Among("mpä", -1, 1),
+                            new Among("impä", 12, -1)
                         ], a_8 = [
-                            new Among('i', -1, -1),
-                            new Among('j', -1, -1)
+                            new Among("i", -1, -1),
+                            new Among("j", -1, -1)
                         ], a_9 = [
-                            new Among('mma', -1, 1),
-                            new Among('imma', 0, -1)
+                            new Among("mma", -1, 1),
+                            new Among("imma", 0, -1)
                         ], g_AEI = [
                             17,
                             1,
@@ -1688,7 +1688,7 @@ var Stemmer = function () {
                                 switch (a_v) {
                                 case 1:
                                     v_2 = sbp.l - sbp.c;
-                                    if (!sbp.e_s_b(1, 'k')) {
+                                    if (!sbp.e_s_b(1, "k")) {
                                         sbp.c = sbp.l - v_2;
                                         sbp.s_d();
                                     }
@@ -1696,9 +1696,9 @@ var Stemmer = function () {
                                 case 2:
                                     sbp.s_d();
                                     sbp.k = sbp.c;
-                                    if (sbp.e_s_b(3, 'kse')) {
+                                    if (sbp.e_s_b(3, "kse")) {
                                         sbp.b = sbp.c;
-                                        sbp.s_f('ksi');
+                                        sbp.s_f("ksi");
                                     }
                                     break;
                                 case 3:
@@ -1725,7 +1725,7 @@ var Stemmer = function () {
                         return sbp.f_a_b(a_5, 7);
                     }
                     function r_VI() {
-                        return sbp.e_s_b(1, 'i') && sbp.i_g_b(g_V2, 97, 246);
+                        return sbp.e_s_b(1, "i") && sbp.i_g_b(g_V2, 97, 246);
                     }
                     function r_case_ending() {
                         var a_v, v_1, v_2;
@@ -1739,35 +1739,35 @@ var Stemmer = function () {
                                 sbp.lb = v_1;
                                 switch (a_v) {
                                 case 1:
-                                    if (!sbp.e_s_b(1, 'a'))
+                                    if (!sbp.e_s_b(1, "a"))
                                         return;
                                     break;
                                 case 2:
                                 case 9:
-                                    if (!sbp.e_s_b(1, 'e'))
+                                    if (!sbp.e_s_b(1, "e"))
                                         return;
                                     break;
                                 case 3:
-                                    if (!sbp.e_s_b(1, 'i'))
+                                    if (!sbp.e_s_b(1, "i"))
                                         return;
                                     break;
                                 case 4:
-                                    if (!sbp.e_s_b(1, 'o'))
+                                    if (!sbp.e_s_b(1, "o"))
                                         return;
                                     break;
                                 case 5:
-                                    if (!sbp.e_s_b(1, '\xE4'))
+                                    if (!sbp.e_s_b(1, "ä"))
                                         return;
                                     break;
                                 case 6:
-                                    if (!sbp.e_s_b(1, '\xF6'))
+                                    if (!sbp.e_s_b(1, "ö"))
                                         return;
                                     break;
                                 case 7:
                                     v_2 = sbp.l - sbp.c;
                                     if (!r_LONG()) {
                                         sbp.c = sbp.l - v_2;
-                                        if (!sbp.e_s_b(2, 'ie')) {
+                                        if (!sbp.e_s_b(2, "ie")) {
                                             sbp.c = sbp.l - v_2;
                                             break;
                                         }
@@ -1803,7 +1803,7 @@ var Stemmer = function () {
                                 sbp.lb = v_1;
                                 if (a_v == 1) {
                                     v_2 = sbp.l - sbp.c;
-                                    if (sbp.e_s_b(2, 'po'))
+                                    if (sbp.e_s_b(2, "po"))
                                         return;
                                     sbp.c = sbp.l - v_2;
                                 }
@@ -1832,7 +1832,7 @@ var Stemmer = function () {
                             v_1 = sbp.lb;
                             sbp.lb = I_p1;
                             sbp.k = sbp.c;
-                            if (sbp.e_s_b(1, 't')) {
+                            if (sbp.e_s_b(1, "t")) {
                                 sbp.b = sbp.c;
                                 v_2 = sbp.l - sbp.c;
                                 if (sbp.i_g_b(g_V1, 97, 246)) {
@@ -1852,7 +1852,7 @@ var Stemmer = function () {
                                             sbp.lb = v_4;
                                             if (a_v == 1) {
                                                 v_5 = sbp.l - sbp.c;
-                                                if (sbp.e_s_b(2, 'po'))
+                                                if (sbp.e_s_b(2, "po"))
                                                     return;
                                                 sbp.c = sbp.l - v_5;
                                             }
@@ -1889,21 +1889,21 @@ var Stemmer = function () {
                             }
                             sbp.c = sbp.l - v_2;
                             sbp.k = sbp.c;
-                            if (sbp.e_s_b(1, 'j')) {
+                            if (sbp.e_s_b(1, "j")) {
                                 sbp.b = sbp.c;
                                 v_3 = sbp.l - sbp.c;
-                                if (!sbp.e_s_b(1, 'o')) {
+                                if (!sbp.e_s_b(1, "o")) {
                                     sbp.c = sbp.l - v_3;
-                                    if (sbp.e_s_b(1, 'u'))
+                                    if (sbp.e_s_b(1, "u"))
                                         sbp.s_d();
                                 } else
                                     sbp.s_d();
                             }
                             sbp.c = sbp.l - v_2;
                             sbp.k = sbp.c;
-                            if (sbp.e_s_b(1, 'o')) {
+                            if (sbp.e_s_b(1, "o")) {
                                 sbp.b = sbp.c;
-                                if (sbp.e_s_b(1, 'j'))
+                                if (sbp.e_s_b(1, "j"))
                                     sbp.s_d();
                             }
                             sbp.c = sbp.l - v_2;
@@ -1957,158 +1957,158 @@ var Stemmer = function () {
                 },
                 FrenchStemmer: function () {
                     var a_0 = [
-                            new Among('col', -1, -1),
-                            new Among('par', -1, -1),
-                            new Among('tap', -1, -1)
+                            new Among("col", -1, -1),
+                            new Among("par", -1, -1),
+                            new Among("tap", -1, -1)
                         ], a_1 = [
-                            new Among('', -1, 4),
-                            new Among('I', 0, 1),
-                            new Among('U', 0, 2),
-                            new Among('Y', 0, 3)
+                            new Among("", -1, 4),
+                            new Among("I", 0, 1),
+                            new Among("U", 0, 2),
+                            new Among("Y", 0, 3)
                         ], a_2 = [
-                            new Among('iqU', -1, 3),
-                            new Among('abl', -1, 3),
-                            new Among('I\xE8r', -1, 4),
-                            new Among('i\xE8r', -1, 4),
-                            new Among('eus', -1, 2),
-                            new Among('iv', -1, 1)
+                            new Among("iqU", -1, 3),
+                            new Among("abl", -1, 3),
+                            new Among("Ièr", -1, 4),
+                            new Among("ièr", -1, 4),
+                            new Among("eus", -1, 2),
+                            new Among("iv", -1, 1)
                         ], a_3 = [
-                            new Among('ic', -1, 2),
-                            new Among('abil', -1, 1),
-                            new Among('iv', -1, 3)
+                            new Among("ic", -1, 2),
+                            new Among("abil", -1, 1),
+                            new Among("iv", -1, 3)
                         ], a_4 = [
-                            new Among('iqUe', -1, 1),
-                            new Among('atrice', -1, 2),
-                            new Among('ance', -1, 1),
-                            new Among('ence', -1, 5),
-                            new Among('logie', -1, 3),
-                            new Among('able', -1, 1),
-                            new Among('isme', -1, 1),
-                            new Among('euse', -1, 11),
-                            new Among('iste', -1, 1),
-                            new Among('ive', -1, 8),
-                            new Among('if', -1, 8),
-                            new Among('usion', -1, 4),
-                            new Among('ation', -1, 2),
-                            new Among('ution', -1, 4),
-                            new Among('ateur', -1, 2),
-                            new Among('iqUes', -1, 1),
-                            new Among('atrices', -1, 2),
-                            new Among('ances', -1, 1),
-                            new Among('ences', -1, 5),
-                            new Among('logies', -1, 3),
-                            new Among('ables', -1, 1),
-                            new Among('ismes', -1, 1),
-                            new Among('euses', -1, 11),
-                            new Among('istes', -1, 1),
-                            new Among('ives', -1, 8),
-                            new Among('ifs', -1, 8),
-                            new Among('usions', -1, 4),
-                            new Among('ations', -1, 2),
-                            new Among('utions', -1, 4),
-                            new Among('ateurs', -1, 2),
-                            new Among('ments', -1, 15),
-                            new Among('ements', 30, 6),
-                            new Among('issements', 31, 12),
-                            new Among('it\xE9s', -1, 7),
-                            new Among('ment', -1, 15),
-                            new Among('ement', 34, 6),
-                            new Among('issement', 35, 12),
-                            new Among('amment', 34, 13),
-                            new Among('emment', 34, 14),
-                            new Among('aux', -1, 10),
-                            new Among('eaux', 39, 9),
-                            new Among('eux', -1, 1),
-                            new Among('it\xE9', -1, 7)
+                            new Among("iqUe", -1, 1),
+                            new Among("atrice", -1, 2),
+                            new Among("ance", -1, 1),
+                            new Among("ence", -1, 5),
+                            new Among("logie", -1, 3),
+                            new Among("able", -1, 1),
+                            new Among("isme", -1, 1),
+                            new Among("euse", -1, 11),
+                            new Among("iste", -1, 1),
+                            new Among("ive", -1, 8),
+                            new Among("if", -1, 8),
+                            new Among("usion", -1, 4),
+                            new Among("ation", -1, 2),
+                            new Among("ution", -1, 4),
+                            new Among("ateur", -1, 2),
+                            new Among("iqUes", -1, 1),
+                            new Among("atrices", -1, 2),
+                            new Among("ances", -1, 1),
+                            new Among("ences", -1, 5),
+                            new Among("logies", -1, 3),
+                            new Among("ables", -1, 1),
+                            new Among("ismes", -1, 1),
+                            new Among("euses", -1, 11),
+                            new Among("istes", -1, 1),
+                            new Among("ives", -1, 8),
+                            new Among("ifs", -1, 8),
+                            new Among("usions", -1, 4),
+                            new Among("ations", -1, 2),
+                            new Among("utions", -1, 4),
+                            new Among("ateurs", -1, 2),
+                            new Among("ments", -1, 15),
+                            new Among("ements", 30, 6),
+                            new Among("issements", 31, 12),
+                            new Among("ités", -1, 7),
+                            new Among("ment", -1, 15),
+                            new Among("ement", 34, 6),
+                            new Among("issement", 35, 12),
+                            new Among("amment", 34, 13),
+                            new Among("emment", 34, 14),
+                            new Among("aux", -1, 10),
+                            new Among("eaux", 39, 9),
+                            new Among("eux", -1, 1),
+                            new Among("ité", -1, 7)
                         ], a_5 = [
-                            new Among('ira', -1, 1),
-                            new Among('ie', -1, 1),
-                            new Among('isse', -1, 1),
-                            new Among('issante', -1, 1),
-                            new Among('i', -1, 1),
-                            new Among('irai', 4, 1),
-                            new Among('ir', -1, 1),
-                            new Among('iras', -1, 1),
-                            new Among('ies', -1, 1),
-                            new Among('\xEEmes', -1, 1),
-                            new Among('isses', -1, 1),
-                            new Among('issantes', -1, 1),
-                            new Among('\xEEtes', -1, 1),
-                            new Among('is', -1, 1),
-                            new Among('irais', 13, 1),
-                            new Among('issais', 13, 1),
-                            new Among('irions', -1, 1),
-                            new Among('issions', -1, 1),
-                            new Among('irons', -1, 1),
-                            new Among('issons', -1, 1),
-                            new Among('issants', -1, 1),
-                            new Among('it', -1, 1),
-                            new Among('irait', 21, 1),
-                            new Among('issait', 21, 1),
-                            new Among('issant', -1, 1),
-                            new Among('iraIent', -1, 1),
-                            new Among('issaIent', -1, 1),
-                            new Among('irent', -1, 1),
-                            new Among('issent', -1, 1),
-                            new Among('iront', -1, 1),
-                            new Among('\xEEt', -1, 1),
-                            new Among('iriez', -1, 1),
-                            new Among('issiez', -1, 1),
-                            new Among('irez', -1, 1),
-                            new Among('issez', -1, 1)
+                            new Among("ira", -1, 1),
+                            new Among("ie", -1, 1),
+                            new Among("isse", -1, 1),
+                            new Among("issante", -1, 1),
+                            new Among("i", -1, 1),
+                            new Among("irai", 4, 1),
+                            new Among("ir", -1, 1),
+                            new Among("iras", -1, 1),
+                            new Among("ies", -1, 1),
+                            new Among("îmes", -1, 1),
+                            new Among("isses", -1, 1),
+                            new Among("issantes", -1, 1),
+                            new Among("îtes", -1, 1),
+                            new Among("is", -1, 1),
+                            new Among("irais", 13, 1),
+                            new Among("issais", 13, 1),
+                            new Among("irions", -1, 1),
+                            new Among("issions", -1, 1),
+                            new Among("irons", -1, 1),
+                            new Among("issons", -1, 1),
+                            new Among("issants", -1, 1),
+                            new Among("it", -1, 1),
+                            new Among("irait", 21, 1),
+                            new Among("issait", 21, 1),
+                            new Among("issant", -1, 1),
+                            new Among("iraIent", -1, 1),
+                            new Among("issaIent", -1, 1),
+                            new Among("irent", -1, 1),
+                            new Among("issent", -1, 1),
+                            new Among("iront", -1, 1),
+                            new Among("ît", -1, 1),
+                            new Among("iriez", -1, 1),
+                            new Among("issiez", -1, 1),
+                            new Among("irez", -1, 1),
+                            new Among("issez", -1, 1)
                         ], a_6 = [
-                            new Among('a', -1, 3),
-                            new Among('era', 0, 2),
-                            new Among('asse', -1, 3),
-                            new Among('ante', -1, 3),
-                            new Among('\xE9e', -1, 2),
-                            new Among('ai', -1, 3),
-                            new Among('erai', 5, 2),
-                            new Among('er', -1, 2),
-                            new Among('as', -1, 3),
-                            new Among('eras', 8, 2),
-                            new Among('\xE2mes', -1, 3),
-                            new Among('asses', -1, 3),
-                            new Among('antes', -1, 3),
-                            new Among('\xE2tes', -1, 3),
-                            new Among('\xE9es', -1, 2),
-                            new Among('ais', -1, 3),
-                            new Among('erais', 15, 2),
-                            new Among('ions', -1, 1),
-                            new Among('erions', 17, 2),
-                            new Among('assions', 17, 3),
-                            new Among('erons', -1, 2),
-                            new Among('ants', -1, 3),
-                            new Among('\xE9s', -1, 2),
-                            new Among('ait', -1, 3),
-                            new Among('erait', 23, 2),
-                            new Among('ant', -1, 3),
-                            new Among('aIent', -1, 3),
-                            new Among('eraIent', 26, 2),
-                            new Among('\xE8rent', -1, 2),
-                            new Among('assent', -1, 3),
-                            new Among('eront', -1, 2),
-                            new Among('\xE2t', -1, 3),
-                            new Among('ez', -1, 2),
-                            new Among('iez', 32, 2),
-                            new Among('eriez', 33, 2),
-                            new Among('assiez', 33, 3),
-                            new Among('erez', 32, 2),
-                            new Among('\xE9', -1, 2)
+                            new Among("a", -1, 3),
+                            new Among("era", 0, 2),
+                            new Among("asse", -1, 3),
+                            new Among("ante", -1, 3),
+                            new Among("ée", -1, 2),
+                            new Among("ai", -1, 3),
+                            new Among("erai", 5, 2),
+                            new Among("er", -1, 2),
+                            new Among("as", -1, 3),
+                            new Among("eras", 8, 2),
+                            new Among("âmes", -1, 3),
+                            new Among("asses", -1, 3),
+                            new Among("antes", -1, 3),
+                            new Among("âtes", -1, 3),
+                            new Among("ées", -1, 2),
+                            new Among("ais", -1, 3),
+                            new Among("erais", 15, 2),
+                            new Among("ions", -1, 1),
+                            new Among("erions", 17, 2),
+                            new Among("assions", 17, 3),
+                            new Among("erons", -1, 2),
+                            new Among("ants", -1, 3),
+                            new Among("és", -1, 2),
+                            new Among("ait", -1, 3),
+                            new Among("erait", 23, 2),
+                            new Among("ant", -1, 3),
+                            new Among("aIent", -1, 3),
+                            new Among("eraIent", 26, 2),
+                            new Among("èrent", -1, 2),
+                            new Among("assent", -1, 3),
+                            new Among("eront", -1, 2),
+                            new Among("ât", -1, 3),
+                            new Among("ez", -1, 2),
+                            new Among("iez", 32, 2),
+                            new Among("eriez", 33, 2),
+                            new Among("assiez", 33, 3),
+                            new Among("erez", 32, 2),
+                            new Among("é", -1, 2)
                         ], a_7 = [
-                            new Among('e', -1, 3),
-                            new Among('I\xE8re', 0, 2),
-                            new Among('i\xE8re', 0, 2),
-                            new Among('ion', -1, 1),
-                            new Among('Ier', -1, 2),
-                            new Among('ier', -1, 2),
-                            new Among('\xEB', -1, 4)
+                            new Among("e", -1, 3),
+                            new Among("Ière", 0, 2),
+                            new Among("ière", 0, 2),
+                            new Among("ion", -1, 1),
+                            new Among("Ier", -1, 2),
+                            new Among("ier", -1, 2),
+                            new Among("ë", -1, 4)
                         ], a_8 = [
-                            new Among('ell', -1, -1),
-                            new Among('eill', -1, -1),
-                            new Among('enn', -1, -1),
-                            new Among('onn', -1, -1),
-                            new Among('ett', -1, -1)
+                            new Among("ell", -1, -1),
+                            new Among("eill", -1, -1),
+                            new Among("enn", -1, -1),
+                            new Among("onn", -1, -1),
+                            new Among("ett", -1, -1)
                         ], g_v = [
                             17,
                             65,
@@ -2182,22 +2182,22 @@ var Stemmer = function () {
                             if (sbp.i_g(g_v, 97, 251)) {
                                 sbp.b = sbp.c;
                                 v_2 = sbp.c;
-                                if (habr1('u', 'U', v_1))
+                                if (habr1("u", "U", v_1))
                                     continue;
                                 sbp.c = v_2;
-                                if (habr1('i', 'I', v_1))
+                                if (habr1("i", "I", v_1))
                                     continue;
                                 sbp.c = v_2;
-                                if (habr2('y', 'Y', v_1))
+                                if (habr2("y", "Y", v_1))
                                     continue;
                             }
                             sbp.c = v_1;
                             sbp.b = v_1;
-                            if (!habr1('y', 'Y', v_1)) {
+                            if (!habr1("y", "Y", v_1)) {
                                 sbp.c = v_1;
-                                if (sbp.e_s(1, 'q')) {
+                                if (sbp.e_s(1, "q")) {
                                     sbp.b = sbp.c;
-                                    if (habr2('u', 'U', v_1))
+                                    if (habr2("u", "U", v_1))
                                         continue;
                                 }
                                 sbp.c = v_1;
@@ -2259,13 +2259,13 @@ var Stemmer = function () {
                             sbp.k = sbp.c;
                             switch (a_v) {
                             case 1:
-                                sbp.s_f('i');
+                                sbp.s_f("i");
                                 break;
                             case 2:
-                                sbp.s_f('u');
+                                sbp.s_f("u");
                                 break;
                             case 3:
-                                sbp.s_f('y');
+                                sbp.s_f("y");
                                 break;
                             case 4:
                                 if (sbp.c >= sbp.l)
@@ -2301,10 +2301,10 @@ var Stemmer = function () {
                                     return false;
                                 sbp.s_d();
                                 sbp.k = sbp.c;
-                                if (sbp.e_s_b(2, 'ic')) {
+                                if (sbp.e_s_b(2, "ic")) {
                                     sbp.b = sbp.c;
                                     if (!r_R2())
-                                        sbp.s_f('iqU');
+                                        sbp.s_f("iqU");
                                     else
                                         sbp.s_d();
                                 }
@@ -2312,17 +2312,17 @@ var Stemmer = function () {
                             case 3:
                                 if (!r_R2())
                                     return false;
-                                sbp.s_f('log');
+                                sbp.s_f("log");
                                 break;
                             case 4:
                                 if (!r_R2())
                                     return false;
-                                sbp.s_f('u');
+                                sbp.s_f("u");
                                 break;
                             case 5:
                                 if (!r_R2())
                                     return false;
-                                sbp.s_f('ent');
+                                sbp.s_f("ent");
                                 break;
                             case 6:
                                 if (!r_RV())
@@ -2337,7 +2337,7 @@ var Stemmer = function () {
                                         if (r_R2()) {
                                             sbp.s_d();
                                             sbp.k = sbp.c;
-                                            if (sbp.e_s_b(2, 'at')) {
+                                            if (sbp.e_s_b(2, "at")) {
                                                 sbp.b = sbp.c;
                                                 if (r_R2())
                                                     sbp.s_d();
@@ -2348,7 +2348,7 @@ var Stemmer = function () {
                                         if (r_R2())
                                             sbp.s_d();
                                         else if (r_R1())
-                                            sbp.s_f('eux');
+                                            sbp.s_f("eux");
                                         break;
                                     case 3:
                                         if (r_R2())
@@ -2356,7 +2356,7 @@ var Stemmer = function () {
                                         break;
                                     case 4:
                                         if (r_RV())
-                                            sbp.s_f('i');
+                                            sbp.s_f("i");
                                         break;
                                     }
                                 }
@@ -2374,13 +2374,13 @@ var Stemmer = function () {
                                         if (r_R2())
                                             sbp.s_d();
                                         else
-                                            sbp.s_f('abl');
+                                            sbp.s_f("abl");
                                         break;
                                     case 2:
                                         if (r_R2())
                                             sbp.s_d();
                                         else
-                                            sbp.s_f('iqU');
+                                            sbp.s_f("iqU");
                                         break;
                                     case 3:
                                         if (r_R2())
@@ -2394,29 +2394,29 @@ var Stemmer = function () {
                                     return false;
                                 sbp.s_d();
                                 sbp.k = sbp.c;
-                                if (sbp.e_s_b(2, 'at')) {
+                                if (sbp.e_s_b(2, "at")) {
                                     sbp.b = sbp.c;
                                     if (r_R2()) {
                                         sbp.s_d();
                                         sbp.k = sbp.c;
-                                        if (sbp.e_s_b(2, 'ic')) {
+                                        if (sbp.e_s_b(2, "ic")) {
                                             sbp.b = sbp.c;
                                             if (r_R2())
                                                 sbp.s_d();
                                             else
-                                                sbp.s_f('iqU');
+                                                sbp.s_f("iqU");
                                             break;
                                         }
                                     }
                                 }
                                 break;
                             case 9:
-                                sbp.s_f('eau');
+                                sbp.s_f("eau");
                                 break;
                             case 10:
                                 if (!r_R1())
                                     return false;
-                                sbp.s_f('al');
+                                sbp.s_f("al");
                                 break;
                             case 11:
                                 if (r_R2())
@@ -2424,7 +2424,7 @@ var Stemmer = function () {
                                 else if (!r_R1())
                                     return false;
                                 else
-                                    sbp.s_f('eux');
+                                    sbp.s_f("eux");
                                 break;
                             case 12:
                                 if (!r_R1() || !sbp.o_g_b(g_v, 97, 251))
@@ -2433,11 +2433,11 @@ var Stemmer = function () {
                                 break;
                             case 13:
                                 if (r_RV())
-                                    sbp.s_f('ant');
+                                    sbp.s_f("ant");
                                 return false;
                             case 14:
                                 if (r_RV())
-                                    sbp.s_f('ent');
+                                    sbp.s_f("ent");
                                 return false;
                             case 15:
                                 v_1 = sbp.l - sbp.c;
@@ -2502,7 +2502,7 @@ var Stemmer = function () {
                             sbp.s_d();
                             v_3 = sbp.l - sbp.c;
                             sbp.k = sbp.c;
-                            if (sbp.e_s_b(1, 'e')) {
+                            if (sbp.e_s_b(1, "e")) {
                                 sbp.b = sbp.c;
                                 sbp.s_d();
                             } else
@@ -2515,7 +2515,7 @@ var Stemmer = function () {
                     function r_residual_suffix() {
                         var a_v, v_1 = sbp.l - sbp.c, v_2, v_4, v_5;
                         sbp.k = sbp.c;
-                        if (sbp.e_s_b(1, 's')) {
+                        if (sbp.e_s_b(1, "s")) {
                             sbp.b = sbp.c;
                             v_2 = sbp.l - sbp.c;
                             if (sbp.o_g_b(g_keep_with_s, 97, 232)) {
@@ -2536,22 +2536,22 @@ var Stemmer = function () {
                                 case 1:
                                     if (r_R2()) {
                                         v_5 = sbp.l - sbp.c;
-                                        if (!sbp.e_s_b(1, 's')) {
+                                        if (!sbp.e_s_b(1, "s")) {
                                             sbp.c = sbp.l - v_5;
-                                            if (!sbp.e_s_b(1, 't'))
+                                            if (!sbp.e_s_b(1, "t"))
                                                 break;
                                         }
                                         sbp.s_d();
                                     }
                                     break;
                                 case 2:
-                                    sbp.s_f('i');
+                                    sbp.s_f("i");
                                     break;
                                 case 3:
                                     sbp.s_d();
                                     break;
                                 case 4:
-                                    if (sbp.e_s_b(2, 'gu'))
+                                    if (sbp.e_s_b(2, "gu"))
                                         sbp.s_d();
                                     break;
                                 }
@@ -2578,13 +2578,13 @@ var Stemmer = function () {
                         if (v_2 <= 0) {
                             sbp.k = sbp.c;
                             v_1 = sbp.l - sbp.c;
-                            if (!sbp.e_s_b(1, '\xE9')) {
+                            if (!sbp.e_s_b(1, "é")) {
                                 sbp.c = sbp.l - v_1;
-                                if (!sbp.e_s_b(1, '\xE8'))
+                                if (!sbp.e_s_b(1, "è"))
                                     return;
                             }
                             sbp.b = sbp.c;
-                            sbp.s_f('e');
+                            sbp.s_f("e");
                         }
                     }
                     function habr5() {
@@ -2601,14 +2601,14 @@ var Stemmer = function () {
                         }
                         sbp.c = sbp.l;
                         sbp.k = sbp.c;
-                        if (sbp.e_s_b(1, 'Y')) {
+                        if (sbp.e_s_b(1, "Y")) {
                             sbp.b = sbp.c;
-                            sbp.s_f('i');
+                            sbp.s_f("i");
                         } else {
                             sbp.c = sbp.l;
-                            if (sbp.e_s_b(1, '\xE7')) {
+                            if (sbp.e_s_b(1, "ç")) {
                                 sbp.b = sbp.c;
-                                sbp.s_f('c');
+                                sbp.s_f("c");
                             }
                         }
                     }
@@ -2631,37 +2631,37 @@ var Stemmer = function () {
                 },
                 GermanStemmer: function () {
                     var a_0 = [
-                            new Among('', -1, 6),
-                            new Among('U', 0, 2),
-                            new Among('Y', 0, 1),
-                            new Among('\xE4', 0, 3),
-                            new Among('\xF6', 0, 4),
-                            new Among('\xFC', 0, 5)
+                            new Among("", -1, 6),
+                            new Among("U", 0, 2),
+                            new Among("Y", 0, 1),
+                            new Among("ä", 0, 3),
+                            new Among("ö", 0, 4),
+                            new Among("ü", 0, 5)
                         ], a_1 = [
-                            new Among('e', -1, 2),
-                            new Among('em', -1, 1),
-                            new Among('en', -1, 2),
-                            new Among('ern', -1, 1),
-                            new Among('er', -1, 1),
-                            new Among('s', -1, 3),
-                            new Among('es', 5, 2)
+                            new Among("e", -1, 2),
+                            new Among("em", -1, 1),
+                            new Among("en", -1, 2),
+                            new Among("ern", -1, 1),
+                            new Among("er", -1, 1),
+                            new Among("s", -1, 3),
+                            new Among("es", 5, 2)
                         ], a_2 = [
-                            new Among('en', -1, 1),
-                            new Among('er', -1, 1),
-                            new Among('st', -1, 2),
-                            new Among('est', 2, 1)
+                            new Among("en", -1, 1),
+                            new Among("er", -1, 1),
+                            new Among("st", -1, 2),
+                            new Among("est", 2, 1)
                         ], a_3 = [
-                            new Among('ig', -1, 1),
-                            new Among('lich', -1, 1)
+                            new Among("ig", -1, 1),
+                            new Among("lich", -1, 1)
                         ], a_4 = [
-                            new Among('end', -1, 1),
-                            new Among('ig', -1, 2),
-                            new Among('ung', -1, 1),
-                            new Among('lich', -1, 3),
-                            new Among('isch', -1, 2),
-                            new Among('ik', -1, 2),
-                            new Among('heit', -1, 3),
-                            new Among('keit', -1, 4)
+                            new Among("end", -1, 1),
+                            new Among("ig", -1, 2),
+                            new Among("ung", -1, 1),
+                            new Among("lich", -1, 3),
+                            new Among("isch", -1, 2),
+                            new Among("ik", -1, 2),
+                            new Among("heit", -1, 3),
+                            new Among("keit", -1, 4)
                         ], g_v = [
                             17,
                             65,
@@ -2714,9 +2714,9 @@ var Stemmer = function () {
                         while (true) {
                             v_2 = sbp.c;
                             sbp.b = v_2;
-                            if (sbp.e_s(1, '\xDF')) {
+                            if (sbp.e_s(1, "ß")) {
                                 sbp.k = sbp.c;
-                                sbp.s_f('ss');
+                                sbp.s_f("ss");
                             } else {
                                 if (v_2 >= sbp.l)
                                     break;
@@ -2731,10 +2731,10 @@ var Stemmer = function () {
                                 if (sbp.i_g(g_v, 97, 252)) {
                                     v_5 = sbp.c;
                                     sbp.b = v_5;
-                                    if (habr1('u', 'U', v_4))
+                                    if (habr1("u", "U", v_4))
                                         break;
                                     sbp.c = v_5;
-                                    if (habr1('y', 'Y', v_4))
+                                    if (habr1("y", "Y", v_4))
                                         break;
                                 }
                                 if (v_4 >= sbp.l) {
@@ -2784,17 +2784,17 @@ var Stemmer = function () {
                             sbp.k = sbp.c;
                             switch (a_v) {
                             case 1:
-                                sbp.s_f('y');
+                                sbp.s_f("y");
                                 break;
                             case 2:
                             case 5:
-                                sbp.s_f('u');
+                                sbp.s_f("u");
                                 break;
                             case 3:
-                                sbp.s_f('a');
+                                sbp.s_f("a");
                                 break;
                             case 4:
-                                sbp.s_f('o');
+                                sbp.s_f("o");
                                 break;
                             case 6:
                                 if (sbp.c >= sbp.l)
@@ -2824,9 +2824,9 @@ var Stemmer = function () {
                                 case 2:
                                     sbp.s_d();
                                     sbp.k = sbp.c;
-                                    if (sbp.e_s_b(1, 's')) {
+                                    if (sbp.e_s_b(1, "s")) {
                                         sbp.b = sbp.c;
-                                        if (sbp.e_s_b(3, 'nis'))
+                                        if (sbp.e_s_b(3, "nis"))
                                             sbp.s_d();
                                     }
                                     break;
@@ -2869,10 +2869,10 @@ var Stemmer = function () {
                                 case 1:
                                     sbp.s_d();
                                     sbp.k = sbp.c;
-                                    if (sbp.e_s_b(2, 'ig')) {
+                                    if (sbp.e_s_b(2, "ig")) {
                                         sbp.b = sbp.c;
                                         v_2 = sbp.l - sbp.c;
-                                        if (!sbp.e_s_b(1, 'e')) {
+                                        if (!sbp.e_s_b(1, "e")) {
                                             sbp.c = sbp.l - v_2;
                                             if (r_R2())
                                                 sbp.s_d();
@@ -2881,7 +2881,7 @@ var Stemmer = function () {
                                     break;
                                 case 2:
                                     v_3 = sbp.l - sbp.c;
-                                    if (!sbp.e_s_b(1, 'e')) {
+                                    if (!sbp.e_s_b(1, "e")) {
                                         sbp.c = sbp.l - v_3;
                                         sbp.s_d();
                                     }
@@ -2890,9 +2890,9 @@ var Stemmer = function () {
                                     sbp.s_d();
                                     sbp.k = sbp.c;
                                     v_4 = sbp.l - sbp.c;
-                                    if (!sbp.e_s_b(2, 'er')) {
+                                    if (!sbp.e_s_b(2, "er")) {
                                         sbp.c = sbp.l - v_4;
-                                        if (!sbp.e_s_b(2, 'en'))
+                                        if (!sbp.e_s_b(2, "en"))
                                             break;
                                     }
                                     sbp.b = sbp.c;
@@ -2928,199 +2928,199 @@ var Stemmer = function () {
                 },
                 HungarianStemmer: function () {
                     var a_0 = [
-                            new Among('cs', -1, -1),
-                            new Among('dzs', -1, -1),
-                            new Among('gy', -1, -1),
-                            new Among('ly', -1, -1),
-                            new Among('ny', -1, -1),
-                            new Among('sz', -1, -1),
-                            new Among('ty', -1, -1),
-                            new Among('zs', -1, -1)
+                            new Among("cs", -1, -1),
+                            new Among("dzs", -1, -1),
+                            new Among("gy", -1, -1),
+                            new Among("ly", -1, -1),
+                            new Among("ny", -1, -1),
+                            new Among("sz", -1, -1),
+                            new Among("ty", -1, -1),
+                            new Among("zs", -1, -1)
                         ], a_1 = [
-                            new Among('\xE1', -1, 1),
-                            new Among('\xE9', -1, 2)
+                            new Among("á", -1, 1),
+                            new Among("é", -1, 2)
                         ], a_2 = [
-                            new Among('bb', -1, -1),
-                            new Among('cc', -1, -1),
-                            new Among('dd', -1, -1),
-                            new Among('ff', -1, -1),
-                            new Among('gg', -1, -1),
-                            new Among('jj', -1, -1),
-                            new Among('kk', -1, -1),
-                            new Among('ll', -1, -1),
-                            new Among('mm', -1, -1),
-                            new Among('nn', -1, -1),
-                            new Among('pp', -1, -1),
-                            new Among('rr', -1, -1),
-                            new Among('ccs', -1, -1),
-                            new Among('ss', -1, -1),
-                            new Among('zzs', -1, -1),
-                            new Among('tt', -1, -1),
-                            new Among('vv', -1, -1),
-                            new Among('ggy', -1, -1),
-                            new Among('lly', -1, -1),
-                            new Among('nny', -1, -1),
-                            new Among('tty', -1, -1),
-                            new Among('ssz', -1, -1),
-                            new Among('zz', -1, -1)
+                            new Among("bb", -1, -1),
+                            new Among("cc", -1, -1),
+                            new Among("dd", -1, -1),
+                            new Among("ff", -1, -1),
+                            new Among("gg", -1, -1),
+                            new Among("jj", -1, -1),
+                            new Among("kk", -1, -1),
+                            new Among("ll", -1, -1),
+                            new Among("mm", -1, -1),
+                            new Among("nn", -1, -1),
+                            new Among("pp", -1, -1),
+                            new Among("rr", -1, -1),
+                            new Among("ccs", -1, -1),
+                            new Among("ss", -1, -1),
+                            new Among("zzs", -1, -1),
+                            new Among("tt", -1, -1),
+                            new Among("vv", -1, -1),
+                            new Among("ggy", -1, -1),
+                            new Among("lly", -1, -1),
+                            new Among("nny", -1, -1),
+                            new Among("tty", -1, -1),
+                            new Among("ssz", -1, -1),
+                            new Among("zz", -1, -1)
                         ], a_3 = [
-                            new Among('al', -1, 1),
-                            new Among('el', -1, 2)
+                            new Among("al", -1, 1),
+                            new Among("el", -1, 2)
                         ], a_4 = [
-                            new Among('ba', -1, -1),
-                            new Among('ra', -1, -1),
-                            new Among('be', -1, -1),
-                            new Among('re', -1, -1),
-                            new Among('ig', -1, -1),
-                            new Among('nak', -1, -1),
-                            new Among('nek', -1, -1),
-                            new Among('val', -1, -1),
-                            new Among('vel', -1, -1),
-                            new Among('ul', -1, -1),
-                            new Among('n\xE1l', -1, -1),
-                            new Among('n\xE9l', -1, -1),
-                            new Among('b\xF3l', -1, -1),
-                            new Among('r\xF3l', -1, -1),
-                            new Among('t\xF3l', -1, -1),
-                            new Among('b\xF5l', -1, -1),
-                            new Among('r\xF5l', -1, -1),
-                            new Among('t\xF5l', -1, -1),
-                            new Among('\xFCl', -1, -1),
-                            new Among('n', -1, -1),
-                            new Among('an', 19, -1),
-                            new Among('ban', 20, -1),
-                            new Among('en', 19, -1),
-                            new Among('ben', 22, -1),
-                            new Among('k\xE9ppen', 22, -1),
-                            new Among('on', 19, -1),
-                            new Among('\xF6n', 19, -1),
-                            new Among('k\xE9pp', -1, -1),
-                            new Among('kor', -1, -1),
-                            new Among('t', -1, -1),
-                            new Among('at', 29, -1),
-                            new Among('et', 29, -1),
-                            new Among('k\xE9nt', 29, -1),
-                            new Among('ank\xE9nt', 32, -1),
-                            new Among('enk\xE9nt', 32, -1),
-                            new Among('onk\xE9nt', 32, -1),
-                            new Among('ot', 29, -1),
-                            new Among('\xE9rt', 29, -1),
-                            new Among('\xF6t', 29, -1),
-                            new Among('hez', -1, -1),
-                            new Among('hoz', -1, -1),
-                            new Among('h\xF6z', -1, -1),
-                            new Among('v\xE1', -1, -1),
-                            new Among('v\xE9', -1, -1)
+                            new Among("ba", -1, -1),
+                            new Among("ra", -1, -1),
+                            new Among("be", -1, -1),
+                            new Among("re", -1, -1),
+                            new Among("ig", -1, -1),
+                            new Among("nak", -1, -1),
+                            new Among("nek", -1, -1),
+                            new Among("val", -1, -1),
+                            new Among("vel", -1, -1),
+                            new Among("ul", -1, -1),
+                            new Among("nál", -1, -1),
+                            new Among("nél", -1, -1),
+                            new Among("ból", -1, -1),
+                            new Among("ról", -1, -1),
+                            new Among("tól", -1, -1),
+                            new Among("bõl", -1, -1),
+                            new Among("rõl", -1, -1),
+                            new Among("tõl", -1, -1),
+                            new Among("ül", -1, -1),
+                            new Among("n", -1, -1),
+                            new Among("an", 19, -1),
+                            new Among("ban", 20, -1),
+                            new Among("en", 19, -1),
+                            new Among("ben", 22, -1),
+                            new Among("képpen", 22, -1),
+                            new Among("on", 19, -1),
+                            new Among("ön", 19, -1),
+                            new Among("képp", -1, -1),
+                            new Among("kor", -1, -1),
+                            new Among("t", -1, -1),
+                            new Among("at", 29, -1),
+                            new Among("et", 29, -1),
+                            new Among("ként", 29, -1),
+                            new Among("anként", 32, -1),
+                            new Among("enként", 32, -1),
+                            new Among("onként", 32, -1),
+                            new Among("ot", 29, -1),
+                            new Among("ért", 29, -1),
+                            new Among("öt", 29, -1),
+                            new Among("hez", -1, -1),
+                            new Among("hoz", -1, -1),
+                            new Among("höz", -1, -1),
+                            new Among("vá", -1, -1),
+                            new Among("vé", -1, -1)
                         ], a_5 = [
-                            new Among('\xE1n', -1, 2),
-                            new Among('\xE9n', -1, 1),
-                            new Among('\xE1nk\xE9nt', -1, 3)
+                            new Among("án", -1, 2),
+                            new Among("én", -1, 1),
+                            new Among("ánként", -1, 3)
                         ], a_6 = [
-                            new Among('stul', -1, 2),
-                            new Among('astul', 0, 1),
-                            new Among('\xE1stul', 0, 3),
-                            new Among('st\xFCl', -1, 2),
-                            new Among('est\xFCl', 3, 1),
-                            new Among('\xE9st\xFCl', 3, 4)
+                            new Among("stul", -1, 2),
+                            new Among("astul", 0, 1),
+                            new Among("ástul", 0, 3),
+                            new Among("stül", -1, 2),
+                            new Among("estül", 3, 1),
+                            new Among("éstül", 3, 4)
                         ], a_7 = [
-                            new Among('\xE1', -1, 1),
-                            new Among('\xE9', -1, 2)
+                            new Among("á", -1, 1),
+                            new Among("é", -1, 2)
                         ], a_8 = [
-                            new Among('k', -1, 7),
-                            new Among('ak', 0, 4),
-                            new Among('ek', 0, 6),
-                            new Among('ok', 0, 5),
-                            new Among('\xE1k', 0, 1),
-                            new Among('\xE9k', 0, 2),
-                            new Among('\xF6k', 0, 3)
+                            new Among("k", -1, 7),
+                            new Among("ak", 0, 4),
+                            new Among("ek", 0, 6),
+                            new Among("ok", 0, 5),
+                            new Among("ák", 0, 1),
+                            new Among("ék", 0, 2),
+                            new Among("ök", 0, 3)
                         ], a_9 = [
-                            new Among('\xE9i', -1, 7),
-                            new Among('\xE1\xE9i', 0, 6),
-                            new Among('\xE9\xE9i', 0, 5),
-                            new Among('\xE9', -1, 9),
-                            new Among('k\xE9', 3, 4),
-                            new Among('ak\xE9', 4, 1),
-                            new Among('ek\xE9', 4, 1),
-                            new Among('ok\xE9', 4, 1),
-                            new Among('\xE1k\xE9', 4, 3),
-                            new Among('\xE9k\xE9', 4, 2),
-                            new Among('\xF6k\xE9', 4, 1),
-                            new Among('\xE9\xE9', 3, 8)
+                            new Among("éi", -1, 7),
+                            new Among("áéi", 0, 6),
+                            new Among("ééi", 0, 5),
+                            new Among("é", -1, 9),
+                            new Among("ké", 3, 4),
+                            new Among("aké", 4, 1),
+                            new Among("eké", 4, 1),
+                            new Among("oké", 4, 1),
+                            new Among("áké", 4, 3),
+                            new Among("éké", 4, 2),
+                            new Among("öké", 4, 1),
+                            new Among("éé", 3, 8)
                         ], a_10 = [
-                            new Among('a', -1, 18),
-                            new Among('ja', 0, 17),
-                            new Among('d', -1, 16),
-                            new Among('ad', 2, 13),
-                            new Among('ed', 2, 13),
-                            new Among('od', 2, 13),
-                            new Among('\xE1d', 2, 14),
-                            new Among('\xE9d', 2, 15),
-                            new Among('\xF6d', 2, 13),
-                            new Among('e', -1, 18),
-                            new Among('je', 9, 17),
-                            new Among('nk', -1, 4),
-                            new Among('unk', 11, 1),
-                            new Among('\xE1nk', 11, 2),
-                            new Among('\xE9nk', 11, 3),
-                            new Among('\xFCnk', 11, 1),
-                            new Among('uk', -1, 8),
-                            new Among('juk', 16, 7),
-                            new Among('\xE1juk', 17, 5),
-                            new Among('\xFCk', -1, 8),
-                            new Among('j\xFCk', 19, 7),
-                            new Among('\xE9j\xFCk', 20, 6),
-                            new Among('m', -1, 12),
-                            new Among('am', 22, 9),
-                            new Among('em', 22, 9),
-                            new Among('om', 22, 9),
-                            new Among('\xE1m', 22, 10),
-                            new Among('\xE9m', 22, 11),
-                            new Among('o', -1, 18),
-                            new Among('\xE1', -1, 19),
-                            new Among('\xE9', -1, 20)
+                            new Among("a", -1, 18),
+                            new Among("ja", 0, 17),
+                            new Among("d", -1, 16),
+                            new Among("ad", 2, 13),
+                            new Among("ed", 2, 13),
+                            new Among("od", 2, 13),
+                            new Among("ád", 2, 14),
+                            new Among("éd", 2, 15),
+                            new Among("öd", 2, 13),
+                            new Among("e", -1, 18),
+                            new Among("je", 9, 17),
+                            new Among("nk", -1, 4),
+                            new Among("unk", 11, 1),
+                            new Among("ánk", 11, 2),
+                            new Among("énk", 11, 3),
+                            new Among("ünk", 11, 1),
+                            new Among("uk", -1, 8),
+                            new Among("juk", 16, 7),
+                            new Among("ájuk", 17, 5),
+                            new Among("ük", -1, 8),
+                            new Among("jük", 19, 7),
+                            new Among("éjük", 20, 6),
+                            new Among("m", -1, 12),
+                            new Among("am", 22, 9),
+                            new Among("em", 22, 9),
+                            new Among("om", 22, 9),
+                            new Among("ám", 22, 10),
+                            new Among("ém", 22, 11),
+                            new Among("o", -1, 18),
+                            new Among("á", -1, 19),
+                            new Among("é", -1, 20)
                         ], a_11 = [
-                            new Among('id', -1, 10),
-                            new Among('aid', 0, 9),
-                            new Among('jaid', 1, 6),
-                            new Among('eid', 0, 9),
-                            new Among('jeid', 3, 6),
-                            new Among('\xE1id', 0, 7),
-                            new Among('\xE9id', 0, 8),
-                            new Among('i', -1, 15),
-                            new Among('ai', 7, 14),
-                            new Among('jai', 8, 11),
-                            new Among('ei', 7, 14),
-                            new Among('jei', 10, 11),
-                            new Among('\xE1i', 7, 12),
-                            new Among('\xE9i', 7, 13),
-                            new Among('itek', -1, 24),
-                            new Among('eitek', 14, 21),
-                            new Among('jeitek', 15, 20),
-                            new Among('\xE9itek', 14, 23),
-                            new Among('ik', -1, 29),
-                            new Among('aik', 18, 26),
-                            new Among('jaik', 19, 25),
-                            new Among('eik', 18, 26),
-                            new Among('jeik', 21, 25),
-                            new Among('\xE1ik', 18, 27),
-                            new Among('\xE9ik', 18, 28),
-                            new Among('ink', -1, 20),
-                            new Among('aink', 25, 17),
-                            new Among('jaink', 26, 16),
-                            new Among('eink', 25, 17),
-                            new Among('jeink', 28, 16),
-                            new Among('\xE1ink', 25, 18),
-                            new Among('\xE9ink', 25, 19),
-                            new Among('aitok', -1, 21),
-                            new Among('jaitok', 32, 20),
-                            new Among('\xE1itok', -1, 22),
-                            new Among('im', -1, 5),
-                            new Among('aim', 35, 4),
-                            new Among('jaim', 36, 1),
-                            new Among('eim', 35, 4),
-                            new Among('jeim', 38, 1),
-                            new Among('\xE1im', 35, 2),
-                            new Among('\xE9im', 35, 3)
+                            new Among("id", -1, 10),
+                            new Among("aid", 0, 9),
+                            new Among("jaid", 1, 6),
+                            new Among("eid", 0, 9),
+                            new Among("jeid", 3, 6),
+                            new Among("áid", 0, 7),
+                            new Among("éid", 0, 8),
+                            new Among("i", -1, 15),
+                            new Among("ai", 7, 14),
+                            new Among("jai", 8, 11),
+                            new Among("ei", 7, 14),
+                            new Among("jei", 10, 11),
+                            new Among("ái", 7, 12),
+                            new Among("éi", 7, 13),
+                            new Among("itek", -1, 24),
+                            new Among("eitek", 14, 21),
+                            new Among("jeitek", 15, 20),
+                            new Among("éitek", 14, 23),
+                            new Among("ik", -1, 29),
+                            new Among("aik", 18, 26),
+                            new Among("jaik", 19, 25),
+                            new Among("eik", 18, 26),
+                            new Among("jeik", 21, 25),
+                            new Among("áik", 18, 27),
+                            new Among("éik", 18, 28),
+                            new Among("ink", -1, 20),
+                            new Among("aink", 25, 17),
+                            new Among("jaink", 26, 16),
+                            new Among("eink", 25, 17),
+                            new Among("jeink", 28, 16),
+                            new Among("áink", 25, 18),
+                            new Among("éink", 25, 19),
+                            new Among("aitok", -1, 21),
+                            new Among("jaitok", 32, 20),
+                            new Among("áitok", -1, 22),
+                            new Among("im", -1, 5),
+                            new Among("aim", 35, 4),
+                            new Among("jaim", 36, 1),
+                            new Among("eim", 35, 4),
+                            new Among("jeim", 38, 1),
+                            new Among("áim", 35, 2),
+                            new Among("éim", 35, 3)
                         ], g_v = [
                             17,
                             65,
@@ -3195,10 +3195,10 @@ var Stemmer = function () {
                             if (r_R1()) {
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('a');
+                                    sbp.s_f("a");
                                     break;
                                 case 2:
-                                    sbp.s_f('e');
+                                    sbp.s_f("e");
                                     break;
                                 }
                             }
@@ -3257,11 +3257,11 @@ var Stemmer = function () {
                             if (r_R1()) {
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('e');
+                                    sbp.s_f("e");
                                     break;
                                 case 2:
                                 case 3:
-                                    sbp.s_f('a');
+                                    sbp.s_f("a");
                                     break;
                                 }
                             }
@@ -3280,10 +3280,10 @@ var Stemmer = function () {
                                     sbp.s_d();
                                     break;
                                 case 3:
-                                    sbp.s_f('a');
+                                    sbp.s_f("a");
                                     break;
                                 case 4:
-                                    sbp.s_f('e');
+                                    sbp.s_f("e");
                                     break;
                                 }
                             }
@@ -3313,10 +3313,10 @@ var Stemmer = function () {
                             if (r_R1()) {
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('a');
+                                    sbp.s_f("a");
                                     break;
                                 case 2:
-                                    sbp.s_f('e');
+                                    sbp.s_f("e");
                                     break;
                                 case 3:
                                 case 4:
@@ -3346,11 +3346,11 @@ var Stemmer = function () {
                                 case 2:
                                 case 5:
                                 case 8:
-                                    sbp.s_f('e');
+                                    sbp.s_f("e");
                                     break;
                                 case 3:
                                 case 6:
-                                    sbp.s_f('a');
+                                    sbp.s_f("a");
                                     break;
                                 }
                             }
@@ -3381,14 +3381,14 @@ var Stemmer = function () {
                                 case 10:
                                 case 14:
                                 case 19:
-                                    sbp.s_f('a');
+                                    sbp.s_f("a");
                                     break;
                                 case 3:
                                 case 6:
                                 case 11:
                                 case 15:
                                 case 20:
-                                    sbp.s_f('e');
+                                    sbp.s_f("e");
                                     break;
                                 }
                             }
@@ -3427,7 +3427,7 @@ var Stemmer = function () {
                                 case 18:
                                 case 22:
                                 case 27:
-                                    sbp.s_f('a');
+                                    sbp.s_f("a");
                                     break;
                                 case 3:
                                 case 8:
@@ -3435,7 +3435,7 @@ var Stemmer = function () {
                                 case 19:
                                 case 23:
                                 case 28:
-                                    sbp.s_f('e');
+                                    sbp.s_f("e");
                                     break;
                                 }
                             }
@@ -3468,210 +3468,210 @@ var Stemmer = function () {
                 },
                 ItalianStemmer: function () {
                     var a_0 = [
-                            new Among('', -1, 7),
-                            new Among('qu', 0, 6),
-                            new Among('\xE1', 0, 1),
-                            new Among('\xE9', 0, 2),
-                            new Among('\xED', 0, 3),
-                            new Among('\xF3', 0, 4),
-                            new Among('\xFA', 0, 5)
+                            new Among("", -1, 7),
+                            new Among("qu", 0, 6),
+                            new Among("á", 0, 1),
+                            new Among("é", 0, 2),
+                            new Among("í", 0, 3),
+                            new Among("ó", 0, 4),
+                            new Among("ú", 0, 5)
                         ], a_1 = [
-                            new Among('', -1, 3),
-                            new Among('I', 0, 1),
-                            new Among('U', 0, 2)
+                            new Among("", -1, 3),
+                            new Among("I", 0, 1),
+                            new Among("U", 0, 2)
                         ], a_2 = [
-                            new Among('la', -1, -1),
-                            new Among('cela', 0, -1),
-                            new Among('gliela', 0, -1),
-                            new Among('mela', 0, -1),
-                            new Among('tela', 0, -1),
-                            new Among('vela', 0, -1),
-                            new Among('le', -1, -1),
-                            new Among('cele', 6, -1),
-                            new Among('gliele', 6, -1),
-                            new Among('mele', 6, -1),
-                            new Among('tele', 6, -1),
-                            new Among('vele', 6, -1),
-                            new Among('ne', -1, -1),
-                            new Among('cene', 12, -1),
-                            new Among('gliene', 12, -1),
-                            new Among('mene', 12, -1),
-                            new Among('sene', 12, -1),
-                            new Among('tene', 12, -1),
-                            new Among('vene', 12, -1),
-                            new Among('ci', -1, -1),
-                            new Among('li', -1, -1),
-                            new Among('celi', 20, -1),
-                            new Among('glieli', 20, -1),
-                            new Among('meli', 20, -1),
-                            new Among('teli', 20, -1),
-                            new Among('veli', 20, -1),
-                            new Among('gli', 20, -1),
-                            new Among('mi', -1, -1),
-                            new Among('si', -1, -1),
-                            new Among('ti', -1, -1),
-                            new Among('vi', -1, -1),
-                            new Among('lo', -1, -1),
-                            new Among('celo', 31, -1),
-                            new Among('glielo', 31, -1),
-                            new Among('melo', 31, -1),
-                            new Among('telo', 31, -1),
-                            new Among('velo', 31, -1)
+                            new Among("la", -1, -1),
+                            new Among("cela", 0, -1),
+                            new Among("gliela", 0, -1),
+                            new Among("mela", 0, -1),
+                            new Among("tela", 0, -1),
+                            new Among("vela", 0, -1),
+                            new Among("le", -1, -1),
+                            new Among("cele", 6, -1),
+                            new Among("gliele", 6, -1),
+                            new Among("mele", 6, -1),
+                            new Among("tele", 6, -1),
+                            new Among("vele", 6, -1),
+                            new Among("ne", -1, -1),
+                            new Among("cene", 12, -1),
+                            new Among("gliene", 12, -1),
+                            new Among("mene", 12, -1),
+                            new Among("sene", 12, -1),
+                            new Among("tene", 12, -1),
+                            new Among("vene", 12, -1),
+                            new Among("ci", -1, -1),
+                            new Among("li", -1, -1),
+                            new Among("celi", 20, -1),
+                            new Among("glieli", 20, -1),
+                            new Among("meli", 20, -1),
+                            new Among("teli", 20, -1),
+                            new Among("veli", 20, -1),
+                            new Among("gli", 20, -1),
+                            new Among("mi", -1, -1),
+                            new Among("si", -1, -1),
+                            new Among("ti", -1, -1),
+                            new Among("vi", -1, -1),
+                            new Among("lo", -1, -1),
+                            new Among("celo", 31, -1),
+                            new Among("glielo", 31, -1),
+                            new Among("melo", 31, -1),
+                            new Among("telo", 31, -1),
+                            new Among("velo", 31, -1)
                         ], a_3 = [
-                            new Among('ando', -1, 1),
-                            new Among('endo', -1, 1),
-                            new Among('ar', -1, 2),
-                            new Among('er', -1, 2),
-                            new Among('ir', -1, 2)
+                            new Among("ando", -1, 1),
+                            new Among("endo", -1, 1),
+                            new Among("ar", -1, 2),
+                            new Among("er", -1, 2),
+                            new Among("ir", -1, 2)
                         ], a_4 = [
-                            new Among('ic', -1, -1),
-                            new Among('abil', -1, -1),
-                            new Among('os', -1, -1),
-                            new Among('iv', -1, 1)
+                            new Among("ic", -1, -1),
+                            new Among("abil", -1, -1),
+                            new Among("os", -1, -1),
+                            new Among("iv", -1, 1)
                         ], a_5 = [
-                            new Among('ic', -1, 1),
-                            new Among('abil', -1, 1),
-                            new Among('iv', -1, 1)
+                            new Among("ic", -1, 1),
+                            new Among("abil", -1, 1),
+                            new Among("iv", -1, 1)
                         ], a_6 = [
-                            new Among('ica', -1, 1),
-                            new Among('logia', -1, 3),
-                            new Among('osa', -1, 1),
-                            new Among('ista', -1, 1),
-                            new Among('iva', -1, 9),
-                            new Among('anza', -1, 1),
-                            new Among('enza', -1, 5),
-                            new Among('ice', -1, 1),
-                            new Among('atrice', 7, 1),
-                            new Among('iche', -1, 1),
-                            new Among('logie', -1, 3),
-                            new Among('abile', -1, 1),
-                            new Among('ibile', -1, 1),
-                            new Among('usione', -1, 4),
-                            new Among('azione', -1, 2),
-                            new Among('uzione', -1, 4),
-                            new Among('atore', -1, 2),
-                            new Among('ose', -1, 1),
-                            new Among('ante', -1, 1),
-                            new Among('mente', -1, 1),
-                            new Among('amente', 19, 7),
-                            new Among('iste', -1, 1),
-                            new Among('ive', -1, 9),
-                            new Among('anze', -1, 1),
-                            new Among('enze', -1, 5),
-                            new Among('ici', -1, 1),
-                            new Among('atrici', 25, 1),
-                            new Among('ichi', -1, 1),
-                            new Among('abili', -1, 1),
-                            new Among('ibili', -1, 1),
-                            new Among('ismi', -1, 1),
-                            new Among('usioni', -1, 4),
-                            new Among('azioni', -1, 2),
-                            new Among('uzioni', -1, 4),
-                            new Among('atori', -1, 2),
-                            new Among('osi', -1, 1),
-                            new Among('anti', -1, 1),
-                            new Among('amenti', -1, 6),
-                            new Among('imenti', -1, 6),
-                            new Among('isti', -1, 1),
-                            new Among('ivi', -1, 9),
-                            new Among('ico', -1, 1),
-                            new Among('ismo', -1, 1),
-                            new Among('oso', -1, 1),
-                            new Among('amento', -1, 6),
-                            new Among('imento', -1, 6),
-                            new Among('ivo', -1, 9),
-                            new Among('it\xE0', -1, 8),
-                            new Among('ist\xE0', -1, 1),
-                            new Among('ist\xE8', -1, 1),
-                            new Among('ist\xEC', -1, 1)
+                            new Among("ica", -1, 1),
+                            new Among("logia", -1, 3),
+                            new Among("osa", -1, 1),
+                            new Among("ista", -1, 1),
+                            new Among("iva", -1, 9),
+                            new Among("anza", -1, 1),
+                            new Among("enza", -1, 5),
+                            new Among("ice", -1, 1),
+                            new Among("atrice", 7, 1),
+                            new Among("iche", -1, 1),
+                            new Among("logie", -1, 3),
+                            new Among("abile", -1, 1),
+                            new Among("ibile", -1, 1),
+                            new Among("usione", -1, 4),
+                            new Among("azione", -1, 2),
+                            new Among("uzione", -1, 4),
+                            new Among("atore", -1, 2),
+                            new Among("ose", -1, 1),
+                            new Among("ante", -1, 1),
+                            new Among("mente", -1, 1),
+                            new Among("amente", 19, 7),
+                            new Among("iste", -1, 1),
+                            new Among("ive", -1, 9),
+                            new Among("anze", -1, 1),
+                            new Among("enze", -1, 5),
+                            new Among("ici", -1, 1),
+                            new Among("atrici", 25, 1),
+                            new Among("ichi", -1, 1),
+                            new Among("abili", -1, 1),
+                            new Among("ibili", -1, 1),
+                            new Among("ismi", -1, 1),
+                            new Among("usioni", -1, 4),
+                            new Among("azioni", -1, 2),
+                            new Among("uzioni", -1, 4),
+                            new Among("atori", -1, 2),
+                            new Among("osi", -1, 1),
+                            new Among("anti", -1, 1),
+                            new Among("amenti", -1, 6),
+                            new Among("imenti", -1, 6),
+                            new Among("isti", -1, 1),
+                            new Among("ivi", -1, 9),
+                            new Among("ico", -1, 1),
+                            new Among("ismo", -1, 1),
+                            new Among("oso", -1, 1),
+                            new Among("amento", -1, 6),
+                            new Among("imento", -1, 6),
+                            new Among("ivo", -1, 9),
+                            new Among("ità", -1, 8),
+                            new Among("istà", -1, 1),
+                            new Among("istè", -1, 1),
+                            new Among("istì", -1, 1)
                         ], a_7 = [
-                            new Among('isca', -1, 1),
-                            new Among('enda', -1, 1),
-                            new Among('ata', -1, 1),
-                            new Among('ita', -1, 1),
-                            new Among('uta', -1, 1),
-                            new Among('ava', -1, 1),
-                            new Among('eva', -1, 1),
-                            new Among('iva', -1, 1),
-                            new Among('erebbe', -1, 1),
-                            new Among('irebbe', -1, 1),
-                            new Among('isce', -1, 1),
-                            new Among('ende', -1, 1),
-                            new Among('are', -1, 1),
-                            new Among('ere', -1, 1),
-                            new Among('ire', -1, 1),
-                            new Among('asse', -1, 1),
-                            new Among('ate', -1, 1),
-                            new Among('avate', 16, 1),
-                            new Among('evate', 16, 1),
-                            new Among('ivate', 16, 1),
-                            new Among('ete', -1, 1),
-                            new Among('erete', 20, 1),
-                            new Among('irete', 20, 1),
-                            new Among('ite', -1, 1),
-                            new Among('ereste', -1, 1),
-                            new Among('ireste', -1, 1),
-                            new Among('ute', -1, 1),
-                            new Among('erai', -1, 1),
-                            new Among('irai', -1, 1),
-                            new Among('isci', -1, 1),
-                            new Among('endi', -1, 1),
-                            new Among('erei', -1, 1),
-                            new Among('irei', -1, 1),
-                            new Among('assi', -1, 1),
-                            new Among('ati', -1, 1),
-                            new Among('iti', -1, 1),
-                            new Among('eresti', -1, 1),
-                            new Among('iresti', -1, 1),
-                            new Among('uti', -1, 1),
-                            new Among('avi', -1, 1),
-                            new Among('evi', -1, 1),
-                            new Among('ivi', -1, 1),
-                            new Among('isco', -1, 1),
-                            new Among('ando', -1, 1),
-                            new Among('endo', -1, 1),
-                            new Among('Yamo', -1, 1),
-                            new Among('iamo', -1, 1),
-                            new Among('avamo', -1, 1),
-                            new Among('evamo', -1, 1),
-                            new Among('ivamo', -1, 1),
-                            new Among('eremo', -1, 1),
-                            new Among('iremo', -1, 1),
-                            new Among('assimo', -1, 1),
-                            new Among('ammo', -1, 1),
-                            new Among('emmo', -1, 1),
-                            new Among('eremmo', 54, 1),
-                            new Among('iremmo', 54, 1),
-                            new Among('immo', -1, 1),
-                            new Among('ano', -1, 1),
-                            new Among('iscano', 58, 1),
-                            new Among('avano', 58, 1),
-                            new Among('evano', 58, 1),
-                            new Among('ivano', 58, 1),
-                            new Among('eranno', -1, 1),
-                            new Among('iranno', -1, 1),
-                            new Among('ono', -1, 1),
-                            new Among('iscono', 65, 1),
-                            new Among('arono', 65, 1),
-                            new Among('erono', 65, 1),
-                            new Among('irono', 65, 1),
-                            new Among('erebbero', -1, 1),
-                            new Among('irebbero', -1, 1),
-                            new Among('assero', -1, 1),
-                            new Among('essero', -1, 1),
-                            new Among('issero', -1, 1),
-                            new Among('ato', -1, 1),
-                            new Among('ito', -1, 1),
-                            new Among('uto', -1, 1),
-                            new Among('avo', -1, 1),
-                            new Among('evo', -1, 1),
-                            new Among('ivo', -1, 1),
-                            new Among('ar', -1, 1),
-                            new Among('ir', -1, 1),
-                            new Among('er\xE0', -1, 1),
-                            new Among('ir\xE0', -1, 1),
-                            new Among('er\xF2', -1, 1),
-                            new Among('ir\xF2', -1, 1)
+                            new Among("isca", -1, 1),
+                            new Among("enda", -1, 1),
+                            new Among("ata", -1, 1),
+                            new Among("ita", -1, 1),
+                            new Among("uta", -1, 1),
+                            new Among("ava", -1, 1),
+                            new Among("eva", -1, 1),
+                            new Among("iva", -1, 1),
+                            new Among("erebbe", -1, 1),
+                            new Among("irebbe", -1, 1),
+                            new Among("isce", -1, 1),
+                            new Among("ende", -1, 1),
+                            new Among("are", -1, 1),
+                            new Among("ere", -1, 1),
+                            new Among("ire", -1, 1),
+                            new Among("asse", -1, 1),
+                            new Among("ate", -1, 1),
+                            new Among("avate", 16, 1),
+                            new Among("evate", 16, 1),
+                            new Among("ivate", 16, 1),
+                            new Among("ete", -1, 1),
+                            new Among("erete", 20, 1),
+                            new Among("irete", 20, 1),
+                            new Among("ite", -1, 1),
+                            new Among("ereste", -1, 1),
+                            new Among("ireste", -1, 1),
+                            new Among("ute", -1, 1),
+                            new Among("erai", -1, 1),
+                            new Among("irai", -1, 1),
+                            new Among("isci", -1, 1),
+                            new Among("endi", -1, 1),
+                            new Among("erei", -1, 1),
+                            new Among("irei", -1, 1),
+                            new Among("assi", -1, 1),
+                            new Among("ati", -1, 1),
+                            new Among("iti", -1, 1),
+                            new Among("eresti", -1, 1),
+                            new Among("iresti", -1, 1),
+                            new Among("uti", -1, 1),
+                            new Among("avi", -1, 1),
+                            new Among("evi", -1, 1),
+                            new Among("ivi", -1, 1),
+                            new Among("isco", -1, 1),
+                            new Among("ando", -1, 1),
+                            new Among("endo", -1, 1),
+                            new Among("Yamo", -1, 1),
+                            new Among("iamo", -1, 1),
+                            new Among("avamo", -1, 1),
+                            new Among("evamo", -1, 1),
+                            new Among("ivamo", -1, 1),
+                            new Among("eremo", -1, 1),
+                            new Among("iremo", -1, 1),
+                            new Among("assimo", -1, 1),
+                            new Among("ammo", -1, 1),
+                            new Among("emmo", -1, 1),
+                            new Among("eremmo", 54, 1),
+                            new Among("iremmo", 54, 1),
+                            new Among("immo", -1, 1),
+                            new Among("ano", -1, 1),
+                            new Among("iscano", 58, 1),
+                            new Among("avano", 58, 1),
+                            new Among("evano", 58, 1),
+                            new Among("ivano", 58, 1),
+                            new Among("eranno", -1, 1),
+                            new Among("iranno", -1, 1),
+                            new Among("ono", -1, 1),
+                            new Among("iscono", 65, 1),
+                            new Among("arono", 65, 1),
+                            new Among("erono", 65, 1),
+                            new Among("irono", 65, 1),
+                            new Among("erebbero", -1, 1),
+                            new Among("irebbero", -1, 1),
+                            new Among("assero", -1, 1),
+                            new Among("essero", -1, 1),
+                            new Among("issero", -1, 1),
+                            new Among("ato", -1, 1),
+                            new Among("ito", -1, 1),
+                            new Among("uto", -1, 1),
+                            new Among("avo", -1, 1),
+                            new Among("evo", -1, 1),
+                            new Among("ivo", -1, 1),
+                            new Among("ar", -1, 1),
+                            new Among("ir", -1, 1),
+                            new Among("erà", -1, 1),
+                            new Among("irà", -1, 1),
+                            new Among("erò", -1, 1),
+                            new Among("irò", -1, 1)
                         ], g_v = [
                             17,
                             65,
@@ -3740,22 +3740,22 @@ var Stemmer = function () {
                                 sbp.k = sbp.c;
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('\xE0');
+                                    sbp.s_f("à");
                                     continue;
                                 case 2:
-                                    sbp.s_f('\xE8');
+                                    sbp.s_f("è");
                                     continue;
                                 case 3:
-                                    sbp.s_f('\xEC');
+                                    sbp.s_f("ì");
                                     continue;
                                 case 4:
-                                    sbp.s_f('\xF2');
+                                    sbp.s_f("ò");
                                     continue;
                                 case 5:
-                                    sbp.s_f('\xF9');
+                                    sbp.s_f("ù");
                                     continue;
                                 case 6:
-                                    sbp.s_f('qU');
+                                    sbp.s_f("qU");
                                     continue;
                                 case 7:
                                     if (sbp.c >= sbp.l)
@@ -3774,10 +3774,10 @@ var Stemmer = function () {
                                 if (sbp.i_g(g_v, 97, 249)) {
                                     sbp.b = sbp.c;
                                     v_4 = sbp.c;
-                                    if (habr1('u', 'U', v_3))
+                                    if (habr1("u", "U", v_3))
                                         break;
                                     sbp.c = v_4;
-                                    if (habr1('i', 'I', v_3))
+                                    if (habr1("i", "I", v_3))
                                         break;
                                 }
                                 sbp.c = v_3;
@@ -3878,10 +3878,10 @@ var Stemmer = function () {
                             sbp.k = sbp.c;
                             switch (a_v) {
                             case 1:
-                                sbp.s_f('i');
+                                sbp.s_f("i");
                                 break;
                             case 2:
-                                sbp.s_f('u');
+                                sbp.s_f("u");
                                 break;
                             case 3:
                                 if (sbp.c >= sbp.l)
@@ -3912,7 +3912,7 @@ var Stemmer = function () {
                                     sbp.s_d();
                                     break;
                                 case 2:
-                                    sbp.s_f('e');
+                                    sbp.s_f("e");
                                     break;
                                 }
                             }
@@ -3936,7 +3936,7 @@ var Stemmer = function () {
                                 return false;
                             sbp.s_d();
                             sbp.k = sbp.c;
-                            if (sbp.e_s_b(2, 'ic')) {
+                            if (sbp.e_s_b(2, "ic")) {
                                 sbp.b = sbp.c;
                                 if (r_R2())
                                     sbp.s_d();
@@ -3945,17 +3945,17 @@ var Stemmer = function () {
                         case 3:
                             if (!r_R2())
                                 return false;
-                            sbp.s_f('log');
+                            sbp.s_f("log");
                             break;
                         case 4:
                             if (!r_R2())
                                 return false;
-                            sbp.s_f('u');
+                            sbp.s_f("u");
                             break;
                         case 5:
                             if (!r_R2())
                                 return false;
-                            sbp.s_f('ente');
+                            sbp.s_f("ente");
                             break;
                         case 6:
                             if (!r_RV())
@@ -3974,7 +3974,7 @@ var Stemmer = function () {
                                     sbp.s_d();
                                     if (a_v == 1) {
                                         sbp.k = sbp.c;
-                                        if (sbp.e_s_b(2, 'at')) {
+                                        if (sbp.e_s_b(2, "at")) {
                                             sbp.b = sbp.c;
                                             if (r_R2())
                                                 sbp.s_d();
@@ -4001,12 +4001,12 @@ var Stemmer = function () {
                                 return false;
                             sbp.s_d();
                             sbp.k = sbp.c;
-                            if (sbp.e_s_b(2, 'at')) {
+                            if (sbp.e_s_b(2, "at")) {
                                 sbp.b = sbp.c;
                                 if (r_R2()) {
                                     sbp.s_d();
                                     sbp.k = sbp.c;
-                                    if (sbp.e_s_b(2, 'ic')) {
+                                    if (sbp.e_s_b(2, "ic")) {
                                         sbp.b = sbp.c;
                                         if (r_R2())
                                             sbp.s_d();
@@ -4040,7 +4040,7 @@ var Stemmer = function () {
                             if (r_RV()) {
                                 sbp.s_d();
                                 sbp.k = sbp.c;
-                                if (sbp.e_s_b(1, 'i')) {
+                                if (sbp.e_s_b(1, "i")) {
                                     sbp.b = sbp.c;
                                     if (r_RV()) {
                                         sbp.s_d();
@@ -4054,7 +4054,7 @@ var Stemmer = function () {
                     function r_vowel_suffix() {
                         habr6();
                         sbp.k = sbp.c;
-                        if (sbp.e_s_b(1, 'h')) {
+                        if (sbp.e_s_b(1, "h")) {
                             sbp.b = sbp.c;
                             if (sbp.i_g_b(g_CG, 99, 103))
                                 if (r_RV())
@@ -4083,50 +4083,50 @@ var Stemmer = function () {
                 },
                 NorwegianStemmer: function () {
                     var a_0 = [
-                            new Among('a', -1, 1),
-                            new Among('e', -1, 1),
-                            new Among('ede', 1, 1),
-                            new Among('ande', 1, 1),
-                            new Among('ende', 1, 1),
-                            new Among('ane', 1, 1),
-                            new Among('ene', 1, 1),
-                            new Among('hetene', 6, 1),
-                            new Among('erte', 1, 3),
-                            new Among('en', -1, 1),
-                            new Among('heten', 9, 1),
-                            new Among('ar', -1, 1),
-                            new Among('er', -1, 1),
-                            new Among('heter', 12, 1),
-                            new Among('s', -1, 2),
-                            new Among('as', 14, 1),
-                            new Among('es', 14, 1),
-                            new Among('edes', 16, 1),
-                            new Among('endes', 16, 1),
-                            new Among('enes', 16, 1),
-                            new Among('hetenes', 19, 1),
-                            new Among('ens', 14, 1),
-                            new Among('hetens', 21, 1),
-                            new Among('ers', 14, 1),
-                            new Among('ets', 14, 1),
-                            new Among('et', -1, 1),
-                            new Among('het', 25, 1),
-                            new Among('ert', -1, 3),
-                            new Among('ast', -1, 1)
+                            new Among("a", -1, 1),
+                            new Among("e", -1, 1),
+                            new Among("ede", 1, 1),
+                            new Among("ande", 1, 1),
+                            new Among("ende", 1, 1),
+                            new Among("ane", 1, 1),
+                            new Among("ene", 1, 1),
+                            new Among("hetene", 6, 1),
+                            new Among("erte", 1, 3),
+                            new Among("en", -1, 1),
+                            new Among("heten", 9, 1),
+                            new Among("ar", -1, 1),
+                            new Among("er", -1, 1),
+                            new Among("heter", 12, 1),
+                            new Among("s", -1, 2),
+                            new Among("as", 14, 1),
+                            new Among("es", 14, 1),
+                            new Among("edes", 16, 1),
+                            new Among("endes", 16, 1),
+                            new Among("enes", 16, 1),
+                            new Among("hetenes", 19, 1),
+                            new Among("ens", 14, 1),
+                            new Among("hetens", 21, 1),
+                            new Among("ers", 14, 1),
+                            new Among("ets", 14, 1),
+                            new Among("et", -1, 1),
+                            new Among("het", 25, 1),
+                            new Among("ert", -1, 3),
+                            new Among("ast", -1, 1)
                         ], a_1 = [
-                            new Among('dt', -1, -1),
-                            new Among('vt', -1, -1)
+                            new Among("dt", -1, -1),
+                            new Among("vt", -1, -1)
                         ], a_2 = [
-                            new Among('leg', -1, 1),
-                            new Among('eleg', 0, 1),
-                            new Among('ig', -1, 1),
-                            new Among('eig', 2, 1),
-                            new Among('lig', 2, 1),
-                            new Among('elig', 4, 1),
-                            new Among('els', -1, 1),
-                            new Among('lov', -1, 1),
-                            new Among('elov', 7, 1),
-                            new Among('slov', 7, 1),
-                            new Among('hetslov', 9, 1)
+                            new Among("leg", -1, 1),
+                            new Among("eleg", 0, 1),
+                            new Among("ig", -1, 1),
+                            new Among("eig", 2, 1),
+                            new Among("lig", 2, 1),
+                            new Among("elig", 4, 1),
+                            new Among("els", -1, 1),
+                            new Among("lov", -1, 1),
+                            new Among("elov", 7, 1),
+                            new Among("slov", 7, 1),
+                            new Among("hetslov", 9, 1)
                         ], g_v = [
                             17,
                             65,
@@ -4204,12 +4204,12 @@ var Stemmer = function () {
                                         sbp.s_d();
                                     else {
                                         sbp.c = sbp.l - v_2;
-                                        if (sbp.e_s_b(1, 'k') && sbp.o_g_b(g_v, 97, 248))
+                                        if (sbp.e_s_b(1, "k") && sbp.o_g_b(g_v, 97, 248))
                                             sbp.s_d();
                                     }
                                     break;
                                 case 3:
-                                    sbp.s_f('er');
+                                    sbp.s_f("er");
                                     break;
                                 }
                             }
@@ -4265,206 +4265,206 @@ var Stemmer = function () {
                 },
                 PortugueseStemmer: function () {
                     var a_0 = [
-                            new Among('', -1, 3),
-                            new Among('\xE3', 0, 1),
-                            new Among('\xF5', 0, 2)
+                            new Among("", -1, 3),
+                            new Among("ã", 0, 1),
+                            new Among("õ", 0, 2)
                         ], a_1 = [
-                            new Among('', -1, 3),
-                            new Among('a~', 0, 1),
-                            new Among('o~', 0, 2)
+                            new Among("", -1, 3),
+                            new Among("a~", 0, 1),
+                            new Among("o~", 0, 2)
                         ], a_2 = [
-                            new Among('ic', -1, -1),
-                            new Among('ad', -1, -1),
-                            new Among('os', -1, -1),
-                            new Among('iv', -1, 1)
+                            new Among("ic", -1, -1),
+                            new Among("ad", -1, -1),
+                            new Among("os", -1, -1),
+                            new Among("iv", -1, 1)
                         ], a_3 = [
-                            new Among('ante', -1, 1),
-                            new Among('avel', -1, 1),
-                            new Among('\xEDvel', -1, 1)
+                            new Among("ante", -1, 1),
+                            new Among("avel", -1, 1),
+                            new Among("ível", -1, 1)
                         ], a_4 = [
-                            new Among('ic', -1, 1),
-                            new Among('abil', -1, 1),
-                            new Among('iv', -1, 1)
+                            new Among("ic", -1, 1),
+                            new Among("abil", -1, 1),
+                            new Among("iv", -1, 1)
                         ], a_5 = [
-                            new Among('ica', -1, 1),
-                            new Among('\xE2ncia', -1, 1),
-                            new Among('\xEAncia', -1, 4),
-                            new Among('ira', -1, 9),
-                            new Among('adora', -1, 1),
-                            new Among('osa', -1, 1),
-                            new Among('ista', -1, 1),
-                            new Among('iva', -1, 8),
-                            new Among('eza', -1, 1),
-                            new Among('log\xEDa', -1, 2),
-                            new Among('idade', -1, 7),
-                            new Among('ante', -1, 1),
-                            new Among('mente', -1, 6),
-                            new Among('amente', 12, 5),
-                            new Among('\xE1vel', -1, 1),
-                            new Among('\xEDvel', -1, 1),
-                            new Among('uci\xF3n', -1, 3),
-                            new Among('ico', -1, 1),
-                            new Among('ismo', -1, 1),
-                            new Among('oso', -1, 1),
-                            new Among('amento', -1, 1),
-                            new Among('imento', -1, 1),
-                            new Among('ivo', -1, 8),
-                            new Among('a\xE7a~o', -1, 1),
-                            new Among('ador', -1, 1),
-                            new Among('icas', -1, 1),
-                            new Among('\xEAncias', -1, 4),
-                            new Among('iras', -1, 9),
-                            new Among('adoras', -1, 1),
-                            new Among('osas', -1, 1),
-                            new Among('istas', -1, 1),
-                            new Among('ivas', -1, 8),
-                            new Among('ezas', -1, 1),
-                            new Among('log\xEDas', -1, 2),
-                            new Among('idades', -1, 7),
-                            new Among('uciones', -1, 3),
-                            new Among('adores', -1, 1),
-                            new Among('antes', -1, 1),
-                            new Among('a\xE7o~es', -1, 1),
-                            new Among('icos', -1, 1),
-                            new Among('ismos', -1, 1),
-                            new Among('osos', -1, 1),
-                            new Among('amentos', -1, 1),
-                            new Among('imentos', -1, 1),
-                            new Among('ivos', -1, 8)
+                            new Among("ica", -1, 1),
+                            new Among("ância", -1, 1),
+                            new Among("ência", -1, 4),
+                            new Among("ira", -1, 9),
+                            new Among("adora", -1, 1),
+                            new Among("osa", -1, 1),
+                            new Among("ista", -1, 1),
+                            new Among("iva", -1, 8),
+                            new Among("eza", -1, 1),
+                            new Among("logía", -1, 2),
+                            new Among("idade", -1, 7),
+                            new Among("ante", -1, 1),
+                            new Among("mente", -1, 6),
+                            new Among("amente", 12, 5),
+                            new Among("ável", -1, 1),
+                            new Among("ível", -1, 1),
+                            new Among("ución", -1, 3),
+                            new Among("ico", -1, 1),
+                            new Among("ismo", -1, 1),
+                            new Among("oso", -1, 1),
+                            new Among("amento", -1, 1),
+                            new Among("imento", -1, 1),
+                            new Among("ivo", -1, 8),
+                            new Among("aça~o", -1, 1),
+                            new Among("ador", -1, 1),
+                            new Among("icas", -1, 1),
+                            new Among("ências", -1, 4),
+                            new Among("iras", -1, 9),
+                            new Among("adoras", -1, 1),
+                            new Among("osas", -1, 1),
+                            new Among("istas", -1, 1),
+                            new Among("ivas", -1, 8),
+                            new Among("ezas", -1, 1),
+                            new Among("logías", -1, 2),
+                            new Among("idades", -1, 7),
+                            new Among("uciones", -1, 3),
+                            new Among("adores", -1, 1),
+                            new Among("antes", -1, 1),
+                            new Among("aço~es", -1, 1),
+                            new Among("icos", -1, 1),
+                            new Among("ismos", -1, 1),
+                            new Among("osos", -1, 1),
+                            new Among("amentos", -1, 1),
+                            new Among("imentos", -1, 1),
+                            new Among("ivos", -1, 8)
                         ], a_6 = [
-                            new Among('ada', -1, 1),
-                            new Among('ida', -1, 1),
-                            new Among('ia', -1, 1),
-                            new Among('aria', 2, 1),
-                            new Among('eria', 2, 1),
-                            new Among('iria', 2, 1),
-                            new Among('ara', -1, 1),
-                            new Among('era', -1, 1),
-                            new Among('ira', -1, 1),
-                            new Among('ava', -1, 1),
-                            new Among('asse', -1, 1),
-                            new Among('esse', -1, 1),
-                            new Among('isse', -1, 1),
-                            new Among('aste', -1, 1),
-                            new Among('este', -1, 1),
-                            new Among('iste', -1, 1),
-                            new Among('ei', -1, 1),
-                            new Among('arei', 16, 1),
-                            new Among('erei', 16, 1),
-                            new Among('irei', 16, 1),
-                            new Among('am', -1, 1),
-                            new Among('iam', 20, 1),
-                            new Among('ariam', 21, 1),
-                            new Among('eriam', 21, 1),
-                            new Among('iriam', 21, 1),
-                            new Among('aram', 20, 1),
-                            new Among('eram', 20, 1),
-                            new Among('iram', 20, 1),
-                            new Among('avam', 20, 1),
-                            new Among('em', -1, 1),
-                            new Among('arem', 29, 1),
-                            new Among('erem', 29, 1),
-                            new Among('irem', 29, 1),
-                            new Among('assem', 29, 1),
-                            new Among('essem', 29, 1),
-                            new Among('issem', 29, 1),
-                            new Among('ado', -1, 1),
-                            new Among('ido', -1, 1),
-                            new Among('ando', -1, 1),
-                            new Among('endo', -1, 1),
-                            new Among('indo', -1, 1),
-                            new Among('ara~o', -1, 1),
-                            new Among('era~o', -1, 1),
-                            new Among('ira~o', -1, 1),
-                            new Among('ar', -1, 1),
-                            new Among('er', -1, 1),
-                            new Among('ir', -1, 1),
-                            new Among('as', -1, 1),
-                            new Among('adas', 47, 1),
-                            new Among('idas', 47, 1),
-                            new Among('ias', 47, 1),
-                            new Among('arias', 50, 1),
-                            new Among('erias', 50, 1),
-                            new Among('irias', 50, 1),
-                            new Among('aras', 47, 1),
-                            new Among('eras', 47, 1),
-                            new Among('iras', 47, 1),
-                            new Among('avas', 47, 1),
-                            new Among('es', -1, 1),
-                            new Among('ardes', 58, 1),
-                            new Among('erdes', 58, 1),
-                            new Among('irdes', 58, 1),
-                            new Among('ares', 58, 1),
-                            new Among('eres', 58, 1),
-                            new Among('ires', 58, 1),
-                            new Among('asses', 58, 1),
-                            new Among('esses', 58, 1),
-                            new Among('isses', 58, 1),
-                            new Among('astes', 58, 1),
-                            new Among('estes', 58, 1),
-                            new Among('istes', 58, 1),
-                            new Among('is', -1, 1),
-                            new Among('ais', 71, 1),
-                            new Among('eis', 71, 1),
-                            new Among('areis', 73, 1),
-                            new Among('ereis', 73, 1),
-                            new Among('ireis', 73, 1),
-                            new Among('\xE1reis', 73, 1),
-                            new Among('\xE9reis', 73, 1),
-                            new Among('\xEDreis', 73, 1),
-                            new Among('\xE1sseis', 73, 1),
-                            new Among('\xE9sseis', 73, 1),
-                            new Among('\xEDsseis', 73, 1),
-                            new Among('\xE1veis', 73, 1),
-                            new Among('\xEDeis', 73, 1),
-                            new Among('ar\xEDeis', 84, 1),
-                            new Among('er\xEDeis', 84, 1),
-                            new Among('ir\xEDeis', 84, 1),
-                            new Among('ados', -1, 1),
-                            new Among('idos', -1, 1),
-                            new Among('amos', -1, 1),
-                            new Among('\xE1ramos', 90, 1),
-                            new Among('\xE9ramos', 90, 1),
-                            new Among('\xEDramos', 90, 1),
-                            new Among('\xE1vamos', 90, 1),
-                            new Among('\xEDamos', 90, 1),
-                            new Among('ar\xEDamos', 95, 1),
-                            new Among('er\xEDamos', 95, 1),
-                            new Among('ir\xEDamos', 95, 1),
-                            new Among('emos', -1, 1),
-                            new Among('aremos', 99, 1),
-                            new Among('eremos', 99, 1),
-                            new Among('iremos', 99, 1),
-                            new Among('\xE1ssemos', 99, 1),
-                            new Among('\xEAssemos', 99, 1),
-                            new Among('\xEDssemos', 99, 1),
-                            new Among('imos', -1, 1),
-                            new Among('armos', -1, 1),
-                            new Among('ermos', -1, 1),
-                            new Among('irmos', -1, 1),
-                            new Among('\xE1mos', -1, 1),
-                            new Among('ar\xE1s', -1, 1),
-                            new Among('er\xE1s', -1, 1),
-                            new Among('ir\xE1s', -1, 1),
-                            new Among('eu', -1, 1),
-                            new Among('iu', -1, 1),
-                            new Among('ou', -1, 1),
-                            new Among('ar\xE1', -1, 1),
-                            new Among('er\xE1', -1, 1),
-                            new Among('ir\xE1', -1, 1)
+                            new Among("ada", -1, 1),
+                            new Among("ida", -1, 1),
+                            new Among("ia", -1, 1),
+                            new Among("aria", 2, 1),
+                            new Among("eria", 2, 1),
+                            new Among("iria", 2, 1),
+                            new Among("ara", -1, 1),
+                            new Among("era", -1, 1),
+                            new Among("ira", -1, 1),
+                            new Among("ava", -1, 1),
+                            new Among("asse", -1, 1),
+                            new Among("esse", -1, 1),
+                            new Among("isse", -1, 1),
+                            new Among("aste", -1, 1),
+                            new Among("este", -1, 1),
+                            new Among("iste", -1, 1),
+                            new Among("ei", -1, 1),
+                            new Among("arei", 16, 1),
+                            new Among("erei", 16, 1),
+                            new Among("irei", 16, 1),
+                            new Among("am", -1, 1),
+                            new Among("iam", 20, 1),
+                            new Among("ariam", 21, 1),
+                            new Among("eriam", 21, 1),
+                            new Among("iriam", 21, 1),
+                            new Among("aram", 20, 1),
+                            new Among("eram", 20, 1),
+                            new Among("iram", 20, 1),
+                            new Among("avam", 20, 1),
+                            new Among("em", -1, 1),
+                            new Among("arem", 29, 1),
+                            new Among("erem", 29, 1),
+                            new Among("irem", 29, 1),
+                            new Among("assem", 29, 1),
+                            new Among("essem", 29, 1),
+                            new Among("issem", 29, 1),
+                            new Among("ado", -1, 1),
+                            new Among("ido", -1, 1),
+                            new Among("ando", -1, 1),
+                            new Among("endo", -1, 1),
+                            new Among("indo", -1, 1),
+                            new Among("ara~o", -1, 1),
+                            new Among("era~o", -1, 1),
+                            new Among("ira~o", -1, 1),
+                            new Among("ar", -1, 1),
+                            new Among("er", -1, 1),
+                            new Among("ir", -1, 1),
+                            new Among("as", -1, 1),
+                            new Among("adas", 47, 1),
+                            new Among("idas", 47, 1),
+                            new Among("ias", 47, 1),
+                            new Among("arias", 50, 1),
+                            new Among("erias", 50, 1),
+                            new Among("irias", 50, 1),
+                            new Among("aras", 47, 1),
+                            new Among("eras", 47, 1),
+                            new Among("iras", 47, 1),
+                            new Among("avas", 47, 1),
+                            new Among("es", -1, 1),
+                            new Among("ardes", 58, 1),
+                            new Among("erdes", 58, 1),
+                            new Among("irdes", 58, 1),
+                            new Among("ares", 58, 1),
+                            new Among("eres", 58, 1),
+                            new Among("ires", 58, 1),
+                            new Among("asses", 58, 1),
+                            new Among("esses", 58, 1),
+                            new Among("isses", 58, 1),
+                            new Among("astes", 58, 1),
+                            new Among("estes", 58, 1),
+                            new Among("istes", 58, 1),
+                            new Among("is", -1, 1),
+                            new Among("ais", 71, 1),
+                            new Among("eis", 71, 1),
+                            new Among("areis", 73, 1),
+                            new Among("ereis", 73, 1),
+                            new Among("ireis", 73, 1),
+                            new Among("áreis", 73, 1),
+                            new Among("éreis", 73, 1),
+                            new Among("íreis", 73, 1),
+                            new Among("ásseis", 73, 1),
+                            new Among("ésseis", 73, 1),
+                            new Among("ísseis", 73, 1),
+                            new Among("áveis", 73, 1),
+                            new Among("íeis", 73, 1),
+                            new Among("aríeis", 84, 1),
+                            new Among("eríeis", 84, 1),
+                            new Among("iríeis", 84, 1),
+                            new Among("ados", -1, 1),
+                            new Among("idos", -1, 1),
+                            new Among("amos", -1, 1),
+                            new Among("áramos", 90, 1),
+                            new Among("éramos", 90, 1),
+                            new Among("íramos", 90, 1),
+                            new Among("ávamos", 90, 1),
+                            new Among("íamos", 90, 1),
+                            new Among("aríamos", 95, 1),
+                            new Among("eríamos", 95, 1),
+                            new Among("iríamos", 95, 1),
+                            new Among("emos", -1, 1),
+                            new Among("aremos", 99, 1),
+                            new Among("eremos", 99, 1),
+                            new Among("iremos", 99, 1),
+                            new Among("ássemos", 99, 1),
+                            new Among("êssemos", 99, 1),
+                            new Among("íssemos", 99, 1),
+                            new Among("imos", -1, 1),
+                            new Among("armos", -1, 1),
+                            new Among("ermos", -1, 1),
+                            new Among("irmos", -1, 1),
+                            new Among("ámos", -1, 1),
+                            new Among("arás", -1, 1),
+                            new Among("erás", -1, 1),
+                            new Among("irás", -1, 1),
+                            new Among("eu", -1, 1),
+                            new Among("iu", -1, 1),
+                            new Among("ou", -1, 1),
+                            new Among("ará", -1, 1),
+                            new Among("erá", -1, 1),
+                            new Among("irá", -1, 1)
                         ], a_7 = [
-                            new Among('a', -1, 1),
-                            new Among('i', -1, 1),
-                            new Among('o', -1, 1),
-                            new Among('os', -1, 1),
-                            new Among('\xE1', -1, 1),
-                            new Among('\xED', -1, 1),
-                            new Among('\xF3', -1, 1)
+                            new Among("a", -1, 1),
+                            new Among("i", -1, 1),
+                            new Among("o", -1, 1),
+                            new Among("os", -1, 1),
+                            new Among("á", -1, 1),
+                            new Among("í", -1, 1),
+                            new Among("ó", -1, 1)
                         ], a_8 = [
-                            new Among('e', -1, 1),
-                            new Among('\xE7', -1, 2),
-                            new Among('\xE9', -1, 1),
-                            new Among('\xEA', -1, 1)
+                            new Among("e", -1, 1),
+                            new Among("ç", -1, 2),
+                            new Among("é", -1, 1),
+                            new Among("ê", -1, 1)
                         ], g_v = [
                             17,
                             65,
@@ -4502,10 +4502,10 @@ var Stemmer = function () {
                                 sbp.k = sbp.c;
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('a~');
+                                    sbp.s_f("a~");
                                     continue;
                                 case 2:
-                                    sbp.s_f('o~');
+                                    sbp.s_f("o~");
                                     continue;
                                 case 3:
                                     if (sbp.c >= sbp.l)
@@ -4597,10 +4597,10 @@ var Stemmer = function () {
                                 sbp.k = sbp.c;
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('\xE3');
+                                    sbp.s_f("ã");
                                     continue;
                                 case 2:
-                                    sbp.s_f('\xF5');
+                                    sbp.s_f("õ");
                                     continue;
                                 case 3:
                                     if (sbp.c >= sbp.l)
@@ -4637,17 +4637,17 @@ var Stemmer = function () {
                         case 2:
                             if (!r_R2())
                                 return false;
-                            sbp.s_f('log');
+                            sbp.s_f("log");
                             break;
                         case 3:
                             if (!r_R2())
                                 return false;
-                            sbp.s_f('u');
+                            sbp.s_f("u");
                             break;
                         case 4:
                             if (!r_R2())
                                 return false;
-                            sbp.s_f('ente');
+                            sbp.s_f("ente");
                             break;
                         case 5:
                             if (!r_R1())
@@ -4661,7 +4661,7 @@ var Stemmer = function () {
                                     sbp.s_d();
                                     if (a_v == 1) {
                                         sbp.k = sbp.c;
-                                        if (sbp.e_s_b(2, 'at')) {
+                                        if (sbp.e_s_b(2, "at")) {
                                             sbp.b = sbp.c;
                                             if (r_R2())
                                                 sbp.s_d();
@@ -4701,16 +4701,16 @@ var Stemmer = function () {
                                 return false;
                             sbp.s_d();
                             sbp.k = sbp.c;
-                            if (sbp.e_s_b(2, 'at')) {
+                            if (sbp.e_s_b(2, "at")) {
                                 sbp.b = sbp.c;
                                 if (r_R2())
                                     sbp.s_d();
                             }
                             break;
                         case 9:
-                            if (!r_RV() || !sbp.e_s_b(1, 'e'))
+                            if (!r_RV() || !sbp.e_s_b(1, "e"))
                                 return false;
-                            sbp.s_f('ir');
+                            sbp.s_f("ir");
                             break;
                         }
                         return true;
@@ -4769,12 +4769,12 @@ var Stemmer = function () {
                                     sbp.s_d();
                                     sbp.k = sbp.c;
                                     v_1 = sbp.l - sbp.c;
-                                    if (habr6('u', 'g'))
-                                        habr6('i', 'c');
+                                    if (habr6("u", "g"))
+                                        habr6("i", "c");
                                 }
                                 break;
                             case 2:
-                                sbp.s_f('c');
+                                sbp.s_f("c");
                                 break;
                             }
                         }
@@ -4790,9 +4790,9 @@ var Stemmer = function () {
                         }
                         sbp.c = sbp.l;
                         sbp.k = sbp.c;
-                        if (sbp.e_s_b(1, 'i')) {
+                        if (sbp.e_s_b(1, "i")) {
                             sbp.b = sbp.c;
-                            if (sbp.e_s_b(1, 'c')) {
+                            if (sbp.e_s_b(1, "c")) {
                                 sbp.c = sbp.l;
                                 if (r_RV())
                                     sbp.s_d();
@@ -4816,237 +4816,237 @@ var Stemmer = function () {
                 },
                 RomanianStemmer: function () {
                     var a_0 = [
-                            new Among('', -1, 3),
-                            new Among('I', 0, 1),
-                            new Among('U', 0, 2)
+                            new Among("", -1, 3),
+                            new Among("I", 0, 1),
+                            new Among("U", 0, 2)
                         ], a_1 = [
-                            new Among('ea', -1, 3),
-                            new Among('a\u0163ia', -1, 7),
-                            new Among('aua', -1, 2),
-                            new Among('iua', -1, 4),
-                            new Among('a\u0163ie', -1, 7),
-                            new Among('ele', -1, 3),
-                            new Among('ile', -1, 5),
-                            new Among('iile', 6, 4),
-                            new Among('iei', -1, 4),
-                            new Among('atei', -1, 6),
-                            new Among('ii', -1, 4),
-                            new Among('ului', -1, 1),
-                            new Among('ul', -1, 1),
-                            new Among('elor', -1, 3),
-                            new Among('ilor', -1, 4),
-                            new Among('iilor', 14, 4)
+                            new Among("ea", -1, 3),
+                            new Among("aţia", -1, 7),
+                            new Among("aua", -1, 2),
+                            new Among("iua", -1, 4),
+                            new Among("aţie", -1, 7),
+                            new Among("ele", -1, 3),
+                            new Among("ile", -1, 5),
+                            new Among("iile", 6, 4),
+                            new Among("iei", -1, 4),
+                            new Among("atei", -1, 6),
+                            new Among("ii", -1, 4),
+                            new Among("ului", -1, 1),
+                            new Among("ul", -1, 1),
+                            new Among("elor", -1, 3),
+                            new Among("ilor", -1, 4),
+                            new Among("iilor", 14, 4)
                         ], a_2 = [
-                            new Among('icala', -1, 4),
-                            new Among('iciva', -1, 4),
-                            new Among('ativa', -1, 5),
-                            new Among('itiva', -1, 6),
-                            new Among('icale', -1, 4),
-                            new Among('a\u0163iune', -1, 5),
-                            new Among('i\u0163iune', -1, 6),
-                            new Among('atoare', -1, 5),
-                            new Among('itoare', -1, 6),
-                            new Among('\u0103toare', -1, 5),
-                            new Among('icitate', -1, 4),
-                            new Among('abilitate', -1, 1),
-                            new Among('ibilitate', -1, 2),
-                            new Among('ivitate', -1, 3),
-                            new Among('icive', -1, 4),
-                            new Among('ative', -1, 5),
-                            new Among('itive', -1, 6),
-                            new Among('icali', -1, 4),
-                            new Among('atori', -1, 5),
-                            new Among('icatori', 18, 4),
-                            new Among('itori', -1, 6),
-                            new Among('\u0103tori', -1, 5),
-                            new Among('icitati', -1, 4),
-                            new Among('abilitati', -1, 1),
-                            new Among('ivitati', -1, 3),
-                            new Among('icivi', -1, 4),
-                            new Among('ativi', -1, 5),
-                            new Among('itivi', -1, 6),
-                            new Among('icit\u0103i', -1, 4),
-                            new Among('abilit\u0103i', -1, 1),
-                            new Among('ivit\u0103i', -1, 3),
-                            new Among('icit\u0103\u0163i', -1, 4),
-                            new Among('abilit\u0103\u0163i', -1, 1),
-                            new Among('ivit\u0103\u0163i', -1, 3),
-                            new Among('ical', -1, 4),
-                            new Among('ator', -1, 5),
-                            new Among('icator', 35, 4),
-                            new Among('itor', -1, 6),
-                            new Among('\u0103tor', -1, 5),
-                            new Among('iciv', -1, 4),
-                            new Among('ativ', -1, 5),
-                            new Among('itiv', -1, 6),
-                            new Among('ical\u0103', -1, 4),
-                            new Among('iciv\u0103', -1, 4),
-                            new Among('ativ\u0103', -1, 5),
-                            new Among('itiv\u0103', -1, 6)
+                            new Among("icala", -1, 4),
+                            new Among("iciva", -1, 4),
+                            new Among("ativa", -1, 5),
+                            new Among("itiva", -1, 6),
+                            new Among("icale", -1, 4),
+                            new Among("aţiune", -1, 5),
+                            new Among("iţiune", -1, 6),
+                            new Among("atoare", -1, 5),
+                            new Among("itoare", -1, 6),
+                            new Among("ătoare", -1, 5),
+                            new Among("icitate", -1, 4),
+                            new Among("abilitate", -1, 1),
+                            new Among("ibilitate", -1, 2),
+                            new Among("ivitate", -1, 3),
+                            new Among("icive", -1, 4),
+                            new Among("ative", -1, 5),
+                            new Among("itive", -1, 6),
+                            new Among("icali", -1, 4),
+                            new Among("atori", -1, 5),
+                            new Among("icatori", 18, 4),
+                            new Among("itori", -1, 6),
+                            new Among("ători", -1, 5),
+                            new Among("icitati", -1, 4),
+                            new Among("abilitati", -1, 1),
+                            new Among("ivitati", -1, 3),
+                            new Among("icivi", -1, 4),
+                            new Among("ativi", -1, 5),
+                            new Among("itivi", -1, 6),
+                            new Among("icităi", -1, 4),
+                            new Among("abilităi", -1, 1),
+                            new Among("ivităi", -1, 3),
+                            new Among("icităţi", -1, 4),
+                            new Among("abilităţi", -1, 1),
+                            new Among("ivităţi", -1, 3),
+                            new Among("ical", -1, 4),
+                            new Among("ator", -1, 5),
+                            new Among("icator", 35, 4),
+                            new Among("itor", -1, 6),
+                            new Among("ător", -1, 5),
+                            new Among("iciv", -1, 4),
+                            new Among("ativ", -1, 5),
+                            new Among("itiv", -1, 6),
+                            new Among("icală", -1, 4),
+                            new Among("icivă", -1, 4),
+                            new Among("ativă", -1, 5),
+                            new Among("itivă", -1, 6)
                         ], a_3 = [
-                            new Among('ica', -1, 1),
-                            new Among('abila', -1, 1),
-                            new Among('ibila', -1, 1),
-                            new Among('oasa', -1, 1),
-                            new Among('ata', -1, 1),
-                            new Among('ita', -1, 1),
-                            new Among('anta', -1, 1),
-                            new Among('ista', -1, 3),
-                            new Among('uta', -1, 1),
-                            new Among('iva', -1, 1),
-                            new Among('ic', -1, 1),
-                            new Among('ice', -1, 1),
-                            new Among('abile', -1, 1),
-                            new Among('ibile', -1, 1),
-                            new Among('isme', -1, 3),
-                            new Among('iune', -1, 2),
-                            new Among('oase', -1, 1),
-                            new Among('ate', -1, 1),
-                            new Among('itate', 17, 1),
-                            new Among('ite', -1, 1),
-                            new Among('ante', -1, 1),
-                            new Among('iste', -1, 3),
-                            new Among('ute', -1, 1),
-                            new Among('ive', -1, 1),
-                            new Among('ici', -1, 1),
-                            new Among('abili', -1, 1),
-                            new Among('ibili', -1, 1),
-                            new Among('iuni', -1, 2),
-                            new Among('atori', -1, 1),
-                            new Among('osi', -1, 1),
-                            new Among('ati', -1, 1),
-                            new Among('itati', 30, 1),
-                            new Among('iti', -1, 1),
-                            new Among('anti', -1, 1),
-                            new Among('isti', -1, 3),
-                            new Among('uti', -1, 1),
-                            new Among('i\u015Fti', -1, 3),
-                            new Among('ivi', -1, 1),
-                            new Among('it\u0103i', -1, 1),
-                            new Among('o\u015Fi', -1, 1),
-                            new Among('it\u0103\u0163i', -1, 1),
-                            new Among('abil', -1, 1),
-                            new Among('ibil', -1, 1),
-                            new Among('ism', -1, 3),
-                            new Among('ator', -1, 1),
-                            new Among('os', -1, 1),
-                            new Among('at', -1, 1),
-                            new Among('it', -1, 1),
-                            new Among('ant', -1, 1),
-                            new Among('ist', -1, 3),
-                            new Among('ut', -1, 1),
-                            new Among('iv', -1, 1),
-                            new Among('ic\u0103', -1, 1),
-                            new Among('abil\u0103', -1, 1),
-                            new Among('ibil\u0103', -1, 1),
-                            new Among('oas\u0103', -1, 1),
-                            new Among('at\u0103', -1, 1),
-                            new Among('it\u0103', -1, 1),
-                            new Among('ant\u0103', -1, 1),
-                            new Among('ist\u0103', -1, 3),
-                            new Among('ut\u0103', -1, 1),
-                            new Among('iv\u0103', -1, 1)
+                            new Among("ica", -1, 1),
+                            new Among("abila", -1, 1),
+                            new Among("ibila", -1, 1),
+                            new Among("oasa", -1, 1),
+                            new Among("ata", -1, 1),
+                            new Among("ita", -1, 1),
+                            new Among("anta", -1, 1),
+                            new Among("ista", -1, 3),
+                            new Among("uta", -1, 1),
+                            new Among("iva", -1, 1),
+                            new Among("ic", -1, 1),
+                            new Among("ice", -1, 1),
+                            new Among("abile", -1, 1),
+                            new Among("ibile", -1, 1),
+                            new Among("isme", -1, 3),
+                            new Among("iune", -1, 2),
+                            new Among("oase", -1, 1),
+                            new Among("ate", -1, 1),
+                            new Among("itate", 17, 1),
+                            new Among("ite", -1, 1),
+                            new Among("ante", -1, 1),
+                            new Among("iste", -1, 3),
+                            new Among("ute", -1, 1),
+                            new Among("ive", -1, 1),
+                            new Among("ici", -1, 1),
+                            new Among("abili", -1, 1),
+                            new Among("ibili", -1, 1),
+                            new Among("iuni", -1, 2),
+                            new Among("atori", -1, 1),
+                            new Among("osi", -1, 1),
+                            new Among("ati", -1, 1),
+                            new Among("itati", 30, 1),
+                            new Among("iti", -1, 1),
+                            new Among("anti", -1, 1),
+                            new Among("isti", -1, 3),
+                            new Among("uti", -1, 1),
+                            new Among("işti", -1, 3),
+                            new Among("ivi", -1, 1),
+                            new Among("ităi", -1, 1),
+                            new Among("oşi", -1, 1),
+                            new Among("ităţi", -1, 1),
+                            new Among("abil", -1, 1),
+                            new Among("ibil", -1, 1),
+                            new Among("ism", -1, 3),
+                            new Among("ator", -1, 1),
+                            new Among("os", -1, 1),
+                            new Among("at", -1, 1),
+                            new Among("it", -1, 1),
+                            new Among("ant", -1, 1),
+                            new Among("ist", -1, 3),
+                            new Among("ut", -1, 1),
+                            new Among("iv", -1, 1),
+                            new Among("ică", -1, 1),
+                            new Among("abilă", -1, 1),
+                            new Among("ibilă", -1, 1),
+                            new Among("oasă", -1, 1),
+                            new Among("ată", -1, 1),
+                            new Among("ită", -1, 1),
+                            new Among("antă", -1, 1),
+                            new Among("istă", -1, 3),
+                            new Among("ută", -1, 1),
+                            new Among("ivă", -1, 1)
                         ], a_4 = [
-                            new Among('ea', -1, 1),
-                            new Among('ia', -1, 1),
-                            new Among('esc', -1, 1),
-                            new Among('\u0103sc', -1, 1),
-                            new Among('ind', -1, 1),
-                            new Among('\xE2nd', -1, 1),
-                            new Among('are', -1, 1),
-                            new Among('ere', -1, 1),
-                            new Among('ire', -1, 1),
-                            new Among('\xE2re', -1, 1),
-                            new Among('se', -1, 2),
-                            new Among('ase', 10, 1),
-                            new Among('sese', 10, 2),
-                            new Among('ise', 10, 1),
-                            new Among('use', 10, 1),
-                            new Among('\xE2se', 10, 1),
-                            new Among('e\u015Fte', -1, 1),
-                            new Among('\u0103\u015Fte', -1, 1),
-                            new Among('eze', -1, 1),
-                            new Among('ai', -1, 1),
-                            new Among('eai', 19, 1),
-                            new Among('iai', 19, 1),
-                            new Among('sei', -1, 2),
-                            new Among('e\u015Fti', -1, 1),
-                            new Among('\u0103\u015Fti', -1, 1),
-                            new Among('ui', -1, 1),
-                            new Among('ezi', -1, 1),
-                            new Among('\xE2i', -1, 1),
-                            new Among('a\u015Fi', -1, 1),
-                            new Among('se\u015Fi', -1, 2),
-                            new Among('ase\u015Fi', 29, 1),
-                            new Among('sese\u015Fi', 29, 2),
-                            new Among('ise\u015Fi', 29, 1),
-                            new Among('use\u015Fi', 29, 1),
-                            new Among('\xE2se\u015Fi', 29, 1),
-                            new Among('i\u015Fi', -1, 1),
-                            new Among('u\u015Fi', -1, 1),
-                            new Among('\xE2\u015Fi', -1, 1),
-                            new Among('a\u0163i', -1, 2),
-                            new Among('ea\u0163i', 38, 1),
-                            new Among('ia\u0163i', 38, 1),
-                            new Among('e\u0163i', -1, 2),
-                            new Among('i\u0163i', -1, 2),
-                            new Among('\xE2\u0163i', -1, 2),
-                            new Among('ar\u0103\u0163i', -1, 1),
-                            new Among('ser\u0103\u0163i', -1, 2),
-                            new Among('aser\u0103\u0163i', 45, 1),
-                            new Among('seser\u0103\u0163i', 45, 2),
-                            new Among('iser\u0103\u0163i', 45, 1),
-                            new Among('user\u0103\u0163i', 45, 1),
-                            new Among('\xE2ser\u0103\u0163i', 45, 1),
-                            new Among('ir\u0103\u0163i', -1, 1),
-                            new Among('ur\u0103\u0163i', -1, 1),
-                            new Among('\xE2r\u0103\u0163i', -1, 1),
-                            new Among('am', -1, 1),
-                            new Among('eam', 54, 1),
-                            new Among('iam', 54, 1),
-                            new Among('em', -1, 2),
-                            new Among('asem', 57, 1),
-                            new Among('sesem', 57, 2),
-                            new Among('isem', 57, 1),
-                            new Among('usem', 57, 1),
-                            new Among('\xE2sem', 57, 1),
-                            new Among('im', -1, 2),
-                            new Among('\xE2m', -1, 2),
-                            new Among('\u0103m', -1, 2),
-                            new Among('ar\u0103m', 65, 1),
-                            new Among('ser\u0103m', 65, 2),
-                            new Among('aser\u0103m', 67, 1),
-                            new Among('seser\u0103m', 67, 2),
-                            new Among('iser\u0103m', 67, 1),
-                            new Among('user\u0103m', 67, 1),
-                            new Among('\xE2ser\u0103m', 67, 1),
-                            new Among('ir\u0103m', 65, 1),
-                            new Among('ur\u0103m', 65, 1),
-                            new Among('\xE2r\u0103m', 65, 1),
-                            new Among('au', -1, 1),
-                            new Among('eau', 76, 1),
-                            new Among('iau', 76, 1),
-                            new Among('indu', -1, 1),
-                            new Among('\xE2ndu', -1, 1),
-                            new Among('ez', -1, 1),
-                            new Among('easc\u0103', -1, 1),
-                            new Among('ar\u0103', -1, 1),
-                            new Among('ser\u0103', -1, 2),
-                            new Among('aser\u0103', 84, 1),
-                            new Among('seser\u0103', 84, 2),
-                            new Among('iser\u0103', 84, 1),
-                            new Among('user\u0103', 84, 1),
-                            new Among('\xE2ser\u0103', 84, 1),
-                            new Among('ir\u0103', -1, 1),
-                            new Among('ur\u0103', -1, 1),
-                            new Among('\xE2r\u0103', -1, 1),
-                            new Among('eaz\u0103', -1, 1)
+                            new Among("ea", -1, 1),
+                            new Among("ia", -1, 1),
+                            new Among("esc", -1, 1),
+                            new Among("ăsc", -1, 1),
+                            new Among("ind", -1, 1),
+                            new Among("ând", -1, 1),
+                            new Among("are", -1, 1),
+                            new Among("ere", -1, 1),
+                            new Among("ire", -1, 1),
+                            new Among("âre", -1, 1),
+                            new Among("se", -1, 2),
+                            new Among("ase", 10, 1),
+                            new Among("sese", 10, 2),
+                            new Among("ise", 10, 1),
+                            new Among("use", 10, 1),
+                            new Among("âse", 10, 1),
+                            new Among("eşte", -1, 1),
+                            new Among("ăşte", -1, 1),
+                            new Among("eze", -1, 1),
+                            new Among("ai", -1, 1),
+                            new Among("eai", 19, 1),
+                            new Among("iai", 19, 1),
+                            new Among("sei", -1, 2),
+                            new Among("eşti", -1, 1),
+                            new Among("ăşti", -1, 1),
+                            new Among("ui", -1, 1),
+                            new Among("ezi", -1, 1),
+                            new Among("âi", -1, 1),
+                            new Among("aşi", -1, 1),
+                            new Among("seşi", -1, 2),
+                            new Among("aseşi", 29, 1),
+                            new Among("seseşi", 29, 2),
+                            new Among("iseşi", 29, 1),
+                            new Among("useşi", 29, 1),
+                            new Among("âseşi", 29, 1),
+                            new Among("işi", -1, 1),
+                            new Among("uşi", -1, 1),
+                            new Among("âşi", -1, 1),
+                            new Among("aţi", -1, 2),
+                            new Among("eaţi", 38, 1),
+                            new Among("iaţi", 38, 1),
+                            new Among("eţi", -1, 2),
+                            new Among("iţi", -1, 2),
+                            new Among("âţi", -1, 2),
+                            new Among("arăţi", -1, 1),
+                            new Among("serăţi", -1, 2),
+                            new Among("aserăţi", 45, 1),
+                            new Among("seserăţi", 45, 2),
+                            new Among("iserăţi", 45, 1),
+                            new Among("userăţi", 45, 1),
+                            new Among("âserăţi", 45, 1),
+                            new Among("irăţi", -1, 1),
+                            new Among("urăţi", -1, 1),
+                            new Among("ârăţi", -1, 1),
+                            new Among("am", -1, 1),
+                            new Among("eam", 54, 1),
+                            new Among("iam", 54, 1),
+                            new Among("em", -1, 2),
+                            new Among("asem", 57, 1),
+                            new Among("sesem", 57, 2),
+                            new Among("isem", 57, 1),
+                            new Among("usem", 57, 1),
+                            new Among("âsem", 57, 1),
+                            new Among("im", -1, 2),
+                            new Among("âm", -1, 2),
+                            new Among("ăm", -1, 2),
+                            new Among("arăm", 65, 1),
+                            new Among("serăm", 65, 2),
+                            new Among("aserăm", 67, 1),
+                            new Among("seserăm", 67, 2),
+                            new Among("iserăm", 67, 1),
+                            new Among("userăm", 67, 1),
+                            new Among("âserăm", 67, 1),
+                            new Among("irăm", 65, 1),
+                            new Among("urăm", 65, 1),
+                            new Among("ârăm", 65, 1),
+                            new Among("au", -1, 1),
+                            new Among("eau", 76, 1),
+                            new Among("iau", 76, 1),
+                            new Among("indu", -1, 1),
+                            new Among("ându", -1, 1),
+                            new Among("ez", -1, 1),
+                            new Among("ească", -1, 1),
+                            new Among("ară", -1, 1),
+                            new Among("seră", -1, 2),
+                            new Among("aseră", 84, 1),
+                            new Among("seseră", 84, 2),
+                            new Among("iseră", 84, 1),
+                            new Among("useră", 84, 1),
+                            new Among("âseră", 84, 1),
+                            new Among("iră", -1, 1),
+                            new Among("ură", -1, 1),
+                            new Among("âră", -1, 1),
+                            new Among("ează", -1, 1)
                         ], a_5 = [
-                            new Among('a', -1, 1),
-                            new Among('e', -1, 1),
-                            new Among('ie', 1, 1),
-                            new Among('i', -1, 1),
-                            new Among('\u0103', -1, 1)
+                            new Among("a", -1, 1),
+                            new Among("e", -1, 1),
+                            new Among("ie", 1, 1),
+                            new Among("i", -1, 1),
+                            new Among("ă", -1, 1)
                         ], g_v = [
                             17,
                             65,
@@ -5090,9 +5090,9 @@ var Stemmer = function () {
                             if (sbp.i_g(g_v, 97, 259)) {
                                 v_2 = sbp.c;
                                 sbp.b = v_2;
-                                habr1('u', 'U');
+                                habr1("u", "U");
                                 sbp.c = v_2;
-                                habr1('i', 'I');
+                                habr1("i", "I");
                             }
                             sbp.c = v_1;
                             if (sbp.c >= sbp.l) {
@@ -5183,10 +5183,10 @@ var Stemmer = function () {
                                 sbp.k = sbp.c;
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('i');
+                                    sbp.s_f("i");
                                     continue;
                                 case 2:
-                                    sbp.s_f('u');
+                                    sbp.s_f("u");
                                     continue;
                                 case 3:
                                     if (sbp.c >= sbp.l)
@@ -5219,26 +5219,26 @@ var Stemmer = function () {
                                     sbp.s_d();
                                     break;
                                 case 2:
-                                    sbp.s_f('a');
+                                    sbp.s_f("a");
                                     break;
                                 case 3:
-                                    sbp.s_f('e');
+                                    sbp.s_f("e");
                                     break;
                                 case 4:
-                                    sbp.s_f('i');
+                                    sbp.s_f("i");
                                     break;
                                 case 5:
                                     v_1 = sbp.l - sbp.c;
-                                    if (!sbp.e_s_b(2, 'ab')) {
+                                    if (!sbp.e_s_b(2, "ab")) {
                                         sbp.c = sbp.l - v_1;
-                                        sbp.s_f('i');
+                                        sbp.s_f("i");
                                     }
                                     break;
                                 case 6:
-                                    sbp.s_f('at');
+                                    sbp.s_f("at");
                                     break;
                                 case 7:
-                                    sbp.s_f('a\u0163i');
+                                    sbp.s_f("aţi");
                                     break;
                                 }
                             }
@@ -5253,22 +5253,22 @@ var Stemmer = function () {
                             if (r_R1()) {
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('abil');
+                                    sbp.s_f("abil");
                                     break;
                                 case 2:
-                                    sbp.s_f('ibil');
+                                    sbp.s_f("ibil");
                                     break;
                                 case 3:
-                                    sbp.s_f('iv');
+                                    sbp.s_f("iv");
                                     break;
                                 case 4:
-                                    sbp.s_f('ic');
+                                    sbp.s_f("ic");
                                     break;
                                 case 5:
-                                    sbp.s_f('at');
+                                    sbp.s_f("at");
                                     break;
                                 case 6:
-                                    sbp.s_f('it');
+                                    sbp.s_f("it");
                                     break;
                                 }
                                 B_standard_suffix_removed = true;
@@ -5298,13 +5298,13 @@ var Stemmer = function () {
                                     sbp.s_d();
                                     break;
                                 case 2:
-                                    if (sbp.e_s_b(1, '\u0163')) {
+                                    if (sbp.e_s_b(1, "ţ")) {
                                         sbp.b = sbp.c;
-                                        sbp.s_f('t');
+                                        sbp.s_f("t");
                                     }
                                     break;
                                 case 3:
-                                    sbp.s_f('ist');
+                                    sbp.s_f("ist");
                                     break;
                                 }
                                 B_standard_suffix_removed = true;
@@ -5325,7 +5325,7 @@ var Stemmer = function () {
                                     v_2 = sbp.l - sbp.c;
                                     if (!sbp.o_g_b(g_v, 97, 259)) {
                                         sbp.c = sbp.l - v_2;
-                                        if (!sbp.e_s_b(1, 'u'))
+                                        if (!sbp.e_s_b(1, "u"))
                                             break;
                                     }
                                 case 2:
@@ -5370,146 +5370,146 @@ var Stemmer = function () {
                 },
                 RussianStemmer: function () {
                     var a_0 = [
-                            new Among('\u0432', -1, 1),
-                            new Among('\u0438\u0432', 0, 2),
-                            new Among('\u044B\u0432', 0, 2),
-                            new Among('\u0432\u0448\u0438', -1, 1),
-                            new Among('\u0438\u0432\u0448\u0438', 3, 2),
-                            new Among('\u044B\u0432\u0448\u0438', 3, 2),
-                            new Among('\u0432\u0448\u0438\u0441\u044C', -1, 1),
-                            new Among('\u0438\u0432\u0448\u0438\u0441\u044C', 6, 2),
-                            new Among('\u044B\u0432\u0448\u0438\u0441\u044C', 6, 2)
+                            new Among("в", -1, 1),
+                            new Among("ив", 0, 2),
+                            new Among("ыв", 0, 2),
+                            new Among("вши", -1, 1),
+                            new Among("ивши", 3, 2),
+                            new Among("ывши", 3, 2),
+                            new Among("вшись", -1, 1),
+                            new Among("ившись", 6, 2),
+                            new Among("ывшись", 6, 2)
                         ], a_1 = [
-                            new Among('\u0435\u0435', -1, 1),
-                            new Among('\u0438\u0435', -1, 1),
-                            new Among('\u043E\u0435', -1, 1),
-                            new Among('\u044B\u0435', -1, 1),
-                            new Among('\u0438\u043C\u0438', -1, 1),
-                            new Among('\u044B\u043C\u0438', -1, 1),
-                            new Among('\u0435\u0439', -1, 1),
-                            new Among('\u0438\u0439', -1, 1),
-                            new Among('\u043E\u0439', -1, 1),
-                            new Among('\u044B\u0439', -1, 1),
-                            new Among('\u0435\u043C', -1, 1),
-                            new Among('\u0438\u043C', -1, 1),
-                            new Among('\u043E\u043C', -1, 1),
-                            new Among('\u044B\u043C', -1, 1),
-                            new Among('\u0435\u0433\u043E', -1, 1),
-                            new Among('\u043E\u0433\u043E', -1, 1),
-                            new Among('\u0435\u043C\u0443', -1, 1),
-                            new Among('\u043E\u043C\u0443', -1, 1),
-                            new Among('\u0438\u0445', -1, 1),
-                            new Among('\u044B\u0445', -1, 1),
-                            new Among('\u0435\u044E', -1, 1),
-                            new Among('\u043E\u044E', -1, 1),
-                            new Among('\u0443\u044E', -1, 1),
-                            new Among('\u044E\u044E', -1, 1),
-                            new Among('\u0430\u044F', -1, 1),
-                            new Among('\u044F\u044F', -1, 1)
+                            new Among("ее", -1, 1),
+                            new Among("ие", -1, 1),
+                            new Among("ое", -1, 1),
+                            new Among("ые", -1, 1),
+                            new Among("ими", -1, 1),
+                            new Among("ыми", -1, 1),
+                            new Among("ей", -1, 1),
+                            new Among("ий", -1, 1),
+                            new Among("ой", -1, 1),
+                            new Among("ый", -1, 1),
+                            new Among("ем", -1, 1),
+                            new Among("им", -1, 1),
+                            new Among("ом", -1, 1),
+                            new Among("ым", -1, 1),
+                            new Among("его", -1, 1),
+                            new Among("ого", -1, 1),
+                            new Among("ему", -1, 1),
+                            new Among("ому", -1, 1),
+                            new Among("их", -1, 1),
+                            new Among("ых", -1, 1),
+                            new Among("ею", -1, 1),
+                            new Among("ою", -1, 1),
+                            new Among("ую", -1, 1),
+                            new Among("юю", -1, 1),
+                            new Among("ая", -1, 1),
+                            new Among("яя", -1, 1)
                         ], a_2 = [
-                            new Among('\u0435\u043C', -1, 1),
-                            new Among('\u043D\u043D', -1, 1),
-                            new Among('\u0432\u0448', -1, 1),
-                            new Among('\u0438\u0432\u0448', 2, 2),
-                            new Among('\u044B\u0432\u0448', 2, 2),
-                            new Among('\u0449', -1, 1),
-                            new Among('\u044E\u0449', 5, 1),
-                            new Among('\u0443\u044E\u0449', 6, 2)
+                            new Among("ем", -1, 1),
+                            new Among("нн", -1, 1),
+                            new Among("вш", -1, 1),
+                            new Among("ивш", 2, 2),
+                            new Among("ывш", 2, 2),
+                            new Among("щ", -1, 1),
+                            new Among("ющ", 5, 1),
+                            new Among("ующ", 6, 2)
                         ], a_3 = [
-                            new Among('\u0441\u044C', -1, 1),
-                            new Among('\u0441\u044F', -1, 1)
+                            new Among("сь", -1, 1),
+                            new Among("ся", -1, 1)
                         ], a_4 = [
-                            new Among('\u043B\u0430', -1, 1),
-                            new Among('\u0438\u043B\u0430', 0, 2),
-                            new Among('\u044B\u043B\u0430', 0, 2),
-                            new Among('\u043D\u0430', -1, 1),
-                            new Among('\u0435\u043D\u0430', 3, 2),
-                            new Among('\u0435\u0442\u0435', -1, 1),
-                            new Among('\u0438\u0442\u0435', -1, 2),
-                            new Among('\u0439\u0442\u0435', -1, 1),
-                            new Among('\u0435\u0439\u0442\u0435', 7, 2),
-                            new Among('\u0443\u0439\u0442\u0435', 7, 2),
-                            new Among('\u043B\u0438', -1, 1),
-                            new Among('\u0438\u043B\u0438', 10, 2),
-                            new Among('\u044B\u043B\u0438', 10, 2),
-                            new Among('\u0439', -1, 1),
-                            new Among('\u0435\u0439', 13, 2),
-                            new Among('\u0443\u0439', 13, 2),
-                            new Among('\u043B', -1, 1),
-                            new Among('\u0438\u043B', 16, 2),
-                            new Among('\u044B\u043B', 16, 2),
-                            new Among('\u0435\u043C', -1, 1),
-                            new Among('\u0438\u043C', -1, 2),
-                            new Among('\u044B\u043C', -1, 2),
-                            new Among('\u043D', -1, 1),
-                            new Among('\u0435\u043D', 22, 2),
-                            new Among('\u043B\u043E', -1, 1),
-                            new Among('\u0438\u043B\u043E', 24, 2),
-                            new Among('\u044B\u043B\u043E', 24, 2),
-                            new Among('\u043D\u043E', -1, 1),
-                            new Among('\u0435\u043D\u043E', 27, 2),
-                            new Among('\u043D\u043D\u043E', 27, 1),
-                            new Among('\u0435\u0442', -1, 1),
-                            new Among('\u0443\u0435\u0442', 30, 2),
-                            new Among('\u0438\u0442', -1, 2),
-                            new Among('\u044B\u0442', -1, 2),
-                            new Among('\u044E\u0442', -1, 1),
-                            new Among('\u0443\u044E\u0442', 34, 2),
-                            new Among('\u044F\u0442', -1, 2),
-                            new Among('\u043D\u044B', -1, 1),
-                            new Among('\u0435\u043D\u044B', 37, 2),
-                            new Among('\u0442\u044C', -1, 1),
-                            new Among('\u0438\u0442\u044C', 39, 2),
-                            new Among('\u044B\u0442\u044C', 39, 2),
-                            new Among('\u0435\u0448\u044C', -1, 1),
-                            new Among('\u0438\u0448\u044C', -1, 2),
-                            new Among('\u044E', -1, 2),
-                            new Among('\u0443\u044E', 44, 2)
+                            new Among("ла", -1, 1),
+                            new Among("ила", 0, 2),
+                            new Among("ыла", 0, 2),
+                            new Among("на", -1, 1),
+                            new Among("ена", 3, 2),
+                            new Among("ете", -1, 1),
+                            new Among("ите", -1, 2),
+                            new Among("йте", -1, 1),
+                            new Among("ейте", 7, 2),
+                            new Among("уйте", 7, 2),
+                            new Among("ли", -1, 1),
+                            new Among("или", 10, 2),
+                            new Among("ыли", 10, 2),
+                            new Among("й", -1, 1),
+                            new Among("ей", 13, 2),
+                            new Among("уй", 13, 2),
+                            new Among("л", -1, 1),
+                            new Among("ил", 16, 2),
+                            new Among("ыл", 16, 2),
+                            new Among("ем", -1, 1),
+                            new Among("им", -1, 2),
+                            new Among("ым", -1, 2),
+                            new Among("н", -1, 1),
+                            new Among("ен", 22, 2),
+                            new Among("ло", -1, 1),
+                            new Among("ило", 24, 2),
+                            new Among("ыло", 24, 2),
+                            new Among("но", -1, 1),
+                            new Among("ено", 27, 2),
+                            new Among("нно", 27, 1),
+                            new Among("ет", -1, 1),
+                            new Among("ует", 30, 2),
+                            new Among("ит", -1, 2),
+                            new Among("ыт", -1, 2),
+                            new Among("ют", -1, 1),
+                            new Among("уют", 34, 2),
+                            new Among("ят", -1, 2),
+                            new Among("ны", -1, 1),
+                            new Among("ены", 37, 2),
+                            new Among("ть", -1, 1),
+                            new Among("ить", 39, 2),
+                            new Among("ыть", 39, 2),
+                            new Among("ешь", -1, 1),
+                            new Among("ишь", -1, 2),
+                            new Among("ю", -1, 2),
+                            new Among("ую", 44, 2)
                         ], a_5 = [
-                            new Among('\u0430', -1, 1),
-                            new Among('\u0435\u0432', -1, 1),
-                            new Among('\u043E\u0432', -1, 1),
-                            new Among('\u0435', -1, 1),
-                            new Among('\u0438\u0435', 3, 1),
-                            new Among('\u044C\u0435', 3, 1),
-                            new Among('\u0438', -1, 1),
-                            new Among('\u0435\u0438', 6, 1),
-                            new Among('\u0438\u0438', 6, 1),
-                            new Among('\u0430\u043C\u0438', 6, 1),
-                            new Among('\u044F\u043C\u0438', 6, 1),
-                            new Among('\u0438\u044F\u043C\u0438', 10, 1),
-                            new Among('\u0439', -1, 1),
-                            new Among('\u0435\u0439', 12, 1),
-                            new Among('\u0438\u0435\u0439', 13, 1),
-                            new Among('\u0438\u0439', 12, 1),
-                            new Among('\u043E\u0439', 12, 1),
-                            new Among('\u0430\u043C', -1, 1),
-                            new Among('\u0435\u043C', -1, 1),
-                            new Among('\u0438\u0435\u043C', 18, 1),
-                            new Among('\u043E\u043C', -1, 1),
-                            new Among('\u044F\u043C', -1, 1),
-                            new Among('\u0438\u044F\u043C', 21, 1),
-                            new Among('\u043E', -1, 1),
-                            new Among('\u0443', -1, 1),
-                            new Among('\u0430\u0445', -1, 1),
-                            new Among('\u044F\u0445', -1, 1),
-                            new Among('\u0438\u044F\u0445', 26, 1),
-                            new Among('\u044B', -1, 1),
-                            new Among('\u044C', -1, 1),
-                            new Among('\u044E', -1, 1),
-                            new Among('\u0438\u044E', 30, 1),
-                            new Among('\u044C\u044E', 30, 1),
-                            new Among('\u044F', -1, 1),
-                            new Among('\u0438\u044F', 33, 1),
-                            new Among('\u044C\u044F', 33, 1)
+                            new Among("а", -1, 1),
+                            new Among("ев", -1, 1),
+                            new Among("ов", -1, 1),
+                            new Among("е", -1, 1),
+                            new Among("ие", 3, 1),
+                            new Among("ье", 3, 1),
+                            new Among("и", -1, 1),
+                            new Among("еи", 6, 1),
+                            new Among("ии", 6, 1),
+                            new Among("ами", 6, 1),
+                            new Among("ями", 6, 1),
+                            new Among("иями", 10, 1),
+                            new Among("й", -1, 1),
+                            new Among("ей", 12, 1),
+                            new Among("ией", 13, 1),
+                            new Among("ий", 12, 1),
+                            new Among("ой", 12, 1),
+                            new Among("ам", -1, 1),
+                            new Among("ем", -1, 1),
+                            new Among("ием", 18, 1),
+                            new Among("ом", -1, 1),
+                            new Among("ям", -1, 1),
+                            new Among("иям", 21, 1),
+                            new Among("о", -1, 1),
+                            new Among("у", -1, 1),
+                            new Among("ах", -1, 1),
+                            new Among("ях", -1, 1),
+                            new Among("иях", 26, 1),
+                            new Among("ы", -1, 1),
+                            new Among("ь", -1, 1),
+                            new Among("ю", -1, 1),
+                            new Among("ию", 30, 1),
+                            new Among("ью", 30, 1),
+                            new Among("я", -1, 1),
+                            new Among("ия", 33, 1),
+                            new Among("ья", 33, 1)
                         ], a_6 = [
-                            new Among('\u043E\u0441\u0442', -1, 1),
-                            new Among('\u043E\u0441\u0442\u044C', -1, 1)
+                            new Among("ост", -1, 1),
+                            new Among("ость", -1, 1)
                         ], a_7 = [
-                            new Among('\u0435\u0439\u0448\u0435', -1, 1),
-                            new Among('\u043D', -1, 2),
-                            new Among('\u0435\u0439\u0448', -1, 1),
-                            new Among('\u044C', -1, 3)
+                            new Among("ейше", -1, 1),
+                            new Among("н", -1, 2),
+                            new Among("ейш", -1, 1),
+                            new Among("ь", -1, 3)
                         ], g_v = [
                             33,
                             65,
@@ -5561,9 +5561,9 @@ var Stemmer = function () {
                             switch (a_v) {
                             case 1:
                                 v_1 = sbp.l - sbp.c;
-                                if (!sbp.e_s_b(1, '\u0430')) {
+                                if (!sbp.e_s_b(1, "а")) {
                                     sbp.c = sbp.l - v_1;
-                                    if (!sbp.e_s_b(1, '\u044F'))
+                                    if (!sbp.e_s_b(1, "я"))
                                         return false;
                                 }
                             case 2:
@@ -5629,11 +5629,11 @@ var Stemmer = function () {
                             case 1:
                                 sbp.s_d();
                                 sbp.k = sbp.c;
-                                if (!sbp.e_s_b(1, '\u043D'))
+                                if (!sbp.e_s_b(1, "н"))
                                     break;
                                 sbp.b = sbp.c;
                             case 2:
-                                if (!sbp.e_s_b(1, '\u043D'))
+                                if (!sbp.e_s_b(1, "н"))
                                     break;
                             case 3:
                                 sbp.s_d();
@@ -5661,7 +5661,7 @@ var Stemmer = function () {
                         }
                         sbp.c = sbp.l;
                         sbp.k = sbp.c;
-                        if (sbp.e_s_b(1, '\u0438')) {
+                        if (sbp.e_s_b(1, "и")) {
                             sbp.b = sbp.c;
                             sbp.s_d();
                         } else
@@ -5674,217 +5674,217 @@ var Stemmer = function () {
                 },
                 SpanishStemmer: function () {
                     var a_0 = [
-                            new Among('', -1, 6),
-                            new Among('\xE1', 0, 1),
-                            new Among('\xE9', 0, 2),
-                            new Among('\xED', 0, 3),
-                            new Among('\xF3', 0, 4),
-                            new Among('\xFA', 0, 5)
+                            new Among("", -1, 6),
+                            new Among("á", 0, 1),
+                            new Among("é", 0, 2),
+                            new Among("í", 0, 3),
+                            new Among("ó", 0, 4),
+                            new Among("ú", 0, 5)
                         ], a_1 = [
-                            new Among('la', -1, -1),
-                            new Among('sela', 0, -1),
-                            new Among('le', -1, -1),
-                            new Among('me', -1, -1),
-                            new Among('se', -1, -1),
-                            new Among('lo', -1, -1),
-                            new Among('selo', 5, -1),
-                            new Among('las', -1, -1),
-                            new Among('selas', 7, -1),
-                            new Among('les', -1, -1),
-                            new Among('los', -1, -1),
-                            new Among('selos', 10, -1),
-                            new Among('nos', -1, -1)
+                            new Among("la", -1, -1),
+                            new Among("sela", 0, -1),
+                            new Among("le", -1, -1),
+                            new Among("me", -1, -1),
+                            new Among("se", -1, -1),
+                            new Among("lo", -1, -1),
+                            new Among("selo", 5, -1),
+                            new Among("las", -1, -1),
+                            new Among("selas", 7, -1),
+                            new Among("les", -1, -1),
+                            new Among("los", -1, -1),
+                            new Among("selos", 10, -1),
+                            new Among("nos", -1, -1)
                         ], a_2 = [
-                            new Among('ando', -1, 6),
-                            new Among('iendo', -1, 6),
-                            new Among('yendo', -1, 7),
-                            new Among('\xE1ndo', -1, 2),
-                            new Among('i\xE9ndo', -1, 1),
-                            new Among('ar', -1, 6),
-                            new Among('er', -1, 6),
-                            new Among('ir', -1, 6),
-                            new Among('\xE1r', -1, 3),
-                            new Among('\xE9r', -1, 4),
-                            new Among('\xEDr', -1, 5)
+                            new Among("ando", -1, 6),
+                            new Among("iendo", -1, 6),
+                            new Among("yendo", -1, 7),
+                            new Among("ándo", -1, 2),
+                            new Among("iéndo", -1, 1),
+                            new Among("ar", -1, 6),
+                            new Among("er", -1, 6),
+                            new Among("ir", -1, 6),
+                            new Among("ár", -1, 3),
+                            new Among("ér", -1, 4),
+                            new Among("ír", -1, 5)
                         ], a_3 = [
-                            new Among('ic', -1, -1),
-                            new Among('ad', -1, -1),
-                            new Among('os', -1, -1),
-                            new Among('iv', -1, 1)
+                            new Among("ic", -1, -1),
+                            new Among("ad", -1, -1),
+                            new Among("os", -1, -1),
+                            new Among("iv", -1, 1)
                         ], a_4 = [
-                            new Among('able', -1, 1),
-                            new Among('ible', -1, 1),
-                            new Among('ante', -1, 1)
+                            new Among("able", -1, 1),
+                            new Among("ible", -1, 1),
+                            new Among("ante", -1, 1)
                         ], a_5 = [
-                            new Among('ic', -1, 1),
-                            new Among('abil', -1, 1),
-                            new Among('iv', -1, 1)
+                            new Among("ic", -1, 1),
+                            new Among("abil", -1, 1),
+                            new Among("iv", -1, 1)
                         ], a_6 = [
-                            new Among('ica', -1, 1),
-                            new Among('ancia', -1, 2),
-                            new Among('encia', -1, 5),
-                            new Among('adora', -1, 2),
-                            new Among('osa', -1, 1),
-                            new Among('ista', -1, 1),
-                            new Among('iva', -1, 9),
-                            new Among('anza', -1, 1),
-                            new Among('log\xEDa', -1, 3),
-                            new Among('idad', -1, 8),
-                            new Among('able', -1, 1),
-                            new Among('ible', -1, 1),
-                            new Among('ante', -1, 2),
-                            new Among('mente', -1, 7),
-                            new Among('amente', 13, 6),
-                            new Among('aci\xF3n', -1, 2),
-                            new Among('uci\xF3n', -1, 4),
-                            new Among('ico', -1, 1),
-                            new Among('ismo', -1, 1),
-                            new Among('oso', -1, 1),
-                            new Among('amiento', -1, 1),
-                            new Among('imiento', -1, 1),
-                            new Among('ivo', -1, 9),
-                            new Among('ador', -1, 2),
-                            new Among('icas', -1, 1),
-                            new Among('ancias', -1, 2),
-                            new Among('encias', -1, 5),
-                            new Among('adoras', -1, 2),
-                            new Among('osas', -1, 1),
-                            new Among('istas', -1, 1),
-                            new Among('ivas', -1, 9),
-                            new Among('anzas', -1, 1),
-                            new Among('log\xEDas', -1, 3),
-                            new Among('idades', -1, 8),
-                            new Among('ables', -1, 1),
-                            new Among('ibles', -1, 1),
-                            new Among('aciones', -1, 2),
-                            new Among('uciones', -1, 4),
-                            new Among('adores', -1, 2),
-                            new Among('antes', -1, 2),
-                            new Among('icos', -1, 1),
-                            new Among('ismos', -1, 1),
-                            new Among('osos', -1, 1),
-                            new Among('amientos', -1, 1),
-                            new Among('imientos', -1, 1),
-                            new Among('ivos', -1, 9)
+                            new Among("ica", -1, 1),
+                            new Among("ancia", -1, 2),
+                            new Among("encia", -1, 5),
+                            new Among("adora", -1, 2),
+                            new Among("osa", -1, 1),
+                            new Among("ista", -1, 1),
+                            new Among("iva", -1, 9),
+                            new Among("anza", -1, 1),
+                            new Among("logía", -1, 3),
+                            new Among("idad", -1, 8),
+                            new Among("able", -1, 1),
+                            new Among("ible", -1, 1),
+                            new Among("ante", -1, 2),
+                            new Among("mente", -1, 7),
+                            new Among("amente", 13, 6),
+                            new Among("ación", -1, 2),
+                            new Among("ución", -1, 4),
+                            new Among("ico", -1, 1),
+                            new Among("ismo", -1, 1),
+                            new Among("oso", -1, 1),
+                            new Among("amiento", -1, 1),
+                            new Among("imiento", -1, 1),
+                            new Among("ivo", -1, 9),
+                            new Among("ador", -1, 2),
+                            new Among("icas", -1, 1),
+                            new Among("ancias", -1, 2),
+                            new Among("encias", -1, 5),
+                            new Among("adoras", -1, 2),
+                            new Among("osas", -1, 1),
+                            new Among("istas", -1, 1),
+                            new Among("ivas", -1, 9),
+                            new Among("anzas", -1, 1),
+                            new Among("logías", -1, 3),
+                            new Among("idades", -1, 8),
+                            new Among("ables", -1, 1),
+                            new Among("ibles", -1, 1),
+                            new Among("aciones", -1, 2),
+                            new Among("uciones", -1, 4),
+                            new Among("adores", -1, 2),
+                            new Among("antes", -1, 2),
+                            new Among("icos", -1, 1),
+                            new Among("ismos", -1, 1),
+                            new Among("osos", -1, 1),
+                            new Among("amientos", -1, 1),
+                            new Among("imientos", -1, 1),
+                            new Among("ivos", -1, 9)
                         ], a_7 = [
-                            new Among('ya', -1, 1),
-                            new Among('ye', -1, 1),
-                            new Among('yan', -1, 1),
-                            new Among('yen', -1, 1),
-                            new Among('yeron', -1, 1),
-                            new Among('yendo', -1, 1),
-                            new Among('yo', -1, 1),
-                            new Among('yas', -1, 1),
-                            new Among('yes', -1, 1),
-                            new Among('yais', -1, 1),
-                            new Among('yamos', -1, 1),
-                            new Among('y\xF3', -1, 1)
+                            new Among("ya", -1, 1),
+                            new Among("ye", -1, 1),
+                            new Among("yan", -1, 1),
+                            new Among("yen", -1, 1),
+                            new Among("yeron", -1, 1),
+                            new Among("yendo", -1, 1),
+                            new Among("yo", -1, 1),
+                            new Among("yas", -1, 1),
+                            new Among("yes", -1, 1),
+                            new Among("yais", -1, 1),
+                            new Among("yamos", -1, 1),
+                            new Among("yó", -1, 1)
                         ], a_8 = [
-                            new Among('aba', -1, 2),
-                            new Among('ada', -1, 2),
-                            new Among('ida', -1, 2),
-                            new Among('ara', -1, 2),
-                            new Among('iera', -1, 2),
-                            new Among('\xEDa', -1, 2),
-                            new Among('ar\xEDa', 5, 2),
-                            new Among('er\xEDa', 5, 2),
-                            new Among('ir\xEDa', 5, 2),
-                            new Among('ad', -1, 2),
-                            new Among('ed', -1, 2),
-                            new Among('id', -1, 2),
-                            new Among('ase', -1, 2),
-                            new Among('iese', -1, 2),
-                            new Among('aste', -1, 2),
-                            new Among('iste', -1, 2),
-                            new Among('an', -1, 2),
-                            new Among('aban', 16, 2),
-                            new Among('aran', 16, 2),
-                            new Among('ieran', 16, 2),
-                            new Among('\xEDan', 16, 2),
-                            new Among('ar\xEDan', 20, 2),
-                            new Among('er\xEDan', 20, 2),
-                            new Among('ir\xEDan', 20, 2),
-                            new Among('en', -1, 1),
-                            new Among('asen', 24, 2),
-                            new Among('iesen', 24, 2),
-                            new Among('aron', -1, 2),
-                            new Among('ieron', -1, 2),
-                            new Among('ar\xE1n', -1, 2),
-                            new Among('er\xE1n', -1, 2),
-                            new Among('ir\xE1n', -1, 2),
-                            new Among('ado', -1, 2),
-                            new Among('ido', -1, 2),
-                            new Among('ando', -1, 2),
-                            new Among('iendo', -1, 2),
-                            new Among('ar', -1, 2),
-                            new Among('er', -1, 2),
-                            new Among('ir', -1, 2),
-                            new Among('as', -1, 2),
-                            new Among('abas', 39, 2),
-                            new Among('adas', 39, 2),
-                            new Among('idas', 39, 2),
-                            new Among('aras', 39, 2),
-                            new Among('ieras', 39, 2),
-                            new Among('\xEDas', 39, 2),
-                            new Among('ar\xEDas', 45, 2),
-                            new Among('er\xEDas', 45, 2),
-                            new Among('ir\xEDas', 45, 2),
-                            new Among('es', -1, 1),
-                            new Among('ases', 49, 2),
-                            new Among('ieses', 49, 2),
-                            new Among('abais', -1, 2),
-                            new Among('arais', -1, 2),
-                            new Among('ierais', -1, 2),
-                            new Among('\xEDais', -1, 2),
-                            new Among('ar\xEDais', 55, 2),
-                            new Among('er\xEDais', 55, 2),
-                            new Among('ir\xEDais', 55, 2),
-                            new Among('aseis', -1, 2),
-                            new Among('ieseis', -1, 2),
-                            new Among('asteis', -1, 2),
-                            new Among('isteis', -1, 2),
-                            new Among('\xE1is', -1, 2),
-                            new Among('\xE9is', -1, 1),
-                            new Among('ar\xE9is', 64, 2),
-                            new Among('er\xE9is', 64, 2),
-                            new Among('ir\xE9is', 64, 2),
-                            new Among('ados', -1, 2),
-                            new Among('idos', -1, 2),
-                            new Among('amos', -1, 2),
-                            new Among('\xE1bamos', 70, 2),
-                            new Among('\xE1ramos', 70, 2),
-                            new Among('i\xE9ramos', 70, 2),
-                            new Among('\xEDamos', 70, 2),
-                            new Among('ar\xEDamos', 74, 2),
-                            new Among('er\xEDamos', 74, 2),
-                            new Among('ir\xEDamos', 74, 2),
-                            new Among('emos', -1, 1),
-                            new Among('aremos', 78, 2),
-                            new Among('eremos', 78, 2),
-                            new Among('iremos', 78, 2),
-                            new Among('\xE1semos', 78, 2),
-                            new Among('i\xE9semos', 78, 2),
-                            new Among('imos', -1, 2),
-                            new Among('ar\xE1s', -1, 2),
-                            new Among('er\xE1s', -1, 2),
-                            new Among('ir\xE1s', -1, 2),
-                            new Among('\xEDs', -1, 2),
-                            new Among('ar\xE1', -1, 2),
-                            new Among('er\xE1', -1, 2),
-                            new Among('ir\xE1', -1, 2),
-                            new Among('ar\xE9', -1, 2),
-                            new Among('er\xE9', -1, 2),
-                            new Among('ir\xE9', -1, 2),
-                            new Among('i\xF3', -1, 2)
+                            new Among("aba", -1, 2),
+                            new Among("ada", -1, 2),
+                            new Among("ida", -1, 2),
+                            new Among("ara", -1, 2),
+                            new Among("iera", -1, 2),
+                            new Among("ía", -1, 2),
+                            new Among("aría", 5, 2),
+                            new Among("ería", 5, 2),
+                            new Among("iría", 5, 2),
+                            new Among("ad", -1, 2),
+                            new Among("ed", -1, 2),
+                            new Among("id", -1, 2),
+                            new Among("ase", -1, 2),
+                            new Among("iese", -1, 2),
+                            new Among("aste", -1, 2),
+                            new Among("iste", -1, 2),
+                            new Among("an", -1, 2),
+                            new Among("aban", 16, 2),
+                            new Among("aran", 16, 2),
+                            new Among("ieran", 16, 2),
+                            new Among("ían", 16, 2),
+                            new Among("arían", 20, 2),
+                            new Among("erían", 20, 2),
+                            new Among("irían", 20, 2),
+                            new Among("en", -1, 1),
+                            new Among("asen", 24, 2),
+                            new Among("iesen", 24, 2),
+                            new Among("aron", -1, 2),
+                            new Among("ieron", -1, 2),
+                            new Among("arán", -1, 2),
+                            new Among("erán", -1, 2),
+                            new Among("irán", -1, 2),
+                            new Among("ado", -1, 2),
+                            new Among("ido", -1, 2),
+                            new Among("ando", -1, 2),
+                            new Among("iendo", -1, 2),
+                            new Among("ar", -1, 2),
+                            new Among("er", -1, 2),
+                            new Among("ir", -1, 2),
+                            new Among("as", -1, 2),
+                            new Among("abas", 39, 2),
+                            new Among("adas", 39, 2),
+                            new Among("idas", 39, 2),
+                            new Among("aras", 39, 2),
+                            new Among("ieras", 39, 2),
+                            new Among("ías", 39, 2),
+                            new Among("arías", 45, 2),
+                            new Among("erías", 45, 2),
+                            new Among("irías", 45, 2),
+                            new Among("es", -1, 1),
+                            new Among("ases", 49, 2),
+                            new Among("ieses", 49, 2),
+                            new Among("abais", -1, 2),
+                            new Among("arais", -1, 2),
+                            new Among("ierais", -1, 2),
+                            new Among("íais", -1, 2),
+                            new Among("aríais", 55, 2),
+                            new Among("eríais", 55, 2),
+                            new Among("iríais", 55, 2),
+                            new Among("aseis", -1, 2),
+                            new Among("ieseis", -1, 2),
+                            new Among("asteis", -1, 2),
+                            new Among("isteis", -1, 2),
+                            new Among("áis", -1, 2),
+                            new Among("éis", -1, 1),
+                            new Among("aréis", 64, 2),
+                            new Among("eréis", 64, 2),
+                            new Among("iréis", 64, 2),
+                            new Among("ados", -1, 2),
+                            new Among("idos", -1, 2),
+                            new Among("amos", -1, 2),
+                            new Among("ábamos", 70, 2),
+                            new Among("áramos", 70, 2),
+                            new Among("iéramos", 70, 2),
+                            new Among("íamos", 70, 2),
+                            new Among("aríamos", 74, 2),
+                            new Among("eríamos", 74, 2),
+                            new Among("iríamos", 74, 2),
+                            new Among("emos", -1, 1),
+                            new Among("aremos", 78, 2),
+                            new Among("eremos", 78, 2),
+                            new Among("iremos", 78, 2),
+                            new Among("ásemos", 78, 2),
+                            new Among("iésemos", 78, 2),
+                            new Among("imos", -1, 2),
+                            new Among("arás", -1, 2),
+                            new Among("erás", -1, 2),
+                            new Among("irás", -1, 2),
+                            new Among("ís", -1, 2),
+                            new Among("ará", -1, 2),
+                            new Among("erá", -1, 2),
+                            new Among("irá", -1, 2),
+                            new Among("aré", -1, 2),
+                            new Among("eré", -1, 2),
+                            new Among("iré", -1, 2),
+                            new Among("ió", -1, 2)
                         ], a_9 = [
-                            new Among('a', -1, 1),
-                            new Among('e', -1, 2),
-                            new Among('o', -1, 1),
-                            new Among('os', -1, 1),
-                            new Among('\xE1', -1, 1),
-                            new Among('\xE9', -1, 2),
-                            new Among('\xED', -1, 1),
-                            new Among('\xF3', -1, 1)
+                            new Among("a", -1, 1),
+                            new Among("e", -1, 2),
+                            new Among("o", -1, 1),
+                            new Among("os", -1, 1),
+                            new Among("á", -1, 1),
+                            new Among("é", -1, 2),
+                            new Among("í", -1, 1),
+                            new Among("ó", -1, 1)
                         ], g_v = [
                             17,
                             65,
@@ -5992,19 +5992,19 @@ var Stemmer = function () {
                                 sbp.k = sbp.c;
                                 switch (a_v) {
                                 case 1:
-                                    sbp.s_f('a');
+                                    sbp.s_f("a");
                                     continue;
                                 case 2:
-                                    sbp.s_f('e');
+                                    sbp.s_f("e");
                                     continue;
                                 case 3:
-                                    sbp.s_f('i');
+                                    sbp.s_f("i");
                                     continue;
                                 case 4:
-                                    sbp.s_f('o');
+                                    sbp.s_f("o");
                                     continue;
                                 case 5:
-                                    sbp.s_f('u');
+                                    sbp.s_f("u");
                                     continue;
                                 case 6:
                                     if (sbp.c >= sbp.l)
@@ -6035,29 +6035,29 @@ var Stemmer = function () {
                                 switch (a_v) {
                                 case 1:
                                     sbp.b = sbp.c;
-                                    sbp.s_f('iendo');
+                                    sbp.s_f("iendo");
                                     break;
                                 case 2:
                                     sbp.b = sbp.c;
-                                    sbp.s_f('ando');
+                                    sbp.s_f("ando");
                                     break;
                                 case 3:
                                     sbp.b = sbp.c;
-                                    sbp.s_f('ar');
+                                    sbp.s_f("ar");
                                     break;
                                 case 4:
                                     sbp.b = sbp.c;
-                                    sbp.s_f('er');
+                                    sbp.s_f("er");
                                     break;
                                 case 5:
                                     sbp.b = sbp.c;
-                                    sbp.s_f('ir');
+                                    sbp.s_f("ir");
                                     break;
                                 case 6:
                                     sbp.s_d();
                                     break;
                                 case 7:
-                                    if (sbp.e_s_b(1, 'u'))
+                                    if (sbp.e_s_b(1, "u"))
                                         sbp.s_d();
                                     break;
                                 }
@@ -6101,23 +6101,23 @@ var Stemmer = function () {
                                 sbp.s_d();
                                 break;
                             case 2:
-                                if (habr6('ic'))
+                                if (habr6("ic"))
                                     return false;
                                 break;
                             case 3:
                                 if (!r_R2())
                                     return false;
-                                sbp.s_f('log');
+                                sbp.s_f("log");
                                 break;
                             case 4:
                                 if (!r_R2())
                                     return false;
-                                sbp.s_f('u');
+                                sbp.s_f("u");
                                 break;
                             case 5:
                                 if (!r_R2())
                                     return false;
-                                sbp.s_f('ente');
+                                sbp.s_f("ente");
                                 break;
                             case 6:
                                 if (!r_R1())
@@ -6131,7 +6131,7 @@ var Stemmer = function () {
                                         sbp.s_d();
                                         if (a_v == 1) {
                                             sbp.k = sbp.c;
-                                            if (sbp.e_s_b(2, 'at')) {
+                                            if (sbp.e_s_b(2, "at")) {
                                                 sbp.b = sbp.c;
                                                 if (r_R2())
                                                     sbp.s_d();
@@ -6149,7 +6149,7 @@ var Stemmer = function () {
                                     return false;
                                 break;
                             case 9:
-                                if (habr6('at'))
+                                if (habr6("at"))
                                     return false;
                                 break;
                             }
@@ -6168,7 +6168,7 @@ var Stemmer = function () {
                             if (a_v) {
                                 sbp.b = sbp.c;
                                 if (a_v == 1) {
-                                    if (!sbp.e_s_b(1, 'u'))
+                                    if (!sbp.e_s_b(1, "u"))
                                         return false;
                                     sbp.s_d();
                                 }
@@ -6190,9 +6190,9 @@ var Stemmer = function () {
                                 switch (a_v) {
                                 case 1:
                                     v_2 = sbp.l - sbp.c;
-                                    if (sbp.e_s_b(1, 'u')) {
+                                    if (sbp.e_s_b(1, "u")) {
                                         v_3 = sbp.l - sbp.c;
-                                        if (sbp.e_s_b(1, 'g'))
+                                        if (sbp.e_s_b(1, "g"))
                                             sbp.c = sbp.l - v_3;
                                         else
                                             sbp.c = sbp.l - v_2;
@@ -6221,10 +6221,10 @@ var Stemmer = function () {
                                 if (r_RV()) {
                                     sbp.s_d();
                                     sbp.k = sbp.c;
-                                    if (sbp.e_s_b(1, 'u')) {
+                                    if (sbp.e_s_b(1, "u")) {
                                         sbp.b = sbp.c;
                                         v_1 = sbp.l - sbp.c;
-                                        if (sbp.e_s_b(1, 'g')) {
+                                        if (sbp.e_s_b(1, "g")) {
                                             sbp.c = sbp.l - v_1;
                                             if (r_RV())
                                                 sbp.s_d();
@@ -6258,57 +6258,57 @@ var Stemmer = function () {
                 },
                 SwedishStemmer: function () {
                     var a_0 = [
-                            new Among('a', -1, 1),
-                            new Among('arna', 0, 1),
-                            new Among('erna', 0, 1),
-                            new Among('heterna', 2, 1),
-                            new Among('orna', 0, 1),
-                            new Among('ad', -1, 1),
-                            new Among('e', -1, 1),
-                            new Among('ade', 6, 1),
-                            new Among('ande', 6, 1),
-                            new Among('arne', 6, 1),
-                            new Among('are', 6, 1),
-                            new Among('aste', 6, 1),
-                            new Among('en', -1, 1),
-                            new Among('anden', 12, 1),
-                            new Among('aren', 12, 1),
-                            new Among('heten', 12, 1),
-                            new Among('ern', -1, 1),
-                            new Among('ar', -1, 1),
-                            new Among('er', -1, 1),
-                            new Among('heter', 18, 1),
-                            new Among('or', -1, 1),
-                            new Among('s', -1, 2),
-                            new Among('as', 21, 1),
-                            new Among('arnas', 22, 1),
-                            new Among('ernas', 22, 1),
-                            new Among('ornas', 22, 1),
-                            new Among('es', 21, 1),
-                            new Among('ades', 26, 1),
-                            new Among('andes', 26, 1),
-                            new Among('ens', 21, 1),
-                            new Among('arens', 29, 1),
-                            new Among('hetens', 29, 1),
-                            new Among('erns', 21, 1),
-                            new Among('at', -1, 1),
-                            new Among('andet', -1, 1),
-                            new Among('het', -1, 1),
-                            new Among('ast', -1, 1)
+                            new Among("a", -1, 1),
+                            new Among("arna", 0, 1),
+                            new Among("erna", 0, 1),
+                            new Among("heterna", 2, 1),
+                            new Among("orna", 0, 1),
+                            new Among("ad", -1, 1),
+                            new Among("e", -1, 1),
+                            new Among("ade", 6, 1),
+                            new Among("ande", 6, 1),
+                            new Among("arne", 6, 1),
+                            new Among("are", 6, 1),
+                            new Among("aste", 6, 1),
+                            new Among("en", -1, 1),
+                            new Among("anden", 12, 1),
+                            new Among("aren", 12, 1),
+                            new Among("heten", 12, 1),
+                            new Among("ern", -1, 1),
+                            new Among("ar", -1, 1),
+                            new Among("er", -1, 1),
+                            new Among("heter", 18, 1),
+                            new Among("or", -1, 1),
+                            new Among("s", -1, 2),
+                            new Among("as", 21, 1),
+                            new Among("arnas", 22, 1),
+                            new Among("ernas", 22, 1),
+                            new Among("ornas", 22, 1),
+                            new Among("es", 21, 1),
+                            new Among("ades", 26, 1),
+                            new Among("andes", 26, 1),
+                            new Among("ens", 21, 1),
+                            new Among("arens", 29, 1),
+                            new Among("hetens", 29, 1),
+                            new Among("erns", 21, 1),
+                            new Among("at", -1, 1),
+                            new Among("andet", -1, 1),
+                            new Among("het", -1, 1),
+                            new Among("ast", -1, 1)
                         ], a_1 = [
-                            new Among('dd', -1, -1),
-                            new Among('gd', -1, -1),
-                            new Among('nn', -1, -1),
-                            new Among('dt', -1, -1),
-                            new Among('gt', -1, -1),
-                            new Among('kt', -1, -1),
-                            new Among('tt', -1, -1)
+                            new Among("dd", -1, -1),
+                            new Among("gd", -1, -1),
+                            new Among("nn", -1, -1),
+                            new Among("dt", -1, -1),
+                            new Among("gt", -1, -1),
+                            new Among("kt", -1, -1),
+                            new Among("tt", -1, -1)
                         ], a_2 = [
-                            new Among('ig', -1, 1),
-                            new Among('lig', 0, 1),
-                            new Among('els', -1, 1),
-                            new Among('fullt', -1, 3),
-                            new Among('l\xF6st', -1, 2)
+                            new Among("ig", -1, 1),
+                            new Among("lig", 0, 1),
+                            new Among("els", -1, 1),
+                            new Among("fullt", -1, 3),
+                            new Among("löst", -1, 2)
                         ], g_v = [
                             17,
                             65,
@@ -6419,10 +6419,10 @@ var Stemmer = function () {
                                     sbp.s_d();
                                     break;
                                 case 2:
-                                    sbp.s_f('l\xF6s');
+                                    sbp.s_f("lös");
                                     break;
                                 case 3:
-                                    sbp.s_f('full');
+                                    sbp.s_f("full");
                                     break;
                                 }
                             }
@@ -6444,149 +6444,149 @@ var Stemmer = function () {
                 },
                 TurkishStemmer: function () {
                     var a_0 = [
-                            new Among('m', -1, -1),
-                            new Among('n', -1, -1),
-                            new Among('miz', -1, -1),
-                            new Among('niz', -1, -1),
-                            new Among('muz', -1, -1),
-                            new Among('nuz', -1, -1),
-                            new Among('m\xFCz', -1, -1),
-                            new Among('n\xFCz', -1, -1),
-                            new Among('m\u0131z', -1, -1),
-                            new Among('n\u0131z', -1, -1)
+                            new Among("m", -1, -1),
+                            new Among("n", -1, -1),
+                            new Among("miz", -1, -1),
+                            new Among("niz", -1, -1),
+                            new Among("muz", -1, -1),
+                            new Among("nuz", -1, -1),
+                            new Among("müz", -1, -1),
+                            new Among("nüz", -1, -1),
+                            new Among("mız", -1, -1),
+                            new Among("nız", -1, -1)
                         ], a_1 = [
-                            new Among('leri', -1, -1),
-                            new Among('lar\u0131', -1, -1)
+                            new Among("leri", -1, -1),
+                            new Among("ları", -1, -1)
                         ], a_2 = [
-                            new Among('ni', -1, -1),
-                            new Among('nu', -1, -1),
-                            new Among('n\xFC', -1, -1),
-                            new Among('n\u0131', -1, -1)
+                            new Among("ni", -1, -1),
+                            new Among("nu", -1, -1),
+                            new Among("nü", -1, -1),
+                            new Among("nı", -1, -1)
                         ], a_3 = [
-                            new Among('in', -1, -1),
-                            new Among('un', -1, -1),
-                            new Among('\xFCn', -1, -1),
-                            new Among('\u0131n', -1, -1)
+                            new Among("in", -1, -1),
+                            new Among("un", -1, -1),
+                            new Among("ün", -1, -1),
+                            new Among("ın", -1, -1)
                         ], a_4 = [
-                            new Among('a', -1, -1),
-                            new Among('e', -1, -1)
+                            new Among("a", -1, -1),
+                            new Among("e", -1, -1)
                         ], a_5 = [
-                            new Among('na', -1, -1),
-                            new Among('ne', -1, -1)
+                            new Among("na", -1, -1),
+                            new Among("ne", -1, -1)
                         ], a_6 = [
-                            new Among('da', -1, -1),
-                            new Among('ta', -1, -1),
-                            new Among('de', -1, -1),
-                            new Among('te', -1, -1)
+                            new Among("da", -1, -1),
+                            new Among("ta", -1, -1),
+                            new Among("de", -1, -1),
+                            new Among("te", -1, -1)
                         ], a_7 = [
-                            new Among('nda', -1, -1),
-                            new Among('nde', -1, -1)
+                            new Among("nda", -1, -1),
+                            new Among("nde", -1, -1)
                         ], a_8 = [
-                            new Among('dan', -1, -1),
-                            new Among('tan', -1, -1),
-                            new Among('den', -1, -1),
-                            new Among('ten', -1, -1)
+                            new Among("dan", -1, -1),
+                            new Among("tan", -1, -1),
+                            new Among("den", -1, -1),
+                            new Among("ten", -1, -1)
                         ], a_9 = [
-                            new Among('ndan', -1, -1),
-                            new Among('nden', -1, -1)
+                            new Among("ndan", -1, -1),
+                            new Among("nden", -1, -1)
                         ], a_10 = [
-                            new Among('la', -1, -1),
-                            new Among('le', -1, -1)
+                            new Among("la", -1, -1),
+                            new Among("le", -1, -1)
                         ], a_11 = [
-                            new Among('ca', -1, -1),
-                            new Among('ce', -1, -1)
+                            new Among("ca", -1, -1),
+                            new Among("ce", -1, -1)
                         ], a_12 = [
-                            new Among('im', -1, -1),
-                            new Among('um', -1, -1),
-                            new Among('\xFCm', -1, -1),
-                            new Among('\u0131m', -1, -1)
+                            new Among("im", -1, -1),
+                            new Among("um", -1, -1),
+                            new Among("üm", -1, -1),
+                            new Among("ım", -1, -1)
                         ], a_13 = [
-                            new Among('sin', -1, -1),
-                            new Among('sun', -1, -1),
-                            new Among('s\xFCn', -1, -1),
-                            new Among('s\u0131n', -1, -1)
+                            new Among("sin", -1, -1),
+                            new Among("sun", -1, -1),
+                            new Among("sün", -1, -1),
+                            new Among("sın", -1, -1)
                         ], a_14 = [
-                            new Among('iz', -1, -1),
-                            new Among('uz', -1, -1),
-                            new Among('\xFCz', -1, -1),
-                            new Among('\u0131z', -1, -1)
+                            new Among("iz", -1, -1),
+                            new Among("uz", -1, -1),
+                            new Among("üz", -1, -1),
+                            new Among("ız", -1, -1)
                         ], a_15 = [
-                            new Among('siniz', -1, -1),
-                            new Among('sunuz', -1, -1),
-                            new Among('s\xFCn\xFCz', -1, -1),
-                            new Among('s\u0131n\u0131z', -1, -1)
+                            new Among("siniz", -1, -1),
+                            new Among("sunuz", -1, -1),
+                            new Among("sünüz", -1, -1),
+                            new Among("sınız", -1, -1)
                         ], a_16 = [
-                            new Among('lar', -1, -1),
-                            new Among('ler', -1, -1)
+                            new Among("lar", -1, -1),
+                            new Among("ler", -1, -1)
                         ], a_17 = [
-                            new Among('niz', -1, -1),
-                            new Among('nuz', -1, -1),
-                            new Among('n\xFCz', -1, -1),
-                            new Among('n\u0131z', -1, -1)
+                            new Among("niz", -1, -1),
+                            new Among("nuz", -1, -1),
+                            new Among("nüz", -1, -1),
+                            new Among("nız", -1, -1)
                         ], a_18 = [
-                            new Among('dir', -1, -1),
-                            new Among('tir', -1, -1),
-                            new Among('dur', -1, -1),
-                            new Among('tur', -1, -1),
-                            new Among('d\xFCr', -1, -1),
-                            new Among('t\xFCr', -1, -1),
-                            new Among('d\u0131r', -1, -1),
-                            new Among('t\u0131r', -1, -1)
+                            new Among("dir", -1, -1),
+                            new Among("tir", -1, -1),
+                            new Among("dur", -1, -1),
+                            new Among("tur", -1, -1),
+                            new Among("dür", -1, -1),
+                            new Among("tür", -1, -1),
+                            new Among("dır", -1, -1),
+                            new Among("tır", -1, -1)
                         ], a_19 = [
-                            new Among('cas\u0131na', -1, -1),
-                            new Among('cesine', -1, -1)
+                            new Among("casına", -1, -1),
+                            new Among("cesine", -1, -1)
                         ], a_20 = [
-                            new Among('di', -1, -1),
-                            new Among('ti', -1, -1),
-                            new Among('dik', -1, -1),
-                            new Among('tik', -1, -1),
-                            new Among('duk', -1, -1),
-                            new Among('tuk', -1, -1),
-                            new Among('d\xFCk', -1, -1),
-                            new Among('t\xFCk', -1, -1),
-                            new Among('d\u0131k', -1, -1),
-                            new Among('t\u0131k', -1, -1),
-                            new Among('dim', -1, -1),
-                            new Among('tim', -1, -1),
-                            new Among('dum', -1, -1),
-                            new Among('tum', -1, -1),
-                            new Among('d\xFCm', -1, -1),
-                            new Among('t\xFCm', -1, -1),
-                            new Among('d\u0131m', -1, -1),
-                            new Among('t\u0131m', -1, -1),
-                            new Among('din', -1, -1),
-                            new Among('tin', -1, -1),
-                            new Among('dun', -1, -1),
-                            new Among('tun', -1, -1),
-                            new Among('d\xFCn', -1, -1),
-                            new Among('t\xFCn', -1, -1),
-                            new Among('d\u0131n', -1, -1),
-                            new Among('t\u0131n', -1, -1),
-                            new Among('du', -1, -1),
-                            new Among('tu', -1, -1),
-                            new Among('d\xFC', -1, -1),
-                            new Among('t\xFC', -1, -1),
-                            new Among('d\u0131', -1, -1),
-                            new Among('t\u0131', -1, -1)
+                            new Among("di", -1, -1),
+                            new Among("ti", -1, -1),
+                            new Among("dik", -1, -1),
+                            new Among("tik", -1, -1),
+                            new Among("duk", -1, -1),
+                            new Among("tuk", -1, -1),
+                            new Among("dük", -1, -1),
+                            new Among("tük", -1, -1),
+                            new Among("dık", -1, -1),
+                            new Among("tık", -1, -1),
+                            new Among("dim", -1, -1),
+                            new Among("tim", -1, -1),
+                            new Among("dum", -1, -1),
+                            new Among("tum", -1, -1),
+                            new Among("düm", -1, -1),
+                            new Among("tüm", -1, -1),
+                            new Among("dım", -1, -1),
+                            new Among("tım", -1, -1),
+                            new Among("din", -1, -1),
+                            new Among("tin", -1, -1),
+                            new Among("dun", -1, -1),
+                            new Among("tun", -1, -1),
+                            new Among("dün", -1, -1),
+                            new Among("tün", -1, -1),
+                            new Among("dın", -1, -1),
+                            new Among("tın", -1, -1),
+                            new Among("du", -1, -1),
+                            new Among("tu", -1, -1),
+                            new Among("dü", -1, -1),
+                            new Among("tü", -1, -1),
+                            new Among("dı", -1, -1),
+                            new Among("tı", -1, -1)
                         ], a_21 = [
-                            new Among('sa', -1, -1),
-                            new Among('se', -1, -1),
-                            new Among('sak', -1, -1),
-                            new Among('sek', -1, -1),
-                            new Among('sam', -1, -1),
-                            new Among('sem', -1, -1),
-                            new Among('san', -1, -1),
-                            new Among('sen', -1, -1)
+                            new Among("sa", -1, -1),
+                            new Among("se", -1, -1),
+                            new Among("sak", -1, -1),
+                            new Among("sek", -1, -1),
+                            new Among("sam", -1, -1),
+                            new Among("sem", -1, -1),
+                            new Among("san", -1, -1),
+                            new Among("sen", -1, -1)
                         ], a_22 = [
-                            new Among('mi\u015F', -1, -1),
-                            new Among('mu\u015F', -1, -1),
-                            new Among('m\xFC\u015F', -1, -1),
-                            new Among('m\u0131\u015F', -1, -1)
+                            new Among("miş", -1, -1),
+                            new Among("muş", -1, -1),
+                            new Among("müş", -1, -1),
+                            new Among("mış", -1, -1)
                         ], a_23 = [
-                            new Among('b', -1, 1),
-                            new Among('c', -1, 2),
-                            new Among('d', -1, 3),
-                            new Among('\u011F', -1, 4)
+                            new Among("b", -1, 1),
+                            new Among("c", -1, 2),
+                            new Among("d", -1, 3),
+                            new Among("ğ", -1, 4)
                         ], g_vowel = [
                             17,
                             65,
@@ -6720,43 +6720,43 @@ var Stemmer = function () {
                             1
                         ], g_vowel4 = [17], g_vowel5 = [65], g_vowel6 = [65], B_c_s_n_s, I_strlen, g_habr = [
                             [
-                                'a',
+                                "a",
                                 g_vowel1,
                                 97,
                                 305
                             ],
                             [
-                                'e',
+                                "e",
                                 g_vowel2,
                                 101,
                                 252
                             ],
                             [
-                                '\u0131',
+                                "ı",
                                 g_vowel3,
                                 97,
                                 305
                             ],
                             [
-                                'i',
+                                "i",
                                 g_vowel4,
                                 101,
                                 105
                             ],
                             [
-                                'o',
+                                "o",
                                 g_vowel5,
                                 111,
                                 117
                             ],
                             [
-                                '\xF6',
+                                "ö",
                                 g_vowel6,
                                 246,
                                 252
                             ],
                             [
-                                'u',
+                                "u",
                                 g_vowel5,
                                 111,
                                 117
@@ -6796,7 +6796,7 @@ var Stemmer = function () {
                             sbp.c = sbp.l - v_2;
                         }
                         sbp.c = sbp.l - v_2;
-                        if (!sbp.e_s_b(1, '\xFC') || !habr1(g_vowel6, 246, 252))
+                        if (!sbp.e_s_b(1, "ü") || !habr1(g_vowel6, 246, 252))
                             return false;
                         sbp.c = sbp.l - v_1;
                         return true;
@@ -6835,17 +6835,17 @@ var Stemmer = function () {
                     }
                     function r_mark_suffix_with_optional_n_consonant() {
                         return habr3(function () {
-                            return sbp.e_s_b(1, 'n');
+                            return sbp.e_s_b(1, "n");
                         });
                     }
                     function r_mark_suffix_with_optional_s_consonant() {
                         return habr3(function () {
-                            return sbp.e_s_b(1, 's');
+                            return sbp.e_s_b(1, "s");
                         });
                     }
                     function r_mark_suffix_with_optional_y_consonant() {
                         return habr3(function () {
-                            return sbp.e_s_b(1, 'y');
+                            return sbp.e_s_b(1, "y");
                         });
                     }
                     function r_mark_suffix_with_optional_U_vowel() {
@@ -6895,7 +6895,7 @@ var Stemmer = function () {
                         return r_check_vowel_harmony() && sbp.f_a_b(a_10, 2) && r_mark_suffix_with_optional_y_consonant();
                     }
                     function r_mark_ki() {
-                        return sbp.e_s_b(2, 'ki');
+                        return sbp.e_s_b(2, "ki");
                     }
                     function r_mark_ncA() {
                         return r_check_vowel_harmony() && sbp.f_a_b(a_11, 2) && r_mark_suffix_with_optional_n_consonant();
@@ -6934,7 +6934,7 @@ var Stemmer = function () {
                         return r_check_vowel_harmony() && sbp.f_a_b(a_22, 4) && r_mark_suffix_with_optional_y_consonant();
                     }
                     function r_mark_yken() {
-                        return sbp.e_s_b(3, 'ken') && r_mark_suffix_with_optional_y_consonant();
+                        return sbp.e_s_b(3, "ken") && r_mark_suffix_with_optional_y_consonant();
                     }
                     function habr4() {
                         var v_1 = sbp.l - sbp.c;
@@ -7403,16 +7403,16 @@ var Stemmer = function () {
                             sbp.b = sbp.c;
                             switch (a_v) {
                             case 1:
-                                sbp.s_f('p');
+                                sbp.s_f("p");
                                 break;
                             case 2:
-                                sbp.s_f('\xE7');
+                                sbp.s_f("ç");
                                 break;
                             case 3:
-                                sbp.s_f('t');
+                                sbp.s_f("t");
                                 break;
                             case 4:
-                                sbp.s_f('k');
+                                sbp.s_f("k");
                                 break;
                             }
                         }
@@ -7450,15 +7450,15 @@ var Stemmer = function () {
                     }
                     function r_append_U_to_stems_ending_with_d_or_g() {
                         var v_1 = sbp.l - sbp.c;
-                        if (!sbp.e_s_b(1, 'd')) {
+                        if (!sbp.e_s_b(1, "d")) {
                             sbp.c = sbp.l - v_1;
-                            if (!sbp.e_s_b(1, 'g'))
+                            if (!sbp.e_s_b(1, "g"))
                                 return;
                         }
-                        if (habr14(v_1, 'a', '\u0131'))
-                            if (habr14(v_1, 'e', 'i'))
-                                if (habr14(v_1, 'o', 'u'))
-                                    habr14(v_1, '\xF6', '\xFC');
+                        if (habr14(v_1, "a", "ı"))
+                            if (habr14(v_1, "e", "i"))
+                                if (habr14(v_1, "o", "u"))
+                                    habr14(v_1, "ö", "ü");
                     }
                     function r_more_than_one_syllable_word() {
                         var v_1 = sbp.c, v_2 = 2, v_3;
@@ -7491,9 +7491,9 @@ var Stemmer = function () {
                     }
                     function r_is_reserved_word() {
                         var v_1 = sbp.c;
-                        if (habr15(v_1, 2, 'ad')) {
+                        if (habr15(v_1, 2, "ad")) {
                             sbp.c = v_1;
-                            if (habr15(v_1, 5, 'soyad'))
+                            if (habr15(v_1, 5, "soyad"))
                                 return false;
                         }
                         return true;

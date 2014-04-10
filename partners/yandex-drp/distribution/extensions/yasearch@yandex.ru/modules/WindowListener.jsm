@@ -1,13 +1,13 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['WindowListener'];
+"use strict";
+const EXPORTED_SYMBOLS = ["WindowListener"];
 const {
         classes: Cc,
         interfaces: Ci,
         results: Cr,
         utils: Cu
     } = Components;
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
-const ABOUT_BLANK_URI = Cc['@mozilla.org/network/io-service;1'].getService(Ci.nsIIOService).newURI('about:blank', null, null);
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const ABOUT_BLANK_URI = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService).newURI("about:blank", null, null);
 const STATE_IS_NETWORK = Ci.nsIWebProgressListener.STATE_IS_NETWORK;
 const STATE_START = Ci.nsIWebProgressListener.STATE_START;
 const STATE_STOP = Ci.nsIWebProgressListener.STATE_STOP;
@@ -56,7 +56,7 @@ ProgressListener.prototype = {
         throw Cr.NS_NOINTERFACE;
     }
 };
-const GLOBAL_MESSAGE_MANAGER = 'nsIMessageListenerManager' in Ci ? Cc['@mozilla.org/globalmessagemanager;1'].getService(Ci.nsIMessageListenerManager) : Cc['@mozilla.org/globalmessagemanager;1'].getService(Ci.nsIChromeFrameMessageManager);
+const GLOBAL_MESSAGE_MANAGER = "nsIMessageListenerManager" in Ci ? Cc["@mozilla.org/globalmessagemanager;1"].getService(Ci.nsIMessageListenerManager) : Cc["@mozilla.org/globalmessagemanager;1"].getService(Ci.nsIChromeFrameMessageManager);
 var messageListener = {
         _inited: false,
         init: function messageListener_init() {
@@ -94,31 +94,31 @@ var messageListener = {
             var windowListener = this._windowListeners.get(tab.ownerDocument && tab.ownerDocument.defaultView);
             if (!windowListener)
                 return;
-            if (typeof data === 'undefined')
+            if (typeof data === "undefined")
                 data = message.json;
             if (name.indexOf(this._CONTENT_MESSAGES_PREFIX) !== 0)
-                throw new Error('Unknown message name');
+                throw new Error("Unknown message name");
             name = name.split(this._CONTENT_MESSAGES_PREFIX)[1];
             switch (name) {
-            case 'pageshow':
-                name = 'PageShow';
+            case "pageshow":
+                name = "PageShow";
                 break;
-            case 'pagehide':
-                name = 'PageHide';
+            case "pagehide":
+                name = "PageHide";
                 break;
-            case 'load':
-                name = 'PageLoad';
+            case "load":
+                name = "PageLoad";
                 break;
             }
             switch (name) {
-            case 'DOMContentLoaded':
-            case 'PageShow':
-            case 'PageHide':
-            case 'PageLoad': {
+            case "DOMContentLoaded":
+            case "PageShow":
+            case "PageHide":
+            case "PageLoad": {
                     let currentURL = data.url;
-                    if (currentURL == 'about:blank')
-                        currentURL = '';
-                    if (name !== 'PageHide')
+                    if (currentURL == "about:blank")
+                        currentURL = "";
+                    if (name !== "PageHide")
                         windowListener.tabsContentInfo.set(tab, { docShellProps: data.docShellProps });
                     windowListener.notifyListeners(name, {
                         tab: tab,
@@ -130,30 +130,30 @@ var messageListener = {
                             return doc && doc.readyState;
                         }
                     });
-                    if (name === 'PageHide')
+                    if (name === "PageHide")
                         windowListener.tabsContentInfo.delete(tab);
                     break;
                 }
-            case 'DOMTitleChanged':
+            case "DOMTitleChanged":
                 if (isCurrentTab(tab))
                     windowListener._updateWindowTitle();
                 break;
             default:
-                throw new Error('Unknown message name (\'' + name + '\')');
+                throw new Error("Unknown message name ('" + name + "')");
             }
         },
-        _CONTENT_SCRIPT: 'function messageListener__CONTENT_SCRIPT() {                                                              [                                                                                                                           "load",                                                                                                                 "pageshow",                                                                                                             "pagehide",                                                                                                             "DOMContentLoaded",                                                                                                     "DOMTitleChanged"                                                                                                   ].forEach(function(eventType) {                                                                                             addEventListener(eventType, function contentEventListener(event) {                                                          if (!event.isTrusted || content.document !== event.originalTarget)                                                          return;                                                                                                                                                                                                                                     let messageData = {                                                                                                         url: String(content.document.location),                                                                                 originalURL: undefined,                                                                                                 responseStatus: undefined,                                                                                              docShellProps: {                                                                                                            currentDocumentChannel: {                                                                                                   originalURL: undefined,                                                                                                 responseStatus: undefined                                                                                           },                                                                                                                      loadType: docShell.loadType                                                                                         }                                                                                                                   };                                                                                                                                                                                                                                              if (eventType !== "DOMTitleChanged" && eventType !== "pagehide") {                                                          try {                                                                                                                       let originalURI = docShell.currentDocumentChannel.originalURI;                                                          if (originalURI && originalURI.spec)                                                                                        messageData.docShellProps.currentDocumentChannel.originalURL = originalURI.spec;                                } catch (e) {}                                                                                                                                                                                                                                  try {                                                                                                                       messageData.docShellProps.currentDocumentChannel.responseStatus =                                                           docShell.currentDocumentChannel.QueryInterface(Ci.nsIHttpChannel).responseStatus;                               } catch (e) {}                                                                                                      }                                                                                                                                                                                                                                               sendSyncMessage("{{PREFIX}}" + eventType, messageData);                                                             }, true);                                                                                                           });                                                                                                                 }',
+        _CONTENT_SCRIPT: "function messageListener__CONTENT_SCRIPT() {                                                              [                                                                                                                           \"load\",                                                                                                                 \"pageshow\",                                                                                                             \"pagehide\",                                                                                                             \"DOMContentLoaded\",                                                                                                     \"DOMTitleChanged\"                                                                                                   ].forEach(function(eventType) {                                                                                             addEventListener(eventType, function contentEventListener(event) {                                                          if (!event.isTrusted || content.document !== event.originalTarget)                                                          return;                                                                                                                                                                                                                                     let messageData = {                                                                                                         url: String(content.document.location),                                                                                 originalURL: undefined,                                                                                                 responseStatus: undefined,                                                                                              docShellProps: {                                                                                                            currentDocumentChannel: {                                                                                                   originalURL: undefined,                                                                                                 responseStatus: undefined                                                                                           },                                                                                                                      loadType: docShell.loadType                                                                                         }                                                                                                                   };                                                                                                                                                                                                                                              if (eventType !== \"DOMTitleChanged\" && eventType !== \"pagehide\") {                                                          try {                                                                                                                       let originalURI = docShell.currentDocumentChannel.originalURI;                                                          if (originalURI && originalURI.spec)                                                                                        messageData.docShellProps.currentDocumentChannel.originalURL = originalURI.spec;                                } catch (e) {}                                                                                                                                                                                                                                  try {                                                                                                                       messageData.docShellProps.currentDocumentChannel.responseStatus =                                                           docShell.currentDocumentChannel.QueryInterface(Ci.nsIHttpChannel).responseStatus;                               } catch (e) {}                                                                                                      }                                                                                                                                                                                                                                               sendSyncMessage(\"{{PREFIX}}\" + eventType, messageData);                                                             }, true);                                                                                                           });                                                                                                                 }",
         get _CONTENT_SCRIPT_URL() {
-            return 'data:,(' + this._CONTENT_SCRIPT.replace(/\{\{PREFIX\}\}/g, this._CONTENT_MESSAGES_PREFIX) + ')()';
+            return "data:,(" + this._CONTENT_SCRIPT.replace(/\{\{PREFIX\}\}/g, this._CONTENT_MESSAGES_PREFIX) + ")()";
         },
         _CONTENT_MESSAGES_PREFIX: __URI__.match(/^resource:\/\/(.+)\-mod.+/)[1],
         get _MESSAGES_NAMES() {
             return [
-                'pageshow',
-                'pagehide',
-                'DOMContentLoaded',
-                'load',
-                'DOMTitleChanged'
+                "pageshow",
+                "pagehide",
+                "DOMContentLoaded",
+                "load",
+                "DOMTitleChanged"
             ].map(function (msg) this._CONTENT_MESSAGES_PREFIX + msg, this);
         },
         QueryInterface: XPCOMUtils.generateQI([Ci.nsIMessageListener])
@@ -169,8 +169,8 @@ function WindowListener(aWindow, aAppName, aLogger) {
     this._started = false;
     this._windowTitle = null;
     this._progressListener = null;
-    aWindow.addEventListener('load', this, false);
-    aWindow.addEventListener('unload', this, false);
+    aWindow.addEventListener("load", this, false);
+    aWindow.addEventListener("unload", this, false);
 }
 WindowListener.prototype = {
     startup: function WindowListener_startup() {
@@ -178,7 +178,7 @@ WindowListener.prototype = {
             return;
         this._started = true;
         var gBrowser = this._window.gBrowser;
-        this.notifyListeners('WindowTitleChange', {
+        this.notifyListeners("WindowTitleChange", {
             title: this.windowTitle,
             url: this.windowLocation
         });
@@ -187,8 +187,8 @@ WindowListener.prototype = {
         gBrowser.addProgressListener(this._progressListener);
         messageListener.addWindowListener(this);
         var container = gBrowser.tabContainer;
-        container.addEventListener('TabOpen', this, false);
-        container.addEventListener('TabClose', this, false);
+        container.addEventListener("TabOpen", this, false);
+        container.addEventListener("TabClose", this, false);
     },
     shutdown: function WindowListener_shutdown() {
         if (this._started) {
@@ -200,8 +200,8 @@ WindowListener.prototype = {
                     this.removeTabEnvironment(gBrowser.getBrowserAtIndex(i));
             }
             let container = gBrowser.tabContainer;
-            container.removeEventListener('TabOpen', this, false);
-            container.removeEventListener('TabClose', this, false);
+            container.removeEventListener("TabOpen", this, false);
+            container.removeEventListener("TabClose", this, false);
             gBrowser.removeProgressListener(this._progressListener);
             this._progressListener.shutdown();
             messageListener.removeWindowListener(this);
@@ -255,27 +255,27 @@ WindowListener.prototype = {
     },
     handleEvent: function WindowListener_handleEvent(aEvent) {
         switch (aEvent.type) {
-        case 'TabOpen':
-        case 'TabClose':
+        case "TabOpen":
+        case "TabClose":
             let tab = aEvent.target.linkedBrowser;
             if (!tab)
                 return;
             switch (aEvent.type) {
-            case 'TabOpen':
-                this.notifyListeners('TabOpen', { tab: tab });
+            case "TabOpen":
+                this.notifyListeners("TabOpen", { tab: tab });
                 break;
-            case 'TabClose':
-                this.notifyListeners('TabClose', { tab: tab });
+            case "TabClose":
+                this.notifyListeners("TabClose", { tab: tab });
                 this.removeTabEnvironment(tab);
                 break;
             }
             break;
-        case 'load':
-            aEvent.currentTarget.removeEventListener('load', this, false);
+        case "load":
+            aEvent.currentTarget.removeEventListener("load", this, false);
             this.startup();
             break;
-        case 'unload':
-            aEvent.currentTarget.removeEventListener('unload', this, false);
+        case "unload":
+            aEvent.currentTarget.removeEventListener("unload", this, false);
             this.shutdown();
             break;
         default:
@@ -283,20 +283,20 @@ WindowListener.prototype = {
         }
     },
     KNOWN_TOPICS: [
-        'WindowTitleChange',
-        'WindowLocationChange',
-        'DOMContentLoaded',
-        'PageLoad',
-        'PageShow',
-        'PageHide',
-        'PageStateStart',
-        'PageStateStop',
-        'TabOpen',
-        'TabClose'
+        "WindowTitleChange",
+        "WindowLocationChange",
+        "DOMContentLoaded",
+        "PageLoad",
+        "PageShow",
+        "PageHide",
+        "PageStateStart",
+        "PageStateStop",
+        "TabOpen",
+        "TabClose"
     ],
     addListener: function WindowListener_addListener(aTopic, aListener) {
         if (this.KNOWN_TOPICS.indexOf(aTopic) == -1)
-            throw new TypeError('WindowListener.addListener: unknown topic "' + aTopic + '"');
+            throw new TypeError("WindowListener.addListener: unknown topic \"" + aTopic + "\"");
         if (!this._listeners)
             return;
         if (!this._listeners[aTopic]) {
@@ -307,7 +307,7 @@ WindowListener.prototype = {
     },
     removeListener: function WindowListener_removeListener(aTopic, aListener) {
         if (this.KNOWN_TOPICS.indexOf(aTopic) == -1)
-            throw new TypeError('WindowListener.removeListener: unknown topic "' + aTopic + '"');
+            throw new TypeError("WindowListener.removeListener: unknown topic \"" + aTopic + "\"");
         if (!this._listeners)
             return;
         if (!this._listeners[aTopic])
@@ -323,7 +323,7 @@ WindowListener.prototype = {
         var WindowListener_notifyListeners_timed = function WindowListener_notifyListeners_timed() {
                 this._notifyListeners.apply(this, arguments);
             }.bind(this, aTopic, aData);
-        var timer = Cc['@mozilla.org/timer;1'].createInstance(Ci.nsITimer);
+        var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
         timer.initWithCallback({ notify: WindowListener_notifyListeners_timed }, 0, Ci.nsITimer.TYPE_ONE_SHOT);
     },
     _notifyListeners: function WindowListener__notifyListeners(aTopic, aData) {
@@ -337,7 +337,7 @@ WindowListener.prototype = {
                 if (this._listeners[aTopic].indexOf(listener) != -1)
                     listener.observe(null, aTopic, aData);
             } catch (e) {
-                this._logger.error('Notify listener error: ' + e);
+                this._logger.error("Notify listener error: " + e);
                 if (e.stack) {
                     this._logger.debug(e.stack);
                 }
@@ -347,13 +347,13 @@ WindowListener.prototype = {
     _updateWindowTitle: function WindowListener__updateWindowTitle() {
         var oldTitle = this._windowTitle;
         try {
-            this._windowTitle = this._window.gBrowser.contentTitle || '';
+            this._windowTitle = this._window.gBrowser.contentTitle || "";
         } catch (e) {
-            this._windowTitle = '';
+            this._windowTitle = "";
         }
         if (oldTitle === this._windowTitle)
             return false;
-        this.notifyListeners('WindowTitleChange', { title: this._windowTitle });
+        this.notifyListeners("WindowTitleChange", { title: this._windowTitle });
         return true;
     },
     get windowTitle() {
@@ -368,11 +368,11 @@ WindowListener.prototype = {
         var currentURL = this._getURISpec(aLocation);
         var specChanged = lastURL != currentURL;
         var hashOnlyChanged = false;
-        if (lastURL && currentURL && specChanged && lastURL.split('#')[0] == currentURL.split('#')[0])
+        if (lastURL && currentURL && specChanged && lastURL.split("#")[0] == currentURL.split("#")[0])
             hashOnlyChanged = true;
         this._updateWindowTitle();
         var tab = this._getTabFromWebProgress(aWebProgress);
-        this.notifyListeners('WindowLocationChange', {
+        this.notifyListeners("WindowLocationChange", {
             uri: aLocation,
             url: currentURL,
             referringURI: aWebProgress.referringURI,
@@ -417,9 +417,9 @@ WindowListener.prototype = {
     _getURISpec: function WindowListener__getURISpec(aURI) {
         var spec = null;
         try {
-            spec = (typeof aURI == 'string' ? aURI : aURI.spec) || '';
-            if (spec == 'about:blank')
-                spec = '';
+            spec = (typeof aURI == "string" ? aURI : aURI.spec) || "";
+            if (spec == "about:blank")
+                spec = "";
         } catch (e) {
         }
         return spec;
@@ -427,7 +427,7 @@ WindowListener.prototype = {
     onPageStateStart: function WindowListener_onPageStateStart(aWebProgress, aRequest) {
         var tab = this._getTabFromWebProgress(aWebProgress);
         this._tabsContentInfo.delete(tab);
-        this.notifyListeners('PageStateStart', {
+        this.notifyListeners("PageStateStart", {
             tab: tab,
             request: aRequest,
             isCurrentTab: isCurrentTab(tab)
@@ -435,7 +435,7 @@ WindowListener.prototype = {
     },
     onPageStateStop: function WindowListener_onPageStateStop(aWebProgress, aRequest) {
         var tab = this._getTabFromWebProgress(aWebProgress);
-        this.notifyListeners('PageStateStop', {
+        this.notifyListeners("PageStateStop", {
             tab: tab,
             request: aRequest,
             isCurrentTab: isCurrentTab(tab)

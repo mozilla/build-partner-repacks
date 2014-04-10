@@ -1,12 +1,12 @@
-'use strict';
-EXPORTED_SYMBOLS.push('promise');
+"use strict";
+EXPORTED_SYMBOLS.push("promise");
 function fulfilled(value) {
     return { then: function then(fulfill) fulfill(value) };
 }
 function rejected(reason) {
     return { then: function then(fulfill, reject) reject(reason) };
 }
-function isPromise(value) value && typeof value.then === 'function'
+function isPromise(value) value && typeof value.then === "function"
 function defer(prototype) {
     var observers = [];
     var result = null;

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 const {
         classes: Cc,
         interfaces: Ci,
@@ -13,18 +13,18 @@ const migrator = {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         },
         migrate: function migrator_migrate() {
-            const geolocationPluginId = 'http://bar.yandex.ru/packages/yandexbar#geolocation';
-            var oldGeolocationPrefName = 'yasearch.geolocation.enabled';
+            const geolocationPluginId = "http://bar.yandex.ru/packages/yandexbar#geolocation";
+            var oldGeolocationPrefName = "yasearch.geolocation.enabled";
             var geolocationEnabled = Preferences.get(oldGeolocationPrefName, null);
             if (geolocationEnabled !== null) {
                 try {
                     application.widgetLibrary.getPlugin(geolocationPluginId).enabled = geolocationEnabled;
                 } catch (e) {
-                    this._logger.config('Couldn\'t change Geolocation plugin state. ' + strutils.formatError(e));
+                    this._logger.config("Couldn't change Geolocation plugin state. " + strutils.formatError(e));
                 }
                 Preferences.reset(oldGeolocationPrefName);
             }
-            if (!application.usingInternalPreset && !application.defaultPreset.refsPlugin(geolocationPluginId) && application.branding.getYandexFeatureState('geolocation')) {
+            if (!application.usingInternalPreset && !application.defaultPreset.refsPlugin(geolocationPluginId) && application.branding.getYandexFeatureState("geolocation")) {
                 let CompEntryProps = application.BarPlatform.Preset.ComponentEntry.prototype;
                 application.defaultPreset.appendEntry({
                     componentType: CompEntryProps.TYPE_PLUGIN,

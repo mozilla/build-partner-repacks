@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 const {
         classes: Cc,
         interfaces: Ci,
@@ -13,16 +13,16 @@ const migrator = {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         },
         migrate: function migrator_migrate() {
-            var textonlyPluginId = 'http://bar.yandex.ru/packages/yandexbar#textonly';
-            var oldTextonlyPrefBranch = 'yasearch.general.ui.textonly.';
-            var enabledTextonly = Preferences.get(oldTextonlyPrefBranch + 'enabled', null);
+            var textonlyPluginId = "http://bar.yandex.ru/packages/yandexbar#textonly";
+            var oldTextonlyPrefBranch = "yasearch.general.ui.textonly.";
+            var enabledTextonly = Preferences.get(oldTextonlyPrefBranch + "enabled", null);
             if (enabledTextonly !== null) {
                 try {
                     application.widgetLibrary.getPlugin(textonlyPluginId).enabled = enabledTextonly;
                 } catch (e) {
-                    this._logger.config('Couldn\'t change Textonly plugin state. ' + strutils.formatError(e));
+                    this._logger.config("Couldn't change Textonly plugin state. " + strutils.formatError(e));
                 }
-                Preferences.reset(oldTextonlyPrefBranch + 'enabled');
+                Preferences.reset(oldTextonlyPrefBranch + "enabled");
             }
         },
         get _logger() {

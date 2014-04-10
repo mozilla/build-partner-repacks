@@ -1,16 +1,16 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['NativeComponents'];
+"use strict";
+const EXPORTED_SYMBOLS = ["NativeComponents"];
 const {
         classes: Cc,
         interfaces: Ci,
         utils: Cu
     } = Components;
 const GLOBAL = this;
-Cu.import('resource://gre/modules/Services.jsm');
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
-const BRAND_SVC_COMPONENT_ID = 'ru.yandex.custombar.branding';
-const BRAND_SVC_NAME = 'package';
-const BRAND_SVC_PKG_UPD_TOPIC = 'package updated';
+Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const BRAND_SVC_COMPONENT_ID = "ru.yandex.custombar.branding";
+const BRAND_SVC_NAME = "package";
+const BRAND_SVC_PKG_UPD_TOPIC = "package updated";
 var application;
 var appCore;
 var BarPlatform;
@@ -20,35 +20,35 @@ const NativeComponents = {
             appCore = barApplication.core;
             appCore.Lib.sysutils.copyProperties(appCore.Lib, GLOBAL);
             BarPlatform = application.BarPlatform;
-            this._loggersRoot = application.name + '.NC';
+            this._loggersRoot = application.name + ".NC";
             this._logger = Log4Moz.repository.getLogger(this._loggersRoot);
             this._loadModules();
             this._application.branding.addListener(BRAND_SVC_PKG_UPD_TOPIC, this);
             this.registerService(BRAND_SVC_COMPONENT_ID, BRAND_SVC_NAME, brandingService);
-            BarPlatform.registerUnitParser('native', 'widget', nativeComponentsParser);
-            BarPlatform.registerUnitParser('native', 'plugin', nativeComponentsParser);
+            BarPlatform.registerUnitParser("native", "widget", nativeComponentsParser);
+            BarPlatform.registerUnitParser("native", "plugin", nativeComponentsParser);
         },
         makePackagePrefPath: function NativeComponents_makePackagePrefPath(packageID, settingName) {
             if (!packageID)
-                throw new CustomErrors.EArgRange('packageID', '/.+/', packageID);
-            return appCore.nativesPrefsPath + packageID + '.settings.' + (settingName ? settingName : '');
+                throw new CustomErrors.EArgRange("packageID", "/.+/", packageID);
+            return appCore.nativesPrefsPath + packageID + ".settings." + (settingName ? settingName : "");
         },
         makeWidgetPrefPath: function NativeComponents_makeWidgetPrefPath(widgetID, settingName) {
             if (!widgetID)
-                throw new CustomErrors.EArgRange('widgetID', '/.+/', widgetID);
-            return appCore.nativesPrefsPath + widgetID + '.all.settings.' + (settingName ? settingName : '');
+                throw new CustomErrors.EArgRange("widgetID", "/.+/", widgetID);
+            return appCore.nativesPrefsPath + widgetID + ".all.settings." + (settingName ? settingName : "");
         },
         makeInstancePrefPath: function NativeComponents_makeInstancePrefPath(widgetID, instanceID, settingName) {
             if (!widgetID)
-                throw new CustomErrors.EArgRange('widgetID', '/.+/', widgetID);
+                throw new CustomErrors.EArgRange("widgetID", "/.+/", widgetID);
             if (!instanceID)
-                throw new CustomErrors.EArgRange('instanceID', '/.+/', instanceID);
-            return appCore.nativesPrefsPath + widgetID + '.' + instanceID + '.settings.' + (settingName ? settingName : '');
+                throw new CustomErrors.EArgRange("instanceID", "/.+/", instanceID);
+            return appCore.nativesPrefsPath + widgetID + "." + instanceID + ".settings." + (settingName ? settingName : "");
         },
         makeStaticBranchPath: function NativeComponents_makeStaticBranchPath(compID, instanceID) {
             if (!compID)
-                throw new CustomErrors.EArgRange('compID', '/.+/', compID);
-            return appCore.staticPrefsPath + compID + '.' + (instanceID || 'all') + '.settings.';
+                throw new CustomErrors.EArgRange("compID", "/.+/", compID);
+            return appCore.staticPrefsPath + compID + "." + (instanceID || "all") + ".settings.";
         },
         getPackageStorage: function NativeComponents_getPackageStorage(packageID) {
             var storageDir = application.directories.nativeStorageDir;
@@ -62,9 +62,9 @@ const NativeComponents = {
         },
         registerService: function NativeComponents_registerService(providerID, serviceName, serviceObject) {
             if (!sysutils.isObject(serviceObject))
-                throw new CustomErrors.EArgRange('serviceObject', 'Object', serviceObject);
+                throw new CustomErrors.EArgRange("serviceObject", "Object", serviceObject);
             var serviceData = this._makeServiceData(providerID, serviceName, serviceObject);
-            this._notifyServiceUsers(providerID, serviceName, serviceData, 'registered', serviceObject);
+            this._notifyServiceUsers(providerID, serviceName, serviceData, "registered", serviceObject);
         },
         notifyServiceUsers: function NativeComponents_notifyServiceUsers(providerID, serviceName, topic, data) {
             var serviceData = this._getServiceData(providerID, serviceName);
@@ -83,7 +83,7 @@ const NativeComponents = {
                     serviceName
                 ]));
             this._unregisterService(serviceData);
-            this._notifyServiceUsers(providerID, serviceName, serviceData, 'unregistered', null);
+            this._notifyServiceUsers(providerID, serviceName, serviceData, "unregistered", null);
         },
         obtainService: function NativeComponents_obtainService(providerID, serviceName, eventListener, scope) {
             var serviceData;
@@ -140,36 +140,36 @@ const NativeComponents = {
         },
         observe: function NativeComponents_observe(subject, topic, data) {
             if (subject == this._application.branding && topic == BRAND_SVC_PKG_UPD_TOPIC) {
-                this._logger.info('Notifying native components about branding update...');
+                this._logger.info("Notifying native components about branding update...");
                 this.notifyServiceUsers(BRAND_SVC_COMPONENT_ID, BRAND_SVC_NAME, BRAND_SVC_PKG_UPD_TOPIC, null);
             }
         },
         _modules: [
-            'npwidget.js',
-            'barplugin.js',
-            'ncparser.js',
-            'compapi.js',
-            'sliceapi.js',
-            'brandsvc.js'
+            "npwidget.js",
+            "barplugin.js",
+            "ncparser.js",
+            "compapi.js",
+            "sliceapi.js",
+            "brandsvc.js"
         ],
         _registeredServices: {},
         _consts: {
-            ERR_SVC_NOT_REGISTERED: 'Provider (%1) did not register service "%2"',
-            ERR_SVC_ALREADY_REGISTERED: 'Provider (%1) already registered service "%2"'
+            ERR_SVC_NOT_REGISTERED: "Provider (%1) did not register service \"%2\"",
+            ERR_SVC_ALREADY_REGISTERED: "Provider (%1) already registered service \"%2\""
         },
         _loadModules: function NativeComponents__loadModules() {
-            const xbDirPath = this._application.partsURL + 'native/';
-            const SCRIPT_LOADER = Cc['@mozilla.org/moz/jssubscript-loader;1'].getService(Ci.mozIJSSubScriptLoader);
+            const xbDirPath = this._application.partsURL + "native/";
+            const SCRIPT_LOADER = Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader);
             this._modules.forEach(function BarPlatform_loadModule(moduleFileName) {
-                this._logger.debug('  Loading module ' + moduleFileName);
+                this._logger.debug("  Loading module " + moduleFileName);
                 SCRIPT_LOADER.loadSubScript(xbDirPath + moduleFileName);
             }, this);
         },
         _getLogger: function NativeComponents__getLogger(name) {
-            return Log4Moz.repository.getLogger(this._loggersRoot + '.' + name);
+            return Log4Moz.repository.getLogger(this._loggersRoot + "." + name);
         },
         _getWindowController: function NativeComponents__getWindowController(window) {
-            return window[appCore.appName + 'OverlayController'];
+            return window[appCore.appName + "OverlayController"];
         },
         _interpretSettingValue: function NativeComponents__interpretSettingValue(rawValue, prefferredType) {
             if (rawValue == undefined)
@@ -177,7 +177,7 @@ const NativeComponents = {
             var types = BarPlatform.Unit.settingTypes;
             switch (prefferredType) {
             case types.STYPE_BOOLEAN:
-                return !!rawValue && rawValue != 'false';
+                return !!rawValue && rawValue != "false";
             case types.STYPE_FLOAT:
                 return Number(rawValue);
             case types.STYPE_INTEGER:
@@ -192,7 +192,7 @@ const NativeComponents = {
             for (let serviceName in componentServices) {
                 let serviceData = componentServices[serviceName];
                 this._unregisterService(serviceData);
-                this._notifyServiceUsers(providerID, serviceName, serviceData, 'unregistered', null);
+                this._notifyServiceUsers(providerID, serviceName, serviceData, "unregistered", null);
             }
         },
         _releaseServices: function NativeComponents__releaseServices(scope) {
@@ -218,17 +218,17 @@ const NativeComponents = {
         _notifyServiceUsers: function NativeComponents__notifyServiceUsers(providerID, serviceName, serviceData, topic, data) {
             serviceData.usersData.forEach(function (userData) {
                 try {
-                    if (topic == 'registered')
+                    if (topic == "registered")
                         data = userData.proxy = new sysutils.WeakObjectProxy(serviceData.serviceObject);
                     userData.eventListener.observeServiceEvent(providerID, serviceName, topic, data);
-                    if (topic == 'unregistered') {
+                    if (topic == "unregistered") {
                         if (userData.proxy) {
                             userData.proxy.clear();
                             userData.proxy = null;
                         }
                     }
                 } catch (e) {
-                    this._logger.error('Error notifying service user. ' + strutils.formatError(e));
+                    this._logger.error("Error notifying service user. " + strutils.formatError(e));
                 }
             }, this);
         },

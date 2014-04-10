@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['syncTopHistory'];
+"use strict";
+const EXPORTED_SYMBOLS = ["syncTopHistory"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -7,12 +7,12 @@ const {
         results: Cr
     } = Components;
 const GLOBAL = this;
-const PREFIX = 'entries.top-history-';
+const PREFIX = "entries.top-history-";
 const syncTopHistory = {
         init: function SyncTopHistory_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
-            this._logger = application.getLogger('SyncTopHistory');
+            this._logger = application.getLogger("SyncTopHistory");
         },
         finalize: function SyncTopHistory_finalize(doCleanup, callback) {
             this._logger = null;
@@ -23,11 +23,11 @@ const syncTopHistory = {
             if (!this._application.sync.svc || !this.engine.enabled)
                 return topHistoryEntries;
             var records = this.engine.get(null);
-            var regex = new RegExp('^' + PREFIX + '(.+)$');
+            var regex = new RegExp("^" + PREFIX + "(.+)$");
             for (let key in records) {
                 let matches = key.match(regex);
                 if (!matches) {
-                    this._logger.error('Wrong key name: ' + key);
+                    this._logger.error("Wrong key name: " + key);
                     continue;
                 }
                 records[key] = JSON.parse(records[key]);
@@ -36,7 +36,7 @@ const syncTopHistory = {
                 topHistoryEntries.push(records[key]);
             }
             topHistoryEntries.sort(function (a, b) b.visits - a.visits);
-            this._logger.trace('Current top history entries: ' + JSON.stringify(topHistoryEntries));
+            this._logger.trace("Current top history entries: " + JSON.stringify(topHistoryEntries));
             return topHistoryEntries;
         },
         saveCurrentState: function SyncTopHistory_saveCurrentState(topHistory) {
@@ -47,12 +47,12 @@ const syncTopHistory = {
                 var key = historyElem.id || this._application.sync.generateId();
                 records[PREFIX + key] = JSON.stringify({
                     url: this._application.sync.prepareUrlForServer(historyElem.url),
-                    title: historyElem.title || '',
+                    title: historyElem.title || "",
                     visits: historyElem.visits,
                     instance: historyElem.instance || this._application.name
                 });
             }, this);
-            this._logger.trace('Full snapshot: ' + JSON.stringify(records));
+            this._logger.trace("Full snapshot: " + JSON.stringify(records));
             this.engine.set(records);
         },
         saveLocalClidState: function SyncTopHistory_saveLocalClidState(url, localHistory) {
@@ -74,7 +74,7 @@ const syncTopHistory = {
         get engine() {
             if (!this._application.sync.svc)
                 return null;
-            return this._application.sync.svc.getEngine('TopHistory');
+            return this._application.sync.svc.getEngine("TopHistory");
         },
         set initFinished(val) {
             this._engineInitFinished = val;

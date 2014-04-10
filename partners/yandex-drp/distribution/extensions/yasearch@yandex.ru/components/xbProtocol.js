@@ -1,16 +1,16 @@
-'use strict';
+"use strict";
 const {
         classes: Cc,
         interfaces: Ci,
         results: Cr,
         utils: Cu
     } = Components;
-const EXTENSION_PATH = Cc['@mozilla.org/network/io-service;1'].getService(Ci.nsIIOService).newFileURI(__LOCATION__.parent.parent).spec;
-Cu.import(EXTENSION_PATH + 'config.js');
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
-const CLASS_ID = '{6BA7D0A8-A115-11DE-8D96-029555D89593}';
-const SCHEME = 'xb';
-this.__defineGetter__('G_XB_HANDLER', function () {
+const EXTENSION_PATH = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService).newFileURI(__LOCATION__.parent.parent).spec;
+Cu.import(EXTENSION_PATH + "config.js");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const CLASS_ID = "{6BA7D0A8-A115-11DE-8D96-029555D89593}";
+const SCHEME = "xb";
+this.__defineGetter__("G_XB_HANDLER", function () {
     delete this.G_XB_HANDLER;
     return this.G_XB_HANDLER = Cc[XBProtocolHandler.prototype.contractID].getService(Ci.nsIProtocolHandler).wrappedJSObject;
 });
@@ -20,9 +20,9 @@ function XBProtocolHandler() {
 ;
 XBProtocolHandler.prototype = {
     version: 9,
-    classDescription: 'Custom Yandex.Bar protocol handler for XB-resources.',
+    classDescription: "Custom Yandex.Bar protocol handler for XB-resources.",
     classID: Components.ID(CLASS_ID),
-    contractID: '@mozilla.org/network/protocol;1?name=' + SCHEME,
+    contractID: "@mozilla.org/network/protocol;1?name=" + SCHEME,
     QueryInterface: XPCOMUtils.generateQI([Ci.nsIProtocolHandler]),
     get wrappedJSObject() {
         return this;
@@ -59,7 +59,7 @@ XBProtocolHandler.prototype = {
         try {
             var provider = uri.dataProvider;
         } catch (e) {
-            Cu.reportError('XB protocol couldn\'t get data provider for URI: ' + aURI.spec);
+            Cu.reportError("XB protocol couldn't get data provider for URI: " + aURI.spec);
         }
         if (!provider)
             throw Cr.NS_ERROR_FAILURE;
@@ -70,7 +70,7 @@ XBProtocolHandler.prototype = {
     }
 };
 XBProtocolHandler.XBURI = function XBURI(aSpec, aOriginalCharset, aBaseURI) {
-    var standardURL = Cc['@mozilla.org/network/standard-url;1'].createInstance(Ci.nsIStandardURL);
+    var standardURL = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIStandardURL);
     standardURL.init(standardURL.URLTYPE_STANDARD, -1, aSpec, aOriginalCharset, aBaseURI);
     standardURL.QueryInterface(Ci.nsIURL);
     this.spec = standardURL.spec;
@@ -107,19 +107,19 @@ XBProtocolHandler.XBURI.prototype = {
         throw Cr.NS_ERROR_NOT_IMPLEMENTED;
     },
     get userPass() {
-        return this._userPass || '';
+        return this._userPass || "";
     },
     set userPass(aUserPass) {
         throw Cr.NS_ERROR_NOT_IMPLEMENTED;
     },
     get username() {
-        return this._username || '';
+        return this._username || "";
     },
     set username(aUsername) {
         throw Cr.NS_ERROR_NOT_IMPLEMENTED;
     },
     get password() {
-        return this._password || '';
+        return this._password || "";
     },
     set password(aPassword) {
         throw Cr.NS_ERROR_NOT_IMPLEMENTED;
@@ -144,7 +144,7 @@ XBProtocolHandler.XBURI.prototype = {
         throw Cr.NS_ERROR_NOT_IMPLEMENTED;
     },
     get path() {
-        return this._path || '';
+        return this._path || "";
     },
     set path(aPath) {
         this._path = aPath;
@@ -157,93 +157,93 @@ XBProtocolHandler.XBURI.prototype = {
         return this.host;
     },
     get originCharset() {
-        return 'UTF-8';
+        return "UTF-8";
     },
     clone: function XBURI_clone() {
         return new XBProtocolHandler.XBURI(this.spec);
     },
     cloneIgnoringRef: function XBURI_cloneIgnoringRef() {
-        return new XBProtocolHandler.XBURI(this.spec.split('#')[0]);
+        return new XBProtocolHandler.XBURI(this.spec.split("#")[0]);
     },
     equals: function XBURI_equals(aURI) {
         return aURI.spec === this.spec;
     },
     equalsExceptRef: function XBURI_equalsExceptRef(aURI) {
-        return aURI.spec.split('#')[0] === this.spec.split('#')[0];
+        return aURI.spec.split("#")[0] === this.spec.split("#")[0];
     },
     resolve: function XBURI_resolve(aRelativePath) {
-        if (typeof aRelativePath != 'string')
+        if (typeof aRelativePath != "string")
             throw Cr.NS_ERROR_MALFORMED_URI;
         if (aRelativePath) {
-            if (aRelativePath.indexOf(this.scheme + '://') == 0)
+            if (aRelativePath.indexOf(this.scheme + "://") == 0)
                 return aRelativePath;
-            if (aRelativePath.indexOf('//') == 0)
-                return this.scheme + ':' + aRelativePath;
-            if (aRelativePath[0] == '/')
-                return this.scheme + '://' + this.host + aRelativePath;
-            if (aRelativePath[0] == '#')
-                return this.scheme + '://' + this.host + this.path + aRelativePath;
+            if (aRelativePath.indexOf("//") == 0)
+                return this.scheme + ":" + aRelativePath;
+            if (aRelativePath[0] == "/")
+                return this.scheme + "://" + this.host + aRelativePath;
+            if (aRelativePath[0] == "#")
+                return this.scheme + "://" + this.host + this.path + aRelativePath;
         }
-        return this.scheme + '://' + this.host + this.path.replace(/[^\/]*$/, '') + aRelativePath;
+        return this.scheme + "://" + this.host + this.path.replace(/[^\/]*$/, "") + aRelativePath;
     },
     schemeIs: function XBURI_schemeIs(aScheme) {
         aScheme = aScheme.toLowerCase();
-        return aScheme == this.scheme || aScheme == 'chrome' && /\.dtd$/.test(this.spec);
+        return aScheme == this.scheme || aScheme == "chrome" && /\.dtd$/.test(this.spec);
     },
     get directory() {
-        return this._directory || '';
+        return this._directory || "";
     },
     set directory(aDirectory) {
         this._directory = aDirectory;
         this._constructFilePath();
     },
     get fileBaseName() {
-        return this._fileBaseName || '';
+        return this._fileBaseName || "";
     },
     set fileBaseName(aFileBaseName) {
         this._fileBaseName = aFileBaseName;
         this._constructFileName();
     },
     get fileExtension() {
-        return this._fileExtension || '';
+        return this._fileExtension || "";
     },
     set fileExtension(aFileExtension) {
         this._fileExtension = aFileExtension;
         this._constructFileName();
     },
     get fileName() {
-        return this._fileName || '';
+        return this._fileName || "";
     },
     set fileName(aFileName) {
         this._fileName = aFileName;
         this._constructFilePath();
     },
     get filePath() {
-        return this._filePath || '';
+        return this._filePath || "";
     },
     set filePath(aFilePath) {
         this._filePath = aFilePath;
         this._constructPath();
     },
     get query() {
-        return this._query || '';
+        return this._query || "";
     },
     set query(aQuery) {
         this._query = aQuery;
         this._constructPath();
     },
     get ref() {
-        return this._ref || '';
+        return this._ref || "";
     },
     set ref(aRef) {
         this._ref = aRef;
         this._constructPath();
     },
     getCommonBaseSpec: function XBURI_getCommonBaseSpec(aURIToCompare) {
-        return '';
+        return "";
     },
     getRelativeSpec: function XBURI_getRelativeSpec(aURIToCompare) {
-        return '';
+        return "";
     },
     get file() {
         return this.dataProvider.findFile(this.filePath);
@@ -252,57 +252,57 @@ XBProtocolHandler.XBURI.prototype = {
         throw Cr.NS_ERROR_NOT_IMPLEMENTED;
     },
     _dataProvider: null,
-    _ERR_MALFORMED_URI: 'Malformed XB protocol URI: ',
-    _spec: '',
-    _prePath: '',
-    _scheme: '',
-    _userPass: '',
-    _username: '',
-    _password: '',
-    _hostPort: '',
-    _host: '',
+    _ERR_MALFORMED_URI: "Malformed XB protocol URI: ",
+    _spec: "",
+    _prePath: "",
+    _scheme: "",
+    _userPass: "",
+    _username: "",
+    _password: "",
+    _hostPort: "",
+    _host: "",
     _port: -1,
-    _path: '',
-    _filePath: '',
-    _directory: '',
-    _fileName: '',
-    _fileBaseName: '',
-    _fileExtension: '',
-    _query: '',
-    _ref: '',
+    _path: "",
+    _filePath: "",
+    _directory: "",
+    _fileName: "",
+    _fileBaseName: "",
+    _fileExtension: "",
+    _query: "",
+    _ref: "",
     _parse: function XBURI__parse() {
         if (!this._spec) {
             Cu.reportError(this._ERR_MALFORMED_URI);
             throw Cr.NS_ERROR_MALFORMED_URI;
         }
-        var standardURL = Cc['@mozilla.org/network/standard-url;1'].createInstance(Ci.nsIStandardURL);
+        var standardURL = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIStandardURL);
         standardURL.init(standardURL.URLTYPE_STANDARD, -1, this._spec, null, null);
         standardURL = standardURL.QueryInterface(Ci.nsIURL);
         [
-            'prePath',
-            'scheme',
-            'userPass',
-            'username',
-            'password',
-            'hostPort',
-            'host',
-            'port',
-            'path',
-            'filePath',
-            'directory',
-            'fileName',
-            'fileBaseName',
-            'fileExtension',
-            'query',
-            'ref'
-        ].forEach(function (p) this['_' + p] = standardURL[p], this);
+            "prePath",
+            "scheme",
+            "userPass",
+            "username",
+            "password",
+            "hostPort",
+            "host",
+            "port",
+            "path",
+            "filePath",
+            "directory",
+            "fileName",
+            "fileBaseName",
+            "fileExtension",
+            "query",
+            "ref"
+        ].forEach(function (p) this["_" + p] = standardURL[p], this);
         if (this._scheme !== SCHEME) {
             Cu.reportError(this._ERR_MALFORMED_URI + this._spec);
             throw Cr.NS_ERROR_MALFORMED_URI;
         }
     },
     _constructFileName: function XBURI__constructFileName() {
-        this._fileName = this._fileBaseName + (this._fileExtension ? '.' + this._fileExtension : '');
+        this._fileName = this._fileBaseName + (this._fileExtension ? "." + this._fileExtension : "");
         this._constructFilePath();
     },
     _constructFilePath: function XBURI__constructFilePath() {
@@ -310,11 +310,11 @@ XBProtocolHandler.XBURI.prototype = {
         this._constructPath();
     },
     _constructPath: function XBURI__constructPath() {
-        this._path = this._filePath + (this._query ? '?' + this._query : '') + (this._ref ? '#' + this._ref : '');
+        this._path = this._filePath + (this._query ? "?" + this._query : "") + (this._ref ? "#" + this._ref : "");
         this._constructSpec();
     },
     _constructSpec: function XBURI__constructSpec() {
-        this._spec = this._scheme + '://' + this._host + this._path;
+        this._spec = this._scheme + "://" + this._host + this._path;
     }
 };
 const NSGetFactory = XPCOMUtils.generateNSGetFactory([XBProtocolHandler]);
