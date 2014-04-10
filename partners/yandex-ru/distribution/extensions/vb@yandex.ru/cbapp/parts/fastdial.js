@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['fastdial'];
+"use strict";
+const EXPORTED_SYMBOLS = ["fastdial"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -7,43 +7,44 @@ const {
         results: Cr
     } = Components;
 const GLOBAL = this;
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
-Cu.import('resource://gre/modules/PlacesUtils.jsm');
-Cu.import('resource://gre/modules/Services.jsm');
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/PlacesUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 [
     [
-        'SESSION_STORE_SVC',
-        '@mozilla.org/browser/sessionstore;1',
-        'nsISessionStore'
+        "SESSION_STORE_SVC",
+        "@mozilla.org/browser/sessionstore;1",
+        "nsISessionStore"
     ],
     [
-        'DOWNLOAD_MANAGER_SVC',
-        '@mozilla.org/download-manager-ui;1',
-        'nsIDownloadManagerUI'
+        "DOWNLOAD_MANAGER_SVC",
+        "@mozilla.org/download-manager-ui;1",
+        "nsIDownloadManagerUI"
     ],
     [
-        'UUID_SVC',
-        '@mozilla.org/uuid-generator;1',
-        'nsIUUIDGenerator'
+        "UUID_SVC",
+        "@mozilla.org/uuid-generator;1",
+        "nsIUUIDGenerator"
     ]
 ].forEach(function ([
     name,
     contract,
     intf
 ]) XPCOMUtils.defineLazyServiceGetter(GLOBAL, name, contract, intf));
-const FILE_PROTOCOL_HANDLER = Services.io.getProtocolHandler('file').QueryInterface(Ci.nsIFileProtocolHandler);
-const OUTER_WINDOW_DESTROY_EVENT = 'outer-window-destroyed';
-const XUL_WINDOW_DESTROY_EVENT = 'xul-window-destroyed';
+const FILE_PROTOCOL_HANDLER = Services.io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
+const OUTER_WINDOW_DESTROY_EVENT = "outer-window-destroyed";
+const XUL_WINDOW_DESTROY_EVENT = "xul-window-destroyed";
 const CLEAR_HISTORY_THUMBS_INTERVAL = 3600;
 const RECENTLY_CLOSED_TABS = 15;
-const BAR_EXTENSION_ID = 'yasearch@yandex.ru';
-const NATIVE_RESTORETAB_PREFIX = 'current-tab-';
-const NATIVE_RESTOREWIN_PREFIX = 'current-win-';
+const BAR_EXTENSION_ID = "yasearch@yandex.ru";
+const NATIVE_RESTORETAB_PREFIX = "current-tab-";
+const NATIVE_RESTOREWIN_PREFIX = "current-win-";
+const CLCK_URL = "http://clck.yandex.ru/click/dtype=stred/pid=12/cid=72480/path=%p/*http://yandex.ru";
 const fastdial = {
         init: function Fastdial_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
-            this._logger = application.getLogger('Fastdial');
+            this._logger = application.getLogger("Fastdial");
             var dataProvider = this._barnavigDataProvider.init(this._application);
             this._application.barnavig.addDataProvider(dataProvider);
             Services.obs.addObserver(this, OUTER_WINDOW_DESTROY_EVENT, false);
@@ -73,7 +74,7 @@ const fastdial = {
                 delete this._registeredListeners[outerWindowId];
                 break;
             case XUL_WINDOW_DESTROY_EVENT:
-                this.sendRequest('closedTabsListChanged', { empty: this._recentlyClosedTabs.length === 0 });
+                this.sendRequest("closedTabsListChanged", { empty: this._recentlyClosedTabs.length === 0 });
                 break;
             case this._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT:
                 aData = JSON.parse(aData);
@@ -85,10 +86,10 @@ const fastdial = {
                     if (!historyThumbHost || historyThumbHost !== aData.domain)
                         continue;
                     sysutils.copyProperties(aData, historyThumbData.cloud);
-                    this.sendRequest('historyThumbChanged', this._application.frontendHelper.getDataForThumb(historyThumbData));
+                    this.sendRequest("historyThumbChanged", this._application.frontendHelper.getDataForThumb(historyThumbData));
                 }
                 break;
-            case 'status':
+            case "status":
                 break;
             }
         },
@@ -123,7 +124,7 @@ const fastdial = {
             return listeners[command] && listeners[command].indexOf(callback) !== -1;
         },
         sendRequest: function Fastdial_sendRequest(command, data) {
-            this._logger.trace('SendRequest [' + command + ']: every window: ' + JSON.stringify(data));
+            this._logger.trace("SendRequest [" + command + "]: every window: " + JSON.stringify(data));
             for (let outerWindowId in this._registeredListeners) {
                 this.sendRequestToTab(outerWindowId, command, data, false);
             }
@@ -133,7 +134,7 @@ const fastdial = {
             if (!listeners || !listeners[command])
                 return;
             if (needsTraceLog !== false) {
-                this._logger.trace('SendRequest [' + command + ']: outer_window_id ' + outerWindowId + ': ' + JSON.stringify(data));
+                this._logger.trace("SendRequest [" + command + "]: outer_window_id " + outerWindowId + ": " + JSON.stringify(data));
             }
             listeners[command].forEach(function (callback) {
                 if (!(outerWindowId in this._registeredListeners))
@@ -142,30 +143,30 @@ const fastdial = {
                 try {
                     callback(data);
                 } catch (ex) {
-                    this._logger.error('Frontend callback execution failed: ' + ex.message);
+                    this._logger.error("Frontend callback execution failed: " + ex.message);
                 }
             }, this);
         },
         openExternalWindow: function Fastdial_openExternalWindow(externalWindowName, window) {
             if ([
-                    'downloads',
-                    'bookmarks',
-                    'history'
+                    "downloads",
+                    "bookmarks",
+                    "history"
                 ].indexOf(externalWindowName) === -1)
-                throw new Error('Wrong window type selected');
-            if (externalWindowName === 'downloads') {
+                throw new Error("Wrong window type selected");
+            if (externalWindowName === "downloads") {
                 DOWNLOAD_MANAGER_SVC.show(window);
                 return;
             }
             var leftPaneRoot;
-            if (externalWindowName === 'bookmarks')
-                leftPaneRoot = 'AllBookmarks';
-            else if (externalWindowName === 'history')
-                leftPaneRoot = 'History';
-            var organizer = misc.getTopWindowOfType('Places:Organizer');
+            if (externalWindowName === "bookmarks")
+                leftPaneRoot = "AllBookmarks";
+            else if (externalWindowName === "history")
+                leftPaneRoot = "History";
+            var organizer = misc.getTopWindowOfType("Places:Organizer");
             if (!organizer) {
                 let topWindow = misc.getTopBrowserWindow();
-                topWindow.openDialog('chrome://browser/content/places/places.xul', '', 'chrome,toolbar=yes,dialog=no,resizable', leftPaneRoot);
+                topWindow.openDialog("chrome://browser/content/places/places.xul", "", "chrome,toolbar=yes,dialog=no,resizable", leftPaneRoot);
             } else {
                 organizer.PlacesOrganizer.selectLeftPaneQuery(leftPaneRoot);
                 organizer.focus();
@@ -175,9 +176,9 @@ const fastdial = {
             var self = this;
             var backboneXY = this._application.layout.getThumbsNumXY();
             var maxThumbIndex = backboneXY[0] * backboneXY[1];
-            var showBookmarks = this._application.preferences.get('ftabs.showBookmarks');
+            var showBookmarks = this._application.preferences.get("ftabs.showBookmarks");
             var requestData = {
-                    debug: this._application.preferences.get('ftabs.debug', false),
+                    debug: this._application.preferences.get("ftabs.debug", false),
                     x: backboneXY[0],
                     y: backboneXY[1],
                     showBookmarks: showBookmarks,
@@ -187,54 +188,54 @@ const fastdial = {
                     hasApps: false,
                     sync: this._application.sync.state
                 };
-            var brandingLogo = this.brandingXMLDoc.querySelector('logo');
-            var brandingSearch = this.brandingXMLDoc.querySelector('search');
-            var brandingSearchURL = brandingSearch.getAttribute('url');
+            var brandingLogo = this.brandingXMLDoc.querySelector("logo");
+            var brandingSearch = this.brandingXMLDoc.querySelector("search");
+            var brandingSearchURL = brandingSearch.getAttribute("url");
             var searchURL = this._application.branding.expandBrandTemplates(brandingSearchURL);
-            var imgFile = this._application.branding.brandPackage.findFile('fastdial/' + brandingLogo.getAttribute('img_clear')) || '';
+            var imgFile = this._application.branding.brandPackage.findFile("fastdial/" + brandingLogo.getAttribute("img_clear")) || "";
             if (imgFile)
                 imgFile = FILE_PROTOCOL_HANDLER.getURLSpecFromFile(imgFile);
             requestData.branding = {
                 logo: {
-                    url: this.expandBrandingURL(brandingLogo.getAttribute('url')),
+                    url: this.expandBrandingURL(brandingLogo.getAttribute("url")),
                     img: imgFile,
-                    alt: brandingLogo.getAttribute('alt'),
-                    title: brandingLogo.getAttribute('title')
+                    alt: brandingLogo.getAttribute("alt"),
+                    title: brandingLogo.getAttribute("title")
                 },
                 search: {
                     url: searchURL,
-                    placeholder: brandingSearch.getAttribute('placeholder'),
+                    placeholder: brandingSearch.getAttribute("placeholder"),
                     example: this._application.searchExample.current,
-                    navigateTitle: brandingSearch.getAttribute('navigate_title') || ''
+                    navigateTitle: brandingSearch.getAttribute("navigate_title") || ""
                 }
             };
             var onSearchStatusReady = function Fastdial_requestInit_onSearchStatusReady(searchStatus) {
                     requestData.searchStatus = searchStatus;
                     if (outerWindowId !== undefined) {
-                        this.sendRequestToTab(outerWindowId, 'init', requestData);
+                        this.sendRequestToTab(outerWindowId, "init", requestData);
                     } else {
-                        this.sendRequest('init', requestData);
+                        this.sendRequest("init", requestData);
                     }
                     if (showBookmarks && !ignoreBookmarks) {
-                        this._application.bookmarks.requestBranch('', function (bookmarks) {
+                        this._application.bookmarks.requestBranch("", function (bookmarks) {
                             if (outerWindowId !== undefined) {
-                                self.sendRequestToTab(outerWindowId, 'bookmarksStateChanged', bookmarks);
+                                self.sendRequestToTab(outerWindowId, "bookmarksStateChanged", bookmarks);
                             } else {
-                                self.sendRequest('bookmarksStateChanged', bookmarks);
+                                self.sendRequest("bookmarksStateChanged", bookmarks);
                             }
                         });
                     }
                     if (outerWindowId !== undefined && !this._outerWindowIdList[outerWindowId]) {
                         this._outerWindowIdList[outerWindowId] = true;
                         if (this._logTabShowFlag) {
-                            this._application.usageHistory.logAction('show');
+                            this._application.usageHistory.logAction("show");
                             this._tabsShownCounter++;
                         }
                         this._logTabShowFlag = true;
                     }
                 }.bind(this);
-            var searchStatusInternal = this._application.preferences.get('ftabs.searchStatus') === 1 ? false : true;
-            var searchStudyOmni = this._application.preferences.get('ftabs.searchStudyOmnibox');
+            var searchStatusInternal = this._application.preferences.get("ftabs.searchStatus") === 1 ? false : true;
+            var searchStudyOmni = this._application.preferences.get("ftabs.searchStudyOmnibox");
             if (searchStatusInternal) {
                 onSearchStatusReady(2);
                 return;
@@ -261,14 +262,14 @@ const fastdial = {
             callback({
                 bgImages: this._application.backgroundImages.list,
                 userImage: userImage,
-                showBookmarks: this._application.preferences.get('ftabs.showBookmarks'),
-                sendStat: this._application.preferences.get('stat.usage.send', false),
-                isHomePage: Preferences.get('browser.startup.homepage').split('|').indexOf(this._application.protocolSupport.url) !== -1,
+                showBookmarks: this._application.preferences.get("ftabs.showBookmarks"),
+                sendStat: this._application.preferences.get("stat.usage.send", false),
+                isHomePage: Preferences.get("browser.startup.homepage").split("|").indexOf(this._application.protocolSupport.url) !== -1,
                 showSearchForm: [
                     0,
                     2
-                ].indexOf(this._application.preferences.get('ftabs.searchStatus')) !== -1,
-                selectedBgImage: this._application.backgroundImages.currentSelected.preview,
+                ].indexOf(this._application.preferences.get("ftabs.searchStatus")) !== -1,
+                selectedBgImage: this._application.backgroundImages.currentSelected.id,
                 maxLayoutX: maxLayoutNum,
                 layouts: possibleLayouts.layouts,
                 currentLayout: possibleLayouts.current,
@@ -282,11 +283,11 @@ const fastdial = {
             });
         },
         getLocalizedString: function Fastdial_getLocalizedString(key) {
-            var node = this.i18nXMLDoc.querySelector('key[name=\'' + key + '\']');
+            var node = this.i18nXMLDoc.querySelector("key[name='" + key + "']");
             if (node === null) {
-                throw new Error('Unknown i18n key: ' + key);
+                throw new Error("Unknown i18n key: " + key);
             }
-            return this.expandBrandingURL(node.getAttribute('value'));
+            return this.expandBrandingURL(node.getAttribute("value"));
         },
         applySettings: function Fastdial_applySettings(layout, showBookmarks, showSearchForm, bgImage) {
             var self = this;
@@ -294,15 +295,15 @@ const fastdial = {
             var oldThumbsNum = this._application.layout.getThumbsNum();
             var layoutXY = this._application.layout.getThumbsXYOfThumbsNum(layout);
             var needsFastPickup = this._application.layout.layoutX * this._application.layout.layoutY < layoutXY[0] * layoutXY[1];
-            var oldShowBookmarks = this._application.preferences.get('ftabs.showBookmarks');
+            var oldShowBookmarks = this._application.preferences.get("ftabs.showBookmarks");
             var ignoreBookmarks;
             if (!oldShowBookmarks && showBookmarks) {
                 ignoreBookmarks = false;
             } else {
                 ignoreBookmarks = true;
             }
-            this._application.preferences.set('ftabs.showBookmarks', showBookmarks);
-            this._application.preferences.set('ftabs.searchStatus', showSearchForm ? 0 : 1);
+            this._application.preferences.set("ftabs.showBookmarks", showBookmarks);
+            this._application.preferences.set("ftabs.searchStatus", showSearchForm ? 0 : 1);
             this._application.layout.layoutX = layoutXY[0];
             this._application.layout.layoutY = layoutXY[1];
             this.requestInit(undefined, ignoreBookmarks);
@@ -328,7 +329,7 @@ const fastdial = {
                     }
                     var uri = netutils.newURI(tabData.url);
                     self._application.favicons.requestFaviconForURL(uri, function (faviconData, dominantColor) {
-                        tabData.favicon = faviconData || '';
+                        tabData.favicon = faviconData || "";
                         delete tabData.url;
                         callback(null, tabData);
                     });
@@ -340,19 +341,19 @@ const fastdial = {
         },
         restoreTab: function Fastdial_restoreTab(id) {
             if (id.indexOf(NATIVE_RESTORETAB_PREFIX) === 0) {
-                id = parseInt(id.replace(NATIVE_RESTORETAB_PREFIX, ''), 10);
+                id = parseInt(id.replace(NATIVE_RESTORETAB_PREFIX, ""), 10);
                 let topWindow = misc.getTopBrowserWindow();
                 SESSION_STORE_SVC.undoCloseTab(topWindow, id);
             } else if (id.indexOf(NATIVE_RESTOREWIN_PREFIX) === 0) {
-                id = parseInt(id.replace(NATIVE_RESTOREWIN_PREFIX, ''), 10);
+                id = parseInt(id.replace(NATIVE_RESTOREWIN_PREFIX, ""), 10);
                 SESSION_STORE_SVC.undoCloseWindow(id);
             } else {
-                throw new Error('Unknown tab id: ' + id);
+                throw new Error("Unknown tab id: " + id);
             }
-            this.sendRequest('closedTabsListChanged', { empty: this._recentlyClosedTabs.length === 0 });
+            this.sendRequest("closedTabsListChanged", { empty: this._recentlyClosedTabs.length === 0 });
         },
         onTabClose: function Fastdial_onTabClose() {
-            this.sendRequest('closedTabsListChanged', { empty: this._recentlyClosedTabs.length === 0 });
+            this.sendRequest("closedTabsListChanged", { empty: this._recentlyClosedTabs.length === 0 });
         },
         requestLastVisited: function Fastdial_requestLastVisited(offset, callback) {
             var self = this;
@@ -393,7 +394,7 @@ const fastdial = {
                     self._application.internalStructure.iterate({ nonempty: true }, function (thumbData, i) {
                         if (i < maxThumbIndex) {
                             try {
-                                let host = thumbData.location.asciiHost.replace(/^www\./, '');
+                                let host = thumbData.location.asciiHost.replace(/^www\./, "");
                                 output.domains[host] = 1;
                             } catch (ex) {
                             }
@@ -495,7 +496,7 @@ const fastdial = {
             this._barnavigDataProvider.addURLData(url, { vtbNum: index + 1 });
         },
         openSpeculativeConnect: function Fastdial_openSpeculativeConnect(url) {
-            if (!('nsISpeculativeConnect' in Ci))
+            if (!("nsISpeculativeConnect" in Ci))
                 return;
             var uri;
             try {
@@ -511,17 +512,17 @@ const fastdial = {
             if (thumb && thumb.source) {
                 misc.navigateBrowser({
                     url: thumb.source,
-                    target: 'current tab'
+                    target: "current tab"
                 });
             }
         },
         navigateUrlWithReferer: function Fastdial_navigateUrlWithReferer(url, navigateCode) {
-            var brandingLogoURL = this.brandingXMLDoc.querySelector('logo').getAttribute('url');
+            var brandingLogoURL = this.brandingXMLDoc.querySelector("logo").getAttribute("url");
             brandingLogoURL = this._application.branding.expandBrandTemplates(brandingLogoURL);
             var target = {
-                    1: 'current tab',
-                    2: 'new window',
-                    3: 'new tab'
+                    1: "current tab",
+                    2: "new window",
+                    3: "new tab"
                 }[navigateCode];
             misc.navigateBrowser({
                 url: url,
@@ -530,21 +531,21 @@ const fastdial = {
             });
         },
         setAsHomePage: function Fastdial_setAsHomePage() {
-            var currentHomePages = Preferences.get('browser.startup.homepage').split('|');
+            var currentHomePages = Preferences.get("browser.startup.homepage").split("|");
             if (currentHomePages.length > 1) {
                 currentHomePages.unshift(this._application.protocolSupport.url);
-                Preferences.set('browser.startup.homepage', currentHomePages.join('|'));
+                Preferences.set("browser.startup.homepage", currentHomePages.join("|"));
             } else {
-                Preferences.set('browser.startup.homepage', this._application.protocolSupport.url);
+                Preferences.set("browser.startup.homepage", this._application.protocolSupport.url);
             }
         },
         onHiddenTabAction: function Fastdial_onHiddenTabAction(action) {
             switch (action) {
-            case 'hide':
+            case "hide":
                 this._logTabShowFlag = false;
                 break;
-            case 'show':
-                this._application.usageHistory.logAction('show');
+            case "show":
+                this._application.usageHistory.logAction("show");
                 this._tabsShownCounter++;
                 Services.obs.notifyObservers(this, this._application.core.eventTopics.APP_TAB_SHOWN, this._tabsShownCounter);
                 break;
@@ -557,7 +558,7 @@ const fastdial = {
                 uri = netutils.newURI(decodedURL);
             } catch (ex) {
             }
-            return uri ? uri.asciiHost.replace(/^www\./, '') : null;
+            return uri ? uri.asciiHost.replace(/^www\./, "") : null;
         },
         getDecodedLocation: function Fastdial_getDecodedLocation(url) {
             var decodedURL = this._decodeURL(url);
@@ -580,22 +581,22 @@ const fastdial = {
         },
         get brandingXMLDoc() {
             delete this.brandingXMLDoc;
-            return this.brandingXMLDoc = this._application.branding.brandPackage.getXMLDocument('fastdial/config.xml');
+            return this.brandingXMLDoc = this._application.branding.brandPackage.getXMLDocument("fastdial/config.xml");
         },
         get brandingClckrDoc() {
             delete this.brandingClckrDoc;
-            return this.brandingClckrDoc = this._application.branding.brandPackage.getXMLDocument('fastdial/clckr.xml');
+            return this.brandingClckrDoc = this._application.branding.brandPackage.getXMLDocument("fastdial/clckr.xml");
         },
         get i18nXMLDoc() {
             delete this.i18nXMLDoc;
-            var stream = this._application.addonFS.getStream('$content/fastdial/i18n.xml');
+            var stream = this._application.addonFS.getStream("$content/fastdial/i18n.xml");
             return this.i18nXMLDoc = fileutils.xmlDocFromStream(stream);
         },
         get _sessionStoreFileData() {
             var tabsData = [];
             var sessionstoreData;
-            var sessionFile = Cc['@mozilla.org/file/directory_service;1'].getService(Ci.nsIProperties).get('ProfD', Ci.nsIFile);
-            sessionFile.append('sessionstore.js');
+            var sessionFile = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("ProfD", Ci.nsIFile);
+            sessionFile.append("sessionstore.js");
             if (!sessionFile.exists() || !sessionFile.isFile() || !sessionFile.isReadable())
                 return tabsData;
             try {
@@ -609,8 +610,8 @@ const fastdial = {
         },
         get _recentlyClosedTabs() {
             const SKIP_URLS = [
-                    'about:blank',
-                    'about:newtab',
+                    "about:blank",
+                    "about:newtab",
                     this._application.protocolSupport.url
                 ];
             const EXTENSION_NAME = this._application.branding.productInfo.ProductName1.nom;
@@ -638,7 +639,7 @@ const fastdial = {
                     } else {
                         try {
                             let uri = netutils.newURI(lastTabEntry.url);
-                            domains.push(uri.host.replace(/^www\./, ''));
+                            domains.push(uri.host.replace(/^www\./, ""));
                         } catch (ex) {
                             domains.push(lastTabEntry.url);
                         }
@@ -648,8 +649,8 @@ const fastdial = {
                     return;
                 windows.push({
                     id: NATIVE_RESTOREWIN_PREFIX + index,
-                    title: '',
-                    favicon: '',
+                    title: "",
+                    favicon: "",
                     isWindow: true,
                     domains: domains
                 });
@@ -708,7 +709,7 @@ const fastdial = {
                 return this;
             },
             addURLData: function Fastdial_BNDP_addURLData(aURL, aThumbData) {
-                if (typeof aURL == 'string' && typeof aThumbData == 'object')
+                if (typeof aURL == "string" && typeof aThumbData == "object")
                     this._dataContainer.set(aURL, aThumbData);
             },
             onWindowLocationChange: function Fastdial_BNDP_onWindowLocationChange() {
@@ -733,26 +734,26 @@ const fastdial = {
             var locationObj = this.getDecodedLocation(url);
             var titleFound;
             if (!locationObj.location)
-                return callback('URL is not valid: ' + url);
+                return callback("URL is not valid: " + url);
             seriesTasks.history = function Fastdial_requestTitleForURL_historySeriesTask(callback) {
                 try {
                     PlacesUtils.asyncHistory.getPlacesInfo(locationObj.location, {
                         handleResult: function handleResult(aPlaceInfo) {
                             titleFound = aPlaceInfo.title;
                             if (titleFound)
-                                return callback('stop');
+                                return callback("stop");
                             callback();
                         },
                         handleError: function handleError(aResultCode, aPlaceInfo) {
                             if (aResultCode !== Cr.NS_ERROR_NOT_AVAILABLE)
-                                self._logger.error('Error in asyncHistory.getPlacesInfo (' + JSON.stringify(locationObj.location) + '): ' + aResultCode);
+                                self._logger.error("Error in asyncHistory.getPlacesInfo (" + JSON.stringify(locationObj.location) + "): " + aResultCode);
                             callback();
                         }
                     });
                 } catch (ex) {
                     titleFound = PlacesUtils.history.getPageTitle(locationObj.location);
                     if (titleFound)
-                        return callback('stop');
+                        return callback("stop");
                     callback();
                 }
             };
@@ -764,57 +765,64 @@ const fastdial = {
                     isStandardURL = false;
                 }
                 if (!isStandardURL || !locationObj.location.host)
-                    return callback('Not a valid nsIURL: ' + url);
+                    return callback("Not a valid nsIURL: " + url);
                 if (self._application.isYandexHost(locationObj.location.host)) {
                     try {
                         locationObj.location.QueryInterface(Ci.nsIURL);
                         let parsedQuery = netutils.querystring.parse(locationObj.location.query);
-                        parsedQuery.nugt = 'vbff-' + self._application.addonManager.addonVersion;
+                        parsedQuery.nugt = "vbff-" + self._application.addonManager.addonVersion;
                         locationObj.location.query = netutils.querystring.stringify(parsedQuery);
                     } catch (ex) {
-                        self._logger.error('URI is not URL: ' + url);
+                        self._logger.error("URI is not URL: " + url);
                     }
                 }
-                var xhr = Cc['@mozilla.org/xmlextras/xmlhttprequest;1'].createInstance(Ci.nsIXMLHttpRequest);
-                xhr.overrideMimeType('text/plain; charset=x-user-defined');
+                var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+                xhr.overrideMimeType("text/plain; charset=x-user-defined");
                 xhr.mozBackgroundRequest = true;
                 xhr.QueryInterface(Ci.nsIDOMEventTarget);
-                xhr.open('GET', locationObj.location.spec, true);
+                xhr.open("GET", locationObj.location.spec, true);
                 var timer = new sysutils.Timer(function () {
                         xhr.abort();
                     }, 25000);
-                xhr.setRequestHeader('Cache-Control', 'no-cache');
-                xhr.addEventListener('load', function () {
+                xhr.setRequestHeader("Cache-Control", "no-cache");
+                xhr.addEventListener("load", function () {
                     timer.cancel();
-                    var responseText = (xhr.responseText || '').replace(/<\/head>[\s\S]*/i, '</head><body/></html>').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-                    var title = '';
+                    var responseText = (xhr.responseText || "").replace(/<\/head>[\s\S]*/i, "</head><body/></html>").replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+                    var title = "";
                     var domParser = xmlutils.getDOMParser();
-                    var xmlDocument;
+                    var xmlDocument, charset;
                     try {
-                        xmlDocument = domParser.parseFromString(responseText, 'text/html');
+                        xmlDocument = domParser.parseFromString(responseText, "text/html");
                     } catch (e) {
                     }
-                    var charset = xhr.getResponseHeader('Content-Type');
-                    if (xmlDocument && !(charset && /charset=(.+)$/.test(charset))) {
-                        charset = xmlDocument.querySelector('meta[http-equiv=\'Content-Type\'][content]');
-                        charset = charset && charset.getAttribute('content');
+                    var contentTypeHeader = xhr.getResponseHeader("Content-Type");
+                    var charsetHeader = contentTypeHeader && contentTypeHeader.match(/charset=(.+)$/);
+                    var charsetTagHTML5 = xmlDocument && xmlDocument.querySelector("meta[charset]");
+                    var charsetHttpEquivTag = xmlDocument && xmlDocument.querySelector("meta[http-equiv='Content-Type'][content]");
+                    if (charsetHeader) {
+                        charset = charsetHeader[1];
+                    } else if (xmlDocument) {
+                        if (charsetHttpEquivTag) {
+                            charset = charsetHttpEquivTag.getAttribute("content").match(/charset=(.+)$/);
+                            charset = charset && charset[1];
+                        } else if (charsetTagHTML5) {
+                            charset = charsetTagHTML5.getAttribute("charset");
+                        }
                     }
-                    charset = charset && charset.match(/charset=(.+)$/);
-                    charset = charset && charset[1] || 'UTF-8';
-                    charset = charset.replace(/[^a-z\d-]/gi, '');
-                    var converter = Cc['@mozilla.org/intl/scriptableunicodeconverter'].createInstance(Ci.nsIScriptableUnicodeConverter);
+                    charset = (charset || "UTF-8").replace(/[^a-z\d-]/gi, "");
+                    var converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].createInstance(Ci.nsIScriptableUnicodeConverter);
                     try {
                         converter.charset = charset;
                         responseText = converter.ConvertToUnicode(responseText);
-                        xmlDocument = domParser.parseFromString(responseText, 'text/html');
+                        xmlDocument = domParser.parseFromString(responseText, "text/html");
                     } catch (e) {
                     }
-                    var titleNode = xmlDocument && xmlDocument.querySelector('head > title');
+                    var titleNode = xmlDocument && xmlDocument.querySelector("head > title");
                     if (titleNode) {
                         title = titleNode.textContent;
                     } else {
                         let titleMatches = responseText.match(/<title>(.*?)<\/title>/im);
-                        title = titleMatches ? titleMatches[1] : '';
+                        title = titleMatches ? titleMatches[1] : "";
                     }
                     title = title.substr(0, 1000) || url;
                     callback(null, title);
@@ -822,8 +830,8 @@ const fastdial = {
                 var errorHandler = function (e) {
                     callback(e.type);
                 };
-                xhr.addEventListener('error', errorHandler, false);
-                xhr.addEventListener('abort', errorHandler, false);
+                xhr.addEventListener("error", errorHandler, false);
+                xhr.addEventListener("abort", errorHandler, false);
                 xhr.send();
             };
             async.series(seriesTasks, function Fastdial_requestTitleForURL_onSeriesTasksRun(err, results) {
@@ -837,20 +845,27 @@ const fastdial = {
         expandBrandingURL: function Fastdial_expandBrandingURL(url) {
             return this._application.branding.expandBrandTemplates(url, { vbID: this._application.core.CONFIG.APP.TYPE });
         },
+        sendClickerRequest: function Fastdial_sendClickerRequest(param) {
+            var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+            request.mozBackgroundRequest = true;
+            request.open("GET", CLCK_URL.replace("%p", param), true);
+            request.setRequestHeader("Cache-Control", "no-cache");
+            request.send();
+        },
         _decodeURL: function Fastdial__decodeURL(url) {
             var outputURL;
             try {
                 let uri = netutils.newURI(url);
-                if (uri.host === 'clck.yandex.ru') {
+                if (uri.host === "clck.yandex.ru") {
                     let clickrMatches = uri.path.match(/.+?\*(.+)/);
                     if (clickrMatches) {
-                        let regexFromOld = new RegExp('\\?from=vb-fx$');
-                        let regexFromNew = new RegExp('\\?from=' + this._application.core.CONFIG.APP.TYPE + '$');
-                        clickrMatches[1] = clickrMatches[1].replace(/[?&]clid=[^&]+/, '').replace(regexFromOld, '').replace(regexFromNew, '');
+                        let regexFromOld = new RegExp("\\?from=vb-fx$");
+                        let regexFromNew = new RegExp("\\?from=" + this._application.core.CONFIG.APP.TYPE + "$");
+                        clickrMatches[1] = clickrMatches[1].replace(/[?&]clid=[^&]+/, "").replace(regexFromOld, "").replace(regexFromNew, "");
                         outputURL = clickrMatches[1];
                     } else {
-                        let clckrItem = this.brandingClckrDoc.querySelector('item[url=\'' + url + '\']');
-                        outputURL = clckrItem ? 'http://' + clckrItem.getAttribute('domain') : url;
+                        let clckrItem = this.brandingClckrDoc.querySelector("item[url='" + url + "']");
+                        outputURL = clckrItem ? "http://" + clckrItem.getAttribute("domain") : url;
                     }
                 } else {
                     outputURL = url;

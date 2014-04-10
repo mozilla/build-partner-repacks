@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 const {
         classes: Cc,
         interfaces: Ci,
@@ -10,7 +10,7 @@ const migrator = {
             this._migrationModule = aMigrationModule;
             aMigrationModule.app.core.Lib.sysutils.copyProperties(aMigrationModule.app.core.Lib, GLOBAL);
             this._migrationArray = [{
-                    id: 'settings',
+                    id: "settings",
                     action: this._migrateSettings.bind(this)
                 }];
         },
@@ -19,7 +19,7 @@ const migrator = {
                 try {
                     item.action();
                 } catch (ex) {
-                    this._migrationModule.logger.error('Failed to perform migration action \'' + item.id + '\':' + strutils.formatError(ex));
+                    this._migrationModule.logger.error("Failed to perform migration action '" + item.id + "':" + strutils.formatError(ex));
                     this._migrationModule.logger.debug(ex.stack);
                 }
             }, this);
@@ -27,50 +27,50 @@ const migrator = {
         _migrateSettings: function migrator__migrateSettings() {
             var app = this._migrationModule.app;
             var prefs = app.preferences;
-            const BAR_EXTENSION_ID = 'yasearch@yandex.ru';
-            if (prefs.get('ftabs.searchStatus') === 3) {
+            const BAR_EXTENSION_ID = "yasearch@yandex.ru";
+            if (prefs.get("ftabs.searchStatus") === 3) {
                 AddonManager.gre_AddonManager.getAddonByID(BAR_EXTENSION_ID, function (addonData) {
                     var isBarInstalled = addonData !== null && addonData.installDate && addonData.isActive;
                     if (app.addonManager.info.isFreshAddonInstall) {
                         if (isBarInstalled === false) {
-                            prefs.set('ftabs.searchStatus', 0);
+                            prefs.set("ftabs.searchStatus", 0);
                         }
                     } else {
                         if (isBarInstalled) {
-                            prefs.set('ftabs.searchStatus', 1);
+                            prefs.set("ftabs.searchStatus", 1);
                         } else {
-                            prefs.set('ftabs.searchStatus', 0);
+                            prefs.set("ftabs.searchStatus", 0);
                         }
                     }
                 });
             }
-            var userBgImagePref = prefs.get('ftabs.backgroundImage', '');
+            var userBgImagePref = prefs.get("ftabs.backgroundImage", "");
             if (userBgImagePref.length) {
                 let userBgImage = app.core.rootDir;
-                userBgImage.append('ftab-data');
-                userBgImage.append('backgrounds');
+                userBgImage.append("ftab-data");
+                userBgImage.append("backgrounds");
                 if (userBgImage.exists() && userBgImage.isDirectory()) {
-                    userBgImage.append(userBgImagePref.split('/').pop());
+                    userBgImage.append(userBgImagePref.split("/").pop());
                     if (userBgImage.exists() && userBgImage.isFile() && userBgImage.isReadable()) {
-                        let extension = userBgImage.leafName.split('.').pop().toLowerCase();
-                        let fileName = 'user.' + extension;
+                        let extension = userBgImage.leafName.split(".").pop().toLowerCase();
+                        let fileName = "user." + extension;
                         let bgImagesDir = app.core.rootDir;
-                        bgImagesDir.append('backgroundImages');
+                        bgImagesDir.append("backgroundImages");
                         if (!bgImagesDir.exists()) {
                             bgImagesDir.create(Ci.nsIFile.DIRECTORY_TYPE, fileutils.PERMS_DIRECTORY);
                         }
-                        prefs.set('ftabs.backgroundImage', fileName);
+                        prefs.set("ftabs.backgroundImage", fileName);
                         userBgImage.copyTo(bgImagesDir, fileName);
                     }
                 }
             }
             var oldScreensDB = app.core.rootDir;
-            oldScreensDB.append(app.name + '-storage.sqlite');
+            oldScreensDB.append(app.name + "-storage.sqlite");
             if (oldScreensDB.exists() && oldScreensDB.isFile()) {
                 oldScreensDB.remove(true);
             }
             var delayedTmpCleanupTimer = new sysutils.Timer(function () {
-                    var theTempDir = Cc['@mozilla.org/file/directory_service;1'].getService(Ci.nsIProperties).get('TmpD', Ci.nsIFile);
+                    var theTempDir = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("TmpD", Ci.nsIFile);
                     try {
                         if (theTempDir.isDirectory()) {
                             let dirEntries = theTempDir.directoryEntries;
@@ -87,16 +87,16 @@ const migrator = {
                     }
                 }, 60 * 100);
             var ftabsXmlDataFile = app.core.rootDir;
-            ftabsXmlDataFile.append('ftab.data.xml');
+            ftabsXmlDataFile.append("ftab.data.xml");
             if (ftabsXmlDataFile.exists() && ftabsXmlDataFile.isFile()) {
                 let xmlDoc = fileutils.xmlDocFromFile(ftabsXmlDataFile);
                 let now = Math.round(Date.now() / 1000);
                 let dbFile = app.core.rootDir;
-                dbFile.append('fastdial.sqlite');
+                dbFile.append("fastdial.sqlite");
                 let database = new Database(dbFile);
                 let defaultXY = this._getDefaultThumbsNumXY();
                 let numThumbsDefault = defaultXY[0] * defaultXY[1];
-                let gridPrefValue = prefs.get('ftabs.gridLayout');
+                let gridPrefValue = prefs.get("ftabs.gridLayout");
                 let backbone;
                 try {
                     let backbonePrefValue = JSON.parse(gridPrefValue);
@@ -108,20 +108,20 @@ const migrator = {
                     backbone = defaultXY;
                 }
                 let newLayoutX, newLayoutY, maxAvailableIncreased = false;
-                let filledPages = xmlDoc.querySelectorAll('pages > page:not([url=\'\'])');
+                let filledPages = xmlDoc.querySelectorAll("pages > page:not([url=''])");
                 let filledPagesNum = 0;
                 let totalPagesNum = backbone[0] * backbone[1];
                 let foldEmptyThumbs = false;
                 let threadPosition;
                 Array.forEach(filledPages, function (page) {
-                    var position = parseInt(page.getAttribute('index'), 10);
+                    var position = parseInt(page.getAttribute("index"), 10);
                     if (position <= totalPagesNum) {
                         filledPagesNum += 1;
                     }
                 });
-                this._migrationModule.logger.debug('Total thumbs num: ' + totalPagesNum);
-                this._migrationModule.logger.debug('Filled thumbs num: ' + filledPagesNum);
-                this._migrationModule.logger.debug('Default thumbs num: ' + numThumbsDefault);
+                this._migrationModule.logger.debug("Total thumbs num: " + totalPagesNum);
+                this._migrationModule.logger.debug("Filled thumbs num: " + filledPagesNum);
+                this._migrationModule.logger.debug("Default thumbs num: " + numThumbsDefault);
                 if (filledPagesNum > 25) {
                     maxAvailableIncreased = true;
                     newLayoutX = Math.min(7, backbone[0]);
@@ -157,30 +157,30 @@ const migrator = {
                         }
                     }
                 }
-                this._migrationModule.logger.debug('Thread position selected: ' + threadPosition);
-                prefs.set('ftabs.layoutX', newLayoutX);
-                prefs.set('ftabs.layoutY', newLayoutY);
+                this._migrationModule.logger.debug("Thread position selected: " + threadPosition);
+                prefs.set("ftabs.layoutX", newLayoutX);
+                prefs.set("ftabs.layoutY", newLayoutY);
                 if (newLayoutX * newLayoutY > totalPagesNum) {
-                    prefs.set('ftabs.emptyLastThumb', true);
+                    prefs.set("ftabs.emptyLastThumb", true);
                 }
                 if (maxAvailableIncreased) {
-                    prefs.set('ftabs.maxAvailableIncreased', true);
+                    prefs.set("ftabs.maxAvailableIncreased", true);
                 }
                 let newTotalThumbsNum = newLayoutX * newLayoutY;
                 let insertedURLs = {};
                 Array.forEach(filledPages, function (page, index) {
-                    var position = foldEmptyThumbs ? index : parseInt(page.getAttribute('index'), 10) - 1;
+                    var position = foldEmptyThumbs ? index : parseInt(page.getAttribute("index"), 10) - 1;
                     if (position >= newTotalThumbsNum) {
                         return;
                     }
-                    var url = page.getAttribute('url');
+                    var url = page.getAttribute("url");
                     try {
-                        let title = page.getAttribute('custom_title');
+                        let title = page.getAttribute("custom_title");
                         if (title.length === 0) {
                             title = null;
                         }
                         if (insertedURLs[url] === undefined) {
-                            database.execQuery('INSERT INTO thumbs(url, title, insertTimestamp) VALUES(:url, :title, :ts)', {
+                            database.execQuery("INSERT INTO thumbs(url, title, insertTimestamp) VALUES(:url, :title, :ts)", {
                                 url: url,
                                 title: title,
                                 ts: now
@@ -189,24 +189,24 @@ const migrator = {
                                 database.lastInsertRowID,
                                 title
                             ];
-                            this._migrationModule.logger.debug('Thumb \'' + url + '\' inserted with rowid ' + insertedURLs[url][0]);
+                            this._migrationModule.logger.debug("Thumb '" + url + "' inserted with rowid " + insertedURLs[url][0]);
                         } else {
-                            this._migrationModule.logger.debug('Thumb \'' + url + '\' has been already inserted with rowid ' + insertedURLs[url][0]);
+                            this._migrationModule.logger.debug("Thumb '" + url + "' has been already inserted with rowid " + insertedURLs[url][0]);
                             if (insertedURLs[url][1] === null && title !== null) {
-                                database.execQuery('UPDATE thumbs SET title = :title WHERE rowid = :id', {
+                                database.execQuery("UPDATE thumbs SET title = :title WHERE rowid = :id", {
                                     title: title,
                                     id: insertedURLs[url][0]
                                 });
                                 insertedURLs[url][1] = title;
                             }
                         }
-                        database.execQuery('INSERT INTO thumbs_shown(thumb_id, position, fixed) VALUES(:id, :position, 1)', {
+                        database.execQuery("INSERT INTO thumbs_shown(thumb_id, position, fixed) VALUES(:id, :position, 1)", {
                             id: insertedURLs[url][0],
                             position: position
                         });
-                        this._migrationModule.logger.debug('Thumb info inserted');
+                        this._migrationModule.logger.debug("Thumb info inserted");
                     } catch (e) {
-                        this._migrationModule.logger.error('Failed to migrate thumb with URL \'' + url + '\':' + strutils.formatError(e));
+                        this._migrationModule.logger.error("Failed to migrate thumb with URL '" + url + "':" + strutils.formatError(e));
                         this._migrationModule.logger.debug(e.stack);
                         throw e;
                     }
@@ -215,7 +215,7 @@ const migrator = {
                 database.close();
             }
             var oldDataDir = app.core.rootDir;
-            oldDataDir.append('ftab-data');
+            oldDataDir.append("ftab-data");
             if (oldDataDir.exists() && oldDataDir.isDirectory()) {
                 oldDataDir.remove(true);
             }
@@ -224,7 +224,7 @@ const migrator = {
             var thumbsNumX, thumbsNumY;
             var width = {};
             var height = {};
-            var primaryScreen = Cc['@mozilla.org/gfx/screenmanager;1'].getService(Ci.nsIScreenManager).primaryScreen;
+            var primaryScreen = Cc["@mozilla.org/gfx/screenmanager;1"].getService(Ci.nsIScreenManager).primaryScreen;
             primaryScreen.GetRect({}, {}, width, height);
             [
                 width,

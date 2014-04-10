@@ -1,5 +1,5 @@
-'use strict';
-EXPORTED_SYMBOLS.push('patterns');
+"use strict";
+EXPORTED_SYMBOLS.push("patterns");
 const patterns = {};
 patterns.NotificationSource = function NotificationSource() {
     this._listeners = {};
@@ -52,7 +52,7 @@ patterns.NotificationSource.prototype = {
                 if (this._listeners[topic].indexOf(listener) != -1)
                     listener.observe(this, topic, data);
             } catch (e) {
-                Cu.reportError('Could not notify event listener. ' + e + '\n' + e.stack);
+                Cu.reportError("Could not notify event listener. " + e + "\n" + e.stack);
             }
         }, this);
     },
@@ -74,10 +74,10 @@ patterns.AsyncTaskQueue = function AsyncTaskQueue(watcher, chainTasks) {
         if (sysutils.isObject(watcher)) {
             this._ownerInterface.checkImplementation(watcher);
             this._owner = watcher;
-        } else if (typeof watcher == 'function') {
+        } else if (typeof watcher == "function") {
             this._onComplete = watcher;
         } else {
-            throw new CustomErrors.EArgType('');
+            throw new CustomErrors.EArgType("");
         }
     }
 };
@@ -93,17 +93,17 @@ patterns.AsyncTaskQueue.prototype = {
     },
     addTask: function AsyncTaskQueue_addTask(task) {
         if (!(task instanceof patterns.AsyncTask))
-            throw new CustomErrors.EArgType('task', 'AsyncTask', asyncTask);
+            throw new CustomErrors.EArgType("task", "AsyncTask", asyncTask);
         this._pendingTasks.push(task);
     },
     startTasks: function AsyncTaskQueue_doTasks(parallelTasks) {
         if (parallelTasks !== undefined) {
-            if (typeof parallelTasks != 'number')
-                throw new CustomErrors.EArgType('parallelTasks', 'number', parallelTasks);
+            if (typeof parallelTasks != "number")
+                throw new CustomErrors.EArgType("parallelTasks", "number", parallelTasks);
             if (isNaN(parallelTasks) || parallelTasks < 1)
-                throw new CustomErrors.EArgRange('parallelTasks', '1+', parallelTasks);
+                throw new CustomErrors.EArgRange("parallelTasks", "1+", parallelTasks);
             if (this._chainTasks && parallelTasks > 1)
-                throw new Error('Can\'t parallel chained tasks');
+                throw new Error("Can't parallel chained tasks");
             this._parallelTasks = Math.floor(parallelTasks);
         }
         this._proceed();
@@ -118,7 +118,7 @@ patterns.AsyncTaskQueue.prototype = {
                 task.abort(reason);
                 currIndex++;
             } catch (e) {
-                Cu.reportError('Task can\'t abort gracefully. Error: ' + strutils.formatError(e));
+                Cu.reportError("Task can't abort gracefully. Error: " + strutils.formatError(e));
                 this._runningTasks.splice(currIndex, 1);
                 this._finishedTasks.push(task);
             }
@@ -133,7 +133,7 @@ patterns.AsyncTaskQueue.prototype = {
     onTaskFinished: function AsyncTaskQueue_onTaskFinished(task) {
         var runIndex = this._runningTasks.indexOf(task);
         if (runIndex < 0)
-            throw new Error('Alien task');
+            throw new Error("Alien task");
         this._runningTasks.splice(runIndex, 1);
         this._finishedTasks.push(task);
         this._notyfyTaskFinished(task);
@@ -162,7 +162,7 @@ patterns.AsyncTaskQueue.prototype = {
         if (!this._owner)
             return;
         try {
-            if (typeof this._owner.onTaskFinished == 'function')
+            if (typeof this._owner.onTaskFinished == "function")
                 this._owner.onTaskFinished(task);
         } catch (e) {
             Cu.reportError(e);
@@ -172,7 +172,7 @@ patterns.AsyncTaskQueue.prototype = {
         if (!this._owner)
             return;
         try {
-            if (typeof this._owner.onTaskProgress == 'function')
+            if (typeof this._owner.onTaskProgress == "function")
                 this._owner.onTaskProgress(task);
         } catch (e) {
             Cu.reportError(e);
@@ -190,7 +190,7 @@ patterns.AsyncTaskQueue.prototype = {
             Cu.reportError(e);
         }
     },
-    _ownerInterface: new sysutils.Interface('ITaskQueueOwner', ['onTasksFinished'])
+    _ownerInterface: new sysutils.Interface("ITaskQueueOwner", ["onTasksFinished"])
 };
 patterns.AsyncTask = function AsyncTask(owner, prevTask) {
 };
@@ -223,8 +223,8 @@ patterns.AsyncTask.prototype = {
         this._progress += by;
         this._owner.onTaskProgress(this);
     },
-    _ownerInterface: new sysutils.Interface('IAsyncTaskOwner', [
-        'onTaskProgress',
-        'onTaskFinished'
+    _ownerInterface: new sysutils.Interface("IAsyncTaskOwner", [
+        "onTaskProgress",
+        "onTaskFinished"
     ])
 };

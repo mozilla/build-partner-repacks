@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 const branding = application.branding;
 const brandingService = {
         findFile: function PartnerPackSvc_findFile(filePath) {
@@ -11,7 +11,7 @@ const brandingService = {
             return branding.productInfo.BrandID;
         },
         getPackageDate: function PartnerPackSvc_getPackageDate() {
-            Cu.reportError('PartnerPackSvc_getPackageDate is deprecated.');
+            Cu.reportError("PartnerPackSvc_getPackageDate is deprecated.");
             return branding.brandingDate;
         },
         resolvePath: function PartnerPackSvc_resolvePath(path, base) {

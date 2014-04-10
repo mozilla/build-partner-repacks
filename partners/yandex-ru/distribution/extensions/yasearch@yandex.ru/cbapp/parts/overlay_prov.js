@@ -1,15 +1,15 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['overlayProvider'];
+"use strict";
+const EXPORTED_SYMBOLS = ["overlayProvider"];
 const {
         classes: Cc,
         interfaces: Ci,
         utils: Cu
     } = Components;
 const GLOBAL = this;
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
-XPCOMUtils.defineLazyGetter(this, 'browserCustomizableUI', function () {
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+XPCOMUtils.defineLazyGetter(this, "browserCustomizableUI", function () {
     try {
-        return Cu.import('resource:///modules/CustomizableUI.jsm', {}).CustomizableUI;
+        return Cu.import("resource:///modules/CustomizableUI.jsm", {}).CustomizableUI;
     } catch (e) {
     }
     return null;
@@ -19,8 +19,8 @@ const overlayProvider = {
             this._application = barApplication;
             barApplication.core.Lib.sysutils.copyProperties(barApplication.core.Lib, GLOBAL);
             this._barCore = barApplication.core;
-            this._logger = barApplication.getLogger('XULOverlay');
-            this._commonItemPattern = new RegExp('^' + this._application.name + '\\.cb\\-(\\S+)\\-inst\\-(.+)$');
+            this._logger = barApplication.getLogger("XULOverlay");
+            this._commonItemPattern = new RegExp("^" + this._application.name + "\\.cb\\-(\\S+)\\-inst\\-(.+)$");
             this._application.core.protocols[this._application.name].addDataProvider(this);
             customizer.init(barApplication);
         },
@@ -30,12 +30,12 @@ const overlayProvider = {
         },
         getContent: function Overlay_getContent(aURI) {
             try {
-                if (aURI.path.toLowerCase() == 'browser-overlay') {
+                if (aURI.path.toLowerCase() == "browser-overlay") {
                     let contentStr = strutils.utf8Converter.ConvertFromUnicode(xmlutils.xmlSerializer.serializeToString(this._createBrowserOverlay()));
                     return contentStr + strutils.utf8Converter.Finish();
                 }
             } catch (e) {
-                this._logger.error('Could not make browser overlay. ' + strutils.formatError(e));
+                this._logger.error("Could not make browser overlay. " + strutils.formatError(e));
                 this._logger.debug(e.stack);
             }
             return null;
@@ -57,18 +57,19 @@ const overlayProvider = {
             return null;
         },
         compileWidgetItemId: function Overlay_compileWidgetItemId(protoID, instanceID) {
-            return this._application.name + '.cb-' + protoID + '-inst-' + instanceID;
+            return this._application.name + ".cb-" + protoID + "-inst-" + instanceID;
         },
         widgetItemRemoved: function Overlay_widgetItemRemoved(removedInstID) {
         },
         makePaletteItem: function Overlay_makePaletteItem(doc, widgetInfo, instanceID) {
-            var toolbarItem = doc.createElementNS(this._consts.STR_XUL_NS, 'toolbaritem');
-            toolbarItem.setAttribute('id', this.compileWidgetItemId(widgetInfo.id, instanceID));
-            toolbarItem.setAttribute('cb-proto-id', widgetInfo.id);
-            toolbarItem.setAttribute('cb-inst-id', instanceID);
-            toolbarItem.setAttribute('cb-app', this._application.name);
-            toolbarItem.setAttribute('title', widgetInfo.name);
-            toolbarItem.setAttribute('image', widgetInfo.iconPath ? widgetInfo.package_.resolvePath(widgetInfo.iconPath) : '');
+            var toolbarItem = doc.createElementNS(this._consts.STR_XUL_NS, "toolbaritem");
+            toolbarItem.setAttribute("id", this.compileWidgetItemId(widgetInfo.id, instanceID));
+            toolbarItem.setAttribute("cb-proto-id", widgetInfo.id);
+            toolbarItem.setAttribute("cb-inst-id", instanceID);
+            toolbarItem.setAttribute("cb-theme-color", "bright");
+            toolbarItem.setAttribute("cb-app", this._application.name);
+            toolbarItem.setAttribute("title", widgetInfo.name);
+            toolbarItem.setAttribute("image", widgetInfo.iconPath ? widgetInfo.package_.resolvePath(widgetInfo.iconPath) : "");
             return toolbarItem;
         },
         genWidgetHostID: function Overlay_genWidgetHostID() {
@@ -87,22 +88,22 @@ const overlayProvider = {
                 let toolbar = res.Value;
                 if (!toolbar)
                     continue;
-                let currentSet = LocalStoreData.getAttribute(toolbar, 'currentset');
-                if (!currentSet || currentSet == '__empty')
+                let currentSet = LocalStoreData.getAttribute(toolbar, "currentset");
+                if (!currentSet || currentSet == "__empty")
                     continue;
-                let newCurrentset = currentSet.split(',').filter(function (id) !filterAppIds(id)).join(',') || '__empty';
+                let newCurrentset = currentSet.split(",").filter(function (id) !filterAppIds(id)).join(",") || "__empty";
                 if (newCurrentset === currentSet)
                     continue;
-                LocalStoreData.setAttribute(toolbar, 'currentset', newCurrentset);
+                LocalStoreData.setAttribute(toolbar, "currentset", newCurrentset);
             }
-            var appToolbarURIString = 'chrome://browser/content/browser.xul#' + this._application.name + '-bar';
-            LocalStoreData.removeAttribute(appToolbarURIString, 'currentset');
-            LocalStoreData.removeAttribute(appToolbarURIString, 'collapsed');
-            LocalStoreData.removeAttribute('chrome://browser/content/browser.xul#navigator-toolbox', 'cb-barless');
+            var appToolbarURIString = "chrome://browser/content/browser.xul#" + this._application.name + "-bar";
+            LocalStoreData.removeAttribute(appToolbarURIString, "currentset");
+            LocalStoreData.removeAttribute(appToolbarURIString, "collapsed");
+            LocalStoreData.removeAttribute("chrome://browser/content/browser.xul#navigator-toolbox", "cb-barless");
         },
         returnNativeElements: function Overlay_returnNativeElements() {
-            var omniboxId = 'http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox';
-            var omniboxQSPref = this._application.NativeComponents.makeWidgetPrefPath(omniboxId, 'nativeqs.removed');
+            var omniboxId = "http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox";
+            var omniboxQSPref = this._application.NativeComponents.makeWidgetPrefPath(omniboxId, "nativeqs.removed");
             Preferences.reset(omniboxQSPref);
             if (!browserCustomizableUI) {
                 this._returnNativeElements28();
@@ -110,16 +111,16 @@ const overlayProvider = {
             }
             var allIds = browserCustomizableUI.areas.map(function (area) browserCustomizableUI.getWidgetIdsInArea(area)).reduce(function (a, b) a.concat(b));
             var idsToInsert = [
-                    'home-button',
-                    'search-container'
+                    "home-button",
+                    "search-container"
                 ].filter(function (id) allIds.indexOf(id) === -1);
             if (!idsToInsert.length)
                 return;
             var insertIndex = undefined;
             [
-                'bookmarks-menu-button-container',
-                'bookmarks-menu-button',
-                'window-controls'
+                "bookmarks-menu-button-container",
+                "bookmarks-menu-button",
+                "window-controls"
             ].some(function (id) {
                 var placement = browserCustomizableUI.getPlacementOfWidget(id);
                 if (placement && placement.area == browserCustomizableUI.AREA_NAVBAR) {
@@ -133,25 +134,25 @@ const overlayProvider = {
             });
         },
         _returnNativeElements28: function Overlay__returnNativeElements28() {
-            var navToolbarURIString = 'chrome://browser/content/browser.xul#nav-bar';
-            var navbarCurrentset = LocalStoreData.getAttribute(navToolbarURIString, 'currentset');
-            if (navbarCurrentset && navbarCurrentset === '__empty')
+            var navToolbarURIString = "chrome://browser/content/browser.xul#nav-bar";
+            var navbarCurrentset = LocalStoreData.getAttribute(navToolbarURIString, "currentset");
+            if (navbarCurrentset && navbarCurrentset === "__empty")
                 return;
-            var ids = navbarCurrentset.split(',');
-            var insertIndex = ids.indexOf('bookmarks-menu-button-container');
+            var ids = navbarCurrentset.split(",");
+            var insertIndex = ids.indexOf("bookmarks-menu-button-container");
             if (insertIndex == -1)
-                insertIndex = ids.indexOf('window-controls');
+                insertIndex = ids.indexOf("window-controls");
             if (insertIndex == -1)
                 insertIndex = ids.length - 1;
             var currentSetsIds = this._getAllIdsFromCurrentSets();
             [
-                'home-button',
-                'search-container'
+                "home-button",
+                "search-container"
             ].forEach(function (id) {
                 if (currentSetsIds.indexOf(id) == -1)
                     ids.splice(insertIndex, 0, id);
             });
-            LocalStoreData.setAttribute(navToolbarURIString, 'currentset', ids.join(','));
+            LocalStoreData.setAttribute(navToolbarURIString, "currentset", ids.join(","));
         },
         removeToolbarsCollapsedState: function Overlay_removeToolbarsCollapsedState() {
             var allResources = LocalStoreData.getAllResources();
@@ -160,10 +161,10 @@ const overlayProvider = {
                 let toolbar = res.Value;
                 if (!toolbar)
                     continue;
-                let collapsed = LocalStoreData.getAttribute(toolbar, 'collapsed');
-                if (collapsed != 'true')
+                let collapsed = LocalStoreData.getAttribute(toolbar, "collapsed");
+                if (collapsed != "true")
                     continue;
-                LocalStoreData.removeAttribute(toolbar, 'collapsed');
+                LocalStoreData.removeAttribute(toolbar, "collapsed");
             }
         },
         _commonItemPattern: null,
@@ -171,9 +172,9 @@ const overlayProvider = {
         _logger: null,
         _newWEID: 0,
         _consts: {
-            STR_DYNBASE_PATH: '$content/overlay/dynbase.xul',
-            STR_XUL_NS: 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul',
-            ERR_CREATE_ITEM: 'Could not add widget palette item'
+            STR_DYNBASE_PATH: "$content/overlay/dynbase.xul",
+            STR_XUL_NS: "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
+            ERR_CREATE_ITEM: "Could not add widget palette item"
         },
         _createBrowserOverlay: function Overlay__createBrowserOverlay() {
             var start = Date.now();
@@ -197,33 +198,33 @@ const overlayProvider = {
                     }
                     let instID = this._application.BarPlatform.getNewWidgetInstanceID();
                     let item = this.makePaletteItem(overlayDoc, widgetInfo, instID);
-                    defaultSetIDs[protoID] = item.getAttribute('id');
+                    defaultSetIDs[protoID] = item.getAttribute("id");
                 }
             }
-            var toolbarPalette = overlayDoc.getElementById('BrowserToolbarPalette');
+            var toolbarPalette = overlayDoc.getElementById("BrowserToolbarPalette");
             for (let [
                         ,
                         normalPaletteItem
                     ] in Iterator(this._makePaletteItems(overlayDoc))) {
                 toolbarPalette.appendChild(normalPaletteItem);
-                let id = normalPaletteItem.getAttribute('id');
+                let id = normalPaletteItem.getAttribute("id");
                 let protoID = this.parseWidgetItemId(id).prototypeID;
                 if (protoID in defaultSetIDs)
-                    defaultSetIDs[protoID] = normalPaletteItem.getAttribute('id');
+                    defaultSetIDs[protoID] = normalPaletteItem.getAttribute("id");
             }
             defaultSetIDs = [id for ([
                     ,
                     id
-                ] in Iterator(defaultSetIDs))].join(',');
-            var appToolbar = overlayDoc.getElementById(this._application.name + '-bar');
-            appToolbar.setAttribute('defaultset', defaultSetIDs);
-            appToolbar.setAttribute('cb-australis', !!browserCustomizableUI);
-            appToolbar.parentNode.setAttribute('cb-default-theme', this._defaultThemeActive);
-            var toolbox = overlayDoc.getElementById('navigator-toolbox');
-            toolbox.setAttribute('cb-os', sysutils.platformInfo.os.name);
+                ] in Iterator(defaultSetIDs))].join(",");
+            var appToolbar = overlayDoc.getElementById(this._application.name + "-bar");
+            appToolbar.setAttribute("defaultset", defaultSetIDs);
+            appToolbar.setAttribute("cb-australis", !!browserCustomizableUI);
+            appToolbar.parentNode.setAttribute("cb-default-theme", this._defaultThemeActive);
+            var toolbox = overlayDoc.getElementById("navigator-toolbox");
+            toolbox.setAttribute("cb-os", sysutils.platformInfo.os.name);
             var version = sysutils.platformInfo.browser.version.toString();
-            toolbox.setAttribute('cb-ff-version', parseInt(version, 10));
-            this._logger.debug('Overlay created in ' + (Date.now() - start) + 'ms');
+            toolbox.setAttribute("cb-ff-version", parseInt(version, 10));
+            this._logger.debug("Overlay created in " + (Date.now() - start) + "ms");
             return overlayDoc;
         },
         _getOverlayBase: function Overlay__getOverlayBase() {
@@ -287,11 +288,13 @@ const overlayProvider = {
             var result = [];
             var state;
             if (browserCustomizableUI) {
+                let migratedAustralis = this._application.preferences.get("migrated.australis", false);
+                this._application.preferences.set("migrated.australis", true);
                 try {
-                    state = JSON.parse(Preferences.get('browser.uiCustomization.state', '{}'));
+                    state = JSON.parse(Preferences.get("browser.uiCustomization.state", "{}"));
                 } catch (e) {
                 }
-                if (state && 'placements' in state) {
+                if (state && "placements" in state) {
                     for (let [
                                 ,
                                 elementIds
@@ -299,33 +302,35 @@ const overlayProvider = {
                         if (Array.isArray(elementIds))
                             result = result.concat(elementIds);
                     }
+                    return result;
                 }
-                return result;
+                if (migratedAustralis)
+                    return result;
             }
             function _getIdsFromCurrentset(aCurrenSetString) {
-                if (!aCurrenSetString || aCurrenSetString == '__empty')
+                if (!aCurrenSetString || aCurrenSetString == "__empty")
                     return;
-                result = result.concat(aCurrenSetString.split(','));
+                result = result.concat(aCurrenSetString.split(","));
             }
-            var rdfService = Cc['@mozilla.org/rdf/rdf-service;1'].getService(Ci.nsIRDFService);
-            var localStoreDataSource = rdfService.GetDataSource('rdf:local-store');
+            var rdfService = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService);
+            var localStoreDataSource = rdfService.GetDataSource("rdf:local-store");
             var allResources = localStoreDataSource.GetAllResources();
-            var currentSetResource = rdfService.GetResource('currentset');
+            var currentSetResource = rdfService.GetResource("currentset");
             while (allResources.hasMoreElements()) {
                 let res = allResources.getNext().QueryInterface(Ci.nsIRDFResource);
                 let tool = res.Value;
                 if (tool) {
-                    if (tool == 'chrome://browser/content/browser.xul#customToolbars') {
+                    if (tool == "chrome://browser/content/browser.xul#customToolbars") {
                         let customToolbarsResource = rdfService.GetResource(tool);
                         let index = 0;
                         let currentSetTarget;
                         do {
-                            let toolbarResource = rdfService.GetResource('toolbar' + ++index);
+                            let toolbarResource = rdfService.GetResource("toolbar" + ++index);
                             currentSetTarget = localStoreDataSource.GetTarget(customToolbarsResource, toolbarResource, true);
                             if (currentSetTarget instanceof Ci.nsIRDFLiteral) {
-                                let ids = currentSetTarget.Value.split(':');
+                                let ids = currentSetTarget.Value.split(":");
                                 ids.shift();
-                                _getIdsFromCurrentset(ids.join(':'));
+                                _getIdsFromCurrentset(ids.join(":"));
                             }
                         } while (currentSetTarget);
                     } else {
@@ -339,17 +344,17 @@ const overlayProvider = {
             return result;
         },
         get _defaultThemeActive() {
-            return Preferences.get('general.skins.selectedSkin') == 'classic/1.0';
+            return Preferences.get("general.skins.selectedSkin") == "classic/1.0";
         }
     };
 const LocalStoreData = {
         get _RDFService() {
             delete this._RDFService;
-            return this._RDFService = Cc['@mozilla.org/rdf/rdf-service;1'].getService(Ci.nsIRDFService);
+            return this._RDFService = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService);
         },
         get _dataSource() {
             delete this._dataSource;
-            return this._dataSource = this._RDFService.GetDataSource('rdf:local-store');
+            return this._dataSource = this._RDFService.GetDataSource("rdf:local-store");
         },
         getAllResources: function LocalStoreData_getAllResources() {
             return this._dataSource.GetAllResources();
@@ -419,7 +424,7 @@ const LocalStoreData = {
 const customizer = {
         init: function customizer_init(barApplication) {
             this._application = barApplication;
-            this._logger = this._application.getLogger('Customizer');
+            this._logger = this._application.getLogger("Customizer");
             if (browserCustomizableUI) {
                 browserCustomizableUI.addListener(this);
                 this.AREA_NAVBAR = browserCustomizableUI.AREA_NAVBAR;
@@ -431,18 +436,22 @@ const customizer = {
             this._logger = null;
             this._application = null;
         },
-        AREA_NAVBAR: 'nav-bar',
+        AREA_NAVBAR: "nav-bar",
         onWidgetRemoved: function customizer_onWidgetRemoved(aWidgetId, aArea) {
             var info = overlayProvider.parseWidgetItemId(aWidgetId, true);
             if (!info)
                 return;
-            var instanceID = info.instanceID;
-            var controllerName = this._application.name + 'OverlayController';
-            this._application.core.Lib.misc.getBrowserWindows().forEach(function (window) {
-                var windowController = window[controllerName];
-                if (windowController)
-                    windowController.callToolbarElementDestructor(instanceID);
-            });
+            new this._application.core.Lib.sysutils.Timer(function () {
+                if (browserCustomizableUI.getPlacementOfWidget(aWidgetId))
+                    return;
+                var instanceID = info.instanceID;
+                var controllerName = this._application.name + "OverlayController";
+                this._application.core.Lib.misc.getBrowserWindows().forEach(function (window) {
+                    var windowController = window[controllerName];
+                    if (windowController)
+                        windowController.callToolbarElementDestructor(instanceID);
+                });
+            }.bind(this), 0);
         },
         onAreaReset: function customizer_onAreaReset(aArea, aContainer) {
             if (aArea !== this.AREA_NAVBAR)
@@ -450,10 +459,10 @@ const customizer = {
             new this._application.core.Lib.sysutils.Timer(function () {
                 try {
                     let window = aContainer.ownerDocument.defaultView;
-                    let toolbox = window.document.getElementById('navigator-toolbox');
+                    let toolbox = window.document.getElementById("navigator-toolbox");
                     if (toolbox)
-                        toolbox.removeAttribute('cb-barless');
-                    let windowController = window[this._application.name + 'OverlayController'];
+                        toolbox.removeAttribute("cb-barless");
+                    let windowController = window[this._application.name + "OverlayController"];
                     windowController.checkNeedSetBarlessMode();
                 } catch (e) {
                     this._logger.error(e);
@@ -461,7 +470,7 @@ const customizer = {
             }.bind(this), 0);
         },
         onCustomizeStart: function customizer_onCustomizeStart(aWindow) {
-            var prefsWindow = this._application.core.Lib.misc.getTopWindowOfType(this._application.name + ':Preferences');
+            var prefsWindow = this._application.core.Lib.misc.getTopWindowOfType(this._application.name + ":Preferences");
             if (prefsWindow)
                 prefsWindow.document.documentElement.cancelDialog();
         }

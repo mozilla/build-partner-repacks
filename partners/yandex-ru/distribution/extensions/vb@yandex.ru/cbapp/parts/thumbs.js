@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['thumbs'];
+"use strict";
+const EXPORTED_SYMBOLS = ["thumbs"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -7,36 +7,36 @@ const {
         results: Cr
     } = Components;
 const GLOBAL = this;
-const DB_FILENAME = 'fastdial.sqlite';
-const DAILY_IDLE_EVENT = 'idle-daily';
+const DB_FILENAME = "fastdial.sqlite";
+const DAILY_IDLE_EVENT = "idle-daily";
 const OLDEST_THUMB_TIME_SECONDS = 86400 * 30;
 const MAX_HISTORY_RESULTS = 100;
 const MAX_PICKUP_LENGTH = 49 + 24 + 3;
 const REFRESH_INTERVAL = 86400;
 const BRANDING_PAGES_BOOST = 5;
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
-XPCOMUtils.defineLazyServiceGetter(GLOBAL, 'UUID_SVC', '@mozilla.org/uuid-generator;1', 'nsIUUIDGenerator');
-Cu.import('resource://gre/modules/PlacesUtils.jsm');
-Cu.import('resource://gre/modules/Services.jsm');
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+XPCOMUtils.defineLazyServiceGetter(GLOBAL, "UUID_SVC", "@mozilla.org/uuid-generator;1", "nsIUUIDGenerator");
+Cu.import("resource://gre/modules/PlacesUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 const thumbs = {
         init: function Thumbs_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
-            this._logger = application.getLogger('Thumbs');
+            this._logger = application.getLogger("Thumbs");
             Services.obs.addObserver(this, DAILY_IDLE_EVENT, false);
             Services.obs.addObserver(this, this._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT, false);
             this._initDatabase();
             var appInfo = this._application.addonManager.info;
-            if (appInfo.isFreshAddonInstall && this._application.preferences.get('yabar.migrated', false) === false)
-                this._application.preferences.set('ftabs.emptyLastThumb', true);
+            if (appInfo.isFreshAddonInstall && this._application.preferences.get("yabar.migrated", false) === false)
+                this._application.preferences.set("ftabs.emptyLastThumb", true);
             var now = Math.round(Date.now() / 1000);
-            var lastPickupTime = this._application.preferences.get('ftabs.lastPickupTime', 0);
+            var lastPickupTime = this._application.preferences.get("ftabs.lastPickupTime", 0);
             var pickupDateDiff = Math.abs(now - lastPickupTime);
             if (appInfo.isFreshAddonInstall) {
                 this.pickupThumbs({ withForceThumbs: true });
                 return;
             }
-            const DATADIR_CRASH_PREF = 'ftabs.dataDirCrash';
+            const DATADIR_CRASH_PREF = "ftabs.dataDirCrash";
             if (this._application.preferences.get(DATADIR_CRASH_PREF, false)) {
                 this._application.preferences.reset(DATADIR_CRASH_PREF);
                 this.pickupThumbs({ withForceThumbs: true });
@@ -55,7 +55,7 @@ const thumbs = {
                     this._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
                         this.getMissingData(thumbData);
                     }, this);
-                    let lastRefreshTime = this._application.preferences.get('ftabs.lastRefreshThumbsTime', 0);
+                    let lastRefreshTime = this._application.preferences.get("ftabs.lastRefreshThumbsTime", 0);
                     let lastRefreshDiff = Math.abs(now - lastRefreshTime);
                     this._refreshThumbsTimer = new sysutils.Timer(this._refreshThumbsData.bind(this), Math.max(REFRESH_INTERVAL - lastRefreshDiff, 0) * 1000);
                 }
@@ -79,7 +79,7 @@ const thumbs = {
         observe: function Thumbs_observe(aSubject, aTopic, aData) {
             switch (aTopic) {
             case DAILY_IDLE_EVENT:
-                this._database.execQueryAsync('DELETE FROM thumbs WHERE insertTimestamp < :oldestTime ' + 'AND rowid NOT IN (SELECT thumb_id FROM thumbs_shown)', { oldestTime: Math.round(Date.now() / 1000) - OLDEST_THUMB_TIME_SECONDS });
+                this._database.execQueryAsync("DELETE FROM thumbs WHERE insertTimestamp < :oldestTime " + "AND rowid NOT IN (SELECT thumb_id FROM thumbs_shown)", { oldestTime: Math.round(Date.now() / 1000) - OLDEST_THUMB_TIME_SECONDS });
                 break;
             }
         },
@@ -88,22 +88,22 @@ const thumbs = {
                 return;
             var pos1ThumbData = this._application.internalStructure.getItem(oldIndex);
             var pos2ThumbData = this._application.internalStructure.getItem(newIndex);
-            this._logger.trace('Swap thumbs #' + oldIndex + ' and #' + newIndex);
+            this._logger.trace("Swap thumbs #" + oldIndex + " and #" + newIndex);
             try {
-                this._logger.trace('Old index data: ' + JSON.stringify(pos1ThumbData));
+                this._logger.trace("Old index data: " + JSON.stringify(pos1ThumbData));
             } catch (ex) {
-                this._logger.trace('Old index data: {nsIURI}');
+                this._logger.trace("Old index data: {nsIURI}");
             }
             try {
-                this._logger.trace('New index data: ' + JSON.stringify(pos2ThumbData));
+                this._logger.trace("New index data: " + JSON.stringify(pos2ThumbData));
             } catch (ex) {
-                this._logger.trace('New index data: {nsIURI}');
+                this._logger.trace("New index data: {nsIURI}");
             }
             if (!pos1ThumbData)
                 return;
             var currentThumbsNum = this._application.layout.getThumbsNum();
             if (newIndex === currentThumbsNum - 1) {
-                this._application.preferences.set('ftabs.emptyLastThumb', false);
+                this._application.preferences.set("ftabs.emptyLastThumb", false);
             }
             this._application.internalStructure.removeItem(oldIndex);
             this._application.internalStructure.removeItem(newIndex);
@@ -123,15 +123,15 @@ const thumbs = {
             var evtData = {};
             evtData[newIndex] = this._application.frontendHelper.getDataForIndex(newIndex);
             evtData[oldIndex] = this._application.frontendHelper.getDataForIndex(oldIndex);
-            this._application.fastdial.sendRequest('thumbChanged', evtData);
+            this._application.fastdial.sendRequest("thumbChanged", evtData);
             this._application.syncPinned.save();
         },
         remove: function Thumbs_remove(aIndex) {
             var thumbData = this._application.internalStructure.getItem(aIndex);
             if (aIndex < 0 || !thumbData)
                 return;
-            this._logger.trace('Remove thumb #' + aIndex);
-            this._application.usageHistory.logAction('delete', { index: aIndex });
+            this._logger.trace("Remove thumb #" + aIndex);
+            this._application.usageHistory.logAction("delete", { index: aIndex });
             this._application.internalStructure.removeItem(aIndex);
             var isStandardURL = false;
             try {
@@ -141,7 +141,7 @@ const thumbs = {
             }
             if (isStandardURL) {
                 let hasSameDomain = false;
-                let thumbHost = thumbData.location.asciiHost.replace(/^www\./, '');
+                let thumbHost = thumbData.location.asciiHost.replace(/^www\./, "");
                 this._application.internalStructure.iterate({
                     nonempty: true,
                     visible: true
@@ -159,7 +159,7 @@ const thumbs = {
             this._application.syncPinned.save();
             this._compactUnpinned(aIndex);
             var holesExist = false;
-            var emptyLastThumb = this._application.preferences.get('ftabs.emptyLastThumb', false);
+            var emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
             var currentThumbsNum = this._application.layout.getThumbsNum();
             if (emptyLastThumb) {
                 currentThumbsNum -= 1;
@@ -173,7 +173,7 @@ const thumbs = {
                 }
             }
             if (holesExist) {
-                this._application.fastdial.sendRequest('thumbChanged', this._application.frontendHelper.fullStructure);
+                this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
                 this.pickupThumbs();
             }
         },
@@ -183,33 +183,33 @@ const thumbs = {
             var uri;
             if (index < 0 || sysutils.isEmptyObject(data))
                 return;
-            data.title = data.title.trim() || '';
+            data.title = data.title.trim() || "";
             try {
                 uri = netutils.newURI(data.url);
             } catch (ex) {
                 if (!/(ht|f)tps?:\/\//.test(data.url))
-                    data.url = 'http://' + data.url;
+                    data.url = "http://" + data.url;
                 try {
                     uri = netutils.newURI(data.url);
                 } catch (ex) {
-                    this._logger.warn('Saved URL is not valid: ' + originalURL);
+                    this._logger.warn("Saved URL is not valid: " + originalURL);
                 }
             }
             if (!uri) {
                 let evtData = {};
                 evtData[index] = this._application.frontendHelper.getDataForIndex(index);
-                this._application.fastdial.sendRequest('thumbChanged', evtData);
+                this._application.fastdial.sendRequest("thumbChanged", evtData);
                 return;
             }
             data.url = uri.spec;
-            this._logger.trace('Save thumb #' + index + ' (' + JSON.stringify(data) + ')');
+            this._logger.trace("Save thumb #" + index + " (" + JSON.stringify(data) + ")");
             var currentThumbData = this._application.internalStructure.getItem(index);
             if (currentThumbData && currentThumbData.source && currentThumbData.thumb && currentThumbData.source === data.url && currentThumbData.thumb.title !== data.title) {
                 currentThumbData.thumb.title = data.title;
                 this._application.internalStructure.overwriteItem(index, currentThumbData);
                 let evtData = {};
                 evtData[index] = this._application.frontendHelper.getDataForIndex(index);
-                this._application.fastdial.sendRequest('thumbChanged', evtData);
+                this._application.fastdial.sendRequest("thumbChanged", evtData);
                 return;
             }
             this._application.internalStructure.iterate({
@@ -222,13 +222,13 @@ const thumbs = {
                 this._compactUnpinned(index);
             }, this);
             if (index === currentThumbsNum - 1) {
-                this._application.preferences.set('ftabs.emptyLastThumb', false);
+                this._application.preferences.set("ftabs.emptyLastThumb", false);
             }
             if (!currentThumbData) {
-                this._application.usageHistory.logAction('add', {
+                this._application.usageHistory.logAction("add", {
                     url: data.url,
                     index: index,
-                    title: data.title || ''
+                    title: data.title || ""
                 });
             }
             var host = this._application.fastdial.getDecodedUrlHost(data.url);
@@ -253,12 +253,12 @@ const thumbs = {
             this._application.internalStructure.overwriteItem(index, internalThumbData);
             var evtData = {};
             evtData[index] = this._application.frontendHelper.getDataForIndex(index);
-            this._application.fastdial.sendRequest('thumbChanged', evtData);
+            this._application.fastdial.sendRequest("thumbChanged", evtData);
             this._application.syncPinned.save();
             this.getMissingData(internalThumbData, { force: true });
         },
         updateCurrentSet: function Thumbs_updateCurrentSet(removePositions, saveData) {
-            this._logger.trace('Update current set with data: ' + JSON.stringify([
+            this._logger.trace("Update current set with data: " + JSON.stringify([
                 removePositions,
                 saveData
             ]));
@@ -270,7 +270,7 @@ const thumbs = {
             }, this);
             Object.keys(saveData).forEach(function (index) {
                 if (index == currentThumbsNum - 1) {
-                    this._application.preferences.set('ftabs.emptyLastThumb', false);
+                    this._application.preferences.set("ftabs.emptyLastThumb", false);
                 }
                 var dbRecord = {
                         url: saveData[index].url,
@@ -288,15 +288,15 @@ const thumbs = {
                     syncOnly: true
                 });
             }, this);
-            this._application.fastdial.sendRequest('thumbChanged', requestData);
+            this._application.fastdial.sendRequest("thumbChanged", requestData);
         },
         changePinnedState: function Thumbs_changePinnedState(index, isPinned) {
             var current = this._application.internalStructure.getItem(index);
             var structureNeedsChanges = true;
             var syncId, syncInstance, syncTimestamp, syncInternalId;
             var needSync;
-            var logMessage = strutils.formatString('%1 thumb #%2', [
-                    isPinned ? 'Pin' : 'Unpin',
+            var logMessage = strutils.formatString("%1 thumb #%2", [
+                    isPinned ? "Pin" : "Unpin",
                     index
                 ]);
             this._logger.trace(logMessage);
@@ -309,10 +309,10 @@ const thumbs = {
                 syncId = syncInstance = syncTimestamp = syncInternalId = null;
             }
             var lastThumbIndex = this._application.layout.getThumbsNum() - 1;
-            var emptyLastThumb = this._application.preferences.get('ftabs.emptyLastThumb', false);
+            var emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
             var knowsAboutLastThumb = index === lastThumbIndex;
             if (knowsAboutLastThumb) {
-                this._application.preferences.set('ftabs.emptyLastThumb', false);
+                this._application.preferences.set("ftabs.emptyLastThumb", false);
             }
             if (isPinned) {
                 needSync = current && current.source;
@@ -340,7 +340,7 @@ const thumbs = {
             }
             var requestData = {};
             requestData[index] = this._application.frontendHelper.getDataForIndex(index);
-            this._application.fastdial.sendRequest('thumbChanged', requestData);
+            this._application.fastdial.sendRequest("thumbChanged", requestData);
             if (needSync) {
                 this._application.syncPinned.save();
             }
@@ -352,14 +352,14 @@ const thumbs = {
             options.num = options.num || 1;
             if (options.num > 3) {
                 this._application.frontendHelper.mute = false;
-                this._application.fastdial.sendRequest('thumbChanged', this._application.frontendHelper.fullStructure);
+                this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
                 return;
             }
-            this._logger.debug('Pickup session started...');
+            this._logger.debug("Pickup session started...");
             if (this._pickupTimer)
                 this._pickupTimer.cancel();
             var now = Math.round(Date.now() / 1000);
-            this._application.preferences.set('ftabs.lastPickupTime', now);
+            this._application.preferences.set("ftabs.lastPickupTime", now);
             async.parallel({
                 blacklist: function Thumbs_pickupThumbs_blacklist(callback) {
                     self._application.blacklist.getAll(callback);
@@ -384,29 +384,29 @@ const thumbs = {
                         fixed: 1
                     };
                     [
-                        'id',
-                        'instance',
-                        'timestamp',
-                        'internalId'
+                        "id",
+                        "instance",
+                        "timestamp",
+                        "internalId"
                     ].forEach(function (syncField) {
                         if (thumbData.sync && thumbData.sync[syncField]) {
-                            let fieldName = 'sync' + syncField[0].toUpperCase() + syncField.substr(1);
+                            let fieldName = "sync" + syncField[0].toUpperCase() + syncField.substr(1);
                             results.pinned[index][fieldName] = thumbData.sync[syncField];
                         }
                     });
                 });
                 results.branded = [];
-                Array.forEach(self._application.fastdial.brandingXMLDoc.querySelectorAll('pages > page'), function (page) {
-                    var boost = page.getAttribute('boost');
+                Array.forEach(self._application.fastdial.brandingXMLDoc.querySelectorAll("pages > page"), function (page) {
+                    var boost = page.getAttribute("boost");
                     boost = boost === null ? BRANDING_PAGES_BOOST : parseInt(boost, 10);
                     results.branded.push({
-                        url: self._application.fastdial.expandBrandingURL(page.getAttribute('url')),
-                        title: page.getAttribute('custom_title'),
+                        url: self._application.fastdial.expandBrandingURL(page.getAttribute("url")),
+                        title: page.getAttribute("custom_title"),
                         fixed: 0,
                         boost: boost
                     });
                 });
-                self._logger.trace('Start data: ' + JSON.stringify(results));
+                self._logger.trace("Start data: " + JSON.stringify(results));
                 var blockedDomains = Array.concat(results.unsafe, results.blacklist.domains);
                 var existingPinnedThumbs = results.pinned;
                 var currentThumbsNum = self._application.layout.getThumbsNum();
@@ -414,7 +414,7 @@ const thumbs = {
                         local: historyEntries,
                         tophistory: topHistoryEntries
                     } = self._getMergedHistoryQueue(results.topHistory, results.unsafe, results.branded);
-                self._logger.trace('Merged history entries: ' + JSON.stringify(historyEntries));
+                self._logger.trace("Merged history entries: " + JSON.stringify(historyEntries));
                 var fixedThumbs = options.withForceThumbs ? self._getForceAndPinnedThumbs(self._application.fastdial.brandingXMLDoc, existingPinnedThumbs) : existingPinnedThumbs;
                 var pinnedDomains = [];
                 for (let [
@@ -437,12 +437,12 @@ const thumbs = {
                     return !host || results.unsafe.indexOf(host) === -1;
                 });
                 var appInfo = self._application.addonManager.info;
-                if (appInfo.isFreshAddonInstall && self._application.preferences.get('yabar.migrated', false) || appInfo.addonUpgraded && /^1\./.test(appInfo.addonLastVersion)) {
-                    self._logger.debug('Blocked domains are: ' + JSON.stringify(blockedDomains, null, '\t'));
-                    self._logger.debug('Pinned thumbs are: ' + JSON.stringify(existingPinnedThumbs, null, '\t'));
-                    self._logger.debug('Pinned domains are: ' + JSON.stringify(pinnedDomains, null, '\t'));
-                    self._logger.debug('Pinned thumbs w/ BP-forced are: ' + JSON.stringify(fixedThumbs, null, '\t'));
-                    self._logger.debug('Most visited queue thumbs are: ' + JSON.stringify(mostVisitedList, null, '\t'));
+                if (appInfo.isFreshAddonInstall && self._application.preferences.get("yabar.migrated", false) || appInfo.addonUpgraded && /^1\./.test(appInfo.addonLastVersion)) {
+                    self._logger.debug("Blocked domains are: " + JSON.stringify(blockedDomains, null, "	"));
+                    self._logger.debug("Pinned thumbs are: " + JSON.stringify(existingPinnedThumbs, null, "	"));
+                    self._logger.debug("Pinned domains are: " + JSON.stringify(pinnedDomains, null, "	"));
+                    self._logger.debug("Pinned thumbs w/ BP-forced are: " + JSON.stringify(fixedThumbs, null, "	"));
+                    self._logger.debug("Most visited queue thumbs are: " + JSON.stringify(mostVisitedList, null, "	"));
                 }
                 var newThumbs = {};
                 let (i = 0) {
@@ -464,7 +464,7 @@ const thumbs = {
                 self._application.internalStructure.clear();
                 self._application.internalStructure.setItem(newThumbs);
                 Services.obs.notifyObservers(this, self._application.core.eventTopics.THUMBS_STRUCTURE_READY_EVENT, null);
-                self._application.fastdial.sendRequest('thumbChanged', self._application.frontendHelper.fullStructure);
+                self._application.fastdial.sendRequest("thumbChanged", self._application.frontendHelper.fullStructure);
                 self.resetPickupTimer();
                 if (self._isRefreshNeeded) {
                     self._refreshThumbsData();
@@ -490,12 +490,12 @@ const thumbs = {
                 pinned: true
             }, function (thumbData, index) {
                 try {
-                    let domain = thumbData.location.asciiHost.replace(/^www\./, '');
+                    let domain = thumbData.location.asciiHost.replace(/^www\./, "");
                     blockedDomains.push(domain);
                 } catch (ex) {
                 }
             }, this);
-            this._logger.trace('Blocked domains during fast pickup: ' + JSON.stringify(blockedDomains));
+            this._logger.trace("Blocked domains during fast pickup: " + JSON.stringify(blockedDomains));
             var emptyPositionIndex = 0;
             var setRecords = {};
             var structureNeedsChanges = false;
@@ -506,7 +506,7 @@ const thumbs = {
                         thumbData
                     ] in Iterator(unpinned)) {
                 try {
-                    let domain = thumbData.location.asciiHost.replace(/^www\./, '');
+                    let domain = thumbData.location.asciiHost.replace(/^www\./, "");
                     if (blockedDomains.indexOf(domain) !== -1) {
                         structureNeedsChanges = true;
                         dropPositions.push(index);
@@ -524,7 +524,7 @@ const thumbs = {
                 var bVisits = b.thumbData.thumb.visits || 0;
                 return bVisits - aVisits;
             });
-            this._logger.trace('Unpinned list: ' + JSON.stringify(unpinnedList));
+            this._logger.trace("Unpinned list: " + JSON.stringify(unpinnedList));
             unpinnedList.forEach(function (unpinnedItem) {
                 while (true) {
                     let positionThumb = this._application.internalStructure.getItem(emptyPositionIndex);
@@ -539,7 +539,7 @@ const thumbs = {
                 }
                 emptyPositionIndex += 1;
             }, this);
-            this._logger.trace('Need to drop records from structure: ' + structureNeedsChanges);
+            this._logger.trace("Need to drop records from structure: " + structureNeedsChanges);
             if (!structureNeedsChanges)
                 return;
             this._application.internalStructure.iterate(null, function (thumbData, index) {
@@ -549,17 +549,17 @@ const thumbs = {
                     this._application.internalStructure.removeItem(index);
                 }
             }, this);
-            this._logger.trace('Set records: ' + JSON.stringify(setRecords));
+            this._logger.trace("Set records: " + JSON.stringify(setRecords));
             this._application.internalStructure.overwriteItem(setRecords);
-            this._application.fastdial.sendRequest('thumbChanged', this._application.frontendHelper.fullStructure);
+            this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
         },
         getMissingData: function Thumbs_getMissingData(thumbData, options) {
             if (!thumbData.source)
                 return;
             try {
-                this._logger.trace('Get missing: ' + JSON.stringify(thumbData));
+                this._logger.trace("Get missing: " + JSON.stringify(thumbData));
             } catch (ex) {
-                this._logger.trace('Get missing: {nsIURI} ' + thumbData.location.spec);
+                this._logger.trace("Get missing: {nsIURI} " + thumbData.location.spec);
             }
             var self = this;
             var stopValues = [
@@ -582,11 +582,11 @@ const thumbs = {
                         dataStructure[index] = data;
                     });
                     self._application.internalStructure.setItem(dataStructure);
-                    self._application.fastdial.sendRequest('thumbChanged', self._application.frontendHelper.fullStructure);
+                    self._application.fastdial.sendRequest("thumbChanged", self._application.frontendHelper.fullStructure);
                     if (self._application.fastdial.cachedHistoryThumbs[thumbData.source]) {
                         self._application.fastdial.cachedHistoryThumbs[thumbData.source].thumb.title = title;
                         cachedHistoryData = self._application.fastdial.cachedHistoryThumbs[thumbData.source];
-                        self._application.fastdial.sendRequest('historyThumbChanged', self._application.frontendHelper.getDataForThumb(cachedHistoryData));
+                        self._application.fastdial.sendRequest("historyThumbChanged", self._application.frontendHelper.getDataForThumb(cachedHistoryData));
                     }
                 });
             }
@@ -603,12 +603,12 @@ const thumbs = {
                         dataStructure[index] = data;
                     });
                     self._application.internalStructure.setItem(dataStructure);
-                    self._application.fastdial.sendRequest('thumbChanged', self._application.frontendHelper.fullStructure);
+                    self._application.fastdial.sendRequest("thumbChanged", self._application.frontendHelper.fullStructure);
                     if (self._application.fastdial.cachedHistoryThumbs[thumbData.source]) {
                         self._application.fastdial.cachedHistoryThumbs[thumbData.source].thumb.favicon = faviconData;
                         self._application.fastdial.cachedHistoryThumbs[thumbData.source].thumb.backgroundColor = dominantColor;
                         cachedHistoryData = self._application.fastdial.cachedHistoryThumbs[thumbData.source];
-                        self._application.fastdial.sendRequest('historyThumbChanged', self._application.frontendHelper.getDataForThumb(cachedHistoryData));
+                        self._application.fastdial.sendRequest("historyThumbChanged", self._application.frontendHelper.getDataForThumb(cachedHistoryData));
                     }
                 });
             } else if (stopValues.indexOf(thumbData.thumb.favicon) === -1 && stopValues.indexOf(thumbData.thumb.backgroundColor) !== -1) {
@@ -623,11 +623,11 @@ const thumbs = {
                         dataStructure[index] = data;
                     });
                     self._application.internalStructure.setItem(dataStructure);
-                    self._application.fastdial.sendRequest('thumbChanged', self._application.frontendHelper.fullStructure);
+                    self._application.fastdial.sendRequest("thumbChanged", self._application.frontendHelper.fullStructure);
                     if (self._application.fastdial.cachedHistoryThumbs[thumbData.source]) {
                         self._application.fastdial.cachedHistoryThumbs[thumbData.source].thumb.backgroundColor = dominantColor;
                         cachedHistoryData = self._application.fastdial.cachedHistoryThumbs[thumbData.source];
-                        self._application.fastdial.sendRequest('historyThumbChanged', self._application.frontendHelper.getDataForThumb(cachedHistoryData));
+                        self._application.fastdial.sendRequest("historyThumbChanged", self._application.frontendHelper.getDataForThumb(cachedHistoryData));
                     }
                 });
             }
@@ -652,12 +652,12 @@ const thumbs = {
                             dataStructure[index] = data;
                         });
                         self._application.internalStructure.setItem(dataStructure);
-                        self._application.fastdial.sendRequest('thumbChanged', self._application.frontendHelper.fullStructure);
+                        self._application.fastdial.sendRequest("thumbChanged", self._application.frontendHelper.fullStructure);
                         if (self._application.fastdial.cachedHistoryThumbs[thumbData.source]) {
                             self._application.fastdial.cachedHistoryThumbs[thumbData.source].cloud.backgroundImage = cloudData.backgroundImage;
                             self._application.fastdial.cachedHistoryThumbs[thumbData.source].cloud.backgroundColor = cloudData.backgroundColor;
                             cachedHistoryData = self._application.fastdial.cachedHistoryThumbs[thumbData.source];
-                            self._application.fastdial.sendRequest('historyThumbChanged', self._application.frontendHelper.getDataForThumb(cachedHistoryData));
+                            self._application.fastdial.sendRequest("historyThumbChanged", self._application.frontendHelper.getDataForThumb(cachedHistoryData));
                         }
                     });
                 }
@@ -676,43 +676,54 @@ const thumbs = {
         get pinnedPositions() {
             var thumbsNumX = this._application.layout.layoutX;
             var thumbsNumY = this._application.layout.layoutY;
-            var emptyLastThumb = this._application.preferences.get('ftabs.emptyLastThumb', false);
+            var emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
             var currentThumbsNum = this._application.layout.getThumbsNum();
             var output = [];
+            var lastThumbProcessed = false;
             this._application.internalStructure.iterate({ visible: true }, function (thumbData, index) {
-                if (index === currentThumbsNum - 1 && emptyLastThumb)
-                    thumbData = { pinned: true };
+                if (index === currentThumbsNum - 1) {
+                    lastThumbProcessed = true;
+                    if (emptyLastThumb) {
+                        thumbData = { pinned: true };
+                    }
+                }
                 if (!thumbData || !thumbData.pinned)
                     return;
                 var yPosition = Math.floor(parseInt(index, 10) / thumbsNumX);
                 var xPosition = parseInt(index, 10) - yPosition * thumbsNumX;
-                output.push(yPosition + '.' + xPosition);
+                output.push(yPosition + "." + xPosition);
             });
+            if (!lastThumbProcessed && emptyLastThumb) {
+                let lastThumbIndex = currentThumbsNum - 1;
+                let yPosition = Math.floor(lastThumbIndex / thumbsNumX);
+                let xPosition = lastThumbIndex - yPosition * thumbsNumX;
+                output.push(yPosition + "." + xPosition);
+            }
             return output;
         },
         get _pickupInterval() {
-            var prefValue = this._application.preferences.get('ftabs.pickupInterval', 3600);
+            var prefValue = this._application.preferences.get("ftabs.pickupInterval", 3600);
             return Math.max(parseInt(prefValue, 10), 0);
         },
         get _isRefreshNeeded() {
             var now = Math.round(Date.now() / 1000);
-            var lastRefreshTime = this._application.preferences.get('ftabs.lastRefreshThumbsTime', 0);
+            var lastRefreshTime = this._application.preferences.get("ftabs.lastRefreshThumbsTime", 0);
             var lastRefreshDiff = Math.abs(now - lastRefreshTime);
             return !lastRefreshTime || lastRefreshDiff > REFRESH_INTERVAL;
         },
         _refreshThumbsData: function Thumbs__refreshThumbsData() {
-            this._logger.debug('Start updating thumbs\' data...');
+            this._logger.debug("Start updating thumbs' data...");
             var now = Math.round(Date.now() / 1000);
-            var lastRefreshTime = this._application.preferences.get('ftabs.lastRefreshThumbsTime', now);
-            var lastRefreshBgTime = this._application.preferences.get('ftabs.lastRefreshBackgroundsTime');
+            var lastRefreshTime = this._application.preferences.get("ftabs.lastRefreshThumbsTime", now);
+            var lastRefreshBgTime = this._application.preferences.get("ftabs.lastRefreshBackgroundsTime");
             var updateBackgroundImage = !lastRefreshBgTime || Date.now() - REFRESH_INTERVAL * 7 * 1000 > lastRefreshBgTime * 1000;
             this._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
                 this.getMissingData(thumbData, { force: updateBackgroundImage });
             }, this);
-            this._application.preferences.set('ftabs.lastRefreshThumbsTime', now);
+            this._application.preferences.set("ftabs.lastRefreshThumbsTime", now);
             this._refreshThumbsTimer = new sysutils.Timer(this._refreshThumbsData.bind(this), REFRESH_INTERVAL * 1000);
             if (updateBackgroundImage) {
-                this._application.preferences.set('ftabs.lastRefreshBackgroundsTime', now);
+                this._application.preferences.set("ftabs.lastRefreshBackgroundsTime", now);
             }
         },
         _getMergedHistoryQueue: function Thumbs__getMergedHistoryQueue(topHistoryData, unsafeDomains, branded) {
@@ -786,10 +797,10 @@ const thumbs = {
             };
         },
         _fetchThumbs: function Thumbs__fetchThumbs(callback) {
-            var sql = 'SELECT thumbs.url, thumbs.title, thumbs.backgroundColor, thumbs.favicon, shown.*             FROM thumbs_shown AS shown LEFT JOIN thumbs ON thumbs.rowid = shown.thumb_id             ORDER BY shown.position';
+            var sql = "SELECT thumbs.url, thumbs.title, thumbs.backgroundColor, thumbs.favicon, shown.*             FROM thumbs_shown AS shown LEFT JOIN thumbs ON thumbs.rowid = shown.thumb_id             ORDER BY shown.position";
             this._database.execQueryAsync(sql, {}, function (rowsData, storageError) {
                 if (storageError)
-                    throw new Error(strutils.formatString('Fetch thumbs error: %1 (code %2)', [
+                    throw new Error(strutils.formatString("Fetch thumbs error: %1 (code %2)", [
                         storageError.message,
                         storageError.result
                     ]));
@@ -820,13 +831,13 @@ const thumbs = {
                     }
                 }
             }
-            Array.forEach(xmlDoc.querySelectorAll('pages > page[force=\'true\']'), function (page) {
-                var pageURL = this._application.fastdial.expandBrandingURL(page.getAttribute('url'));
+            Array.forEach(xmlDoc.querySelectorAll("pages > page[force='true']"), function (page) {
+                var pageURL = this._application.fastdial.expandBrandingURL(page.getAttribute("url"));
                 var pageDomain = this._application.fastdial.getDecodedUrlHost(pageURL);
                 if (pageDomain && domains[pageDomain])
                     return;
-                var index = parseInt(page.getAttribute('index'), 10) - 1;
-                var pageTitle = page.getAttribute('custom_title');
+                var index = parseInt(page.getAttribute("index"), 10) - 1;
+                var pageTitle = page.getAttribute("custom_title");
                 if (output[index] === undefined) {
                     output[index] = {
                         url: pageURL,
@@ -890,7 +901,7 @@ const thumbs = {
                 index = thumbIndex;
                 compactedNum += 1;
             }, this);
-            this._application.fastdial.sendRequest('thumbChanged', evtData);
+            this._application.fastdial.sendRequest("thumbChanged", evtData);
             return compactedNum;
         },
         _application: null,

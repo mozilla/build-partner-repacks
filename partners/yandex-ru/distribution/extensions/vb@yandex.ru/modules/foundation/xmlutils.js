@@ -1,21 +1,21 @@
-'use strict';
-EXPORTED_SYMBOLS.push('xmlutils');
+"use strict";
+EXPORTED_SYMBOLS.push("xmlutils");
 const xmlutils = {
         get xmlSerializer() {
             delete this.XMLSerializer;
-            return this.XMLSerializer = Cc['@mozilla.org/xmlextras/xmlserializer;1'].getService(Ci.nsIDOMSerializer);
+            return this.XMLSerializer = Cc["@mozilla.org/xmlextras/xmlserializer;1"].getService(Ci.nsIDOMSerializer);
         },
         get xpathEvaluator() {
             delete this.xpathEvaluator;
-            return this.xpathEvaluator = Cc['@mozilla.org/dom/xpath-evaluator;1'].getService(Ci.nsIDOMXPathEvaluator);
+            return this.xpathEvaluator = Cc["@mozilla.org/dom/xpath-evaluator;1"].getService(Ci.nsIDOMXPathEvaluator);
         },
         get xsltProcessor() {
             delete this.xsltProcessor;
-            return this.xsltProcessor = Cc['@mozilla.org/document-transformer;1?type=xslt'].createInstance(Ci.nsIXSLTProcessor);
+            return this.xsltProcessor = Cc["@mozilla.org/document-transformer;1?type=xslt"].createInstance(Ci.nsIXSLTProcessor);
         },
         queryXMLDoc: function xmlutils_queryXMLDoc(expr, contextNode, extNSResolver) {
             if (!(contextNode instanceof Ci.nsIDOMNode))
-                throw new CustomErrors.EArgType('contextNode', 'nsIDOMNode', contextNode);
+                throw new CustomErrors.EArgType("contextNode", "nsIDOMNode", contextNode);
             var doc = contextNode instanceof Ci.nsIDOMDocument ? contextNode : contextNode.ownerDocument;
             var NSResolver = extNSResolver || this.xpathEvaluator.createNSResolver(doc.documentElement);
             var rawResult = this.xpathEvaluator.evaluate(expr, contextNode, NSResolver, 0, null);
@@ -61,9 +61,9 @@ const xmlutils = {
         },
         recreateXML: function xmlutils_recreateXML(srcNode, toDocument, deep) {
             if (!(srcNode instanceof Ci.nsIDOMNode))
-                throw new CustomErrors.EArgType('scrNode', 'nsIDOMNode', srcNode);
+                throw new CustomErrors.EArgType("scrNode", "nsIDOMNode", srcNode);
             if (!(toDocument instanceof Ci.nsIDOMDocument))
-                throw new CustomErrors.EArgType('toDocument', 'nsIDOMDocument', toDocument);
+                throw new CustomErrors.EArgType("toDocument", "nsIDOMDocument", toDocument);
             var clone = null;
             switch (srcNode.nodeType) {
             case srcNode.DOCUMENT_NODE:
@@ -99,7 +99,7 @@ const xmlutils = {
             return clone;
         },
         getDOMParser: function xmlutils_getDOMParser(docURI, baseURI, withSystemPrincipal) {
-            var domParser = Cc['@mozilla.org/xmlextras/domparser;1'].createInstance(Ci.nsIDOMParser);
+            var domParser = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
             if (docURI || baseURI) {
                 let systemPrincipal = null;
                 try {
@@ -115,9 +115,9 @@ const xmlutils = {
         },
         domElement2jsObj: function xmlutils_domElement2jsObj(element, walker) {
             if (!(element instanceof Ci.nsIDOMElement))
-                throw new CustomErrors.EArgType('element', 'nsIDOMElement', element);
+                throw new CustomErrors.EArgType("element", "nsIDOMElement", element);
             var result = {
-                    toString: function () '',
+                    toString: function () "",
                     childElements: []
                 };
             var treeWalker = walker || element.ownerDocument.createTreeWalker(element, Ci.nsIDOMNodeFilter.SHOW_ALL, this._nodeFilter, true);
@@ -157,7 +157,7 @@ const xmlutils = {
                 return this.domElement2jsObj(domObject);
             if (domObject instanceof Ci.nsIDOMDocument)
                 return this.domElement2jsObj(domObject.documentElement);
-            throw new CustomErrors.EArgType('domObject', 'nsIDOMElement | nsIDOMDocument', domObject);
+            throw new CustomErrors.EArgType("domObject", "nsIDOMElement | nsIDOMDocument", domObject);
         },
         getSimpleXPathForElement: function xmlutils_getXPathForElement(el) {
             var xpath = [];
@@ -173,12 +173,12 @@ const xmlutils = {
                 let selector = el.nodeName;
                 let pos = brothers.indexOf(el) + 1;
                 if (brothers.length > 1)
-                    selector += '[' + pos + ']';
+                    selector += "[" + pos + "]";
                 xpath.unshift(selector);
                 if (el === root)
                     break;
             } while (el = el.parentNode);
-            return '/' + xpath.join('/');
+            return "/" + xpath.join("/");
         },
         _nodeFilter: {
             acceptNode: function XBWidgetParser__acceptNode(node) {

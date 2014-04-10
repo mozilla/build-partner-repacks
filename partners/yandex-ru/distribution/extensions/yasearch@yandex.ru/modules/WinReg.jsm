@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['WinReg'];
+"use strict";
+const EXPORTED_SYMBOLS = ["WinReg"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -22,24 +22,24 @@ if (!WINDOW_OS) {
     };
 } else {
     const KEY_NAMES_HASH = {
-            'CURRENT_USER': [
-                'HKCU',
-                'USER',
-                'CURRENT_USER'
+            "CURRENT_USER": [
+                "HKCU",
+                "USER",
+                "CURRENT_USER"
             ],
-            'CLASSES_ROOT': [
-                'HKCR',
-                'ROOT',
-                'CLASSES_ROOT'
+            "CLASSES_ROOT": [
+                "HKCR",
+                "ROOT",
+                "CLASSES_ROOT"
             ],
-            'LOCAL_MACHINE': [
-                'HKLM',
-                'MACHINE',
-                'LOCAL_MACHINE'
+            "LOCAL_MACHINE": [
+                "HKLM",
+                "MACHINE",
+                "LOCAL_MACHINE"
             ]
         };
     let convertName2Key = function convertName2Key(aKeyName) {
-        aKeyName = aKeyName.replace(/^(HKEY_)/i, '').toUpperCase();
+        aKeyName = aKeyName.replace(/^(HKEY_)/i, "").toUpperCase();
         var keyName;
         for (let kName in KEY_NAMES_HASH) {
             if (KEY_NAMES_HASH[kName].indexOf(aKeyName) !== -1) {
@@ -48,8 +48,8 @@ if (!WINDOW_OS) {
             }
         }
         if (!keyName)
-            throw new TypeError('Wrong key name');
-        return nsIWindowsRegKey['ROOT_KEY_' + keyName];
+            throw new TypeError("Wrong key name");
+        return nsIWindowsRegKey["ROOT_KEY_" + keyName];
     };
     WinReg = {
         read: function WinReg_read(aKey, aPath, aName) {
@@ -85,7 +85,7 @@ if (!WINDOW_OS) {
             var wrk = this._getWRK();
             try {
                 wrk.open(key, aPath, wrk.ACCESS_ALL);
-                if (typeof aName == 'undefined')
+                if (typeof aName == "undefined")
                     this._removeChildren(wrk);
                 else
                     wrk.removeChild(aName);
@@ -115,20 +115,20 @@ if (!WINDOW_OS) {
         },
         _writeValue: function WinReg__writeValue(wrk, name, value, type) {
             switch (type.toLowerCase()) {
-            case 'string':
+            case "string":
                 wrk.writeStringValue(name, value);
                 break;
-            case 'binary':
+            case "binary":
                 wrk.writeBinaryValue(name, value);
                 break;
-            case 'int':
+            case "int":
                 wrk.writeIntValue(name, value);
                 break;
-            case 'int64':
+            case "int64":
                 wrk.writeInt64Value(name, value);
                 break;
             default:
-                throw new TypeError('nsIYaSearch.WinReg: wrong key type');
+                throw new TypeError("nsIYaSearch.WinReg: wrong key type");
                 break;
             }
         },
@@ -144,7 +144,7 @@ if (!WINDOW_OS) {
             }
         },
         _getWRK: function WinReg__getWRK() {
-            return Cc['@mozilla.org/windows-registry-key;1'].createInstance(nsIWindowsRegKey);
+            return Cc["@mozilla.org/windows-registry-key;1"].createInstance(nsIWindowsRegKey);
         }
     };
 }

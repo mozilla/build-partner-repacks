@@ -1,6 +1,6 @@
-'use strict';
-EXPORTED_SYMBOLS.push('Database');
-const storageSvc = Cc['@mozilla.org/storage/service;1'].getService(Ci.mozIStorageService);
+"use strict";
+EXPORTED_SYMBOLS.push("Database");
+const storageSvc = Cc["@mozilla.org/storage/service;1"].getService(Ci.mozIStorageService);
 function Database(storageFile, initStatements) {
     if (storageFile)
         this.open(storageFile, initStatements);
@@ -9,8 +9,8 @@ function Database(storageFile, initStatements) {
 Database.prototype = {
     constructor: Database,
     open: function Database_open(storageFile, initStatements) {
-        if (!(storageFile instanceof Ci.nsILocalFile))
-            throw new TypeError('nsILocalFile required');
+        if (!(storageFile instanceof Ci.nsIFile))
+            throw new TypeError("nsIFile required");
         this.close();
         try {
             this._connectAndInit(storageFile, initStatements);
@@ -20,26 +20,26 @@ Database.prototype = {
                 this._connection.close();
             }
             let journalFile = storageFile.parent;
-            journalFile.append(storageFile.leafName + '-journal');
+            journalFile.append(storageFile.leafName + "-journal");
             fileutils.removeFileSafe(journalFile);
             switch (e.result) {
             case Cr.NS_ERROR_FILE_CORRUPTED:
             case Cr.NS_ERROR_STORAGE_IOERR:
-                Cu.reportError('Database: will try to remove corrupt DB file');
+                Cu.reportError("Database: will try to remove corrupt DB file");
                 fileutils.removeFileSafe(storageFile);
                 if (storageFile.exists())
-                    Cu.reportError('Database: can not remove corrupt DB file');
+                    Cu.reportError("Database: can not remove corrupt DB file");
                 else
-                    Cu.reportError('Database: corrupt DB file removed');
+                    Cu.reportError("Database: corrupt DB file removed");
             }
             this._connectAndInit(storageFile, initStatements);
         }
     },
     close: function Database_close(callback) {
-        if (callback && typeof callback != 'function')
-            throw new CustomErrors.EArgType('callback', 'Function', callback);
+        if (callback && typeof callback != "function")
+            throw new CustomErrors.EArgType("callback", "Function", callback);
         if (this._connection) {
-            if ('asyncClose' in this._connection)
+            if ("asyncClose" in this._connection)
                 this._connection.asyncClose(callback ? {
                     complete: function Database_closeComplete() {
                         callback();
@@ -87,8 +87,8 @@ Database.prototype = {
         return undefined;
     },
     execQueryAsync: function Database_execAsync(query, parameters, onCompletion) {
-        if (onCompletion && typeof onCompletion != 'function')
-            throw new TypeError('Third argument must be a function.');
+        if (onCompletion && typeof onCompletion != "function")
+            throw new TypeError("Third argument must be a function.");
         var statement = this._createStatement(query, parameters, true);
         try {
             let callbackObj = this._createStmtCallback(statement, onCompletion);
@@ -130,7 +130,7 @@ Database.prototype = {
     },
     set schemaVersion(version) {
         if (version < 1 || parseInt(version, 10) !== version)
-            throw new Error('Database schema version must be a positive number.');
+            throw new Error("Database schema version must be a positive number.");
         this._connection.schemaVersion = version;
     },
     get storageFile() this._connection && this._connection.databaseFile,
@@ -183,16 +183,16 @@ Database.prototype = {
     },
     _createStatement: function Database__createStatement(query, parameters, asyncStatement) {
         if (!this._connection)
-            throw new Error('Can\'t create statement. Database is closed.');
+            throw new Error("Can't create statement. Database is closed.");
         var statement;
         try {
             statement = this._connection.createStatement(query);
         } catch (e) {
             Cu.reportError([
-                'Error: ' + e,
-                'Query: ' + query,
-                'Last error string: ' + this._connection.lastErrorString
-            ].join('\n  ----\n'));
+                "Error: " + e,
+                "Query: " + query,
+                "Last error string: " + this._connection.lastErrorString
+            ].join("\n  ----\n"));
             throw e;
         }
         if (parameters) {
@@ -246,18 +246,18 @@ Database.DatedValues.prototype = {
         }, dbCallback);
     },
     eraseRecord: function DatedValues_eraseRecord(key) {
-        return this._database.execQueryAsync('DELETE FROM resources WHERE (id = :id)', { id: key });
+        return this._database.execQueryAsync("DELETE FROM resources WHERE (id = :id)", { id: key });
     },
     eraseOldRecords: function DatedValues_eraseOldRecords() {
-        return this._database.execQueryAsync('DELETE FROM resources WHERE (time < :time)', { time: this._currentTimestampSecs - 3600 * 24 * 90 });
+        return this._database.execQueryAsync("DELETE FROM resources WHERE (time < :time)", { time: this._currentTimestampSecs - 3600 * 24 * 90 });
     },
     flush: function DatedValues_flush() {
-        return this._database.execQueryAsync('DELETE FROM resources');
+        return this._database.execQueryAsync("DELETE FROM resources");
     },
     _consts: {
-        INIT_TABLE_QUERY: 'CREATE TABLE IF NOT EXISTS resources (id TEXT, time INTEGER, value BLOB, PRIMARY KEY(id))',
-        INSERT_QUERY: 'INSERT OR REPLACE INTO resources (id, time, value) VALUES (:id, :time, :value)',
-        SEARCH_QUERY: 'SELECT * FROM resources WHERE id = :id AND time >= :treshold LIMIT 1'
+        INIT_TABLE_QUERY: "CREATE TABLE IF NOT EXISTS resources (id TEXT, time INTEGER, value BLOB, PRIMARY KEY(id))",
+        INSERT_QUERY: "INSERT OR REPLACE INTO resources (id, time, value) VALUES (:id, :time, :value)",
+        SEARCH_QUERY: "SELECT * FROM resources WHERE id = :id AND time >= :treshold LIMIT 1"
     },
     _database: null,
     get _currentTimestampSecs() {
