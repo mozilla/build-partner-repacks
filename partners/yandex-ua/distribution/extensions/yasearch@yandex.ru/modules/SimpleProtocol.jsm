@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['SimpleProtocol'];
+"use strict";
+const EXPORTED_SYMBOLS = ["SimpleProtocol"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -7,19 +7,19 @@ const {
         utils: Cu,
         manager: Cm
     } = Components;
-const IOS = Cc['@mozilla.org/network/io-service;1'].getService(Ci.nsIIOService);
-const InputStreamFabric = Cc['@mozilla.org/io/string-input-stream;1'];
+const IOS = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
+const InputStreamFabric = Cc["@mozilla.org/io/string-input-stream;1"];
 const nsIStringInputStream = Ci.nsIStringInputStream;
-const ccSimpleURI = Cc['@mozilla.org/network/simple-uri;1'];
-const ccStandardURL = Cc['@mozilla.org/network/standard-url;1'];
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
+const ccSimpleURI = Cc["@mozilla.org/network/simple-uri;1"];
+const ccStandardURL = Cc["@mozilla.org/network/standard-url;1"];
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 function SimpleProtocol(scheme, classID) {
-    this._scheme = '' + scheme;
-    this._hostEnabledPrefix = this._scheme + '://';
-    this._readableName = this.constructor.name + ' (' + this._scheme + ')';
-    var uuidStr = classID || Cc['@mozilla.org/uuid-generator;1'].getService(Ci.nsIUUIDGenerator).generateUUID().toString();
+    this._scheme = "" + scheme;
+    this._hostEnabledPrefix = this._scheme + "://";
+    this._readableName = this.constructor.name + " (" + this._scheme + ")";
+    var uuidStr = classID || Cc["@mozilla.org/uuid-generator;1"].getService(Ci.nsIUUIDGenerator).generateUUID().toString();
     this._classID = Components.ID(uuidStr);
-    this._contractID = '@mozilla.org/network/protocol;1?name=' + scheme;
+    this._contractID = "@mozilla.org/network/protocol;1?name=" + scheme;
     this._dataProviders = [];
     Cm.QueryInterface(Ci.nsIComponentRegistrar).registerFactory(this._classID, this._DESCR, this._contractID, this);
 }
@@ -35,8 +35,8 @@ SimpleProtocol.prototype = {
     addDataProvider: function SimpleProtocol_addDataProvider(provider) {
         if (this._dataProviders.indexOf(provider) > -1)
             return;
-        if (!('newURI' in provider) && !('newChannel' in provider) && !('getContent' in provider))
-            throw new Error('Bad data provider interface.');
+        if (!("newURI" in provider) && !("newChannel" in provider) && !("getContent" in provider))
+            throw new Error("Bad data provider interface.");
         this._dataProviders.push(provider);
     },
     removeDataProvider: function SimpleProtocol_removeDataProvider(provider) {
@@ -66,18 +66,18 @@ SimpleProtocol.prototype = {
         var result = this._findURI(spec, originalCharset, baseURI, createdURI) || createdURI;
         if (result)
             return result;
-        return IOS.newURI('data:,', null, null);
+        return IOS.newURI("data:,", null, null);
     },
     newChannel: function SimpleProtocol_newChannel(uri) {
         try {
             let channel = this._findChannel(uri, !this._specHasHost(uri.spec));
             if (!channel) {
-                channel = IOS.newChannel('data:,', null, null);
+                channel = IOS.newChannel("data:,", null, null);
                 channel.originalURI = uri;
             }
             return channel;
         } catch (e) {
-            Cu.reportError(this._readableName + ' newChannel: ' + e + '. URI: ' + uri.spec);
+            Cu.reportError(this._readableName + " newChannel: " + e + ". URI: " + uri.spec);
             throw Cr.NS_ERROR_FAILURE;
         }
     },
@@ -85,20 +85,20 @@ SimpleProtocol.prototype = {
     _hostEnabledPrefix: undefined,
     _classID: undefined,
     _contractID: undefined,
-    _DESCR: 'Simple protocol handler',
+    _DESCR: "Simple protocol handler",
     _dataProviders: null,
     _findURI: function SimpleProtocol__findURI(spec, originalCharset, baseURI, createdURI) {
         let (i = 0, len = this._dataProviders.length) {
             for (; i < len; i++) {
                 let dataProvider = this._dataProviders[i];
-                if (typeof dataProvider.newURI != 'function')
+                if (typeof dataProvider.newURI != "function")
                     continue;
                 try {
                     let uri = dataProvider.newURI(spec, originalCharset, baseURI, createdURI);
                     if (uri)
                         return uri;
                 } catch (e) {
-                    Cu.reportError(this._readableName + ' _findURI: ' + e + '. Spec: ' + spec);
+                    Cu.reportError(this._readableName + " _findURI: " + e + ". Spec: " + spec);
                 }
             }
         }
@@ -133,13 +133,13 @@ SimpleProtocol.prototype = {
             for (; i < len; i++) {
                 let dataProvider = this._dataProviders[i];
                 try {
-                    if (typeof dataProvider.newChannel == 'function') {
+                    if (typeof dataProvider.newChannel == "function") {
                         channel = dataProvider.newChannel(uri, isSimpleURI);
-                    } else if (typeof dataProvider.getContent == 'function') {
-                        let strData = '' + dataProvider.getContent(uri, isSimpleURI);
+                    } else if (typeof dataProvider.getContent == "function") {
+                        let strData = "" + dataProvider.getContent(uri, isSimpleURI);
                         let inputStream = InputStreamFabric.createInstance(nsIStringInputStream);
                         inputStream.setData(strData, strData.length);
-                        channel = Cc['@mozilla.org/network/input-stream-channel;1'].createInstance(Ci.nsIInputStreamChannel).QueryInterface(Ci.nsIChannel);
+                        channel = Cc["@mozilla.org/network/input-stream-channel;1"].createInstance(Ci.nsIInputStreamChannel).QueryInterface(Ci.nsIChannel);
                         channel.setURI(uri);
                         channel.originalURI = uri;
                         channel.contentStream = inputStream;
@@ -147,11 +147,11 @@ SimpleProtocol.prototype = {
                     if (channel !== null)
                         return channel;
                 } catch (e) {
-                    Cu.reportError(this._readableName + ' _findChannel: ' + e + '. Spec: ' + uri.spec);
+                    Cu.reportError(this._readableName + " _findChannel: " + e + ". Spec: " + uri.spec);
                 }
             }
         }
-        throw new Error('None of ' + this._dataProviders.length + ' providers could serve the resource: ' + uri.spec);
+        throw new Error("None of " + this._dataProviders.length + " providers could serve the resource: " + uri.spec);
     }
 };
 var proxyHandlerMaker = function proxyHandlerMaker(obj) {
@@ -193,10 +193,10 @@ var proxyHandlerMaker = function proxyHandlerMaker(obj) {
         has: function proxyHandlerMaker_has(name) name in obj,
         hasOwn: function proxyHandlerMaker_hasOwn(name) Object.prototype.hasOwnProperty.call(obj, name),
         get: function proxyHandlerMaker_get(receiver, name) {
-            if (name == 'schemeIs') {
+            if (name == "schemeIs") {
                 return function (aScheme) {
                     aScheme = aScheme.toLowerCase();
-                    return aScheme == obj.scheme || aScheme == 'chrome' && /\.dtd$/.test(obj.spec);
+                    return aScheme == obj.scheme || aScheme == "chrome" && /\.dtd$/.test(obj.spec);
                 };
             }
             return obj[name];

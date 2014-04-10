@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['browserUsage'];
+"use strict";
+const EXPORTED_SYMBOLS = ["browserUsage"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -11,7 +11,7 @@ const TIMER_INTERVAL = 10 * 60 * 1000;
 const browserUsage = {
         init: function browserUsage_init(aApplication) {
             this._application = aApplication;
-            this._logger = aApplication.getLogger('BrowserUsage');
+            this._logger = aApplication.getLogger("BrowserUsage");
             this._stack = [];
             aApplication.core.Lib.sysutils.copyProperties(aApplication.core.Lib, GLOBAL);
             this._timer = new sysutils.Timer(this._initTimed.bind(this), TIMED_INIT_TIMER_INTERVAL);
@@ -29,7 +29,7 @@ const browserUsage = {
             return [];
         },
         _initTimed: function browserUsage__initTimed() {
-            if (this.readUsageStat.toSource().indexOf('return [];') == -1)
+            if (this.readUsageStat.toSource().indexOf("return [];") == -1)
                 return;
             this.readUsageStat = function browserUsage_readUsageStat() {
                 var collectUsageData = function collectUsageData() {
@@ -60,14 +60,14 @@ const browserUsage = {
         _toBytes: function browserUsage__toBytes(value) {
             var remainder = value.length % 8;
             if (remainder > 0)
-                return strutils.repeatString('0', 8 - remainder) + value;
+                return strutils.repeatString("0", 8 - remainder) + value;
             return value;
         },
         _getCipher: function browserUsage__getCipher(counter) {
             var currentYear = new Date().getFullYear();
             var yearStart = new Date(currentYear, 0, 1, 0, 0, 0);
             var minutes = Math.floor((counter.time - yearStart.getTime()) / TIMER_INTERVAL);
-            var reserved = strutils.repeatString('0', 32);
+            var reserved = strutils.repeatString("0", 32);
             var cipher = this._toBytes(minutes.toString(2)) + this._toBytes(counter.tabs.toString(2)) + this._toBytes(counter.windows.toString(2)) + reserved;
             return Number(parseInt(cipher, 2));
         },

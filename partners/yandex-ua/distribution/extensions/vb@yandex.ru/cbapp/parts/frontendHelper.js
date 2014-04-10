@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['frontendHelper'];
+"use strict";
+const EXPORTED_SYMBOLS = ["frontendHelper"];
 const GLOBAL = this;
 const {
         classes: Cc,
@@ -10,7 +10,7 @@ const frontendHelper = {
         init: function FrontendHelper_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
-            this._logger = application.getLogger('Frontend');
+            this._logger = application.getLogger("Frontend");
         },
         finalize: function FrontendHelper_finalize(doCleanup, callback) {
             this._application = null;
@@ -18,16 +18,16 @@ const frontendHelper = {
         },
         logMessage: function FrontendHelper_logMessage(level, msg, url, line, trace) {
             if ([
-                    'info',
-                    'error',
-                    'warn'
+                    "info",
+                    "error",
+                    "warn"
                 ].indexOf(level) === -1)
-                throw new Error('Unknown debug level: ' + level);
-            var msg = strutils.formatString('%1 on line %2 in %3 (%4)', [
+                throw new Error("Unknown debug level: " + level);
+            var msg = strutils.formatString("%1 on line %2 in %3 (%4)", [
                     msg,
                     line || 0,
-                    url || '<unknown>',
-                    trace || 'no trace'
+                    url || "<unknown>",
+                    trace || "no trace"
                 ]);
             this._logger[level](msg);
         },
@@ -42,14 +42,14 @@ const frontendHelper = {
             if (!thumbData.location)
                 return output;
             output.url = thumbData.source;
-            output.title = thumbData.thumb && thumbData.thumb.title || '';
+            output.title = thumbData.thumb && thumbData.thumb.title || "";
             output.isIndexPage = true;
             try {
                 if (this._application.isYandexHost(thumbData.location.asciiHost)) {
                     thumbData.location.QueryInterface(Ci.nsIURL);
-                    output.isIndexPage = thumbData.location.filePath === '/';
+                    output.isIndexPage = thumbData.location.filePath === "/";
                 } else {
-                    output.isIndexPage = thumbData.location.path === '/';
+                    output.isIndexPage = thumbData.location.path === "/";
                 }
             } catch (ex) {
             }
@@ -67,7 +67,7 @@ const frontendHelper = {
         },
         getDataForIndex: function InternalStructure_getFrontendDataForIndex(index) {
             var currentThumbsNum = this._application.layout.getThumbsNum();
-            var emptyLastThumb = this._application.preferences.get('ftabs.emptyLastThumb', false);
+            var emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
             if (this._muteMessages)
                 return {};
             if (emptyLastThumb && index == currentThumbsNum - 1)

@@ -1,10 +1,10 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['Preferences'];
+"use strict";
+const EXPORTED_SYMBOLS = ["Preferences"];
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const MAX_INT = Math.pow(2, 31) - 1;
 const MIN_INT = -MAX_INT;
 function Preferences(args) {
@@ -36,12 +36,12 @@ Preferences.prototype = {
         case Ci.nsIPrefBranch.PREF_INVALID:
             return defaultValue;
         default:
-            throw 'Error getting pref ' + prefName + '; its value\'s type is ' + this._prefSvc.getPrefType(prefName) + ', which I don\'t know ' + 'how to handle.';
+            throw "Error getting pref " + prefName + "; its value's type is " + this._prefSvc.getPrefType(prefName) + ", which I don't know " + "how to handle.";
         }
     },
     _siteGet: function (prefName, defaultValue) {
         var value = this._contentPrefSvc.getPref(this._site, this._prefBranch + prefName);
-        return typeof value != 'undefined' ? value : defaultValue;
+        return typeof value != "undefined" ? value : defaultValue;
     },
     set: function (prefName, prefValue) {
         if (isObject(prefName)) {
@@ -73,35 +73,35 @@ Preferences.prototype = {
     },
     _set: function (prefName, prefValue, overwrite) {
         var prefType;
-        if (typeof prefValue != 'undefined' && prefValue != null)
+        if (typeof prefValue != "undefined" && prefValue != null)
             prefType = prefValue.constructor.name;
         var prefSvc = this._prefSvc;
         var storedValueType = prefSvc.getPrefType(prefName);
         switch (prefType) {
-        case 'String': {
-                let string = Cc['@mozilla.org/supports-string;1'].createInstance(Ci.nsISupportsString);
+        case "String": {
+                let string = Cc["@mozilla.org/supports-string;1"].createInstance(Ci.nsISupportsString);
                 string.data = prefValue;
                 if (overwrite && storedValueType != prefSvc.PREF_STRING)
                     this._reset(prefName);
                 this._prefSvc.setComplexValue(prefName, Ci.nsISupportsString, string);
             }
             break;
-        case 'Number':
+        case "Number":
             if (prefValue > MAX_INT || prefValue < MIN_INT)
-                throw 'you cannot set the ' + prefName + ' pref to the number ' + prefValue + ', as number pref values must be in the signed ' + '32-bit integer range -(2^31-1) to 2^31-1.  To store numbers ' + 'outside that range, store them as strings.';
+                throw "you cannot set the " + prefName + " pref to the number " + prefValue + ", as number pref values must be in the signed " + "32-bit integer range -(2^31-1) to 2^31-1.  To store numbers " + "outside that range, store them as strings.";
             if (overwrite && storedValueType != prefSvc.PREF_INT)
                 this._reset(prefName);
             this._prefSvc.setIntPref(prefName, prefValue);
             if (prefValue % 1 != 0)
-                Cu.reportError('Warning: setting the ' + prefName + ' pref to the ' + 'non-integer number ' + prefValue + ' converted it ' + 'to the integer number ' + this.get(prefName) + '; to retain fractional precision, store non-integer ' + 'numbers as strings.');
+                Cu.reportError("Warning: setting the " + prefName + " pref to the " + "non-integer number " + prefValue + " converted it " + "to the integer number " + this.get(prefName) + "; to retain fractional precision, store non-integer " + "numbers as strings.");
             break;
-        case 'Boolean':
+        case "Boolean":
             if (overwrite && storedValueType != prefSvc.PREF_BOOL)
                 this._reset(prefName);
             this._prefSvc.setBoolPref(prefName, prefValue);
             break;
         default:
-            throw 'can\'t set pref ' + prefName + ' to value \'' + prefValue + '\'; it isn\'t a String, Number, or Boolean';
+            throw "can't set pref " + prefName + " to value '" + prefValue + "'; it isn't a String, Number, or Boolean";
         }
     },
     _siteSet: function (prefName, prefValue) {
@@ -166,14 +166,14 @@ Preferences.prototype = {
         return this._prefSvc.prefIsLocked(prefName);
     },
     observe: function (prefName, callback, thisObject) {
-        var fullPrefName = this._prefBranch + (prefName || '');
+        var fullPrefName = this._prefBranch + (prefName || "");
         var observer = new PrefObserver(fullPrefName, callback, thisObject);
         Preferences._prefSvc.addObserver(fullPrefName, observer, true);
         observers.push(observer);
         return observer;
     },
     ignore: function (prefName, callback, thisObject) {
-        var fullPrefName = this._prefBranch + (prefName || '');
+        var fullPrefName = this._prefBranch + (prefName || "");
         var [observer] = observers.filter(function (v) v.prefName == fullPrefName && v.callback == callback && v.thisObject == thisObject);
         if (observer) {
             Preferences._prefSvc.removeObserver(fullPrefName, observer);
@@ -190,28 +190,28 @@ Preferences.prototype = {
                 throw ex;
         }
     },
-    _prefBranch: '',
+    _prefBranch: "",
     site: function (site) {
         if (!(site instanceof Ci.nsIURI))
-            site = this._ioSvc.newURI('http://' + site, null, null);
+            site = this._ioSvc.newURI("http://" + site, null, null);
         return new Preferences({
             branch: this._prefBranch,
             site: site
         });
     },
     get _prefSvc() {
-        var prefSvc = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefService).getBranch(this._prefBranch).QueryInterface(Ci.nsIPrefBranch2);
-        this.__defineGetter__('_prefSvc', function () prefSvc);
+        var prefSvc = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch(this._prefBranch).QueryInterface(Ci.nsIPrefBranch2);
+        this.__defineGetter__("_prefSvc", function () prefSvc);
         return this._prefSvc;
     },
     get _ioSvc() {
-        var ioSvc = Cc['@mozilla.org/network/io-service;1'].getService(Ci.nsIIOService);
-        this.__defineGetter__('_ioSvc', function () ioSvc);
+        var ioSvc = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
+        this.__defineGetter__("_ioSvc", function () ioSvc);
         return this._ioSvc;
     },
     get _contentPrefSvc() {
-        var contentPrefSvc = Cc['@mozilla.org/content-pref/service;1'].getService(Ci.nsIContentPrefService);
-        this.__defineGetter__('_contentPrefSvc', function () contentPrefSvc);
+        var contentPrefSvc = Cc["@mozilla.org/content-pref/service;1"].getService(Ci.nsIContentPrefService);
+        this.__defineGetter__("_contentPrefSvc", function () contentPrefSvc);
         return this._contentPrefSvc;
     }
 };
@@ -230,7 +230,7 @@ PrefObserver.prototype = {
     observe: function (subject, topic, data) {
         if (data != this.prefName)
             return;
-        if (typeof this.callback == 'function') {
+        if (typeof this.callback == "function") {
             let prefValue = Preferences.get(this.prefName);
             if (this.thisObject)
                 this.callback.call(this.thisObject, prefValue);
@@ -241,17 +241,17 @@ PrefObserver.prototype = {
     }
 };
 function isObject(val) {
-    return typeof val != 'undefined' && val != null && typeof val == 'object' && val.constructor.name == 'Object';
+    return typeof val != "undefined" && val != null && typeof val == "object" && val.constructor.name == "Object";
 }
 Preferences.prototype.observe2 = function (prefName, callback, thisObject) {
-    var fullPrefName = this._prefBranch + (prefName || '');
+    var fullPrefName = this._prefBranch + (prefName || "");
     var observer = new PrefObserver2(fullPrefName, callback, thisObject);
     Preferences._prefSvc.addObserver(fullPrefName, observer, true);
     observers2.push(observer);
     return observer;
 };
 Preferences.prototype.ignore2 = function (prefName, callback, thisObject) {
-    var fullPrefName = this._prefBranch + (prefName || '');
+    var fullPrefName = this._prefBranch + (prefName || "");
     var [observer] = observers2.filter(function (v) v.prefName == fullPrefName && v.callback == callback && v.thisObject == thisObject);
     if (observer) {
         Preferences._prefSvc.removeObserver(fullPrefName, observer);
@@ -272,7 +272,7 @@ PrefObserver2.prototype = {
     observe: function (subject, topic, data) {
         if (this.prefName.indexOf(data) == 0)
             return;
-        if (typeof this.callback == 'function') {
+        if (typeof this.callback == "function") {
             let prefValue = Preferences.get(this.prefName);
             if (this.thisObject)
                 this.callback.call(this.thisObject, prefValue);
@@ -286,30 +286,30 @@ Preferences.prototype.loadFromString = function Preferences_loadFromString(prefs
     if (!prefsString)
         return null;
     var result = true;
-    const prefService = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefService);
+    const prefService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
     const prefDefaultBranch = prefService.getDefaultBranch(null);
     function pref(aPrefName, aPrefValue) {
-        if (!(aPrefName && typeof aPrefName == 'string'))
+        if (!(aPrefName && typeof aPrefName == "string"))
             return;
         switch (typeof aPrefValue) {
-        case 'boolean':
+        case "boolean":
             prefDefaultBranch.setBoolPref(aPrefName, aPrefValue);
             break;
-        case 'number':
+        case "number":
             prefDefaultBranch.setIntPref(aPrefName, aPrefValue);
             break;
-        case 'string':
+        case "string":
             prefDefaultBranch.setCharPref(aPrefName, aPrefValue);
             break;
         }
     }
     function user_pref(aPrefName, aPrefValue) {
-        if (!(aPrefName && typeof aPrefName == 'string'))
+        if (!(aPrefName && typeof aPrefName == "string"))
             return;
         switch (typeof aPrefValue) {
-        case 'boolean':
-        case 'number':
-        case 'string':
+        case "boolean":
+        case "number":
+        case "string":
             Preferences.set(aPrefName, aPrefValue);
             break;
         }
@@ -317,20 +317,20 @@ Preferences.prototype.loadFromString = function Preferences_loadFromString(prefs
     function evalFromString(match, fnName, prefName, prefValue) {
         try {
             if (/["']/.test(prefValue)) {
-                prefValue = '"' + prefValue.replace(/"/g, '\\"') + '"';
-                prefValue = JSON.parse(prefValue).replace(/^["']|["']$/g, '');
+                prefValue = "\"" + prefValue.replace(/"/g, "\\\"") + "\"";
+                prefValue = JSON.parse(prefValue).replace(/^["']|["']$/g, "");
             } else {
                 prefValue = JSON.parse(prefValue);
             }
             switch (fnName) {
-            case 'pref':
+            case "pref":
                 pref(prefName, prefValue);
                 break;
-            case 'user_pref':
+            case "user_pref":
                 user_pref(prefName, prefValue);
                 break;
             default:
-                throw new Error('Unknown pref function name ("' + fnName + '")');
+                throw new Error("Unknown pref function name (\"" + fnName + "\")");
                 break;
             }
         } catch (e) {
@@ -343,16 +343,16 @@ Preferences.prototype.loadFromString = function Preferences_loadFromString(prefs
 };
 Preferences.prototype.loadFromFile = function Preferences_loadFromFile(prefsFile) {
     if (!(prefsFile instanceof Ci.nsIFile))
-        throw new TypeError('nsIFile required');
+        throw new TypeError("nsIFile required");
     if (!prefsFile.exists())
         return null;
     var data = null;
-    var is = Cc['@mozilla.org/network/file-input-stream;1'].createInstance(Ci.nsIFileInputStream);
+    var is = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
     try {
         is.init(prefsFile, 1, 0, is.CLOSE_ON_EOF);
         let streamSize = is.available();
-        let convStream = Cc['@mozilla.org/intl/converter-input-stream;1'].createInstance(Ci.nsIConverterInputStream);
-        convStream.init(is, 'UTF-8', streamSize, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
+        let convStream = Cc["@mozilla.org/intl/converter-input-stream;1"].createInstance(Ci.nsIConverterInputStream);
+        convStream.init(is, "UTF-8", streamSize, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
         let outObject = {};
         try {
             convStream.readString(streamSize, outObject);
@@ -369,5 +369,5 @@ Preferences.prototype.loadFromFile = function Preferences_loadFromFile(prefsFile
     } finally {
         is.close();
     }
-    return this.loadFromString(data || '');
+    return this.loadFromString(data || "");
 };

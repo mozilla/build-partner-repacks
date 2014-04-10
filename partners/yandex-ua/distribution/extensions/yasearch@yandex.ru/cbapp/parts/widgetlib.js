@@ -1,4 +1,4 @@
-const EXPORTED_SYMBOLS = ['widgetLibrary'];
+const EXPORTED_SYMBOLS = ["widgetLibrary"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -11,17 +11,17 @@ const widgetLibrary = {
             this._barCore = application.core;
             this._barPlatform = application.BarPlatform;
             this._barCore.Lib.sysutils.copyProperties(this._barCore.Lib, GLOBAL);
-            this._logger = application.getLogger('WLib');
-            this._useParserCache = application.preferences.get('barplatform.components.parsercache') !== false;
+            this._logger = application.getLogger("WLib");
+            this._useParserCache = application.preferences.get("barplatform.components.parsercache") !== false;
             this._loadBundleLists();
             this._checkPreinstalledPackages();
             this._loadComponentsInfo();
             if (application.addonManager.info.addonVersionChanged) {
                 try {
-                    this._logger.config('Removing parsers cache...');
+                    this._logger.config("Removing parsers cache...");
                     fileutils.removeFileSafe(application.directories.parsedCompsDir);
                 } catch (e) {
-                    this._logger.error('Parser cache cleanup failed. ' + strutils.formatError(e));
+                    this._logger.error("Parser cache cleanup failed. " + strutils.formatError(e));
                     this._logger.debug(e.stack);
                 }
             }
@@ -53,7 +53,7 @@ const widgetLibrary = {
         getComponentInfo: function WidgetLibrary_getComponentInfo(componentID) {
             var componentData = this._knownWidgets[componentID] || this._pluginsData[componentID];
             if (!componentData)
-                throw new Error(strutils.formatString('No such component (%1)', [componentID]));
+                throw new Error(strutils.formatString("No such component (%1)", [componentID]));
             var componentInfo = componentData.info || (componentData.info = this._loadComponentInfo(componentID));
             return sysutils.copyObj(componentInfo);
         },
@@ -68,9 +68,9 @@ const widgetLibrary = {
                         ,
                         widgetID
                     ] in Iterator(newWidgetIDs))
-                registered += this._registerComponent(widgetID, 'widget', dontFail, logStat);
+                registered += this._registerComponent(widgetID, "widget", dontFail, logStat);
             if (registered > 0)
-                this._logger.debug('Registered ' + registered + ' widgets.');
+                this._logger.debug("Registered " + registered + " widgets.");
             return registered;
         },
         registerPlugins: function WidgetLibrary_registerPlugins(newPluginIDs, dontFail, logStat) {
@@ -81,9 +81,9 @@ const widgetLibrary = {
                         ,
                         pluginID
                     ] in Iterator(newPluginIDs))
-                registered += this._registerComponent(pluginID, 'plugin', dontFail, logStat);
+                registered += this._registerComponent(pluginID, "plugin", dontFail, logStat);
             if (registered > 0)
-                this._logger.debug('Registered ' + registered + ' plugins.');
+                this._logger.debug("Registered " + registered + " plugins.");
             return registered;
         },
         forgetWidgets: function WidgetLibrary_forgetWidget(protoIDsArray, logStat) {
@@ -97,13 +97,13 @@ const widgetLibrary = {
                 delete this._knownWidgets[protoID];
                 if (logStat)
                     componentsUsage.logSysAction(protoID, componentsUsage.ACTIONS.COMP_REMOVE);
-                if (widgetInfo.barAPI == 'xb')
+                if (widgetInfo.barAPI == "xb")
                     fileutils.removeFileSafe(this._getParserCacheFile(protoID));
                 else
                     fileutils.removeFileSafe(this._barApp.NativeComponents.getComponentStorage(protoID));
             }, this);
             if (unregistered > 0)
-                this._logger.debug('Forgot ' + unregistered + ' widgets.');
+                this._logger.debug("Forgot " + unregistered + " widgets.");
             return unregistered;
         },
         forgetPlugins: function WidgetLibrary_forgetPlugins(pluginIDsArray, logStat) {
@@ -119,7 +119,7 @@ const widgetLibrary = {
                 fileutils.removeFileSafe(this._barApp.NativeComponents.getComponentStorage(pluginID));
             }, this);
             if (unregistered > 0)
-                this._logger.debug('Forgot ' + unregistered + ' plugins.');
+                this._logger.debug("Forgot " + unregistered + " plugins.");
             return unregistered;
         },
         forgetComponents: function WidgetLibrary_forgetComponents(compIDsArray, logStat) {
@@ -140,7 +140,7 @@ const widgetLibrary = {
         },
         getPlugin: function WidgetLibrary_getPlugin(pluginID) {
             if (!(pluginID in this._pluginsData))
-                throw new Error(strutils.formatString('No such plugin (%1).', [pluginID]));
+                throw new Error(strutils.formatString("No such plugin (%1).", [pluginID]));
             var pluginData = this._pluginsData[pluginID];
             return (pluginData ? pluginData.component : null) || this._loadPlugin(pluginID);
         },
@@ -157,7 +157,7 @@ const widgetLibrary = {
         },
         getPluginInfo: function WidgetLibrary_getPluginInfo(pluginID) {
             if (!(pluginID in this._pluginsData))
-                throw new Error(strutils.formatString('No such plugin (%1).', [pluginID]));
+                throw new Error(strutils.formatString("No such plugin (%1).", [pluginID]));
             var pluginData = this._pluginsData[pluginID];
             var pluginInfo = pluginData.info || (pluginData.info = this._loadComponentInfo(pluginID));
             return sysutils.copyObj(pluginInfo);
@@ -167,7 +167,7 @@ const widgetLibrary = {
         },
         pluginEnabled: function WidgetLibrary_pluginEnabled(pluginID) {
             if (!(pluginID in this._pluginsData))
-                throw new Error(strutils.formatString('No such plugin (%1).', [pluginID]));
+                throw new Error(strutils.formatString("No such plugin (%1).", [pluginID]));
             var plugin = this._pluginsData[pluginID].component;
             return plugin ? plugin.enabled : false;
         },
@@ -178,7 +178,7 @@ const widgetLibrary = {
                     if (plugin)
                         plugin.finalize();
                 } catch (e) {
-                    this._logger.error('Could not finalize plugin. ' + strutils.formatError(e));
+                    this._logger.error("Could not finalize plugin. " + strutils.formatError(e));
                     this._logger.debug(e.stack);
                 } finally {
                     this._pluginsData[pluginID] = {
@@ -250,16 +250,16 @@ const widgetLibrary = {
             }, this);
         },
         _consts: {
-            STR_KNOWN_WIDGETS_FILE_NAME: 'known_widgets.json',
-            STR_KNOWN_PLUGINS_FILE_NAME: 'plugins.json',
-            STR_INTERNAL_PKGS_DATA_PATH: '$content/internal_packages.json',
-            ERR_UNIT_HAS_NO_WIDGET: 'Unit does not declare a widget',
-            ERR_UNIT_HAS_NO_PLUGIN: 'Unit does not declare a plugin',
-            ERR_NO_COMP_INFO: 'Could not get component info from unit',
-            ERR_COULDNT_WRITE_WLIST: 'Could not write known widgets list. ',
-            ERR_COULDNT_WRITE_PLIST: 'Could not write known plugins list. ',
-            ERR_INVALID_WIDGET_ID: 'Invalid widget ID',
-            ERR_NO_SUCH_WIDGET: 'No such widget (%1)'
+            STR_KNOWN_WIDGETS_FILE_NAME: "known_widgets.json",
+            STR_KNOWN_PLUGINS_FILE_NAME: "plugins.json",
+            STR_INTERNAL_PKGS_DATA_PATH: "$content/internal_packages.json",
+            ERR_UNIT_HAS_NO_WIDGET: "Unit does not declare a widget",
+            ERR_UNIT_HAS_NO_PLUGIN: "Unit does not declare a plugin",
+            ERR_NO_COMP_INFO: "Could not get component info from unit",
+            ERR_COULDNT_WRITE_WLIST: "Could not write known widgets list. ",
+            ERR_COULDNT_WRITE_PLIST: "Could not write known plugins list. ",
+            ERR_INVALID_WIDGET_ID: "Invalid widget ID",
+            ERR_NO_SUCH_WIDGET: "No such widget (%1)"
         },
         _barApp: null,
         _logger: null,
@@ -270,14 +270,18 @@ const widgetLibrary = {
         _internalPackagesInfo: {},
         _useParserCache: true,
         _registerComponent: function WidgetLibrary__registerComponent(componentID, componentType, dontFail, logStat) {
-            var registry = componentType == 'widget' ? this._knownWidgets : this._pluginsData;
+            var registry = componentType == "widget" ? this._knownWidgets : this._pluginsData;
             if (componentID in registry)
                 return 0;
             const componentsUsage = this._barApp.componentsUsage;
             try {
                 let componentInfo = this._loadComponentInfo(componentID);
+                if (componentInfo.barAPI === "xb") {
+                    fileutils.removeFileSafe(this._getParserCacheFile(componentID));
+                    return 0;
+                }
                 if (componentType != componentInfo.type) {
-                    throw new TypeError(strutils.formatString('Component type missmatch. Expected: \'%1\', got \'%2\'', [
+                    throw new TypeError(strutils.formatString("Component type missmatch. Expected: '%1', got '%2'", [
                         componentType,
                         componentInfo.type
                     ]));
@@ -291,7 +295,7 @@ const widgetLibrary = {
                 return 1;
             } catch (e) {
                 if (dontFail) {
-                    this._logger.warn('Could not register component "' + componentID + '". ' + strutils.formatError(e));
+                    this._logger.warn("Could not register component \"" + componentID + "\". " + strutils.formatError(e));
                     return 0;
                 } else
                     throw e;
@@ -299,7 +303,7 @@ const widgetLibrary = {
         },
         _getParserCacheDir: function WidgetLibrary__getParserCacheDir(packageID) {
             var cacheDir = this._barApp.directories.parsedCompsDir;
-            cacheDir.append(misc.CryptoHash.getFromString(packageID, 'MD5'));
+            cacheDir.append(misc.CryptoHash.getFromString(packageID, "MD5"));
             return cacheDir;
         },
         _getParserCacheFile: function WidgetLibrary__getParserCacheFile(componentID) {
@@ -318,13 +322,13 @@ const widgetLibrary = {
             try {
                 this._internalPackagesInfo = JSON.parse(fileutils.readStringFromStream(addonFS.getStream(this._consts.STR_INTERNAL_PKGS_DATA_PATH)));
             } catch (e) {
-                this._logger.error('Could not load preinstalled widgets info. ' + strutils.formatError(e));
+                this._logger.error("Could not load preinstalled widgets info. " + strutils.formatError(e));
             }
         },
         _checkPreinstalledPackages: function WidgetLibrary__checkPreinstalledPackages() {
             var installInfo = this._barApp.addonManager.info;
             if (installInfo.addonVersionChanged || installInfo.buildNumberChanged) {
-                this._logger.config('  Replacing built-in packages');
+                this._logger.config("  Replacing built-in packages");
                 for (let pkgID in this._internalPackagesInfo) {
                     if (this._barApp.packageManager.isPackageInstalled(pkgID)) {
                         this._barApp.packageManager.uninstallPackage(pkgID);
@@ -336,7 +340,7 @@ const widgetLibrary = {
             } else {
                 let missingPackages = [];
                 for (let pkgID in this._internalPackagesInfo) {
-                    this._logger.debug('  Checking package ' + pkgID);
+                    this._logger.debug("  Checking package " + pkgID);
                     if (!this._barApp.packageManager.isPackageInstalled(pkgID)) {
                         missingPackages.push(pkgID);
                         this.cleanPackageParserCache(pkgID);
@@ -344,7 +348,7 @@ const widgetLibrary = {
                     }
                 }
                 if (missingPackages.length > 0) {
-                    this._logger.warn('  Missing packages: ' + missingPackages + '. I\'ll try to restore.');
+                    this._logger.warn("  Missing packages: " + missingPackages + ". I'll try to restore.");
                     this._extractBuiltinPackages(missingPackages);
                     this._barApp.packageManager.rescanPackages();
                 }
@@ -360,9 +364,9 @@ const widgetLibrary = {
                     packageDir.append(destPackageDirName);
                     if (packageDir.exists())
                         packageDir.remove(true);
-                    this._barApp.addonFS.copySource('$content/packages/' + packageDirName, packagesDir, destPackageDirName);
+                    this._barApp.addonFS.copySource("$content/packages/" + packageDirName, packagesDir, destPackageDirName);
                 } catch (e) {
-                    this._logger.error('Couldn\'t extract package "' + packageID + '". ' + strutils.formatError(e));
+                    this._logger.error("Couldn't extract package \"" + packageID + "\". " + strutils.formatError(e));
                     let stackTace = e.stack;
                     if (stackTace)
                         this._logger.debug(stackTace);
@@ -397,7 +401,7 @@ const widgetLibrary = {
                 if (dataFile.exists())
                     knownWidgetIDs = JSON.parse(fileutils.readTextFile(dataFile));
             } catch (e) {
-                this._logger.error('An error occured while reading known widgets list. ' + strutils.formatError(e));
+                this._logger.error("An error occured while reading known widgets list. " + strutils.formatError(e));
             }
             this.registerWidgets(knownWidgetIDs, true);
             try {
@@ -406,13 +410,13 @@ const widgetLibrary = {
                 if (dataFile.exists())
                     this._prevPluginsState = JSON.parse(fileutils.readTextFile(dataFile));
             } catch (e) {
-                this._logger.error('Could not load active plugins list. ' + strutils.formatError(e));
+                this._logger.error("Could not load active plugins list. " + strutils.formatError(e));
             }
             if (this._prevPluginsState)
                 this.registerPlugins(misc.mapKeysToArray(this._prevPluginsState), true);
         },
         _makeComponentID: function WidgetLibrary__makeComponentID(packageID, componentName) {
-            return packageID + '#' + componentName;
+            return packageID + "#" + componentName;
         },
         _loadWidgetProto: function WidgetLibrary__loadWidgetProto(protoID) {
             var [
@@ -422,7 +426,7 @@ const widgetLibrary = {
             var packageInfo = this._barApp.packageManager.getPackageInfo(packageID);
             var package_ = this._barApp.packageManager.getPackage(packageID);
             var unit = package_.getUnit(widgetName), componentInfo = unit.componentInfo;
-            if (componentInfo.type != 'widget')
+            if (componentInfo.type != "widget")
                 throw new Error(this._consts.ERR_UNIT_HAS_NO_WIDGET);
             if (this._useParserCache) {
                 let cacheFile = this._getParserCacheFile(protoID);
@@ -464,14 +468,14 @@ const widgetLibrary = {
                             plugin.applySettings(settings, true);
                         plugin.enabled = active;
                     } catch (e) {
-                        this._logger.error(strutils.formatString('Could not turn plugin (%1) on. %2', [
+                        this._logger.error(strutils.formatString("Could not turn plugin (%1) on. %2", [
                             pluginID,
                             strutils.formatError(e)
                         ]));
                     }
                 } catch (e) {
                     failedPlugins.push(pluginID);
-                    this._logger.error(strutils.formatString('Could not create plugin %1. %2', [
+                    this._logger.error(strutils.formatString("Could not create plugin %1. %2", [
                         pluginID,
                         strutils.formatError(e)
                     ]));
@@ -487,7 +491,7 @@ const widgetLibrary = {
                     pluginName
                 ] = this._barPlatform.parseComponentID(pluginID);
             var unit = this._barApp.packageManager.getPackage(packageID).getUnit(pluginName), componentInfo = unit.componentInfo;
-            if (componentInfo.type != 'plugin')
+            if (componentInfo.type != "plugin")
                 throw new Error(this._consts.ERR_UNIT_HAS_NO_PLUGIN);
             var plugin = unit.getComponent();
             this._pluginsData[pluginID] = {

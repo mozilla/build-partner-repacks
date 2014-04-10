@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['branding'];
+"use strict";
+const EXPORTED_SYMBOLS = ["branding"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -7,10 +7,10 @@ const {
         results: Cr
     } = Components;
 const GLOBAL = this;
-const PKG_UPD_TOPIC = 'package updated';
+const PKG_UPD_TOPIC = "package updated";
 const branding = {
         init: function PartnerPack_init(application) {
-            this._logger = application.getLogger('Branding');
+            this._logger = application.getLogger("Branding");
             this._application = application;
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this.__proto__ = new patterns.NotificationSource();
@@ -19,20 +19,20 @@ const branding = {
                 if (this._application.addonManager.info.addonVersionChanged)
                     this._checkBPAndReplaceIfSame();
             } catch (e) {
-                this._logger.error('Failed replacing the same BP with internal version. \n' + strutils.formatError(e));
+                this._logger.error("Failed replacing the same BP with internal version. \n" + strutils.formatError(e));
                 this._logger.debug(e.stack);
             }
             this._trySetAddonDescription();
         },
         updateFrom: function Branding_updateFrom(newPkgDir, newProductInfo, responseDate) {
-            this._logger.config(strutils.formatString('Preparing to update to a new branding package. BrandID: \'%1\', date: %2', [
+            this._logger.config(strutils.formatString("Preparing to update to a new branding package. BrandID: '%1', date: %2", [
                 newProductInfo.BrandID,
                 responseDate
             ]));
             try {
                 fileutils.safeReplace(this._currPackageDir, newPkgDir);
             } catch (e) {
-                this._logger.error('Could not replace old directory with a new one. \n' + strutils.formatError(e));
+                this._logger.error("Could not replace old directory with a new one. \n" + strutils.formatError(e));
                 return;
             } finally {
                 fileutils.removeFileSafe(newPkgDir);
@@ -80,21 +80,21 @@ const branding = {
             return this.expandBrandTemplates(aTemplateStr, aParams, true);
         },
         expandBrandTemplates: function PartnerPack_expandBrandTemplates(aTemplateString, aParams, aEncodeParams) {
-            var result = '' + aTemplateString;
+            var result = "" + aTemplateString;
             if (!/\{/.test(result))
                 return result;
             function encode(str) aEncodeParams ? encodeURIComponent(str) : str
             var self = this;
             function replacer(aMatch) {
-                var match = aMatch.replace(/[{}]/g, '');
+                var match = aMatch.replace(/[{}]/g, "");
                 if (aParams && aParams.hasOwnProperty(match))
                     return encode(aParams[match]);
-                if (match == 'brandID')
+                if (match == "brandID")
                     return encode(self.productInfo.BrandID);
                 if (/clid(.+)/.test(match)) {
                     let clidData = self._vendorData[match];
                     if (!(clidData && clidData.clidAndVid))
-                        return '';
+                        return "";
                     return encode(clidData.clidAndVid);
                 }
                 const namesRe = /^(product[12]|vendor)\.(\w+)$/;
@@ -102,16 +102,16 @@ const branding = {
                 if (matchNames) {
                     try {
                         switch (matchNames[1]) {
-                        case 'product1':
-                            return encode(self.productInfo.ProductName1[matchNames[2]] || '');
-                        case 'product2':
-                            return encode(self.productInfo.ProductName2[matchNames[2]] || '');
-                        case 'vendor':
-                            return encode(self.productInfo.VendorName[matchNames[2]] || '');
+                        case "product1":
+                            return encode(self.productInfo.ProductName1[matchNames[2]] || "");
+                        case "product2":
+                            return encode(self.productInfo.ProductName2[matchNames[2]] || "");
+                        case "vendor":
+                            return encode(self.productInfo.VendorName[matchNames[2]] || "");
                         }
                     } catch (e) {
-                        self._logger.error('Could not expand branding templates. \n' + strutils.formatError(e));
-                        return '';
+                        self._logger.error("Could not expand branding templates. \n" + strutils.formatError(e));
+                        return "";
                     }
                 }
                 return aMatch;
@@ -123,7 +123,7 @@ const branding = {
                 try {
                     this._productInfo = this._getBPProductInfo(this._package);
                 } catch (e) {
-                    this._logger.error('Could not read file \'/about/product.xml\' \n' + strutils.formatError(e));
+                    this._logger.error("Could not read file '/about/product.xml' \n" + strutils.formatError(e));
                     this._productInfo = null;
                 }
             }
@@ -132,9 +132,9 @@ const branding = {
         get browserConf() {
             if (this._browserConf === undefined) {
                 try {
-                    this._browserConf = xmlutils.dom2jsObj(this._package.getXMLDocument('/browser/browserconf.xml'));
+                    this._browserConf = xmlutils.dom2jsObj(this._package.getXMLDocument("/browser/browserconf.xml"));
                 } catch (e) {
-                    this._logger.error('Could not read file \'/browser/browserconf.xml\'');
+                    this._logger.error("Could not read file '/browser/browserconf.xml'");
                     this._browserConf = null;
                 }
             }
@@ -149,18 +149,18 @@ const branding = {
         _barless: null,
         _consts: {
             GCASES: [
-                'nom',
-                'gen',
-                'dat',
-                'acc',
-                'ins',
-                'pre',
-                'loc',
-                'ex1',
-                'ex2'
+                "nom",
+                "gen",
+                "dat",
+                "acc",
+                "ins",
+                "pre",
+                "loc",
+                "ex1",
+                "ex2"
             ],
-            BRAND_TS_PREF_NAME: 'branding.lastupdate',
-            PKG_DIR_NAME: 'branding'
+            BRAND_TS_PREF_NAME: "branding.lastupdate",
+            PKG_DIR_NAME: "branding"
         },
         get _brandingDate() {
             var brandTimestamp = Number(this._application.preferences.get(this._consts.BRAND_TS_PREF_NAME, undefined));
@@ -197,16 +197,16 @@ const branding = {
             try {
                 let currPkgDir = this._currPackageDir;
                 if (!currPkgDir.exists())
-                    this._application.addonFS.copySource('$content/branding', this._application.directories.vendorDir, this._consts.PKG_DIR_NAME);
+                    this._application.addonFS.copySource("$content/branding", this._application.directories.vendorDir, this._consts.PKG_DIR_NAME);
                 [
                     package_,
                     productInfo
                 ] = this._validateBrandPkg(currPkgDir);
             } catch (e) {
-                this._logger.error('Existing branding package is invalid! Will try internal version. \n' + strutils.formatError(e));
+                this._logger.error("Existing branding package is invalid! Will try internal version. \n" + strutils.formatError(e));
                 this._logger.debug(e.stack);
                 fileutils.removeFileSafe(this._currPackageDir);
-                this._application.addonFS.copySource('$content/branding', this._application.directories.vendorDir, this._consts.PKG_DIR_NAME);
+                this._application.addonFS.copySource("$content/branding", this._application.directories.vendorDir, this._consts.PKG_DIR_NAME);
                 [
                     package_,
                     productInfo
@@ -221,10 +221,10 @@ const branding = {
             var currPkgDir = currentPackage.rootDirectory;
             var currentProductInfo = this._productInfo;
             var internalPkgDir = this._application.directories.vendorDir;
-            internalPkgDir.append('tmp');
+            internalPkgDir.append("tmp");
             if (internalPkgDir.exists())
                 internalPkgDir.remove(true);
-            this._application.addonFS.copySource('$content/branding', this._application.directories.vendorDir, 'tmp');
+            this._application.addonFS.copySource("$content/branding", this._application.directories.vendorDir, "tmp");
             var internalProductInfo;
             var internalTmpPkg = new this._application.BarPlatform.FilePackage(internalPkgDir);
             try {
@@ -236,26 +236,26 @@ const branding = {
                     fileutils.removeFileSafe(internalPkgDir);
             }
             var canUpdatePackage = true;
-            if (this._application.core.CONFIG.APP.TYPE === 'barff') {
+            if (this._application.core.CONFIG.APP.TYPE === "barff") {
                 let sameAddresses = String(currentProductInfo.BrandingURL) == String(internalProductInfo.BrandingURL);
                 if (sameAddresses)
-                    this._logger.debug('Package addresses are the same: ' + currentProductInfo.BrandingURL);
+                    this._logger.debug("Package addresses are the same: " + currentProductInfo.BrandingURL);
                 else
-                    this._logger.debug(strutils.formatString('Package addresses are: %1, %2', [
+                    this._logger.debug(strutils.formatString("Package addresses are: %1, %2", [
                         currentProductInfo.BrandingURL,
                         internalProductInfo.BrandingURL
                     ]));
                 let currentIsBarless = strutils.xmlAttrToBool(currentProductInfo.Barless && currentProductInfo.Barless.enabled);
                 let internalIsBarless = strutils.xmlAttrToBool(internalProductInfo.Barless && internalProductInfo.Barless.enabled);
                 let viewModeChanged = currentIsBarless != internalIsBarless;
-                this._logger.debug(strutils.formatString('Barless modes are: %1, %2', [
+                this._logger.debug(strutils.formatString("Barless modes are: %1, %2", [
                     currentIsBarless,
                     internalIsBarless
                 ]));
                 canUpdatePackage = sameAddresses || viewModeChanged;
             }
             if (canUpdatePackage) {
-                this._logger.debug('Replacing existing BP with internal one');
+                this._logger.debug("Replacing existing BP with internal one");
                 this.updateFrom(internalPkgDir, internalProductInfo, this._application.core.buildDate);
             } else {
                 fileutils.removeFileSafe(internalPkgDir);
@@ -265,13 +265,13 @@ const branding = {
             var productInfo = this.productInfo;
             var prefs = this._application.preferences;
             try {
-                prefs.set('name', productInfo.ProductName1.nom);
-                prefs.set('description', productInfo.ProductDescription.fx);
-                prefs.set('creator', productInfo.VendorName.nom);
-                let homepageURL = productInfo.HomePage && productInfo.HomePage.toString() || '';
-                prefs.set('homepageURL', homepageURL);
+                prefs.set("name", productInfo.ProductName1.nom);
+                prefs.set("description", productInfo.ProductDescription.fx);
+                prefs.set("creator", productInfo.VendorName.nom);
+                let homepageURL = productInfo.HomePage && productInfo.HomePage.toString() || "";
+                prefs.set("homepageURL", homepageURL);
             } catch (e) {
-                this._logger.error('Could not set branded addon description. ' + strutils.formatError(e));
+                this._logger.error("Could not set branded addon description. " + strutils.formatError(e));
             }
         },
         _validateBrandPkg: function PartnerPack__validateBrandPkg(packageDir, autoFinalizePkg) {
@@ -288,23 +288,23 @@ const branding = {
                     try {
                         package_.finalize();
                     } catch (e) {
-                        this._logger.error('Error finalizing temporary package instance. \n' + strutils.formatError(e));
+                        this._logger.error("Error finalizing temporary package instance. \n" + strutils.formatError(e));
                     }
                     package_ = null;
                 }
             }
         },
         _validateProductInfo: function Branding__validateProductInfo(productInfo) {
-            this._logger.debug('Validating product info...');
-            if (!productInfo.BrandID || productInfo.BrandID == '')
-                throw new Error('No brand ID');
+            this._logger.debug("Validating product info...");
+            if (!productInfo.BrandID || productInfo.BrandID == "")
+                throw new Error("No brand ID");
             if (!productInfo.ProductName1.nom)
-                throw new Error('No product name');
+                throw new Error("No product name");
             try {
                 let updateURL = productInfo.BrandingURL;
                 netutils.newURI(updateURL, null, null);
             } catch (e) {
-                throw new Error('Branding update URL unavailable. \n' + strutils.formatError(e));
+                throw new Error("Branding update URL unavailable. \n" + strutils.formatError(e));
             }
         },
         _updatePackage: function PartnerPack__updatePackage(newProductInfo, responseDate) {
@@ -315,7 +315,7 @@ const branding = {
             this._productInfo = newProductInfo;
             this._brandingDate = responseDate;
             this._application.preferences.set(this._consts.BRAND_TS_PREF_NAME, Math.round(responseDate.getTime() / 1000));
-            this._logger.config('Branding replaced. Notifying listeners...');
+            this._logger.config("Branding replaced. Notifying listeners...");
             this._notifyListeners(PKG_UPD_TOPIC, this._package);
         },
         get _vendorData() {
@@ -338,30 +338,30 @@ const branding = {
                         _,
                         gCase
                     ] in Iterator(this._consts.GCASES)) {
-                result['product1.' + gCase] = productInfo.ProductName1[gCase] || '';
-                result['product2.' + gCase] = productInfo.ProductName2[gCase] || '';
-                result['vendor.' + gCase] = productInfo.VendorName[gCase] || '';
+                result["product1." + gCase] = productInfo.ProductName1[gCase] || "";
+                result["product2." + gCase] = productInfo.ProductName2[gCase] || "";
+                result["vendor." + gCase] = productInfo.VendorName[gCase] || "";
             }
             for (let [
                         clidName,
                         clidData
                     ] in Iterator(this._vendorData))
-                result[clidName] = clidData ? clidData.clidAndVid : '';
+                result[clidName] = clidData ? clidData.clidAndVid : "";
             return result;
         },
         _getBPProductInfo: function Branding__getBPProductInfo(brandPackage) {
-            var productInfo = xmlutils.dom2jsObj(brandPackage.getXMLDocument('/about/product.xml'));
-            if (!brandPackage.findFile('/fx/about/product.xml'))
+            var productInfo = xmlutils.dom2jsObj(brandPackage.getXMLDocument("/about/product.xml"));
+            if (!brandPackage.findFile("/fx/about/product.xml"))
                 return productInfo;
             try {
-                let fxProductInfo = xmlutils.dom2jsObj(brandPackage.getXMLDocument('/fx/about/product.xml'));
+                let fxProductInfo = xmlutils.dom2jsObj(brandPackage.getXMLDocument("/fx/about/product.xml"));
                 this._application.core.Lib.sysutils.copyProperties(fxProductInfo, productInfo);
             } catch (e) {
-                this._logger.error('Could not read \'/fx/about/product.xml\'. ' + e);
+                this._logger.error("Could not read '/fx/about/product.xml'. " + e);
             }
             return productInfo;
         },
         _getBPBrowserConf: function Branding__getBPBrowserConf(brandPackage) {
-            return xmlutils.dom2jsObj(brandPackage.getXMLDocument('/browser/browserconf.xml'));
+            return xmlutils.dom2jsObj(brandPackage.getXMLDocument("/browser/browserconf.xml"));
         }
     };

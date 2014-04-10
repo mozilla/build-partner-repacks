@@ -1,12 +1,12 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['AddonManager'];
+"use strict";
+const EXPORTED_SYMBOLS = ["AddonManager"];
 const {
         classes: Cc,
         interfaces: Ci,
         results: Cr,
         utils: Cu
     } = Components;
-const OBSERVER_SERVICE = Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService);
+const OBSERVER_SERVICE = Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);
 const AddonManager = {
         SCOPE_PROFILE: 1,
         SCOPE_APPLICATION: 4,
@@ -22,18 +22,18 @@ const AddonManager = {
         },
         get gre_AddonManager() {
             delete this.gre_AddonManager;
-            return this.gre_AddonManager = Cu.import('resource://gre/modules/AddonManager.jsm', {}).AddonManager;
+            return this.gre_AddonManager = Cu.import("resource://gre/modules/AddonManager.jsm", {}).AddonManager;
         },
         _getInstallRdfContent: function AM__getInstallRdfContent(aAddonDirectory) {
             var installRDFFile = aAddonDirectory;
-            installRDFFile.append('install.rdf');
-            var content = '';
+            installRDFFile.append("install.rdf");
+            var content = "";
             try {
-                let inputStream = Cc['@mozilla.org/network/file-input-stream;1'].createInstance(Ci.nsIFileInputStream);
+                let inputStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
                 inputStream.init(installRDFFile, 1, 0, inputStream.CLOSE_ON_EOF);
                 let fileSize = inputStream.available();
-                let cvstream = Cc['@mozilla.org/intl/converter-input-stream;1'].createInstance(Ci.nsIConverterInputStream);
-                cvstream.init(inputStream, 'UTF-8', fileSize, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
+                let cvstream = Cc["@mozilla.org/intl/converter-input-stream;1"].createInstance(Ci.nsIConverterInputStream);
+                cvstream.init(inputStream, "UTF-8", fileSize, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
                 let data = {};
                 cvstream.readString(fileSize, data);
                 content = data.value;
@@ -50,7 +50,7 @@ const AddonManager = {
                 if (version && /^\d+\.\d+/.test(version[1]))
                     return version[1];
             }
-            throw new Error('AddonManager: can\'t get addon version from install.rdf');
+            throw new Error("AddonManager: can't get addon version from install.rdf");
         },
         getAddonId: function AM_getAddonId(aAddonDirectory) {
             var installRdfContent = this._getInstallRdfContent(aAddonDirectory);
@@ -59,7 +59,7 @@ const AddonManager = {
                 if (addonId && addonId[1])
                     return addonId[1];
             }
-            throw new Error('AddonManager: can\'t get addon id from install.rdf');
+            throw new Error("AddonManager: can't get addon id from install.rdf");
         },
         disableAddonByID: function AM_disableAddonByID(aAddonId, aCallback) {
             this.gre_AddonManager.getAddonByID(aAddonId, function AM_disableAddonByID_callback(aAddon) {
@@ -72,11 +72,11 @@ const AddonManager = {
             var onUninstall = function onUninstall(addons, restart) {
                     this._applyCallback(aCallback);
                     if (!!aRestartBrowser && (restart || addons && addons.length)) {
-                        let timer = Cc['@mozilla.org/timer;1'].createInstance(Ci.nsITimer);
+                        let timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
                         timer.initWithCallback({
                             notify: function AM_uninstallAddonsByIDs_onUninstall() {
                                 const nsIAppStartup = Ci.nsIAppStartup;
-                                Cc['@mozilla.org/toolkit/app-startup;1'].getService(nsIAppStartup).quit(nsIAppStartup.eForceQuit | nsIAppStartup.eRestart);
+                                Cc["@mozilla.org/toolkit/app-startup;1"].getService(nsIAppStartup).quit(nsIAppStartup.eForceQuit | nsIAppStartup.eRestart);
                             }
                         }, 150, timer.TYPE_ONE_SHOT);
                     }
@@ -97,7 +97,7 @@ const AddonManager = {
                 });
             } catch (e) {
             }
-            var timer = Cc['@mozilla.org/timer;1'].createInstance(Ci.nsITimer);
+            var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
             timer.initWithCallback({
                 notify: function AM_uninstallAddonsByIDs_wait() {
                     if (!addonsUninstallCallback) {
@@ -117,21 +117,21 @@ const AddonManager = {
             this._started = true;
             var me = this;
             [
-                'onEnabling',
-                'onEnabled',
-                'onDisabling',
-                'onDisabled',
-                'onInstalling',
-                'onInstalled',
-                'onUninstalling',
-                'onUninstalled',
-                'onOperationCancelled',
-                'onUpdateAvailable',
-                'onNoUpdateAvailable',
-                'onUpdateFinished',
-                'onCompatibilityUpdateAvailable',
-                'onNoCompatibilityUpdateAvailable',
-                'onPropertyChanged'
+                "onEnabling",
+                "onEnabled",
+                "onDisabling",
+                "onDisabled",
+                "onInstalling",
+                "onInstalled",
+                "onUninstalling",
+                "onUninstalled",
+                "onOperationCancelled",
+                "onUpdateAvailable",
+                "onNoUpdateAvailable",
+                "onUpdateFinished",
+                "onCompatibilityUpdateAvailable",
+                "onNoCompatibilityUpdateAvailable",
+                "onPropertyChanged"
             ].forEach(function (aEvent) {
                 me[aEvent] = function () {
                     me._notifyAddonListeners.apply(me, [aEvent].concat(Array.slice(arguments)));
@@ -149,13 +149,13 @@ const AddonManager = {
         },
         observe: function AM_observe(aSubject, aTopic, aData) {
             switch (aTopic) {
-            case 'browser-ui-startup-complete':
-                OBSERVER_SERVICE.removeObserver(this, 'browser-ui-startup-complete');
-                OBSERVER_SERVICE.addObserver(this, 'xpcom-shutdown', false);
+            case "browser-ui-startup-complete":
+                OBSERVER_SERVICE.removeObserver(this, "browser-ui-startup-complete");
+                OBSERVER_SERVICE.addObserver(this, "xpcom-shutdown", false);
                 this.startup();
                 break;
-            case 'xpcom-shutdown':
-                OBSERVER_SERVICE.removeObserver(this, 'xpcom-shutdown');
+            case "xpcom-shutdown":
+                OBSERVER_SERVICE.removeObserver(this, "xpcom-shutdown");
                 this.shutdown();
                 break;
             default:
@@ -167,7 +167,7 @@ const AddonManager = {
             var watchingAddon = this._watchingAddons[addonId] || null;
             if (!watchingAddon)
                 return;
-            watchingAddon.installed = !(aEventType == 'onUninstalling');
+            watchingAddon.installed = !(aEventType == "onUninstalling");
         },
         _watchingAddons: Object.create(null),
         watchAddonUninstall: function AM_watchAddonUninstall(aAddonId) {
@@ -205,9 +205,9 @@ const AddonManager = {
                 try {
                     aListener.onAddonEvent.apply(aListener, args);
                 } catch (e) {
-                    Cu.reportError('AddonManager._notifyAddonListeners threw exception ' + 'when calling Listener.onAddonEvent: ' + e);
+                    Cu.reportError("AddonManager._notifyAddonListeners threw exception " + "when calling Listener.onAddonEvent: " + e);
                 }
             });
         }
     };
-OBSERVER_SERVICE.addObserver(AddonManager, 'browser-ui-startup-complete', false);
+OBSERVER_SERVICE.addObserver(AddonManager, "browser-ui-startup-complete", false);

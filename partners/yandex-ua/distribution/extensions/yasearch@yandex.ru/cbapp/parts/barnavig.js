@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['barnavig'];
+"use strict";
+const EXPORTED_SYMBOLS = ["barnavig"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -7,10 +7,10 @@ const {
         results: Cr
     } = Components;
 const GLOBAL = this;
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
-Cu.import('resource://gre/modules/Services.jsm');
-if ('nsIPrivateBrowsingChannel' in Ci) {
-    XPCOMUtils.defineLazyModuleGetter(this, 'PrivateBrowsingUtils', 'resource://gre/modules/PrivateBrowsingUtils.jsm');
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
+if ("nsIPrivateBrowsingChannel" in Ci) {
+    XPCOMUtils.defineLazyModuleGetter(this, "PrivateBrowsingUtils", "resource://gre/modules/PrivateBrowsingUtils.jsm");
     this.isWindowPrivate = function _isWindowPrivate(aWindow) {
         if (aWindow)
             return PrivateBrowsingUtils.isWindowPrivate(aWindow);
@@ -19,38 +19,38 @@ if ('nsIPrivateBrowsingChannel' in Ci) {
 } else {
     this.isWindowPrivate = function _isWindowPrivateEmpty(aWindow) false;
 }
-XPCOMUtils.defineLazyGetter(this, 'mozWorker', function () {
-    var mozWorker = new Worker('resource://' + barnavig._application.name + '-app/parts/workers/barnavig.js');
+XPCOMUtils.defineLazyGetter(this, "mozWorker", function () {
+    var mozWorker = new Worker("resource://" + barnavig._application.name + "-app/parts/workers/barnavig.js");
     mozWorker.postMessage({
-        type: 'setModulesPath',
-        data: 'resource://' + barnavig._application.name + '-mod/'
+        type: "setModulesPath",
+        data: "resource://" + barnavig._application.name + "-mod/"
     });
     var dictionary = null;
     try {
-        dictionary = fileutils.readTextFile(barnavig._application.branding.brandPackage.findFile('/search/dictionary.txt'));
+        dictionary = fileutils.readTextFile(barnavig._application.branding.brandPackage.findFile("/search/dictionary.txt"));
     } catch (e) {
     }
     mozWorker.postMessage({
-        type: 'setSearchDictionary',
+        type: "setSearchDictionary",
         data: dictionary
     });
     return mozWorker;
 });
-function isErrorRequest(aReq) !!(!aReq || aReq.type == 'error' || !aReq.target || aReq.target.status != 200)
+function isErrorRequest(aReq) !!(!aReq || aReq.type == "error" || !aReq.target || aReq.target.status != 200)
 function getWindowListenerForWindow(window) {
-    var controllerName = barnavig._application.name + 'OverlayController';
+    var controllerName = barnavig._application.name + "OverlayController";
     return controllerName in window ? window[controllerName].windowListener : null;
 }
 function getTabDataForTab(tab, key) {
     var winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
     return winListener && winListener.getTabData(tab, key) || null;
 }
-const ABOUT_BLANK_URI = Services.io.newURI('about:blank', null, null);
+const ABOUT_BLANK_URI = Services.io.newURI("about:blank", null, null);
 const barnavig = {
         init: function BarNavig_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
-            this._logger = application.getLogger('BarNavig');
+            this._logger = application.getLogger("BarNavig");
             this._dataProviders = [];
             this.transmissionEnabled = true;
             this.listenStatEventsEnabled = true;
@@ -59,10 +59,10 @@ const barnavig = {
             } catch (e) {
                 this._logger.debug(e);
             }
-            Services.obs.addObserver(linkClickListener, 'http-on-modify-request', false);
+            Services.obs.addObserver(linkClickListener, "http-on-modify-request", false);
         },
         finalize: function BarNavig_finalize(aDoCleanup) {
-            Services.obs.removeObserver(linkClickListener, 'http-on-modify-request');
+            Services.obs.removeObserver(linkClickListener, "http-on-modify-request");
             this.listenStatEventsEnabled = false;
             this.transmissionEnabled = false;
             if (aDoCleanup)
@@ -87,9 +87,9 @@ const barnavig = {
             if (!!val == this._listenStatEvents)
                 return;
             this._listenStatEvents = !!val;
-            if (this._application.core.CONFIG.APP.TYPE === 'vbff') {
+            if (this._application.core.CONFIG.APP.TYPE === "vbff") {
                 try {
-                    let barAppBarNavig = Cc['@yandex.ru/custombarcore;yasearch'].getService().wrappedJSObject.application.barnavig;
+                    let barAppBarNavig = Cc["@yandex.ru/custombarcore;yasearch"].getService().wrappedJSObject.application.barnavig;
                     if (!this._listenStatEvents)
                         barAppBarNavig.addDataProvider(this._barAppDataProvider);
                     else
@@ -99,9 +99,11 @@ const barnavig = {
             }
             if (this._listenStatEvents) {
                 downloadsStat.init();
+                tabStat.init();
                 windowMediatorListener.enable();
             } else {
                 downloadsStat.finalize();
+                tabStat.finalize();
                 windowMediatorListener.disable();
             }
         },
@@ -117,27 +119,27 @@ const barnavig = {
                 var [
                         params,
                         callbacks
-                    ] = barnavig._callDataProviders('onPageLoad', barAppParams);
+                    ] = barnavig._callDataProviders("onPageLoad", barAppParams);
                 if (barNavigParamsLength < Object.keys(barAppParams.barNavigParams).length) {
                     let emptyParams = barnavig._emptyBarNavigParamsObject;
                     [
-                        'ver',
-                        'clid',
-                        'yasoft',
-                        'brandID'
-                    ].forEach(function (paramName) barAppParams.barNavigParams['vb' + paramName] = emptyParams[paramName]);
+                        "ver",
+                        "clid",
+                        "yasoft",
+                        "brandID"
+                    ].forEach(function (paramName) barAppParams.barNavigParams["vb" + paramName] = emptyParams[paramName]);
                 }
                 if (!callbacks.length)
                     return;
                 return function BarNavig__barAppDataProvider_onPageLoadCallback(params) {
-                    callbacks.filter(function (callback) typeof callback == 'object' || typeof callback == 'function').forEach(function (callback) {
+                    callbacks.filter(function (callback) typeof callback == "object" || typeof callback == "function").forEach(function (callback) {
                         try {
-                            if (typeof callback == 'function')
+                            if (typeof callback == "function")
                                 callback(params);
                             else
                                 callback.onBarNavigResponse(params);
                         } catch (e) {
-                            barnavig._logger.error('Notify provider error "onBarNavigResponse": ' + e);
+                            barnavig._logger.error("Notify provider error \"onBarNavigResponse\": " + e);
                         }
                     });
                 };
@@ -167,7 +169,7 @@ const barnavig = {
                     r1 = this._application.core.Lib.fileutils.readTextFile(this._barnavigR1File);
                 } catch (e) {
                 }
-                this._barnavigR1String = r1 || '';
+                this._barnavigR1String = r1 || "";
             }
             return this._barnavigR1String;
         },
@@ -181,14 +183,14 @@ const barnavig = {
             this._barnavigR1String = null;
         },
         get alwaysSendUsageStat() {
-            return this._application.preferences.get('stat.usage.send', null);
+            return this._application.preferences.get("stat.usage.send", null);
         },
         _sendWaitingRequests: function BarNavig__sendWaitingRequests() {
-            var requests = this._application.preferences.get('stat.usage.requests', null);
+            var requests = this._application.preferences.get("stat.usage.requests", null);
             if (!requests)
                 return;
-            this._application.preferences.reset('stat.usage.requests');
-            if (this._application.preferences.get('stat.usage.requests', null))
+            this._application.preferences.reset("stat.usage.requests");
+            if (this._application.preferences.get("stat.usage.requests", null))
                 return;
             requests = JSON.parse(requests);
             (requests.forced || []).forEach(function (params) {
@@ -203,7 +205,7 @@ const barnavig = {
             if (this.__emptyBarNavigParamsObject === null) {
                 this.__emptyBarNavigParamsObject = {
                     ver: this._application.addonManager.addonVersion,
-                    clid: '',
+                    clid: "",
                     yasoft: this._application.core.CONFIG.APP.TYPE,
                     brandID: this._application.branding.productInfo.BrandID.toString(),
                     ui: this._guidString,
@@ -231,7 +233,7 @@ const barnavig = {
                     barNavigParams: this._makeBarNavigParams()
                 };
             if (aRequestParams) {
-                if (typeof aRequestParams == 'function') {
+                if (typeof aRequestParams == "function") {
                     aRequestParams(params);
                 } else {
                     for (let [
@@ -269,12 +271,12 @@ const barnavig = {
             if (referringURI && !referringURI.userPass)
                 params.referer = referringURI.spec;
             if (browser.contentTitle)
-                params.title = String(browser.contentTitle || '').substr(0, 1000);
+                params.title = String(browser.contentTitle || "").substr(0, 1000);
             var {
                     originalURL: originalURL,
                     responseStatus: responseStatus
                 } = (aWindowListenerData.docShellProps || {}).currentDocumentChannel || {};
-            if (originalURL && originalURL !== 'about:blank' && originalURL !== url)
+            if (originalURL && originalURL !== "about:blank" && originalURL !== url)
                 params.oldurl = originalURL;
             if (responseStatus)
                 params.httpstatus = parseInt(responseStatus, 10) || 0;
@@ -283,16 +285,16 @@ const barnavig = {
         get BAR_NAVIG_URL() {
             delete this.BAR_NAVIG_URL;
             this.BAR_NAVIG_URL = {
-                primary: 'bar-navig.yandex.ru',
-                backup: 'backup.bar-navig.com'
+                primary: "bar-navig.yandex.ru",
+                backup: "backup.bar-navig.com"
             };
             var statisticsDoc;
             try {
-                statisticsDoc = this._application.branding.brandPackage.getXMLDocument('/statistics/statistics.xml');
+                statisticsDoc = this._application.branding.brandPackage.getXMLDocument("/statistics/statistics.xml");
             } catch (e) {
-                this._logger.error('Can not get "statistics/statistics.xml" file from branding');
+                this._logger.error("Can not get \"statistics/statistics.xml\" file from branding");
             }
-            var domainElement = statisticsDoc && statisticsDoc.querySelector('Statistics > BarNavigDomain');
+            var domainElement = statisticsDoc && statisticsDoc.querySelector("Statistics > BarNavigDomain");
             if (domainElement) {
                 for (let prop in this.BAR_NAVIG_URL) {
                     let value = domainElement.getAttribute(prop);
@@ -304,11 +306,11 @@ const barnavig = {
         },
         get BARNAVIG_URL_PATH() {
             delete this.BARNAVIG_URL_PATH;
-            return this.BARNAVIG_URL_PATH = this.BAR_NAVIG_URL.primary + '/u';
+            return this.BARNAVIG_URL_PATH = this.BAR_NAVIG_URL.primary + "/u";
         },
         get BARNAVIG_BACKUP_URL_PATH() {
             delete this.BARNAVIG_BACKUP_URL_PATH;
-            return this.BARNAVIG_BACKUP_URL_PATH = this.BAR_NAVIG_URL.backup + '/u';
+            return this.BARNAVIG_BACKUP_URL_PATH = this.BAR_NAVIG_URL.backup + "/u";
         },
         _sendRequest: function BarNavig__sendRequest(aURL, aParams) {
             task.spawn(function () {
@@ -326,24 +328,24 @@ const barnavig = {
                     if (!ip)
                         url = url.replace(this.BARNAVIG_URL_PATH, this.BARNAVIG_BACKUP_URL_PATH);
                 }
-                url = 'https://' + url;
-                var request = Cc['@mozilla.org/xmlextras/xmlhttprequest;1'].createInstance(Ci.nsIXMLHttpRequest);
+                url = "https://" + url;
+                var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
                 request.mozBackgroundRequest = true;
-                request.open('POST', url, true);
-                request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-                request.setRequestHeader('Connection', 'close');
+                request.open("POST", url, true);
+                request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+                request.setRequestHeader("Connection", "close");
                 var target = request.QueryInterface(Ci.nsIDOMEventTarget);
-                target.addEventListener('load', callbackFunc, false);
-                target.addEventListener('error', callbackFunc, false);
+                target.addEventListener("load", callbackFunc, false);
+                target.addEventListener("error", callbackFunc, false);
                 var params = [];
                 for (let [
                             key,
                             value
                         ] in Iterator(aParams.barNavigParams)) {
                     if (value !== null)
-                        params.push(key + '=' + encodeURIComponent(String(value)));
+                        params.push(key + "=" + encodeURIComponent(String(value)));
                 }
-                request.send(params.join('&'));
+                request.send(params.join("&"));
             }.bind(this));
         },
         _getBrowserURI: function BarNavig__getBrowserURI(aBrowser) {
@@ -360,9 +362,9 @@ const barnavig = {
             }
             var url = null;
             try {
-                url = uri.spec || '';
-                if (url == 'about:blank')
-                    url = '';
+                url = uri.spec || "";
+                if (url == "about:blank")
+                    url = "";
             } catch (e) {
             }
             return [
@@ -387,7 +389,7 @@ const barnavig = {
                 params.dls = downloadData.size;
             }
             pageStat.appendYammData(aParams);
-            params.target = 'c';
+            params.target = "c";
             var browser = aParams.browser;
             if (browser) {
                 let docShellProps = aParams.windowListenerData.docShellProps;
@@ -395,9 +397,9 @@ const barnavig = {
                     try {
                         let sessionHistory = browser.webNavigation.sessionHistory;
                         if (sessionHistory.count == 1) {
-                            params.target = 't';
+                            params.target = "t";
                             if (browser.getTabBrowser().browsers.length == 1)
-                                params.target = 'w';
+                                params.target = "w";
                         }
                     } catch (e) {
                     }
@@ -407,7 +409,7 @@ const barnavig = {
                 let browserUsage = app.browserUsage.readUsageStat();
                 let (i = 0, len = browserUsage.length) {
                     for (; i < len; i++)
-                        params['k' + (i + 1)] = browserUsage[i];
+                        params["k" + (i + 1)] = browserUsage[i];
                 }
             }
             linkClickListener.appendLinkData(aParams);
@@ -416,6 +418,7 @@ const barnavig = {
                     pageStat.appendTimesData(aParams);
                     yield pageStat.appendCheckSumData(aParams);
                     yield searchPersonalization.appendBarNavigParam(aParams);
+                    tabStat.appendTabsData(aParams);
                 }
                 params.hip = (yield DNSInfo.getHIPString(aParams.url)) || null;
                 defer.resolve();
@@ -446,7 +449,7 @@ const barnavig = {
             var [
                     params,
                     callbacks
-                ] = this._callDataProviders('onWindowLocationChange', aWindowListenerData);
+                ] = this._callDataProviders("onWindowLocationChange", aWindowListenerData);
         },
         onPageLoad: function BarNavig_onPageLoad(aWindowListenerData) {
             if (isWindowPrivate(aWindowListenerData.tab.contentWindow))
@@ -456,7 +459,7 @@ const barnavig = {
             var [
                     params,
                     callbacks
-                ] = this._callDataProviders('onPageLoad', aWindowListenerData);
+                ] = this._callDataProviders("onPageLoad", aWindowListenerData);
             if (!callbacks.length) {
                 if (this.alwaysSendUsageStat !== true)
                     return;
@@ -468,19 +471,19 @@ const barnavig = {
                     return;
             }
             this._appendOtherStatParams(params, true).then(function () {
-                params._callbacks = callbacks.filter(function (c) typeof c == 'object' || typeof c == 'function');
+                params._callbacks = callbacks.filter(function (c) typeof c == "object" || typeof c == "function");
                 this._sendRequest(this.BARNAVIG_URL_PATH, params);
             }.bind(this));
         },
         _callDataProviders: function BarNavig__callDataProviders(eventType, windowListenerData) {
-            var params = typeof windowListenerData === 'object' && 'windowListenerData' in windowListenerData ? windowListenerData : this._makeParamsForNotification(windowListenerData);
+            var params = typeof windowListenerData === "object" && "windowListenerData" in windowListenerData ? windowListenerData : this._makeParamsForNotification(windowListenerData);
             var callbacks = [];
             this._dataProviders.forEach(function BarNavig__callDataProviders_NotificatorFunc(provider) {
                 try {
                     if (this._dataProviders.indexOf(provider) != -1)
                         callbacks.push(provider[eventType](params));
                 } catch (e) {
-                    this._logger.error('Notify provider error "' + eventType + '": ' + e);
+                    this._logger.error("Notify provider error \"" + eventType + "\": " + e);
                 }
             }, this);
             callbacks = callbacks.filter(function (c) !!c);
@@ -500,15 +503,15 @@ const barnavig = {
                         } catch (ex) {
                         }
                         if (status === 0) {
-                            let extraParams = '';
+                            let extraParams = "";
                             if (aIP) {
-                                let nipString = '';
+                                let nipString = "";
                                 let parts = aIP && aIP.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
                                 if (parts) {
                                     let nip = parts[1] * 16777216 + parts[2] * 65536 + parts[3] * 256 + parts[4] * 1;
-                                    nipString = '&nip=' + nip;
+                                    nipString = "&nip=" + nip;
                                 }
-                                extraParams = '?pstatus=-1' + nipString;
+                                extraParams = "?pstatus=-1" + nipString;
                             }
                             this._sendRequest(this.BARNAVIG_BACKUP_URL_PATH + extraParams, aParams);
                             return;
@@ -525,19 +528,19 @@ const barnavig = {
             } catch (e) {
             }
             if (aParams.responseXML) {
-                let r1 = aParams.responseXML.querySelector('urlinfo > r1');
+                let r1 = aParams.responseXML.querySelector("urlinfo > r1");
                 r1 = r1 && r1.textContent;
                 if (r1)
                     this.barnavigR1String = r1;
             }
-            aParams._callbacks.filter(function (callback) typeof callback == 'object' || typeof callback == 'function').forEach(function (callback) {
+            aParams._callbacks.filter(function (callback) typeof callback == "object" || typeof callback == "function").forEach(function (callback) {
                 try {
-                    if (typeof callback == 'function')
+                    if (typeof callback == "function")
                         callback(aParams);
                     else
                         callback.onBarNavigResponse(aParams);
                 } catch (e) {
-                    this._logger.error('Notify provider error "onBarNavigResponse": ' + e);
+                    this._logger.error("Notify provider error \"onBarNavigResponse\": " + e);
                 }
             }, this);
         },
@@ -546,7 +549,7 @@ const barnavig = {
         },
         get _barnavigR1File() {
             var r1File = this._application.directories.userDir;
-            r1File.append('r1-' + this._application.core.CONFIG.APP.TYPE);
+            r1File.append("r1-" + this._application.core.CONFIG.APP.TYPE);
             return r1File;
         },
         _dataProviders: [],
@@ -566,26 +569,26 @@ const windowMediatorListener = {
             Services.ww.unregisterNotification(this);
         },
         observe: function WML_observe(aSubject, aTopic, aData) {
-            aSubject.addEventListener('load', this, false);
+            aSubject.addEventListener("load", this, false);
         },
         handleEvent: function WML_handleEvent(aEvent) {
             var win = aEvent.target.defaultView;
             switch (aEvent.type) {
-            case 'load':
-                win.removeEventListener('load', this, false);
+            case "load":
+                win.removeEventListener("load", this, false);
                 let winListener = getWindowListenerForWindow(win);
                 if (winListener) {
-                    win.addEventListener('unload', function WML_win_onUnload() {
-                        win.removeEventListener('unload', WML_win_onUnload, false);
-                        win.removeEventListener('click', linkClickListener, true);
-                        winListener.removeListener('PageStateStart', linkClickListener);
-                        winListener.removeListener('WindowLocationChange', windowEventsListener);
-                        winListener.removeListener('PageLoad', windowEventsListener);
+                    win.addEventListener("unload", function WML_win_onUnload() {
+                        win.removeEventListener("unload", WML_win_onUnload, false);
+                        win.removeEventListener("click", linkClickListener, true);
+                        winListener.removeListener("PageStateStart", linkClickListener);
+                        winListener.removeListener("WindowLocationChange", windowEventsListener);
+                        winListener.removeListener("PageLoad", windowEventsListener);
                     }, false);
-                    winListener.addListener('WindowLocationChange', windowEventsListener);
-                    winListener.addListener('PageLoad', windowEventsListener);
-                    winListener.addListener('PageStateStart', linkClickListener);
-                    win.addEventListener('click', linkClickListener, true);
+                    winListener.addListener("WindowLocationChange", windowEventsListener);
+                    winListener.addListener("PageLoad", windowEventsListener);
+                    winListener.addListener("PageStateStart", linkClickListener);
+                    win.addEventListener("click", linkClickListener, true);
                 }
                 break;
             }
@@ -602,18 +605,18 @@ const linkClickListener = {
             var winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
             if (!winListener)
                 return;
-            var tabData = winListener.getTabData(tab, 'linkClick');
+            var tabData = winListener.getTabData(tab, "linkClick");
             if (!tabData)
                 return;
             if (tabData.linkText)
                 barNavigParams.lt = tabData.linkText;
-            winListener.removeTabData(tab, 'linkClick');
+            winListener.removeTabData(tab, "linkClick");
         },
         handleEvent: function linkClickListener_handleEvent(event) {
             if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false)
                 return;
             switch (event.type) {
-            case 'click':
+            case "click":
                 this._lastActionText = this._getLinkText(event);
                 this._lastActionTimestamp = Date.now();
                 break;
@@ -621,10 +624,10 @@ const linkClickListener = {
         },
         observe: function linkClickListener_observe(subject, topic, data) {
             switch (topic) {
-            case 'PageStateStart':
+            case "PageStateStart":
                 this._onPageStateStart(data);
                 break;
-            case 'http-on-modify-request':
+            case "http-on-modify-request":
                 this._onModifyRequest(subject);
                 break;
             }
@@ -636,12 +639,12 @@ const linkClickListener = {
         _getLinkText: function linkClickListener__getLinkText(event) {
             var protocol = event.view.location.protocol;
             var target = event.originalTarget;
-            if (protocol === 'chrome:') {
-                return target.localName === 'menuitem' && target.parentNode && target.parentNode.id === 'contentAreaContextMenu' && this._lastActionText || null;
+            if (protocol === "chrome:") {
+                return target.localName === "menuitem" && target.parentNode && target.parentNode.id === "contentAreaContextMenu" && this._lastActionText || null;
             }
-            if (protocol !== 'http:')
+            if (protocol !== "http:")
                 return null;
-            while (target && target.localName !== 'a')
+            while (target && target.localName !== "a")
                 target = target.parentNode;
             return target && target.textContent.trim().substr(0, 500) || null;
         },
@@ -656,7 +659,7 @@ const linkClickListener = {
             var winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
             if (!winListener)
                 return;
-            var tabData = winListener.getTabData(tab, 'linkClick');
+            var tabData = winListener.getTabData(tab, "linkClick");
             if (!tabData)
                 return;
             var requestName;
@@ -665,7 +668,7 @@ const linkClickListener = {
             } catch (e) {
             }
             if (!requestName || tabData.lastURL !== requestName)
-                winListener.removeTabData(tab, 'linkClick');
+                winListener.removeTabData(tab, "linkClick");
         },
         _onModifyRequest: function linkClickListener__onModifyRequest(channel) {
             if (!this._lastActionText)
@@ -712,7 +715,7 @@ const linkClickListener = {
                 let tab = chromeWindow.getBrowser().getBrowserForDocument(window.document);
                 if (!tab)
                     return null;
-                return getTabDataForTab(tab, 'linkClick');
+                return getTabDataForTab(tab, "linkClick");
             } catch (e) {
             }
             return null;
@@ -723,10 +726,10 @@ const windowEventsListener = {
             if (!barnavig.listenStatEventsEnabled)
                 return;
             switch (aTopic) {
-            case 'WindowLocationChange':
+            case "WindowLocationChange":
                 barnavig.onWindowLocationChange(aData);
                 break;
-            case 'PageLoad':
+            case "PageLoad":
                 barnavig.onPageLoad(aData);
                 break;
             }
@@ -736,7 +739,7 @@ const DNSInfo = {
         getHIPString: function DNSInfo_getHIPString(strURL) {
             var defer = promise.defer();
             this.getIPsForURL(strURL).then(function (ips) {
-                var strHIP = '';
+                var strHIP = "";
                 if (ips) {
                     ips.some(function makeHIP4(ip) {
                         var parts = ip ? ip.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/) : null;
@@ -772,7 +775,7 @@ const DNSInfo = {
             try {
                 let url = strURL;
                 if (!/^https?:\/\//.test(strURL))
-                    url = 'http://' + url;
+                    url = "http://" + url;
                 host = Services.io.newURI(url, null, null).host;
             } catch (e) {
             }
@@ -822,11 +825,11 @@ const DNSInfo = {
         },
         get _dnsService() {
             delete this._dnsService;
-            return this._dnsService = Cc['@mozilla.org/network/dns-service;1'].getService(Ci.nsIDNSService);
+            return this._dnsService = Cc["@mozilla.org/network/dns-service;1"].getService(Ci.nsIDNSService);
         },
         get _currentThread() {
             delete this._currentThread;
-            this.__defineGetter__('_currentThread', function _currentThread() Services.tm.currentThread);
+            this.__defineGetter__("_currentThread", function _currentThread() Services.tm.currentThread);
             return this._currentThread;
         },
         get DNSListener() {
@@ -855,6 +858,131 @@ const DNSInfo = {
             return this.DNSListener = DNSListener;
         }
     };
+const tabStat = {
+        _data: {
+            date: null,
+            entries: []
+        },
+        _ordered: [],
+        _file: null,
+        get statFile() {
+            if (!this._file) {
+                let mmmStatFile = barnavig.application.directories.appRootDir;
+                mmmStatFile.append("mmm.json");
+                this._file = mmmStatFile;
+            }
+            return this._file;
+        },
+        init: function tabStat_init() {
+            var data;
+            try {
+                data = fileutils.jsonFromFile(this.statFile);
+            } catch (e) {
+            }
+            if (data && typeof data == "object" && Array.isArray(data.entries)) {
+                data.entries = data.entries.filter(function (entry) typeof entry.count == "number");
+                this._data = data;
+            }
+            this._ordered = Array.slice(this._data.entries).sort(function (a, b) a.count - b.count);
+        },
+        finalize: function tabStat_finalize() {
+            try {
+                fileutils.jsonToFile(this._data, this.statFile);
+            } catch (e) {
+            }
+        },
+        _newIntervalStarted: function tabStat__newIntervalStarted() {
+            if (!this._data.date) {
+                return false;
+            }
+            var timeShift = 5 * 60 * 60 * 1000;
+            var today = new Date(Date.now() - timeShift);
+            var intervalDate = new Date(this._data.date - timeShift);
+            if (today.getDate() == intervalDate.getDate()) {
+                return false;
+            }
+            return true;
+        },
+        countTabs: function tabStat_countTabs() {
+            var domainsCounter = Object.create(null);
+            var entries = this._data.entries;
+            misc.getBrowserWindows().forEach(function (chromeWindow) {
+                if (isWindowPrivate(chromeWindow)) {
+                    return;
+                }
+                var gBrowser = chromeWindow.gBrowser;
+                let (i = 0) {
+                    for (; i < gBrowser.browsers.length; i++) {
+                        let browser = gBrowser.browsers[i];
+                        let uri = browser.currentURI;
+                        let domain;
+                        try {
+                            domain = uri.host.replace(/^www\./i, "");
+                        } catch (e) {
+                            continue;
+                        }
+                        if (!domain) {
+                            continue;
+                        }
+                        if (!domainsCounter[domain]) {
+                            domainsCounter[domain] = 0;
+                        }
+                        domainsCounter[domain]++;
+                    }
+                }
+            });
+            var desc = "";
+            var tabsNumber = 0;
+            var ungrouped = 0;
+            for (let domain in domainsCounter) {
+                let quantity = domainsCounter[domain];
+                if (quantity == 1) {
+                    ungrouped++;
+                    tabsNumber++;
+                    continue;
+                }
+                desc += quantity + ",";
+                tabsNumber += quantity;
+            }
+            desc = ungrouped + ";" + desc.slice(0, -1);
+            var entry = {
+                    desc: desc,
+                    count: tabsNumber
+                };
+            entries.push(entry);
+            var orderedIndexInsert = entries.length;
+            this._ordered.some(function (aEntry, aIndex) {
+                if (aEntry.count >= entry.count) {
+                    orderedIndexInsert = aIndex;
+                    return true;
+                }
+            });
+            this._ordered.splice(orderedIndexInsert, 0, entry);
+        },
+        appendTabsData: function tabStat_appendTabsData(aParams) {
+            if (this._newIntervalStarted()) {
+                let orderedLength = this._ordered.length;
+                if (orderedLength) {
+                    let min = this._ordered[0].count;
+                    let maxEntry = this._ordered[orderedLength - 1];
+                    let max = maxEntry.count;
+                    let med = this._ordered[Math.ceil(orderedLength / 2) - 1].count;
+                    let mmm = min + ";" + max + ";" + med;
+                    let mxstr = maxEntry.desc;
+                    let params = aParams.barNavigParams;
+                    params.mmm = mmm;
+                    params.mxstr = mxstr;
+                }
+                this._data.date = null;
+                this._data.entries = [];
+                this._ordered = [];
+            }
+            this.countTabs();
+            if (!this._data.date) {
+                this._data.date = Date.now();
+            }
+        }
+    };
 const pageStat = {
         appendTimesData: function pageStat_appendTimesData(aParams) {
             if (!aParams.browser)
@@ -864,7 +992,7 @@ const pageStat = {
                 return;
             if (!this._checkConditions(contentWindow.location))
                 return;
-            var winPerformance = 'performance' in contentWindow && contentWindow.performance;
+            var winPerformance = "performance" in contentWindow && contentWindow.performance;
             var timing = winPerformance && winPerformance.timing;
             if (!timing)
                 return;
@@ -879,13 +1007,13 @@ const pageStat = {
                     timing.domContentLoadedEventEnd - timing.responseStart,
                     timing.loadEventEnd - timing.domContentLoadedEventEnd
                 ];
-            if (times.some(function (v) !(typeof v == 'number' && v >= 0)))
+            if (times.some(function (v) !(typeof v == "number" && v >= 0)))
                 return;
             if (times[0] == 0 || times[1] == 0)
                 return;
             var params = aParams.barNavigParams;
             params.tv = 5;
-            params.t = times.map(function (t) parseInt(t / 10, 10)).join('-');
+            params.t = times.map(function (t) parseInt(t / 10, 10)).join("-");
         },
         appendYammData: function pageStat_appendYammData(aParams) {
             if (!aParams.browser)
@@ -895,12 +1023,12 @@ const pageStat = {
                 return;
             if (!this._isYandexHost(contentDocument.location))
                 return;
-            var metaNodes = contentDocument.getElementsByTagName('meta');
+            var metaNodes = contentDocument.getElementsByTagName("meta");
             let (i = 0, len = metaNodes.length) {
                 for (; i < len; i++) {
-                    let metaName = (metaNodes[i].name || '').toLowerCase();
-                    if (metaName == 'yamm' && metaNodes[i].content) {
-                        aParams.barNavigParams.yamm = ('' + metaNodes[i].content).substr(0, 10);
+                    let metaName = (metaNodes[i].name || "").toLowerCase();
+                    if (metaName == "yamm" && metaNodes[i].content) {
+                        aParams.barNavigParams.yamm = ("" + metaNodes[i].content).substr(0, 10);
                         break;
                     }
                 }
@@ -908,12 +1036,12 @@ const pageStat = {
         },
         appendCheckSumData: function pageStat_appendCheckSumData(aParams) {
             var defer = promise.defer();
-            var workerTaskType = 'calculateCheckSum';
+            var workerTaskType = "calculateCheckSum";
             var workerTaskId = [
                     workerTaskType,
                     Date.now(),
                     Math.random() * 10000
-                ].join(':');
+                ].join(":");
             var listener = function listener(event) {
                 var {
                         type: type,
@@ -924,14 +1052,14 @@ const pageStat = {
                     return;
                 if (taskId !== workerTaskId)
                     return;
-                mozWorker.removeEventListener('message', listener, false);
+                mozWorker.removeEventListener("message", listener, false);
                 var apiCrypto = barnavig.application.core.Lib.misc.CryptoHash;
-                var hash = data && pageStat._fnv1a_32(apiCrypto.getBinaryFromString(data, 'MD5'));
+                var hash = data && pageStat._fnv1a_32(apiCrypto.getBinaryFromString(data, "MD5"));
                 if (hash)
                     aParams.barNavigParams.psu = hash;
                 defer.resolve();
             };
-            mozWorker.addEventListener('message', listener, false);
+            mozWorker.addEventListener("message", listener, false);
             var contentDocument = aParams.browser.contentDocument;
             var documentInnerHTML;
             try {
@@ -956,12 +1084,12 @@ const pageStat = {
             return hash >>> 0;
         },
         _hostQuickRe: /(^|\.)((yandex|ya|moikrug)\.(com(\.tr)?|ru|ua|by|kz)|(google)\.(com|ru)|(mail|rambler)\.ru)$/i,
-        _hostYaRe: new RegExp('(^|\\.)(yandex\\.(?:com(\\.tr)?|ru|ua|by|kz)|(ya|moikrug)\\.ru)$', 'i'),
-        _hostOnlyRe: new RegExp('(^|www\\.)(yandex|ya|moikrug|google|mail|rambler)\\.', 'i'),
-        _hostReS: new RegExp('(^|(nova|www|go)\\.)(yandex|google|mail|rambler)\\.(?:com(\\.tr)?|ru|ua|by|kz)$', 'i'),
-        _pathReS: new RegExp('^((yand)?search|srch)\\?', 'i'),
-        _hostReM: new RegExp('^((web)?mail\\.yandex\\.(com(\\.tr)?|ru|ua|by|kz)|(win|e)\\.mail\\.ru|mail\\.rambler\\.ru)$', 'i'),
-        _urlReM: new RegExp('^https?://([^/]+/(cgi\\-bin/sendmsg\\?)?compose|webmail\\.yandex\\.(com(\\.tr)?|ru|ua|by|kz)/messages|mail\\.yandex\\.(com(\\.tr)?|ru|ua|by|kz)/((classic|modern|neo)/)?(messages|compose)|(win|e)\\.mail\\.ru/cgi\\-bin/(sentmsg\\?compose|msglist))|mail\\.rambler\\.ru/m/(folder/INBOX|compose)|mail\\.rambler\\.ru/mail/(startpage\\?|mail.cgi\\?(r|mode=(startpage|compose|mailbox;mbox=INBOX)))', 'i'),
+        _hostYaRe: new RegExp("(^|\\.)(yandex\\.(?:com(\\.tr)?|ru|ua|by|kz)|(ya|moikrug)\\.ru)$", "i"),
+        _hostOnlyRe: new RegExp("(^|www\\.)(yandex|ya|moikrug|google|mail|rambler)\\.", "i"),
+        _hostReS: new RegExp("(^|(nova|www|go)\\.)(yandex|google|mail|rambler)\\.(?:com(\\.tr)?|ru|ua|by|kz)$", "i"),
+        _pathReS: new RegExp("^((yand)?search|srch)\\?", "i"),
+        _hostReM: new RegExp("^((web)?mail\\.yandex\\.(com(\\.tr)?|ru|ua|by|kz)|(win|e)\\.mail\\.ru|mail\\.rambler\\.ru)$", "i"),
+        _urlReM: new RegExp("^https?://([^/]+/(cgi\\-bin/sendmsg\\?)?compose|webmail\\.yandex\\.(com(\\.tr)?|ru|ua|by|kz)/messages|mail\\.yandex\\.(com(\\.tr)?|ru|ua|by|kz)/((classic|modern|neo)/)?(messages|compose)|(win|e)\\.mail\\.ru/cgi\\-bin/(sentmsg\\?compose|msglist))|mail\\.rambler\\.ru/m/(folder/INBOX|compose)|mail\\.rambler\\.ru/mail/(startpage\\?|mail.cgi\\?(r|mode=(startpage|compose|mailbox;mbox=INBOX)))", "i"),
         _checkConditions: function pageStat__checkConditions(aURL) {
             var url = String(aURL);
             if (!url || !url.match(/^https?:\/\/([^\/]+)\/?(.*)/))
@@ -975,19 +1103,19 @@ const pageStat = {
             if (this._hostReM.test(host) && url.match(this._urlReM))
                 return true;
             if (this._pathReS.test(path) && host.match(this._hostReS)) {
-                let q = 'text';
+                let q = "text";
                 switch (RegExp.$3) {
-                case 'google':
-                    q = '(as_)?q';
+                case "google":
+                    q = "(as_)?q";
                     break;
-                case 'mail':
-                    q = 'q';
+                case "mail":
+                    q = "q";
                     break;
-                case 'rambler':
-                    q = '(query|words)';
+                case "rambler":
+                    q = "(query|words)";
                     break;
                 }
-                let re = new RegExp('[?&](?:' + q + ')=([^#&?]*)');
+                let re = new RegExp("[?&](?:" + q + ")=([^#&?]*)");
                 if (re.test(path))
                     return true;
             }
@@ -1004,21 +1132,21 @@ const pageStat = {
     };
 const downloadsStat = {
         init: function DlStat_init() {
-            Services.obs.addObserver(this, 'final-ui-startup', true);
+            Services.obs.addObserver(this, "final-ui-startup", true);
         },
         finalize: function DlStat_finalize() {
             try {
-                let {Downloads: Downloads} = Cu.import('resource://gre/modules/Downloads.jsm');
-                if (!('getList' in Downloads))
-                    throw new Error('Old \'Downloads\' module');
+                let {Downloads: Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
+                if (!("getList" in Downloads))
+                    throw new Error("Old 'Downloads' module");
                 let that = this;
                 Downloads.getList(Downloads.PUBLIC).then(function (list) list.removeView(that));
             } catch (ex1) {
                 try {
-                    const DownloadManager = Cc['@mozilla.org/download-manager;1'].getService(Ci.nsIDownloadManager);
+                    const DownloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
                     DownloadManager.removeListener(this);
                 } catch (ex2) {
-                    barnavig._logger.error(ex1 + '\n' + ex2);
+                    barnavig._logger.error(ex1 + "\n" + ex2);
                 }
             }
             this._activeDownloads = Object.create(null);
@@ -1033,45 +1161,45 @@ const downloadsStat = {
         EXT_TYPES: {
             __proto__: null,
             1: {
-                extensions: ' bat bin com cmd deb dll dmg exe hqx img iso java msi msm msp scr ',
-                mimes: ' application/bat                           application/x-bat                           application/x-apple-diskimage                           application/x-msdos-program                           application/x-msdownload                           application/x-msi                           application/mac-binhex40                           application/macbinhex40                           application/mac-binary                           application/macbinary                           application/x-binary                           application/x-macbinary                           application/java                           application/java-byte-code                           application/x-java-class                         '
+                extensions: " bat bin com cmd deb dll dmg exe hqx img iso java msi msm msp scr ",
+                mimes: " application/bat                           application/x-bat                           application/x-apple-diskimage                           application/x-msdos-program                           application/x-msdownload                           application/x-msi                           application/mac-binhex40                           application/macbinhex40                           application/mac-binary                           application/macbinary                           application/x-binary                           application/x-macbinary                           application/java                           application/java-byte-code                           application/x-java-class                         "
             },
             2: {
-                extensions: ' 7z boz bz bz2 gtar gz lha lhz rar tar tar.bz2 tar.gz tbz tgz x zip ',
-                mimes: ' application/gnutar                           application/x-gzip                           application/x-tgz                           application/x-tar                           application/zip                           application/x-bzip                           application/x-bzip2                           application/x-bzip-compressed-tar                           application/x-7z-compressed                           application/x-rar-compressed                           application/rar                           application/x-compress                           application/x-compressed                           application/x-zip-compressed                           application/x-gtar                           multipart/x-zip                         '
+                extensions: " 7z boz bz bz2 gtar gz lha lhz rar tar tar.bz2 tar.gz tbz tgz x zip ",
+                mimes: " application/gnutar                           application/x-gzip                           application/x-tgz                           application/x-tar                           application/zip                           application/x-bzip                           application/x-bzip2                           application/x-bzip-compressed-tar                           application/x-7z-compressed                           application/x-rar-compressed                           application/rar                           application/x-compress                           application/x-compressed                           application/x-zip-compressed                           application/x-gtar                           multipart/x-zip                         "
             },
             3: {
-                extensions: ' 3gp 3gpp afl asf asf asr asx avi avs flv lsf lsx m1v m2v mng mov movie                           mp2 mp4 mpa mpe mpeg mpg mpv2 qt qtc swf viv vivo wmv ',
-                mimes: ' application/x-mplayer2                           application/x-shockwave-flash                         '
+                extensions: " 3gp 3gpp afl asf asf asr asx avi avs flv lsf lsx m1v m2v mng mov movie                           mp2 mp4 mpa mpe mpeg mpg mpv2 qt qtc swf viv vivo wmv ",
+                mimes: " application/x-mplayer2                           application/x-shockwave-flash                         "
             },
             4: {
-                extensions: ' aif aifc aiff au cda flac kar m2a m3u m4a mid midi mp3 ogg ra ram rmi snd voc wav ',
-                mimes: ' application/ogg                           application/x-cda                           application/x-midi                         '
+                extensions: " aif aifc aiff au cda flac kar m2a m3u m4a mid midi mp3 ogg ra ram rmi snd voc wav ",
+                mimes: " application/ogg                           application/x-cda                           application/x-midi                         "
             },
             5: {
-                extensions: ' art bm bmp cmx cod gif ico ico ief jfif jng jpe jpeg jpg pbm pct pcx pgm                           pic pict png pnm ppm qif qti qtif ras rgb svg tif tiff wbmp xbm xpm xwd ',
-                mimes: ''
+                extensions: " art bm bmp cmx cod gif ico ico ief jfif jng jpe jpeg jpg pbm pct pcx pgm                           pic pict png pnm ppm qif qti qtif ras rgb svg tif tiff wbmp xbm xpm xwd ",
+                mimes: ""
             },
             6: {
-                extensions: ' ai djv djvu doc docx dot eps epub fb2 latex ltx odt odg odp ods odc odi odf odm                           pdf pps ppt pptx ps rtf rtx txt word xl xla xlb xlc xld xlk xll xlm xls                           xlsx xlt xlv xlw ',
-                mimes: ' application/pdf                           application/msword                           application/rtf                           application/postscript                           application/x-rtf                           application/x-latex                           text/richtext                           application/excel                           application/x-excel                           application/x-msexcel                           application/vnd.ms-excel                           application/vnd.ms-powerpoint                           application/vnd.openxmlformats-officedocument.presentationml.presentation                           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet                           application/vnd.openxmlformats-officedocument.wordprocessingml.document                           application/vnd.oasis.opendocument.text                           application/vnd.oasis.opendocument.graphics                           application/vnd.oasis.opendocument.presentation                           application/vnd.oasis.opendocument.spreadsheet                           application/vnd.oasis.opendocument.chart                           application/vnd.oasis.opendocument.image                           application/vnd.oasis.opendocument.formula                           application/vnd.oasis.opendocument.text-master                           image/vnd.djvu                         '
+                extensions: " ai djv djvu doc docx dot eps epub fb2 latex ltx odt odg odp ods odc odi odf odm                           pdf pps ppt pptx ps rtf rtx txt word xl xla xlb xlc xld xlk xll xlm xls                           xlsx xlt xlv xlw ",
+                mimes: " application/pdf                           application/msword                           application/rtf                           application/postscript                           application/x-rtf                           application/x-latex                           text/richtext                           application/excel                           application/x-excel                           application/x-msexcel                           application/vnd.ms-excel                           application/vnd.ms-powerpoint                           application/vnd.openxmlformats-officedocument.presentationml.presentation                           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet                           application/vnd.openxmlformats-officedocument.wordprocessingml.document                           application/vnd.oasis.opendocument.text                           application/vnd.oasis.opendocument.graphics                           application/vnd.oasis.opendocument.presentation                           application/vnd.oasis.opendocument.spreadsheet                           application/vnd.oasis.opendocument.chart                           application/vnd.oasis.opendocument.image                           application/vnd.oasis.opendocument.formula                           application/vnd.oasis.opendocument.text-master                           image/vnd.djvu                         "
             },
             7: {
-                extensions: ' torrent ',
-                mimes: ' application/x-bittorrent '
+                extensions: " torrent ",
+                mimes: " application/x-bittorrent "
             }
         },
         _getIdForDownload: function DlStat__getIdForDownload(aDownload) {
             return [
                 aDownload.source.spec,
                 aDownload.target.spec
-            ].join('|');
+            ].join("|");
         },
         __httpCacheSession: null,
         get httpCacheSession() {
             if (!this.__httpCacheSession) {
-                const CACHE_SERVICE = Cc['@mozilla.org/network/cache-service;1'].getService(Ci.nsICacheService);
-                this.__httpCacheSession = CACHE_SERVICE.createSession('HTTP', Ci.nsICache.STORE_ANYWHERE, true);
+                const CACHE_SERVICE = Cc["@mozilla.org/network/cache-service;1"].getService(Ci.nsICacheService);
+                this.__httpCacheSession = CACHE_SERVICE.createSession("HTTP", Ci.nsICache.STORE_ANYWHERE, true);
                 this.__httpCacheSession.doomEntriesIfExpired = false;
             }
             return this.__httpCacheSession;
@@ -1088,7 +1216,7 @@ const downloadsStat = {
         },
         _getMIMETypeFromCacheEntry: function DlStat__getMIMEFromCacheEntry(aURL) {
             var defer = promise.defer();
-            var cacheKey = aURL.replace(/#.*$/, '');
+            var cacheKey = aURL.replace(/#.*$/, "");
             try {
                 cacheKey = barnavig.application.core.Lib.misc.tryCreateFixupURI(cacheKey).asciiSpec;
             } catch (e) {
@@ -1099,16 +1227,16 @@ const downloadsStat = {
                     onCacheEntryAvailable: function cacheHelper_listener(descriptor, accessGranted, status) {
                         var type = null;
                         if (status === Cr.NS_OK && descriptor) {
-                            let response = '';
+                            let response = "";
                             try {
-                                response = descriptor.getMetaDataElement('response-head');
+                                response = descriptor.getMetaDataElement("response-head");
                             } catch (e) {
                             }
                             if (redirects++ < 10) {
                                 let location = /^Location:\s*(.+)$/im.exec(response);
                                 location = location && location[1] || null;
                                 if (location) {
-                                    cacheSession.asyncOpenCacheEntry(location.replace(/#.*$/, ''), Ci.nsICache.ACCESS_READ, listener, true);
+                                    cacheSession.asyncOpenCacheEntry(location.replace(/#.*$/, ""), Ci.nsICache.ACCESS_READ, listener, true);
                                     return;
                                 }
                             }
@@ -1124,7 +1252,7 @@ const downloadsStat = {
             return defer.promise;
         },
         _getExtensionTypeForMIME: function DlStat__getExtensionTypeForMIME(aMIMEType) {
-            var mime = (' ' + aMIMEType + ' ').toLowerCase();
+            var mime = (" " + aMIMEType + " ").toLowerCase();
             for (let [
                         type,
                         data
@@ -1135,7 +1263,7 @@ const downloadsStat = {
             return null;
         },
         _getExtensionTypeForExtension: function DlStat__getExtensionTypeForExtension(aExtension) {
-            var extension = (' ' + aExtension + ' ').toLowerCase();
+            var extension = (" " + aExtension + " ").toLowerCase();
             for (let [
                         type,
                         data
@@ -1156,28 +1284,28 @@ const downloadsStat = {
             var prePath = downloadURI.prePath;
             var userName = downloadURI.userName;
             if (userName)
-                prePath = prePath.split(userName + '@').join('');
+                prePath = prePath.split(userName + "@").join("");
             var referrerURL = downloadData.referrerURL;
             var collect = function collect(mimeType) {
                     var extensionType;
                     if (mimeType) {
                         extensionType = this._getExtensionTypeForMIME(mimeType);
                         if (!extensionType) {
-                            switch ((/^(audio|image|video)\//.exec(mimeType || '') || '')[1]) {
-                            case 'video':
+                            switch ((/^(audio|image|video)\//.exec(mimeType || "") || "")[1]) {
+                            case "video":
                                 extensionType = 3;
                                 break;
-                            case 'audio':
+                            case "audio":
                                 extensionType = 4;
                                 break;
-                            case 'image':
+                            case "image":
                                 extensionType = 5;
                                 break;
                             }
                         }
                     }
                     if (!extensionType) {
-                        let extension = (/\.([^.]+)$/.exec(aDownload.target.spec) || '')[1];
+                        let extension = (/\.([^.]+)$/.exec(aDownload.target.spec) || "")[1];
                         extensionType = extension ? this._getExtensionTypeForExtension(extension) || 8 : 0;
                     }
                     this._downloadsData.push({
@@ -1201,20 +1329,20 @@ const downloadsStat = {
         ]),
         observe: function DlStat_observe(aSubject, aTopic, aData) {
             switch (aTopic) {
-            case 'final-ui-startup':
-                Services.obs.removeObserver(this, 'final-ui-startup', true);
+            case "final-ui-startup":
+                Services.obs.removeObserver(this, "final-ui-startup", true);
                 try {
-                    let {Downloads: Downloads} = Cu.import('resource://gre/modules/Downloads.jsm');
-                    if (!('getList' in Downloads))
-                        throw new Error('Old \'Downloads\' module');
+                    let {Downloads: Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
+                    if (!("getList" in Downloads))
+                        throw new Error("Old 'Downloads' module");
                     let that = this;
                     Downloads.getList(Downloads.PUBLIC).then(function (list) list.addView(that));
                 } catch (ex1) {
                     try {
-                        const DownloadManager = Cc['@mozilla.org/download-manager;1'].getService(Ci.nsIDownloadManager);
+                        const DownloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
                         DownloadManager.addListener(this);
                     } catch (ex2) {
-                        barnavig._logger.error(ex1 + '\n' + ex2);
+                        barnavig._logger.error(ex1 + "\n" + ex2);
                     }
                 }
                 break;
@@ -1229,7 +1357,7 @@ const downloadsStat = {
                 return null;
             var referrerURI = barnavig.application.core.Lib.misc.tryCreateFixupURI(download.source.referrer);
             return {
-                id: download.source.url + '|' + download.target.path,
+                id: download.source.url + "|" + download.target.path,
                 source: sourceURI,
                 target: targetURI,
                 referrer: referrerURI,
@@ -1244,7 +1372,7 @@ const downloadsStat = {
             var referrerURL = download.referrer && download.referrer.spec;
             if (!referrerURL) {
                 try {
-                    let win = Services.wm.getMostRecentWindow('navigator:browser');
+                    let win = Services.wm.getMostRecentWindow("navigator:browser");
                     let ref = win.gBrowser.mCurrentBrowser.currentURI.spec;
                     if (/^(http|ftp)s?:\/\//.test(ref))
                         referrerURL = ref;
@@ -1311,16 +1439,16 @@ const searchPersonalization = {
             try {
                 documentInnerHTML = contentDocument.documentElement.innerHTML;
             } catch (e) {
-                barnavig._logger.debug('searchPersonalization.appendBarNavigParam, innerHTML error: ' + e);
+                barnavig._logger.debug("searchPersonalization.appendBarNavigParam, innerHTML error: " + e);
             }
             if (!documentInnerHTML)
                 return resolvedPromise();
-            var workerTaskType = 'calculateSearchPersonalization';
+            var workerTaskType = "calculateSearchPersonalization";
             var workerTaskId = [
                     workerTaskType,
                     Date.now(),
                     Math.random() * 10000
-                ].join(':');
+                ].join(":");
             var listener = function listener(event) {
                 var {
                         type: type,
@@ -1331,12 +1459,12 @@ const searchPersonalization = {
                     return;
                 if (taskId !== workerTaskId)
                     return;
-                mozWorker.removeEventListener('message', listener, false);
+                mozWorker.removeEventListener("message", listener, false);
                 if (data)
                     aParams.barNavigParams.body = data;
                 defer.resolve();
             };
-            mozWorker.addEventListener('message', listener, false);
+            mozWorker.addEventListener("message", listener, false);
             mozWorker.postMessage({
                 type: workerTaskType,
                 data: documentInnerHTML,
