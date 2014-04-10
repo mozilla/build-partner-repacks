@@ -1,6 +1,6 @@
-'use strict';
-EXPORTED_SYMBOLS.push('fileutils');
-const StrInputStreamFabric = Cc['@mozilla.org/io/string-input-stream;1'];
+"use strict";
+EXPORTED_SYMBOLS.push("fileutils");
+const StrInputStreamFabric = Cc["@mozilla.org/io/string-input-stream;1"];
 const nsIStringInputStream = Ci.nsIStringInputStream;
 const fileutils = {
         MODE_RDONLY: 1,
@@ -9,27 +9,27 @@ const fileutils = {
         MODE_CREATE: 8,
         MODE_APPEND: 16,
         MODE_TRUNCATE: 32,
-        PERMS_FILE: parseInt('0644', 8),
-        PERMS_DIRECTORY: parseInt('0755', 8),
+        PERMS_FILE: parseInt("0644", 8),
+        PERMS_DIRECTORY: parseInt("0755", 8),
         readTextFile: function FileUtils_readTextFile(file, encoding) {
             var inStream = this.openFile(file);
             try {
                 return this.readStringFromStream(inStream, encoding);
             } catch (e) {
-                throw new Error('Can not read file [' + file.path + ']\n' + strutils.formatError(e));
+                throw new Error("Can not read file [" + file.path + "]\n" + strutils.formatError(e));
             } finally {
                 inStream.close();
             }
         },
         writeTextFile: function FileUtils_writeTextFile(file, text, accessRights, modeFlags) {
-            var fileOutStream = Cc['@mozilla.org/network/file-output-stream;1'].createInstance(Ci.nsIFileOutputStream);
-            var converter = Cc['@mozilla.org/intl/converter-output-stream;1'].createInstance(Ci.nsIConverterOutputStream);
+            var fileOutStream = Cc["@mozilla.org/network/file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);
+            var converter = Cc["@mozilla.org/intl/converter-output-stream;1"].createInstance(Ci.nsIConverterOutputStream);
             try {
                 fileOutStream.init(file, modeFlags || this.MODE_WRONLY | this.MODE_CREATE | this.MODE_TRUNCATE, accessRights || this.PERMS_FILE, 0);
-                converter.init(fileOutStream, 'UTF-8', 0, 0);
+                converter.init(fileOutStream, "UTF-8", 0, 0);
                 converter.writeString(text);
             } catch (e) {
-                throw new Error('Can not write file [' + file.path + ']\n' + strutils.formatError(e));
+                throw new Error("Can not write file [" + file.path + "]\n" + strutils.formatError(e));
             } finally {
                 converter.close();
                 fileOutStream.close();
@@ -37,15 +37,15 @@ const fileutils = {
         },
         writeStreamToFile: function FileUtils_writeStreamToFile(inputStream, destFile, accessRights, modeFlags, progressWatcher) {
             if (!(inputStream instanceof Ci.nsIInputStream))
-                throw new TypeError('First argument must be nsIInputStream');
+                throw new TypeError("First argument must be nsIInputStream");
             if (!(destFile instanceof Ci.nsIFile))
-                throw new TypeError('Second argument must be nsIFile');
-            var fileOutStream = Cc['@mozilla.org/network/file-output-stream;1'].createInstance(Ci.nsIFileOutputStream);
+                throw new TypeError("Second argument must be nsIFile");
+            var fileOutStream = Cc["@mozilla.org/network/file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);
             try {
                 let accessRights = accessRights || this.PERMS_FILE;
                 let modeFlags = modeFlags || this.MODE_WRONLY | this.MODE_CREATE | this.MODE_TRUNCATE;
                 fileOutStream.init(destFile, modeFlags, accessRights, 0);
-                let binInputStream = Cc['@mozilla.org/binaryinputstream;1'].createInstance(Ci.nsIBinaryInputStream);
+                let binInputStream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
                 binInputStream.setInputStream(inputStream);
                 try {
                     let size;
@@ -70,7 +70,7 @@ const fileutils = {
         },
         openFile: function FileUtils_openFile(file) {
             file = file.QueryInterface(Ci.nsILocalFile);
-            var inStream = Cc['@mozilla.org/network/file-input-stream;1'].createInstance(Ci.nsIFileInputStream);
+            var inStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
             inStream.init(file, this.MODE_RDONLY, 0, inStream.CLOSE_ON_EOF);
             return inStream;
         },
@@ -89,8 +89,8 @@ const fileutils = {
             docStream = docStream.QueryInterface(Ci.nsIInputStream);
             try {
                 let domParser = xmlutils.getDOMParser(docURI, baseURI, withSystemPrincipal);
-                let XMLDoc = domParser.parseFromStream(docStream, charset || null, docStream.available(), 'text/xml');
-                if (XMLDoc.documentElement.localName == 'parsererror')
+                let XMLDoc = domParser.parseFromStream(docStream, charset || null, docStream.available(), "text/xml");
+                if (XMLDoc.documentElement.localName == "parsererror")
                     throw new Error(XMLDoc.documentElement.textContent);
                 return XMLDoc;
             } finally {
@@ -100,10 +100,10 @@ const fileutils = {
         xmlDocToFile: function FileUtils_xmlDocToFile(xmlDocument, destFile, accessRights, modeFlags) {
             var accessRights = accessRights || this.PERMS_FILE;
             var modeFlags = modeFlags || this.MODE_WRONLY | this.MODE_CREATE | this.MODE_TRUNCATE;
-            var fileOutStream = Cc['@mozilla.org/network/file-output-stream;1'].createInstance(Ci.nsIFileOutputStream);
+            var fileOutStream = Cc["@mozilla.org/network/file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);
             fileOutStream.init(destFile, modeFlags, accessRights, 0);
             try {
-                xmlutils.xmlSerializer.serializeToStream(xmlDocument, fileOutStream, '');
+                xmlutils.xmlSerializer.serializeToStream(xmlDocument, fileOutStream, "");
             } finally {
                 fileOutStream.close();
             }
@@ -113,7 +113,7 @@ const fileutils = {
                 let text = this.readTextFile(file);
                 return JSON.parse(text);
             } catch (e) {
-                throw new Error('Can not read json file [' + file.path + ']\n' + strutils.formatError(e));
+                throw new Error("Can not read json file [" + file.path + "]\n" + strutils.formatError(e));
             }
         },
         jsonFromStream: function FileUtils_jsonFromStream(anInputStream) {
@@ -126,8 +126,8 @@ const fileutils = {
         },
         readStringFromStream: function FileUtils_readStringFromStream(aInputStream, aEncoding) {
             var streamSize = aInputStream.available();
-            var convStream = Cc['@mozilla.org/intl/converter-input-stream;1'].createInstance(Ci.nsIConverterInputStream);
-            convStream.init(aInputStream, aEncoding || 'UTF-8', streamSize, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
+            var convStream = Cc["@mozilla.org/intl/converter-input-stream;1"].createInstance(Ci.nsIConverterInputStream);
+            convStream.init(aInputStream, aEncoding || "UTF-8", streamSize, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
             try {
                 let data = {};
                 convStream.readString(streamSize, data);
@@ -138,16 +138,16 @@ const fileutils = {
         },
         extractZipArchive: function FileUtils_extractZipArchive(archiveFile, destDirFile) {
             if (!(archiveFile instanceof Ci.nsIFile) || !(destDirFile instanceof Ci.nsIFile))
-                throw new TypeError('nsIFile required');
+                throw new TypeError("nsIFile required");
             function getItemFile(filePath) {
                 var itemLocation = destDirFile.clone();
-                filePath.split('/').forEach(function (part) itemLocation.append(part));
+                filePath.split("/").forEach(function (part) itemLocation.append(part));
                 return itemLocation;
             }
-            var zReader = Cc['@mozilla.org/libjar/zip-reader;1'].createInstance(Ci.nsIZipReader);
+            var zReader = Cc["@mozilla.org/libjar/zip-reader;1"].createInstance(Ci.nsIZipReader);
             zReader.open(archiveFile);
             try {
-                let entries = zReader.findEntries('*/');
+                let entries = zReader.findEntries("*/");
                 while (entries.hasMore()) {
                     let entryName = entries.getNext();
                     let target = getItemFile(entryName);
@@ -185,28 +185,28 @@ const fileutils = {
                 if (!file.exists())
                     return;
             } catch (e) {
-                Cu.reportError('Could not remove file [' + file.path + ']\n' + e);
+                Cu.reportError("Could not remove file [" + file.path + "]\n" + e);
             }
-            var trash = Cc['@mozilla.org/file/directory_service;1'].getService(Ci.nsIProperties).get('TmpD', Ci.nsIFile);
-            trash.append('trash');
+            var trash = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("TmpD", Ci.nsIFile);
+            trash.append("trash");
             trash.createUnique(Ci.nsIFile.DIRECTORY_TYPE, this.PERMS_DIRECTORY);
             try {
                 file.moveTo(trash, file.leafName);
             } catch (e) {
-                Cu.reportError('Could not move file [' + file.path + '] to trash dir\n' + e);
+                Cu.reportError("Could not move file [" + file.path + "] to trash dir\n" + e);
                 return;
             }
             try {
                 trash.remove(true);
             } catch (e) {
-                Cu.reportError('Could not remove trash [' + trash.path + ']\n' + e);
+                Cu.reportError("Could not remove trash [" + trash.path + "]\n" + e);
             }
         },
         safeReplace: function fileutils_safeReplace(oldFile, newFile, backupName) {
             oldFile = oldFile.clone();
             newFile = newFile.clone();
             if (backupName === undefined)
-                backupName = 'backup';
+                backupName = "backup";
             var destName = oldFile.leafName;
             var parentDir = oldFile.parent;
             var backupDir = parentDir.clone();
@@ -217,7 +217,7 @@ const fileutils = {
                 if (oldFile.exists())
                     oldFile.moveTo(null, backupName);
             } catch (e) {
-                throw new Error('Could not make old file backup. \n' + strutils.formatError(e));
+                throw new Error("Could not make old file backup. \n" + strutils.formatError(e));
             }
             try {
                 newFile.moveTo(parentDir, destName);

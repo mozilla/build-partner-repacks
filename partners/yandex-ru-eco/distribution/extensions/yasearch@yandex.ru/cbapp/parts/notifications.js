@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['notifications'];
+"use strict";
+const EXPORTED_SYMBOLS = ["notifications"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -7,10 +7,10 @@ const {
         results: Cr
     } = Components;
 const GLOBAL = this;
-Cu.import('resource://gre/modules/Services.jsm');
+Cu.import("resource://gre/modules/Services.jsm");
 const notifications = {
         init: function Notifications_init(application) {
-            this._logger = application.getLogger('Notifications');
+            this._logger = application.getLogger("Notifications");
             this._application = application;
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._createdNotificationsCounter = 0;
@@ -23,7 +23,7 @@ const notifications = {
             };
             var overrideKnockQueueTimer = new sysutils.Timer(function () {
                     try {
-                        Cc['@mozilla.org/appshell/appShellService;1'].getService(Ci.nsIAppShellService).hiddenDOMWindow;
+                        Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService).hiddenDOMWindow;
                         if (!animator.hiddenDocument)
                             return;
                         overrideKnockQueueTimer.cancel();
@@ -53,9 +53,9 @@ const notifications = {
         TEMPLATE_GROUP: 3,
         create: function Notifications_create(componentId, notificationData, replace) {
             var groupKey = null;
-            var notificationType = notificationData.type || '';
+            var notificationType = notificationData.type || "";
             if (notificationType) {
-                groupKey = componentId + ' :: ' + notificationType;
+                groupKey = componentId + " :: " + notificationType;
                 delete this._groupKeys[groupKey];
             }
             var notificationId = this._createdNotificationsCounter++;
@@ -81,10 +81,10 @@ const notifications = {
                 groupedNotifications: groupedNotifications,
                 groupKey: groupKey
             });
-            if ('groupSize' in notificationData) {
+            if ("groupSize" in notificationData) {
                 let size = notificationData.groupSize;
                 if (parseInt(size, 10) !== size || size <= 0)
-                    throw new RangeError('Invalid group size (' + size + ')');
+                    throw new RangeError("Invalid group size (" + size + ")");
             }
             if (groupKey && componentId in this._listeners) {
                 let notShownNotifications = this._getNotificationsByType(groupKey).map(function (notification) {
@@ -99,12 +99,12 @@ const notifications = {
                             return previousValue + size;
                         }, 0);
                     if (groupSize > this.MAX_UNGROUPED_BY_TYPE) {
-                        let queryId = Date.now() + '' + Math.floor(Math.random() * 10000);
+                        let queryId = Date.now() + "" + Math.floor(Math.random() * 10000);
                         this._groupKeys[groupKey] = queryId;
                         let notificationsToGroup = notShownNotifications.map(function (n) n.notificationData);
                         this._listeners[componentId].forEach(function (listener) {
                             try {
-                                if ('notificationsGroup' in listener)
+                                if ("notificationsGroup" in listener)
                                     listener.notificationsGroup(queryId, notificationsToGroup);
                             } catch (e) {
                                 this._logger.error(e);
@@ -140,10 +140,10 @@ const notifications = {
         },
         group: function Notifications_group(componentId, queryId, notificationData) {
             if (!notificationData.type)
-                throw new Error('Notification data without type.');
+                throw new Error("Notification data without type.");
             if (!queryId)
-                throw new Error('Wrong queryId.');
-            var key = componentId + ' :: ' + notificationData.type;
+                throw new Error("Wrong queryId.");
+            var key = componentId + " :: " + notificationData.type;
             if (this._groupKeys[key] !== queryId)
                 return;
             return this.create(componentId, notificationData, true);
@@ -178,7 +178,7 @@ const notifications = {
                 if (notification.groupKey)
                     delete this._groupKeys[notification.groupKey];
             }, this);
-            if (sysutils.platformInfo.os.name === 'linux')
+            if (sysutils.platformInfo.os.name === "linux")
                 this._closeNotifications(notificationsToShow, this.CLOSE_REASON_TIMEOUT);
             else
                 animator.showNotifications(notificationsToShow);
@@ -191,7 +191,7 @@ const notifications = {
                     return;
                 this._listeners[componentId].forEach(function (listener) {
                     try {
-                        if ('notificationClosed' in listener)
+                        if ("notificationClosed" in listener)
                             listener.notificationClosed(notification.id, notification.notificationData, reason);
                     } catch (e) {
                         this._logger.error(e);
@@ -208,7 +208,7 @@ const notifications = {
                     return;
                 this._listeners[componentId].forEach(function (listener) {
                     try {
-                        if ('notificationClicked' in listener)
+                        if ("notificationClicked" in listener)
                             listener.notificationClicked(notification.id, notification.notificationData, target);
                     } catch (e) {
                         this._logger.error(e);
@@ -224,7 +224,7 @@ const notifications = {
             }, this);
         },
         _isFullScreenMode: function Notifications__isFullScreenMode() {
-            var topBrowserWindow = Services.wm.getMostRecentWindow('navigator:browser');
+            var topBrowserWindow = Services.wm.getMostRecentWindow("navigator:browser");
             return topBrowserWindow && topBrowserWindow.fullScreen || false;
         },
         _createdNotificationsCounter: 0,
@@ -250,13 +250,13 @@ const animator = {
         },
         get hiddenDocument() {
             if (!this._hiddenFrame) {
-                const CONTENT_PATH = 'chrome://' + notifications._application.name + '/content/';
-                let hiddenFrame = misc.hiddenWindows.getFrame('notifications-frame', CONTENT_PATH + 'overlay/hiddenwindow.xul');
+                const CONTENT_PATH = "chrome://" + notifications._application.name + "/content/";
+                let hiddenFrame = misc.hiddenWindows.getFrame("notifications-frame", CONTENT_PATH + "overlay/hiddenwindow.xul");
                 let hiddenDoc = hiddenFrame.contentDocument;
-                let styleElement = hiddenDoc.createElementNS('http://www.w3.org/1999/xhtml', 'style');
+                let styleElement = hiddenDoc.createElementNS("http://www.w3.org/1999/xhtml", "style");
                 hiddenDoc.documentElement.appendChild(styleElement);
                 let stylesheet = styleElement.sheet;
-                stylesheet.insertRule('@import url(\'' + CONTENT_PATH + 'dialogs/notifications/notification.css\');', stylesheet.cssRules.length);
+                stylesheet.insertRule("@import url('" + CONTENT_PATH + "dialogs/notifications/notification.css');", stylesheet.cssRules.length);
                 this._hiddenFrame = hiddenFrame;
             }
             return this._hiddenFrame.contentDocument;
@@ -268,18 +268,18 @@ const animator = {
                         var panel = notification._panel;
                         if (!panel)
                             return;
-                        if (!('move' in panel))
+                        if (!("move" in panel))
                             return;
                         panel.move();
                     });
                 }.bind(this), 10, true);
             }
             var hiddenDoc = this.hiddenDocument;
-            var panel = hiddenDoc.createElement('panel');
-            panel.setAttribute('noautohide', 'true');
-            panel.setAttribute('level', 'top');
-            panel.addEventListener('popuphidden', function popuphiddenEventListener(event) {
-                panel.removeEventListener('popuphidden', popuphiddenEventListener, false);
+            var panel = hiddenDoc.createElement("panel");
+            panel.setAttribute("noautohide", "true");
+            panel.setAttribute("level", "top");
+            panel.addEventListener("popuphidden", function popuphiddenEventListener(event) {
+                panel.removeEventListener("popuphidden", popuphiddenEventListener, false);
                 this._closeNotification(notificationToShow, notifications.CLOSE_REASON_TIMEOUT);
             }.bind(this), false);
             panel.yaWinArguments = {
@@ -309,7 +309,7 @@ const animator = {
                 notifications._closeNotifications([notification], reason);
             }
             if (notification._panel) {
-                if ('close' in notification._panel)
+                if ("close" in notification._panel)
                     notification._panel.close();
                 delete notification._panel;
             }

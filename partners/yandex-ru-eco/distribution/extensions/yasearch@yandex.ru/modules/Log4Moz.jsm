@@ -1,20 +1,20 @@
-'use strict';
+"use strict";
 const EXPORTED_SYMBOLS = [
-        'Log4Moz',
-        'ConsoleListener'
+        "Log4Moz",
+        "ConsoleListener"
     ];
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const MODE_RDONLY = 1;
 const MODE_WRONLY = 2;
 const MODE_CREATE = 8;
 const MODE_APPEND = 16;
 const MODE_TRUNCATE = 32;
-const PERMS_FILE = parseInt('0644', 8);
-const PERMS_DIRECTORY = parseInt('0755', 8);
+const PERMS_FILE = parseInt("0644", 8);
+const PERMS_DIRECTORY = parseInt("0755", 8);
 const ONE_BYTE = 1;
 const ONE_KILOBYTE = 1024 * ONE_BYTE;
 const ONE_MEGABYTE = 1024 * ONE_KILOBYTE;
@@ -30,14 +30,14 @@ var Log4Moz = {
             Trace: 10,
             All: 0,
             Desc: {
-                70: 'FATAL',
-                60: 'ERROR',
-                50: 'WARN',
-                40: 'INFO',
-                30: 'CONFIG',
-                20: 'DEBUG',
-                10: 'TRACE',
-                0: 'ALL'
+                70: "FATAL",
+                60: "ERROR",
+                50: "WARN",
+                40: "INFO",
+                30: "CONFIG",
+                20: "DEBUG",
+                10: "TRACE",
+                0: "ALL"
             }
         },
         get repository() {
@@ -100,11 +100,11 @@ var Log4Moz = {
             var properties = [];
             for (let p in aObject) {
                 try {
-                    if (aExcludeComplexTypes && (typeof aObject[p] == 'object' || typeof aObject[p] == 'function'))
+                    if (aExcludeComplexTypes && (typeof aObject[p] == "object" || typeof aObject[p] == "function"))
                         continue;
-                    properties.push(p + ' = ' + aObject[p]);
+                    properties.push(p + " = " + aObject[p]);
                 } catch (ex) {
-                    properties.push(p + ' = ' + ex);
+                    properties.push(p + " = " + ex);
                 }
             }
             return properties;
@@ -112,7 +112,7 @@ var Log4Moz = {
     };
 function LogMessage(loggerName, level, messages) {
     this.loggerName = loggerName;
-    this.message = Array.join(messages, ' ');
+    this.message = Array.join(messages, " ");
     this.level = level;
     this.time = Date.now();
 }
@@ -121,10 +121,10 @@ LogMessage.prototype = {
     get levelDesc() {
         if (this.level in Log4Moz.Level.Desc)
             return Log4Moz.Level.Desc[this.level];
-        return 'UNKNOWN';
+        return "UNKNOWN";
     },
     toString: function LogMsg_toString() {
-        return 'LogMessage [' + this.time + ' ' + this.level + ' ' + this.message + ']';
+        return "LogMessage [" + this.time + " " + this.level + " " + this.message + "]";
     }
 };
 function Logger(name, repository) {
@@ -146,14 +146,14 @@ Logger.prototype = {
             return this._level;
         if (this.parent)
             return this.parent.level;
-        dump('log4moz warning: root logger configuration error: no level defined\n');
+        dump("log4moz warning: root logger configuration error: no level defined\n");
         return Log4Moz.Level.All;
     },
     set level(level) {
         this._level = level;
     },
     getLogger: function Logger_getLogger(name) {
-        return this._repository.getLogger(this._name + '.' + name);
+        return this._repository.getLogger(this._name + "." + name);
     },
     _appenders: null,
     get appenders() {
@@ -200,14 +200,14 @@ Logger.prototype = {
         this.log(new LogMessage(this._name, Log4Moz.Level.Trace, arguments));
     },
     __exposedProps__: {
-        getLogger: 'r',
-        fatal: 'r',
-        error: 'r',
-        warn: 'r',
-        info: 'r',
-        config: 'r',
-        debug: 'r',
-        trace: 'r'
+        getLogger: "r",
+        fatal: "r",
+        error: "r",
+        warn: "r",
+        info: "r",
+        config: "r",
+        debug: "r",
+        trace: "r"
     }
 };
 function LoggerRepository() {
@@ -218,18 +218,18 @@ LoggerRepository.prototype = {
     _rootLogger: null,
     get rootLogger() {
         if (!this._rootLogger) {
-            this._rootLogger = new Logger('root', this);
+            this._rootLogger = new Logger("root", this);
             this._rootLogger.level = Log4Moz.Level.All;
         }
         return this._rootLogger;
     },
     _updateParents: function LogRep__updateParents(name) {
-        var pieces = name.split('.');
+        var pieces = name.split(".");
         var cur, parent;
         let (i = 0) {
             for (; i < pieces.length - 1; i++) {
                 if (cur)
-                    cur += '.' + pieces[i];
+                    cur += "." + pieces[i];
                 else
                     cur = pieces[i];
                 if (cur in this._loggers)
@@ -270,17 +270,17 @@ BasicFormatter.prototype = {
     __proto__: Formatter.prototype,
     _dateFormat: null,
     get dateFormat() {
-        return this._dateFormat || (this._dateFormat = '%Y-%m-%d %H:%M:%S');
+        return this._dateFormat || (this._dateFormat = "%Y-%m-%d %H:%M:%S");
     },
     set dateFormat(format) {
         this._dateFormat = format;
     },
     format: function BF_format(message) {
-        var pad = function BF__pad(str, len, chr) str + new Array(Math.max((len || 20) - str.length + 1, 0)).join(chr || ' ');
+        var pad = function BF__pad(str, len, chr) str + new Array(Math.max((len || 20) - str.length + 1, 0)).join(chr || " ");
         var messageDate = new Date(message.time);
         var msec = messageDate.getMilliseconds();
-        var dateStr = messageDate.toLocaleFormat(this.dateFormat) + '.' + (msec < 100 ? msec < 10 ? '00' + msec : '0' + msec : msec);
-        return dateStr + '\t' + pad(message.loggerName) + ' ' + message.levelDesc + '\t' + message.message + '\n';
+        var dateStr = messageDate.toLocaleFormat(this.dateFormat) + "." + (msec < 100 ? msec < 10 ? "00" + msec : "0" + msec : msec);
+        return dateStr + "	" + pad(message.loggerName) + " " + message.levelDesc + "	" + message.message + "\n";
     }
 };
 function XMLFormatter() {
@@ -292,7 +292,7 @@ XMLFormatter.prototype = {
         var file = null;
         var line = null;
         var method = null;
-        if (typeof msg == 'object' && 'lineNumber' in msg) {
+        if (typeof msg == "object" && "lineNumber" in msg) {
             file = msg.fileName || msg.filename;
             line = msg.lineNumber;
         } else {
@@ -301,12 +301,12 @@ XMLFormatter.prototype = {
             line = stackFrame.lineNumber;
             method = stackFrame.name;
         }
-        var escapedMessage = String(msg).replace(/[^ \u0021-\u003B\u003F-\u007A]/g, function (ch) '&#' + ch.charCodeAt(0) + ';');
-        return '' + '<log4j:event logger=\'' + message.loggerName + '\' ' + 'level=\'' + message.levelDesc + '\' thread=\'unknown\' ' + 'timestamp=\'' + message.time + '\'>' + '<log4j:message>' + escapedMessage + '</log4j:message>' + '<log4j:locationInfo class=\'' + message.loggerName + '\' ' + 'method=\'' + method + '\' ' + 'file=\'' + file + '\' line=\'' + line + '\'/>' + '</log4j:event>';
+        var escapedMessage = String(msg).replace(/[^ \u0021-\u003B\u003F-\u007A]/g, function (ch) "&#" + ch.charCodeAt(0) + ";");
+        return "" + "<log4j:event logger='" + message.loggerName + "' " + "level='" + message.levelDesc + "' thread='unknown' " + "timestamp='" + message.time + "'>" + "<log4j:message>" + escapedMessage + "</log4j:message>" + "<log4j:locationInfo class='" + message.loggerName + "' " + "method='" + method + "' " + "file='" + file + "' line='" + line + "'/>" + "</log4j:event>";
     }
 };
 function Appender(formatter) {
-    this._name = 'Appender';
+    this._name = "Appender";
     this._formatter = formatter ? formatter : new BasicFormatter();
 }
 Appender.prototype = {
@@ -323,13 +323,13 @@ Appender.prototype = {
             this.doAppend(this._formatter.format(message));
     },
     toString: function App_toString() {
-        return this._name + ' [level=' + this._level + ', formatter=' + this._formatter + ']';
+        return this._name + " [level=" + this._level + ", formatter=" + this._formatter + "]";
     },
     doAppend: function App_doAppend(message) {
     }
 };
 function DumpAppender(formatter) {
-    this._name = 'DumpAppender';
+    this._name = "DumpAppender";
     this._formatter = formatter ? formatter : new BasicFormatter();
 }
 DumpAppender.prototype = {
@@ -350,7 +350,7 @@ ConsoleAppender.prototype = {
     }
 };
 function FileAppender(file, formatter) {
-    this._name = 'FileAppender';
+    this._name = "FileAppender";
     this._file = file;
     this._formatter = formatter ? formatter : new BasicFormatter();
 }
@@ -364,13 +364,13 @@ FileAppender.prototype = {
     },
     openStream: function FApp_openStream() {
         try {
-            let __fos = Cc['@mozilla.org/network/file-output-stream;1'].createInstance(Ci.nsIFileOutputStream);
+            let __fos = Cc["@mozilla.org/network/file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);
             let flags = MODE_WRONLY | MODE_CREATE | MODE_APPEND;
             __fos.init(this._file, flags, PERMS_FILE, 0);
-            this.__fos = Cc['@mozilla.org/intl/converter-output-stream;1'].createInstance(Ci.nsIConverterOutputStream);
-            this.__fos.init(__fos, 'UTF-8', 4096, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
+            this.__fos = Cc["@mozilla.org/intl/converter-output-stream;1"].createInstance(Ci.nsIConverterOutputStream);
+            this.__fos.init(__fos, "UTF-8", 4096, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
         } catch (e) {
-            dump('Error opening stream:\n' + e);
+            dump("Error opening stream:\n" + e);
         }
     },
     closeStream: function FApp_closeStream() {
@@ -380,7 +380,7 @@ FileAppender.prototype = {
             this.__fos.close();
             this.__fos = null;
         } catch (e) {
-            dump('Failed to close file output stream\n' + e);
+            dump("Failed to close file output stream\n" + e);
         }
     },
     doAppend: function FApp_doAppend(message) {
@@ -389,7 +389,7 @@ FileAppender.prototype = {
         try {
             this._fos.writeString(message);
         } catch (e) {
-            dump('Error writing file:\n' + e);
+            dump("Error writing file:\n" + e);
         }
     },
     clear: function FApp_clear() {
@@ -405,7 +405,7 @@ function RotatingFileAppender(file, formatter, maxSize, maxBackups) {
         maxSize = ONE_MEGABYTE * 2;
     if (maxBackups === undefined)
         maxBackups = 0;
-    this._name = 'RotatingFileAppender';
+    this._name = "RotatingFileAppender";
     this._file = file;
     this._formatter = formatter ? formatter : new BasicFormatter();
     this._maxSize = maxSize;
@@ -420,7 +420,7 @@ RotatingFileAppender.prototype = {
             this.rotateLogs();
             FileAppender.prototype.doAppend.call(this, message);
         } catch (e) {
-            dump('Error writing file:' + e + '\n');
+            dump("Error writing file:" + e + "\n");
         }
     },
     rotateLogs: function RFApp_rotateLogs() {
@@ -430,23 +430,23 @@ RotatingFileAppender.prototype = {
         let (i = this.maxBackups - 1) {
             for (; i > 0; i--) {
                 let backup = this._file.parent.clone();
-                backup.append(this._file.leafName + '.' + i);
+                backup.append(this._file.leafName + "." + i);
                 if (backup.exists())
-                    backup.moveTo(this._file.parent, this._file.leafName + '.' + (i + 1));
+                    backup.moveTo(this._file.parent, this._file.leafName + "." + (i + 1));
             }
         }
         var cur = this._file.clone();
         if (cur.exists())
-            cur.moveTo(cur.parent, cur.leafName + '.1');
+            cur.moveTo(cur.parent, cur.leafName + ".1");
     }
 };
 function SocketAppender(host, port, formatter, timeoutDelay) {
-    this._name = 'SocketAppender';
+    this._name = "SocketAppender";
     this._host = host;
     this._port = port;
     this._formatter = formatter;
     this._timeout_delay = timeoutDelay || DEFAULT_NETWORK_TIMEOUT_DELAY;
-    this._mainThread = Cc['@mozilla.org/thread-manager;1'].getService().mainThread;
+    this._mainThread = Cc["@mozilla.org/thread-manager;1"].getService().mainThread;
 }
 SocketAppender.prototype = {
     __proto__: Appender.prototype,
@@ -460,7 +460,7 @@ SocketAppender.prototype = {
     get _socketService() {
         if (!this.__socketService) {
             try {
-                this.__socketService = Cc['@mozilla.org/network/socket-transport-service;1'].getService(Ci.nsISocketTransportService);
+                this.__socketService = Cc["@mozilla.org/network/socket-transport-service;1"].getService(Ci.nsISocketTransportService);
             } catch (e) {
             }
         }
@@ -481,7 +481,7 @@ SocketAppender.prototype = {
             this.__nos = this._transport.openOutputStream(0, 0, 0);
         } catch (ex) {
             if (ex.result != Cr.NS_ERROR_OFFLINE)
-                dump('Unexpected SocketAppender connection problem: ' + ex.fileName + ':' + ex.lineNumber + ': ' + ex + '\n');
+                dump("Unexpected SocketAppender connection problem: " + ex.fileName + ":" + ex.lineNumber + ": " + ex + "\n");
         }
     },
     closeStream: function SApp_closeStream() {
@@ -518,17 +518,17 @@ SocketAppender.prototype = {
     }
 };
 const nsIScriptError = Ci.nsIScriptError;
-const ScriptError = new Components.Constructor('@mozilla.org/scripterror;1', 'nsIScriptError', 'init');
-const gConsoleService = Cc['@mozilla.org/consoleservice;1'].getService(Ci.nsIConsoleService);
+const ScriptError = new Components.Constructor("@mozilla.org/scripterror;1", "nsIScriptError", "init");
+const gConsoleService = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleService);
 function ConsoleAppender(formatter) {
-    this._name = 'ConsoleAppender';
+    this._name = "ConsoleAppender";
     this._formatter = formatter;
 }
 ConsoleAppender.prototype = {
     __proto__: Appender.prototype,
     _makeScriptError: function CApp__makeScriptError(message, flags) {
         var stackFrame = Components.stack.caller.caller.caller.caller.caller;
-        var error = new ScriptError(message, stackFrame.filename, stackFrame.sourceLine, stackFrame.lineNumber, stackFrame.columnNumber || 0, flags, 'component javascript');
+        var error = new ScriptError(message, stackFrame.filename, stackFrame.sourceLine, stackFrame.lineNumber, stackFrame.columnNumber || 0, flags, "component javascript");
         return error;
     },
     append: function CApp_append(message) {
@@ -575,7 +575,7 @@ const ConsoleListener = {
             this._loggers.forEach(function (logger) logger.info(aMessage));
         },
         _logError: function ConsoleListener__logError(aErrorObject) {
-            if (typeof aErrorObject.category == 'string' && !/(chrome|XPConnect|component)/.test(aErrorObject.category))
+            if (typeof aErrorObject.category == "string" && !/(chrome|XPConnect|component)/.test(aErrorObject.category))
                 return;
             if (/^(uncaught exception: )?\[Exception... /.test(aErrorObject.errorMessage)) {
                 aErrorObject = this._parseException(aErrorObject.errorMessage);
@@ -594,7 +594,7 @@ const ConsoleListener = {
         },
         _parseException: function ConsoleListener__parseException(aErrorMessage) {
             if (/^(?:uncaught exception: )?\[Exception... "(?!<no message>)([\s\S]+)"  nsresult: "0x\S+ \((.+)\)"  location: "(?:(?:JS|native) frame :: (?!<unknown filename>)(.+) :: .+ :: line (\d+)|<unknown>)"  data: (?:yes|no)\]$/.test(aErrorMessage) || /^(?:uncaught exception: )?\[Exception... "(?!<no message>)([\s\S]+)"  code: "\d+" nsresult: "0x\S+ \((.+)\)"  location: "(?:(.+) Line: (\d+)|<unknown>)"\]$/.test(aErrorMessage)) {
-                return new ScriptError(RegExp.$1 + (RegExp.$1.indexOf(RegExp.$2) == -1 ? ' = ' + RegExp.$2 : ''), RegExp.$3, 0, RegExp.$4, 0, nsIScriptError.exceptionFlag, 'component javascript');
+                return new ScriptError(RegExp.$1 + (RegExp.$1.indexOf(RegExp.$2) == -1 ? " = " + RegExp.$2 : ""), RegExp.$3, 0, RegExp.$4, 0, nsIScriptError.exceptionFlag, "component javascript");
             }
             return null;
         },
@@ -602,19 +602,19 @@ const ConsoleListener = {
     };
 const StackUtils = {
         formatFrame: function StackUtils_formatFrame(aFrame) {
-            var tmp = '<file:unknown>';
+            var tmp = "<file:unknown>";
             var file = aFrame.filename || aFrame.fileName;
             if (file)
-                tmp = file.replace(/^(?:chrome|file):.*?([^\/\.]+\.\w+)$/, '$1');
+                tmp = file.replace(/^(?:chrome|file):.*?([^\/\.]+\.\w+)$/, "$1");
             if (aFrame.lineNumber)
-                tmp += ':' + aFrame.lineNumber;
+                tmp += ":" + aFrame.lineNumber;
             if (aFrame.name)
-                tmp = aFrame.name + '()@' + tmp;
+                tmp = aFrame.name + "()@" + tmp;
             return tmp;
         },
         exceptionStr: function StackUtils_exceptionStr(aException) {
             var message = aException.message || aException;
-            return message + '\n' + this.stackTrace(aException);
+            return message + "\n" + this.stackTrace(aException);
         },
         stackTraceFromFrame: function StackUtils_stackTraceFromFrame(aFrame) {
             var output = [];
@@ -624,17 +624,17 @@ const StackUtils = {
                     output.push(str);
                 aFrame = aFrame.caller;
             }
-            return ' ## ' + output.join('\n <- ');
+            return " ## " + output.join("\n <- ");
         },
         stackTrace: function StackUtils_stackTrace(aException) {
             if (!arguments.length)
-                return 'Current stack trace:\n' + this.stackTraceFromFrame(Components.stack.caller);
+                return "Current stack trace:\n" + this.stackTraceFromFrame(Components.stack.caller);
             if (aException.location)
-                return 'Stack trace:\n' + this.stackTraceFromFrame(aException.location);
+                return "Stack trace:\n" + this.stackTraceFromFrame(aException.location);
             if (aException.stack) {
-                let result = aException.stack.trim().replace(/\n/g, '\n <- ').replace(/@[^@]*?([^\/\.]+\.\w+:)/g, '@$1');
-                return 'JS Stack trace:\n ## ' + result;
+                let result = aException.stack.trim().replace(/\n/g, "\n <- ").replace(/@[^@]*?([^\/\.]+\.\w+:)/g, "@$1");
+                return "JS Stack trace:\n ## " + result;
             }
-            return 'No traceback available';
+            return "No traceback available";
         }
     };

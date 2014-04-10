@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['appStrings'];
+"use strict";
+const EXPORTED_SYMBOLS = ["appStrings"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -8,10 +8,10 @@ const {
 const appStrings = {
         init: function StringBundlePart_init(application) {
             this._application = application;
-            this.defaultPrefixForURL = 'chrome://' + application.name + '/locale/';
-            var globalPropsBundle = Cc['@mozilla.org/intl/stringbundle;1'].getService(Ci.nsIStringBundleService).createBundle(this.defaultPrefixForURL + 'global.properties');
-            var pluralRule = parseInt(globalPropsBundle.GetStringFromName('pluralRule'), 10);
-            Cu.import('resource://gre/modules/PluralForm.jsm', this._pluralFormModule);
+            this.defaultPrefixForURL = "chrome://" + application.name + "/locale/";
+            var globalPropsBundle = Cc["@mozilla.org/intl/stringbundle;1"].getService(Ci.nsIStringBundleService).createBundle(this.defaultPrefixForURL + "global.properties");
+            var pluralRule = parseInt(globalPropsBundle.GetStringFromName("pluralRule"), 10);
+            Cu.import("resource://gre/modules/PluralForm.jsm", this._pluralFormModule);
             [
                 this.getPluralForm,
                 this.getNumForms
@@ -32,21 +32,21 @@ appStrings.StringBundle.prototype = {
         return appStrings._application.branding.expandBrandTemplates(nonBrandResult);
     },
     getPlural: function StringBundle_getPlural(key, pluralData, args) {
-        if (typeof pluralData == 'number')
+        if (typeof pluralData == "number")
             return this._getPluralString(key, pluralData);
         var str = this.get(key, args);
         let (i = pluralData.length) {
             for (; i--;) {
                 let purIndex = i + 1;
                 let data = pluralData[i];
-                let plurStringKey = typeof data == 'number' || !('key' in data) ? [
+                let plurStringKey = typeof data == "number" || !("key" in data) ? [
                         key,
                         purIndex,
-                        'Plur'
-                    ].join('') : data.key;
-                let plurNumber = (typeof data == 'number' ? data : data.number) || 0;
+                        "Plur"
+                    ].join("") : data.key;
+                let plurNumber = (typeof data == "number" ? data : data.number) || 0;
                 let plurString = this._getPluralString(plurStringKey, plurNumber);
-                str = str.replace(new RegExp('#' + purIndex, 'g'), plurString);
+                str = str.replace(new RegExp("#" + purIndex, "g"), plurString);
             }
         }
         return str;
@@ -55,20 +55,20 @@ appStrings.StringBundle.prototype = {
         try {
             return this.get(key, args);
         } catch (e) {
-            return default_ || '';
+            return default_ || "";
         }
     },
     _createURL: function StringBundle__createURL(aURL) {
-        return (/^[a-z]+:\/\//.test(aURL) ? '' : appStrings.defaultPrefixForURL) + aURL;
+        return (/^[a-z]+:\/\//.test(aURL) ? "" : appStrings.defaultPrefixForURL) + aURL;
     },
     get _stringBundle() {
-        var stringBundle = Cc['@mozilla.org/intl/stringbundle;1'].getService(Ci.nsIStringBundleService).createBundle(this._url);
-        this.__defineGetter__('_stringBundle', function _stringBundle() stringBundle);
+        var stringBundle = Cc["@mozilla.org/intl/stringbundle;1"].getService(Ci.nsIStringBundleService).createBundle(this._url);
+        this.__defineGetter__("_stringBundle", function _stringBundle() stringBundle);
         return this._stringBundle;
     },
     _getPluralString: function StringBundle__getPluralString(aStringKey, aNumber) {
-        var plurStrings = this.get(aStringKey).split(';');
+        var plurStrings = this.get(aStringKey).split(";");
         var plurStringNone = appStrings.getNumForms() < plurStrings.length ? plurStrings.shift() : null;
-        return aNumber === 0 && plurStringNone !== null ? plurStringNone : appStrings.getPluralForm(aNumber, plurStrings.join(';'));
+        return aNumber === 0 && plurStringNone !== null ? plurStringNone : appStrings.getPluralForm(aNumber, plurStrings.join(";"));
     }
 };

@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['sync'];
+"use strict";
+const EXPORTED_SYMBOLS = ["sync"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -23,14 +23,14 @@ const LOGIN_STATES = {
         NETWORK_ERROR: 7,
         EXPIRED: 8
     };
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
-Cu.import('resource://gre/modules/Services.jsm');
-XPCOMUtils.defineLazyServiceGetter(GLOBAL, 'UUID_SVC', '@mozilla.org/uuid-generator;1', 'nsIUUIDGenerator');
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
+XPCOMUtils.defineLazyServiceGetter(GLOBAL, "UUID_SVC", "@mozilla.org/uuid-generator;1", "nsIUUIDGenerator");
 const sync = {
         init: function Sync_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
-            this._logger = application.getLogger('Sync');
+            this._logger = application.getLogger("Sync");
             var topics = this._application.core.eventTopics;
             Services.obs.addObserver(this, topics.APP_TAB_SHOWN, false);
             Services.obs.addObserver(this, topics.SYNC_AUTH_CHANGED, false);
@@ -44,12 +44,12 @@ const sync = {
             Services.obs.addObserver(this, topics.SYNC_SERVICE_PINNED_ENABLED_FINISHED, false);
             Services.obs.addObserver(this, topics.SYNC_SERVICE_PINNED_DISABLED, false);
             if (this.svc)
-                this._application.syncPinned.engine.addListener('data', this);
+                this._application.syncPinned.engine.addListener("data", this);
             var appInfo = this._application.addonManager.info;
             if (appInfo.isFreshAddonInstall || appInfo.addonUpgraded) {
-                this._application.preferences.set('sync.advert', true);
+                this._application.preferences.set("sync.advert", true);
                 if (appInfo.addonUpgraded) {
-                    this._application.preferences.reset('sync.showButton');
+                    this._application.preferences.reset("sync.showButton");
                 }
             }
         },
@@ -67,29 +67,29 @@ const sync = {
             Services.obs.removeObserver(this, topics.SYNC_SERVICE_PINNED_ENABLED_FINISHED);
             Services.obs.removeObserver(this, topics.SYNC_SERVICE_PINNED_DISABLED);
             if (this.svc)
-                this._application.syncPinned.engine.removeListener('data', this);
+                this._application.syncPinned.engine.removeListener("data", this);
             this._application = null;
             this._logger = null;
         },
         observe: function Fastdial_observe(aSubject, aTopic, aData) {
-            this._logger.trace('Event caught: ' + aTopic);
+            this._logger.trace("Event caught: " + aTopic);
             switch (aTopic) {
             case this._application.core.eventTopics.APP_TAB_SHOWN:
-                if (!this._application.preferences.get('sync.advert', true))
+                if (!this._application.preferences.get("sync.advert", true))
                     return;
                 let now = Math.round(Date.now() / 1000);
-                let installTime = this._application.preferences.get('general.install.time');
+                let installTime = this._application.preferences.get("general.install.time");
                 let daysPassedAfterInstall = Math.floor((now - installTime) / 86400);
                 if (daysPassedAfterInstall >= 1 && aData > 3) {
-                    this._application.preferences.set('sync.advert', false);
-                    this._application.fastdial.sendRequest('sync', this.state);
+                    this._application.preferences.set("sync.advert", false);
+                    this._application.fastdial.sendRequest("sync", this.state);
                 }
                 break;
             case this._application.core.eventTopics.SYNC_AUTH_CHANGED:
                 try {
                     aData = JSON.parse(aData);
                 } catch (ex) {
-                    this._logger.error('Not a JSON string: ' + strutils.formatError(ex));
+                    this._logger.error("Not a JSON string: " + strutils.formatError(ex));
                     this._logger.debug(ex.stack);
                     return;
                 }
@@ -99,24 +99,24 @@ const sync = {
                         LOGIN_STATES.CREDENTIALS_ERROR,
                         LOGIN_STATES.EXPIRED
                     ].indexOf(aData.state) !== -1) {
-                    this._application.fastdial.sendRequest('sync', this.state);
+                    this._application.fastdial.sendRequest("sync", this.state);
                     if (aData.state === LOGIN_STATES.AUTH) {
-                        this._application.preferences.reset('sync.showButton');
+                        this._application.preferences.reset("sync.showButton");
                     }
                 }
                 break;
             case this._application.core.eventTopics.SYNC_COMPONENT_ENABLED:
                 async.nextTick(function () {
-                    this._application.fastdial.sendRequest('sync', this.state);
+                    this._application.fastdial.sendRequest("sync", this.state);
                 }, this);
                 break;
             case this._application.core.eventTopics.SYNC_COMPONENT_READY:
-                this._application.syncPinned.engine.addListener('data', this);
-                this._application.fastdial.sendRequest('sync', this.state);
+                this._application.syncPinned.engine.addListener("data", this);
+                this._application.fastdial.sendRequest("sync", this.state);
                 break;
             case this._application.core.eventTopics.SYNC_COMPONENT_DISABLED:
-                this._application.syncPinned.engine.removeListener('data', this);
-                this._application.fastdial.sendRequest('sync', { status: STATES.NO_SYNC_COMPONENT });
+                this._application.syncPinned.engine.removeListener("data", this);
+                this._application.fastdial.sendRequest("sync", { status: STATES.NO_SYNC_COMPONENT });
                 break;
             case this._application.core.eventTopics.SYNC_SERVICE_TOPHISTORY_ENABLED_STARTED:
             case this._application.core.eventTopics.SYNC_SERVICE_PINNED_ENABLED_STARTED:
@@ -135,18 +135,18 @@ const sync = {
                 break;
             case this._application.core.eventTopics.SYNC_SERVICE_TOPHISTORY_DISABLED:
                 this._application.syncTopHistory.initFinished = false;
-                this._application.preferences.set('sync.enabled', false);
-                this._application.fastdial.sendRequest('sync', this.state);
+                this._application.preferences.set("sync.enabled", false);
+                this._application.fastdial.sendRequest("sync", this.state);
                 break;
             case this._application.core.eventTopics.SYNC_SERVICE_PINNED_DISABLED:
                 this._application.syncPinned.initFinished = false;
-                this._application.preferences.set('sync.enabled', false);
-                this._application.fastdial.sendRequest('sync', this.state);
+                this._application.preferences.set("sync.enabled", false);
+                this._application.fastdial.sendRequest("sync", this.state);
                 break;
-            case 'data':
+            case "data":
                 if (this._enabledStarted)
                     return;
-                this._logger.trace('Processing data event');
+                this._logger.trace("Processing data event");
                 try {
                     this._application.syncPinned.processData(aData, false);
                 } catch (ex) {
@@ -170,7 +170,7 @@ const sync = {
         get svc() {
             var syncSvc = null;
             try {
-                syncSvc = Cc['@yandex.ru/esync;1'].getService().wrappedJSObject;
+                syncSvc = Cc["@yandex.ru/esync;1"].getService().wrappedJSObject;
             } catch (ex) {
             }
             return syncSvc;
@@ -192,16 +192,16 @@ const sync = {
                     if (this.svc.authorized) {
                         output.status = STATES.SYNCING;
                         output.enabled = this._application.syncPinned.engine.enabled && this._application.syncTopHistory.engine.enabled;
-                        output.offer = output.enabled || !this._application.preferences.get('sync.offer') ? 0 : 1;
+                        output.offer = output.enabled || !this._application.preferences.get("sync.offer") ? 0 : 1;
                         output.login = this.svc.username;
                     } else {
                         output.status = STATES.NOT_AUTHORIZED;
-                        if (!this._application.preferences.get('sync.showButton')) {
+                        if (!this._application.preferences.get("sync.showButton")) {
                             output.view = 1;
                         } else {
-                            let showAdvertPref = this._application.preferences.get('sync.advert');
+                            let showAdvertPref = this._application.preferences.get("sync.advert");
                             let now = Math.round(Date.now() / 1000);
-                            let installTime = this._application.preferences.get('general.install.time');
+                            let installTime = this._application.preferences.get("general.install.time");
                             let daysPassedAfterInstall = Math.floor((now - installTime) / 86400);
                             output.view = showAdvertPref && daysPassedAfterInstall >= 1 ? 3 : 2;
                         }
@@ -211,16 +211,16 @@ const sync = {
             return output;
         },
         suppressAdvert: function Sync_suppressAdvert() {
-            this._application.preferences.set('sync.advert', false);
-            this._application.fastdial.sendRequest('sync', this.state);
+            this._application.preferences.set("sync.advert", false);
+            this._application.fastdial.sendRequest("sync", this.state);
         },
         suppressOffer: function Sync_suppressOffer() {
-            this._application.preferences.set('sync.offer', false);
-            this._application.fastdial.sendRequest('sync', this.state);
+            this._application.preferences.set("sync.offer", false);
+            this._application.fastdial.sendRequest("sync", this.state);
         },
         hideBlockUI: function Sync_hideBlockUI() {
-            this._application.preferences.set('sync.showButton', false);
-            this._application.fastdial.sendRequest('sync', this.state);
+            this._application.preferences.set("sync.showButton", false);
+            this._application.fastdial.sendRequest("sync", this.state);
         },
         prepareUrlForServer: function Sync_prepareUrlForServer(url) {
             var uri;
@@ -237,13 +237,13 @@ const sync = {
             }
             if (!host)
                 return url;
-            if (host !== 'clck.yandex.ru')
+            if (host !== "clck.yandex.ru")
                 return this._application.isYandexHost(host) ? this._cutFromParam(url) : url;
             var clickrMatches = uri.path.match(/.+?\*(.+)/);
             if (clickrMatches)
                 return this._cutFromParam(clickrMatches[1]);
-            var clckrItem = this._application.fastdial.brandingClckrDoc.querySelector('item[url=\'' + url + '\']');
-            return clckrItem ? 'http://' + clckrItem.getAttribute('domain') : url;
+            var clckrItem = this._application.fastdial.brandingClckrDoc.querySelector("item[url='" + url + "']");
+            return clckrItem ? "http://" + clckrItem.getAttribute("domain") : url;
         },
         prepareUrlForSave: function Sync_prepareUrlForSave(url) {
             var uri;
@@ -276,18 +276,18 @@ const sync = {
             return UUID_SVC.generateUUID().toString().substr(1, 8);
         },
         _onAnyEngineStartedLoading: function Sync__onAnyEngineStartedLoading() {
-            if (this._application.preferences.get('sync.enabled', false))
+            if (this._application.preferences.get("sync.enabled", false))
                 return;
-            this._application.preferences.set('sync.enabled', true);
-            this._application.preferences.set('sync.offer', false);
+            this._application.preferences.set("sync.enabled", true);
+            this._application.preferences.set("sync.offer", false);
             var evtData = this.state;
             evtData.offer = 0;
-            this._application.fastdial.sendRequest('sync', evtData);
+            this._application.fastdial.sendRequest("sync", evtData);
         },
         _onAnyEngineFinishedLoading: function Sync__onAnyEngineFinishedLoading() {
             this._enabledStarted = false;
-            this._application.preferences.set('ftabs.emptyLastThumb', false);
-            this._application.fastdial.sendRequest('sync', this.state);
+            this._application.preferences.set("ftabs.emptyLastThumb", false);
+            this._application.fastdial.sendRequest("sync", this.state);
         },
         _cutFromParam: function Sync__cutFromParam(url) {
             var uri = netutils.newURI(url);

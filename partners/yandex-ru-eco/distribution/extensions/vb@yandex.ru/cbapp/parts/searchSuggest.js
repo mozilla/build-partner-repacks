@@ -1,23 +1,23 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['searchSuggest'];
+"use strict";
+const EXPORTED_SYMBOLS = ["searchSuggest"];
 const GLOBAL = this;
 const {
         classes: Cc,
         interfaces: Ci,
         utils: Cu
     } = Components;
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
-Cu.import('resource://gre/modules/Services.jsm');
-Cu.import('resource://gre/modules/PlacesUtils.jsm');
-if ('nsIPrivateBrowsingChannel' in Ci)
-    XPCOMUtils.defineLazyModuleGetter(this, 'PrivateBrowsingUtils', 'resource://gre/modules/PrivateBrowsingUtils.jsm');
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/PlacesUtils.jsm");
+if ("nsIPrivateBrowsingChannel" in Ci)
+    XPCOMUtils.defineLazyModuleGetter(this, "PrivateBrowsingUtils", "resource://gre/modules/PrivateBrowsingUtils.jsm");
 else
     this.PrivateBrowsingUtils = null;
 const searchSuggest = {
         SUGGEST_TIMEOUT: 5000,
         init: function searchSuggest_init(application) {
             this._application = application;
-            this._logger = application.getLogger('searchSuggest');
+            this._logger = application.getLogger("searchSuggest");
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         },
         finalize: function searchSuggest_finalize() {
@@ -25,10 +25,10 @@ const searchSuggest = {
             this._logger = null;
         },
         searchWeb: function searchSuggest_searchWeb(queryString, callback) {
-            var request = Cc['@mozilla.org/xmlextras/xmlhttprequest;1'].createInstance(Ci.nsIXMLHttpRequest);
+            var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
             request.mozBackgroundRequest = true;
-            request.open('GET', this._makeURLForQuery(queryString), true);
-            request.setRequestHeader('Cache-Control', 'no-cache');
+            request.open("GET", this._makeURLForQuery(queryString), true);
+            request.setRequestHeader("Cache-Control", "no-cache");
             var listenerCallback = function listenerCallback(data) callback(data || JSON.stringify([
                 queryString,
                 []
@@ -36,7 +36,7 @@ const searchSuggest = {
             var timer = new this._application.core.Lib.sysutils.Timer(function abortOnTimeout() request.abort(), this.SUGGEST_TIMEOUT);
             var listener = new searchRequestListener(request, timer, listenerCallback);
             if (PrivateBrowsingUtils && request.channel instanceof Ci.nsIPrivateBrowsingChannel) {
-                let topBrowserWindow = Services.wm.getMostRecentWindow('navigator:browser');
+                let topBrowserWindow = Services.wm.getMostRecentWindow("navigator:browser");
                 if (topBrowserWindow)
                     request.channel.setPrivate(PrivateBrowsingUtils.isWindowPrivate(topBrowserWindow));
             }
@@ -80,7 +80,7 @@ const searchSuggest = {
             if (this._useExampleTimer)
                 this._useExampleTimer.cancel();
             gURLBar.focus();
-            gURLBar.inputField.value = '';
+            gURLBar.inputField.value = "";
             this._useExampleTimer = new sysutils.Timer(function () {
                 gURLBar.inputField.value += query.substr(currentPos, 1);
                 currentPos += 1;
@@ -94,34 +94,34 @@ const searchSuggest = {
             }, 25, true, query.length);
         },
         suppressTutorial: function searchSuggest_suppressTutorial() {
-            this._application.preferences.set('ftabs.searchStudyOmnibox', false);
+            this._application.preferences.set("ftabs.searchStudyOmnibox", false);
             this._application.fastdial.requestInit();
         },
         get isFormVisible() {
             return [
                 0,
                 2
-            ].indexOf(this._application.preferences.get('ftabs.searchStatus')) !== -1;
+            ].indexOf(this._application.preferences.get("ftabs.searchStatus")) !== -1;
         },
         get alternativeEngines() {
-            var brandingXMLDoc = this._application.branding.brandPackage.getXMLDocument('fastdial/alternate.xml');
+            var brandingXMLDoc = this._application.branding.brandPackage.getXMLDocument("fastdial/alternate.xml");
             var engines = [];
-            Array.forEach(brandingXMLDoc.querySelectorAll('engines > engine'), function (engine) {
+            Array.forEach(brandingXMLDoc.querySelectorAll("engines > engine"), function (engine) {
                 engines.push({
-                    id: engine.getAttribute('id'),
-                    title: engine.getAttribute('title'),
-                    url: this._application.branding.expandBrandTemplates(engine.getAttribute('query'))
+                    id: engine.getAttribute("id"),
+                    title: engine.getAttribute("title"),
+                    url: this._application.branding.expandBrandTemplates(engine.getAttribute("query"))
                 });
             }, this);
             delete this.alternativeEngines;
             return this.alternativeEngines = engines;
         },
         _makeURLForQuery: function searchSuggest__makeURLForQuery(queryString) {
-            return this._application.branding.expandBrandTemplatesEscape(this._brandingSuggestURL, { 'searchTerms': queryString });
+            return this._application.branding.expandBrandTemplatesEscape(this._brandingSuggestURL, { "searchTerms": queryString });
         },
         get _brandingSuggestURL() {
             delete this._brandingSuggestURL;
-            return this._brandingSuggestURL = this._application.fastdial.brandingXMLDoc.querySelector('search').getAttribute('suggest');
+            return this._brandingSuggestURL = this._application.fastdial.brandingXMLDoc.querySelector("search").getAttribute("suggest");
         },
         _application: null,
         _logger: null,
@@ -141,19 +141,19 @@ searchRequestListener.prototype = {
         this._timer = null;
     },
     _addEventListeners: function searchRequestListener__addEventListeners() {
-        this._request.addEventListener('error', this, false);
-        this._request.addEventListener('abort', this, false);
-        this._request.addEventListener('load', this, false);
+        this._request.addEventListener("error", this, false);
+        this._request.addEventListener("abort", this, false);
+        this._request.addEventListener("load", this, false);
     },
     _removeEventListeners: function searchRequestListener__removeEventListeners() {
-        this._request.removeEventListener('error', this, false);
-        this._request.removeEventListener('abort', this, false);
-        this._request.removeEventListener('load', this, false);
+        this._request.removeEventListener("error", this, false);
+        this._request.removeEventListener("abort", this, false);
+        this._request.removeEventListener("load", this, false);
     },
     handleEvent: function searchRequestListener_handleEvent(event) {
         this._removeEventListeners();
         this._timer.cancel();
-        var data = event.type === 'load' ? this._request.responseText : '';
+        var data = event.type === "load" ? this._request.responseText : "";
         this._callback(data);
         this._finalize();
     }

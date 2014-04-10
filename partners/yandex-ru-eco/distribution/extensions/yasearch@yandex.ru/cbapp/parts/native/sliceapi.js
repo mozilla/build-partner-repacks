@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 function createSliceWrapper(sliceProps, apiInstance, WIID) {
     var platformEnv = new PlatformEnvironment(apiInstance, WIID, sliceProps.messageHandler || null);
     sliceProps.injectedProperties = sliceProps.injectedProperties || {};
@@ -27,7 +27,7 @@ function createSliceWrapper(sliceProps, apiInstance, WIID) {
                 try {
                     listener.apply(listener, _args);
                 } catch (e) {
-                    apiInstance.logger.error('Could not notify slice. ' + e);
+                    apiInstance.logger.error("Could not notify slice. " + e);
                 }
             });
         },
@@ -38,9 +38,9 @@ function createSliceWrapper(sliceProps, apiInstance, WIID) {
 }
 function PlatformEnvironment(nativeAPI, WIID, messageHandler) {
     if (!(nativeAPI instanceof NativeBarAPI))
-        throw new CustomErrors.EArgType('nativeAPI', 'NativeBarAPI', nativeAPI);
-    if (!!messageHandler && typeof messageHandler != 'function')
-        throw new CustomErrors.EArgType('messageHandler', 'Function', messageHandler);
+        throw new CustomErrors.EArgType("nativeAPI", "NativeBarAPI", nativeAPI);
+    if (!!messageHandler && typeof messageHandler != "function")
+        throw new CustomErrors.EArgType("messageHandler", "Function", messageHandler);
     this._api = nativeAPI;
     this._WIID = WIID || undefined;
     this._messageHandler = messageHandler;
@@ -52,14 +52,14 @@ PlatformEnvironment.prototype = {
     get sliceID() this._sliceID,
     set sliceID(sliceID) {
         if (this._sliceID !== undefined)
-            throw new Error('Slice ID is already set.');
+            throw new Error("Slice ID is already set.");
         this._sliceID = sliceID;
     },
     currentPage: {
         get url() {
             var browser = misc.getTopBrowserWindow();
             browser = browser && browser.gBrowser;
-            return browser && browser.contentWindow && '' + browser.contentWindow.location || null;
+            return browser && browser.contentWindow && "" + browser.contentWindow.location || null;
         },
         get title() {
             var browser = misc.getTopBrowserWindow();
@@ -67,8 +67,8 @@ PlatformEnvironment.prototype = {
             return browser && browser.contentTitle || null;
         },
         __exposedProps__: {
-            'url': 'r',
-            'title': 'r'
+            "url": "r",
+            "title": "r"
         }
     },
     resizeWindowTo: function PlatformEnvironment_resizeWindowTo(width, height) {
@@ -76,13 +76,13 @@ PlatformEnvironment.prototype = {
     },
     getOption: function PlatformEnvironment_getOption(aKey) {
         var value = this._api.Settings.getValue(aKey, this._WIID);
-        if (typeof value === 'undefined')
-            value = '';
+        if (typeof value === "undefined")
+            value = "";
         return String(value);
     },
     setOption: function PlatformEnvironment_setOption(aKey, aValue) {
-        if (typeof aValue !== 'string')
-            throw new TypeError('Option value must be a string.');
+        if (typeof aValue !== "string")
+            throw new TypeError("Option value must be a string.");
         this._api.Settings.setValue(aKey, aValue, this._WIID);
     },
     observeSettings: function PlatformEnvironment_observeSettings(aListenerFunction) {
@@ -100,7 +100,7 @@ PlatformEnvironment.prototype = {
         this._settingsListeners.splice(this._settingsListeners.indexOf(observer), 1);
     },
     showSettings: function PlatformEnvironment_showSettings() {
-        var setupID = this._api.componentType == 'widget' ? this._WIID : this._api.componentID;
+        var setupID = this._api.componentType == "widget" ? this._WIID : this._api.componentID;
         application.openSettingsDialog(null, setupID, null);
     },
     getLocalizedString: function PlatformEnvironment_getLocalizedString(aKey) {
@@ -136,30 +136,30 @@ PlatformEnvironment.prototype = {
     get logger() {
         delete this.logger;
         var logger = this._api.logger;
-        this.__defineGetter__('logger', function () logger);
+        this.__defineGetter__("logger", function () logger);
         return this.logger;
     },
     get Notifications() this._api.Notifications,
     __exposedProps__: {
-        'logger': 'r',
-        'sliceID': 'r',
-        'currentPage': 'r',
-        'resizeWindowTo': 'r',
-        'getOption': 'r',
-        'setOption': 'r',
-        'observeSettings': 'r',
-        'ignoreSettings': 'r',
-        'showSettings': 'r',
-        'getLocalizedString': 'r',
-        'sendMessage': 'r',
-        'onMessage': 'r',
-        'getCookie': 'r',
-        'language': 'r',
-        'brandID': 'r',
-        'navigate': 'r',
-        'logCustomAction': 'r',
-        'XMLHttpRequest': 'r',
-        'Notifications': 'r'
+        "logger": "r",
+        "sliceID": "r",
+        "currentPage": "r",
+        "resizeWindowTo": "r",
+        "getOption": "r",
+        "setOption": "r",
+        "observeSettings": "r",
+        "ignoreSettings": "r",
+        "showSettings": "r",
+        "getLocalizedString": "r",
+        "sendMessage": "r",
+        "onMessage": "r",
+        "getCookie": "r",
+        "language": "r",
+        "brandID": "r",
+        "navigate": "r",
+        "logCustomAction": "r",
+        "XMLHttpRequest": "r",
+        "Notifications": "r"
     }
 };
 function Messager(sliceEnv) {
@@ -176,13 +176,13 @@ Messager.prototype = {
         this._listeners = this._listeners.filter(function (listener) listener !== aListener);
     },
     __exposedProps__: {
-        'addListener': 'r',
-        'removeListener': 'r'
+        "addListener": "r",
+        "removeListener": "r"
     }
 };
 function XMLHttpRequestWrapper(sliceID) {
     var that = Object.create(XMLHttpRequestWrapper.prototype);
-    var xhr = Cc['@mozilla.org/xmlextras/xmlhttprequest;1'].createInstance(Ci.nsIXMLHttpRequest);
+    var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
     xhr.mozBackgroundRequest = true;
     xhr.onreadystatechange = function XMLHttpRequestWrapper_onreadystatechange() {
         if (!application)
@@ -197,14 +197,14 @@ function XMLHttpRequestWrapper(sliceID) {
             } else {
             }
         }
-        this.statusText = '';
+        this.statusText = "";
         this.status = 0;
         try {
             this.status = xhr.status;
             this.statusText = xhr.statusText;
         } catch (e) {
         }
-        if (typeof this.onreadystatechange == 'function')
+        if (typeof this.onreadystatechange == "function")
             this.onreadystatechange(arguments);
     }.bind(that);
     that.readyState = xhr.readyState;
@@ -231,18 +231,18 @@ function XMLHttpRequestWrapper(sliceID) {
 ;
 XMLHttpRequestWrapper.prototype = {
     __exposedProps__: {
-        onreadystatechange: 'rw',
-        readyState: 'r',
-        open: 'r',
-        setRequestHeader: 'r',
-        send: 'r',
-        abort: 'r',
-        getAllResponseHeaders: 'r',
-        getResponseHeader: 'r',
-        responseText: 'r',
-        responseXML: 'r',
-        status: 'r',
-        statusText: 'r',
-        withCredentials: 'rw'
+        onreadystatechange: "rw",
+        readyState: "r",
+        open: "r",
+        setRequestHeader: "r",
+        send: "r",
+        abort: "r",
+        getAllResponseHeaders: "r",
+        getResponseHeader: "r",
+        responseText: "r",
+        responseXML: "r",
+        status: "r",
+        statusText: "r",
+        withCredentials: "rw"
     }
 };

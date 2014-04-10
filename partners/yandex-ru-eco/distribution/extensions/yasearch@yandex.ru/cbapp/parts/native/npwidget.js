@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
         constructor: function NativeWidgetPrototype(protoID, name, unique, iconPath, nativeModulePath, unit) {
             if (!nativeModulePath)
-                throw new CustomErrors.EArgRange('nativeModulePath', 'FilePath', nativeModulePath);
+                throw new CustomErrors.EArgRange("nativeModulePath", "FilePath", nativeModulePath);
             this.base(protoID, name, unique, iconPath, unit);
             this._nativeModulePath = nativeModulePath;
             this._settingsMap = {};
@@ -36,7 +36,7 @@ var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
                 try {
                     this.pkg.removeSettingUser(settingName, this.id);
                 } catch (e) {
-                    this._logger.error(strutils.formatString('Failed in removeSettingUser(%1). %2', [
+                    this._logger.error(strutils.formatString("Failed in removeSettingUser(%1). %2", [
                         settingName,
                         strutils.formatError(e)
                     ]));
@@ -72,7 +72,7 @@ var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
                 };
                 break;
             default:
-                throw new CustomErrors.EArgType('settingScope', 'ENUM_SCOPE_PACKAGE | ENUM_SCOPE_WIDGET | ENUM_SCOPE_INSTANCE', '' + settingScope);
+                throw new CustomErrors.EArgType("settingScope", "ENUM_SCOPE_PACKAGE | ENUM_SCOPE_WIDGET | ENUM_SCOPE_INSTANCE", "" + settingScope);
             }
         },
         getSettingValue: function NativeWidgetPrototype_getSettingValue(settingName) {
@@ -93,11 +93,11 @@ var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
                 return this.getSettingValue(settingName);
             var spawnRec = this._spawns[WIID];
             if (!spawnRec)
-                throw new Error('Invalid widget instance ID: ' + WIID);
+                throw new Error("Invalid widget instance ID: " + WIID);
             var projections = spawnRec.projections;
             var projection = projections && projections[0];
             if (!projection)
-                throw new Error('Could not find widget projections for instance: ' + WIID);
+                throw new Error("Could not find widget projections for instance: " + WIID);
             return projection.getSettingValue(settingName);
         },
         lookupSetSettingValue: function NativeWidgetPrototype_lookupSetSettingValue(settingName, WIID, newValue) {
@@ -133,13 +133,13 @@ var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
             switch (topic) {
             case appCore.eventTopics.EVT_BEFORE_GLOBAL_RESET: {
                     let widgetCore = this._nativeModule && this._nativeModule.core;
-                    if (widgetCore && typeof widgetCore.onBeforeReset == 'function')
+                    if (widgetCore && typeof widgetCore.onBeforeReset == "function")
                         widgetCore.onBeforeReset();
                     break;
                 }
             case appCore.eventTopics.EVT_AFTER_GLOBAL_RESET: {
                     let widgetCore = this._nativeModule && this._nativeModule.core;
-                    if (widgetCore && typeof widgetCore.onAfterReset == 'function')
+                    if (widgetCore && typeof widgetCore.onAfterReset == "function")
                         widgetCore.onAfterReset();
                     break;
                 }
@@ -148,12 +148,12 @@ var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
             }
         },
         _consts: {
-            MSG_SETTING_NOT_REGISTERED: 'Setting "%1" is not registered',
-            ERR_FINALIZING_CORE: 'Could not finalize native module core. ',
-            ERR_FINALIZING_API: 'Could not finalize native API object. ',
-            ERR_NOTIFYING_CORE: 'Could not notify native widget core. ',
-            ERR_SUBSCRIBING: 'Could not subscribe to event notifications. ',
-            ERR_UNSUBSCRIBING: 'Could not unsubscribe from event notifications. '
+            MSG_SETTING_NOT_REGISTERED: "Setting \"%1\" is not registered",
+            ERR_FINALIZING_CORE: "Could not finalize native module core. ",
+            ERR_FINALIZING_API: "Could not finalize native API object. ",
+            ERR_NOTIFYING_CORE: "Could not notify native widget core. ",
+            ERR_SUBSCRIBING: "Could not subscribe to event notifications. ",
+            ERR_UNSUBSCRIBING: "Could not unsubscribe from event notifications. "
         },
         _nativeModulePath: undefined,
         _nativeAPIInst: null,
@@ -165,9 +165,9 @@ var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
         _initCore: function NativeWidgetPrototype__initCore() {
             this._coreInitAttempted = true;
             var widgetCore = this._nativeModule.core;
-            if (widgetCore && typeof widgetCore.init == 'function') {
+            if (widgetCore && typeof widgetCore.init == "function") {
                 this._nativeAPIInst = new NativeBarAPI({
-                    type: 'widget',
+                    type: "widget",
                     id: this._id,
                     package_: this.unit.unitPackage,
                     component: this
@@ -178,7 +178,7 @@ var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
         },
         _finalizeCore: function NativeWidgetPrototype__finalizeCore() {
             var widgetCore = this._nativeModule.core;
-            if (widgetCore && typeof widgetCore.finalize == 'function') {
+            if (widgetCore && typeof widgetCore.finalize == "function") {
                 try {
                     widgetCore.finalize();
                 } catch (e) {
@@ -223,7 +223,7 @@ var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
         _noMoreInstProjections: function NativeWidgetPrototype__noMoreInstProjections(WIID, spawnRec) {
             try {
                 let widgetCore = this._nativeModule && this._nativeModule.core;
-                if (widgetCore && typeof widgetCore.onNoMoreInstProjections == 'function') {
+                if (widgetCore && typeof widgetCore.onNoMoreInstProjections == "function") {
                     widgetCore.onNoMoreInstProjections(WIID);
                 }
             } catch (e) {
@@ -241,13 +241,13 @@ var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
 var NativeWidgetInstance = Base.extend({
         constructor: function NativeWidgetInstance(IID, proto, widgetHost, settingsInfo) {
             if (!(proto instanceof NativeWidgetPrototype))
-                throw new CustomErrors.EArgType('proto', 'NativeWidgetPrototype', proto);
+                throw new CustomErrors.EArgType("proto", "NativeWidgetPrototype", proto);
             if (!IID)
-                throw new CustomErrors.EArgRange('IID', '/.+/', IID);
+                throw new CustomErrors.EArgRange("IID", "/.+/", IID);
             this._IID = IID;
             this._proto = proto;
             this._host = widgetHost;
-            this._logger = NativeComponents._getLogger(BarPlatform.makeCompLoggerName(proto.unit) + '.' + IID);
+            this._logger = NativeComponents._getLogger(BarPlatform.makeCompLoggerName(proto.unit) + "." + IID);
             this._settingsMap = settingsInfo;
         },
         get id() {
@@ -288,7 +288,7 @@ var NativeWidgetInstance = Base.extend({
                 try {
                     this.applySetting(name, settingsMap[name]);
                 } catch (e) {
-                    this._logger.error('Couldn\'t apply widget instance setting. ' + strutils.formatError(e));
+                    this._logger.error("Couldn't apply widget instance setting. " + strutils.formatError(e));
                     if (!noFail)
                         throw e;
                 }
@@ -298,7 +298,7 @@ var NativeWidgetInstance = Base.extend({
             Preferences.resetBranch(NativeComponents.makeInstancePrefPath(this._proto.id, this.id));
         },
         finalize: function NativeWidgetInstance_finalize() {
-            this._logger.config('Instance finalization');
+            this._logger.config("Instance finalization");
             this._destroyUI();
             var proto = this._proto;
             this._proto = null;
@@ -315,7 +315,7 @@ var NativeWidgetInstance = Base.extend({
             try {
                 this._proto.nativeModule.core.destroyWidget(this._IID, this._toolbarElement, this._coreContext);
             } catch (e) {
-                this._logger.error('Failed in widgetCore.destroyWidget. ' + strutils.formatError(e));
+                this._logger.error("Failed in widgetCore.destroyWidget. " + strutils.formatError(e));
                 this._logger.debug(e.stack);
             } finally {
                 this._coreContext = undefined;

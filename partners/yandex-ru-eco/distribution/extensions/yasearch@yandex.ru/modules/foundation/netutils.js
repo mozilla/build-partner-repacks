@@ -1,9 +1,9 @@
-'use strict';
-EXPORTED_SYMBOLS.push('netutils');
+"use strict";
+EXPORTED_SYMBOLS.push("netutils");
 const netutils = {
-        ioService: Cc['@mozilla.org/network/io-service;1'].getService(Ci.nsIIOService),
-        cookieService: Cc['@mozilla.org/cookieService;1'].getService().QueryInterface(Ci.nsICookieService),
-        cookieManager: Cc['@mozilla.org/cookiemanager;1'].getService(Ci.nsICookieManager2),
+        ioService: Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService),
+        cookieService: Cc["@mozilla.org/cookieService;1"].getService().QueryInterface(Ci.nsICookieService),
+        cookieManager: Cc["@mozilla.org/cookiemanager;1"].getService(Ci.nsICookieManager2),
         newURI: function netutils_newURI(spec, origCharset, baseURI) {
             return this.ioService.newURI(spec, origCharset || null, baseURI || null);
         },
@@ -41,7 +41,7 @@ const netutils = {
                     return true;
                 if (strictMatch)
                     return false;
-                return cookie.isDomain && strutils.stringEndsWith('.' + hostName, cookie.host);
+                return cookie.isDomain && strutils.stringEndsWith("." + hostName, cookie.host);
             }
             function pathMatch(path, cookie) {
                 var cookiePath = cookie.path;
@@ -50,7 +50,7 @@ const netutils = {
                 if (strictMatch)
                     return false;
                 var pathPrefix = path.substr(0, cookiePath.length);
-                return pathPrefix == cookiePath && (cookiePath.substr(-1) == '/' || path[cookiePath.length] == '/');
+                return pathPrefix == cookiePath && (cookiePath.substr(-1) == "/" || path[cookiePath.length] == "/");
             }
             return domainMatch(uri.host, cookie) && pathMatch(uri.path, cookie);
         },
@@ -63,8 +63,8 @@ const netutils = {
     };
 netutils.querystring = {
     stringify: function netutils_querystring_stringify(obj, sep, eq) {
-        sep = sep || '&';
-        eq = eq || '=';
+        sep = sep || "&";
+        eq = eq || "=";
         var parts = [];
         for (let [
                     key,
@@ -72,20 +72,20 @@ netutils.querystring = {
                 ] in Iterator(obj)) {
             if (Array.isArray(value)) {
                 value = value.map(function (val) {
-                    val = val || '';
+                    val = val || "";
                     return key + eq + val;
                 });
                 parts.push.apply(parts, value);
             } else {
-                value = value || '';
+                value = value || "";
                 parts.push(key + eq + value);
             }
         }
         return parts.join(sep);
     },
     parse: function netutils_querystring_parse(str, sep, eq) {
-        sep = sep || '&';
-        eq = eq || '=';
+        sep = sep || "&";
+        eq = eq || "=";
         var parts = str.split(sep);
         var output = {};
         if (!str.length)
@@ -114,7 +114,7 @@ netutils.DownloadTask = function DownloadTask(urlString, output, channelProperti
     try {
         this._originalURI = netutils.ioService.newURI(urlString, null, null);
     } catch (e) {
-        throw this._error = new Error(e.message + ' ' + urlString);
+        throw this._error = new Error(e.message + " " + urlString);
     }
     if (output !== undefined) {
         if (output instanceof Ci.nsIFile)
@@ -122,10 +122,10 @@ netutils.DownloadTask = function DownloadTask(urlString, output, channelProperti
         else if (output instanceof Ci.nsIOutputStream)
             this._outputStream = output;
         else
-            throw this._error = new CustomErrors.EArgType('output', 'nsIFile | nsIOutputStream', output);
+            throw this._error = new CustomErrors.EArgType("output", "nsIFile | nsIOutputStream", output);
     }
     if (httpHeaders !== undefined && !sysutils.isObject(httpHeaders))
-        throw this._error = new CustomErrors.EArgType('httpHeaders', 'Object', httpHeaders);
+        throw this._error = new CustomErrors.EArgType("httpHeaders", "Object", httpHeaders);
     this._channelProps = channelProperties;
     this._bypassCache = !!bypassCache;
     this._httpHeaders = httpHeaders;
@@ -202,9 +202,9 @@ netutils.DownloadTask.prototype = {
         }
         this._setNewChannel(request.QueryInterface(Ci.nsIChannel));
         this._request = request;
-        this._binInputStream = Cc['@mozilla.org/binaryinputstream;1'].createInstance(Ci.nsIBinaryInputStream);
+        this._binInputStream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
         if (!this._outputStream)
-            this._contentBuffer = '';
+            this._contentBuffer = "";
     },
     onStopRequest: function DownloadTask_onStopRequest(request, context, statusCode) {
         try {
@@ -244,12 +244,12 @@ netutils.DownloadTask.prototype = {
     _statusCode: undefined,
     _openBuffer: function DownloadTask__openBuffer() {
         if (this._contentBuffer === undefined)
-            throw new Error('No internal buffer');
+            throw new Error("No internal buffer");
         return fileutils.openBuffer(this._contentBuffer);
     },
     _startAsyncDownload: function DownloadTask__startAsyncDownload() {
         if (!this._outputStream && this._outputFile) {
-            this._outputStream = Cc['@mozilla.org/network/file-output-stream;1'].createInstance(Ci.nsIFileOutputStream);
+            this._outputStream = Cc["@mozilla.org/network/file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);
             let modeFlags = fileutils.MODE_WRONLY | fileutils.MODE_CREATE | fileutils.MODE_TRUNCATE;
             this._outputStream.init(this._outputFile, modeFlags, fileutils.PERMS_FILE, 0);
         }
@@ -272,14 +272,14 @@ netutils.DownloadTask.prototype = {
                     propName,
                     propValue
                 ] in Iterator(propsMap)) {
-            if (typeof propValue == 'boolean')
+            if (typeof propValue == "boolean")
                 propBag.setPropertyAsBool(propName, propValue);
             else if (sysutils.isNumber(propValue))
                 propBag.setPropertyAsInt64(propName, propValue);
-            else if (typeof propValue == 'string')
+            else if (typeof propValue == "string")
                 propBag.setPropertyAsAUTF8String(propName, propValue);
             else
-                throw new TypeError('Can\'t add property of type ' + typeof propValue);
+                throw new TypeError("Can't add property of type " + typeof propValue);
         }
     },
     _addHttpHeaders: function DownloadTask__addHttpHeaders(headersMap, toChannel) {
@@ -293,8 +293,8 @@ netutils.DownloadTask.prototype = {
 };
 netutils.Cookie = function Cookie(cookieName, cookieURI, httpCookies, exactURIMatch, expired) {
     if (!(cookieURI instanceof Ci.nsIURI))
-        throw new TypeError('Second argument must be nsIURI');
-    this._cookieName = '' + cookieName;
+        throw new TypeError("Second argument must be nsIURI");
+    this._cookieName = "" + cookieName;
     this._uri = cookieURI.clone();
     this._httpCookies = !!httpCookies;
     this._exactURIMatch = !!exactURIMatch;
@@ -308,7 +308,7 @@ netutils.Cookie.prototype = {
     set name(newName) {
         if (this._cookieName == newName)
             return;
-        this._cookieName = '' + newName;
+        this._cookieName = "" + newName;
         this._update();
     },
     get uri() {
@@ -316,7 +316,7 @@ netutils.Cookie.prototype = {
     },
     set uri(newURI) {
         if (!(newURI instanceof Ci.nsIURI))
-            throw new TypeError('New value must be nsIURI');
+            throw new TypeError("New value must be nsIURI");
         if (this._uri.equals(newURI))
             return;
         this._uri = newURI;
@@ -345,15 +345,15 @@ netutils.Cookie.prototype = {
             this._cookie = this._findBestCookie();
         return this._lastValue = this._getCurrentCookieValue();
     },
-    EVENTS: { COOKIE_VALUE_CHANGED: 'cookie-value-changed' },
+    EVENTS: { COOKIE_VALUE_CHANGED: "cookie-value-changed" },
     constructor: netutils.Cookie,
     toString: function Cookie_toString() {
-        return strutils.formatString('[%1 "%2" @ %3 (%4, %5)]', [
+        return strutils.formatString("[%1 \"%2\" @ %3 (%4, %5)]", [
             this.constructor.name,
             this._cookieName,
             this._uri.spec,
-            this._httpCookies ? 'http' : 'all',
-            this._exactURIMatch ? 'exactly' : 'best'
+            this._httpCookies ? "http" : "all",
+            this._exactURIMatch ? "exactly" : "best"
         ]);
     },
     QueryInterface: XPCOMUtils.generateQI([
@@ -361,18 +361,18 @@ netutils.Cookie.prototype = {
         Ci.nsIObserver
     ]),
     observe: function Cookie_observe(subject, topic, data) {
-        if (!this._hasListeners || topic != 'cookie-changed')
+        if (!this._hasListeners || topic != "cookie-changed")
             return;
         const nsICookie2 = Ci.nsICookie2;
         switch (data) {
-        case 'cleared':
+        case "cleared":
             this._cookie = null;
             break;
-        case 'batch-deleted':
-        case 'reload':
+        case "batch-deleted":
+        case "reload":
             this._cookie = this._findBestCookie();
             break;
-        case 'deleted': {
+        case "deleted": {
                 if (!this._cookie)
                     return;
                 let deletedCookie = subject.QueryInterface(nsICookie2);
@@ -380,7 +380,7 @@ netutils.Cookie.prototype = {
                     this._cookie = this._findBestCookie();
                 break;
             }
-        case 'added': {
+        case "added": {
                 let addedCookie = subject.QueryInterface(nsICookie2);
                 if (!this._cookieMatches(addedCookie))
                     return;
@@ -388,7 +388,7 @@ netutils.Cookie.prototype = {
                     this._cookie = addedCookie;
                 break;
             }
-        case 'changed': {
+        case "changed": {
                 let changedCookie = subject.QueryInterface(nsICookie2);
                 if (!this._cookie) {
                     if (this._cookieMatches(changedCookie))
@@ -410,7 +410,7 @@ netutils.Cookie.prototype = {
             this._notifyListeners(this.EVENTS.COOKIE_VALUE_CHANGED, this._lastValue = newValue);
         }
     },
-    _observerService: Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService),
+    _observerService: Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService),
     _observing: false,
     _uri: null,
     _cookieName: undefined,
@@ -419,7 +419,7 @@ netutils.Cookie.prototype = {
     _lastValue: undefined,
     _listenerAdded: function Cookie__listenerAdded(topic, listener) {
         if (!this._observing) {
-            this._observerService.addObserver(this, 'cookie-changed', false);
+            this._observerService.addObserver(this, "cookie-changed", false);
             this._observing = true;
             if (this._cookie)
                 this._cookie = this._findBestCookie();
@@ -427,7 +427,7 @@ netutils.Cookie.prototype = {
     },
     _listenerRemoved: function Cookie__listenerRemoved(topic, listener) {
         if (!this._hasListeners && this._observing) {
-            this._observerService.removeObserver(this, 'cookie-changed');
+            this._observerService.removeObserver(this, "cookie-changed");
             this._observing = false;
         }
     },

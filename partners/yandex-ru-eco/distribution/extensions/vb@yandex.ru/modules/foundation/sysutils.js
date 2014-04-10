@@ -1,19 +1,19 @@
-'use strict';
-EXPORTED_SYMBOLS.push('sysutils');
+"use strict";
+EXPORTED_SYMBOLS.push("sysutils");
 const sysutils = {
         get scriptSecurityManager() {
             delete this.scriptSecurityManager;
-            return this.scriptSecurityManager = Cc['@mozilla.org/scriptsecuritymanager;1'].getService(Ci.nsIScriptSecurityManager);
+            return this.scriptSecurityManager = Cc["@mozilla.org/scriptsecuritymanager;1"].getService(Ci.nsIScriptSecurityManager);
         },
         dump: function SysUtils_dump(what, depth) {
             const brackets = {
-                    object: '{}',
-                    array: '[]'
+                    object: "{}",
+                    array: "[]"
                 };
             function _dump(what, depth, stack) {
                 if (!what)
-                    return '' + what;
-                var currIndent = strutils.repeatString('  ', stack.length);
+                    return "" + what;
+                var currIndent = strutils.repeatString("  ", stack.length);
                 stack.push(what);
                 var useBr = Array.isArray(what) ? brackets.array : brackets.object;
                 var res = useBr[0];
@@ -24,54 +24,54 @@ const sysutils = {
                         if (depth > stack.length && sysutils.isObject(val)) {
                             valStr = _dump(val, depth, stack);
                         } else {
-                            if (typeof val == 'string')
+                            if (typeof val == "string")
                                 valStr = [
-                                    '"',
+                                    "\"",
                                     val,
-                                    '"'
-                                ].join('');
+                                    "\""
+                                ].join("");
                             else
                                 valStr = String(val);
                         }
                     } catch (e) {
-                        valStr = '/conversion error/';
+                        valStr = "/conversion error/";
                     }
                     res += [
-                        '\n',
+                        "\n",
                         currIndent,
-                        '  ',
+                        "  ",
                         propName,
-                        ': ',
+                        ": ",
                         valStr
-                    ].join('');
+                    ].join("");
                 }
-                res += '\n' + currIndent + useBr[1];
+                res += "\n" + currIndent + useBr[1];
                 stack.pop();
                 return res;
             }
             return _dump(what, depth, []);
         },
         get versionComparator() {
-            var comparator = Cc['@mozilla.org/xpcom/version-comparator;1'].getService(Ci.nsIVersionComparator);
-            this.__defineGetter__('versionComparator', function getVersionComparator() comparator);
+            var comparator = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
+            this.__defineGetter__("versionComparator", function getVersionComparator() comparator);
             return this.versionComparator;
         },
         get platformInfo() {
-            var info = Cc['@mozilla.org/xre/app-info;1'].getService(Ci.nsIXULAppInfo).QueryInterface(Ci.nsIXULRuntime);
+            var info = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULAppInfo).QueryInterface(Ci.nsIXULRuntime);
             var os = info.OS;
             if (/^win/i.test(os))
-                os = 'windows';
+                os = "windows";
             else if (/^linux/i.test(os))
-                os = 'linux';
+                os = "linux";
             else if (/^darwin/i.test(os))
-                os = 'mac';
+                os = "mac";
             var comparator = this.versionComparator;
-            var simpleArchitecture = info.XPCOMABI.split('-')[0] || 'x86';
-            if (simpleArchitecture == 'x86_64')
-                simpleArchitecture = 'x64';
+            var simpleArchitecture = info.XPCOMABI.split("-")[0] || "x86";
+            if (simpleArchitecture == "x86_64")
+                simpleArchitecture = "x64";
             var platformInfo = {
                     browser: {
-                        name: 'firefox',
+                        name: "firefox",
                         version: {
                             toString: function PBVersion_toString() info.version,
                             isLessThan: function PBVersion_isLessThan(aVersion) comparator.compare(this, aVersion) < 0,
@@ -83,7 +83,7 @@ const sysutils = {
                     },
                     os: { name: os }
                 };
-            this.__defineGetter__('platformInfo', function () platformInfo);
+            this.__defineGetter__("platformInfo", function () platformInfo);
             return this.platformInfo;
         },
         isEmptyObject: function SysUtils_isEmptyObject(obj) {
@@ -92,8 +92,8 @@ const sysutils = {
             return true;
         },
         objectsAreEqual: function SysUtils_objectsAreEqual(obj1, obj2) {
-            if (typeof obj1 != 'object' || typeof obj2 != 'object')
-                throw new TypeError('Objects expected');
+            if (typeof obj1 != "object" || typeof obj2 != "object")
+                throw new TypeError("Objects expected");
             if (obj1 === obj2)
                 return true;
             if (Array.isArray(obj1) !== Array.isArray(obj2))
@@ -107,7 +107,7 @@ const sysutils = {
                     return true;
                 var prop1 = obj1[propName];
                 var prop2 = obj2[propName];
-                if (typeof prop1 == 'object' && typeof prop2 == 'object') {
+                if (typeof prop1 == "object" && typeof prop2 == "object") {
                     if (!this.objectsAreEqual(prop1, prop2))
                         return true;
                 } else {
@@ -118,7 +118,7 @@ const sysutils = {
         },
         freezeObj: function SysUtils_freezeObj_factory() {
             const watcher = function SysUtils_freezeObj_watcher(key, oldValue, newValue) {
-                throw new TypeError('Can not modify property [' + key + ']: ' + this + ' is frozen');
+                throw new TypeError("Can not modify property [" + key + "]: " + this + " is frozen");
             };
             return function SysUtils_freezeObj(obj) {
                 if (obj.Object_freeze_self) {
@@ -128,7 +128,7 @@ const sysutils = {
                 for (let key in obj) {
                     if (obj.hasOwnProperty(key)) {
                         let value = obj[key];
-                        if (value && typeof value === 'object') {
+                        if (value && typeof value === "object") {
                             sysutils.freezeObj(value);
                         }
                     }
@@ -140,7 +140,7 @@ const sysutils = {
             };
         }(),
         copyObj: function SysUtils_copyObj(src, deep) {
-            if (typeof src != 'object' || !src)
+            if (typeof src != "object" || !src)
                 return src;
             if (Array.isArray(src))
                 return src.map(function (el) {
@@ -167,7 +167,7 @@ const sysutils = {
         copyProperties: function SysUtils_copyProperties(from, to, filter) {
             var filterFunc;
             if (filter) {
-                filterFunc = typeof filter == 'function' ? filter : function SysUtils_copyFilter(propName) propName in filter;
+                filterFunc = typeof filter == "function" ? filter : function SysUtils_copyFilter(propName) propName in filter;
             }
             var passValues = filterFunc && filterFunc.length > 1;
             for (let propName in from) {
@@ -176,13 +176,13 @@ const sysutils = {
             }
         },
         promiseSleep: function sysutils_promiseSleep(timeout, condition) {
-            timeout = typeof timeout == 'number' && timeout > 0 ? timeout : 0;
+            timeout = typeof timeout == "number" && timeout > 0 ? timeout : 0;
             var timeStep = Math.max(Math.floor(timeout / 100), 50);
             var timeStart = Date.now();
-            var timer = Cc['@mozilla.org/timer;1'].createInstance(Ci.nsITimer);
+            var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
             var _promiseSleep = function sysutils__promiseSleep() {
                 var defer = promise.defer();
-                if (typeof condition !== 'function') {
+                if (typeof condition !== "function") {
                     timer.initWithCallback(defer.resolve, timeout, timer.TYPE_ONE_SHOT);
                 } else {
                     if (condition() || Date.now() - timeStart >= timeout) {
@@ -199,30 +199,30 @@ const sysutils = {
         },
         ensureValueTypeIs: function SysUtils_ensureValueTypeIs(val, typeDescr) {
             if (!this.valueTypeIs(val, typeDescr))
-                throw new TypeError(strutils.formatString('Value \'%1\' type is not \'%2\'', [
+                throw new TypeError(strutils.formatString("Value '%1' type is not '%2'", [
                     val,
                     typeDescr
                 ]));
         },
         valueTypeIs: function SysUtils_valueTypeIs(val, typeDescr) {
-            if (typeof typeDescr == 'string')
+            if (typeof typeDescr == "string")
                 return this.smartTypeOf(val) == typeDescr;
-            else if (typeof typeDescr == 'function')
+            else if (typeof typeDescr == "function")
                 return val instanceof typeDescr;
             else
                 return false;
         },
         smartTypeOf: function SysUtils_smartTypeOf(val) {
-            return val === null ? 'null' : Array.isArray(val) ? 'array' : typeof val;
+            return val === null ? "null" : Array.isArray(val) ? "array" : typeof val;
         },
         isPlainObject: function SysUtils_isPlainObject(val) {
             return Object.getPrototypeOf(Object.getPrototypeOf(val)) === null;
         },
         isObject: function SysUtils_isObject(val) {
-            return Boolean(val && Object.prototype.toString.call(val) == '[object Object]');
+            return Boolean(val && Object.prototype.toString.call(val) == "[object Object]");
         },
         isNumber: function SysUtils_isNumber(x) {
-            return typeof x == 'number' && !isNaN(x);
+            return typeof x == "number" && !isNaN(x);
         },
         cutNumberTo: function SysUtils_cutNumberTo(num, numDigits) {
             var intPart = Math.floor(num);
@@ -248,7 +248,7 @@ const sysutils = {
         },
         WeakObjectProxy: function WeakObjectProxy(object) {
             if (!sysutils.isObject(object))
-                throw new CustomErrors.EArgType('object', 'Object', object);
+                throw new CustomErrors.EArgType("object", "Object", object);
             var inst = function weakRefInitializer() {
                     var __storedObject = object;
                     return {
@@ -257,10 +257,10 @@ const sysutils = {
                         },
                         invoke: function WeakObjectProxy_invoke(methodName, methodArguments) {
                             if (!this.isValid)
-                                throw new Error('This weak object is invalid');
+                                throw new Error("This weak object is invalid");
                             var method = __storedObject[methodName];
-                            if (typeof method !== 'function')
-                                throw new Error(strutils.formatString('No such method (%1)', [methodName]));
+                            if (typeof method !== "function")
+                                throw new Error(strutils.formatString("No such method (%1)", [methodName]));
                             var args = Array.slice(arguments, 1);
                             return method.apply(__storedObject, args);
                         },
@@ -282,14 +282,14 @@ sysutils.Interface = function Interface(name, methods, properties) {
     this._properties = {};
     if (methods !== undefined) {
         if (!Array.isArray(methods))
-            throw new TypeError('Methods must be described by an array of strings');
+            throw new TypeError("Methods must be described by an array of strings");
         methods.forEach(function (methodName) {
-            this._properties[methodName] = 'function';
+            this._properties[methodName] = "function";
         }, this);
     }
     if (properties !== undefined) {
         if (!sysutils.isPlainObject(properties))
-            throw new TypeError('Properties must be described by a plain map of properties');
+            throw new TypeError("Properties must be described by a plain map of properties");
         sysutils.copyProperties(properties, this._properties);
     }
 };
@@ -333,11 +333,11 @@ sysutils.Interface.prototype = {
 };
 sysutils.Timer = function Timer(aCallback, aDelay, aRepeating, aMaxTimes) {
     this.callback = aCallback;
-    this.repeatingDelay = typeof aRepeating == 'number' && aRepeating > 0 ? aRepeating : null;
-    this.repeating = typeof aRepeating == 'boolean' || this.repeatingDelay ? !!aRepeating : false;
+    this.repeatingDelay = typeof aRepeating == "number" && aRepeating > 0 ? aRepeating : null;
+    this.repeating = typeof aRepeating == "boolean" || this.repeatingDelay ? !!aRepeating : false;
     this.timesCounter = 0;
-    this.maxTimes = typeof aMaxTimes == 'number' && aMaxTimes > 0 ? aMaxTimes : null;
-    this.timer = Cc['@mozilla.org/timer;1'].createInstance(Ci.nsITimer);
+    this.maxTimes = typeof aMaxTimes == "number" && aMaxTimes > 0 ? aMaxTimes : null;
+    this.timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
     var type = aRepeating ? this.timer.TYPE_REPEATING_SLACK : this.timer.TYPE_ONE_SHOT;
     this.timer.initWithCallback(this, aDelay, type);
 };
@@ -374,14 +374,14 @@ sysutils.Timer.prototype = {
 sysutils.DataContainer = function DataContainer(aContainerProperties) {
     this._dropAllData();
     var expirationTime = aContainerProperties && aContainerProperties.expirationTime;
-    this._expirationTime = typeof expirationTime == 'number' && expirationTime > 0 ? expirationTime : 24 * 60 * 60 * 1000;
+    this._expirationTime = typeof expirationTime == "number" && expirationTime > 0 ? expirationTime : 24 * 60 * 60 * 1000;
     if (this._expirationTime) {
         let DataContainer_cleanup = function DataContainer_cleanup() {
                 this._checkExpiredAll();
             }.bind(this);
         let cleanup = { notify: DataContainer_cleanup };
         let timerPeriod = Math.max(parseInt(this._expirationTime / 2, 10), 10 * 60 * 1000);
-        let timer = Cc['@mozilla.org/timer;1'].createInstance(Ci.nsITimer);
+        let timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
         timer.initWithCallback(cleanup, timerPeriod, Ci.nsITimer.TYPE_REPEATING_SLACK);
         this._cleanupTimer = timer;
     }
@@ -434,10 +434,10 @@ sysutils.DataContainer.prototype = {
         return (items[k].value for (k in items));
     },
     toString: function DataContainer_toString() {
-        return '{' + [k + ': ' + v for ([
+        return "{" + [k + ": " + v for ([
                 k,
                 v
-            ] in this)].join(', ') + '}';
+            ] in this)].join(", ") + "}";
     },
     __iterator__: function DataContainer___iterator__() {
         this._checkExpiredAll();
@@ -473,7 +473,7 @@ sysutils.DataContainer.prototype = {
                 this.remove(key);
     },
     _convertKey: function DataContainer__convertKey(aKey) {
-        return ':' + aKey;
+        return ":" + aKey;
     },
     _unconvertKey: function DataContainer__unconvertKey(aKey) {
         return aKey.substr(1);
