@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 
 Name: config.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: mJvW0IvVxbWw02dZCZtF1w==
-SHA1-Digest: PA9+03Hfm+nms34SResT1Tb6sKk=
+MD5-Digest: nIjf6Nx0BruXoH9grC1Srw==
+SHA1-Digest: mGUCdUBDuWepOAnGlQuLYPPdwYM=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -12,8 +12,8 @@ SHA1-Digest: 6uKf/4cm6jtYQ+NZ0CSQtw8FszE=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: jlZzQ5hHl1gj8RR7TtdYWA==
-SHA1-Digest: ANNQKxOQDnH5lDaUvTSciEy7gi8=
+MD5-Digest: /dv0YGf25z2w5lJnlzIR9A==
+SHA1-Digest: xhYLtkTMtOjB1UtxkSH87XlqfLs=
 
 Name: components/nsIYaSearch.xpt
 Digest-Algorithms: MD5 SHA1
@@ -22,438 +22,313 @@ SHA1-Digest: Cw7YK+5oE4dqMInzSBtuVa3q1iI=
 
 Name: components/nsYaSearch.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: xg26+Aiep5uO5U4YCHUgxQ==
-SHA1-Digest: /bvdMbmB67hqTRlWopVMKVpu5CA=
+MD5-Digest: lDgOwZe2m1HPfSrygtZasQ==
+SHA1-Digest: 4Zoo/1QkAFqREeEfXRvGRm2zE/Q=
 
 Name: components/core.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: cENqrk12nUTKSlw0KcqX4g==
-SHA1-Digest: J/mbJL3I/pi7b6apir61F8akN7Y=
+MD5-Digest: dqNqeWje6bXwy6fAcC0PEA==
+SHA1-Digest: CFfcJ9DjTce/JCnEG5x3GStkzqM=
 
 Name: components/xbProtocol.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: TloXst/VH3O2bafmvJRvtA==
-SHA1-Digest: tpCJ+GgFf2DgUflq6AltxhRstys=
+MD5-Digest: NwGINsy/1YZOSolcsz6Adg==
+SHA1-Digest: WLn3qlAn83ZWfirs8NcjskU6tHQ=
 
 Name: components/nsSearchSuggestions.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: IOoz63ZliF9Gj6HsqCHdYA==
-SHA1-Digest: p43tk/qQiVsBNAF6r/nf0dIkuoM=
+MD5-Digest: iAj3hjfVIEDh+lqFjK0BPg==
+SHA1-Digest: eQ4IvYcKiT1v+nuCAqRwUHXocPI=
 
 Name: cbapp/bar.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: TUicwV/0jesykB0yx3na5Q==
-SHA1-Digest: upbnmVtcFKvxMRfWgQlnJb7co5E=
+MD5-Digest: WeAm9+MJ5xETs77S5WBp5g==
+SHA1-Digest: Hi+OBn7MGR72KYhlXYX2AXc/FGs=
 
 Name: cbapp/parts/incoming.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 8PVPNTwpGv2c5aQ1aJUd2A==
-SHA1-Digest: to2OMPnC40aXFylsXLwpzq06iZw=
+MD5-Digest: XMmUuqS/IWenbC3JGwklRQ==
+SHA1-Digest: 194RDBJuCyncTRhfCO/vFtJsgr4=
 
 Name: cbapp/parts/barnavig.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: o4S1/TEypbbngqXNQ6VJKw==
-SHA1-Digest: saKotrzTpo7TslYcjbn9H1mPzX0=
+MD5-Digest: WPe+ok0zyJy9+d6DLat7KA==
+SHA1-Digest: qzUzY+HtMltnBlkm37mkYhooLEM=
 
 Name: cbapp/parts/strbundle.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: fslQoD+VbXRJsKUyCp3Y1w==
-SHA1-Digest: DDbxqtNkuIuJh44XEeHVi2dcVPc=
+MD5-Digest: bvybRDRXCg5HtGqzDidOFA==
+SHA1-Digest: UgTMpG+MwOn51eM7J6/8xUNMSgk=
 
 Name: cbapp/parts/addonfs.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 9jFK/1NPb+1KIbxcd4re9A==
-SHA1-Digest: gMBF7OjK6HN3gCkNDALHYNpP73w=
+MD5-Digest: aA8FbY57nyk1mQquPNQo4w==
+SHA1-Digest: 9gWO+NrZoufY4j002LSTBOtHqX0=
 
 Name: cbapp/parts/addonStatus.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: lP+S0Ab8ooNifdRr+lcryw==
-SHA1-Digest: EhpSzm6v8xIh6igAUElPM7GYDQU=
+MD5-Digest: RV9+OSCYmfgf4FSb5/YYBg==
+SHA1-Digest: OxginMRDiL/z2S1jbwgNCu0kQR0=
 
 Name: cbapp/parts/platform.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: VSMBEnfX+Sp9ZfTsYEGEVQ==
-SHA1-Digest: /pDOapqAde1yIdyync2iCOQBR0k=
+MD5-Digest: i+uVJi6HMN9z4vZmv0OhJQ==
+SHA1-Digest: ohfA8OMw+xMi267vMSGjU4C8cGk=
 
 Name: cbapp/parts/defender.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: t4eKD2g+112zXg2mff/U1w==
-SHA1-Digest: /TuEQ0BnNvWUONwDjVg7aty0LWg=
+MD5-Digest: 7Om0qvNE1p1DasgzvoMX9Q==
+SHA1-Digest: HKsRE/NdxQvKIY2W27ts21bqiNo=
 
 Name: cbapp/parts/distribution.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: yQiADfucOD2sk29NGJnejw==
-SHA1-Digest: KFo/VwkO+GrfBvWwX9mJs5g5qvY=
+MD5-Digest: DJiZ61UkNDjmsvcNlsSaIQ==
+SHA1-Digest: 9iLID34hD8yJvQXK088z0g0jseI=
 
 Name: cbapp/parts/pacman.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: fhMpEPu1LZe4K62cEhONRQ==
-SHA1-Digest: xaGjjAthdJ6g+O/NJDaC6QrtsNE=
+MD5-Digest: IIVPc4ncHOWKBm0pijFHkA==
+SHA1-Digest: AOxZoJKmiF9Fvusy2/dDC+EIWgE=
 
 Name: cbapp/parts/xb.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: lLfBeOtikeKPjRJrNtEAHw==
-SHA1-Digest: ftvfRa8lvsEXRQSSq1bNgNNiCYE=
+MD5-Digest: X4lrwpaDIvWqrZ0C/P30gw==
+SHA1-Digest: a7tvFK5myjE6c2LF3zCwaWySCUI=
 
 Name: cbapp/parts/widgetlib.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: tV2tbvQOnuzGNnyXcbLAsA==
-SHA1-Digest: BKd7MAy88G/Ibk/zfsU1z7mfndc=
+MD5-Digest: Zxv9NC3QWDv+680ccQm3jw==
+SHA1-Digest: 1TUAjlsEl2IG6j90ba78trWpvhg=
 
 Name: cbapp/parts/native_comps.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: YNMahkm8AAUc1L9gJ70cgA==
-SHA1-Digest: Dxz93AaUgt3tFj3R3EflFehaN/c=
+MD5-Digest: bpe/8z15UrKUTYmae9KgyQ==
+SHA1-Digest: hscBVA4JpoaySbWtEkiQGlsruQ8=
 
 Name: cbapp/parts/slices.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: SMoAu7ip9Ox20ls/j5zZWg==
-SHA1-Digest: O4YfwTxxmm74vLqtfGJo/ptwTg0=
+MD5-Digest: 39B4B6UQu5IPGz+V4rdsKQ==
+SHA1-Digest: Zll1NsfROxhR+ToDwxy4wTQe4vA=
 
 Name: cbapp/parts/addonmgr.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: +moZCQAFkmy1aaXUvOSAAg==
-SHA1-Digest: HzmaY6WjoeaYhB3Pg3sGGPA7Ks4=
+MD5-Digest: k6E1ctY5MnWycfHvsULt6w==
+SHA1-Digest: U8Cc8UJTEQj9Mly+FQ8h65qGr1g=
 
 Name: cbapp/parts/aboutSupport.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: a7jhh+OSjrKrCFJcp9R1nQ==
-SHA1-Digest: HoZXiiIyJ+y0xDWktEFjUKt5qUo=
+MD5-Digest: 601dG5dRlu1ciVGHQKq0iQ==
+SHA1-Digest: BF6i1OPVzHu/UyqkEv773ECJ7m4=
 
 Name: cbapp/parts/migration.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: SqoCKRtEXDOsAmewt1OkmQ==
-SHA1-Digest: ygg1d0rgPC5Qi9OACVXbZNlX/t0=
+MD5-Digest: 27z/CjSuQs7paZ/Rh0PGxg==
+SHA1-Digest: H50D5IczjEhJJLA+z133t+O66Lg=
+
+Name: cbapp/parts/urlRewrite.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: +wkTHlCNkLgTNwvsgD/NEQ==
+SHA1-Digest: htdxkGGy8AeOm29xBZXStemJTpo=
+
+Name: cbapp/parts/browserTheme.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 8zAARVKU9lFtzDrznVZlPw==
+SHA1-Digest: 2DeFb4urTHbEGMFe5EW4053wtPQ=
 
 Name: cbapp/parts/browserUsage.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: KEttaWf/wSv8tFqLPphnPQ==
-SHA1-Digest: 8reNgdbLPU8hkA5/DR7AqEAWs8M=
+MD5-Digest: E832h1OZqMjbPZM28tqK3Q==
+SHA1-Digest: /c19D4MqzcgDTHKsG9bQ+qcNlOo=
 
 Name: cbapp/parts/installer.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: /OCOI3uiYVHDtWcWjJOOCQ==
-SHA1-Digest: dkiL6KiIKSEYLecJdDiizSlfRrY=
+MD5-Digest: DQjJNWMmMOQ38bF6124sVw==
+SHA1-Digest: h98SqhyuL+IMFY10ONtjQxd0OEw=
 
 Name: cbapp/parts/update.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: rFEZdTM1aP2gahHc/Eaz3w==
-SHA1-Digest: DLk8KK6tY6ymNQJM7Q3cetHpp8E=
+MD5-Digest: pEXjQqILcL8x5XeY6LGTTQ==
+SHA1-Digest: UdWBjcuCZnIY6oyJa+ShxjYzWDs=
 
 Name: cbapp/parts/anonymousStatistic.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Q8F4ajOkj8YsvagceYWMrQ==
-SHA1-Digest: ydEx2ZWDjjquRidoKCzGfPDaus0=
+MD5-Digest: giY/mecn1Gl2NXeVijoB4w==
+SHA1-Digest: 4OTjcNEicMwcqIrmFFT6DfKmTrU=
 
 Name: cbapp/parts/notifications.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: YF5AZalMdh0w+NgSdD21tw==
-SHA1-Digest: oqvkhxkW+AWPMT+oxIJZQR5Teu4=
+MD5-Digest: iGMeeG24yNeFFBXlKT+09g==
+SHA1-Digest: kGG8uaM8IgzmqFoIl8yNFRZ5MNs=
+
+Name: cbapp/parts/mailruStat.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: kbn+0GrF9vnAn1z4yQSbEQ==
+SHA1-Digest: pwDcGg7u0loOEqa61K7b+P0N844=
 
 Name: cbapp/parts/clids.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 1Wf1IF9lTsdUbFpxKJzCXw==
-SHA1-Digest: 4RtkWlb3xAeOOIg/PMJJuEwICDo=
+MD5-Digest: mKEiAiWlZfIdC5k4agQZmg==
+SHA1-Digest: J9nrrn5psuFDpA6S7BTVmobJ468=
 
 Name: cbapp/parts/autoinst.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: w6VSS+On2PcjGNh6+7RotA==
-SHA1-Digest: Dl361z29eYARS5+SH1fmqoW1JNM=
+MD5-Digest: zP0aJ9/hXsmxRu7c1TJCqw==
+SHA1-Digest: Jhh8p8oHD+JiJypqVvQxGP4ISo0=
 
 Name: cbapp/parts/overlay_prov.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: iecZyH3nD8GTxy3Ux9Vayw==
-SHA1-Digest: tkPJV9KkWt8ABJKAEshlnyd+n/0=
+MD5-Digest: 1jZ6ZZq2VwaU8UV8pNjkAQ==
+SHA1-Digest: Xy9o1xtZuIcRnemfO8yXCmJ4uDw=
 
 Name: cbapp/parts/brand_prov.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: HxIaiHFQbZtZ4/S+Ja80EA==
-SHA1-Digest: 7R1yjNonbabQnudCMw51jfUmb7Y=
+MD5-Digest: ZmHgt71l3F86C0r9HMRAZQ==
+SHA1-Digest: kYTiRnHqTDzQjPDgLlnk2lV+CwQ=
 
 Name: cbapp/parts/vendorCookie.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: e9sb8w2j1vOYSpRytheLJA==
-SHA1-Digest: 1ZztC5mb8GtNtN9+LuEwKucX+ME=
+MD5-Digest: ETAG7i04QLkCUbOXZLOMCw==
+SHA1-Digest: qjAi7iLX6oixoWJVnJrIRKGzip0=
 
 Name: cbapp/parts/ycookie.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: hIynQRglfmrbUockFFwpiQ==
-SHA1-Digest: BXANXPVXfdQxDkU8qkl9fOxXml8=
+MD5-Digest: ENugt5O/Pr3j5N+0azg0Ng==
+SHA1-Digest: PpJhPnqfNm7NG+sASndL30UbIIs=
 
 Name: cbapp/parts/compsusage.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: WV+nlKJmWAdY1cjG9s3jeg==
-SHA1-Digest: 1d5uW6I4cfTwG0Q5C3gX1/3iz8s=
+MD5-Digest: GoAXNC+inzCowjdBmT8suA==
+SHA1-Digest: W8/JC59hwdQWutuKuYQWONiY5sM=
 
 Name: cbapp/parts/branding.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: NWmami50h5J8cS6/Ut9Vew==
-SHA1-Digest: onqpZO0Avsfd5Fz1y8ZD+0VoEfs=
+MD5-Digest: r99cqdvyZUKkfoOjlSWQdA==
+SHA1-Digest: /DeOOpWZxfAESYji3NvSlxcIxPY=
 
 Name: cbapp/parts/native/brandsvc.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 8Eq6nX9hYXe0WhRBUG/WIA==
-SHA1-Digest: 2EY9wV5toMj9ZPcy/7/aLbZwaU4=
+MD5-Digest: RVusEfdTGgpbEbWFVRw3NQ==
+SHA1-Digest: EoK5IuISjbNHuSBRLYYy1AXe/tw=
 
 Name: cbapp/parts/native/barplugin.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: CeagH21BDDBTfdHg5U1ElQ==
-SHA1-Digest: Anzzk/hd3KO+GqGpUK9yFeEyPJ8=
+MD5-Digest: AT9tS3I7PPovS/3rFxBfeA==
+SHA1-Digest: Tx1T6UqX12b0k/6j7JIFRMj/iMU=
 
 Name: cbapp/parts/native/compapi.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: UppKULyRHzK0L69XW2cDJw==
-SHA1-Digest: HFaaFwDW//vegQ3lCtUYeyUe8bE=
+MD5-Digest: 2eB0w/jCIYAEHM3uL82MZQ==
+SHA1-Digest: C2aW1ObG8GtrfhAnCUwhn6i/v50=
 
 Name: cbapp/parts/native/sliceapi.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: MrXiAoyRVPsYFrHZoa5Drg==
-SHA1-Digest: 1afJ1Q3JbwT7QCR845qWBrqUGU8=
+MD5-Digest: KPG9GhkAh9j74keu6kdXmg==
+SHA1-Digest: DQn0yZHSwWG4hZ1khCuJ1C47NuU=
 
 Name: cbapp/parts/native/ncparser.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 4gxghfkeTb7QqvAaOSal+w==
-SHA1-Digest: uPTuFzEGhDNxjAHuGySFTdkGAwI=
+MD5-Digest: xeS40nHTW6hYc+28cCDHAA==
+SHA1-Digest: Rt7Wm9rSaUd2x5veVWS1/BKe9TU=
 
 Name: cbapp/parts/native/npwidget.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: pnBtUAPIVfIKgjF/9/S8Vw==
-SHA1-Digest: bfUdyy3YLwU+cCbXWF+ExBAQ3pk=
-
-Name: cbapp/parts/xb/xbcalcnodes.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: /GS6QDft/bTfVxd7FsIp7A==
-SHA1-Digest: U9On7Vs+zMLl43dJclDRLlW8orI=
-
-Name: cbapp/parts/xb/xbfuncs.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: BsFl/pJK19IkacZPZc0ZlQ==
-SHA1-Digest: yduYzhou+JbqGSkcOeCSEPyhSR4=
-
-Name: cbapp/parts/xb/xbbase.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: YJWxcJEerdprQgvQeFAtEA==
-SHA1-Digest: xC58GIHSPJK8VgMRZzqj6v7Dvpk=
-
-Name: cbapp/parts/xb/xbtypes.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: +TkRMKG0tkqcSzuzd4Y+Rg==
-SHA1-Digest: D0HFWe6ftqwHkyzjbyhn022l05A=
-
-Name: cbapp/parts/xb/xbparser.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: O8erCCekbKXzrskLIw2F6w==
-SHA1-Digest: 0SUSs3oV+RAaF7XsmDcqGdLjn0k=
-
-Name: cbapp/parts/xb/xbwidget.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: wo+qjDHMYL2QDrHbR0Bz3A==
-SHA1-Digest: cjzODQzVSHsI0bpXLy9+RKg9q+8=
-
-Name: cbapp/parts/xb/xbui.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: Uqg0fai2j8igOoi5CrMdXA==
-SHA1-Digest: ZPNa9ljRk0wxrNqIJ6ey5yOuxM4=
-
-Name: cbapp/parts/xb/ui/elements.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: ktG3aexBBYOeDD8ehJpgjw==
-SHA1-Digest: TwiLJxaq8OpRX0vDdgRxBM6CLNA=
-
-Name: cbapp/parts/xb/ui/event-listener.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: Ax2hcKHK6XI/+PIx9G0KQQ==
-SHA1-Digest: hdOvvxDvB3NOY2U5X6FVn41Sktw=
-
-Name: cbapp/parts/xb/ui/behaviour.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: 4KKpmjKtaggzHYNf43YoqQ==
-SHA1-Digest: 1ZPjg7DKB2rhFpR1qjyN3BJ8BHY=
-
-Name: cbapp/parts/xb/ui/behaviour/enabled.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: wNUkgNn7hz1ph++79+eIPw==
-SHA1-Digest: LOXe5HgAHXxf6cbkORT55QgNKTo=
-
-Name: cbapp/parts/xb/ui/behaviour/checked.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: CjmZI4pKlYy7wBaMLmhoSg==
-SHA1-Digest: zrcqLWZqna6QGZDEsTPQfycLnxk=
-
-Name: cbapp/parts/xb/ui/behaviour/tooltip.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: dJwGQ7PbZMk41zAH8unsoA==
-SHA1-Digest: WNG30p7X6h+gGk070CnNuYeNVpM=
-
-Name: cbapp/parts/xb/ui/behaviour/widget.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: glEDhX1THYI7mlrfSuoZ7Q==
-SHA1-Digest: F2tx5kxHbZ8hB4yZkyzayGe2WCI=
-
-Name: cbapp/parts/xb/ui/behaviour/url.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: WFhMUtpcgqHlJGarIsH+xQ==
-SHA1-Digest: SyTTBfXwaZGE7YhFzrG6kA3pzJ8=
-
-Name: cbapp/parts/xb/ui/behaviour/checkbox.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: PKnunvUjeVuMSH0Fq4JlQQ==
-SHA1-Digest: KPAwJMRGkb3DZlfgQMimLJ+Cr6s=
-
-Name: cbapp/parts/xb/ui/behaviour/button.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: Xq+afjCg0XRjfzNURRSJqA==
-SHA1-Digest: Pxgk+7djl8sspUGUB6bmL7caOsk=
-
-Name: cbapp/parts/xb/ui/behaviour/style.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: EWtj4yioCVa/DYHd3HANQA==
-SHA1-Digest: y5yJDKrolasJOljqZGILhkrIweY=
-
-Name: cbapp/parts/xb/ui/behaviour/computed.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: YQv3lM3nCYv3RDaVuUn6rQ==
-SHA1-Digest: NnfwGyxHoL0O/gKxNEs6CDeGU88=
-
-Name: cbapp/parts/xb/ui/behaviour/image.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: dpj3FtMz1wOHkOWMbeDhLA==
-SHA1-Digest: o90riyxDG/gMUqVhhBhjld9RtNw=
-
-Name: cbapp/parts/xb/ui/behaviour/text.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: ZNqSWxWV9UwrbBFuBiFdNw==
-SHA1-Digest: o36tABZ0Zw3RG2bBNyIbboUuetw=
-
-Name: cbapp/parts/xb/ui/behaviour/xml.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: ZALMka8ZRrv/WU62wxZ5dQ==
-SHA1-Digest: aTTYuSJyzBaZtjBV9t0qT289m64=
-
-Name: cbapp/parts/xb/ui/behaviour/attribute.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: Rmmdom4UXaiWKYvUU1UawQ==
-SHA1-Digest: yo60jduSyRC+JZaS+hdb7983cDQ=
-
-Name: cbapp/parts/xb/ui/behaviour/menu.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: oc3CbpXEaFatjOimTyUKcg==
-SHA1-Digest: lJrXfm/NQ3eo+kQGqgOcAZu4cIo=
-
-Name: cbapp/parts/xb/ui/behaviour/grid.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: UjXE/qSnMGxKy94BL0HHCw==
-SHA1-Digest: jS0oH3BpXUriF4X+7PJOYtMpZ/U=
-
-Name: cbapp/parts/xb/ui/behaviour/action.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: idnaYknXs5dPIzobsPWPVw==
-SHA1-Digest: REqPDlUjGGPtcOcxQFBznadD8+M=
-
-Name: cbapp/parts/xb/ui/behaviour/extra-text.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: aUPYnAv4OMR6qUSWePvr3w==
-SHA1-Digest: OYlWKXnxNovssyw/rwmiFWrtrp0=
+MD5-Digest: Irhh8i/x2I1fzGwRq0vMuA==
+SHA1-Digest: ue7DJfxzk14OIbPhU/6fCOCWUik=
 
 Name: cbapp/parts/workers/barnavig.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: glmX65sRCHC3dF3pVZM/aA==
-SHA1-Digest: Uvw/7129r2oudPpVw2KAh7+7xiQ=
+MD5-Digest: B6jUp2pwJBnGET108ZG3EA==
+SHA1-Digest: 4B2PiWR7aMcgBtsq7sJ8hVT+h1s=
 
 Name: cbapp/parts/migration/l-8_1_0.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: GR4S7cK10pNlf5empi76Gw==
-SHA1-Digest: 1BJZomC1WIYdQWfNuh4jCkrDisE=
+MD5-Digest: 6yFvw3/9V4uqwVTCOpnbPw==
+SHA1-Digest: ha14DIUnsKpZ9HR/OzPqkN5jmqs=
 
 Name: cbapp/parts/migration/l-7_0_0.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: di6A/urdmvPN/CzSI70/CQ==
-SHA1-Digest: QZayAAVH/RAifMs/Rl8yJqZXOBw=
+MD5-Digest: H1daCnEhXpmc/kSST6nriQ==
+SHA1-Digest: DLNxfRbMzbGA3F94JbCGWKpKLSQ=
 
 Name: cbapp/parts/migration/l-6_4_0.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: TFCUNaSa0SLXP2k0GNyV6Q==
-SHA1-Digest: lBS7RCCoVN2aSMbEdQmxnXLwJkk=
+MD5-Digest: T2axRkZHg+0JlqWeNpyUGA==
+SHA1-Digest: 3/MF78mV++omGYopAbjNQPvM3hE=
 
 Name: cbapp/parts/migration/install.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: PW22X/88jdJKIfpJ+n9PBg==
-SHA1-Digest: NZ49AeOOLRQU4zx0B4DOvatG1/A=
+MD5-Digest: vwL62BkXadGFBR+phGN1sQ==
+SHA1-Digest: EFUtkgucqOJwErRtG82DB1ya/vc=
 
 Name: cbapp/parts/migration/l-5_2_0.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 8rYMNy1ah1yCn1GRvpfrnA==
-SHA1-Digest: zfVmCW0a+CM7zCC4ev1HEv2Zjzs=
+MD5-Digest: fHco+we+kcYlXRruCuIwFA==
+SHA1-Digest: JHLv0YnBwyOPOaXNy9f00+mE7q8=
 
 Name: cbapp/parts/migration/l-8_0_0.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 44gpK12DOYK8P89yB5XktQ==
-SHA1-Digest: TI2DAcluDeaq07ji+aFX18pEE+c=
+MD5-Digest: b3VEr4FkDdJ3+aBqg5qM1g==
+SHA1-Digest: T9WZrIEjCiFQ5fo31sQOqTnBXac=
 
 Name: cbapp/parts/migration/l-7_8_1.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: D1lH1BR20EFPYYbA4o9DuA==
-SHA1-Digest: p8/C9k2OMRm3/lo3X/II1hrrqkM=
+MD5-Digest: BaNLMlqadOfiMcDqat43Wg==
+SHA1-Digest: cxw58bP+iKz1DFbvdO569Xs0mO0=
 
 Name: cbapp/parts/migration/l-7_8_0.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: rE7tOkyAC60KI/SmPh2q2g==
-SHA1-Digest: yQDITvV4ld3M0HFXX/Y+wl2yhkw=
+MD5-Digest: L6x1n8uvnGbNS525zqlrDw==
+SHA1-Digest: LfP6DyLb504vbcgq+3Xs2v68A0c=
 
 Name: cbapp/parts/migration/l-7_6_0.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 7fexrlTeb7BeDesYY6zL/w==
-SHA1-Digest: M3RXhHimtPiZzyJpttVdE2VV5RU=
+MD5-Digest: 42mD2jnnBms4HdvgI+96Dg==
+SHA1-Digest: /3rIkmKtc616UnH0oMY4Habrz5Q=
 
 Name: cbapp/parts/platform/cachedres.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: XU+cI9sSjzrxvlGoFvlizg==
-SHA1-Digest: 9M4a7lZSXZxWumaQN+N/LPHK8EM=
+MD5-Digest: QqP/8j/qu9AFukZH6klcDQ==
+SHA1-Digest: KIFcsbBI/rd11HaSlLLg1sGafgg=
 
 Name: cbapp/parts/platform/preset.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: uAtCZ4BeliCOWTgZSCpNYQ==
-SHA1-Digest: oxnR/VzjYFykzv3IIApW2aHsqJ4=
-
-Name: cbapp/parts/platform/permissions.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: qhMnp/PyDJLtVf1lcQtAMA==
-SHA1-Digest: 3fn7o7wxjocsRLQs//3gYT3sGp0=
+MD5-Digest: QplhXYCxnDgAqTy9N4V++A==
+SHA1-Digest: fIF0Rg/sNeMohS0Z9fYtHXN6lc0=
 
 Name: cbapp/parts/platform/package.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: ZYaL59BgkVMIZ1jf4SgR5Q==
-SHA1-Digest: NT9z2OJbVpIWzWKaoxmByNarBW8=
+MD5-Digest: 77SlHOttC+aBGteNqMZTkQ==
+SHA1-Digest: xLulYkfTitRswcrIRvEd5L12DZ4=
 
 Name: cbapp/parts/platform/manifest.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: NCzqYLp50LBv5droyB6XKw==
-SHA1-Digest: +/kqwRZarAoLZ0+PWFQHzTRJmhE=
+MD5-Digest: 70mOUcfnhG4xkrH0IlPtlg==
+SHA1-Digest: q6Qfme/WjiFu8gx4z7amyFWNzTw=
 
 Name: cbapp/parts/platform/unit.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 722Wc8AYSiy8ssYyEpRXAQ==
-SHA1-Digest: I6g8J2VLbxnBxdrX2MldpZtSNyE=
+MD5-Digest: X9vtcm7nLJaXoE32EDz/+g==
+SHA1-Digest: LTc4Vtm/L1tyut+TCGRWSuG8QyY=
 
 Name: cbapp/parts/platform/preset-with-manifest.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Y1EZFFqP92mMdvheJoAPfg==
-SHA1-Digest: mamVIzUys/rMP7geXHwkB4VTQek=
+MD5-Digest: 6YJmqMAAkcQ014u8jkZv2g==
+SHA1-Digest: FKLmsiETEsBqTVSkT10ZfoinjLw=
 
 Name: chrome/yasearch.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Ydi3/EqYaE3QlZAAj29VOw==
-SHA1-Digest: 0728BbGjCWOCzofWd3aHd+oTsHU=
+MD5-Digest: gs7QNLVuz3y76rLFwBP3lA==
+SHA1-Digest: zdpzT0syfdzM5HhTyNH2FZXlTHE=
 
 Name: defaults/dynamic-preferences/safebrowsing.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: JUW7ky4VZzZAKHohDDtcag==
-SHA1-Digest: nUR0ujDX+1zszSnKMVZY6VkavZs=
+MD5-Digest: rRh5P3isWpzdMdOhBfNy+w==
+SHA1-Digest: pGiUXK4Lq0hB6EyQE+LYnpowhxg=
 
 Name: defaults/dynamic-preferences/brand/ua/safebrowsing.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: B6DtvFh9EljmVqgrIQpHGQ==
-SHA1-Digest: BF3ANFXEGBhMB5swfpUt0VZEkw4=
+MD5-Digest: Wqb2moYM0qudd5KH+hZ+7g==
+SHA1-Digest: HSq84b3FZLVP2Id4n+Bvr8c/WYo=
 
 Name: defaults/vendor/vendor.xml
 Digest-Algorithms: MD5 SHA1
@@ -482,125 +357,125 @@ SHA1-Digest: K9+Gx+182HlOZbypq29Pc4vCDpw=
 
 Name: defaults/preferences/yasearch.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: As1GdIqWLL4FlMVqJDg+Cw==
-SHA1-Digest: v6v4eAR0N80B4r5CiuirQqBial0=
+MD5-Digest: IrX1J5+B59Y5hzqGUmyd+w==
+SHA1-Digest: U3eNyxwFXLVQqp0K20BE3RUOS78=
 
 Name: modules/SimpleProtocol.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Vm+uD9o7kR6fJg7C0y/WoQ==
-SHA1-Digest: yAhcRJLyyUAKhLYzB3u4qbltyWY=
+MD5-Digest: eaewrG55YertFKYGtpuD1g==
+SHA1-Digest: Mw3sIpcJvEChvAp/+KzLhQJYJ/s=
 
 Name: modules/DataURI.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: ZjUKnRMxP2PMvjtckyWpww==
-SHA1-Digest: SRIAV7XeQ+vzAGqF7bTtKKvuGCU=
+MD5-Digest: kXvR6+vfQVKXxeIT9PvhVA==
+SHA1-Digest: TmWwxgGgYGQU0E+XaKFv1aj2A9A=
 
 Name: modules/Preferences.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: xyjMuV6yhyDesakiPUc7sA==
-SHA1-Digest: VoIFrqMt0X5cczK6mlxtG63q604=
+MD5-Digest: b06G+h+px6z4/X1wjbVrHQ==
+SHA1-Digest: 7m/e8ImuIoWJKE6g3oC4YErAbFw=
 
 Name: modules/AddonManager.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: ofq16BnJUSE4jo1OnkQlQA==
-SHA1-Digest: wNyRZItKQd8UwqIoH3jw2Q+Tb2g=
+MD5-Digest: cMsS7O/bsO08LTMZnJKauQ==
+SHA1-Digest: sZz+ndrUbZp4maOx2/kfzppQxxc=
 
 Name: modules/SimpleHTMLParser.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: ERQ3tqWgntohy9w0xB1jrQ==
-SHA1-Digest: 0K6jvxOISkuAj/x1nfIunfHB5wQ=
+MD5-Digest: Xnw5LvpMXZX1T1ZEOi1m8g==
+SHA1-Digest: 9lSpXv+Vn/G8GklRJwYiq8XTc+M=
 
 Name: modules/Foundation.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: zLZvgL4+bnUBe1FaEFy7TA==
-SHA1-Digest: nEJxZsQiE973l6QgUxJDtkIsJvg=
+MD5-Digest: JJ9Y97wATUZYCs6jmxE+/g==
+SHA1-Digest: LmdFnAzAACSRwbsogWQ4Bp5gUyk=
 
 Name: modules/Stemmer.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: +4m181Wrzu3U70Tedx1hsg==
-SHA1-Digest: M2gX26a6LLMOFDD6/hm8JRCF5ig=
+MD5-Digest: mDYPg77lHvw8u59KTaaT0Q==
+SHA1-Digest: NqR1rkr+i+fFEl6zTLIakVhg05k=
 
 Name: modules/WinReg.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: nuFHk3NQNbH2lXZZU3rr8g==
-SHA1-Digest: veSaecHul6GaPJL96EnfSZJ1VWo=
+MD5-Digest: i0h+ZrjPf37kD/u1/Jd+rQ==
+SHA1-Digest: jBUfSPdS61l2cLk5Zr8l/xJNHMY=
 
 Name: modules/Log4Moz.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: FGYHBREuYig2zidTQ+jipw==
-SHA1-Digest: Lis/uOlIA1A7frsLJLWEycvUdPk=
+MD5-Digest: OPcdC1TNylt+YqxvYS/p9g==
+SHA1-Digest: nAMDHC9CD2qNPb+0Cel1nR3PKTY=
 
 Name: modules/WindowListener.jsm
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: TCKjwXWf1PisB15Fq8hH0w==
-SHA1-Digest: AVh5DiZIQJNLABixkJZyZJqH66A=
+MD5-Digest: +d5dJfayZXnK30/SgsfsMw==
+SHA1-Digest: WBAQckwg5KpcKUdr2aYIP96E168=
 
 Name: modules/foundation/database.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: uuXznGGA3P7cWdY/u0sowQ==
-SHA1-Digest: iFfct3HVHWEDZ6HsvoBUx3DxRWk=
+MD5-Digest: H0isLYgvRCaXc2arQSQ7cg==
+SHA1-Digest: AgMPH4ieLFEcVAw2U8uZ95nAV3U=
 
 Name: modules/foundation/task.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 5AUGHbwxtd2rnO0cJwDpiw==
-SHA1-Digest: LA3F5ZIt8moCAdDbmwVokoVrjfE=
+MD5-Digest: Nsrs/GSNs2bd6rORht45ug==
+SHA1-Digest: KnhzcTtJk+IKVMrYD1vjYssP/Vc=
 
 Name: modules/foundation/xmlutils.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: hH0gjYe+TfzhtRD4Yq1bnw==
-SHA1-Digest: iIlrcNgQgf3oIoUi9diZS2IF91I=
+MD5-Digest: dgf5jbj/S6kjUuBdfN/jhg==
+SHA1-Digest: URnJH9dg+SpCooNMgh/w8WENIAA=
 
 Name: modules/foundation/sysutils.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: FI1LH11RPX3aNGHZ1Ovj/g==
-SHA1-Digest: hDrQhYM1T4gRhlgjvYdu84Q8X6M=
+MD5-Digest: JHB/F2lldljAS5lRRLPVdQ==
+SHA1-Digest: 5rHcsQ2gGpQt1mO7dEGOhu9dCeU=
 
 Name: modules/foundation/misc.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: pNf8QB6kNDFKJjMrPD4qhg==
-SHA1-Digest: gGoJCzvGUO908hMGsmyLBckHtWM=
+MD5-Digest: pBkpOT+nGsgLjxKxZOgWAA==
+SHA1-Digest: y7+A8DGSShy1K1mRiAT5jH+2bFw=
 
 Name: modules/foundation/netutils.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: F3BhbQpgP6QqCgUxaJ/OcQ==
-SHA1-Digest: eLe8o9joJOnkOAK+jhDmws/msm8=
+MD5-Digest: NZqmjHzVhHfA/MRlNAMwWg==
+SHA1-Digest: BPNQhIiGQ6yTSoEN2i21uwZvdhg=
 
 Name: modules/foundation/strutils.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: bk3zGqMMLpn58zNIPmnBJQ==
-SHA1-Digest: dfabwU/FzvkUk6v4F2wfJmFRtEw=
+MD5-Digest: WtTc/+Vi3srsCg1kiAS3ZQ==
+SHA1-Digest: ooR8gO5JU7EFqFy3bslj2PO1CLA=
 
 Name: modules/foundation/dlqueue.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: nbEBN690mUENlpiHbSYJ4Q==
-SHA1-Digest: nV+9EjcnFPgbyNfrYu0z94oMI3Y=
+MD5-Digest: 4ceSielEF9dXMSnSOFkyJg==
+SHA1-Digest: 4EXrkKFqiuyocDWstOtbJeQM8nw=
 
 Name: modules/foundation/ecustom.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: itWxqVAO64Eig0NI+L+mhQ==
-SHA1-Digest: U4+ic0cvW3ZCQFXYG0CFUnaeUfQ=
+MD5-Digest: 1d78b7XV5c5aHqad8F+BLQ==
+SHA1-Digest: DviWywjBmtgDqMUyYPS1quf+2Go=
 
 Name: modules/foundation/legacy.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: eDrhPJRkjGoGvUdC4vr20w==
-SHA1-Digest: hTflwwQ/S/VVMVS56mG8SxwZnjE=
+MD5-Digest: OLu9qK3EKWICGsbpsNggYg==
+SHA1-Digest: VZuHHZIEZFS6LMjRghC28CDaTaU=
 
 Name: modules/foundation/patterns.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: /OSSN58HZvWg3bcV3Cp8QQ==
-SHA1-Digest: cUSjxQJy3Knxnwb2Q2a0tgoaTVU=
+MD5-Digest: kv2XBg/Zgv24tUt9WCqSiA==
+SHA1-Digest: BM6hMdeQZM51d52/Ot0HQlAXTa0=
 
 Name: modules/foundation/promise.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: mvE7kmeaIf4CiSHIg7WH6Q==
-SHA1-Digest: TVAe4qCMumInssIvdFs8dorAYxo=
+MD5-Digest: Yjc8CGiF6rVP4Ls6WAa32A==
+SHA1-Digest: tq06ni7VzfzdoFHBISR1kurUVUs=
 
 Name: modules/foundation/fileutils.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 4JWmOrhjfxK0rRZddGt4Ew==
-SHA1-Digest: O3dykUcc3m8aGvgzpm4vvwJXloA=
+MD5-Digest: KsvNrVCR9YEB8zcAAslLdQ==
+SHA1-Digest: IUVW8zk3QzguF0kRl+ZhFPrd508=
 
 Name: modules/foundation/async.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Exp2sCPQw35F4uJ7FmjkFQ==
-SHA1-Digest: 4rlFvMWgNcEX0x/1Zb4eI6IvqHQ=
+MD5-Digest: vbOQYp121NZa1q/7YreZNA==
+SHA1-Digest: XvNs25HD/WO1l/3MhH+SFpYzsXY=

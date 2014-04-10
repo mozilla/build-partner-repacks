@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 BarPlatform.PackageManifest = function XBPackageManifest(srcURL, XMLDocOrFile, isTrusted) {
-    if (typeof srcURL != 'string')
-        throw new CustomErrors.EArgType('srcURL', 'String', srcURL);
+    if (typeof srcURL != "string")
+        throw new CustomErrors.EArgType("srcURL", "String", srcURL);
     this._packageID = srcURL;
     this._baseURI = Services.io.newURI(this._packageID, null, null);
     this._files = [];
@@ -10,7 +10,7 @@ BarPlatform.PackageManifest = function XBPackageManifest(srcURL, XMLDocOrFile, i
     else if (XMLDocOrFile instanceof Ci.nsIDOMDocument)
         this._loadFromDocument(XMLDocOrFile, isTrusted);
     else
-        throw new CustomErrors.EArgType('XMLDocOrFile', 'nsIDOMDocument | nsIFile', XMLDocOrFile);
+        throw new CustomErrors.EArgType("XMLDocOrFile", "nsIDOMDocument | nsIFile", XMLDocOrFile);
 };
 BarPlatform.PackageManifest.EPacManifestSyntax = function EPacManifestSyntax(elementName) {
     CustomErrors.ECustom.apply(this, null);
@@ -19,7 +19,7 @@ BarPlatform.PackageManifest.EPacManifestSyntax = function EPacManifestSyntax(ele
 BarPlatform.PackageManifest.EPacManifestSyntax.prototype = {
     __proto__: CustomErrors.ECustom.prototype,
     constructor: BarPlatform.PackageManifest.EPacManifestSyntax,
-    _message: 'Package manifest parse error',
+    _message: "Package manifest parse error",
     _elementName: undefined,
     get _details() [this._elementName]
 };
@@ -31,38 +31,29 @@ BarPlatform.PackageManifest.prototype = {
     get id() {
         return this._packageID;
     },
-    get permissions() {
-        return this._permissions;
-    },
     get packagesInfo() {
-        return this._files.map(function (packageInfo) {
-            packageInfo = sysutils.copyObj(packageInfo);
-            packageInfo.permissions = this._permissions;
-            return packageInfo;
-        }, this);
+        return this._files.map(function (packageInfo) sysutils.copyObj(packageInfo));
     },
     _packageID: undefined,
     _files: null,
-    _permissions: null,
     _loadFromFile: function XBPkgMan__loadFromFile(file, isTrusted) {
         this._loadFromDocument(fileutils.xmlDocFromFile(file), isTrusted);
     },
     _loadFromDocument: function XBPkgMan__loadFromDocument(document, isTrusted) {
         var root = document.documentElement;
-        if (root.localName !== 'manifest')
+        if (root.localName !== "manifest")
             throw new BarPlatform.PackageManifest.EPacManifestSyntax(root.nodeName);
-        var Permissions = BarPlatform[isTrusted ? 'TrustedPackagePermissions' : 'Permissions'];
         var children = root.childNodes;
         let (i = 0, length = children.length) {
             for (; i < length; i++) {
                 let childElement = children[i];
                 switch (childElement.localName) {
-                case 'package':
-                    let versionMin = parseInt(childElement.getAttribute('platform-min'), 10);
+                case "package":
+                    let versionMin = parseInt(childElement.getAttribute("platform-min"), 10);
                     if (!(versionMin > 0))
                         throw new BarPlatform.PackageManifest.EPacManifestSyntax(childElement.nodeName);
-                    let packageVersion = childElement.getAttribute('version') || '1.0';
-                    let fileURL = childElement.getAttribute('url');
+                    let packageVersion = childElement.getAttribute("version") || "1.0";
+                    let fileURL = childElement.getAttribute("url");
                     if (!fileURL)
                         throw new BarPlatform.PackageManifest.EPacManifestSyntax(childElement.nodeName);
                     let packageInfo = {
@@ -71,23 +62,14 @@ BarPlatform.PackageManifest.prototype = {
                             version: packageVersion,
                             fileURL: this._baseURI ? netutils.resolveRelativeURL(fileURL, this._baseURI) : fileURL,
                             platformMin: versionMin,
-                            browser: childElement.getAttribute('browser') || undefined,
-                            architecture: childElement.getAttribute('architecture') || undefined,
-                            os: childElement.getAttribute('os') || undefined
+                            browser: childElement.getAttribute("browser") || undefined,
+                            architecture: childElement.getAttribute("architecture") || undefined,
+                            os: childElement.getAttribute("os") || undefined
                         };
                     this._files.push(packageInfo);
                     break;
-                case 'permissions':
-                    this._permissions = new Permissions.fromElement(childElement);
-                    break;
                 }
             }
-        }
-        if (!this._permissions) {
-            if (isTrusted)
-                this._permissions = new BarPlatform.FullPermissions.fromNull();
-            else
-                throw new BarPlatform.PackageManifest.EPacManifestSyntax('permissions');
         }
     }
 };

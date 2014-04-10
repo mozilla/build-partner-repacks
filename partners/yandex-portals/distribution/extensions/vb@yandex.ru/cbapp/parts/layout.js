@@ -1,17 +1,17 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['layout'];
+"use strict";
+const EXPORTED_SYMBOLS = ["layout"];
 const {
         classes: Cc,
         interfaces: Ci,
         utils: Cu
     } = Components;
-const SCREEN_MGR = Cc['@mozilla.org/gfx/screenmanager;1'].getService(Ci.nsIScreenManager);
+const SCREEN_MGR = Cc["@mozilla.org/gfx/screenmanager;1"].getService(Ci.nsIScreenManager);
 const layout = {
         MAX_DIMENSION: 7,
         REGULAR_DIMENSION: 5,
         init: function Layout_init(application) {
             this._application = application;
-            this._logger = application.getLogger('Layout');
+            this._logger = application.getLogger("Layout");
         },
         finalize: function Layout_finalize() {
             this._application = null;
@@ -66,7 +66,7 @@ const layout = {
             ];
         },
         getMaxThumbLayout: function Layout_getMaxThumbLayout() {
-            return this._application.preferences.get('ftabs.maxAvailableIncreased', false) ? this.MAX_DIMENSION : this.REGULAR_DIMENSION;
+            return this._application.preferences.get("ftabs.maxAvailableIncreased", false) ? this.MAX_DIMENSION : this.REGULAR_DIMENSION;
         },
         getMaxThumbLayoutXY: function Layout_getMaxThumbLayoutXY() {
             var maxLayout = this.getMaxThumbLayout();
@@ -76,8 +76,8 @@ const layout = {
             ];
         },
         getThumbsNumXY: function Layout_getThumbsNumXY() {
-            var thumbsNumX = this._application.preferences.get('ftabs.layoutX', 0);
-            var thumbsNumY = this._application.preferences.get('ftabs.layoutY', 0);
+            var thumbsNumX = this._application.preferences.get("ftabs.layoutX", 0);
+            var thumbsNumY = this._application.preferences.get("ftabs.layoutY", 0);
             if (thumbsNumX >= 1 && thumbsNumY >= 1 && thumbsNumX <= this.MAX_DIMENSION && thumbsNumY <= this.MAX_DIMENSION) {
                 return [
                     thumbsNumX,
@@ -88,8 +88,8 @@ const layout = {
                     thumbsNumX,
                     thumbsNumY
                 ] = this.getXYLayoutOfScreen();
-            this._application.preferences.set('ftabs.layoutX', thumbsNumX);
-            this._application.preferences.set('ftabs.layoutY', thumbsNumY);
+            this._application.preferences.set("ftabs.layoutX", thumbsNumX);
+            this._application.preferences.set("ftabs.layoutY", thumbsNumY);
             return [
                 thumbsNumX,
                 thumbsNumY
@@ -103,13 +103,13 @@ const layout = {
             return x * y;
         },
         getThumbsXYOfThumbsNum: function Layout_getThumbsXYOfThumbsNum(num) {
-            if (num.indexOf('x') !== -1)
-                return num.split('x').map(function (nmb) parseInt(nmb, 10));
+            if (num.indexOf("x") !== -1)
+                return num.split("x").map(function (nmb) parseInt(nmb, 10));
             num = parseInt(num, 10);
             var defaultLayouts = this._getDefaults();
             var isDefault = defaultLayouts.some(function (n) n.x * n.y === num);
             if (!isDefault) {
-                num = this._application.preferences.get('ftabs.oldThumbsLayout', '0x0');
+                num = this._application.preferences.get("ftabs.oldThumbsLayout", "0x0");
                 return this.getThumbsXYOfThumbsNum(num);
             }
             var [
@@ -240,7 +240,7 @@ const layout = {
             var [
                     oldX,
                     oldY
-                ] = this._application.preferences.get('ftabs.oldThumbsLayout', '0x0').split('x').map(function (n) parseInt(n, 10));
+                ] = this._application.preferences.get("ftabs.oldThumbsLayout", "0x0").split("x").map(function (n) parseInt(n, 10));
             var current;
             var addCurrent = true;
             var addOld = true;
@@ -274,8 +274,8 @@ const layout = {
                     let cur = layouts[i];
                     let prev = layouts[i - 1];
                     if (cur.x * cur.y === prev.x * prev.y) {
-                        prev.text = prev.x + 'x' + prev.y;
-                        cur.text = cur.x + 'x' + cur.y;
+                        prev.text = prev.x + "x" + prev.y;
+                        cur.text = cur.x + "x" + cur.y;
                     }
                 }
             }
@@ -283,7 +283,7 @@ const layout = {
                 for (; i < layouts.length; i++) {
                     let cur = layouts[i];
                     if (cur.isCurrent) {
-                        current = cur.text ? cur.text : cur.x * cur.y + '';
+                        current = cur.text ? cur.text : cur.x * cur.y + "";
                     }
                 }
             }
@@ -292,8 +292,8 @@ const layout = {
                 layouts: layouts.map(function (layout) String(layout.text || layout.x * layout.y))
             };
         },
-        get layoutX() parseInt(this._application.preferences.get('ftabs.layoutX'), 10),
-        set layoutX(val) this._application.preferences.set('ftabs.layoutX', parseInt(val, 10)),
-        get layoutY() parseInt(this._application.preferences.get('ftabs.layoutY'), 10),
-        set layoutY(val) this._application.preferences.set('ftabs.layoutY', parseInt(val, 10))
+        get layoutX() parseInt(this._application.preferences.get("ftabs.layoutX"), 10),
+        set layoutX(val) this._application.preferences.set("ftabs.layoutX", parseInt(val, 10)),
+        get layoutY() parseInt(this._application.preferences.get("ftabs.layoutY"), 10),
+        set layoutY(val) this._application.preferences.set("ftabs.layoutY", parseInt(val, 10))
     };

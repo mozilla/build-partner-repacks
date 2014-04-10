@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['bookmarks'];
+"use strict";
+const EXPORTED_SYMBOLS = ["bookmarks"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -7,18 +7,18 @@ const {
         results: Cr
     } = Components;
 const GLOBAL = this;
-const UI_STARTED_EVENT = 'browser-delayed-startup-finished';
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
-Cu.import('resource://gre/modules/Services.jsm');
-Cu.import('resource://gre/modules/PlacesUtils.jsm');
-XPCOMUtils.defineLazyServiceGetter(GLOBAL, 'LIVEMARKS_SVC', '@mozilla.org/browser/livemark-service;2', 'mozIAsyncLivemarks' in Ci ? 'mozIAsyncLivemarks' : 'nsILivemarkService');
+const UI_STARTED_EVENT = "browser-delayed-startup-finished";
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/PlacesUtils.jsm");
+XPCOMUtils.defineLazyServiceGetter(GLOBAL, "LIVEMARKS_SVC", "@mozilla.org/browser/livemark-service;2", "mozIAsyncLivemarks" in Ci ? "mozIAsyncLivemarks" : "nsILivemarkService");
 const bookmarks = {
         init: function Bookmarks_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             Services.obs.addObserver(this, UI_STARTED_EVENT, false);
             PlacesUtils.bookmarks.addObserver(this._changesObserver, false);
             this._application = application;
-            this._logger = application.getLogger('Bookmarks');
+            this._logger = application.getLogger("Bookmarks");
         },
         finalize: function Bookmarks_finalize(doCleanup, callback) {
             try {
@@ -36,19 +36,19 @@ const bookmarks = {
             case UI_STARTED_EVENT:
                 let appInfo = this._application.addonManager.info;
                 if (appInfo.isFreshAddonInstall) {
-                    const BOOKMARKS_TOOLBAR_ID = 'PersonalToolbar';
+                    const BOOKMARKS_TOOLBAR_ID = "PersonalToolbar";
                     let topWindow = misc.getTopBrowserWindow();
-                    let bookmarksBrowserToolbar = topWindow && topWindow.document.querySelector('#' + BOOKMARKS_TOOLBAR_ID);
+                    let bookmarksBrowserToolbar = topWindow && topWindow.document.querySelector("#" + BOOKMARKS_TOOLBAR_ID);
                     if (bookmarksBrowserToolbar) {
-                        let prefOldValue = this._application.preferences.get('ftabs.showBookmarks', false);
+                        let prefOldValue = this._application.preferences.get("ftabs.showBookmarks", false);
                         if (bookmarksBrowserToolbar.collapsed) {
-                            this._application.preferences.set('ftabs.showBookmarks', false);
+                            this._application.preferences.set("ftabs.showBookmarks", false);
                         } else {
-                            this._application.preferences.set('ftabs.showBookmarks', true);
+                            this._application.preferences.set("ftabs.showBookmarks", true);
                             bookmarksBrowserToolbar.collapsed = true;
-                            topWindow.document.persist(BOOKMARKS_TOOLBAR_ID, 'collapsed');
+                            topWindow.document.persist(BOOKMARKS_TOOLBAR_ID, "collapsed");
                         }
-                        if (prefOldValue !== this._application.preferences.get('ftabs.showBookmarks', false))
+                        if (prefOldValue !== this._application.preferences.get("ftabs.showBookmarks", false))
                             this._application.fastdial.requestInit();
                     }
                 }
@@ -118,15 +118,15 @@ const bookmarks = {
                                             if (!isFolder && node.type !== node.RESULT_TYPE_URI) {
                                                 return callback();
                                             }
-                                            var id = isFolder ? node.itemId + '' : '';
+                                            var id = isFolder ? node.itemId + "" : "";
                                             var bookmark = {
-                                                    url: isFolder ? '' : node.uri,
-                                                    title: node.title || '',
+                                                    url: isFolder ? "" : node.uri,
+                                                    title: node.title || "",
                                                     id: id,
                                                     isFolder: isFolder
                                                 };
                                             if (isFolder) {
-                                                bookmark.favicon = '';
+                                                bookmark.favicon = "";
                                                 return callback(null, bookmark);
                                             }
                                             if (node.icon) {
@@ -140,7 +140,7 @@ const bookmarks = {
                                                     return callback(null, bookmark);
                                                 });
                                             } else {
-                                                bookmark.favicon = '';
+                                                bookmark.favicon = "";
                                                 callback(null, bookmark);
                                             }
                                         });
@@ -170,7 +170,7 @@ const bookmarks = {
             result.root.containerOpen = true;
         },
         _getLivemark: function Bookmarks__getLivemark(aLivemarkInfo, aCallback) {
-            if ('getLivemark' in LIVEMARKS_SVC) {
+            if ("getLivemark" in LIVEMARKS_SVC) {
                 LIVEMARKS_SVC.getLivemark(aLivemarkInfo, aCallback);
             } else {
                 aCallback(LIVEMARKS_SVC.isLivemark(aLivemarkInfo.id) ? Cr.NS_OK : null);
@@ -185,8 +185,8 @@ const bookmarks = {
             var onLivemarkReady = function Bookmarks__fetchLivemarkChildren_onLivemarkReady(node) {
                 var isFolder = node.type === node.RESULT_TYPE_FOLDER;
                 var livemark = {
-                        url: isFolder ? '' : node.uri,
-                        title: node.title || '',
+                        url: isFolder ? "" : node.uri,
+                        title: node.title || "",
                         id: node.itemId,
                         isFolder: isFolder
                     };
@@ -279,11 +279,11 @@ const bookmarks = {
             if (this._bookmarksStateTimer)
                 this._bookmarksStateTimer.cancel();
             var self = this;
-            var showBookmarks = this._application.preferences.get('ftabs.showBookmarks');
+            var showBookmarks = this._application.preferences.get("ftabs.showBookmarks");
             this._bookmarksStateTimer = new sysutils.Timer(function () {
                 if (showBookmarks) {
-                    self.requestBranch('', function (bookmarks) {
-                        self._application.fastdial.sendRequest('bookmarksStateChanged', bookmarks);
+                    self.requestBranch("", function (bookmarks) {
+                        self._application.fastdial.sendRequest("bookmarksStateChanged", bookmarks);
                     });
                 }
             }, 50);
@@ -312,7 +312,7 @@ const bookmarks = {
             onItemReplaced: function Bookmarks__changesObserver_onItemReplaced() {
             },
             onItemAdded: function Bookmarks__changesObserver_onItemAdded(aItemId, aParentId, aIndex) {
-                bookmarks._logger.trace('onItemAdded [id=' + aItemId + '] [parentId=' + aParentId + '] [index=' + aIndex + ']');
+                bookmarks._logger.trace("onItemAdded [id=" + aItemId + "] [parentId=" + aParentId + "] [index=" + aIndex + "]");
                 if (~[
                         PlacesUtils.bookmarks.toolbarFolder,
                         PlacesUtils.bookmarks.bookmarksMenuFolder,
@@ -321,7 +321,7 @@ const bookmarks = {
                     bookmarks._sendStateChanged();
             },
             onItemRemoved: function Bookmarks__changesObserver_onItemRemoved(aItemId, aParentId, aIndex) {
-                bookmarks._logger.trace('onItemRemoved [id=' + aItemId + '] [parentId=' + aParentId + '] [index=' + aIndex + ']');
+                bookmarks._logger.trace("onItemRemoved [id=" + aItemId + "] [parentId=" + aParentId + "] [index=" + aIndex + "]");
                 if (~[
                         PlacesUtils.bookmarks.toolbarFolder,
                         PlacesUtils.bookmarks.bookmarksMenuFolder,
@@ -330,7 +330,7 @@ const bookmarks = {
                     bookmarks._sendStateChanged();
             },
             onItemChanged: function Bookmarks__changesObserver_onItemChanged(aItemId, aProperty, aIsAnnotationProperty, aNewValue) {
-                bookmarks._logger.trace('onItemChanged [id=' + aItemId + '] [property=' + aProperty + '] [isAnnotationProperty=' + aIsAnnotationProperty + '] [newValue=' + aNewValue + ']');
+                bookmarks._logger.trace("onItemChanged [id=" + aItemId + "] [property=" + aProperty + "] [isAnnotationProperty=" + aIsAnnotationProperty + "] [newValue=" + aNewValue + "]");
                 var parentId = PlacesUtils.bookmarks.getFolderIdForItem(aItemId);
                 if (~[
                         PlacesUtils.bookmarks.toolbarFolder,
@@ -340,7 +340,7 @@ const bookmarks = {
                     bookmarks._sendStateChanged();
             },
             onItemMoved: function Bookmarks__changesObserver_onItemMoved(aItemId, aOldParentId, aOldIndex, aNewParentId, aNewIndex) {
-                bookmarks._logger.trace('onItemMoved [id=' + aItemId + '] [oldParentId=' + aOldParentId + '] [oldIndex=' + aOldIndex + '] [newParentId=' + aNewParentId + '] [newIndex=' + aNewIndex + ']');
+                bookmarks._logger.trace("onItemMoved [id=" + aItemId + "] [oldParentId=" + aOldParentId + "] [oldIndex=" + aOldIndex + "] [newParentId=" + aNewParentId + "] [newIndex=" + aNewIndex + "]");
                 if (~[
                         PlacesUtils.bookmarks.toolbarFolder,
                         PlacesUtils.bookmarks.bookmarksMenuFolder,

@@ -1,19 +1,19 @@
-'use strict';
+"use strict";
 const {
         classes: Cc,
         interfaces: Ci,
         results: Cr,
         utils: Cu
     } = Components;
-Cu.import('resource://gre/modules/Services.jsm');
-Cu.import('resource://gre/modules/XPCOMUtils.jsm');
+Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const EXTENSION_DIR = __LOCATION__.parent.parent;
 const EXTENSION_PATH = Services.io.newFileURI(EXTENSION_DIR).spec;
-Cu.import(EXTENSION_PATH + 'config.js');
+Cu.import(EXTENSION_PATH + "config.js");
 const APP_NAME = CB_CONFIG.APP.NAME;
 function CustomBarCore() {
     this._loadModules();
-    Services.obs.addObserver(this, 'quit-application', false);
+    Services.obs.addObserver(this, "quit-application", false);
 }
 ;
 CustomBarCore.prototype = {
@@ -44,16 +44,16 @@ CustomBarCore.prototype = {
     },
     get rootDir() {
         if (!this._appRoot) {
-            this._appRoot = Services.dirsvc.get('ProfD', Ci.nsIFile);
-            this._appRoot.append(this.appName + '-xb');
+            this._appRoot = Services.dirsvc.get("ProfD", Ci.nsIFile);
+            this._appRoot.append(this.appName + "-xb");
             if (!this._appRoot.exists())
-                this._appRoot.create(Ci.nsIFile.DIRECTORY_TYPE, parseInt('0755', 8));
+                this._appRoot.create(Ci.nsIFile.DIRECTORY_TYPE, parseInt("0755", 8));
         }
         return this._appRoot.clone();
     },
     get xbProtocol() {
         if (!this._xbProtocol)
-            this._xbProtocol = Cc['@mozilla.org/network/protocol;1?name=xb'].getService(Ci.nsIProtocolHandler).wrappedJSObject;
+            this._xbProtocol = Cc["@mozilla.org/network/protocol;1?name=xb"].getService(Ci.nsIProtocolHandler).wrappedJSObject;
         return this._xbProtocol;
     },
     get protocols() {
@@ -82,24 +82,24 @@ CustomBarCore.prototype = {
     },
     observe: function CustomBarCore_observe(subject, topic, data) {
         switch (topic) {
-        case 'profile-after-change':
+        case "profile-after-change":
             this._startLogging();
             this._registerProtocols();
             this._initApp();
             break;
-        case 'quit-application':
+        case "quit-application":
             if (this._appObj)
                 this._destroyApp();
             break;
-        case 'nsPref:changed':
+        case "nsPref:changed":
             this._updateLoggers(data == this._dumpLogLevelPrefName, data == this._consoleLogLevelPrefName, data == this._fileLogLevelPrefName, data == this._socketLogLevelPrefName);
             break;
         }
     },
     get oldCore() {
         try {
-            let oldCore = 'nsIYaSearch' in Ci && Cc['@yandex.ru/' + APP_NAME + ';1'].getService(Ci.nsIYaSearch).wrappedJSObject;
-            this.__defineGetter__('oldCore', function () oldCore);
+            let oldCore = "nsIYaSearch" in Ci && Cc["@yandex.ru/" + APP_NAME + ";1"].getService(Ci.nsIYaSearch).wrappedJSObject;
+            this.__defineGetter__("oldCore", function () oldCore);
             return this.oldCore;
         } catch (e) {
         }
@@ -107,36 +107,36 @@ CustomBarCore.prototype = {
     },
     _buildTimeStamp: Date.parse(CB_CONFIG.BUILD.DATE),
     _appName: APP_NAME,
-    _modulesPath: 'resource://' + APP_NAME + '-mod/',
-    _appResPath: 'resource://' + APP_NAME + '-app/',
-    _appChromePath: 'chrome://' + APP_NAME + '/',
+    _modulesPath: "resource://" + APP_NAME + "-mod/",
+    _appResPath: "resource://" + APP_NAME + "-app/",
+    _appChromePath: "chrome://" + APP_NAME + "/",
     _appRoot: null,
     _appObj: null,
-    _dumpLogLevelPrefName: APP_NAME + '.xbcore.logging.stdout.level',
-    _consoleLogLevelPrefName: APP_NAME + '.xbcore.logging.console.level',
-    _fileLogLevelPrefName: APP_NAME + '.xbcore.logging.file.level',
-    _socketLogLevelPrefName: APP_NAME + '.xbcore.logging.socket.level',
+    _dumpLogLevelPrefName: APP_NAME + ".xbcore.logging.stdout.level",
+    _consoleLogLevelPrefName: APP_NAME + ".xbcore.logging.console.level",
+    _fileLogLevelPrefName: APP_NAME + ".xbcore.logging.file.level",
+    _socketLogLevelPrefName: APP_NAME + ".xbcore.logging.socket.level",
     _dumpAppender: null,
     _consoleAppender: null,
     _fileAppender: null,
     _socketAppender: null,
     _logging: true,
     _globalEvents: {
-        EVT_PLUGIN_BEFORE_ENABLED: APP_NAME + '-platform-plugin-before_enabled',
-        EVT_PLUGIN_ENABLED: APP_NAME + '-platform-plugin-enabled',
-        EVT_PLUGIN_BEFORE_DISABLED: APP_NAME + '-platform-plugin-before_disabled',
-        EVT_PLUGIN_DISABLED: APP_NAME + '-platform-plugin-disabled',
-        EVT_AFTER_DEFPRESET_UPD: APP_NAME + '-platform-defpreset-after_update',
-        EVT_BEFORE_GLOBAL_RESET: APP_NAME + '-platform-components-before_reset',
-        EVT_AFTER_GLOBAL_RESET: APP_NAME + '-platform-components-after_reset'
+        EVT_PLUGIN_BEFORE_ENABLED: APP_NAME + "-platform-plugin-before_enabled",
+        EVT_PLUGIN_ENABLED: APP_NAME + "-platform-plugin-enabled",
+        EVT_PLUGIN_BEFORE_DISABLED: APP_NAME + "-platform-plugin-before_disabled",
+        EVT_PLUGIN_DISABLED: APP_NAME + "-platform-plugin-disabled",
+        EVT_AFTER_DEFPRESET_UPD: APP_NAME + "-platform-defpreset-after_update",
+        EVT_BEFORE_GLOBAL_RESET: APP_NAME + "-platform-components-before_reset",
+        EVT_AFTER_GLOBAL_RESET: APP_NAME + "-platform-components-after_reset"
     },
     _moduleFileNames: [
-        'Log4Moz.jsm',
-        'Preferences.jsm',
-        'WindowListener.jsm',
-        'AddonManager.jsm',
-        'Foundation.jsm',
-        'SimpleProtocol.jsm'
+        "Log4Moz.jsm",
+        "Preferences.jsm",
+        "WindowListener.jsm",
+        "AddonManager.jsm",
+        "Foundation.jsm",
+        "SimpleProtocol.jsm"
     ],
     _loadModules: function CustomBarCore__loadModules() {
         const Lib = this.Lib;
@@ -155,21 +155,21 @@ CustomBarCore.prototype = {
         this._dumpAppender = new Log4Moz.DumpAppender(formatter);
         root.addAppender(this._dumpAppender);
         var logFile = this.rootDir;
-        logFile.append('debug.log');
+        logFile.append("debug.log");
         this._fileAppender = new Log4Moz.RotatingFileAppender(logFile, formatter);
         root.addAppender(this._fileAppender);
-        var host = 'localhost';
-        var port = '4448';
+        var host = "localhost";
+        var port = "4448";
         this._socketAppender = new Log4Moz.SocketAppender(host, port, new Log4Moz.XMLFormatter());
         root.addAppender(this._socketAppender);
-        this._logger = Log4Moz.repository.getLogger(this.appName + '.Core');
+        this._logger = Log4Moz.repository.getLogger(this.appName + ".Core");
         this._logger.level = Log4Moz.Level.Debug;
         this._updateLoggers(true, true, true, true);
         this.Lib.Preferences.observe(this._dumpLogLevelPrefName, this);
         this.Lib.Preferences.observe(this._consoleLogLevelPrefName, this);
         this.Lib.Preferences.observe(this._fileLogLevelPrefName, this);
         this.Lib.Preferences.observe(this._socketLogLevelPrefName, this);
-        var consoleListenerLogger = Log4Moz.repository.getLogger('Browser.Console');
+        var consoleListenerLogger = Log4Moz.repository.getLogger("Browser.Console");
         consoleListenerLogger.level = Log4Moz.Level.Error;
         this.Lib.ConsoleListener.addLogger(consoleListenerLogger);
     },
@@ -189,7 +189,7 @@ CustomBarCore.prototype = {
         this._socketAppender.closeStream();
         root.removeAppender(this._socketAppender);
         this._socketAppender = null;
-        this.Lib.ConsoleListener.removeLogger(this.Lib.Log4Moz.repository.getLogger('Browser.Console'));
+        this.Lib.ConsoleListener.removeLogger(this.Lib.Log4Moz.repository.getLogger("Browser.Console"));
     },
     _updateLoggers: function CustomBarCore__updateLoggers(checkDumpSetting, checkConsoleSetting, checkFileSetting, checkSocketSetting) {
         const Preferences = this.Lib.Preferences;
@@ -209,13 +209,13 @@ CustomBarCore.prototype = {
     _initApp: function CustomBarCore__initApp() {
         try {
             let appModule = {};
-            Cu.import(this._appResPath + 'bar.js', appModule);
+            Cu.import(this._appResPath + "bar.js", appModule);
             this._appObj = appModule.barApplication;
             this._appObj.init(this);
-            Services.obs.notifyObservers(null, this.appName + '-state-changed', 'custombar-initialized');
+            Services.obs.notifyObservers(null, this.appName + "-state-changed", "custombar-initialized");
         } catch (e) {
             this._appObj = null;
-            this._logger.fatal('Couldn\'t initialize application. ' + this._formatError(e));
+            this._logger.fatal("Couldn't initialize application. " + this._formatError(e));
             if (e.stack)
                 this._logger.debug(e.stack);
         }
@@ -249,21 +249,21 @@ CustomBarCore.prototype = {
             try {
                 protocol.unregister();
             } catch (e) {
-                this._logger.error('Error unregistering \'' + scheme + '\' protocol. ' + e);
+                this._logger.error("Error unregistering '" + scheme + "' protocol. " + e);
             }
         }
         this._protocols = {};
     },
     _formatError: function CustomBarCore__formatError(e) {
-        if (typeof e != 'object')
-            return '' + e;
-        var text = e.name + ': ' + e.message;
+        if (typeof e != "object")
+            return "" + e;
+        var text = e.name + ": " + e.message;
         var fileName = e.fileName || e.filename;
         if (fileName)
-            text += '\nin ' + fileName + '@' + e.lineNumber;
+            text += "\nin " + fileName + "@" + e.lineNumber;
         return text;
     },
-    classDescription: 'Custom Yandex bar core JS component for ' + APP_NAME,
+    classDescription: "Custom Yandex bar core JS component for " + APP_NAME,
     classID: Components.ID(CB_CONFIG.CORE.CLASS_ID),
     contractID: CB_CONFIG.CORE.CONTRACT_ID,
     QueryInterface: XPCOMUtils.generateQI([
@@ -271,10 +271,10 @@ CustomBarCore.prototype = {
         Ci.nsIObserver
     ]),
     _xpcom_categories: [{
-            category: 'app-startup',
+            category: "app-startup",
             service: true
         }]
 };
 const NSGetFactory = XPCOMUtils.generateNSGetFactory([CustomBarCore]);
-if (Cc['@mozilla.org/process/environment;1'].getService(Ci.nsIEnvironment).exists('YABAR_DEBUG_PROFILER_RUN'))
-    Cu.import(CustomBarCore.prototype._modulesPath + 'Profiler.jsm', {}).Profiler.run();
+if (Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment).exists("YABAR_DEBUG_PROFILER_RUN"))
+    Cu.import(CustomBarCore.prototype._modulesPath + "Profiler.jsm", {}).Profiler.run();

@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['updater'];
+"use strict";
+const EXPORTED_SYMBOLS = ["updater"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -7,7 +7,7 @@ const {
         results: Cr
     } = Components;
 const GLOBAL = this;
-Cu.import('resource://gre/modules/Services.jsm');
+Cu.import("resource://gre/modules/Services.jsm");
 var barApplication;
 function DefaultController() {
 }
@@ -34,26 +34,26 @@ DefaultController.prototype = {
         this._logger.debug(this._consts.MSG_SILENT_FINISHED);
     },
     get _logger() {
-        var logger = barApplication.getLogger('DefUpdCtrl');
-        this.__defineGetter__('_logger', function () logger);
+        var logger = barApplication.getLogger("DefUpdCtrl");
+        this.__defineGetter__("_logger", function () logger);
         return this._logger;
     },
     _consts: {
-        MSG_FOUND_COMPS: 'Found %1 new packages.',
-        MSG_NO_NEW_COMPS: 'No new components found. Update check finished.',
-        MSG_SILENT_FINISHED: 'Silent updates finished.',
-        ERR_START_SILENT: 'Could not start updating components. '
+        MSG_FOUND_COMPS: "Found %1 new packages.",
+        MSG_NO_NEW_COMPS: "No new components found. Update check finished.",
+        MSG_SILENT_FINISHED: "Silent updates finished.",
+        ERR_START_SILENT: "Could not start updating components. "
     }
 };
 const updater = {
         init: function Updater_init(application) {
             barApplication = this._application = application;
             barApplication.core.Lib.sysutils.copyProperties(barApplication.core.Lib, GLOBAL);
-            this._logger = application.getLogger('CompUpdater');
-            this._timer = Cc['@mozilla.org/timer;1'].createInstance(Ci.nsITimer);
+            this._logger = application.getLogger("CompUpdater");
+            this._timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
             var nextInterval = this._nextCheckInterval;
             this._timer.initWithCallback(this, nextInterval, this._timer.TYPE_ONE_SHOT);
-            this._logger.config('Components updates will be checked in ' + parseInt(nextInterval / 60 / 1000, 10) + ' minutes');
+            this._logger.config("Components updates will be checked in " + parseInt(nextInterval / 60 / 1000, 10) + " minutes");
         },
         finalize: function Updater_finalize() {
             this._timer.cancel();
@@ -62,12 +62,12 @@ const updater = {
             try {
                 if (!misc.getTopBrowserWindow())
                     return;
-                this._logger.debug('Updates check initiated');
+                this._logger.debug("Updates check initiated");
                 this._updateComponents(updateController);
             } finally {
                 this._timer.cancel();
                 this._timer.initWithCallback(this, this._updateInterval, this._timer.TYPE_ONE_SHOT);
-                this._logger.config('Components updates will be checked in ' + parseInt(this._updateInterval / 60 / 1000, 10) + ' minutes');
+                this._logger.config("Components updates will be checked in " + parseInt(this._updateInterval / 60 / 1000, 10) + " minutes");
                 this._lastUpdateTimestamp = Date.now();
             }
         },
@@ -75,20 +75,20 @@ const updater = {
             try {
                 this.checkUpdates(new DefaultController());
             } catch (e) {
-                this._logger.error('Could not check updates. ' + strutils.formatError(e));
+                this._logger.error("Could not check updates. " + strutils.formatError(e));
                 this._logger.debug(e.stack);
             }
         },
         _consts: {
-            ERR_MFS_DL: 'Manifest %1 was not downloaded. Status code: %2. Error: %3',
-            ERR_PKG_DL: 'Package %1 was not downloaded. Status code: %2. Error: %3',
-            ERR_WUNIT_FAIL: 'Could not get unit for widget \'%1\'. %2',
-            ERR_PUNIT_FAIL: 'Could not get unit for plugin \'%1\'. %2',
-            ERR_W_MISSING: 'Widget \'%1\' is missing',
-            ERR_P_MISSING: 'Plugin \'%1\' is missing'
+            ERR_MFS_DL: "Manifest %1 was not downloaded. Status code: %2. Error: %3",
+            ERR_PKG_DL: "Package %1 was not downloaded. Status code: %2. Error: %3",
+            ERR_WUNIT_FAIL: "Could not get unit for widget '%1'. %2",
+            ERR_PUNIT_FAIL: "Could not get unit for plugin '%1'. %2",
+            ERR_W_MISSING: "Widget '%1' is missing",
+            ERR_P_MISSING: "Plugin '%1' is missing"
         },
         get _lastUpdatePrefName() {
-            return this._application.name + '.updates.widgets.lastUpdateTime';
+            return this._application.name + ".updates.widgets.lastUpdateTime";
         },
         get _lastUpdateTimestamp() {
             return parseInt(Preferences.get(this._lastUpdatePrefName, 0), 10) * 1000;
@@ -107,16 +107,16 @@ const updater = {
         _makeTempFile: function Updater__makeTempFile(URLStr) {
             var fileName;
             try {
-                let stdURL = Cc['@mozilla.org/network/standard-url;1'].createInstance(Ci.nsIStandardURL);
+                let stdURL = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIStandardURL);
                 stdURL.init(Ci.nsIStandardURL.URLTYPE_STANDARD, -1, URLStr, null, null);
                 let url = stdURL.QueryInterface(Ci.nsIURL);
                 fileName = url.fileName;
             } catch (e) {
-                this._logger.warn('Could not extract URL fileName. ' + e);
+                this._logger.warn("Could not extract URL fileName. " + e);
             }
-            var tempFile = Services.dirsvc.get('TmpD', Ci.nsIFile);
-            tempFile.append(fileName || misc.CryptoHash.getFromString(URLStr, 'MD5'));
-            tempFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, parseInt('0666', 8));
+            var tempFile = Services.dirsvc.get("TmpD", Ci.nsIFile);
+            tempFile.append(fileName || misc.CryptoHash.getFromString(URLStr, "MD5"));
+            tempFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, parseInt("0666", 8));
             return tempFile;
         },
         _gatherUnknownComponents: function Updater__gatherUnknownComponents(preset) {
@@ -146,13 +146,13 @@ const updater = {
                 try {
                     downloadQueue.addTask(new netutils.DownloadTask(url, noFiles ? undefined : this._makeTempFile(url), undefined, bypassCache));
                 } catch (e) {
-                    this._logger.warn('Could not add download task for URL ' + url + '. ' + e);
+                    this._logger.warn("Could not add download task for URL " + url + ". " + e);
                 }
             }, this);
             downloadQueue.startTasks();
         },
         _check4NewManifests: function Updater__check4NewManifests(downloadQueue) {
-            this._logger.debug('Checking manifests');
+            this._logger.debug("Checking manifests");
             var pacMan = this._application.packageManager;
             var manifestsCheckResult = {};
             downloadQueue.finishedTasks.forEach(function (mfsDlTask) {
@@ -172,8 +172,8 @@ const updater = {
                         }
                         manifestsCheckResult[manifestURL] = newPkgInfo;
                     } catch (e) {
-                        if (manifestURL !== 'http://bar.yandex.ru/packages/yandexbar')
-                            this._logger.warn('Could not check new manifest from URL [' + manifestURL + '] \n' + strutils.formatError(e));
+                        if (manifestURL !== "http://bar.yandex.ru/packages/yandexbar")
+                            this._logger.warn("Could not check new manifest from URL [" + manifestURL + "] \n" + strutils.formatError(e));
                     }
                 } else {
                     this._logger.warn(strutils.formatString(this._consts.ERR_MFS_DL, [
@@ -187,16 +187,16 @@ const updater = {
         },
         _preinstallPackage: function Updater__preinstallPackage(packageInfo, archiveFile) {
             var preinstDir = archiveFile.clone();
-            preinstDir.createUnique(Ci.nsIFile.DIRECTORY_TYPE, parseInt('0755', 8));
+            preinstDir.createUnique(Ci.nsIFile.DIRECTORY_TYPE, parseInt("0755", 8));
             fileutils.extractZipArchive(archiveFile, preinstDir);
-            var preinstPkg = new this._application.BarPlatform.ComponentPackage(preinstDir, packageInfo.id, packageInfo.permissions);
+            var preinstPkg = new this._application.BarPlatform.ComponentPackage(preinstDir, packageInfo.id);
             return preinstPkg;
         },
         _getComponentIDsRemovedFromPackage: function Updater__getComponentIDsRemovedFromPackage(newPackage) {
             const BarPlatform = this._application.BarPlatform;
             const widgetLibrary = this._application.widgetLibrary;
             if (!(newPackage instanceof BarPlatform.ComponentPackage))
-                throw new CustomErrors.EArgType('newPackage', 'BarPlatform.ComponentPackage', newPackage);
+                throw new CustomErrors.EArgType("newPackage", "BarPlatform.ComponentPackage", newPackage);
             var removedWIDs = [];
             var removedPIDs = [];
             widgetLibrary.getWidgetIDs(newPackage.id).forEach(function (widgetID) {
@@ -207,7 +207,7 @@ const updater = {
                         ] = BarPlatform.parseComponentID(widgetID);
                     let unit = newPackage.getUnit(widgetName);
                     unit.checkSecurity();
-                    if (unit.componentInfo.type != 'widget')
+                    if (unit.componentInfo.type != "widget")
                         removedWIDs.push(widgetID);
                 } catch (e) {
                     this._logger.warn(strutils.formatString(this._consts.ERR_WUNIT_FAIL, [
@@ -225,7 +225,7 @@ const updater = {
                         ] = BarPlatform.parseComponentID(pluginID);
                     let unit = newPackage.getUnit(pluginName);
                     unit.checkSecurity();
-                    if (unit.componentInfo.type != 'plugin')
+                    if (unit.componentInfo.type != "plugin")
                         removedPIDs.push(pluginID);
                 } catch (e) {
                     this._logger.warn(strutils.formatString(this._consts.ERR_PUNIT_FAIL, [
@@ -245,7 +245,7 @@ const updater = {
             const pacMan = this._application.packageManager;
             var missingWIDs = [];
             var missingPIDs = [];
-            this._logger.debug('Expecting widgets: "' + misc.mapKeysToArray(expectedWidgets) + '".' + 'Expecting plugins: "' + misc.mapKeysToArray(expectedPlugins) + '".');
+            this._logger.debug("Expecting widgets: \"" + misc.mapKeysToArray(expectedWidgets) + "\"." + "Expecting plugins: \"" + misc.mapKeysToArray(expectedPlugins) + "\".");
             for (let widgetID in expectedWidgets) {
                 try {
                     let [
@@ -257,7 +257,7 @@ const updater = {
                     let unit = checkedPackage.getUnit(widgetName);
                     if (isNewPackage)
                         unit.checkSecurity();
-                    if (unit.componentInfo.type != 'widget')
+                    if (unit.componentInfo.type != "widget")
                         missingWIDs.push(widgetID);
                 } catch (e) {
                     this._logger.warn(strutils.formatString(this._consts.ERR_WUNIT_FAIL, [
@@ -278,7 +278,7 @@ const updater = {
                     let unit = checkedPackage.getUnit(pluginName);
                     if (isNewPackage)
                         unit.checkSecurity();
-                    if (unit.componentInfo.type != 'plugin')
+                    if (unit.componentInfo.type != "plugin")
                         missingPIDs.push(pluginID);
                 } catch (e) {
                     this._logger.warn(strutils.formatString(this._consts.ERR_PUNIT_FAIL, [
@@ -296,16 +296,16 @@ const updater = {
         _installUpdatePackage: function Updater__installUpdatePackage(newPackage, packageInfo) {
             var widgetLibrary = this._application.widgetLibrary;
             if (!(newPackage instanceof this._application.BarPlatform.ComponentPackage))
-                throw new CustomErrors.EArgType('newPackage', 'BarPlatform.ComponentPackage', newPackage);
+                throw new CustomErrors.EArgType("newPackage", "BarPlatform.ComponentPackage", newPackage);
             var packageID = packageInfo.id;
             var [
                     removedWIDs,
                     removedPIDs
                 ] = this._getComponentIDsRemovedFromPackage(newPackage);
             if (removedWIDs.length)
-                this._logger.info('The following widgets will no longer be available: ' + removedWIDs);
+                this._logger.info("The following widgets will no longer be available: " + removedWIDs);
             if (removedPIDs.length)
-                this._logger.info('The following plugins will no longer be available: ' + removedPIDs);
+                this._logger.info("The following plugins will no longer be available: " + removedPIDs);
             var prevPluginsState = widgetLibrary.getCurrentPluginsState(packageID);
             this._application.switchWidgets(packageID, false);
             try {
@@ -342,14 +342,14 @@ const updater = {
         }
     };
 const UpdateProcess = function UpdateProcess(updateController) {
-    this._logger = barApplication.getLogger('CompUpdater');
+    this._logger = barApplication.getLogger("CompUpdater");
     this._updateController = updateController;
     updateController.start(this);
 };
 UpdateProcess.prototype = {
     constructor: UpdateProcess,
     checkUserPackagesUpdates: function UpdateProcess_checkUserPackagesUpdates() {
-        this._logger.debug('User components update started.');
+        this._logger.debug("User components update started.");
         var packageIDsSet = {};
         for (let [
                     ,
@@ -358,7 +358,7 @@ UpdateProcess.prototype = {
             packageIDsSet[packageID] = 1;
         var URLsList = misc.mapKeysToArray(packageIDsSet);
         if (URLsList.length) {
-            this._logger.debug('Need to check manifests: ' + URLsList);
+            this._logger.debug("Need to check manifests: " + URLsList);
             updater._startAsyncDownloads(URLsList, true, this._onUserManifestsDownloaded.bind(this), true);
         } else {
             this._updateController.onUserComponentsDataReady([]);
@@ -371,8 +371,8 @@ UpdateProcess.prototype = {
     },
     _updateController: null,
     _startPackageDownloads: function UpdateProcess__startPackageDownloads(manifestsCheckResult, onPreinstalled) {
-        if (typeof onPreinstalled != 'function')
-            throw new CustomErrors.EArgType('onPreinstalled', 'Function', onPreinstalled);
+        if (typeof onPreinstalled != "function")
+            throw new CustomErrors.EArgType("onPreinstalled", "Function", onPreinstalled);
         var packageDlQueue = new patterns.AsyncTaskQueue(this._preinstallPackages.bind(this, manifestsCheckResult, onPreinstalled));
         for (let [
                     packageID,
@@ -381,20 +381,20 @@ UpdateProcess.prototype = {
             if (!packageInfo)
                 continue;
             try {
-                this._logger.debug('Adding download task for package ' + packageID);
+                this._logger.debug("Adding download task for package " + packageID);
                 let archiveDlTask = new netutils.DownloadTask(packageInfo.fileURL, updater._makeTempFile(packageInfo.fileURL), undefined, true);
                 archiveDlTask.packageID = packageID;
                 packageDlQueue.addTask(archiveDlTask);
             } catch (e) {
-                this._logger.warn('Could not add archive download task for URL ' + packageInfo.fileURL + '. ' + e);
+                this._logger.warn("Could not add archive download task for URL " + packageInfo.fileURL + ". " + e);
             }
         }
         var numDlTasks = packageDlQueue.pendingTasks.length;
         if (numDlTasks > 0) {
-            this._logger.debug('Downloading ' + numDlTasks + ' package archives...');
+            this._logger.debug("Downloading " + numDlTasks + " package archives...");
             packageDlQueue.startTasks();
         } else {
-            this._logger.debug('No new packages are available right now.');
+            this._logger.debug("No new packages are available right now.");
             onPreinstalled({});
         }
     },
@@ -416,7 +416,7 @@ UpdateProcess.prototype = {
                     }
                     let packageInfo = packageInfoSet[packageID];
                     if (!packageInfo) {
-                        this._logger.warn('Strange thing happened. Could not find PackageInfo for ' + [
+                        this._logger.warn("Strange thing happened. Could not find PackageInfo for " + [
                             packageID,
                             archiveURL
                         ]);
@@ -428,7 +428,7 @@ UpdateProcess.prototype = {
                             packageInfo: packageInfo
                         };
                     } catch (e) {
-                        this._logger.error('Could not preinstall package from ' + archiveURL + '. ' + strutils.formatError(e));
+                        this._logger.error("Could not preinstall package from " + archiveURL + ". " + strutils.formatError(e));
                     }
                 } finally {
                     fileutils.removeFileSafe(pkgDlTask.outputFile);
@@ -449,7 +449,7 @@ UpdateProcess.prototype = {
         }
     },
     _onUsrPkgsPreinstalled: function UpdateProcess__onUsrPkgsPreinstalled(preinstalledPackages) {
-        this._logger.debug('User components are ready to update');
+        this._logger.debug("User components are ready to update");
         try {
             for (let [
                         ,
@@ -459,7 +459,7 @@ UpdateProcess.prototype = {
                 try {
                     updater._installUpdatePackage(newPackage, preinstInfo.packageInfo);
                 } catch (e) {
-                    this._logger.warn(strutils.formatString('Package %1 failed to install/update. %2', [
+                    this._logger.warn(strutils.formatString("Package %1 failed to install/update. %2", [
                         newPackage.id,
                         e
                     ]));
@@ -474,11 +474,11 @@ UpdateProcess.prototype = {
                 this._ensureComponentsAvailable([], newWIDsSet, newPIDsSet);
                 this._registerNewComponents(newWIDsSet, newPIDsSet);
             } catch (e) {
-                this._logger.warn('Preset failed to update.');
+                this._logger.warn("Preset failed to update.");
                 this._logger.debug(e.stack);
             }
         } catch (e) {
-            this._logger.error('Silent components update failed. ' + strutils.formatError(e));
+            this._logger.error("Silent components update failed. " + strutils.formatError(e));
             this._logger.debug(e.stack);
         }
         this._updateController.onUserComponentsUpdated();
@@ -488,11 +488,11 @@ UpdateProcess.prototype = {
                 missingWIDs,
                 missingPIDs
             ] = updater._checkForMissingComponents(preinstalledPackages, newWIDsSet, newPIDsSet);
-        var errorMessage = '';
+        var errorMessage = "";
         if (missingWIDs.length)
-            errorMessage += 'Missing widgets: ' + missingWIDs + '.';
+            errorMessage += "Missing widgets: " + missingWIDs + ".";
         if (missingPIDs.length)
-            errorMessage += 'Missing plugins: ' + missingPIDs + '.';
+            errorMessage += "Missing plugins: " + missingPIDs + ".";
         if (errorMessage)
             throw new Error(errorMessage);
     },
@@ -516,7 +516,7 @@ UpdateProcess.prototype = {
                 controller.appendToPalette(widgetIDs);
             });
         } catch (e) {
-            this._logger.error('Could not add following items to palettes: ' + widgetIDs + '. ' + strutils.formatError(e));
+            this._logger.error("Could not add following items to palettes: " + widgetIDs + ". " + strutils.formatError(e));
             this._logger.debug(e.stack);
         }
     },

@@ -1,5 +1,5 @@
-'use strict';
-EXPORTED_SYMBOLS.push('DownloadQueue');
+"use strict";
+EXPORTED_SYMBOLS.push("DownloadQueue");
 function DownloadQueue(queue, callback, progressmeter) {
     this.queue = queue;
     this.callback = callback;
@@ -19,10 +19,10 @@ DownloadQueue.prototype = {
         this.queue.forEach(function (item) {
             try {
                 item.uri = item.uri || item.url;
-                let uri = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService).newURI(item.uri, null, null);
+                let uri = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService).newURI(item.uri, null, null);
                 if (!item.file)
                     item.file = this.tempFile(item.uri);
-                let persist = Components.classes['@mozilla.org/embedding/browser/nsWebBrowserPersist;1'].createInstance(Components.interfaces.nsIWebBrowserPersist);
+                let persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"].createInstance(Components.interfaces.nsIWebBrowserPersist);
                 persist.persistFlags = persist.PERSIST_FLAGS_REPLACE_EXISTING_FILES | persist.PERSIST_FLAGS_BYPASS_CACHE;
                 persist.progressListener = {
                     item: item,
@@ -33,7 +33,7 @@ DownloadQueue.prototype = {
                     onStateChange: this.onStateChange,
                     onProgressChange: this.onProgressChange
                 };
-                persist.saveURI(uri, null, null, null, '', item.file, null);
+                persist.saveURI(uri, null, null, null, "", item.file, null);
                 item.persist = persist;
             } catch (e) {
                 Components.utils.reportError(e);
@@ -48,11 +48,11 @@ DownloadQueue.prototype = {
     },
     tempFile: function DownloadQueue_tempFile(uri) {
         if (!this.tempDirectory) {
-            this.tempDirectory = Components.classes['@mozilla.org/file/directory_service;1'].getService(Components.interfaces.nsIProperties).get('TmpD', Components.interfaces.nsIFile);
+            this.tempDirectory = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("TmpD", Components.interfaces.nsIFile);
         }
         var file = this.tempDirectory.clone();
-        file.append(misc.CryptoHash.getFromString(uri, 'MD5'));
-        file.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, parseInt('0666', 8));
+        file.append(misc.CryptoHash.getFromString(uri, "MD5"));
+        file.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, parseInt("0666", 8));
         return file;
     },
     destroy: function DownloadQueue_destroy() {
@@ -74,7 +74,7 @@ DownloadQueue.prototype = {
     },
     checkDefer: function DownloadQueue_checkDefer() {
         var context = this;
-        (this._timer = Components.classes['@mozilla.org/timer;1'].createInstance(Components.interfaces.nsITimer)).initWithCallback({
+        (this._timer = Components.classes["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer)).initWithCallback({
             notify: function () {
                 context.check();
             }

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 const migrator = {
         init: function init(aMigrationModule) {
         },

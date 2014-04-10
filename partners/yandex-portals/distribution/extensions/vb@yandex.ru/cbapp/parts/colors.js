@@ -1,12 +1,12 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['colors'];
+"use strict";
+const EXPORTED_SYMBOLS = ["colors"];
 const {
         classes: Cc,
         interfaces: Ci,
         utils: Cu
     } = Components;
 const GLOBAL = this;
-const DEFAULT_BGCOLOR = 'f2f2f2';
+const DEFAULT_BGCOLOR = "f2f2f2";
 const FONT_COLOR_THRESHOLD = 170;
 const MAX_THRESHOLD = 238;
 const MIN_THRESHOLD = 20;
@@ -16,7 +16,7 @@ const colors = {
         init: function Safebrowsing_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
-            this._logger = application.getLogger('Colors');
+            this._logger = application.getLogger("Colors");
         },
         finalize: function Safebrowsing_finalize(doCleanup, callback) {
             this._application = null;
@@ -38,22 +38,22 @@ const colors = {
             return tone < FONT_COLOR_THRESHOLD && (red < FONT_COLOR_THRESHOLD || green < FONT_COLOR_THRESHOLD) ? 1 : 0;
         },
         requestImageDominantColor: function Colors_requestImageDominantColor(url, options, callback) {
-            if (typeof options === 'function') {
+            if (typeof options === "function") {
                 callback = options;
                 options = {};
             }
             var self = this;
             var hiddenWindow = misc.hiddenWindows.appWindow;
             var hiddenWindowDoc = hiddenWindow.document;
-            var image = hiddenWindowDoc.createElementNS('http://www.w3.org/1999/xhtml', 'img');
-            const MOZ_ANNO_PREFIX = 'moz-anno:favicon:';
+            var image = hiddenWindowDoc.createElementNS("http://www.w3.org/1999/xhtml", "img");
+            const MOZ_ANNO_PREFIX = "moz-anno:favicon:";
             if (url.indexOf(MOZ_ANNO_PREFIX) === 0)
-                url = url.replace(MOZ_ANNO_PREFIX, '');
+                url = url.replace(MOZ_ANNO_PREFIX, "");
             image.onload = function imgOnLoad() {
                 if (image.width === 1 && image.height === 1)
                     return callback(null, null);
-                var canvas = hiddenWindowDoc.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
-                var ctx = canvas.getContext('2d');
+                var canvas = hiddenWindowDoc.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+                var ctx = canvas.getContext("2d");
                 ctx.mozImageSmoothingEnabled = false;
                 var canvasWidth = image.width;
                 var canvasHeight = image.height;
@@ -68,8 +68,8 @@ const colors = {
                         canvasWidth = Math.round(canvasHeight * image.width / image.height);
                     }
                 }
-                canvas.setAttribute('width', canvasWidth);
-                canvas.setAttribute('height', canvasHeight);
+                canvas.setAttribute("width", canvasWidth);
+                canvas.setAttribute("height", canvasHeight);
                 ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
                 var imgPixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 var maxValueKey = null;
@@ -125,11 +125,11 @@ const colors = {
                         maxValueKey = toRGB(red) + toRGB(green) + toRGB(blue);
                     }
                 }
-                self._logger.trace('Most frequent color for ' + url + ' is ' + (maxValueKey || 'undefined'));
+                self._logger.trace("Most frequent color for " + url + " is " + (maxValueKey || "undefined"));
                 callback(null, maxValueKey);
             };
             image.onerror = function imgOnError() {
-                callback(new Error('Failed to load image ' + url));
+                callback(new Error("Failed to load image " + url));
             };
             image.src = url;
         },
@@ -145,7 +145,7 @@ function isAcidColor(red, green, blue) {
     return false;
 }
 function toRGB(num) {
-    return (num < 16 ? '0' : '') + num.toString(16);
+    return (num < 16 ? "0" : "") + num.toString(16);
 }
 function isAlmostTransparent(opacity) {
     return opacity < 230;

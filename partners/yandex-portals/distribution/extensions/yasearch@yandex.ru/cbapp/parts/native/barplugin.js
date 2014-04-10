@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 NativeComponents.NativePlugin = function NativePlugin(id, modulePath, unit) {
     if (!id)
-        throw new CustomErrors.EArgRange('id', '/.+/', id);
+        throw new CustomErrors.EArgRange("id", "/.+/", id);
     if (!modulePath)
-        throw new CustomErrors.EArgRange('modulePath', '/.+/', modulePath);
+        throw new CustomErrors.EArgRange("modulePath", "/.+/", modulePath);
     if (!(unit instanceof BarPlatform.Unit))
-        throw new CustomErrors.EArgRange('unit', 'Unit', unit);
+        throw new CustomErrors.EArgRange("unit", "Unit", unit);
     this._id = id;
     this._modulePath = modulePath;
     this._unit = unit;
@@ -45,9 +45,9 @@ NativeComponents.NativePlugin.prototype = {
             return;
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_BEFORE_ENABLED, null);
         var pluginCore = this._module.core;
-        if (pluginCore && typeof pluginCore.init == 'function') {
+        if (pluginCore && typeof pluginCore.init == "function") {
             this._nativeAPIInst = new NativeBarAPI({
-                type: 'plugin',
+                type: "plugin",
                 id: this._id,
                 package_: this._package,
                 component: this
@@ -57,7 +57,7 @@ NativeComponents.NativePlugin.prototype = {
         Services.obs.addObserver(this, appCore.eventTopics.EVT_BEFORE_GLOBAL_RESET, false);
         Services.obs.addObserver(this, appCore.eventTopics.EVT_AFTER_GLOBAL_RESET, false);
         this._enabled = true;
-        this._logger.debug('Plugin enabled: ' + this._id);
+        this._logger.debug("Plugin enabled: " + this._id);
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_ENABLED, null);
     },
     disable: function NativePlugin_disable(manually) {
@@ -65,18 +65,18 @@ NativeComponents.NativePlugin.prototype = {
             return;
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_BEFORE_DISABLED, null);
         var pluginCore = this._module.core;
-        if (pluginCore && typeof pluginCore.finalize == 'function') {
+        if (pluginCore && typeof pluginCore.finalize == "function") {
             try {
                 pluginCore.finalize({ stateSwitchedManually: manually });
             } catch (e) {
-                this._logger.error('Error finalizing plugin core. ' + strutils.formatError(e));
+                this._logger.error("Error finalizing plugin core. " + strutils.formatError(e));
                 this._logger.debug(e.stack);
             } finally {
                 if (this._nativeAPIInst) {
                     try {
                         this._nativeAPIInst.finalize();
                     } catch (e) {
-                        this._logger.error('Error finalizing plugin native API. ' + strutils.formatError(e));
+                        this._logger.error("Error finalizing plugin native API. " + strutils.formatError(e));
                         this._logger.debug(e.stack);
                     }
                 }
@@ -86,7 +86,7 @@ NativeComponents.NativePlugin.prototype = {
         Services.obs.removeObserver(this, appCore.eventTopics.EVT_BEFORE_GLOBAL_RESET);
         Services.obs.removeObserver(this, appCore.eventTopics.EVT_AFTER_GLOBAL_RESET);
         this._enabled = false;
-        this._logger.debug('Plugin disabled: ' + this._id);
+        this._logger.debug("Plugin disabled: " + this._id);
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_DISABLED, null);
     },
     get browserStyles() {
@@ -101,7 +101,7 @@ NativeComponents.NativePlugin.prototype = {
                     return this._package.resolvePath(stylePath);
                 }, this);
             } else
-                this._logger.warn('Plugin resources.browser.styles is not an Array');
+                this._logger.warn("Plugin resources.browser.styles is not an Array");
         }
         return this._styleURLs;
     },
@@ -169,7 +169,7 @@ NativeComponents.NativePlugin.prototype = {
             try {
                 this.applySetting(name, settingsMap[name]);
             } catch (e) {
-                this._logger.error('Couldn\'t apply plugin setting. ' + strutils.formatError(e));
+                this._logger.error("Couldn't apply plugin setting. " + strutils.formatError(e));
                 if (!noFail)
                     throw e;
             }
@@ -194,7 +194,7 @@ NativeComponents.NativePlugin.prototype = {
             };
             break;
         default:
-            throw new CustomErrors.EArgType('settingScope', 'ENUM_SCOPE_PLUGIN | ENUM_SCOPE_PACKAGE', '' + settingScope);
+            throw new CustomErrors.EArgType("settingScope", "ENUM_SCOPE_PLUGIN | ENUM_SCOPE_PACKAGE", "" + settingScope);
         }
     },
     finalize: function NativePlugin_finalize() {
@@ -220,13 +220,13 @@ NativeComponents.NativePlugin.prototype = {
             switch (topic) {
             case appCore.eventTopics.EVT_BEFORE_GLOBAL_RESET: {
                     let pluginCore = this._module.core;
-                    if (pluginCore && typeof pluginCore.onBeforeReset == 'function')
+                    if (pluginCore && typeof pluginCore.onBeforeReset == "function")
                         pluginCore.onBeforeReset();
                     break;
                 }
             case appCore.eventTopics.EVT_AFTER_GLOBAL_RESET: {
                     let pluginCore = this._module.core;
-                    if (pluginCore && typeof pluginCore.onAfterReset == 'function')
+                    if (pluginCore && typeof pluginCore.onAfterReset == "function")
                         pluginCore.onAfterReset();
                     break;
                 }
@@ -234,10 +234,10 @@ NativeComponents.NativePlugin.prototype = {
                 break;
             }
         } catch (e) {
-            this._logger.error('nsIObserver.observe failed. ' + strutils.formatError(e));
+            this._logger.error("nsIObserver.observe failed. " + strutils.formatError(e));
         }
     },
-    _consts: { MSG_SETTING_NOT_REGISTERED: 'Setting "%1" is not registered' },
+    _consts: { MSG_SETTING_NOT_REGISTERED: "Setting \"%1\" is not registered" },
     _logger: null,
     _shortName: undefined,
     _id: undefined,
@@ -270,7 +270,7 @@ NativeComponents.NativePlugin.prototype = {
         try {
             Services.obs.notifyObservers(this, topic, data);
         } catch (e) {
-            this._logger.error(strutils.formatString('Could not notify observers (%1). %2', [
+            this._logger.error(strutils.formatString("Could not notify observers (%1). %2", [
                 [
                     topic,
                     data

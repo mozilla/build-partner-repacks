@@ -1,8 +1,8 @@
-'use strict';
-EXPORTED_SYMBOLS.push('task');
+"use strict";
+EXPORTED_SYMBOLS.push("task");
 const task = {
         spawn: function Task_spawn(aTask) {
-            if (aTask && typeof aTask == 'function') {
+            if (aTask && typeof aTask == "function") {
                 try {
                     aTask = aTask();
                 } catch (ex) {
@@ -10,7 +10,7 @@ const task = {
                     return promise.reject(ex);
                 }
             }
-            if (aTask && typeof aTask.send === 'function')
+            if (aTask && typeof aTask.send === "function")
                 return new TaskImpl(aTask).deferred.promise;
             return promise.resolve(aTask);
         },
@@ -29,9 +29,9 @@ TaskImpl.prototype = {
     _run: function TaskImpl_run(aSendResolved, aSendValue) {
         try {
             let yielded = aSendResolved ? this._iterator.send(aSendValue) : this._iterator.throw(aSendValue);
-            if (yielded && typeof yielded.send === 'function')
+            if (yielded && typeof yielded.send === "function")
                 yielded = task.spawn(yielded);
-            if (yielded && typeof yielded.then === 'function') {
+            if (yielded && typeof yielded.then === "function") {
                 yielded.then(this._run.bind(this, true), this._run.bind(this, false));
             } else {
                 this._run(true, yielded);

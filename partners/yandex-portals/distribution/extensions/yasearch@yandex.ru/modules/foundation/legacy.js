@@ -1,12 +1,12 @@
-'use strict';
-EXPORTED_SYMBOLS.push('Base');
+"use strict";
+EXPORTED_SYMBOLS.push("Base");
 function Class($super, $members, $statics) {
-    if ($members.constructor && $members.constructor.name !== 'Object') {
+    if ($members.constructor && $members.constructor.name !== "Object") {
         $members.$constructor = $members.constructor;
         delete $members.constructor;
     }
     var $class = function $class() {
-        if ('$constructor' in this)
+        if ("$constructor" in this)
             this.$constructor.apply(this, arguments);
     };
     var prototype = {};
@@ -18,7 +18,7 @@ function Class($super, $members, $statics) {
     $class.prototype = prototype;
     prototype.$class = $class;
     prototype.$super = $super ? $super.prototype : null;
-    prototype.$name = $members.$name || ($members.$constructor ? $members.$constructor.name : '');
+    prototype.$name = $members.$name || ($members.$constructor ? $members.$constructor.name : "");
     Class.$implement($class, $members, $statics);
     return $class;
 }
@@ -40,9 +40,9 @@ function wrapMethod(method) {
     return wrapper;
 }
 const specials = [
-        '$class',
-        '$name',
-        '$super'
+        "$class",
+        "$name",
+        "$super"
     ];
 Class.$copy = function $copy($source, $target, $class) {
     for (let name in $source) {
@@ -67,7 +67,7 @@ Class.$copy = function $copy($source, $target, $class) {
             }
         } else {
             let member = $source[name];
-            if (typeof member == 'function') {
+            if (typeof member == "function") {
                 member.$class = $class;
                 member.$name = name;
                 $target[name] = wrapMethod(member);
