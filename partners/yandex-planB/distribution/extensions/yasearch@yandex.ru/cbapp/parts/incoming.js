@@ -1,12 +1,12 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['incomingCompMgr'];
+"use strict";
+const EXPORTED_SYMBOLS = ["incomingCompMgr"];
 const {
         classes: Cc,
         interfaces: Ci,
         utils: Cu,
         results: Cr
     } = Components;
-Cu.import('resource://gre/modules/Services.jsm');
+Cu.import("resource://gre/modules/Services.jsm");
 const GLOBAL = this;
 const incomingCompMgr = {
         init: function incomingCompMgr_init(application) {
@@ -17,11 +17,11 @@ const incomingCompMgr = {
                 strutils: 1,
                 Preferences: 1
             });
-            this._logger = this._application.getLogger('IncomingComponentsManager');
+            this._logger = this._application.getLogger("IncomingComponentsManager");
             try {
                 this._checkIncoming();
             } catch (e) {
-                this._logger.error('Failed checking for incomming components. ' + strutils.formatError(e));
+                this._logger.error("Failed checking for incomming components. " + strutils.formatError(e));
                 this._logger.debug(e.stack);
             }
         },
@@ -53,13 +53,13 @@ const incomingCompMgr = {
                         break;
                     }
                 } catch (e) {
-                    this._logger.warn('Could not activate new component. ' + strutils.formatError(e));
+                    this._logger.warn("Could not activate new component. " + strutils.formatError(e));
                 }
             }
         },
         _consts: {
-            PREF_DEFAULT_PRESET_URL: '.default.preset.url',
-            DEF_PRESET_FILE_NAME: 'default.xml'
+            PREF_DEFAULT_PRESET_URL: ".default.preset.url",
+            DEF_PRESET_FILE_NAME: "default.xml"
         },
         _checkIncoming: function incomingCompMgr__checkIncoming() {
             this._newComponentEntries = [];
@@ -72,12 +72,12 @@ const incomingCompMgr = {
                         this._newComponentEntries = storedEntries.map(function (fake) new ComponentEntry(fake));
                     }
                 } catch (e) {
-                    this._logger.warn('Invalid file ' + incomingEntriesFile.leafName + '. ' + strutils.formatError(e));
+                    this._logger.warn("Invalid file " + incomingEntriesFile.leafName + ". " + strutils.formatError(e));
                 }
                 fileutils.removeFileSafe(incomingEntriesFile);
             }
             var incomingCompsDir = this._application.directories.appRootDir;
-            incomingCompsDir.append('incoming');
+            incomingCompsDir.append("incoming");
             if (!incomingCompsDir.exists())
                 return;
             var incomingDirEntries = incomingCompsDir.directoryEntries;
@@ -101,7 +101,7 @@ const incomingCompMgr = {
                         firstPresetUrl = presetUrl;
                     }
                 } catch (e) {
-                    this._logger.error('Could not install components from incomming directory. ' + strutils.formatError(e));
+                    this._logger.error("Could not install components from incomming directory. " + strutils.formatError(e));
                 }
             }
             var weHaveNewWidgets = false;
@@ -129,7 +129,7 @@ const incomingCompMgr = {
             try {
                 widgetLibrary.persist(weHaveNewWidgets, weHaveNewPlugins);
             } catch (e) {
-                this._logger.error('Could not persist widget library. ' + strutils.formatError(e));
+                this._logger.error("Could not persist widget library. " + strutils.formatError(e));
             }
             if (firstPresetFile)
                 this._trySetAsDefaultPreset(firstPresetUrl);
@@ -141,14 +141,14 @@ const incomingCompMgr = {
         },
         get _incomingEntriesFile() {
             var incomingEntriesFile = this._application.directories.appRootDir;
-            incomingEntriesFile.append('incoming_comps.json');
+            incomingEntriesFile.append("incoming_comps.json");
             return incomingEntriesFile;
         },
         _processDirectory: function incomingCompMgr__processDirectory(directory) {
             var presetFile = directory.clone();
             presetFile.append(this._consts.DEF_PRESET_FILE_NAME);
             if (!presetFile.exists()) {
-                this._logger.debug('Preinstalled default preset file not found. (Folder: ' + directory.path + ')');
+                this._logger.debug("Preinstalled default preset file not found. (Folder: " + directory.path + ")");
                 return;
             }
             var preset_manifest = new this._application.BarPlatform.PresetWithManifest(presetFile);
@@ -170,7 +170,7 @@ const incomingCompMgr = {
                             sourceFile.append(packageInfo.file);
                             packageManager.installPackage(sourceFile, packageInfo);
                         } catch (e) {
-                            this._logger.error('Failed installing package \'' + id + '\'.\n' + strutils.formatError(e));
+                            this._logger.error("Failed installing package '" + id + "'.\n" + strutils.formatError(e));
                             this._logger.debug(e.stack);
                         }
                     }
@@ -200,7 +200,7 @@ const incomingCompMgr = {
             try {
                 presetFile.copyTo(this._application.directories.presetsDir, destFileName);
             } catch (e) {
-                this._logger.error('Failed installing preset.\n' + strutils.formatError(e));
+                this._logger.error("Failed installing preset.\n" + strutils.formatError(e));
             }
         },
         _trySetAsDefaultPreset: function incomingCompMgr__trySetAsDefaultPreset(presetUrl) {

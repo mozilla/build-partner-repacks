@@ -1,23 +1,23 @@
-'use strict';
+"use strict";
 BarPlatform.FilePackage = Base.extend({
     constructor: function FilePackage(rootDir, domain) {
         if (!(rootDir instanceof Ci.nsIFile))
-            throw new CustomErrors.EArgType('rootDir', 'nsIFile', rootDir);
+            throw new CustomErrors.EArgType("rootDir", "nsIFile", rootDir);
         if (!rootDir.isDirectory())
-            throw new CustomErrors.EArgRange('rootDir', 'nsIFile(Directory)', rootDir);
+            throw new CustomErrors.EArgRange("rootDir", "nsIFile(Directory)", rootDir);
         this._rootDir = rootDir.clone();
         this._rootDir.normalize();
         if (domain) {
             this._domain = domain;
         } else {
-            let uuid = Cc['@mozilla.org/uuid-generator;1'].getService(Ci.nsIUUIDGenerator).generateUUID().toString();
-            this._domain = uuid.replace(/[^\w\-]/g, '') + '.' + barApp.name;
+            let uuid = Cc["@mozilla.org/uuid-generator;1"].getService(Ci.nsIUUIDGenerator).generateUUID().toString();
+            this._domain = uuid.replace(/[^\w\-]/g, "") + "." + barApp.name;
         }
         this._files = Object.create(null);
-        this._logger = BarPlatform._getLogger('Package_' + this._domain);
+        this._logger = BarPlatform._getLogger("Package_" + this._domain);
         var protocolHandler = barApp.core.xbProtocol;
         protocolHandler.setDataProvider(this._domain, this);
-        this._uri = protocolHandler.newURI(protocolHandler.scheme + '://' + this._domain + '/', null, null);
+        this._uri = protocolHandler.newURI(protocolHandler.scheme + "://" + this._domain + "/", null, null);
     },
     finalize: function FilePkg_finalize() {
         this._files = Object.create(null);
@@ -32,10 +32,10 @@ BarPlatform.FilePackage = Base.extend({
         return fileutils.xmlDocFromStream(channel.open(), channel.originalURI, channel.originalURI, usePrivilegedParser);
     },
     resolvePath: function FilePkg_resolvePath(path, base) {
-        if (typeof path != 'string')
-            throw new CustomErrors.EArgType('path', 'String', path);
+        if (typeof path != "string")
+            throw new CustomErrors.EArgType("path", "String", path);
         if (base)
-            path = path.replace(/^(?!\/|\w+:)/, base.replace(/[^\/]+$/, ''));
+            path = path.replace(/^(?!\/|\w+:)/, base.replace(/[^\/]+$/, ""));
         return this._uri.resolve(path);
     },
     newChannelFromPath: function FilePkg_newChannelFromPath(path) {
@@ -44,7 +44,7 @@ BarPlatform.FilePackage = Base.extend({
     getFile: function FilePkg_getFile(path) {
         var file = this.findFile(path);
         if (!file)
-            throw new Error(this._consts.ERR_FILE_NOT_FOUND + ' "' + path + '"');
+            throw new Error(this._consts.ERR_FILE_NOT_FOUND + " \"" + path + "\"");
         return file;
     },
     QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports]),
@@ -52,9 +52,9 @@ BarPlatform.FilePackage = Base.extend({
     get UUID() this._domain,
     newChannel: function FilePkg_newChannel(aURI) {
         var file = this.getFile(aURI.QueryInterface(Ci.nsIURL).filePath);
-        var filesStream = Cc['@mozilla.org/network/file-input-stream;1'].createInstance(Ci.nsIFileInputStream);
+        var filesStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
         filesStream.init(file, fileutils.MODE_RDONLY, 0, filesStream.CLOSE_ON_EOF);
-        var channel = Cc['@mozilla.org/network/input-stream-channel;1'].createInstance(Ci.nsIInputStreamChannel).QueryInterface(Ci.nsIChannel);
+        var channel = Cc["@mozilla.org/network/input-stream-channel;1"].createInstance(Ci.nsIInputStreamChannel).QueryInterface(Ci.nsIChannel);
         channel.setURI(aURI);
         channel.originalURI = aURI;
         channel.contentStream = filesStream;
@@ -62,14 +62,14 @@ BarPlatform.FilePackage = Base.extend({
         return channel;
     },
     findFile: function FilePkg_findFile(path) {
-        if (typeof path != 'string')
-            throw new CustomErrors.EArgType('path', 'String', path);
+        if (typeof path != "string")
+            throw new CustomErrors.EArgType("path", "String", path);
         path = this._suppressRelativePathReference(path);
-        path = path.replace(/#.+/, '');
+        path = path.replace(/#.+/, "");
         if (path in this._files)
             return this._files[path];
-        var components = path.split('/');
-        if (components[components.length - 1][0] == '.')
+        var components = path.split("/");
+        if (components[components.length - 1][0] == ".")
             return this._files[path] = null;
         var root = this._rootDir.clone();
         var locales = this._locales();
@@ -79,14 +79,14 @@ BarPlatform.FilePackage = Base.extend({
                 let localeName = locales[i].name;
                 let candidate = root.clone();
                 if (localeName) {
-                    candidate.append('locale');
+                    candidate.append("locale");
                     candidate.append(localeName);
                 }
                 let brandedCandidate;
                 let brandID = barApp.branding.brandID;
                 if (brandID) {
                     brandedCandidate = candidate.clone();
-                    brandedCandidate.append('brand');
+                    brandedCandidate.append("brand");
                     brandedCandidate.append(brandID);
                     let (j = 0, len = components.length) {
                         for (; j < len; j++)
@@ -112,7 +112,7 @@ BarPlatform.FilePackage = Base.extend({
                         break;
                     }
                 } catch (e) {
-                    this._logger.error('Error while searching file. ' + strutils.formatError(e));
+                    this._logger.error("Error while searching file. " + strutils.formatError(e));
                     continue;
                 }
             }
@@ -120,8 +120,8 @@ BarPlatform.FilePackage = Base.extend({
         return this._files[path] = file;
     },
     _consts: {
-        ERR_FILE_NOT_FOUND: 'File not found',
-        ERR_ACCESS_DENIED: 'Attempt to access a file outside the package directory'
+        ERR_FILE_NOT_FOUND: "File not found",
+        ERR_ACCESS_DENIED: "Attempt to access a file outside the package directory"
     },
     _rootDir: null,
     _files: null,
@@ -141,12 +141,12 @@ BarPlatform.FilePackage = Base.extend({
             };
         var locales = [];
         locales.push({
-            name: '',
+            name: "",
             weight: weights.root,
             components: null
         });
         var localeDir = this._rootDir.clone();
-        localeDir.append('locale');
+        localeDir.append("locale");
         if (!localeDir.exists())
             return this._localesCache = locales;
         var appLocale = misc.parseLocale(barApp.localeString);
@@ -163,7 +163,7 @@ BarPlatform.FilePackage = Base.extend({
                     let component = components[space];
                     if (component === undefined)
                         continue;
-                    if (space == 'language')
+                    if (space == "language")
                         if (component in weights)
                             weight += weights[component];
                     if (component === appLocale[space])
@@ -189,45 +189,37 @@ BarPlatform.FilePackage = Base.extend({
         let (i = 0, len = re.length) {
             for (; i < len; i++)
                 while (re[i].test(path))
-                    path = path.replace(re[i], '/');
+                    path = path.replace(re[i], "/");
         }
         return path;
     }
 });
 BarPlatform.ComponentPackage = BarPlatform.FilePackage.extend({
-    constructor: function ComponentPackage(rootDirectory, id, permissions, domain) {
+    constructor: function ComponentPackage(rootDirectory, id, domain) {
         this.base(rootDirectory, domain);
-        if (typeof id != 'string')
-            throw new CustomErrors.EArgType('id', 'String', id);
+        if (typeof id != "string")
+            throw new CustomErrors.EArgType("id", "String", id);
         this._id = id;
-        this._persistPath = barApp.core.xbWidgetsPrefsPath + this._id;
         this._settings = {};
         this._units = {};
-        this._permissions = permissions;
     },
     finalize: function ComponentPackage_finalize() {
         for (let unitName in this._units) {
             try {
                 this._units[unitName].finalize();
             } catch (e) {
-                this._logger.error('Couldn\'t clear loaded unit ' + unitName + '. ' + strutils.formatError(e));
+                this._logger.error("Couldn't clear loaded unit " + unitName + ". " + strutils.formatError(e));
             }
         }
         this._units = null;
         this._settings = null;
-        this._permissions = null;
         this.base();
     },
-    get id() {
-        return this._id;
-    },
-    get permissions() {
-        return this._permissions;
-    },
+    get id() this._id,
     getUnit: function ComponentPackage_getUnit(unitName) {
         var unit = this._units[unitName];
         if (!unit) {
-            let unitFile = this.getFile(unitName + '.xml');
+            let unitFile = this.getFile(unitName + ".xml");
             unit = new BarPlatform.Unit(unitFile.leafName, this, unitName);
             this._units[unitName] = unit;
         }
@@ -235,18 +227,16 @@ BarPlatform.ComponentPackage = BarPlatform.FilePackage.extend({
     },
     addSettingUser: function ComponentPackage_addSettingUser(settingName, componentID) {
         var users = this._settings[settingName] || (this._settings[settingName] = []);
-        if (users.indexOf(componentID) > -1)
-            return;
-        users.push(componentID);
+        if (users.indexOf(componentID) === -1)
+            users.push(componentID);
     },
     removeSettingUser: function ComponentPackage_removeSettingUser(settingName, componentID) {
         if (!settingName in this._settings)
             return;
         var users = this._settings[settingName];
         var userIndex = users.indexOf(componentID);
-        if (userIndex < 0)
-            return;
-        users.splice(userIndex, 1);
+        if (userIndex !== -1)
+            users.splice(userIndex, 1);
     },
     getSettingUsers: function ComponentPackage_getSettingUsers(settingName) {
         var users = this._settings[settingName];
@@ -255,6 +245,5 @@ BarPlatform.ComponentPackage = BarPlatform.FilePackage.extend({
     _id: undefined,
     _domain: undefined,
     _uri: null,
-    _units: null,
-    _persistPath: undefined
+    _units: null
 });

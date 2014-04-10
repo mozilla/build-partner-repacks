@@ -1,16 +1,16 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['cloudSource'];
+"use strict";
+const EXPORTED_SYMBOLS = ["cloudSource"];
 const {
         classes: Cc,
         interfaces: Ci,
         utils: Cu
     } = Components;
-Cu.import('resource://gre/modules/Services.jsm');
+Cu.import("resource://gre/modules/Services.jsm");
 const GLOBAL = this;
-const DB_FILENAME = 'fastdial.sqlite';
-const API_DATA_RECEIVED_EVENT = 'ftabs-api-data-received';
-const SELF_DATA_RECEIVED_EVENT = 'ftabs-self-data-received';
-const CLOUD_API_URL = 'http://api.browser.yandex.ru/dashboard/v2/get/?nodes=';
+const DB_FILENAME = "fastdial.sqlite";
+const API_DATA_RECEIVED_EVENT = "ftabs-api-data-received";
+const SELF_DATA_RECEIVED_EVENT = "ftabs-self-data-received";
+const CLOUD_API_URL = "http://api.browser.yandex.ru/dashboard/v2/get/?nodes=";
 const MAX_LOGO_WIDTH = 150;
 const MAX_LOGO_HEIGHT = 60;
 var cachedCloudData = Object.create(null);
@@ -21,7 +21,7 @@ const cloudSource = {
             this.addListener(API_DATA_RECEIVED_EVENT, this);
             this.addListener(SELF_DATA_RECEIVED_EVENT, this);
             this._application = application;
-            this._logger = application.getLogger('CloudSource');
+            this._logger = application.getLogger("CloudSource");
             this._initDatabase();
         },
         finalize: function CloudSource_finalize(doCleanup, callback) {
@@ -49,9 +49,9 @@ const cloudSource = {
             switch (aTopic) {
             case API_DATA_RECEIVED_EVENT:
                 let self = this;
-                this._database.execQueryAsync('SELECT domain, logo, backgroundColor FROM cloud_data WHERE domain = :domain AND user_supplied = 1', { domain: aData.domain }, function (rowsData, storageError) {
+                this._database.execQueryAsync("SELECT domain, logo, backgroundColor FROM cloud_data WHERE domain = :domain AND user_supplied = 1", { domain: aData.domain }, function (rowsData, storageError) {
                     if (storageError) {
-                        let msg = strutils.formatString('DB error while selecting local cloud data: %1 (code %2)', [
+                        let msg = strutils.formatString("DB error while selecting local cloud data: %1 (code %2)", [
                                 storageError.message,
                                 storageError.result
                             ]);
@@ -68,7 +68,7 @@ const cloudSource = {
                         backgroundColor: aData.color,
                         backgroundImage: aData.logo
                     };
-                    self._database.execQueryAsync('INSERT INTO cloud_data (domain, logo, backgroundColor, user_supplied) VALUES (:domain, :logo, :color, 0)', {
+                    self._database.execQueryAsync("INSERT INTO cloud_data (domain, logo, backgroundColor, user_supplied) VALUES (:domain, :logo, :color, 0)", {
                         domain: aData.domain,
                         logo: aData.logo,
                         color: aData.color
@@ -82,7 +82,7 @@ const cloudSource = {
                         backgroundColor: aData.color,
                         domain: aData.domain
                     };
-                this._database.execQueryAsync('INSERT OR REPLACE INTO cloud_data (domain, logo, backgroundColor, user_supplied) VALUES (:domain, :logo, :color, 1)', {
+                this._database.execQueryAsync("INSERT OR REPLACE INTO cloud_data (domain, logo, backgroundColor, user_supplied) VALUES (:domain, :logo, :color, 1)", {
                     domain: aData.domain,
                     logo: aData.logo,
                     color: aData.color
@@ -101,7 +101,7 @@ const cloudSource = {
         requestExistingTile: function CloudSource_requestExistingTile(host, callback) {
             if (cachedCloudData[host])
                 return callback(null, cachedCloudData[host]);
-            this._database.execQueryAsync('SELECT domain, logo, backgroundColor FROM cloud_data WHERE domain = :domain', { domain: host }, function CloudSource_requestTileFromDatabase_onDataReady(rowsData, storageError) {
+            this._database.execQueryAsync("SELECT domain, logo, backgroundColor FROM cloud_data WHERE domain = :domain", { domain: host }, function CloudSource_requestTileFromDatabase_onDataReady(rowsData, storageError) {
                 if (storageError || !rowsData.length)
                     return callback(storageError);
                 cachedCloudData[host] = {
@@ -115,12 +115,12 @@ const cloudSource = {
             var host;
             try {
                 uri.QueryInterface(Ci.nsIURL);
-                host = uri.asciiHost.replace(/^www\./, '');
+                host = uri.asciiHost.replace(/^www\./, "");
             } catch (ex) {
             }
             if (!host)
                 return;
-            uri.host = uri.host.replace(/^www\./, '');
+            uri.host = uri.host.replace(/^www\./, "");
             this._requestAPI(uri);
             if (useBothSources && !this._application.isYandexHost(uri.host)) {
                 this._requestPageManifest(uri);
@@ -136,36 +136,36 @@ const cloudSource = {
             uri.QueryInterface(Ci.nsIURL);
             if (this._application.isYandexHost(uri.host)) {
                 let parsedQuery = netutils.querystring.parse(uri.query);
-                parsedQuery.nugt = 'vbff-' + this._application.addonManager.addonVersion;
+                parsedQuery.nugt = "vbff-" + this._application.addonManager.addonVersion;
                 uri.query = netutils.querystring.stringify(parsedQuery);
             }
-            xhr.open('GET', uri.spec, true);
+            xhr.open("GET", uri.spec, true);
             var timer = new sysutils.Timer(function () {
                     xhr.abort();
                 }, 25000);
-            xhr.addEventListener('load', function () {
+            xhr.addEventListener("load", function () {
                 timer.cancel();
                 delete self._pagesLoadQueue[uri.spec];
-                var responseText = (xhr.responseText || '').replace(/<\/head>[\s\S]*/i, '</head><body/></html>').replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+                var responseText = (xhr.responseText || "").replace(/<\/head>[\s\S]*/i, "</head><body/></html>").replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
                 var domParser = xmlutils.getDOMParser();
                 var xmlDocument;
                 try {
-                    xmlDocument = domParser.parseFromString(responseText, 'text/html');
+                    xmlDocument = domParser.parseFromString(responseText, "text/html");
                 } catch (e) {
                 }
                 if (!xmlDocument)
                     return;
-                var link = xmlDocument.querySelector('link[rel=\'yandex-tableau-widget\']');
+                var link = xmlDocument.querySelector("link[rel='yandex-tableau-widget']");
                 if (!link)
                     return;
-                var manifestUrl = netutils.resolveRelativeURL(link.getAttribute('href'), uri);
+                var manifestUrl = netutils.resolveRelativeURL(link.getAttribute("href"), uri);
                 self._validatePageManifest(manifestUrl, uri.asciiHost);
             });
             var errorHandler = function errorHandler(e) {
                 delete self._pagesLoadQueue[uri.spec];
             };
-            xhr.addEventListener('error', errorHandler, false);
-            xhr.addEventListener('abort', errorHandler, false);
+            xhr.addEventListener("error", errorHandler, false);
+            xhr.addEventListener("abort", errorHandler, false);
             xhr.send();
         },
         _validatePageManifest: function CloudSource__validatePageManifest(url, domain) {
@@ -174,22 +174,22 @@ const cloudSource = {
             this._manifestLoadQueue[url] = 1;
             var self = this;
             var xhr = this._createXHR();
-            xhr.open('GET', url, true);
-            xhr.responseType = 'json';
+            xhr.open("GET", url, true);
+            xhr.responseType = "json";
             var timer = new sysutils.Timer(function () {
                     xhr.abort();
                 }, 25000);
-            xhr.addEventListener('load', function () {
+            xhr.addEventListener("load", function () {
                 timer.cancel();
                 delete self._manifestLoadQueue[url];
                 if (!xhr.response) {
-                    self._logger.warn('Server response is not a valid JSON');
+                    self._logger.warn("Server response is not a valid JSON");
                     return;
                 }
                 if (!xhr.response.api_version || !xhr.response.layout || !xhr.response.layout.logo || !xhr.response.layout.color)
                     return;
-                var color = typeof xhr.response.layout.color === 'object' ? xhr.response.layout.color[self._application.locale.language] || xhr.response.layout.color.default : xhr.response.layout.color;
-                var logo = typeof xhr.response.layout.logo === 'object' ? xhr.response.layout.logo[self._application.locale.language] || xhr.response.layout.logo.default : xhr.response.layout.logo;
+                var color = typeof xhr.response.layout.color === "object" ? xhr.response.layout.color[self._application.locale.language] || xhr.response.layout.color.default : xhr.response.layout.color;
+                var logo = typeof xhr.response.layout.logo === "object" ? xhr.response.layout.logo[self._application.locale.language] || xhr.response.layout.logo.default : xhr.response.layout.logo;
                 if (!logo || !color || !/^#/.test(color) || [
                         4,
                         7
@@ -197,7 +197,7 @@ const cloudSource = {
                     return;
                 color = color.substr(1);
                 if (color.length === 3)
-                    color = color.split('').map(function (symbol) symbol + symbol).join('');
+                    color = color.split("").map(function (symbol) symbol + symbol).join("");
                 var logoSource = netutils.resolveRelativeURL(logo, netutils.newURI(url));
                 self._validateImageAgainstSize(logoSource, function (valid) {
                     if (!valid)
@@ -212,17 +212,17 @@ const cloudSource = {
             var errorHandler = function errorHandler(e) {
                 delete self._manifestLoadQueue[url];
             };
-            xhr.addEventListener('error', errorHandler, false);
-            xhr.addEventListener('abort', errorHandler, false);
+            xhr.addEventListener("error", errorHandler, false);
+            xhr.addEventListener("abort", errorHandler, false);
             xhr.send();
         },
         _validateImageAgainstSize: function CloudSource__validateImageAgainstSize(imgSource, callback) {
             var self = this;
             var hiddenWindow = misc.hiddenWindows.appWindow;
             var hiddenWindowDoc = hiddenWindow.document;
-            var image = hiddenWindowDoc.createElementNS('http://www.w3.org/1999/xhtml', 'img');
+            var image = hiddenWindowDoc.createElementNS("http://www.w3.org/1999/xhtml", "img");
             image.onload = function imgOnLoad() {
-                self._logger.trace('Image proportions: ' + image.width + 'x' + image.height);
+                self._logger.trace("Image proportions: " + image.width + "x" + image.height);
                 callback(image.width <= MAX_LOGO_WIDTH && image.height <= MAX_LOGO_HEIGHT);
             };
             image.onerror = function imgOnError() {
@@ -234,7 +234,7 @@ const cloudSource = {
             var host;
             try {
                 uri.QueryInterface(Ci.nsIURL);
-                host = uri.asciiHost.replace(/^www\./, '');
+                host = uri.asciiHost.replace(/^www\./, "");
             } catch (ex) {
             }
             if (!host)
@@ -243,44 +243,44 @@ const cloudSource = {
                 return;
             this._cloudDataDomainsQueue[host] = 1;
             var self = this;
-            var cloudURL = CLOUD_API_URL + encodeURIComponent(host) + '&brandID=' + this._application.branding.productInfo.BrandID + '&lang=' + this._application.locale.language;
+            var cloudURL = CLOUD_API_URL + encodeURIComponent(host) + "&brandID=" + this._application.branding.productInfo.BrandID + "&lang=" + this._application.locale.language;
             var xhr = this._createXHR();
-            xhr.open('GET', cloudURL, true);
-            xhr.responseType = 'json';
+            xhr.open("GET", cloudURL, true);
+            xhr.responseType = "json";
             var timer = new sysutils.Timer(function () {
                     xhr.abort();
                 }, 25000);
-            xhr.addEventListener('load', function () {
+            xhr.addEventListener("load", function () {
                 timer.cancel();
                 delete self._cloudDataDomainsQueue[host];
                 if (!xhr.response)
-                    return self._logger.error('Server response is not a valid JSON: ' + xhr.responseText);
+                    return self._logger.error("Server response is not a valid JSON: " + xhr.responseText);
                 if (xhr.response.error || !xhr.response[0].color || !xhr.response[0].resources.logo)
                     return;
                 self._notifyListeners(API_DATA_RECEIVED_EVENT, {
                     domain: host,
-                    color: xhr.response[0].color.replace(/^#/, ''),
+                    color: xhr.response[0].color.replace(/^#/, ""),
                     logo: xhr.response[0].resources.logo.url
                 });
             });
             var errorHandler = function errorHandler(e) {
                 delete self._cloudDataDomainsQueue[host];
             };
-            xhr.addEventListener('error', errorHandler, false);
-            xhr.addEventListener('abort', errorHandler, false);
+            xhr.addEventListener("error", errorHandler, false);
+            xhr.addEventListener("abort", errorHandler, false);
             xhr.send();
         },
         _createXHR: function CloudSource__createXHR() {
-            var xhr = Cc['@mozilla.org/xmlextras/xmlhttprequest;1'].createInstance(Ci.nsIXMLHttpRequest);
+            var xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
             xhr.mozBackgroundRequest = true;
             xhr.QueryInterface(Ci.nsIDOMEventTarget);
             var dropFromQueue = function () {
                     var pos = this._pendingRequests.indexOf(xhr);
                     this._pendingRequests.splice(pos, 1);
                 }.bind(this);
-            xhr.addEventListener('load', dropFromQueue, false);
-            xhr.addEventListener('error', dropFromQueue, false);
-            xhr.addEventListener('abort', dropFromQueue, false);
+            xhr.addEventListener("load", dropFromQueue, false);
+            xhr.addEventListener("error", dropFromQueue, false);
+            xhr.addEventListener("abort", dropFromQueue, false);
             this._pendingRequests.push(xhr);
             return xhr;
         },

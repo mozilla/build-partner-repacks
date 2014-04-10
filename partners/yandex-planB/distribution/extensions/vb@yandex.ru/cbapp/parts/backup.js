@@ -1,22 +1,22 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['backup'];
+"use strict";
+const EXPORTED_SYMBOLS = ["backup"];
 const GLOBAL = this;
 const {
         classes: Cc,
         interfaces: Ci,
         utils: Cu
     } = Components;
-const DB_FILENAME = 'fastdial.sqlite';
-const PREF_LASTDUMP_NAME = 'backup.lastTime';
+const DB_FILENAME = "fastdial.sqlite";
+const PREF_LASTDUMP_NAME = "backup.lastTime";
 const INTERVAL_SEC = 86400;
 const FILES_MAX_NUMBER = 10;
 const SYNC_THROTTLE_TIMEOUT_MS = 3000;
-const SYNC_THROTTLE_PROCESS_FINISH = 'ftabs-backup-sync-finish';
+const SYNC_THROTTLE_PROCESS_FINISH = "ftabs-backup-sync-finish";
 const backup = {
         init: function Backup_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
-            this._logger = application.getLogger('Backup');
+            this._logger = application.getLogger("Backup");
             this.__proto__ = new patterns.NotificationSource();
             this._initDatabase();
             var now = Math.round(Date.now() / 1000);
@@ -69,19 +69,19 @@ const backup = {
             var backupFile = this._backupsDir;
             backupFile.append(fileName);
             if (!backupFile.exists() || !backupFile.isFile() || !backupFile.isReadable())
-                throw new Error('No such backup file: ' + fileName);
+                throw new Error("No such backup file: " + fileName);
             var json = fileutils.jsonFromFile(backupFile);
             var thumbs = {};
             var newThumbs = {};
             this._dbTables.forEach(function (tableName) {
-                this._database.execQuery('DELETE FROM ' + tableName, {});
+                this._database.execQuery("DELETE FROM " + tableName, {});
             }, this);
             this._dbTables.forEach(function (tableName) {
                 json[tableName].forEach(function (row) {
-                    this._database.execQuery('INSERT INTO ' + tableName + ' (' + Object.keys(row).join(', ') + ') VALUES (' + Object.keys(row).map(function (field) ':' + field).join(', ') + ')', row);
-                    if (tableName === 'thumbs') {
+                    this._database.execQuery("INSERT INTO " + tableName + " (" + Object.keys(row).join(", ") + ") VALUES (" + Object.keys(row).map(function (field) ":" + field).join(", ") + ")", row);
+                    if (tableName === "thumbs") {
                         thumbs[row.rowid] = row;
-                    } else if (tableName === 'thumbs_shown') {
+                    } else if (tableName === "thumbs_shown") {
                         let dbStructure = {
                                 url: thumbs[row.thumb_id].url,
                                 title: thumbs[row.thumb_id].title,
@@ -100,7 +100,7 @@ const backup = {
             this._application.thumbs.resetPickupTimer();
             this._application.internalStructure.clear();
             this._application.internalStructure.setItem(newThumbs);
-            this._application.fastdial.sendRequest('thumbChanged', this._application.frontendHelper.fullStructure);
+            this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
             this._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
                 this._application.thumbs.getMissingData(thumbData);
             }, this);
@@ -131,21 +131,21 @@ const backup = {
             this._application.internalStructure.iterate(null, function (thumbData, index) {
                 if (thumbData.source) {
                     thumbsTasks[thumbData.source] = function (callback) {
-                        self._database.execQueryAsync('SELECT rowid, * FROM thumbs WHERE url = :url', { url: thumbData.source }, function (rowsData, storageError) {
+                        self._database.execQueryAsync("SELECT rowid, * FROM thumbs WHERE url = :url", { url: thumbData.source }, function (rowsData, storageError) {
                             if (storageError)
                                 return callback(storageError);
                             if (rowsData.length) {
                                 let rowId = rowsData[0].rowid;
                                 let needsUpdate = [
-                                        'title',
-                                        'backgroundColor',
-                                        'favicon'
+                                        "title",
+                                        "backgroundColor",
+                                        "favicon"
                                     ].some(function (field) {
                                         return thumbData.thumb[field] !== rowsData[0][field];
                                     });
                                 if (!needsUpdate)
                                     return callback(null, rowId);
-                                self._database.execQueryAsync('UPDATE thumbs SET title = :title, backgroundColor = :backgroundColor, favicon = :favicon WHERE url = :url', {
+                                self._database.execQueryAsync("UPDATE thumbs SET title = :title, backgroundColor = :backgroundColor, favicon = :favicon WHERE url = :url", {
                                     url: thumbData.source,
                                     title: thumbData.thumb.title || null,
                                     backgroundColor: thumbData.thumb.backgroundColor || null,
@@ -154,7 +154,7 @@ const backup = {
                                     callback(storageError, rowId);
                                 });
                             } else {
-                                self._database.execQueryAsync('INSERT INTO thumbs (url, title, backgroundImage, backgroundColor, favicon, insertTimestamp) VALUES (:url, :title, \'\', :backgroundColor, :favicon, :ts)', {
+                                self._database.execQueryAsync("INSERT INTO thumbs (url, title, backgroundImage, backgroundColor, favicon, insertTimestamp) VALUES (:url, :title, '', :backgroundColor, :favicon, :ts)", {
                                     url: thumbData.source,
                                     title: thumbData.thumb.title || null,
                                     backgroundColor: thumbData.thumb.backgroundColor || null,
@@ -163,9 +163,9 @@ const backup = {
                                 }, function (rowsData, storageError) {
                                     if (storageError)
                                         return callback(storageError);
-                                    self._database.execQueryAsync('SELECT rowid FROM thumbs WHERE url = :url', { url: thumbData.source }, function (rowsData, storageError) {
+                                    self._database.execQueryAsync("SELECT rowid FROM thumbs WHERE url = :url", { url: thumbData.source }, function (rowsData, storageError) {
                                         if (!storageError)
-                                            self._logger.debug('Thumb (URL: ' + thumbData.source + ') was inserted into DB with rowid: ' + rowsData[0].rowid);
+                                            self._logger.debug("Thumb (URL: " + thumbData.source + ") was inserted into DB with rowid: " + rowsData[0].rowid);
                                         callback(storageError, rowsData[0].rowid);
                                     });
                                 });
@@ -174,7 +174,7 @@ const backup = {
                     };
                 }
                 replaceShownTasks.push(function (callback) {
-                    self._database.execQueryAsync('INSERT OR REPLACE INTO thumbs_shown (thumb_id, position, fixed, syncId, syncInstance, syncTimestamp) VALUES(:id, :index, :pinned, :syncId, :syncInstance, :syncTimestamp)', {
+                    self._database.execQueryAsync("INSERT OR REPLACE INTO thumbs_shown (thumb_id, position, fixed, syncId, syncInstance, syncTimestamp) VALUES(:id, :index, :pinned, :syncId, :syncInstance, :syncTimestamp)", {
                         id: thumbData.source ? thumbsRowIds[thumbData.source] : 0,
                         index: index,
                         pinned: Number(thumbData.pinned),
@@ -188,7 +188,7 @@ const backup = {
             }, this);
             async.parallel(thumbsTasks, function (storageError, thumbs) {
                 if (storageError) {
-                    let errorMsg = strutils.formatString('Get thumbs rowid error: %1 (code %2)', [
+                    let errorMsg = strutils.formatString("Get thumbs rowid error: %1 (code %2)", [
                             storageError.message,
                             storageError.result
                         ]);
@@ -196,29 +196,29 @@ const backup = {
                     return;
                 }
                 thumbsRowIds = thumbs;
-                self._database.execQueryAsync('SELECT MAX(rowid) AS rowid FROM thumbs_shown', {}, function (rowsData, storageError) {
+                self._database.execQueryAsync("SELECT MAX(rowid) AS rowid FROM thumbs_shown", {}, function (rowsData, storageError) {
                     if (storageError)
-                        throw new Error(strutils.formatString('Get max thums_shown rowid error: %1 (code %2)', [
+                        throw new Error(strutils.formatString("Get max thums_shown rowid error: %1 (code %2)", [
                             storageError.message,
                             storageError.result
                         ]));
                     if (rowsData.length) {
                         replaceShownTasks.push(function (callback) {
-                            self._database.execQueryAsync('DELETE FROM thumbs_shown WHERE rowid <= :maxint', { maxint: rowsData[0].rowid }, function (rowsData, storageError) {
+                            self._database.execQueryAsync("DELETE FROM thumbs_shown WHERE rowid <= :maxint", { maxint: rowsData[0].rowid }, function (rowsData, storageError) {
                                 callback(storageError);
                             });
                         });
                     }
                     async.parallel(replaceShownTasks, function (storageError) {
                         if (storageError) {
-                            let errorMsg = strutils.formatString('Replace shown error: %1 (code %2)', [
+                            let errorMsg = strutils.formatString("Replace shown error: %1 (code %2)", [
                                     storageError.message,
                                     storageError.result
                                 ]);
                             self._logger.error(errorMsg);
                             return;
                         }
-                        self._logger.trace('Thumbs structure synced');
+                        self._logger.trace("Thumbs structure synced");
                         self._throttleTimer = null;
                         self._notifyListeners(SYNC_THROTTLE_PROCESS_FINISH);
                     });
@@ -230,19 +230,19 @@ const backup = {
             var tasks = {};
             this._dbTables.forEach(function (tableName) {
                 tasks[tableName] = function (callback) {
-                    self._database.execQueryAsync('SELECT rowid, * FROM ' + tableName + ' ORDER BY rowid', {}, function (rowsData, storageError) {
+                    self._database.execQueryAsync("SELECT rowid, * FROM " + tableName + " ORDER BY rowid", {}, function (rowsData, storageError) {
                         callback(storageError, rowsData);
                     });
                 };
             });
             async.parallel(tasks, function Backup__initDatabase_onParallelReady(storageError, results) {
                 if (storageError)
-                    throw new Error(strutils.formatString('Dump error: %1 (code %2)', [
+                    throw new Error(strutils.formatString("Dump error: %1 (code %2)", [
                         storageError.message,
                         storageError.result
                     ]));
                 var file = self._backupsDir;
-                file.append(Date.now() + '.json');
+                file.append(Date.now() + ".json");
                 fileutils.jsonToFile(results, file);
                 var now = Math.round(Date.now() / 1000);
                 self._application.preferences.set(PREF_LASTDUMP_NAME, now);
@@ -258,7 +258,7 @@ const backup = {
         },
         get _backupsDir() {
             var dir = this._application.core.rootDir;
-            dir.append('backups');
+            dir.append("backups");
             if (!dir.exists()) {
                 dir.create(Ci.nsIFile.DIRECTORY_TYPE, fileutils.PERMS_DIRECTORY);
             }
@@ -268,11 +268,11 @@ const backup = {
         _logger: null,
         _database: null,
         _dbTables: [
-            'blacklist',
-            'thumbs',
-            'thumbs_shown',
-            'cloud_data',
-            'unsafe_domains'
+            "blacklist",
+            "thumbs",
+            "thumbs_shown",
+            "cloud_data",
+            "unsafe_domains"
         ],
         _throttleTimer: null,
         _finalizeDoCleanup: null,

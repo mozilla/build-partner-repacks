@@ -1,5 +1,5 @@
-'use strict';
-EXPORTED_SYMBOLS.push('async');
+"use strict";
+EXPORTED_SYMBOLS.push("async");
 const async = {
         parallel: function async_parallel(tasks, concurrency, callback) {
             if (arguments.length === 2) {
@@ -77,7 +77,7 @@ const async = {
         nextTick: function async_nextTick(callback, ctx) {
             if (ctx)
                 callback = callback.bind(ctx);
-            var currentThread = Cc['@mozilla.org/thread-manager;1'].getService().currentThread;
-            currentThread.dispatch({ 'run': callback }, Ci.nsIEventTarget.DISPATCH_NORMAL);
+            var currentThread = Cc["@mozilla.org/thread-manager;1"].getService().currentThread;
+            currentThread.dispatch({ "run": callback }, Ci.nsIEventTarget.DISPATCH_NORMAL);
         }
     };

@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['syncPinned'];
+"use strict";
+const EXPORTED_SYMBOLS = ["syncPinned"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -7,12 +7,12 @@ const {
         results: Cr
     } = Components;
 const GLOBAL = this;
-const PREFIX = 'entries.entry-';
+const PREFIX = "entries.entry-";
 const syncPinned = {
         init: function SyncPinned_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
-            this._logger = application.getLogger('SyncPinned');
+            this._logger = application.getLogger("SyncPinned");
         },
         finalize: function SyncPinned_finalize(doCleanup, callback) {
             this._logger = null;
@@ -35,13 +35,13 @@ const syncPinned = {
                     instance: thumbData.sync.instance || this._application.name
                 });
             }, this);
-            this._logger.trace('Saving pinned: ' + JSON.stringify(records));
+            this._logger.trace("Saving pinned: " + JSON.stringify(records));
             this.engine.set(records);
         },
         get engine() {
             if (!this._application.sync.svc)
                 return null;
-            return this._application.sync.svc.getEngine('Pinned');
+            return this._application.sync.svc.getEngine("Pinned");
         },
         set initFinished(val) {
             this._engineInitFinished = val;
@@ -65,9 +65,9 @@ const syncPinned = {
                     syncInternalId: thumbData.sync.internalId
                 };
             }, this);
-            this._logger.trace('Initial thumbs on server: ' + JSON.stringify(records));
-            this._logger.trace('Local thumbs: ' + JSON.stringify(localThumbs));
-            this._logger.trace('Visible thumbs num: ' + currentThumbsNum);
+            this._logger.trace("Initial thumbs on server: " + JSON.stringify(records));
+            this._logger.trace("Local thumbs: " + JSON.stringify(localThumbs));
+            this._logger.trace("Visible thumbs num: " + currentThumbsNum);
             for (let key in records) {
                 records[key] = JSON.parse(records[key]);
             }
@@ -111,8 +111,8 @@ const syncPinned = {
         processData: function SyncPinned_processData(records, isInitialSync) {
             if (!this._engineInitFinished)
                 return;
-            this._logger.trace('Engine initialized. Processing data');
-            this._logger.trace('Process data: ' + JSON.stringify(records));
+            this._logger.trace("Engine initialized. Processing data");
+            this._logger.trace("Process data: " + JSON.stringify(records));
             var localPinnedThumbs = {};
             this._application.internalStructure.iterate({
                 nonempty: true,
@@ -127,17 +127,17 @@ const syncPinned = {
                 fastPickupSet[index] = thumbData;
             });
             var self = this;
-            var pinnedThumbsRegex = new RegExp('^' + PREFIX + '(.+)$');
+            var pinnedThumbsRegex = new RegExp("^" + PREFIX + "(.+)$");
             var serverPinnedThumbs = [];
             var resolvedPinnedThumbs = {};
             var wereChangesMade = false;
             Object.keys(records).forEach(function (key) {
                 var matches = key.match(pinnedThumbsRegex);
                 if (!matches) {
-                    this._logger.error('Wrong key name: ' + key);
+                    this._logger.error("Wrong key name: " + key);
                     return;
                 }
-                if (typeof records[key] === 'string') {
+                if (typeof records[key] === "string") {
                     records[key] = JSON.parse(records[key]);
                 }
                 records[key].key = matches[1];
@@ -150,7 +150,7 @@ const syncPinned = {
                 var currentIndex = serverThumb.index;
                 var localThumb = resolvedPinnedThumbs[currentIndex];
                 var containsLocalThumb = localThumb !== undefined;
-                this._logger.trace('Iterate through: ' + JSON.stringify([
+                this._logger.trace("Iterate through: " + JSON.stringify([
                     currentIndex,
                     localThumb,
                     serverThumb,
@@ -158,7 +158,7 @@ const syncPinned = {
                 ]));
                 if (containsLocalThumb) {
                     let emptyPosition = this._findEmptyPosition(resolvedPinnedThumbs, currentIndex);
-                    this._logger.trace('This position was filled. Save on position: ' + emptyPosition);
+                    this._logger.trace("This position was filled. Save on position: " + emptyPosition);
                     serverThumb.key = this._application.sync.generateId();
                     serverThumb.index = emptyPosition;
                     serverThumb.timestamp = Math.round(Date.now() / 1000);
@@ -166,11 +166,11 @@ const syncPinned = {
                     resolvedPinnedThumbs[emptyPosition] = serverThumb;
                     wereChangesMade = true;
                 } else {
-                    this._logger.trace('This temporary resolved position is empty. Check thumbs for equality');
+                    this._logger.trace("This temporary resolved position is empty. Check thumbs for equality");
                     if (localPinnedThumbs[currentIndex] && localPinnedThumbs[currentIndex].source && this._isEqualURL(serverThumb.url, localPinnedThumbs[currentIndex].source))
-                        serverThumb.title = localPinnedThumbs[currentIndex].thumb.title || '';
+                        serverThumb.title = localPinnedThumbs[currentIndex].thumb.title || "";
                     if (this._wereChangesMade(localPinnedThumbs, serverThumb)) {
-                        this._logger.trace('Thumbs differ');
+                        this._logger.trace("Thumbs differ");
                         wereChangesMade = true;
                     }
                     resolvedPinnedThumbs[currentIndex] = serverThumb;
@@ -193,12 +193,12 @@ const syncPinned = {
                 }
             }, this);
             if (removePositions.length) {
-                this._logger.trace('Drop thumb(s) on positions: ' + JSON.stringify(removePositions));
+                this._logger.trace("Drop thumb(s) on positions: " + JSON.stringify(removePositions));
             }
             Object.keys(resolvedPinnedThumbs).forEach(function (position) {
                 saveData[position] = {
                     url: self._application.sync.prepareUrlForSave(resolvedPinnedThumbs[position].url),
-                    title: '',
+                    title: "",
                     internalId: resolvedPinnedThumbs[position].id,
                     id: resolvedPinnedThumbs[position].key,
                     instance: resolvedPinnedThumbs[position].instance,
@@ -213,13 +213,13 @@ const syncPinned = {
                 });
             }, this);
             if (!wereChangesMade) {
-                this._logger.trace('No changes were made. Quit');
+                this._logger.trace("No changes were made. Quit");
                 return;
             }
             this._application.thumbs.updateCurrentSet(removePositions, saveData);
             this._application.thumbs.fastPickup(fastPickupSet);
             if (isInitialSync) {
-                self._logger.trace('Save resolved data: ' + JSON.stringify(saveEngineData));
+                self._logger.trace("Save resolved data: " + JSON.stringify(saveEngineData));
                 self.engine.set(saveEngineData);
             }
         },
@@ -241,7 +241,7 @@ const syncPinned = {
         _cutParams: function SyncPinned__cutParams(uri) {
             if (!this._application.isYandexHost(uri.host))
                 return uri;
-            uri.host = uri.host.replace(/^www\./, '');
+            uri.host = uri.host.replace(/^www\./, "");
             var parsedQuery = netutils.querystring.parse(uri.query);
             delete parsedQuery.clid;
             if (parsedQuery.from === this._application.core.CONFIG.APP.TYPE)

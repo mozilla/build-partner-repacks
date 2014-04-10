@@ -21,7 +21,7 @@ var searchDictionary = {
         _version: 0
     };
 function ContentHandler() {
-    this.result = '';
+    this.result = "";
     this._statHash = Object.create(null);
     this._positionsCounter = 0;
     this._ignoreText = true;
@@ -32,11 +32,11 @@ ContentHandler.prototype = {
         if (this._checkTimeLimit())
             return;
         switch (tagName.toLowerCase()) {
-        case 'script':
-        case 'style':
+        case "script":
+        case "style":
             this._ignoreText = true;
             break;
-        case 'body':
+        case "body":
             this._ignoreText = false;
             break;
         }
@@ -45,12 +45,12 @@ ContentHandler.prototype = {
         if (this._checkTimeLimit())
             return;
         switch (tagName.toLowerCase()) {
-        case 'script':
-        case 'style':
+        case "script":
+        case "style":
             if (this._ignoreText)
                 this._ignoreText = false;
             break;
-        case 'body':
+        case "body":
             this._htmlParser.cancel();
             break;
         }
@@ -114,21 +114,21 @@ ContentHandler.prototype = {
         this._htmlParser.cancel();
         return true;
     },
-    VERSION_DELIMITER: '/',
-    STATISTIC_DELIMITER: ';',
-    WORD_DELIMITER: ':',
-    POSITION_DELIMITER: ',',
+    VERSION_DELIMITER: "/",
+    STATISTIC_DELIMITER: ";",
+    WORD_DELIMITER: ":",
+    POSITION_DELIMITER: ",",
     MAX_RESULT_STRING_LENGTH: 3000,
     MAX_PARSE_TIME: 10000
 };
 var checkSum = {
         MAX_DOCUMENT_SIZE: 512 * 1024 - 1,
         calculate: function checkSum_calculate(htmlSource) {
-            return htmlSource.substr(0, this.MAX_DOCUMENT_SIZE).replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '').replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '').replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/gi, '').replace(/<(?:a|meta)([^>]*)>/gi, this._parseAttributes).replace(/<\/?[^>]*>/gi, '').replace(/\s|\d/g, '');
+            return htmlSource.substr(0, this.MAX_DOCUMENT_SIZE).replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "").replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "").replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/gi, "").replace(/<(?:a|meta)([^>]*)>/gi, this._parseAttributes).replace(/<\/?[^>]*>/gi, "").replace(/\s|\d/g, "");
         },
         _parseAttributes: function checkSum__parseAttributes(match, p1, offset, string) {
-            var result = '';
-            var buf = '';
+            var result = "";
+            var buf = "";
             var i = -1;
             var dict = Object.create(null);
             var startSym = null;
@@ -137,34 +137,34 @@ var checkSum = {
                 if (p1[i].search(/\s/) > -1) {
                     if (!startSym) {
                         if (buf.length > 0) {
-                            dict[buf] = '';
-                            buf = '';
+                            dict[buf] = "";
+                            buf = "";
                         }
                         if (lastKey) {
-                            dict[lastKey] = '';
+                            dict[lastKey] = "";
                             lastKey = null;
                         }
                         continue;
                     }
                 }
-                if (p1[i] == '=') {
+                if (p1[i] == "=") {
                     if (!startSym) {
                         if (buf.length > 0) {
                             lastKey = buf;
-                            buf = '';
+                            buf = "";
                             continue;
                         }
                     }
                 }
-                if (p1[i] == '\\') {
+                if (p1[i] == "\\") {
                     var ch = p1[i];
-                    if (p1[i + 1] && (p1[i + 1] == '"' || p1[i] == '\'')) {
+                    if (p1[i + 1] && (p1[i + 1] == "\"" || p1[i] == "'")) {
                         ch = p1[++i];
                     }
                     buf += ch;
                     continue;
                 }
-                if ((p1[i] == '"' || p1[i] == '\'') && !startSym) {
+                if ((p1[i] == "\"" || p1[i] == "'") && !startSym) {
                     startSym = p1[i];
                     continue;
                 }
@@ -173,7 +173,7 @@ var checkSum = {
                         dict[lastKey] = buf;
                         lastKey = null;
                     }
-                    buf = '';
+                    buf = "";
                     startSym = null;
                     continue;
                 }
@@ -183,7 +183,7 @@ var checkSum = {
                 dict[lastKey] = buf;
                 lastKey = null;
             }
-            return Object.keys(dict).sort().map(function (key) key + dict[key]).join('');
+            return Object.keys(dict).sort().map(function (key) key + dict[key]).join("");
         }
     };
 onmessage = function onmessage(event) {
@@ -191,14 +191,14 @@ onmessage = function onmessage(event) {
     var data = event.data.data;
     var taskId = event.data.taskId;
     switch (type) {
-    case 'calculateCheckSum':
+    case "calculateCheckSum":
         postMessage({
             type: type,
             data: checkSum.calculate(data),
             taskId: taskId
         });
         break;
-    case 'calculateSearchPersonalization': {
+    case "calculateSearchPersonalization": {
             var htmlParser = new SimpleHTMLParser();
             var contentHandler = new ContentHandler();
             contentHandler.htmlParser = htmlParser;
@@ -213,17 +213,17 @@ onmessage = function onmessage(event) {
             });
             break;
         }
-    case 'setModulesPath': {
-            importScripts(data + 'SimpleHTMLParser.jsm');
-            importScripts(data + 'Stemmer.jsm');
-            stemmer = new Stemmer('russian');
+    case "setModulesPath": {
+            importScripts(data + "SimpleHTMLParser.jsm");
+            importScripts(data + "Stemmer.jsm");
+            stemmer = new Stemmer("russian");
             break;
         }
-    case 'setSearchDictionary':
+    case "setSearchDictionary":
         searchDictionary.dictionaryHash = data;
         break;
     default:
-        throw new Error('Wrong message type (\'' + type + '\')');
+        throw new Error("Wrong message type ('" + type + "')");
         break;
     }
 };

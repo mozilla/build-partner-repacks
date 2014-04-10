@@ -1,11 +1,11 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['migration'];
+"use strict";
+const EXPORTED_SYMBOLS = ["migration"];
 const {
         classes: Cc,
         interfaces: Ci,
         utils: Cu
     } = Components;
-Cu.import('resource://gre/modules/Services.jsm');
+Cu.import("resource://gre/modules/Services.jsm");
 const GLOBAL = this;
 const migration = {
         init: function migration_init(aApplication) {
@@ -14,7 +14,7 @@ const migration = {
             try {
                 this._migrate();
             } catch (e) {
-                this.logger.error('Failed while running migration process. ' + e);
+                this.logger.error("Failed while running migration process. " + e);
                 this.logger.debug(e.stack);
             }
         },
@@ -23,7 +23,7 @@ const migration = {
         },
         get logger() {
             if (!this._logger) {
-                this._logger = this._application.getLogger('Migration');
+                this._logger = this._application.getLogger("Migration");
             }
             return this._logger;
         },
@@ -38,7 +38,7 @@ const migration = {
             this._addonVersionForMigration = aVersion;
         },
         movePrefBranch: function migration_movePrefBranch(oldPrefBranchPath, newPrefBranchPath) {
-            Services.prefs.getBranch(oldPrefBranchPath).getChildList('', {}).forEach(function (key) {
+            Services.prefs.getBranch(oldPrefBranchPath).getChildList("", {}).forEach(function (key) {
                 var prefValue = Preferences.get(oldPrefBranchPath + key, null);
                 if (prefValue !== null)
                     Preferences.set(newPrefBranchPath + key, prefValue);
@@ -51,38 +51,38 @@ const migration = {
             },
             _replaceIdsInLocalStore: function migration_currentset__replaceIdsInLocalStore(replacer) {
                 var allResources = this._localStoreRDF.GetAllResources();
-                var currentsetResource = this._rdfService.GetResource('currentset');
+                var currentsetResource = this._rdfService.GetResource("currentset");
                 while (allResources.hasMoreElements()) {
                     let res = allResources.getNext().QueryInterface(Ci.nsIRDFResource);
                     if (!res.Value)
                         continue;
                     let toolbar = this._rdfService.GetResource(res.Value);
                     let currentSet = this._getRDFLiteralValue(toolbar, currentsetResource);
-                    if (!(currentSet && currentSet != '__empty'))
+                    if (!(currentSet && currentSet != "__empty"))
                         continue;
-                    let currentSetIds = currentSet.split(',');
+                    let currentSetIds = currentSet.split(",");
                     let (i = 0, len = currentSetIds.length) {
                         for (; i < len; i++) {
                             let currentSetId = currentSetIds[i];
                             let newId = replacer(currentSetId);
-                            if (currentSetId === newId || typeof newId === 'undefined')
+                            if (currentSetId === newId || typeof newId === "undefined")
                                 continue;
-                            migration.logger.debug('Replace \'' + currentSetIds[i] + '\' with \'' + newId + '\'');
+                            migration.logger.debug("Replace '" + currentSetIds[i] + "' with '" + newId + "'");
                             currentSetIds[i] = newId;
                         }
                     }
-                    currentSetIds = currentSetIds.filter(function (id) id !== null).join(',');
+                    currentSetIds = currentSetIds.filter(function (id) id !== null).join(",");
                     this._setRDFLiteralValue(toolbar, currentsetResource, currentSetIds);
                 }
                 this._localStoreRDF.QueryInterface(Ci.nsIRDFRemoteDataSource).Flush();
             },
             get _localStoreRDF() {
                 delete this._localStoreRDF;
-                return this._localStoreRDF = this._rdfService.GetDataSource('rdf:local-store');
+                return this._localStoreRDF = this._rdfService.GetDataSource("rdf:local-store");
             },
             get _rdfService() {
                 delete this._rdfService;
-                return this._rdfService = Cc['@mozilla.org/rdf/rdf-service;1'].getService(Ci.nsIRDFService);
+                return this._rdfService = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService);
             },
             _getRDFLiteralValue: function migrator__getRDFLiteralValue(aSource, aProperty) {
                 var target = this._localStoreRDF.GetTarget(aSource, aProperty, true);
@@ -109,11 +109,11 @@ const migration = {
             var installInfo = this.app.addonManager.info;
             if (!installInfo.addonVersionChanged || installInfo.addonDowngraded)
                 return;
-            this.logger.config('Migration started. ' + 'Fresh install: ' + installInfo.isFreshAddonInstall + '; ' + 'addonVersion: ' + this.app.addonManager.addonVersion + '; ' + 'addonLastVersion: ' + installInfo.addonLastVersion + '.');
+            this.logger.config("Migration started. " + "Fresh install: " + installInfo.isFreshAddonInstall + "; " + "addonVersion: " + this.app.addonManager.addonVersion + "; " + "addonLastVersion: " + installInfo.addonLastVersion + ".");
             var versionComparator = sysutils.versionComparator;
             try {
                 if (installInfo.isFreshAddonInstall) {
-                    this._migrateVersion({ file: 'install.js' });
+                    this._migrateVersion({ file: "install.js" });
                 }
                 this._migrationScripts.forEach(function (scriptDef) {
                     var scriptName = scriptDef.name;
@@ -121,9 +121,9 @@ const migration = {
                                 alias,
                                 operation
                             ] in Iterator(this._migrationConfig)) {
-                        if (scriptName.indexOf(alias + '-') != 0)
+                        if (scriptName.indexOf(alias + "-") != 0)
                             continue;
-                        let version = scriptName.replace(alias + '-', '');
+                        let version = scriptName.replace(alias + "-", "");
                         let compResult = versionComparator.compare(this.addonVersionForMigration, version);
                         if (operation(compResult))
                             this._migrateVersion(scriptDef);
@@ -131,10 +131,10 @@ const migration = {
                     }
                 }, this);
             } catch (e) {
-                this.logger.error('Failed migrating from another version. ' + strutils.formatError(e));
+                this.logger.error("Failed migrating from another version. " + strutils.formatError(e));
                 this.logger.debug(e.stack);
             }
-            this.logger.config('Migration finished');
+            this.logger.config("Migration finished");
         },
         _migrateVersion: function migration__migrateVersion(migScriptDef) {
             var script = this._loadModule(migScriptDef.file);
@@ -142,44 +142,44 @@ const migration = {
             script.migrator.migrate();
         },
         _loadModule: function migration__loadModule(fileName) {
-            const SCRIPT_LOADER = Cc['@mozilla.org/moz/jssubscript-loader;1'].getService(Ci.mozIJSSubScriptLoader);
+            const SCRIPT_LOADER = Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader);
             var scope = {};
-            SCRIPT_LOADER.loadSubScript(this._application.partsURL + 'migration/' + fileName, scope);
-            this.logger.debug(' Migration module \'' + fileName + '\' loaded');
+            SCRIPT_LOADER.loadSubScript(this._application.partsURL + "migration/" + fileName, scope);
+            this.logger.debug(" Migration module '" + fileName + "' loaded");
             return scope;
         },
         _migrationScripts: [
             {
-                name: 'l-5.2.0',
-                file: 'l-5_2_0.js'
+                name: "l-5.2.0",
+                file: "l-5_2_0.js"
             },
             {
-                name: 'l-6.4.0',
-                file: 'l-6_4_0.js'
+                name: "l-6.4.0",
+                file: "l-6_4_0.js"
             },
             {
-                name: 'l-7.0.0',
-                file: 'l-7_0_0.js'
+                name: "l-7.0.0",
+                file: "l-7_0_0.js"
             },
             {
-                name: 'l-7.6.0',
-                file: 'l-7_6_0.js'
+                name: "l-7.6.0",
+                file: "l-7_6_0.js"
             },
             {
-                name: 'l-7.8.0',
-                file: 'l-7_8_0.js'
+                name: "l-7.8.0",
+                file: "l-7_8_0.js"
             },
             {
-                name: 'l-7.8.1',
-                file: 'l-7_8_1.js'
+                name: "l-7.8.1",
+                file: "l-7_8_1.js"
             },
             {
-                name: 'l-8.0.0',
-                file: 'l-8_0_0.js'
+                name: "l-8.0.0",
+                file: "l-8_0_0.js"
             },
             {
-                name: 'l-8.1.0',
-                file: 'l-8_1_0.js'
+                name: "l-8.1.0",
+                file: "l-8_1_0.js"
             }
         ],
         _migrationConfig: {

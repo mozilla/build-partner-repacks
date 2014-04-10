@@ -1,19 +1,19 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['internalStructure'];
+"use strict";
+const EXPORTED_SYMBOLS = ["internalStructure"];
 const GLOBAL = this;
 const {
         classes: Cc,
         interfaces: Ci,
         utils: Cu
     } = Components;
-Cu.import('resource://gre/modules/PlacesUtils.jsm');
-Cu.import('resource://gre/modules/Services.jsm');
+Cu.import("resource://gre/modules/PlacesUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 var thumbs = Object.create(null);
 const internalStructure = {
         init: function InternalStructure_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
-            this._logger = application.getLogger('InternalStructure');
+            this._logger = application.getLogger("InternalStructure");
             Services.obs.addObserver(this, this._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT, false);
         },
         finalize: function InternalStructure_finalize(doCleanup, callback) {
@@ -34,7 +34,7 @@ const internalStructure = {
                         this.setItem(index, { cloud: cloudData });
                         let requestData = {};
                         requestData[index] = this._application.frontendHelper.getDataForIndex(index);
-                        this._application.fastdial.sendRequest('thumbChanged', requestData);
+                        this._application.fastdial.sendRequest("thumbChanged", requestData);
                     } catch (ex) {
                     }
                 }, this);
@@ -105,10 +105,10 @@ const internalStructure = {
                 output.thumb = {};
                 output.sync = {};
                 [
-                    'title',
-                    'backgroundColor',
-                    'favicon',
-                    'visits'
+                    "title",
+                    "backgroundColor",
+                    "favicon",
+                    "visits"
                 ].forEach(function (fieldName) {
                     if (thumbData[fieldName]) {
                         output.thumb[fieldName] = thumbData[fieldName];
@@ -117,12 +117,12 @@ const internalStructure = {
                 let host = locationObj.location ? locationObj.location.asciiHost : null;
                 output.cloud = host ? this._application.cloudSource.getCachedExistingData(host) : {};
                 [
-                    'Id',
-                    'Instance',
-                    'Timestamp',
-                    'InternalId'
+                    "Id",
+                    "Instance",
+                    "Timestamp",
+                    "InternalId"
                 ].forEach(function (fieldName) {
-                    var dbField = 'sync' + fieldName;
+                    var dbField = "sync" + fieldName;
                     var syncKey = fieldName[0].toLowerCase() + fieldName.substr(1);
                     if (thumbData[dbField]) {
                         output.sync[syncKey] = thumbData[dbField];

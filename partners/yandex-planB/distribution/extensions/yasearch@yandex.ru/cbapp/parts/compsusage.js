@@ -1,5 +1,5 @@
-'use strict';
-const EXPORTED_SYMBOLS = ['componentsUsage'];
+"use strict";
+const EXPORTED_SYMBOLS = ["componentsUsage"];
 const {
         classes: Cc,
         interfaces: Ci,
@@ -9,7 +9,7 @@ const GLOBAL = this;
 const componentsUsage = {
         init: function componentsUsage_init(aApplication) {
             this._application = aApplication;
-            this._logger = aApplication.getLogger('CompsUsage');
+            this._logger = aApplication.getLogger("CompsUsage");
             aApplication.core.Lib.sysutils.copyProperties(aApplication.core.Lib, GLOBAL);
             this.clear();
             var statDBFile = this._cacheFile;
@@ -34,7 +34,7 @@ const componentsUsage = {
             this._database = null;
         },
         dump: function componentsUsage_dump() {
-            this._logger.debug('Statistics:' + '\nshort actions:\n' + sysutils.dump(this._shortActions, 2) + '\nsys actions:\n' + sysutils.dump(this._sysActions, 2) + '\ncustom actions:\n' + sysutils.dump(this._customActions, 2));
+            this._logger.debug("Statistics:" + "\nshort actions:\n" + sysutils.dump(this._shortActions, 2) + "\nsys actions:\n" + sysutils.dump(this._sysActions, 2) + "\ncustom actions:\n" + sysutils.dump(this._customActions, 2));
         },
         clear: function componentsUsage_clear() {
             this._shortActions = {};
@@ -58,25 +58,25 @@ const componentsUsage = {
             var allChunks = [];
             for (let actionID in this._shortActions) {
                 let actionCount = this._shortActions[actionID];
-                let chunk = actionID + (actionCount > 1 ? '.' + actionCount : '');
+                let chunk = actionID + (actionCount > 1 ? "." + actionCount : "");
                 allChunks.push(chunk);
             }
             for (let componentHash in this._sysActions) {
                 for (let actionID in this._sysActions[componentHash]) {
                     let actionCount = this._sysActions[componentHash][actionID];
-                    let chunk = componentHash + '-' + actionID + (actionCount > 1 ? '.' + actionCount : '');
+                    let chunk = componentHash + "-" + actionID + (actionCount > 1 ? "." + actionCount : "");
                     allChunks.push(chunk);
                 }
             }
             for (let componentHash in this._customActions) {
                 for (let actionID in this._customActions[componentHash]) {
                     let actionCount = this._customActions[componentHash][actionID];
-                    let chunk = componentHash + '+' + actionID + (actionCount > 1 ? '.' + actionCount : '');
+                    let chunk = componentHash + "+" + actionID + (actionCount > 1 ? "." + actionCount : "");
                     allChunks.push(chunk);
                 }
             }
             this.clear();
-            return allChunks.join(',');
+            return allChunks.join(",");
         },
         ACTIONS: {
             COMP_INSTALL: 1,
@@ -116,7 +116,7 @@ const componentsUsage = {
             return result || null;
         },
         onFisrtNavigatorReady: function componentsUsage_onFisrtNavigatorReady() {
-            this._timer = Cc['@mozilla.org/timer;1'].createInstance(Ci.nsITimer);
+            this._timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
             var chkTimePref = this._application.preferences.get(this._consts.LAST_CHK_PREF_NAME, 0);
             this._lastCheckTime = parseInt(chkTimePref, 10) || 0;
             var nextCheckInterval = this._consts.CHK_INTERVAL * 1000 - Math.abs(this._lastCheckTime * 1000 - Date.now());
@@ -129,7 +129,7 @@ const componentsUsage = {
             this._timer.initWithCallback(this, this._consts.CHK_INTERVAL * 1000, this._timer.TYPE_ONE_SHOT);
         },
         _consts: {
-            LAST_CHK_PREF_NAME: 'daylystat.sent',
+            LAST_CHK_PREF_NAME: "daylystat.sent",
             CHK_INTERVAL: 24 * 60 * 60
         },
         _sysActions: null,
@@ -138,17 +138,17 @@ const componentsUsage = {
         _database: null,
         _lastReturnedRowID: 0,
         _EMPTY_ROW_RANGE: null,
-        _COMPSTAT_QUERY: '        SELECT id, days, btn_clicks, menu_clicks, tooltips, (btn_clicks + menu_clicks + tooltips) as total         FROM (             SELECT id,                 count(*) as days,                 sum(btn_clicks) as btn_clicks,                 sum(menu_clicks) as menu_clicks,                 sum(tooltips) as tooltips             FROM componentsusage             WHERE id = :id )',
+        _COMPSTAT_QUERY: "        SELECT id, days, btn_clicks, menu_clicks, tooltips, (btn_clicks + menu_clicks + tooltips) as total         FROM (             SELECT id,                 count(*) as days,                 sum(btn_clicks) as btn_clicks,                 sum(menu_clicks) as menu_clicks,                 sum(tooltips) as tooltips             FROM componentsusage             WHERE id = :id )",
         get _cacheFile() {
             var cacheFile = this._application.directories.appRootDir;
-            cacheFile.append('statcache.sqlite');
+            cacheFile.append("statcache.sqlite");
             return cacheFile;
         },
         _filterActionID: function componentsUsage__filterActionID(actionID) {
             var action = Number(actionID);
             if (action > 0) {
-                action = '' + action;
-                if (action === '' + actionID)
+                action = "" + action;
+                if (action === "" + actionID)
                     return action;
             }
             return null;
@@ -163,7 +163,7 @@ const componentsUsage = {
             compActions[actionID]++;
         },
         _compID2Hash: function componentsUsage__incAction(componentID) {
-            return misc.CryptoHash.getFromString(componentID, 'MD5');
+            return misc.CryptoHash.getFromString(componentID, "MD5");
         },
         _rememberDaylyStatTry: function componentsUsage__rememberDaylyStatTry() {
             var secondsSinceUnixEpoch = Math.floor(Date.now() / 1000);
@@ -173,13 +173,13 @@ const componentsUsage = {
             try {
                 this._logActiveComps();
             } catch (e) {
-                this._logger.error('Could not log current buttons statistics. ' + strutils.formatError(e));
+                this._logger.error("Could not log current buttons statistics. " + strutils.formatError(e));
                 this._logger.debug(e.stack);
             }
             try {
                 this._postDefPresetDigest();
             } catch (e) {
-                this._logger.error('Could not log default preset digest. ' + strutils.formatError(e));
+                this._logger.error("Could not log default preset digest. " + strutils.formatError(e));
                 this._logger.debug(e.stack);
             }
         },
@@ -195,22 +195,22 @@ const componentsUsage = {
             var topWnd = misc.getTopBrowserWindow();
             if (!topWnd)
                 return;
-            var wndCtrl = topWnd[this._application.name + 'OverlayController'];
+            var wndCtrl = topWnd[this._application.name + "OverlayController"];
             wndCtrl.getAllWidgetItems().forEach(function (widgetItem) {
-                var widgetProtoID = widgetItem.getAttribute('cb-proto-id');
+                var widgetProtoID = widgetItem.getAttribute("cb-proto-id");
                 var wVis = wndCtrl.widgetIsAlwaysVisible(widgetItem);
-                this._logger.debug('Reporting ' + widgetProtoID + ' as ' + (wVis ? 'visible' : 'invisible'));
+                this._logger.debug("Reporting " + widgetProtoID + " as " + (wVis ? "visible" : "invisible"));
                 this.logSysAction(widgetProtoID, wVis ? this.ACTIONS.WIDGET_VIS : this.ACTIONS.WIDGET_HID);
             }, this);
             var chevronButton = wndCtrl.chevronButton;
-            var chevronVisible = chevronButton && 'isHidden' in chevronButton && !chevronButton.isHidden;
+            var chevronVisible = chevronButton && "isHidden" in chevronButton && !chevronButton.isHidden;
             var chevronOpen = chevronVisible && !chevronButton.toolbarsCollapsed;
             if (chevronOpen) {
-                let chevronID = 'bar:chevron';
-                this._logger.debug('Reporting ' + chevronID + ' as OPEN');
+                let chevronID = "bar:chevron";
+                this._logger.debug("Reporting " + chevronID + " as OPEN");
                 this.logSysAction(chevronID, this.ACTIONS.COMP_DAYUSE);
             } else {
-                this._logger.debug(strutils.formatString('Chevron is hidden or closed. chevronButton: %1, chevronVisible: %2, chevronOpen: %3', [
+                this._logger.debug(strutils.formatString("Chevron is hidden or closed. chevronButton: %1, chevronVisible: %2, chevronOpen: %3", [
                     chevronButton,
                     chevronVisible,
                     chevronOpen
@@ -218,7 +218,7 @@ const componentsUsage = {
             }
         },
         _postDefPresetDigest: function componentsUsage__postDefPresetDigest() {
-            var allIDsSpaceSeparated = this._application.defaultPreset.allEntries.map(function (presetEntry) presetEntry.componentID).join(' ');
+            var allIDsSpaceSeparated = this._application.defaultPreset.allEntries.map(function (presetEntry) presetEntry.componentID).join(" ");
             this.logSysAction(allIDsSpaceSeparated, this.ACTIONS.DP_HASH);
         }
     };
