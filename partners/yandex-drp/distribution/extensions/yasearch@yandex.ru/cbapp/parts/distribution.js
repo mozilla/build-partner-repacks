@@ -164,7 +164,7 @@ function ChromeDataManager(aDirectory, aBrowserName) {
     case "windows":
         this._chromeDefaultDirPath = "User Data/Default";
         this._localStateFilePath = "User Data/Local State";
-        this._firstRunFilePath = "Application/First Run";
+        this._firstRunFilePath = "User Data/First Run";
         break;
     case "mac":
     case "linux":
@@ -267,16 +267,16 @@ ChromeDataManager.prototype = {
         fileutils.forceDirectories(localStateFile.parent);
         fileutils.writeTextFile(localStateFile, fileContent);
     },
-    _writePreferences: function ChromeDataManager__writePreferences(aData) {
-        var fileutils = this._application.core.Lib.fileutils;
-        var installer = this._application.installer;
+    get _preferencesFile() {
         var prefsFile = this._chromeDefaultDir;
         prefsFile.append("Preferences");
-        var chromePrefs = prefsFile.exists() && fileutils.readTextFile(prefsFile) || "{}";
-        chromePrefs = JSON.parse(chromePrefs);
+        return prefsFile;
+    },
+    _writePreferences: function ChromeDataManager__writePreferences(aData) {
+        var chromePrefs = this._preferencesObject;
         this._logger.debug("canWriteHP: " + this.canWriteHP + "\n" + "HP: '" + (aData.HP && aData.HP.url || "") + "'\n" + "chrome prefs homepage: '" + chromePrefs.homepage + "'");
         if (this.canWriteHP && aData.HP) {
-            if (installer.isOverridableURL(chromePrefs.homepage || "")) {
+            if (this._application.installer.isOverridableURL(chromePrefs.homepage || "")) {
                 chromePrefs.homepage = aData.HP.url;
                 this._logger.debug("New homepage: '" + aData.HP.url + "'");
                 chromePrefs.homepage_is_newtabpage = false;
@@ -284,18 +284,23 @@ ChromeDataManager.prototype = {
             }
             let distributedHPPart = aData.HP.url.replace(/^https?(:\/\/[^\/]+).*/, "$1").replace(/\.(com\.)?[^\.]+$/, ".");
             chromePrefs.session = chromePrefs.session || {};
-            let startupURLs = chromePrefs.session.urls_to_restore_on_startup || [];
+            let startupURLs = chromePrefs.session.startup_urls || [];
             if (startupURLs.join(" ").indexOf(distributedHPPart) == -1) {
                 startupURLs.unshift(aData.HP.url);
-                chromePrefs.session.urls_to_restore_on_startup = startupURLs;
-                this._logger.debug("Add '" + aData.HP.url + "' to 'urls_to_restore_on_startup' array.");
+                chromePrefs.session.startup_urls = startupURLs;
+                this._logger.debug("Add '" + aData.HP.url + "' to 'startup_urls' array.");
             }
             chromePrefs.session.restore_on_startup = 4;
             this._logger.debug("Set 'restore_on_startup' value to 4.");
             chromePrefs.browser = chromePrefs.browser || {};
             chromePrefs.browser.show_home_button = true;
         }
-        fileutils.writeTextFile(prefsFile, JSON.stringify(chromePrefs));
+        this._application.core.Lib.fileutils.writeTextFile(this._preferencesFile, JSON.stringify(chromePrefs));
+    },
+    get _preferencesObject() {
+        var prefsFile = this._preferencesFile;
+        var chromePrefs = prefsFile.exists() && this._application.core.Lib.fileutils.readTextFile(prefsFile) || "{}";
+        return JSON.parse(chromePrefs);
     },
     _writeWebData: function ChromeDataManager__writeWebData(aData) {
         if (!(this.canWriteQS && aData.QS))
@@ -306,29 +311,11 @@ ChromeDataManager.prototype = {
         if (!webDataDB)
             return;
         try {
-            let dbVersion = parseInt(webDataDB.execSimpleQuery("SELECT value FROM meta WHERE key='version';"), 10) || 0;
-            if (dbVersion && dbVersion <= this._WEB_DATA_SQL.LAST_KNOWN_VERSION) {
-                webDataDB.execQuery("BEGIN TRANSACTION");
-                if (dbVersion >= 45) {
-                    webDataDB.execQuery("ALTER TABLE keywords ADD autogenerate_keyword INTEGER DEFAULT 0;");
-                    webDataDB.execQuery("ALTER TABLE keywords ADD logo_id INTEGER DEFAULT 0;");
-                }
-                let keywordsChangesWereMade = false;
-                aData.QS.forEach(function (qs) {
-                    keywordsChangesWereMade = this._writeWebDataDB(webDataDB, qs) || keywordsChangesWereMade;
-                }, this);
-                if (keywordsChangesWereMade) {
-                    let currentBKV = webDataDB.execSimpleQuery("SELECT value FROM meta WHERE key='Builtin Keyword Version'");
-                    if (!currentBKV) {
-                        webDataDB.execQuery("INSERT OR REPLACE INTO meta (key, value) VALUES ('Builtin Keyword Version', :builtinVersion)", { builtinVersion: this._WEB_DATA_SQL.LAST_BUILTIN_VERSION });
-                    }
-                }
-                if (dbVersion <= 44) {
-                    webDataDB.execQuery("UPDATE meta SET value='39' WHERE key='version' OR key='last_compatible_version';");
-                    webDataDB.execQuery("DELETE FROM meta WHERE key LIKE '%Backup%'");
-                }
-                webDataDB.execQuery("COMMIT TRANSACTION");
-            }
+            webDataDB.execQuery("BEGIN TRANSACTION");
+            aData.QS.forEach(function (qs) {
+                this._writeWebDataDB(webDataDB, qs);
+            }, this);
+            webDataDB.execQuery("COMMIT TRANSACTION");
         } finally {
             webDataDB.close();
         }
@@ -391,18 +378,26 @@ ChromeDataManager.prototype = {
         }
         if (!addProvider)
             return false;
-        aWebDataDB.execQuery(this._WEB_DATA_SQL.INS_QS_QUERY, {
-            "keyword": aQSData.keyword,
+        aWebDataDB.execQuery(this._WEB_DATA_SQL.INS_QS_QUERY, this._WEB_DATA_SQL.makeInsertEngineParams({
             "short_name": aQSData.shortName || aQSData.keyword,
+            "keyword": aQSData.keyword,
             "favicon_url": aQSData.image || "",
             "url": aQSData.searchURL,
-            "suggest_url": aQSData.suggestURL,
             "input_encodings": aQSData.inputEncoding || "UTF-8",
+            "suggest_url": aQSData.suggestURL,
+            "instant_url": "",
+            "image_url": "",
+            "new_tab_url": "",
+            "search_url_post_params": "",
+            "suggest_url_post_params": "",
+            "instant_url_post_params": "",
+            "image_url_post_params": "",
+            "alternate_urls": "[]",
+            "search_terms_replacement_key": "",
             "show_in_default_list": aQSData.isDefault ? 1 : 0,
             "safe_for_autoreplace": 1,
-            "prepopulate_id": aQSData.isDefault ? this._keywordPrepopulateId : 0,
-            "last_modified": Date.now()
-        });
+            "prepopulate_id": aQSData.isDefault ? this._keywordPrepopulateId : 0
+        }));
         this._logger.debug("Added (id: " + aWebDataDB.lastInsertRowID + ")");
         if (aQSData.isDefault) {
             aWebDataDB.execQuery("INSERT OR REPLACE INTO meta (key, value) VALUES('Default Search Provider ID', :keywordId)", { keywordId: aWebDataDB.lastInsertRowID });
@@ -420,11 +415,35 @@ ChromeDataManager.prototype = {
             if (!webDataFileExists && aCreate) {
                 webDataDB.execQuery("BEGIN TRANSACTION");
                 webDataDB.execQuery("PRAGMA encoding = 'UTF-8'");
-                webDataDB.execQuery(this._WEB_DATA_SQL.META_TABLE_DEF);
-                this._WEB_DATA_SQL.INS_META_VALUES_QUERIES.forEach(function (query) webDataDB.execQuery(query));
-                webDataDB.execQuery(this._WEB_DATA_SQL.KW_TABLE_DEF);
-                this._WEB_DATA_SQL.INS_KEYWORDS_VALUES_QUERIES.forEach(function (query) webDataDB.execQuery(query));
+                this._WEB_DATA_SQL.CREATE_TABLES_QUERIES.forEach(function (query) webDataDB.execQuery(query));
                 webDataDB.execQuery("COMMIT TRANSACTION");
+            }
+            let isAnyKeywords = false;
+            let keywordsVersion = 0;
+            try {
+                isAnyKeywords = !!webDataDB.execSimpleQuery("SELECT id FROM keywords");
+                keywordsVersion = parseInt(webDataDB.execSimpleQuery("SELECT value FROM meta WHERE key = 'version'"), 10) || 0;
+            } catch (e) {
+            }
+            if (aCreate && !isAnyKeywords) {
+                if (keywordsVersion === this._WEB_DATA_SQL.KEYWORDS_VERSION) {
+                    webDataDB.execQuery("BEGIN TRANSACTION");
+                    let countryId = this._preferencesObject.countryid_at_install;
+                    if (!countryId || typeof countryId !== "number")
+                        countryId = 21077;
+                    let country = [
+                            countryId >> 8 & 255,
+                            countryId & 255
+                        ].map(function (ch) String.fromCharCode(ch)).join("").toLowerCase();
+                    this._logger.debug("Keyword table is empty, let's fill it (country='" + country + "')");
+                    this._WEB_DATA_SQL.getPrepopulatedEnginesForCountry(country).forEach(function (engine) {
+                        webDataDB.execQuery(this._WEB_DATA_SQL.INS_QS_QUERY, this._WEB_DATA_SQL.makeInsertEngineParams(engine));
+                    }, this);
+                    webDataDB.execQuery(this._WEB_DATA_SQL.INS_BUILTIN_VERSION_QUERY);
+                    webDataDB.execQuery("COMMIT TRANSACTION");
+                } else {
+                    this._logger.debug("Uncompatible versions: " + keywordsVersion + " : " + this._WEB_DATA_SQL.KEYWORDS_VERSION);
+                }
             }
         } catch (e) {
             try {
@@ -439,33 +458,294 @@ ChromeDataManager.prototype = {
         return webDataDB;
     },
     _WEB_DATA_SQL: {
-        LAST_BUILTIN_VERSION: 69,
-        LAST_KNOWN_VERSION: 54,
-        META_TABLE_DEF: "CREATE TABLE IF NOT EXISTS meta(                                                               key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY,                                            value LONGVARCHAR                                                               )",
-        KW_TABLE_DEF: "CREATE TABLE IF NOT EXISTS keywords (                                                          id INTEGER PRIMARY KEY,                                                                 short_name VARCHAR NOT NULL,                                                            keyword VARCHAR NOT NULL,                                                               favicon_url VARCHAR NOT NULL,                                                           url VARCHAR NOT NULL,                                                                   show_in_default_list INTEGER,                                                           safe_for_autoreplace INTEGER,                                                           originating_url VARCHAR,                                                                date_created INTEGER DEFAULT 0,                                                         usage_count INTEGER DEFAULT 0,                                                          input_encodings VARCHAR,                                                                suggest_url VARCHAR,                                                                    prepopulate_id INTEGER DEFAULT 0,                                                       autogenerate_keyword INTEGER DEFAULT 0,                                                 logo_id INTEGER DEFAULT 0,                                                              created_by_policy INTEGER DEFAULT 0,                                                    instant_url VARCHAR,                                                                    last_modified INTEGER DEFAULT 0,                                                        sync_guid LONGVARCHAR                                                           )",
-        INS_QS_QUERY: "INSERT INTO keywords (                                                                         short_name,                                                                             keyword,                                                                                favicon_url,                                                                            url,                                                                                    show_in_default_list,                                                                   safe_for_autoreplace,                                                                   input_encodings,                                                                        suggest_url,                                                                            prepopulate_id,                                                                         last_modified                                                                   )                                                                                       VALUES (                                                                                        :short_name,                                                                            :keyword,                                                                               :favicon_url,                                                                           :url,                                                                                   :show_in_default_list,                                                                  :safe_for_autoreplace,                                                                  :input_encodings,                                                                       :suggest_url,                                                                           :prepopulate_id,                                                                        :last_modified                                                                  )",
-        get INS_KEYWORDS_VALUES_QUERIES() {
-            var kwId = 1;
-            var keywordsQueries = [
-                    "INSERT INTO keywords VALUES(                     " + kwId++ + ",'Google','google.com','http://www.google.com/favicon.ico','{google:baseURL}search?{google:RLZ}                    {google:acceptedSuggestion}{google:originalQueryForSuggestion}{google:searchFieldtrialParameter}                    {google:instantFieldTrialGroupParameter}sourceid=chrome&ie={inputEncoding}&q={searchTerms}',1,1,                    '',0,0,'UTF-8','{google:baseSuggestURL}search?{google:searchFieldtrialParameter}                    {google:instantFieldTrialGroupParameter}client=chrome&hl={language}&q={searchTerms}',1,1,6211,0,                    '{google:baseURL}webhp?{google:RLZ}sourceid=chrome-instant&{google:instantFieldTrialGroupParameter}                    ie={inputEncoding}&ion=1{searchTerms}&nord=1',0,'6FB4CB28-9DED-41A8-B3AB-9B1A45D31DBF'                );",
-                    "INSERT INTO keywords VALUES(                     " + kwId++ + ",'Bing','bing.com','http://www.bing.com/s/wlflag.ico',                    'http://www.bing.com/search?setmkt=en-US&q={searchTerms}',                    1,1,'',0,0,'UTF-8','http://api.bing.com/osjson.aspx?query={searchTerms}&language={language}',                    3,0,6205,0,'',0,'0236030E-AEF0-4897-9B82-1A74BDC5BD58'                );"
-                ];
-            if (distribution._application.branding.productInfo.BrandID.toString() == "yandex") {
-                keywordsQueries = keywordsQueries.concat([
-                    "INSERT INTO keywords VALUES(                         " + kwId++ + ",'@MAIL.RU','mail.ru','http://img.go.mail.ru/favicon.ico','http://go.mail.ru/search?q={searchTerms}',                        1,1,'',0,0,'windows-1251','http://suggests.go.mail.ru/chrome?q={searchTerms}',83,0,6213,0,'',0,                        '9A09DA05-2BCD-4A70-A88F-3D1B722B3E09'                    );",
-                    "INSERT INTO keywords VALUES(                         " + kwId++ + ",'TUT.BY','tut.by','http://www.tut.by/favicon.ico','http://search.tut.by/?query={searchTerms}',1,1,'',                        0,0,'windows-1251','',17,0,6225,0,'',0,'A68A1E5F-C663-4DDC-A96C-8856FAEDE4F5'                    );",
-                    "INSERT INTO keywords VALUES(                         " + kwId++ + ",'Rambler','rambler.ru','http://www.rambler.ru/favicon.ico','http://www.rambler.ru/srch?words={searchTerms}',                        1,1,'',0,0,'windows-1251','',16,0,6221,0,'',0,'E58BA67D-EEFE-481F-9620-9736E155D5D1'                    );"
-                ]);
-            }
-            return keywordsQueries;
-        },
-        get INS_META_VALUES_QUERIES() {
+        BUILTIN_VERSION: 68,
+        KEYWORDS_VERSION: 54,
+        get CREATE_TABLES_QUERIES() {
             return [
-                "INSERT INTO meta VALUES('version', 39);",
-                "INSERT INTO meta VALUES('last_compatible_version', 39);",
-                "INSERT INTO meta VALUES('Builtin Keyword Version', " + this.LAST_BUILTIN_VERSION + ");",
-                "INSERT INTO meta VALUES('Default Search Provider ID', 2);"
+                "CREATE TABLE autofill (" + "name VARCHAR," + "value VARCHAR," + "value_lower VARCHAR," + "pair_id INTEGER PRIMARY KEY," + "count INTEGER DEFAULT 1" + ");",
+                "CREATE TABLE autofill_dates (" + "pair_id INTEGER DEFAULT 0," + "date_created INTEGER DEFAULT 0" + ");",
+                "CREATE TABLE autofill_profile_emails (" + "guid VARCHAR," + "email VARCHAR" + ");",
+                "CREATE TABLE autofill_profile_names (" + "guid VARCHAR," + "first_name VARCHAR," + "middle_name VARCHAR," + "last_name VARCHAR" + ");",
+                "CREATE TABLE autofill_profile_phones (" + "guid VARCHAR," + "number VARCHAR" + ");",
+                "CREATE TABLE autofill_profiles (" + "guid VARCHAR PRIMARY KEY," + "company_name VARCHAR," + "street_address VARCHAR," + "dependent_locality VARCHAR," + "city VARCHAR, state VARCHAR," + "zipcode VARCHAR," + "sorting_code VARCHAR," + "country_code VARCHAR," + "date_modified INTEGER NOT NULL DEFAULT 0," + "origin VARCHAR DEFAULT ''" + ");",
+                "CREATE TABLE autofill_profiles_trash (" + "guid VARCHAR" + ");",
+                "CREATE TABLE credit_cards (" + "guid VARCHAR PRIMARY KEY," + "name_on_card VARCHAR," + "expiration_month INTEGER," + "expiration_year INTEGER," + "card_number_encrypted BLOB," + "date_modified INTEGER NOT NULL DEFAULT 0," + "origin VARCHAR DEFAULT ''" + ");",
+                "CREATE TABLE ie7_logins (" + "url_hash VARCHAR NOT NULL," + "password_value BLOB," + "date_created INTEGER NOT NULL," + "UNIQUE (url_hash)" + ");",
+                "CREATE TABLE keywords (" + "id INTEGER PRIMARY KEY," + "short_name VARCHAR NOT NULL," + "keyword VARCHAR NOT NULL," + "favicon_url VARCHAR NOT NULL," + "url VARCHAR NOT NULL," + "safe_for_autoreplace INTEGER," + "originating_url VARCHAR," + "date_created INTEGER DEFAULT 0," + "usage_count INTEGER DEFAULT 0," + "input_encodings VARCHAR," + "show_in_default_list INTEGER," + "suggest_url VARCHAR," + "prepopulate_id INTEGER DEFAULT 0," + "created_by_policy INTEGER DEFAULT 0," + "instant_url VARCHAR," + "last_modified INTEGER DEFAULT 0," + "sync_guid VARCHAR," + "alternate_urls VARCHAR," + "search_terms_replacement_key VARCHAR," + "image_url VARCHAR," + "search_url_post_params VARCHAR," + "suggest_url_post_params VARCHAR," + "instant_url_post_params VARCHAR," + "image_url_post_params VARCHAR," + "new_tab_url VARCHAR" + ");",
+                "CREATE TABLE meta(" + "key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY," + "value LONGVARCHAR" + ");",
+                "CREATE TABLE token_service (" + "service VARCHAR PRIMARY KEY NOT NULL," + "encrypted_token BLOB" + ");",
+                "CREATE TABLE web_app_icons (" + "url LONGVARCHAR," + "width int," + "height int," + "image BLOB," + "UNIQUE (url, width, height)" + ");",
+                "CREATE TABLE web_apps (" + "url LONGVARCHAR UNIQUE," + "has_all_images INTEGER NOT NULL" + ");",
+                "CREATE TABLE web_intents (" + "service_url LONGVARCHAR," + "action VARCHAR," + "type VARCHAR," + "title LONGVARCHAR," + "disposition VARCHAR," + "scheme VARCHAR," + "UNIQUE (service_url, action, scheme, type)" + ");",
+                "CREATE TABLE web_intents_defaults (" + "action VARCHAR," + "type VARCHAR," + "url_pattern LONGVARCHAR," + "user_date INTEGER," + "suppression INTEGER," + "service_url LONGVARCHAR," + "scheme VARCHAR," + "UNIQUE (action, scheme, type, url_pattern)" + ");",
+                "CREATE INDEX autofill_dates_pair_id ON autofill_dates (" + "pair_id" + ");",
+                "CREATE INDEX autofill_name ON autofill (" + "name" + ");",
+                "CREATE INDEX autofill_name_value_lower ON autofill (" + "name," + "value_lower" + ");",
+                "CREATE INDEX ie7_logins_hash ON ie7_logins (" + "url_hash" + ");",
+                "CREATE INDEX web_apps_url_index ON web_apps (" + "url" + ");",
+                "CREATE INDEX web_intents_default_index ON web_intents_defaults (" + "action" + ");",
+                "CREATE INDEX web_intents_index ON web_intents (" + "action" + ");",
+                "INSERT INTO meta (key, value) VALUES('version', " + this.KEYWORDS_VERSION + ");",
+                "INSERT INTO meta (key, value) VALUES('last_compatible_version', " + this.KEYWORDS_VERSION + ");"
             ];
+        },
+        makeInsertEngineParams: function _WEB_DATA_SQL_makeInsertEngineParams(engine) {
+            var params = Object.create(null);
+            for (let [
+                        name,
+                        value
+                    ] in Iterator(engine))
+                params[name] = value;
+            params.safe_for_autoreplace = "safe_for_autoreplace" in engine ? engine.safe_for_autoreplace : 1;
+            params.originating_url = "originating_url" in engine ? engine.originating_url : "";
+            params.date_created = "date_created" in engine ? engine.date_created : "";
+            params.usage_count = "usage_count" in engine ? engine.usage_count : 0;
+            params.show_in_default_list = "show_in_default_list" in engine ? engine.show_in_default_list : 1;
+            params.created_by_policy = "created_by_policy" in engine ? engine.created_by_policy : 0;
+            params.sync_guid = "sync_guid" in engine ? engine.sync_guid : "";
+            params.last_modified = "last_modified" in engine ? engine.last_modified : Date.now();
+            return params;
+        },
+        INS_QS_QUERY: "INSERT INTO keywords (" + "short_name," + "keyword," + "favicon_url," + "url," + "safe_for_autoreplace," + "originating_url," + "date_created," + "usage_count," + "input_encodings," + "show_in_default_list," + "suggest_url," + "prepopulate_id," + "created_by_policy," + "instant_url," + "last_modified," + "sync_guid," + "alternate_urls," + "search_terms_replacement_key," + "image_url," + "search_url_post_params," + "suggest_url_post_params," + "instant_url_post_params," + "image_url_post_params," + "new_tab_url" + ") VALUES (" + ":short_name," + ":keyword," + ":favicon_url," + ":url," + ":safe_for_autoreplace," + ":originating_url," + ":date_created," + ":usage_count," + ":input_encodings," + ":show_in_default_list," + ":suggest_url," + ":prepopulate_id," + ":created_by_policy," + ":instant_url," + ":last_modified," + ":sync_guid," + ":alternate_urls," + ":search_terms_replacement_key," + ":image_url," + ":search_url_post_params," + ":suggest_url_post_params," + ":instant_url_post_params," + ":image_url_post_params," + ":new_tab_url" + ")",
+        getPrepopulatedEnginesForCountry: function _WEB_DATA_SQL_getPrepopulatedEnginesForCountry(country) {
+            return this._ENGINES[country] || this._ENGINES.default;
+        },
+        get _ENGINES() {
+            const google = {
+                    short_name: "Google",
+                    keyword: "google.com",
+                    favicon_url: "http://www.google.com/favicon.ico",
+                    url: "{google:baseURL}search?q={searchTerms}&{google:RLZ}{google:originalQueryForSuggestion}{google:assistedQueryStats}{google:searchFieldtrialParameter}{google:bookmarkBarPinned}{google:searchClient}{google:sourceId}{google:instantExtendedEnabledParameter}{google:omniboxStartMarginParameter}ie={inputEncoding}",
+                    input_encodings: "UTF-8",
+                    suggest_url: "{google:baseSuggestURL}search?{google:searchFieldtrialParameter}client={google:suggestClient}&gs_ri={google:suggestRid}&xssi=t&q={searchTerms}&{google:cursorPosition}{google:currentPageUrl}{google:pageClassification}sugkey={google:suggestAPIKeyParameter}",
+                    instant_url: "{google:baseURL}webhp?sourceid=chrome-instant&{google:RLZ}{google:forceInstantResults}{google:instantExtendedEnabledParameter}{google:ntpIsThemedParameter}{google:omniboxStartMarginParameter}ie={inputEncoding}",
+                    image_url: "{google:baseURL}searchbyimage/upload",
+                    new_tab_url: "{google:baseURL}_/chrome/newtab?{google:RLZ}{google:instantExtendedEnabledParameter}{google:ntpIsThemedParameter}ie={inputEncoding}",
+                    search_url_post_params: "",
+                    suggest_url_post_params: "",
+                    instant_url_post_params: "",
+                    image_url_post_params: "encoded_image={google:imageThumbnail},image_url={google:imageURL},sbisrc={google:imageSearchSource},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight}",
+                    alternate_urls: "[\"{google:baseURL}#q={searchTerms}\",\"{google:baseURL}search#q={searchTerms}\",\"{google:baseURL}webhp#q={searchTerms}\"]",
+                    search_terms_replacement_key: "{google:instantExtendedEnabledKey}",
+                    prepopulate_id: 1
+                };
+            const yandex_ru = {
+                    short_name: "Яндекс",
+                    keyword: "yandex.ru",
+                    favicon_url: "http://yandex.ru/favicon.ico",
+                    url: "http://yandex.ru/yandsearch?text={searchTerms}",
+                    input_encodings: "UTF-8",
+                    suggest_url: "http://suggest.yandex.net/suggest-ff.cgi?part={searchTerms}",
+                    instant_url: "",
+                    image_url: "",
+                    new_tab_url: "",
+                    search_url_post_params: "",
+                    suggest_url_post_params: "",
+                    instant_url_post_params: "",
+                    image_url_post_params: "",
+                    alternate_urls: "[]",
+                    search_terms_replacement_key: "",
+                    prepopulate_id: 15
+                };
+            const mail_ru = {
+                    short_name: "@MAIL.RU",
+                    keyword: "mail.ru",
+                    favicon_url: "http://img.go.mail.ru/favicon.ico",
+                    url: "http://go.mail.ru/search?q={searchTerms}",
+                    input_encodings: "windows-1251",
+                    suggest_url: "http://suggests.go.mail.ru/chrome?q={searchTerms}",
+                    instant_url: "",
+                    image_url: "",
+                    new_tab_url: "",
+                    search_url_post_params: "",
+                    suggest_url_post_params: "",
+                    instant_url_post_params: "",
+                    image_url_post_params: "",
+                    alternate_urls: "[]",
+                    search_terms_replacement_key: "",
+                    prepopulate_id: 83
+                };
+            const bing_tr = {
+                    short_name: "Bing",
+                    keyword: "bing.com",
+                    favicon_url: "http://www.bing.com/s/wlflag.ico",
+                    url: "http://www.bing.com/search?setmkt=tr-TR&q={searchTerms}",
+                    input_encodings: "UTF-8",
+                    suggest_url: "http://api.bing.com/osjson.aspx?query={searchTerms}&language={language}",
+                    instant_url: "",
+                    image_url: "",
+                    new_tab_url: "",
+                    search_url_post_params: "",
+                    suggest_url_post_params: "",
+                    instant_url_post_params: "",
+                    image_url_post_params: "",
+                    alternate_urls: "[]",
+                    search_terms_replacement_key: "",
+                    prepopulate_id: 3
+                };
+            const yahoo_tr = {
+                    short_name: "Yahoo! Türkiye",
+                    keyword: "tr.yahoo.com",
+                    favicon_url: "http://tr.search.yahoo.com/favicon.ico",
+                    url: "http://tr.search.yahoo.com/search?ei={inputEncoding}&fr=crmas&p={searchTerms}",
+                    input_encodings: "UTF-8",
+                    suggest_url: "",
+                    instant_url: "",
+                    image_url: "",
+                    new_tab_url: "",
+                    search_url_post_params: "",
+                    suggest_url_post_params: "",
+                    instant_url_post_params: "",
+                    image_url_post_params: "",
+                    alternate_urls: "[]",
+                    search_terms_replacement_key: "",
+                    prepopulate_id: 2
+                };
+            const yandex_ua = {
+                    short_name: "Яндекс",
+                    keyword: "yandex.ua",
+                    favicon_url: "http://yandex.ua/favicon.ico",
+                    url: "http://yandex.ua/yandsearch?text={searchTerms}",
+                    input_encodings: "UTF-8",
+                    suggest_url: "http://suggest.yandex.net/suggest-ff.cgi?part={searchTerms}",
+                    instant_url: "",
+                    image_url: "",
+                    new_tab_url: "",
+                    search_url_post_params: "",
+                    suggest_url_post_params: "",
+                    instant_url_post_params: "",
+                    image_url_post_params: "",
+                    alternate_urls: "[]",
+                    search_terms_replacement_key: "",
+                    prepopulate_id: 15
+                };
+            const bing_ru = {
+                    short_name: "Bing",
+                    keyword: "bing.com",
+                    favicon_url: "http://www.bing.com/s/wlflag.ico",
+                    url: "http://www.bing.com/search?setmkt=ru-RU&q={searchTerms}",
+                    input_encodings: "UTF-8",
+                    suggest_url: "http://api.bing.com/osjson.aspx?query={searchTerms}&language={language}",
+                    instant_url: "",
+                    image_url: "",
+                    new_tab_url: "",
+                    search_url_post_params: "",
+                    suggest_url_post_params: "",
+                    instant_url_post_params: "",
+                    image_url_post_params: "",
+                    alternate_urls: "[]",
+                    search_terms_replacement_key: "",
+                    prepopulate_id: 3
+                };
+            const bing = {
+                    short_name: "Bing",
+                    keyword: "bing.com",
+                    favicon_url: "http://www.bing.com/s/wlflag.ico",
+                    url: "http://www.bing.com/search?q={searchTerms}",
+                    input_encodings: "UTF-8",
+                    suggest_url: "http://api.bing.com/osjson.aspx?query={searchTerms}&language={language}",
+                    instant_url: "",
+                    image_url: "",
+                    new_tab_url: "",
+                    search_url_post_params: "",
+                    suggest_url_post_params: "",
+                    instant_url_post_params: "",
+                    image_url_post_params: "",
+                    alternate_urls: "[]",
+                    search_terms_replacement_key: "",
+                    prepopulate_id: 3
+                };
+            const yahoo = {
+                    short_name: "Yahoo!",
+                    keyword: "yahoo.com",
+                    favicon_url: "http://search.yahoo.com/favicon.ico",
+                    url: "http://search.yahoo.com/search?ei={inputEncoding}&fr=crmas&p={searchTerms}",
+                    input_encodings: "UTF-8",
+                    suggest_url: "http://ff.search.yahoo.com/gossip?output=fxjson&command={searchTerms}",
+                    instant_url: "",
+                    image_url: "",
+                    new_tab_url: "",
+                    search_url_post_params: "",
+                    suggest_url_post_params: "",
+                    instant_url_post_params: "",
+                    image_url_post_params: "",
+                    alternate_urls: "[]",
+                    search_terms_replacement_key: "",
+                    prepopulate_id: 2
+                };
+            const yahoo_ru = {
+                    short_name: "Yahoo! по-русски",
+                    keyword: "ru.yahoo.com",
+                    favicon_url: "http://ru.search.yahoo.com/favicon.ico",
+                    url: "http://ru.search.yahoo.com/search?ei={inputEncoding}&fr=crmas&p={searchTerms}",
+                    input_encodings: "UTF-8",
+                    suggest_url: "",
+                    instant_url: "",
+                    image_url: "",
+                    new_tab_url: "",
+                    search_url_post_params: "",
+                    suggest_url_post_params: "",
+                    instant_url_post_params: "",
+                    image_url_post_params: "",
+                    alternate_urls: "[]",
+                    search_terms_replacement_key: "",
+                    prepopulate_id: 2
+                };
+            const yandex_tr = {
+                    short_name: "Yandex",
+                    keyword: "yandex.com.tr",
+                    favicon_url: "http://yandex.st/islands-icons/_/6jyHGXR8-HAc8oJ1bU8qMUQQz_g.ico",
+                    url: "http://www.yandex.com.tr/yandsearch?text={searchTerms}",
+                    input_encodings: "UTF-8",
+                    suggest_url: "http://suggest.yandex.com.tr/suggest-ff.cgi?part={searchTerms}",
+                    instant_url: "",
+                    image_url: "",
+                    new_tab_url: "",
+                    search_url_post_params: "",
+                    suggest_url_post_params: "",
+                    instant_url_post_params: "",
+                    image_url_post_params: "",
+                    alternate_urls: "[]",
+                    search_terms_replacement_key: "",
+                    prepopulate_id: 15
+                };
+            delete this._ENGINES;
+            return this._ENGINES = {
+                "ru": [
+                    google,
+                    yandex_ru,
+                    mail_ru
+                ],
+                "tr": [
+                    google,
+                    bing_tr,
+                    yahoo_tr,
+                    yandex_tr
+                ],
+                "ua": [
+                    google,
+                    yandex_ua,
+                    bing_ru
+                ],
+                "kz": [
+                    google,
+                    bing,
+                    yahoo
+                ],
+                "by": [
+                    google,
+                    yahoo_ru,
+                    bing_ru
+                ],
+                "default": [
+                    google,
+                    bing,
+                    yahoo
+                ]
+            };
+        },
+        get INS_BUILTIN_VERSION_QUERY() {
+            return "INSERT OR REPLACE INTO meta VALUES('Builtin Keyword Version', " + this.BUILTIN_VERSION + ");";
         }
     }
 };
