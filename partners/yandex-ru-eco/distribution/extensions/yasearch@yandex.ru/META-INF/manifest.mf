@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 
 Name: config.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: xz6UNoV5NvSb1IfBIxmv2g==
-SHA1-Digest: yn+IiahqXAwd1ua3YQT6l6o51S4=
+MD5-Digest: tyY/G/8Hz9sUEx6Zx0MGmg==
+SHA1-Digest: uBaKWwDescQljfho88hq22DDjMU=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -12,8 +12,8 @@ SHA1-Digest: 6uKf/4cm6jtYQ+NZ0CSQtw8FszE=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: /dv0YGf25z2w5lJnlzIR9A==
-SHA1-Digest: xhYLtkTMtOjB1UtxkSH87XlqfLs=
+MD5-Digest: od/uqYiUvDvmFSinJvLWXA==
+SHA1-Digest: vQcLXOmaxjuE8lelsGXmz3HJdsI=
 
 Name: components/nsIYaSearch.xpt
 Digest-Algorithms: MD5 SHA1
@@ -82,8 +82,8 @@ SHA1-Digest: HKsRE/NdxQvKIY2W27ts21bqiNo=
 
 Name: cbapp/parts/distribution.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: DJiZ61UkNDjmsvcNlsSaIQ==
-SHA1-Digest: 9iLID34hD8yJvQXK088z0g0jseI=
+MD5-Digest: ihbMaeK+YtCJ8OkcsBUMsA==
+SHA1-Digest: 7f81BOoyNYQ7b5VtMl6srKb94Z8=
 
 Name: cbapp/parts/pacman.js
 Digest-Algorithms: MD5 SHA1
@@ -317,8 +317,8 @@ SHA1-Digest: FKLmsiETEsBqTVSkT10ZfoinjLw=
 
 Name: chrome/yasearch.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: HSPNTm+mfs7sb8W3XKx+mw==
-SHA1-Digest: Y7/NEbEBBs6THh+hcpJ3mWJ7dRM=
+MD5-Digest: SF9jU7rwuDNuD0Rxau1Q+Q==
+SHA1-Digest: zdkGzhgzmFu1sW2CNr+Nv3Hx12Q=
 
 Name: defaults/dynamic-preferences/safebrowsing.js
 Digest-Algorithms: MD5 SHA1
