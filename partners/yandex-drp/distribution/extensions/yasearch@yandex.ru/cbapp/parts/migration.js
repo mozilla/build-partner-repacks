@@ -180,6 +180,10 @@ const migration = {
             {
                 name: "l-8.1.0",
                 file: "l-8_1_0.js"
+            },
+            {
+                name: "l-8.3.0",
+                file: "l-8_3_0.js"
             }
         ],
         _migrationConfig: {

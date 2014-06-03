@@ -465,6 +465,10 @@ const barApplication = {
                 file: "update.js"
             },
             {
+                name: "safeBrowsing",
+                file: "safeBrowsing.js"
+            },
+            {
                 name: "aboutSupport",
                 file: "aboutSupport.js"
             },
@@ -495,26 +499,11 @@ const barApplication = {
             {
                 name: "mailruStat",
                 file: "mailruStat.js"
+            },
+            {
+                name: "bookmarksStat",
+                file: "bookmarksStat.js"
             }
-        ],
-        _PREV_BUILTIN_WIDS: [
-            "http://bar.yandex.ru/packages/yandexbar#logo",
-            "http://bar.yandex.ru/packages/yandexbar#search",
-            "http://bar.yandex.ru/packages/yandexbar#cy",
-            "http://bar.yandex.ru/packages/yandexbar#spam",
-            "http://bar.yandex.ru/packages/yandexbar#opinions",
-            "http://bar.yandex.ru/packages/yandexbar#spellchecker",
-            "http://bar.yandex.ru/packages/yandexbar#translator",
-            "http://bar.yandex.ru/packages/yandexbar#pagetranslator",
-            "http://bar.yandex.ru/packages/yandexbar#login",
-            "http://bar.yandex.ru/packages/yandexbar#mail",
-            "http://bar.yandex.ru/packages/yandexbar#fotki",
-            "http://bar.yandex.ru/packages/yandexbar#yaru",
-            "http://bar.yandex.ru/packages/yandexbar#moikrug",
-            "http://bar.yandex.ru/packages/yandexbar#lenta",
-            "http://bar.yandex.ru/packages/yandexbar#zakladki",
-            "http://bar.yandex.ru/packages/yandexbar#widget-news",
-            "http://bar.yandex.ru/packages/yandexbar#settings"
         ],
         _finalCleanup: function BarApp__finalCleanup(aAddonId) {
             this._logger.debug("Cleanup...");
@@ -578,8 +567,6 @@ const barApplication = {
             } else if (installInfo.addonVersionChanged) {
                 this._logger.config("Addon version changed. Checking default preset stuff...");
                 try {
-                    if (!this._usingInternalPreset)
-                        this._fixOldPresetIfNeeded();
                     let internalPreset = new this.BarPlatform.Preset(fileutils.xmlDocFromStream(this.addonFS.getStream("$content/presets/" + this._consts.DEF_PRESET_FILE_NAME)));
                     let widgetLibrary = this.widgetLibrary;
                     let currDefPreset = this._defaultPreset;
@@ -642,44 +629,16 @@ const barApplication = {
             fileutils.removeFileSafe(presetFile);
             this.addonFS.copySource("$content/presets/" + this._consts.DEF_PRESET_FILE_NAME, this.directories.presetsDir, presetFileName, parseInt("0755", 8));
         },
-        _fixOldPresetIfNeeded: function BarApp__fixOldPresetIfNeeded() {
-            if (sysutils.versionComparator.compare(this._defaultPreset.formatVersion, "2.0") >= 0)
-                return;
-            try {
-                let oldPresetWidgetIDs = this._defaultPreset.widgetIDs;
-                this._logger.config("Fixing old default preset...");
-                let CompEntryProps = this.BarPlatform.Preset.ComponentEntry.prototype;
-                for (let [
-                            ,
-                            invisWidgetID
-                        ] in Iterator(this._PREV_BUILTIN_WIDS)) {
-                    if (invisWidgetID in oldPresetWidgetIDs)
-                        continue;
-                    let entryDescr = {
-                            componentType: CompEntryProps.TYPE_WIDGET,
-                            componentID: invisWidgetID,
-                            enabled: CompEntryProps.ENABLED_NO
-                        };
-                    this._defaultPreset.appendEntry(entryDescr);
-                }
-                this._defaultPreset.formatVersion = "2.0";
-                let presetFile = this.directories.presetsDir;
-                presetFile.append(encodeURIComponent(this._defaultPreset.url));
-                this._defaultPreset.saveToFile(presetFile);
-            } catch (e) {
-                this._logger.fatal("Could not fix default preset. " + strutils.formatError(e));
-                this._logger.debug(e.stack);
-            }
-        },
         _switchDefaultPresetAutoComps: function BarApp__switchDefaultPresetAutoComps() {
             try {
                 this._logger.config("Components autoactivation started");
-                let componentsActivated = [];
+                let activatedComponentIds = [];
                 for (let presetCompEntry in this.autoinstaller.genHistoryRelevantEntries(this.defaultPreset)) {
                     presetCompEntry.enabled = presetCompEntry.ENABLED_YES;
-                    componentsActivated.push(presetCompEntry.componentID);
+                    activatedComponentIds.push(presetCompEntry.componentID);
                 }
-                this._logger.debug("Total " + componentsActivated.length + " components activated: " + componentsActivated);
+                this.autoinstaller.activatedComponentIds = activatedComponentIds;
+                this._logger.debug("Total " + activatedComponentIds.length + " components activated: " + activatedComponentIds);
             } catch (e) {
                 this._logger.error("Could not modify default preset. " + strutils.formatError(e));
                 this._logger.debug(e.stack);

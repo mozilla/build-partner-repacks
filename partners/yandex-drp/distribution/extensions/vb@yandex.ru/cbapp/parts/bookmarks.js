@@ -7,7 +7,6 @@ const {
         results: Cr
     } = Components;
 const GLOBAL = this;
-const UI_STARTED_EVENT = "browser-delayed-startup-finished";
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/PlacesUtils.jsm");
@@ -15,46 +14,16 @@ XPCOMUtils.defineLazyServiceGetter(GLOBAL, "LIVEMARKS_SVC", "@mozilla.org/browse
 const bookmarks = {
         init: function Bookmarks_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
-            Services.obs.addObserver(this, UI_STARTED_EVENT, false);
             PlacesUtils.bookmarks.addObserver(this._changesObserver, false);
             this._application = application;
             this._logger = application.getLogger("Bookmarks");
         },
         finalize: function Bookmarks_finalize(doCleanup, callback) {
-            try {
-                Services.obs.removeObserver(this, UI_STARTED_EVENT);
-            } catch (e) {
-            }
             PlacesUtils.bookmarks.removeObserver(this._changesObserver);
             if (this._bookmarksStateTimer)
                 this._bookmarksStateTimer.cancel();
             this._application = null;
             this._logger = null;
-        },
-        observe: function Bookmarks_observe(aSubject, aTopic, aData) {
-            switch (aTopic) {
-            case UI_STARTED_EVENT:
-                let appInfo = this._application.addonManager.info;
-                if (appInfo.isFreshAddonInstall) {
-                    const BOOKMARKS_TOOLBAR_ID = "PersonalToolbar";
-                    let topWindow = misc.getTopBrowserWindow();
-                    let bookmarksBrowserToolbar = topWindow && topWindow.document.querySelector("#" + BOOKMARKS_TOOLBAR_ID);
-                    if (bookmarksBrowserToolbar) {
-                        let prefOldValue = this._application.preferences.get("ftabs.showBookmarks", false);
-                        if (bookmarksBrowserToolbar.collapsed) {
-                            this._application.preferences.set("ftabs.showBookmarks", false);
-                        } else {
-                            this._application.preferences.set("ftabs.showBookmarks", true);
-                            bookmarksBrowserToolbar.collapsed = true;
-                            topWindow.document.persist(BOOKMARKS_TOOLBAR_ID, "collapsed");
-                        }
-                        if (prefOldValue !== this._application.preferences.get("ftabs.showBookmarks", false))
-                            this._application.fastdial.requestInit();
-                    }
-                }
-                Services.obs.removeObserver(this, UI_STARTED_EVENT);
-                break;
-            }
         },
         requestBranch: function Bookmarks_requestBranch(id, callback) {
             var self = this;

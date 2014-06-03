@@ -1,6 +1,7 @@
 "use strict";
 const EXPORTED_SYMBOLS = ["application"];
 const Cc = Components.classes, Ci = Components.interfaces, Cu = Components.utils, GLOBAL = this;
+Cu.import("resource://gre/modules/Services.jsm");
 const application = {
         init: function VBApp_init(core) {
             this._barCore = core;
@@ -170,6 +171,14 @@ const application = {
         },
         isYandexHost: function VBApp_isYandexHost(hostName) {
             return /(^|\.)(yandex\.(ru|ua|by|kz|net|com(\.tr)?)|(ya|narod|moikrug)\.ru)$/i.test(hostName);
+        },
+        isYandexURL: function VBApp_isYandexURL(url) {
+            try {
+                let uri = Services.io.newURI(url, null, null);
+                return this.isYandexHost(uri.host);
+            } catch (e) {
+                return false;
+            }
         },
         _consts: {
             DOWNLOAD_HOST_NAME: "download.yandex.ru",
@@ -472,6 +481,14 @@ const application = {
             {
                 "name": "searchSuggest",
                 "file": "searchSuggest.js"
+            },
+            {
+                "name": "screenshots",
+                "file": "screenshots.js"
+            },
+            {
+                "name": "screenshotsGrabber",
+                "file": "screenshotsGrabber.js"
             },
             {
                 "name": "fastdial",
