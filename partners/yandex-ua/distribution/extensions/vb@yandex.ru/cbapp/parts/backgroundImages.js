@@ -99,7 +99,7 @@ const backgroundImages = {
                     output.image = userImageURL;
                     output.preview = userImageURL;
                     if (fontColors[USER_FILE_LEAFNAME]) {
-                        output.color = fontColors.user;
+                        output.color = fontColors[USER_FILE_LEAFNAME];
                     } else {
                         this._calculateFontColor(USER_FILE_LEAFNAME);
                     }

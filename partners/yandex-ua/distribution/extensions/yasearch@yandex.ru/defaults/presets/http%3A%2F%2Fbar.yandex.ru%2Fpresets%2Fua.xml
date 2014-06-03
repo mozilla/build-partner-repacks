@@ -59,7 +59,6 @@
         <setting force="true" name="show_name">false</setting>
     </widget>
     <widget id="http://bar.yandex.ru/packages/yandexbar#quote" important="true" visible="auto"/>
-    <widget id="http://bar.yandex.ru/packages/yandexbar#opinions" visible="false"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#zakladki" visible="false"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#lenta" visible="false"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#cy" visible="false"/>

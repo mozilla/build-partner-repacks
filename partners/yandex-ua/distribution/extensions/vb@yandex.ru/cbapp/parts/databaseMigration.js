@@ -113,6 +113,9 @@ const schema = {
                 database.execQuery("ALTER TABLE thumbs_shown ADD COLUMN syncTimestamp INTEGER");
                 database.execQuery("UPDATE thumbs SET backgroundColor = NULL WHERE backgroundColor = ''");
                 database.execQuery("UPDATE thumbs SET backgroundColor = NULL, favicon = NULL WHERE favicon LIKE 'http://favicon.yandex.net/favicon/%'");
+            },
+            7: function schema_fastdial_7(database) {
+                database.execQuery("ALTER TABLE thumbs ADD COLUMN screenshotColor TEXT");
             }
         },
         usageHistory: {

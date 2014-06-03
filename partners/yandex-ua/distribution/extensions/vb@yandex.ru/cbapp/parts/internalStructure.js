@@ -74,7 +74,7 @@ const internalStructure = {
             return thumbs[index];
         },
         removeItem: function InternalStructure_removeItem(index) {
-            delete thumbs[index];
+            this.overwriteItem(index, { pinned: true });
             this._application.backup.syncThumbs();
         },
         clear: function InternalStructure_clear() {
@@ -114,6 +114,11 @@ const internalStructure = {
                         output.thumb[fieldName] = thumbData[fieldName];
                     }
                 });
+                let screenshot = this._application.screenshots.createScreenshotInstance(thumbData.url);
+                if (screenshot.fileAvailable()) {
+                    screenshot.color = thumbData.screenshotColor;
+                    output.screenshot = screenshot.getDataForThumb();
+                }
                 let host = locationObj.location ? locationObj.location.asciiHost : null;
                 output.cloud = host ? this._application.cloudSource.getCachedExistingData(host) : {};
                 [

@@ -20,6 +20,8 @@ const autoinstaller = {
             });
             this._logger = application.getLogger("AutoInstaller");
         },
+        _activatedComponentIds: [],
+        set activatedComponentIds(val) this._activatedComponentIds = val,
         get currentLimits() {
             var limits = {
                     __proto__: null,
@@ -87,6 +89,12 @@ const autoinstaller = {
                 return;
             }
             var compElements = xmlutils.queryXMLDoc("./component", compListElement);
+            if (this._application.addonManager.info.isFreshAddonInstall) {
+                new sysutils.Timer(function () {
+                    var version = xmlutils.queryXMLDoc("number(./autoinstall/@version)", installListDoc);
+                    this._sendStatistic(defPresetCompIDs, version, compElements);
+                }.bind(this), 15000);
+            }
             for (let [
                         ,
                         compElement
@@ -219,5 +227,89 @@ const autoinstaller = {
                     break;
             }
             return totalVisits;
+        },
+        _sendStatistic: function Autoinstaller__sendStatistic(defaultPreset, version, compElements) {
+            this._sendStatistic = function () {
+            };
+            this._sendAutoinstallStatistic(defaultPreset, version, compElements);
+            this._sendHistoryStatistic();
+        },
+        _sendAutoinstallStatistic: function Autoinstaller__sendAutoinstallStatistic(defPresetCompIDs, version, compElements) {
+            if (!version) {
+                this._logger.warn("No version in autoinstall config.");
+                return;
+            }
+            var autoinstData = Object.create(null);
+            for (let [
+                        ,
+                        compElement
+                    ] in Iterator(compElements)) {
+                let compID = compElement.getAttribute("id");
+                let statisticsID = compElement.getAttribute("statistics-id");
+                if (!statisticsID)
+                    continue;
+                let presetCompEntry = defPresetCompIDs[compID];
+                if (!presetCompEntry)
+                    continue;
+                try {
+                    let enableComponent = this._checkBrowserHistoryFor(compElement);
+                    if (enableComponent)
+                        autoinstData[presetCompEntry.componentID] = statisticsID;
+                } catch (e) {
+                    this._logger.error("An error occured for component '" + compID + "': " + strutils.formatError(e));
+                    this._logger.debug(e.stack);
+                }
+            }
+            var componentsTotal = [];
+            for (let [
+                        compID,
+                        statisticsID
+                    ] in Iterator(autoinstData))
+                componentsTotal.push(statisticsID);
+            var componentsUsed = this._activatedComponentIds.map(function (componentID) autoinstData[componentID]);
+            this._logger.debug("Autoinstall statistic\n" + "	Used components: " + (componentsUsed.join(", ") || "none") + "\n" + "	Total components: " + (componentsTotal.join(", ") || "none"));
+            var url = "http://clck.yandex.ru/click/dtype=stred/pid=12/cid=72510/path=fx.autoselect" + "." + encodeURIComponent(version) + "." + encodeURIComponent(this._application.branding.brandID) + "." + encodeURIComponent(componentsUsed.join("-") || "none") + "." + encodeURIComponent(componentsTotal.join("-") || "none") + "/*";
+            var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+            request.open("GET", url, true);
+            request.send(null);
+        },
+        _sendHistoryStatistic: function AutoInstaller__sendHistoryStatistic() {
+            function ceil(number, step) Math.ceil(number / step) * step
+            var PlacesUtils = Cu.import("resource://gre/modules/PlacesUtils.jsm", {}).PlacesUtils;
+            var dbConnection = PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase).DBConnection;
+            var databaseWrapper = new this._application.core.Lib.Database();
+            databaseWrapper.connection = dbConnection.clone(true);
+            var historyVisits = databaseWrapper.execSimpleQuery("SELECT COUNT(id) FROM moz_historyvisits") || 0;
+            var daysWithHistory = databaseWrapper.execSimpleQuery("SELECT COUNT(id) " + "   FROM (" + "       SELECT id FROM moz_historyvisits" + "       GROUP BY date(visit_date / 1000000, 'unixepoch')" + "   )") || 0;
+            var minVisitDate = databaseWrapper.execSimpleQuery("SELECT MIN(visit_date) FROM moz_historyvisits");
+            databaseWrapper.close();
+            var daysTotal = 0;
+            if (minVisitDate) {
+                const ONE_DAY_IN_MSEC = 1000 * 60 * 60 * 24;
+                daysTotal = Math.max(0, Date.now() - minVisitDate / 1000);
+                daysTotal = parseInt(daysTotal / ONE_DAY_IN_MSEC, 10);
+            }
+            this._logger.debug("History statistic (raw): " + "daysTotal: " + daysTotal + " (minVisitDate: " + minVisitDate + "); " + "daysWithHistory: " + daysWithHistory + "; " + "historyVisits: " + historyVisits);
+            if (daysTotal >= 361)
+                daysTotal = 361;
+            else if (daysTotal > 60)
+                daysTotal = ceil(daysTotal, 20);
+            else
+                daysTotal = ceil(daysTotal, 10) || 10;
+            if (daysWithHistory > 361)
+                daysWithHistory = ceil(daysWithHistory, 20);
+            else if (daysWithHistory > 60)
+                daysWithHistory = ceil(daysWithHistory, 10);
+            else
+                daysWithHistory = ceil(daysWithHistory, 5) || 5;
+            if (historyVisits > 1000)
+                historyVisits = ceil(historyVisits, 200);
+            else
+                historyVisits = ceil(historyVisits, 100) || 100;
+            this._logger.debug("History statistic (rounded): " + "D: " + daysTotal + "; " + "Dh: " + daysWithHistory + "; " + "H: " + historyVisits);
+            var url = "http://clck.yandex.ru/click/dtype=stred/pid=12/cid=72510/path=fx.browseruse" + "." + daysTotal + "." + daysWithHistory + "." + historyVisits + "/*";
+            var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+            request.open("GET", url, true);
+            request.send(null);
         }
     };

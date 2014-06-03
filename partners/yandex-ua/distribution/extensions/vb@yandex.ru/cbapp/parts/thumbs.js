@@ -59,6 +59,7 @@ const thumbs = {
                     let lastRefreshDiff = Math.abs(now - lastRefreshTime);
                     this._refreshThumbsTimer = new sysutils.Timer(this._refreshThumbsData.bind(this), Math.max(REFRESH_INTERVAL - lastRefreshDiff, 0) * 1000);
                 }
+                this.getMissingScreenshots();
             }.bind(this));
         },
         finalize: function Thumbs_finalize(doCleanup, callback) {
@@ -142,6 +143,8 @@ const thumbs = {
             if (isStandardURL) {
                 let hasSameDomain = false;
                 let thumbHost = thumbData.location.asciiHost.replace(/^www\./, "");
+                let source = thumbData.source;
+                let hasSameURL = false;
                 this._application.internalStructure.iterate({
                     nonempty: true,
                     visible: true
@@ -151,13 +154,18 @@ const thumbs = {
                     if (thumbHost === thumbData.location.asciiHost) {
                         hasSameDomain = true;
                     }
+                    if (source === thumbData.source) {
+                        hasSameURL = true;
+                    }
                 });
                 if (!hasSameDomain) {
                     this._application.blacklist.upsertDomain(thumbHost);
                 }
+                if (!hasSameURL) {
+                    this._application.screenshots.createScreenshotInstance(thumbData.source).remove();
+                }
             }
             this._application.syncPinned.save();
-            this._compactUnpinned(aIndex);
             var holesExist = false;
             var emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
             var currentThumbsNum = this._application.layout.getThumbsNum();
@@ -173,9 +181,9 @@ const thumbs = {
                 }
             }
             if (holesExist) {
-                this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
                 this.pickupThumbs();
             }
+            this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
         },
         save: function Thumbs_save(index, data) {
             var currentThumbsNum = this._application.layout.getThumbsNum();
@@ -201,9 +209,19 @@ const thumbs = {
                 this._application.fastdial.sendRequest("thumbChanged", evtData);
                 return;
             }
+            try {
+                uri = uri.QueryInterface(Ci.nsIURL);
+            } catch (err) {
+            }
+            if (this._application.isYandexURL(uri.spec)) {
+                let parsedQuery = netutils.querystring.parse(uri.query || "");
+                delete parsedQuery.nugt;
+                uri.query = netutils.querystring.stringify(parsedQuery);
+            }
             data.url = uri.spec;
             this._logger.trace("Save thumb #" + index + " (" + JSON.stringify(data) + ")");
             var currentThumbData = this._application.internalStructure.getItem(index);
+            (currentThumbData || {}).pinned = true;
             if (currentThumbData && currentThumbData.source && currentThumbData.thumb && currentThumbData.source === data.url && currentThumbData.thumb.title !== data.title) {
                 currentThumbData.thumb.title = data.title;
                 this._application.internalStructure.overwriteItem(index, currentThumbData);
@@ -256,6 +274,7 @@ const thumbs = {
             this._application.fastdial.sendRequest("thumbChanged", evtData);
             this._application.syncPinned.save();
             this.getMissingData(internalThumbData, { force: true });
+            this.getMissingScreenshots();
         },
         updateCurrentSet: function Thumbs_updateCurrentSet(removePositions, saveData) {
             this._logger.trace("Update current set with data: " + JSON.stringify([
@@ -380,6 +399,7 @@ const thumbs = {
                         title: thumbData.thumb ? thumbData.thumb.title : null,
                         backgroundColor: thumbData.thumb ? thumbData.thumb.backgroundColor : null,
                         favicon: thumbData.thumb ? thumbData.thumb.favicon : null,
+                        screenshot: thumbData.screenshot ? thumbData.screenshot : null,
                         position: index,
                         fixed: 1
                     };
@@ -474,6 +494,17 @@ const thumbs = {
                     });
                 }
                 self._application.safebrowsing.checkUnpinnedDomains(options.num, topHistoryEntries);
+                self.getMissingScreenshots();
+                var existingScreenshotNames = Object.create(null);
+                self._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
+                    existingScreenshotNames[this._application.screenshots.createScreenshotInstance(thumbData.source).name] = true;
+                }, self);
+                var entries = self._application.screenshots.shotsDir.directoryEntries;
+                while (entries.hasMoreElements()) {
+                    let file = entries.getNext().QueryInterface(Ci.nsIFile);
+                    if (file.isFile() && !existingScreenshotNames[file.leafName])
+                        fileutils.removeFileSafe(file);
+                }
             });
         },
         resetPickupTimer: function Thumbs_resetPickupTimer() {
@@ -552,6 +583,7 @@ const thumbs = {
             this._logger.trace("Set records: " + JSON.stringify(setRecords));
             this._application.internalStructure.overwriteItem(setRecords);
             this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
+            this.getMissingScreenshots();
         },
         getMissingData: function Thumbs_getMissingData(thumbData, options) {
             if (!thumbData.source)
@@ -567,6 +599,7 @@ const thumbs = {
                     null
                 ];
             var backgroundImageMissing = stopValues.indexOf(thumbData.cloud.backgroundImage) !== -1;
+            var screenshotMissing = stopValues.indexOf(thumbData.screenshot) !== -1;
             var thumbDataMerged = thumbData;
             var cachedHistoryData;
             options = options || {};
@@ -663,6 +696,17 @@ const thumbs = {
                 }
             }
         },
+        getMissingScreenshots: function Thumbs_getMissingScreenshots(thumbData) {
+            this._application.internalStructure.iterate({
+                nonempty: true,
+                visible: true
+            }, function (thumbData) {
+                var screenshot = this._application.screenshots.createScreenshotInstance(thumbData.source);
+                if (!screenshot.fileAvailable()) {
+                    screenshot.shot();
+                }
+            }.bind(this));
+        },
         get numberOfFilled() {
             var total = 0;
             this._application.internalStructure.iterate({
@@ -725,6 +769,7 @@ const thumbs = {
             if (updateBackgroundImage) {
                 this._application.preferences.set("ftabs.lastRefreshBackgroundsTime", now);
             }
+            this.getMissingScreenshots();
         },
         _getMergedHistoryQueue: function Thumbs__getMergedHistoryQueue(topHistoryData, unsafeDomains, branded) {
             var mergedTopHistory = [];
@@ -797,7 +842,7 @@ const thumbs = {
             };
         },
         _fetchThumbs: function Thumbs__fetchThumbs(callback) {
-            var sql = "SELECT thumbs.url, thumbs.title, thumbs.backgroundColor, thumbs.favicon, shown.*             FROM thumbs_shown AS shown LEFT JOIN thumbs ON thumbs.rowid = shown.thumb_id             ORDER BY shown.position";
+            var sql = "SELECT thumbs.url, thumbs.title, thumbs.backgroundColor, thumbs.screenshotColor, thumbs.favicon, shown.*             FROM thumbs_shown AS shown LEFT JOIN thumbs ON thumbs.rowid = shown.thumb_id             ORDER BY shown.position";
             this._database.execQueryAsync(sql, {}, function (rowsData, storageError) {
                 if (storageError)
                     throw new Error(strutils.formatString("Fetch thumbs error: %1 (code %2)", [
