@@ -5,6 +5,7 @@ const {
         interfaces: Ci,
         utils: Cu
     } = Components;
+Cu.import("resource://gre/modules/Services.jsm");
 const vendorCookie = {
         init: function VendorCookie_init(application) {
             this._application = application;
@@ -26,9 +27,8 @@ const vendorCookie = {
             var cookieNodes = this._application.core.Lib.xmlutils.queryXMLDoc("/cookies/domain/set/cookie", cookiesXML);
             if (!(cookieNodes && cookieNodes.length))
                 return;
-            var timeNow = Date.now();
-            var timeNowSec = parseInt(timeNow / 1000, 10);
-            const cookieService = Cc["@mozilla.org/cookieService;1"].getService().QueryInterface(Ci.nsICookieService);
+            var timeNowSec = Math.ceil(Date.now() / 1000);
+            const MAX_EXPIRY = Math.pow(2, 62);
             cookieNodes.forEach(function (cookie) {
                 var domain = cookie.parentNode.parentNode.getAttribute("id");
                 if (!domain)
@@ -47,18 +47,8 @@ const vendorCookie = {
                             return;
                     }
                 }
-                var uri = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIURI);
-                uri.spec = "http://" + domain.replace(/^\./, "");
-                var cookieStrArray = ["" + cookieName + "=" + cookie.textContent];
-                if (domain.charAt(0) == ".")
-                    cookieStrArray.push("domain=" + domain);
-                cookieStrArray.push("path=" + (cookie.getAttribute("path") || "/"));
-                if (maxAge)
-                    cookieStrArray.push("expires=" + new Date(timeNow + maxAge * 1000).toGMTString());
-                if (cookie.getAttribute("http-only") === "yes")
-                    cookieStrArray.push("HttpOnly");
-                cookieService.setCookieStringFromHttp(uri, uri, null, cookieStrArray.join(";"), maxAge ? new Date(timeNow).toGMTString() : "", null);
-                this._logger.debug("Set cookie '" + cookieStrArray.join(";") + "'");
+                var expiry = maxAge ? timeNowSec + maxAge : MAX_EXPIRY;
+                Services.cookies.add(domain, cookie.getAttribute("path") || "/", cookieName, cookie.textContent, false, cookie.getAttribute("http-only") === "yes", false, expiry);
             }, this);
         },
         get _vendorCookiesFile() {

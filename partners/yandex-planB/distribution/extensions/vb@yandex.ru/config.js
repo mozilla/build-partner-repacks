@@ -10,8 +10,8 @@ const VB_CONFIG = function () {
                     PROTOCOL: "yafd"
                 },
                 BUILD: {
-                    DATE: "Wed Apr 09 2014 09:13:15 GMT+0000",
-                    REVISION: "1_15"
+                    DATE: "Fri May 30 2014 11:35:35 GMT+0000",
+                    REVISION: "49071_9"
                 },
                 CORE: {
                     CONTRACT_ID: "@yandex.ru/vb-core;1",

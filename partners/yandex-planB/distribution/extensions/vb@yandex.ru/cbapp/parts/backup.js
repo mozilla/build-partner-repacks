@@ -143,23 +143,26 @@ const backup = {
                                     ].some(function (field) {
                                         return thumbData.thumb[field] !== rowsData[0][field];
                                     });
+                                needsUpdate = needsUpdate || (!thumbData.screenshot || thumbData.screenshot.color !== rowsData[0].screenshotColor);
                                 if (!needsUpdate)
                                     return callback(null, rowId);
-                                self._database.execQueryAsync("UPDATE thumbs SET title = :title, backgroundColor = :backgroundColor, favicon = :favicon WHERE url = :url", {
-                                    url: thumbData.source,
-                                    title: thumbData.thumb.title || null,
-                                    backgroundColor: thumbData.thumb.backgroundColor || null,
-                                    favicon: thumbData.thumb.favicon || null
-                                }, function (rowsData, storageError) {
-                                    callback(storageError, rowId);
-                                });
-                            } else {
-                                self._database.execQueryAsync("INSERT INTO thumbs (url, title, backgroundImage, backgroundColor, favicon, insertTimestamp) VALUES (:url, :title, '', :backgroundColor, :favicon, :ts)", {
+                                self._database.execQueryAsync("UPDATE thumbs SET title = :title, backgroundColor = :backgroundColor, favicon = :favicon, screenshotColor = :screenshotColor WHERE url = :url", {
                                     url: thumbData.source,
                                     title: thumbData.thumb.title || null,
                                     backgroundColor: thumbData.thumb.backgroundColor || null,
                                     favicon: thumbData.thumb.favicon || null,
-                                    ts: Math.round(Date.now() / 1000)
+                                    screenshotColor: thumbData.screenshot && thumbData.screenshot.color || null
+                                }, function (rowsData, storageError) {
+                                    callback(storageError, rowId);
+                                });
+                            } else {
+                                self._database.execQueryAsync("INSERT INTO thumbs (url, title, backgroundImage, backgroundColor, favicon, insertTimestamp, screenshotColor) VALUES (:url, :title, '', :backgroundColor, :favicon, :ts, :screenshotColor)", {
+                                    url: thumbData.source,
+                                    title: thumbData.thumb.title || null,
+                                    backgroundColor: thumbData.thumb.backgroundColor || null,
+                                    favicon: thumbData.thumb.favicon || null,
+                                    ts: Math.round(Date.now() / 1000),
+                                    screenshotColor: thumbData.screenshot && thumbData.screenshot.color || null
                                 }, function (rowsData, storageError) {
                                     if (storageError)
                                         return callback(storageError);
