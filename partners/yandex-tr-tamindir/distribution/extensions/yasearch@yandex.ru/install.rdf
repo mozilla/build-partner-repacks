@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<RDF xmlns:em='http://www.mozilla.org/2004/em-rdf#' xmlns='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+
+  <Description about='urn:mozilla:install-manifest'>
+
+    <em:localized>
+        <Description>
+            <em:locale>be</em:locale>
+            <em:name>Кампанент &quot;Элементы Яндекса&quot;</em:name>
+            <em:description>Хуткі доступ да ўсіх магчымасцяў Яндекса</em:description>
+            <em:creator>Яндекс</em:creator>
+        </Description>
+    </em:localized>
+
+    <em:localized>
+        <Description>
+            <em:locale>cs</em:locale>
+            <em:name>&quot;Yandex Elements&quot;</em:name>
+            <em:description>Quick access to all Yandex features</em:description>
+            <em:creator>Yandex</em:creator>
+        </Description>
+    </em:localized>
+
+    <em:localized>
+        <Description>
+            <em:locale>en</em:locale>
+            <em:name>&quot;Yandex Elements&quot;</em:name>
+            <em:description>Quick access to all Yandex features</em:description>
+            <em:creator>Yandex</em:creator>
+        </Description>
+    </em:localized>
+
+    <em:localized>
+        <Description>
+            <em:locale>kk</em:locale>
+            <em:name>&quot;Яндекстің Элементтері&quot; компоненті</em:name>
+            <em:description>Яндекстің барлық мүмкіндіктеріне тез қол жеткізу</em:description>
+            <em:creator>Яндекс</em:creator>
+        </Description>
+    </em:localized>
+
+    <em:localized>
+        <Description>
+            <em:locale>ru</em:locale>
+            <em:name>Компонент &quot;Элементы Яндекса&quot;</em:name>
+            <em:description>Быстрый доступ ко всем возможностям Яндекса</em:description>
+            <em:creator>Яндекс</em:creator>
+        </Description>
+    </em:localized>
+
+    <em:localized>
+        <Description>
+            <em:locale>tr</em:locale>
+            <em:name>&quot;Yandex Elements&quot; bileşenleri</em:name>
+            <em:description>Yandex'in tüm özelliklerine hızlı erişim</em:description>
+            <em:creator>Yandex</em:creator>
+        </Description>
+    </em:localized>
+
+    <em:localized>
+        <Description>
+            <em:locale>uk</em:locale>
+            <em:name>Компонент &quot;Елементи Яндекса&quot;</em:name>
+            <em:description>Швидкий доступ до всіх можливостей Яндекса</em:description>
+            <em:creator>Яндекс</em:creator>
+        </Description>
+    </em:localized>
+
+    <em:id>yasearch@yandex.ru</em:id>
+    <em:name>Yandex Elements</em:name>
+    <em:type>2</em:type>
+    <em:unpack>true</em:unpack>
+    <em:version>8.3.0</em:version>
+    <em:description>Quick access to all Yandex features</em:description>
+    <em:creator>Yandex</em:creator>
+    <em:contributor>Aleksey Rybakov</em:contributor>
+    <em:contributor>Alexander Bykov</em:contributor>
+    <em:contributor>Alexander Borodach</em:contributor>
+    <em:contributor>Alexander Ermolaev</em:contributor>
+    <em:contributor>Danil Ivanov</em:contributor>
+    <em:contributor>Dmitriy Alekseev</em:contributor>
+    <em:contributor>Dmitriy Karlovskiy</em:contributor>
+    <em:contributor>Dmitriy Sorin</em:contributor>
+    <em:contributor>Maxim Breev</em:contributor>
+    <em:contributor>Nikolay Jaremko</em:contributor>
+    <em:contributor>Roman Ivanov</em:contributor>
+    <em:contributor>Sergey Petrenko</em:contributor>
+    <em:contributor>Valentin Shergin</em:contributor>
+    <em:contributor>Vasily Chekalkin</em:contributor>
+    <em:contributor>Guro Bokum</em:contributor>
+
+    <em:iconURL>yasearch://branding/about/logo-fx-small.png</em:iconURL>
+    <em:icon64URL>yasearch://branding/about/logo-fx-large.png</em:icon64URL>
+    <em:aboutURL>chrome://yasearch/content/preferences/preferences.xul#about</em:aboutURL>
+    <em:optionsURL>chrome://yasearch/content/preferences/preferences.xul</em:optionsURL>
+
+    <em:homepageURL>http://bar.yandex.com.tr/</em:homepageURL>
+    <em:updateURL>https://ye-update.yandex.ru/update-fx-tr.xml</em:updateURL>
+
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>17.0</em:minVersion>
+        <em:maxVersion>31.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+  </Description>
+
+</RDF>
