@@ -1,0 +1,15 @@
+<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
+<ShortName>Yandex</ShortName>
+<Description>Search in Yandex</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16">data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHBwwrLaFv+p0AAAIySURBVDjLjZPPS1RRFMc/70cDM0WLwoYw1FZD4qrcSDlkm6JaZYibENwMbloEbfwXIjcSBTNYtIrU0kIYsAJhkGIWGq0GFGpKgmxoxnF6vrnv3tPCedNgRX7hC4fzPffc7+HcawFtwFEgwv9REpGNvclTnucVZR9YWFi4BcRFhJAAp40x8i/KzD2RsQGRsQGpr30oJZPJJBA1xmCMwQYcEYGJ21gjZ+FZptld/B149QK2d5CefpyT3UempqZuAsfCGhtwjDGYMxegVMN6OUPYXZZfQ/Er1AQ9mMIYQ2dn5+Dk5OQlx3GOG2MAOOf7vvjb22Iu9or0dkk9vyy+74tODYv0dknwYEJ832+yXC5/jsfjA0DEBlytNdq20eevwmYV6/ks5tNH7MU3iH2Q+vUbaK2bjEQiJ+bn50eBDhtwlVIopfCuDUN5B+fJNNajh/BtC39kDHUgQlgTMpFIDAMdLuBWKpXdhUZjuH39RLNZInfuErS3s3n5CoR6Cxrzuy7geJ7XFL4PDRHPZkEpSqOjePX6X1/UysrKNPDFDUcIobu7OdyIK3196BYtRK1W20ilUrPAugu4QRA0RSsIqDVipTWmRQuRyWTuVyqV96urq/4fDiyl+Bk2UAqzx0GhUFhMp9PZfD6/ppTCBZy9DrwWB9KieZ73Y3x8/CmwHp5xAa9arW7GYrG23U1E2crlfl+pdTOcm5t7XCwW3+VyubJu5C2gB0gAh/bxnQtLS0tvWxO/AL96kXxeRq67AAAAAElFTkSuQmCC</Image>
+<Url type="application/x-suggestions+json" method="GET" template="http://suggest.yandex.com.tr/suggest-ff.cgi">
+  <Param name="uil" value="tr"/> 
+  <Param name="part" value="{searchTerms}"/>
+</Url>
+<Url type="text/html" method="GET" template="http://yandex.com.tr/yandsearch">
+   <Param name="clid" value="1945716"/>
+   <Param name="text" value="{searchTerms}"/>
+</Url>
+<SearchForm>http://www.yandex.com.tr/</SearchForm>
+</SearchPlugin>
