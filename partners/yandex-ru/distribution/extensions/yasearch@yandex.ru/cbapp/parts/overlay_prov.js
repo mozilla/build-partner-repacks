@@ -222,8 +222,6 @@ const overlayProvider = {
             appToolbar.parentNode.setAttribute("cb-default-theme", this._defaultThemeActive);
             var toolbox = overlayDoc.getElementById("navigator-toolbox");
             toolbox.setAttribute("cb-os", sysutils.platformInfo.os.name);
-            var version = sysutils.platformInfo.browser.version.toString();
-            toolbox.setAttribute("cb-ff-version", parseInt(version, 10));
             this._logger.debug("Overlay created in " + (Date.now() - start) + "ms");
             return overlayDoc;
         },
@@ -442,6 +440,8 @@ const customizer = {
             if (!info)
                 return;
             new this._application.core.Lib.sysutils.Timer(function () {
+                if (!this._application)
+                    return;
                 if (browserCustomizableUI.getPlacementOfWidget(aWidgetId))
                     return;
                 var instanceID = info.instanceID;
@@ -456,18 +456,16 @@ const customizer = {
         onAreaReset: function customizer_onAreaReset(aArea, aContainer) {
             if (aArea !== this.AREA_NAVBAR)
                 return;
-            new this._application.core.Lib.sysutils.Timer(function () {
-                try {
-                    let window = aContainer.ownerDocument.defaultView;
-                    let toolbox = window.document.getElementById("navigator-toolbox");
-                    if (toolbox)
-                        toolbox.removeAttribute("cb-barless");
-                    let windowController = window[this._application.name + "OverlayController"];
-                    windowController.checkNeedSetBarlessMode();
-                } catch (e) {
-                    this._logger.error(e);
-                }
-            }.bind(this), 0);
+            try {
+                let window = aContainer.ownerDocument.defaultView;
+                let toolbox = window.document.getElementById("navigator-toolbox");
+                if (toolbox)
+                    toolbox.removeAttribute("cb-barless");
+                let windowController = window[this._application.name + "OverlayController"];
+                windowController.checkNeedSetBarlessMode();
+            } catch (e) {
+                this._logger.error(e);
+            }
         },
         onCustomizeStart: function customizer_onCustomizeStart(aWindow) {
             var prefsWindow = this._application.core.Lib.misc.getTopWindowOfType(this._application.name + ":Preferences");

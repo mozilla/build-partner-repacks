@@ -250,7 +250,6 @@ const fastdial = {
             });
         },
         requestSettings: function Fastdial_requestSettings(callback) {
-            var maxLayoutNum = this._application.layout.getMaxThumbLayout();
             var productInfo = this._application.branding.productInfo;
             var possibleLayouts = this._application.layout.getPossibleLayouts();
             var userImageURL = this._application.backgroundImages.userImageURL;
@@ -270,16 +269,15 @@ const fastdial = {
                     2
                 ].indexOf(this._application.preferences.get("ftabs.searchStatus")) !== -1,
                 selectedBgImage: this._application.backgroundImages.currentSelected.id,
-                maxLayoutX: maxLayoutNum,
                 layouts: possibleLayouts.layouts,
                 currentLayout: possibleLayouts.current,
-                maxLayoutY: maxLayoutNum,
                 licenseURL: productInfo.LicenseURL.fx,
                 copyright: productInfo.Copyright.fx,
                 rev: this._application.addonManager.addonVersion,
                 build: this._application.core.CONFIG.BUILD.REVISION,
                 buildDate: Math.round(new Date(this._application.core.CONFIG.BUILD.DATE).getTime() / 1000),
-                sync: this._application.sync.state
+                sync: this._application.sync.state,
+                thumbStyle: this._application.preferences.get("ftabs.thumbStyle", 1)
             });
         },
         getLocalizedString: function Fastdial_getLocalizedString(key) {
@@ -289,9 +287,8 @@ const fastdial = {
             }
             return this.expandBrandingURL(node.getAttribute("value"));
         },
-        applySettings: function Fastdial_applySettings(layout, showBookmarks, showSearchForm, bgImage) {
+        applySettings: function Fastdial_applySettings(layout, showBookmarks, showSearchForm, thumbStyle) {
             var self = this;
-            var maxNum = this._application.layout.getMaxThumbLayout();
             var oldThumbsNum = this._application.layout.getThumbsNum();
             var layoutXY = this._application.layout.getThumbsXYOfThumbsNum(layout);
             var needsFastPickup = this._application.layout.layoutX * this._application.layout.layoutY < layoutXY[0] * layoutXY[1];
@@ -304,6 +301,7 @@ const fastdial = {
             }
             this._application.preferences.set("ftabs.showBookmarks", showBookmarks);
             this._application.preferences.set("ftabs.searchStatus", showSearchForm ? 0 : 1);
+            this._application.preferences.set("ftabs.thumbStyle", thumbStyle);
             this._application.layout.layoutX = layoutXY[0];
             this._application.layout.layoutY = layoutXY[1];
             this.requestInit(undefined, ignoreBookmarks);
@@ -316,6 +314,7 @@ const fastdial = {
                 });
                 this._application.thumbs.fastPickup(unpinned);
             }
+            this._application.thumbs.getMissingScreenshots();
         },
         requestRecentlyClosedTabs: function Fastdial_requestRecentlyClosedTabs(callback) {
             var self = this;

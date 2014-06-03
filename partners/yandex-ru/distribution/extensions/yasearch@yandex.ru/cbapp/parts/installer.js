@@ -11,10 +11,12 @@ const GLOBAL = this;
 const PKG_UPD_TOPIC = "package updated";
 var branding = null;
 var barApp = null;
+const TEMP_QS_PREF = "qs.temp";
 const installer = {
         init: function Installer_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = barApp = application;
+            this._preferences = application.preferences;
             this._logger = application.getLogger("Installer");
             this._brandPrefs = new Preferences(application.preferencesBranch + "branding.");
             branding = application.branding;
@@ -37,6 +39,24 @@ const installer = {
         },
         finalize: function Installer_finalize(doCleanup) {
             this._application.branding.removeListener(PKG_UPD_TOPIC, this);
+            this._removeTempQuickSearches();
+        },
+        _removeTempQuickSearches: function Installer__removeTempQuickSearches() {
+            var tempQSList;
+            try {
+                tempQSList = JSON.parse(this._preferences.get(TEMP_QS_PREF, null));
+            } catch (e) {
+            }
+            if (!Array.isArray(tempQSList))
+                return;
+            var searchPluginsDir = Services.dirsvc.get("ProfD", Ci.nsIFile);
+            searchPluginsDir.append("searchplugins");
+            tempQSList.forEach(function (qsFileName) {
+                var qsFile = searchPluginsDir.clone();
+                qsFile.append(qsFileName);
+                fileutils.removeFileSafe(qsFile);
+            });
+            this._preferences.reset(TEMP_QS_PREF);
         },
         onAddonEvent: function Installer_onAddonEvent(aEventType, aAddon, aPendingRestart) {
             const ADDON_DISABLE_EVENTS = {
@@ -88,7 +108,6 @@ const installer = {
             if (barApp.addonManager.isAddonUninstalling)
                 return false;
             const acceptedPrefName = barApp.name + ".license.accepted";
-            var needRestartBrowser = false;
             if (!Preferences.get(acceptedPrefName, false)) {
                 let sendUsageStat = this._showOfferWindow();
                 if (sendUsageStat !== null) {
@@ -105,115 +124,12 @@ const installer = {
                     }
                 }
                 Preferences.set(acceptedPrefName, true);
-                if (Preferences.get(acceptedPrefName, false) === true)
-                    needRestartBrowser = true;
                 try {
                     Services.prefs.savePrefFile(null);
                 } catch (e) {
-                    needRestartBrowser = false;
                     this._logger.error("Could not write prefs file. " + e);
                 }
                 this._onAddonInstall();
-            }
-            try {
-                this._setActiveQS();
-            } catch (e) {
-                this._logger.error("Could not set active QS engine. " + e);
-                this._logger.debug(e.stack);
-            }
-            var extrasDir = this._application.core.extensionPathFile;
-            extrasDir.append("extra-xpis");
-            var extrasInfoFile = extrasDir.clone();
-            extrasInfoFile.append("info.json");
-            var totalInstalls = 0;
-            extraInstall:
-                if (extrasInfoFile.exists() && extrasInfoFile.isFile()) {
-                    let extrasInfo = fileutils.jsonFromFile(extrasInfoFile);
-                    fileutils.removeFileSafe(extrasInfoFile);
-                    if (extrasInfoFile.exists()) {
-                        this._logger.warn("Can not remove file with extra xpis info.");
-                        break extraInstall;
-                    }
-                    let ids = [id for (id in extrasInfo.xpis)];
-                    if (!ids.length)
-                        break extraInstall;
-                    let existsAddonsDataRemoved = false;
-                    const AddonManager = Cu.import("resource://gre/modules/AddonManager.jsm", {}).AddonManager;
-                    AddonManager.getAddonsByIDs(ids, function (addons) {
-                        addons && addons.forEach(function (a) {
-                            if (a && a.id in extrasInfo.xpis && Services.vc.compare(a.version, extrasInfo.xpis[a.id].version) >= 0)
-                                delete extrasInfo.xpis[a.id];
-                        });
-                        existsAddonsDataRemoved = true;
-                    });
-                    sysutils.sleep(5000, function () !existsAddonsDataRemoved);
-                    if (!existsAddonsDataRemoved) {
-                        this._logger.error("Can not get info about installed addons.");
-                        break extraInstall;
-                    }
-                    this._logger.debug("Try to install extra addons:\n" + JSON.stringify(extrasInfo.xpis));
-                    let trash = Services.dirsvc.get("TmpD", Ci.nsIFile);
-                    trash.append("trash-extra-xpis");
-                    trash.createUnique(Ci.nsIFile.DIRECTORY_TYPE, fileutils.PERMS_DIRECTORY);
-                    for (let [
-                                name,
-                                description
-                            ] in Iterator(extrasInfo.xpis)) {
-                        let addonFile = extrasDir.clone();
-                        addonFile.append(name);
-                        if (!(addonFile.exists() && addonFile.isFile()))
-                            continue;
-                        try {
-                            addonFile.moveTo(trash, name);
-                        } catch (e) {
-                            this._logger.error("Could not move file [" + addonFile.path + "] to trash dir\n" + e);
-                            continue;
-                        }
-                        addonFile = trash.clone();
-                        addonFile.append(name);
-                        if (!(addonFile.exists() && addonFile.isFile()))
-                            continue;
-                        totalInstalls++;
-                        this._logger.debug("Try to install extra addon \"" + name + "\"");
-                        let installListener = {
-                                onDownloadCancelled: function (aInstall) this._onFinish(aInstall),
-                                onDownloadFailed: function (aInstall) this._onFinish(aInstall),
-                                onInstallEnded: function (aInstall) this._onFinish(aInstall),
-                                onInstallCancelled: function (aInstall) this._onFinish(aInstall),
-                                onInstallFailed: function (aInstall) this._onFinish(aInstall),
-                                onNewInstall: function () {
-                                },
-                                onDownloadStarted: function () {
-                                },
-                                onDownloadProgress: function () {
-                                },
-                                onDownloadEnded: function () {
-                                },
-                                onInstallStarted: function () {
-                                },
-                                onExternalInstall: function () {
-                                },
-                                _onFinish: function (aInstall) {
-                                    totalInstalls--;
-                                    aInstall.removeListener(this);
-                                }
-                            };
-                        AddonManager.getInstallForFile(addonFile, function (aInstall) {
-                            aInstall.addListener(installListener);
-                            aInstall.install();
-                        }, "application/x-xpinstall");
-                    }
-                }
-            if (totalInstalls > 0) {
-                sysutils.sleep(2 * 60000, function () totalInstalls > 0);
-                this._logger.debug("Need restart browser after extra addons installed.");
-                needRestartBrowser = true;
-            }
-            if (needRestartBrowser) {
-                this._logger.debug("Restart browser.");
-                const appStartup = Services.startup;
-                appStartup.quit(appStartup.eForceQuit | appStartup.eRestart);
-                return false;
             }
             new sysutils.Timer(function () {
                 var selectedEngineName = this._getLocalizedPref("browser.search.selectedEngine", null);
@@ -224,14 +140,6 @@ const installer = {
             if (this._application.core.CONFIG.APP.TYPE === "barff")
                 this._removePromoFile();
             return true;
-        },
-        _setActiveQS: function Installer__setActiveQS() {
-            const hackPrefName = "qsEngineNameForSelect";
-            var qsNameToSet = this._brandPrefs.get(hackPrefName, null);
-            if (qsNameToSet) {
-                this._brandPrefs.reset(hackPrefName);
-                Preferences.set("browser.search.selectedEngine", qsNameToSet);
-            }
         },
         _setupData: null,
         set setupData(aValue) {
@@ -308,9 +216,15 @@ const installer = {
                 let goodbyePageElement = fxProductXML && fxProductXML.querySelector("Product > GoodbyeUrl");
                 if (goodbyePageElement) {
                     let goodbyeURL = branding.expandBrandTemplatesEscape(goodbyePageElement.textContent);
+                    let extraParams = [];
                     let ui = this._application.addonStatus.guidString;
                     if (ui)
-                        goodbyeURL += (/\?/.test(goodbyeURL) ? "&" : "?") + "ui=" + encodeURIComponent(ui);
+                        extraParams.push("ui=" + encodeURIComponent(ui));
+                    extraParams.push("version=" + encodeURIComponent(this._application.addonManager.addonVersion));
+                    let clidData = this._application.clids.vendorData.clid1;
+                    if (clidData && clidData.clid)
+                        extraParams.push("clid=" + encodeURIComponent(clidData.clid));
+                    goodbyeURL += (/\?/.test(goodbyeURL) ? "&" : "?") + extraParams.join("&");
                     data.GoodbyePage.url = goodbyeURL;
                 }
                 try {
@@ -593,6 +507,7 @@ const installer = {
         _writeQuickSearches: function Installer__writeQuickSearches(forceSetDefault, prevDefaultQSName) {
             var searchPluginsDir = Services.dirsvc.get("ProfD", Ci.nsIFile);
             searchPluginsDir.append("searchplugins");
+            var filesBeforeChanges = [];
             const QS_FILENAME_PREFIX = "yqs-" + this._application.core.CONFIG.APP.TYPE + "-";
             var installedQSNames = Object.create(null);
             if (searchPluginsDir.exists() && searchPluginsDir.isDirectory()) {
@@ -609,6 +524,7 @@ const installer = {
                     let uniqName = /^(?:yqs\-[^\-]+|ybqs)\-(.+)\.xml$/.exec(name);
                     if (uniqName && uniqName[1])
                         installedQSNames[uniqName[1]] = true;
+                    filesBeforeChanges.push(qsFile);
                 }
             }
             var quickSearches;
@@ -625,6 +541,8 @@ const installer = {
             fileutils.forceDirectories(searchPluginsDir);
             const DataURI = Cu.import("resource://" + barApp.name + "-mod/DataURI.jsm", {}).DataURI;
             const YB_NS = "http://bar.yandex.ru/";
+            var searchService = Cc["@mozilla.org/browser/search-service;1"].getService(Ci.nsIBrowserSearchService);
+            var selectedEngineName = null;
             let (i = 0, len = quickSearches.length) {
                 for (; i < len; i++) {
                     let qs = quickSearches[i];
@@ -636,17 +554,13 @@ const installer = {
                         shortName = shortName && shortName.textContent || "";
                         let browserDefaultEngineName = this._getLocalizedPref("browser.search.defaultenginename", "");
                         if (forceSetDefault || shortName != prevDefaultQSName && prevDefaultQSName === browserDefaultEngineName) {
-                            if (forceSetDefault)
-                                Preferences.set("browser.search.selectedEngine", shortName);
-                            else
-                                this._brandPrefs.set("qsEngineNameForSelect", shortName);
-                            this._logger.debug("Changed browser QS to '" + shortName + "'");
-                            Preferences.set("browser.search.defaultenginename", shortName);
-                            Preferences.set("yasearch.native_comps.http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox.all.settings.searchName", shortName);
+                            selectedEngineName = shortName;
                         }
                     }
                     if (uniqName in installedQSNames)
                         continue;
+                    let shortName = qs.querySelector("ShortName");
+                    shortName = shortName.textContent || "";
                     let qsFile = searchPluginsDir.clone();
                     qsFile.append(QS_FILENAME_PREFIX + uniqName + ".xml");
                     if (uniqName == "yandex") {
@@ -655,11 +569,9 @@ const installer = {
                             if (i == 0 && forceSetDefault) {
                                 try {
                                     let qsCopyXML = fileutils.xmlDocFromFile(qsFileCopy);
-                                    let shortName = qsCopyXML.querySelector("ShortName");
+                                    shortName = qsCopyXML.querySelector("ShortName");
                                     shortName = shortName && shortName.textContent || "";
-                                    Preferences.set("browser.search.selectedEngine", shortName);
-                                    Preferences.set("browser.search.defaultenginename", shortName);
-                                    this._logger.debug("Changed browser QS to '" + shortName + "'");
+                                    selectedEngineName = shortName;
                                 } catch (e) {
                                     this._logger.debug("Can not get shortName from copy of Yandex QS.\n" + e);
                                 }
@@ -667,6 +579,14 @@ const installer = {
                             continue;
                         }
                     }
+                    let image = qs.querySelector("Image");
+                    if (image && image.textContent) {
+                        let imageFile = branding.brandPackage.findFile(image.textContent);
+                        if (imageFile)
+                            image.textContent = DataURI.fromFile(imageFile);
+                    }
+                    let description = qs.querySelector("Description");
+                    description = description.textContent || "";
                     let osUrls = qs.querySelectorAll("Url");
                     let (j = 0, len = osUrls.length) {
                         for (; j < len; j++) {
@@ -679,6 +599,10 @@ const installer = {
                                 url.setAttribute("type", "application/x-suggestions+json");
                         }
                     }
+                    let searchURLElement = qs.querySelector("Url[type='text/html']");
+                    let searchURL = searchURLElement && searchURLElement.getAttribute("template") || null;
+                    if (searchURL)
+                        searchService.addEngineWithDetails(shortName, image.textContent, shortName, description, "get", searchURL);
                     let searchFormURLElement = qs.querySelector("Url[rel='search-form'][type='text/html']");
                     if (searchFormURLElement) {
                         let searchFormURL = searchFormURLElement.getAttribute("template");
@@ -687,16 +611,27 @@ const installer = {
                         searchFormElement.textContent = searchFormURL;
                         qs.appendChild(searchFormElement);
                     }
-                    let image = qs.querySelector("Image");
-                    if (image) {
-                        let imageFile;
-                        let imagePath = image.textContent;
-                        if (imagePath && (imageFile = branding.brandPackage.findFile(imagePath)))
-                            image.textContent = DataURI.fromFile(imageFile);
-                    }
                     fileutils.writeTextFile(qsFile, xmlutils.serializeXML(qs));
                 }
             }
+            if (selectedEngineName) {
+                new sysutils.Timer(function () {
+                    Preferences.set("browser.search.selectedEngine", selectedEngineName);
+                    Preferences.set("browser.search.defaultenginename", selectedEngineName);
+                    this._logger.debug("Changed browser QS to '" + selectedEngineName + "'");
+                }.bind(this), 100);
+            }
+            var tempQSList = [];
+            var searchPluginsDirEntries = searchPluginsDir.directoryEntries;
+            while (searchPluginsDirEntries.hasMoreElements()) {
+                let qsFile = searchPluginsDirEntries.getNext().QueryInterface(Ci.nsIFile);
+                if (!qsFile.isFile())
+                    continue;
+                if (filesBeforeChanges.indexOf(qsFile.leafName) === -1 && !/^(?:yqs\-[^\-]+|ybqs)\-(.+)\.xml$/.test(qsFile.leafName)) {
+                    tempQSList.push(qsFile.leafName);
+                }
+            }
+            this._preferences.set(TEMP_QS_PREF, JSON.stringify(tempQSList));
         },
         _copyYandexQSFromApplication: function Installer__copyYandexQSFromApplication(aFile) {
             var curProcDir;

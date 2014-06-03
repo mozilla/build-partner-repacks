@@ -4,7 +4,7 @@
         <em:id>vb@yandex.ru</em:id>
         <em:type>2</em:type>
         <em:unpack>true</em:unpack>
-        <em:version>2.11.0</em:version>
+        <em:version>2.12.0</em:version>
 
         <em:localized>
             <Description>
@@ -13,9 +13,12 @@
                 <em:description>Візуальныя закладкі – гэта старонка, на якой сабраныя вашы ўлюбёныя сайты.</em:description>
                 <em:creator>Яндекс</em:creator>
 
+                <em:contributor>Александр Кричун</em:contributor>
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Андрей Сильвестров</em:contributor>
                 <em:contributor>Владимир Старков</em:contributor>
+                <em:contributor>Владислава Тихомирова</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
                 <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
@@ -34,7 +37,9 @@
                 <em:creator>Yandex</em:creator>
 
                 <em:contributor>Aleksey Rybakov</em:contributor>
+                <em:contributor>Alexander Krichun</em:contributor>
                 <em:contributor>Anatoliy Ostrovskiy</em:contributor>
+                <em:contributor>Andrei Silvestrov</em:contributor>
                 <em:contributor>Galina Mitricheva</em:contributor>
                 <em:contributor>Danil Ivanov</em:contributor>
                 <em:contributor>Denis Chistyakov</em:contributor>
@@ -43,6 +48,7 @@
                 <em:contributor>Maxim Breev</em:contributor>
                 <em:contributor>Pavel Gorobtsov</em:contributor>
                 <em:contributor>Vladimir Starkov</em:contributor>
+                <em:contributor>Vladislava Tihomirova</em:contributor>
             </Description>
         </em:localized>
 
@@ -53,9 +59,12 @@
                 <em:description>Визуалдық бетбелгілер - бұл сіздің сүйікті сайттарыңызды  жинаған бет.</em:description>
                 <em:creator>Яндекс</em:creator>
 
+                <em:contributor>Александр Кричун</em:contributor>
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Андрей Сильвестров</em:contributor>
                 <em:contributor>Владимир Старков</em:contributor>
+                <em:contributor>Владислава Тихомирова</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
                 <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
@@ -73,9 +82,12 @@
                 <em:description>Визуальные закладки – это страница, на которой собраны ваши любимые сайты.</em:description>
                 <em:creator>Яндекс</em:creator>
 
+                <em:contributor>Александр Кричун</em:contributor>
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Андрей Сильвестров</em:contributor>
                 <em:contributor>Владимир Старков</em:contributor>
+                <em:contributor>Владислава Тихомирова</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
                 <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
@@ -94,7 +106,9 @@
                 <em:creator>Yandex</em:creator>
 
                 <em:contributor>Aleksey Rybakov</em:contributor>
+                <em:contributor>Alexander Krichun</em:contributor>
                 <em:contributor>Anatoliy Ostrovskiy</em:contributor>
+                <em:contributor>Andrei Silvestrov</em:contributor>
                 <em:contributor>Galina Mitricheva</em:contributor>
                 <em:contributor>Danil Ivanov</em:contributor>
                 <em:contributor>Denis Chistyakov</em:contributor>
@@ -103,6 +117,7 @@
                 <em:contributor>Maxim Breev</em:contributor>
                 <em:contributor>Pavel Gorobtsov</em:contributor>
                 <em:contributor>Vladimir Starkov</em:contributor>
+                <em:contributor>Vladislava Tihomirova</em:contributor>
             </Description>
         </em:localized>
 
@@ -113,9 +128,12 @@
                 <em:description>Візуальні закладки – це сторінка, на якій зібрано ваші улюблені сайти.</em:description>
                 <em:creator>Яндекс</em:creator>
 
+                <em:contributor>Александр Кричун</em:contributor>
                 <em:contributor>Алексей Рыбаков</em:contributor>
                 <em:contributor>Анатолий Островский</em:contributor>
+                <em:contributor>Андрей Сильвестров</em:contributor>
                 <em:contributor>Владимир Старков</em:contributor>
+                <em:contributor>Владислава Тихомирова</em:contributor>
                 <em:contributor>Галина Митричева</em:contributor>
                 <em:contributor>Гуро Бокум</em:contributor>
                 <em:contributor>Данил Иванов</em:contributor>
@@ -130,9 +148,12 @@
         <em:description>Визуальные закладки – это страница, на которой собраны ваши любимые сайты.</em:description>
         <em:creator>Яндекс</em:creator>
 
+        <em:contributor>Александр Кричун</em:contributor>
         <em:contributor>Алексей Рыбаков</em:contributor>
         <em:contributor>Анатолий Островский</em:contributor>
+        <em:contributor>Андрей Сильвестров</em:contributor>
         <em:contributor>Владимир Старков</em:contributor>
+        <em:contributor>Владислава Тихомирова</em:contributor>
         <em:contributor>Галина Митричева</em:contributor>
         <em:contributor>Гуро Бокум</em:contributor>
         <em:contributor>Данил Иванов</em:contributor>

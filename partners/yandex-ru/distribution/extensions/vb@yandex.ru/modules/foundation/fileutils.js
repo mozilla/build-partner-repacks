@@ -69,7 +69,7 @@ const fileutils = {
             }
         },
         openFile: function FileUtils_openFile(file) {
-            file = file.QueryInterface(Ci.nsILocalFile);
+            file = file.QueryInterface(Ci.nsIFile);
             var inStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
             inStream.init(file, this.MODE_RDONLY, 0, inStream.CLOSE_ON_EOF);
             return inStream;
@@ -152,7 +152,7 @@ const fileutils = {
                     let entryName = entries.getNext();
                     let target = getItemFile(entryName);
                     if (!target.exists())
-                        target.create(Ci.nsILocalFile.DIRECTORY_TYPE, destDirFile.permissions);
+                        target.create(Ci.nsIFile.DIRECTORY_TYPE, destDirFile.permissions);
                 }
                 entries = zReader.findEntries(null);
                 while (entries.hasMore()) {

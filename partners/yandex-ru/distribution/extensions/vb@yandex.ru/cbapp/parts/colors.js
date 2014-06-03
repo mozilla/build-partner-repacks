@@ -72,66 +72,71 @@ const colors = {
                 canvas.setAttribute("height", canvasHeight);
                 ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
                 var imgPixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                var maxValueKey = null;
-                var colorsContainer = {};
-                var startY = options.bottomQuarter ? Math.round(imgPixels.height * 0.75) : 0;
-                var startX = options.rightHalf ? Math.round(imgPixels.width / 2) : 0;
-                var pixelColorData = new Array(4);
-                let (y = startY) {
-                    for (; y < imgPixels.height; y++) {
-                        let (x = startX) {
-                            for (; x < imgPixels.width; x++) {
-                                let index = y * 4 * imgPixels.width + x * 4;
-                                pixelColorData[0] = imgPixels.data[index];
-                                pixelColorData[1] = imgPixels.data[index + 1];
-                                pixelColorData[2] = imgPixels.data[index + 2];
-                                pixelColorData[3] = imgPixels.data[index + 3];
-                                if (isAlmostTransparent(pixelColorData[3]))
-                                    continue;
-                                if (pixelColorData[3] !== 255) {
-                                    let (z = 0) {
-                                        for (; z < 3; z++) {
-                                            let colorStep = (255 - pixelColorData[z]) / 255;
-                                            pixelColorData[z] = Math.round(255 - colorStep * pixelColorData[3]);
-                                        }
-                                    }
-                                }
-                                if (!options.preventSkipColors && (isAlmostWhite(pixelColorData) || isAlmostBlack(pixelColorData) || isLightGrey(pixelColorData)))
-                                    continue;
-                                let color = toRGB(pixelColorData[0]) + toRGB(pixelColorData[1]) + toRGB(pixelColorData[2]);
-                                colorsContainer[color] = colorsContainer[color] || 0;
-                                colorsContainer[color] += 1;
-                                if (maxValueKey === null || colorsContainer[maxValueKey] < colorsContainer[color]) {
-                                    maxValueKey = color;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (maxValueKey) {
-                    let [
-                            red,
-                            green,
-                            blue
-                        ] = [
-                            parseInt(maxValueKey.substr(0, 2), 16),
-                            parseInt(maxValueKey.substr(2, 2), 16),
-                            parseInt(maxValueKey.substr(4, 2), 16)
-                        ];
-                    if (isAcidColor(red, green, blue)) {
-                        red = Math.max(red, PASTEL_THRESHOLD);
-                        green = Math.max(green, PASTEL_THRESHOLD);
-                        blue = Math.max(blue, PASTEL_THRESHOLD);
-                        maxValueKey = toRGB(red) + toRGB(green) + toRGB(blue);
-                    }
-                }
-                self._logger.trace("Most frequent color for " + url + " is " + (maxValueKey || "undefined"));
-                callback(null, maxValueKey);
+                options.startY = options.bottomQuarter ? Math.round(imgPixels.height * 0.75) : 0;
+                options.startX = options.rightHalf ? Math.round(imgPixels.width / 2) : 0;
+                options.url = url;
+                callback(null, self.getPixelsDominantColor(imgPixels, options));
             };
             image.onerror = function imgOnError() {
                 callback(new Error("Failed to load image " + url));
             };
             image.src = url;
+        },
+        getPixelsDominantColor: function Colors_getPixelsDominantColor(imgPixels, options) {
+            var maxValueKey = null;
+            var colorsContainer = Object.create(null);
+            var pixelColorData = new Array(4);
+            let (y = options.startY) {
+                for (; y < imgPixels.height; y++) {
+                    let (x = options.startX) {
+                        for (; x < imgPixels.width; x++) {
+                            let index = y * 4 * imgPixels.width + x * 4;
+                            pixelColorData[0] = imgPixels.data[index];
+                            pixelColorData[1] = imgPixels.data[index + 1];
+                            pixelColorData[2] = imgPixels.data[index + 2];
+                            pixelColorData[3] = imgPixels.data[index + 3];
+                            if (isAlmostTransparent(pixelColorData[3]))
+                                continue;
+                            if (pixelColorData[3] !== 255) {
+                                let (z = 0) {
+                                    for (; z < 3; z++) {
+                                        let colorStep = (255 - pixelColorData[z]) / 255;
+                                        pixelColorData[z] = Math.round(255 - colorStep * pixelColorData[3]);
+                                    }
+                                }
+                            }
+                            if (!options.preventSkipColors && (isAlmostWhite(pixelColorData) || isAlmostBlack(pixelColorData) || isLightGrey(pixelColorData)))
+                                continue;
+                            let color = toRGB(pixelColorData[0]) + toRGB(pixelColorData[1]) + toRGB(pixelColorData[2]);
+                            colorsContainer[color] = colorsContainer[color] || 0;
+                            colorsContainer[color] += 1;
+                            if (maxValueKey === null || colorsContainer[maxValueKey] < colorsContainer[color]) {
+                                maxValueKey = color;
+                            }
+                        }
+                    }
+                }
+            }
+            if (maxValueKey) {
+                let [
+                        red,
+                        green,
+                        blue
+                    ] = [
+                        parseInt(maxValueKey.substr(0, 2), 16),
+                        parseInt(maxValueKey.substr(2, 2), 16),
+                        parseInt(maxValueKey.substr(4, 2), 16)
+                    ];
+                if (isAcidColor(red, green, blue)) {
+                    red = Math.max(red, PASTEL_THRESHOLD);
+                    green = Math.max(green, PASTEL_THRESHOLD);
+                    blue = Math.max(blue, PASTEL_THRESHOLD);
+                    maxValueKey = toRGB(red) + toRGB(green) + toRGB(blue);
+                }
+            }
+            if (options.url)
+                this._logger.trace("Most frequent color for " + options.url + " is " + (maxValueKey || "undefined"));
+            return maxValueKey;
         },
         _application: null,
         _logger: null
