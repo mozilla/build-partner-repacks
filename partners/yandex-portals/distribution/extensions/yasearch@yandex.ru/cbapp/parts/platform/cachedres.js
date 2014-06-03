@@ -386,7 +386,8 @@ CachedResource.prototype = {
         ]));
         if (!cacheIsValid && this._hasListeners) {
             this._logger.debug(this._consts.MSG_REQUESTING);
-            this._downloader.update();
+            let requestId = this._downloader.update();
+            this._reqFlags[requestId] = this._REQ_FLAG_INVALIDATE_CACHE;
             return;
         }
         if (this._currDataTime !== undefined) {
@@ -496,6 +497,9 @@ ResourceDownloader.prototype = {
     update: function ResDownloader_update(bypassCache) {
         var requestId = this._sendRequest(!!bypassCache);
         this._timer.cancel();
+        if (!!bypassCache) {
+            this._errorsCounter = 0;
+        }
         return requestId;
     },
     get responseData() {
@@ -525,6 +529,7 @@ ResourceDownloader.prototype = {
     _responseData: null,
     _timer: null,
     _logger: null,
+    _errorsCounter: 0,
     _listenerAdded: function ResDownloader__listenerAdded(topic, listener) {
         var addedInterval = listener.descriptor.updateInterval;
         if (addedInterval < this._currentInterval)
@@ -608,10 +613,19 @@ ResourceDownloader.prototype = {
         } catch (e) {
             this._logger.error("Error in ResourceDownloader::_handleResponse. " + strutils.formatError(e));
         } finally {
-            let bNetworkError = this._responseData.status == 502 || this._responseData.status == 0 || this._responseData.bodyText == null;
-            if (bNetworkError)
+            let responseError = this._responseData.status < this._resDescr.statusRange.start || this._responseData.status > this._resDescr.statusRange.end || this._responseData.bodyText == null;
+            if (responseError) {
                 this._logger.debug("_handleResponse: ERROR;  HTTP-status: " + this._responseData.status);
-            let newInterval = bNetworkError ? Math.ceil(this._currentInterval * 0.1) : this._currentInterval;
+            }
+            let newInterval = this._currentInterval;
+            if (responseError) {
+                newInterval = 15 * Math.pow(2, this._errorsCounter++);
+                if (newInterval > 3600) {
+                    newInterval = 3600;
+                }
+            } else {
+                this._errorsCounter = 0;
+            }
             this._resetReqTimer(newInterval);
             BarPlatform.CachedResources._onDownloadFinished(requestId);
         }

@@ -42,6 +42,7 @@ function browserThemeConsumer(window) {
             ]
         };
     this._mutationObserver.observe(this._window.document.documentElement, mutationObserverOptions);
+    this._updateToolboxAttribute();
 }
 browserThemeConsumer.prototype = {
     WINDOW_LWTHEME_ATTR_NAME: "lwtheme",
@@ -146,7 +147,13 @@ browserThemeConsumer.prototype = {
         this._lightweightTheme = lightweightTheme;
         this._notifyListeners();
     },
+    _updateToolboxAttribute: function browserTheme__updateToolboxAttribute() {
+        var navigatorToolbox = this._window.document.getElementById("navigator-toolbox");
+        if (navigatorToolbox)
+            navigatorToolbox.setAttribute("cb-theme-color", this._backgroundColor);
+    },
     _notifyListeners: function browserTheme__notifyListeners() {
+        this._updateToolboxAttribute();
         if (!this._listeners)
             return;
         var data = Object.create(null);

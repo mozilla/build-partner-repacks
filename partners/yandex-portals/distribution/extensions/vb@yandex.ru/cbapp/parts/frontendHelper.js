@@ -63,9 +63,12 @@ const frontendHelper = {
                 output.backgroundColor = thumbData.cloud.backgroundColor;
                 output.fontColor = this._application.colors.getFontColorByBackgroundColor(thumbData.cloud.backgroundColor);
             }
+            if (thumbData.screenshot && this._application.screenshots.useScreenshot(thumbData)) {
+                output.screenshot = this._application.screenshots.createScreenshotInstance(thumbData.source).getDataForThumb();
+            }
             return output;
         },
-        getDataForIndex: function InternalStructure_getFrontendDataForIndex(index) {
+        getDataForIndex: function FrontendHelper_getFrontendDataForIndex(index) {
             var currentThumbsNum = this._application.layout.getThumbsNum();
             var emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
             if (this._muteMessages)

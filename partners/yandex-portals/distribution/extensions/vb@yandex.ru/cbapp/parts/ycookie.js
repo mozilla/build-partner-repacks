@@ -5,6 +5,7 @@ const {
         interfaces: Ci,
         utils: Cu
     } = Components;
+Cu.import("resource://gre/modules/Services.jsm");
 const yCookie = {
         init: function YCookie_init(application) {
             this._application = application;
@@ -55,17 +56,17 @@ const yCookie = {
         setValue: function YCookie_setValue(aCookieName, aFieldName, aFieldValue, aFieldExpire) {
             this._setYCookie(aCookieName, aFieldName, aFieldValue, aFieldExpire);
         },
-        _cookieService: Cc["@mozilla.org/cookieService;1"].getService(Ci.nsICookieService),
-        _makeCookieURI: function YCookie__makeCookieURI(aDomain) {
-            var cookieURI = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIURI);
-            cookieURI.spec = "http://" + aDomain.replace(/^\./, "");
-            return cookieURI;
-        },
         _getYCookie: function YCookie__getYCookie(aCookieName, aDomain) {
+            var timeNowSec = Math.ceil(Date.now() / 1000);
             var domain = aDomain || ".yandex.ru";
-            var allCookiesStr = this._cookieService.getCookieString(this._makeCookieURI(domain), null) || "";
-            var cookieMatch = allCookiesStr.match("(?:^|;)\\s*" + aCookieName + "=([^;]*)");
-            return cookieMatch && cookieMatch[1] || null;
+            for (let existCookie in this._application.core.Lib.netutils.getCookiesFromHost(domain)) {
+                if (existCookie.name !== aCookieName)
+                    continue;
+                if (!existCookie.isSession && timeNowSec < existCookie.expiry)
+                    continue;
+                return existCookie.value;
+            }
+            return null;
         },
         _setYCookie: function YCookie__setYCookie(aCookieName, aFieldName, aFieldValue, aFieldExpire) {
             this.TRUSTED_DOMAINS.forEach(function (aDomain) {
@@ -75,12 +76,12 @@ const yCookie = {
         _setYCookieOnDomain: function YCookie__setYCookieOnDomain(aDomain, aCookieName, aFieldName, aFieldValue, aFieldExpire) {
             var yCookieValue = this._getYCookie(aCookieName, aDomain);
             var newCookieValue = this._parseAndSetFieldValue(yCookieValue, aFieldName, aFieldValue, aFieldExpire);
-            var cookieStr = aCookieName + "=" + newCookieValue;
-            if (!newCookieValue.length)
-                cookieStr += ";expires=" + new Date(0);
-            if (aDomain.charAt(0) == ".")
-                cookieStr += ";domain=" + aDomain;
-            this._cookieService.setCookieString(this._makeCookieURI(aDomain), null, cookieStr, null);
+            const MAX_EXPIRY = Math.pow(2, 62);
+            if (newCookieValue.length) {
+                Services.cookies.add(aDomain, "/", aCookieName, newCookieValue, false, false, true, MAX_EXPIRY);
+            } else {
+                Services.cookies.remove(aDomain, aCookieName, "/", false);
+            }
         },
         _parseAndSetFieldValue: function YCookie__parseAndSetFieldValue(aCookieValue, aFieldName, aFieldValue, aFieldExpire) {
             var ySubCookies = (aCookieValue || "").split("#");
