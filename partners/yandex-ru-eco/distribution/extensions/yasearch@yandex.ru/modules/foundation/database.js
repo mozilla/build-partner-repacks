@@ -55,18 +55,14 @@ Database.prototype = {
     },
     execQuery: function Database_execQuery(query, parameters) {
         var result = [];
-        var statement = this._createStatement(query, parameters);
+        var statement = this._createStatement(query, parameters, false);
         try {
-            let colNames = [];
-            let (i = statement.columnCount) {
-                for (; i--;)
-                    colNames.push(statement.getColumnName(i));
-            }
+            let columnNames = this._getStatementColumnNames(statement);
             while (statement.executeStep()) {
                 let row = {};
-                let (i = colNames.length) {
+                let (i = columnNames.length) {
                     for (; i--;) {
-                        let colName = colNames[i];
+                        let colName = columnNames[i];
                         row[colName] = statement.row[colName];
                     }
                 }
@@ -86,15 +82,33 @@ Database.prototype = {
                     return firstResult[p];
         return undefined;
     },
-    execQueryAsync: function Database_execAsync(query, parameters, onCompletion) {
-        if (onCompletion && typeof onCompletion != "function")
+    execQueryAsync: function Database_execQueryAsync(query, parameters, callback) {
+        if (callback && typeof callback != "function")
             throw new TypeError("Third argument must be a function.");
-        var statement = this._createStatement(query, parameters, true);
+        var statement = this._createStatement(query, parameters, false);
+        var columnNames = callback && this._getStatementColumnNames(statement);
         try {
-            let callbackObj = this._createStmtCallback(statement, onCompletion);
+            let callbackObj = this._createStmtCallback(statement, columnNames, callback);
             return statement.executeAsync(callbackObj);
         } finally {
-            statement.reset();
+            statement.finalize();
+        }
+    },
+    executeQueryAsync: function Database_executeQueryAsync({
+        query: query,
+        parameters: parameters,
+        columns: columns,
+        callback: callback
+    }) {
+        if (typeof query !== "string")
+            throw new TypeError("'query' must be a string.");
+        if (callback && typeof callback !== "function")
+            throw new TypeError("'callback' must be a function.");
+        var statement = this._createStatement(query, parameters, true);
+        try {
+            let callbackObj = this._createStmtCallback(statement, columns || undefined, callback);
+            return statement.executeAsync(callbackObj);
+        } finally {
             statement.finalize();
         }
     },
@@ -145,39 +159,40 @@ Database.prototype = {
             return;
         (Array.isArray(initStatements) ? initStatements : [initStatements]).forEach(function (statement) this.execQuery(statement), this);
     },
-    _createStmtCallback: function Database__createStmtCallback(statement, onCompletion) {
+    _createStmtCallback: function Database__createStmtCallback(statement, columnNames, onCompletion) {
         if (!onCompletion)
-            return null;
-        var colNames = [];
-        let (i = 0, len = statement.columnCount) {
-            for (; i < len; i++)
-                colNames.push(statement.getColumnName(i));
-        }
-        var numNames = colNames.length;
+            return;
         return {
-            _result: [],
+            _results: [],
             _error: undefined,
             handleResult: function Database_callback_handleResult(aResultSet) {
                 var row;
                 while (row = aResultSet.getNextRow()) {
-                    let resultRow = {};
-                    let (nameIdx = 0) {
-                        for (; nameIdx < numNames; nameIdx++) {
-                            let colName = colNames[nameIdx];
-                            resultRow[colName] = row.getResultByName(colName);
+                    if (Array.isArray(columnNames)) {
+                        let resultRow = Object.create(null);
+                        columnNames.forEach(function (name, index) resultRow[name] = row.getResultByIndex(index));
+                        this._results.push(resultRow);
+                    } else {
+                        let resultRow = [];
+                        try {
+                            let (index = 0) {
+                                for (;; index++)
+                                    resultRow.push(row.getResultByIndex(index));
+                            }
+                        } catch (e) {
                         }
+                        this._results.push(resultRow);
                     }
-                    this._result.push(resultRow);
                 }
             },
             handleError: function Database_callback_handleError(aError) {
                 this._error = aError;
             },
             handleCompletion: function Database_callback_handleCompletion(aReason) {
-                if (aReason == Ci.mozIStorageStatementCallback.REASON_CANCELED)
+                if (aReason === Ci.mozIStorageStatementCallback.REASON_CANCELED)
                     return;
                 if (onCompletion)
-                    onCompletion(this._result, this._error);
+                    onCompletion(this._results, this._error);
             }
         };
     },
@@ -186,7 +201,7 @@ Database.prototype = {
             throw new Error("Can't create statement. Database is closed.");
         var statement;
         try {
-            statement = this._connection.createStatement(query);
+            statement = asyncStatement ? this._connection.createAsyncStatement(query) : this._connection.createStatement(query);
         } catch (e) {
             Cu.reportError([
                 "Error: " + e,
@@ -213,6 +228,14 @@ Database.prototype = {
             }
         }
         return statement;
+    },
+    _getStatementColumnNames: function Database__getStatementColumnNames(statement) {
+        var columnNames = [];
+        let (i = 0, len = statement.columnCount) {
+            for (; i < len; i++)
+                columnNames.push(statement.getColumnName(i));
+        }
+        return columnNames;
     }
 };
 Database.DatedValues = function DatedValues(storageFile) {

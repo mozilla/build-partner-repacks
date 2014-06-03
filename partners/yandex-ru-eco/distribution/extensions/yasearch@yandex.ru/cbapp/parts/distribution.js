@@ -694,7 +694,7 @@ ChromeDataManager.prototype = {
             const yandex_tr = {
                     short_name: "Yandex",
                     keyword: "yandex.com.tr",
-                    favicon_url: "http://yandex.st/islands-icons/_/6jyHGXR8-HAc8oJ1bU8qMUQQz_g.ico",
+                    favicon_url: "http://yastatic.net/islands-icons/_/6jyHGXR8-HAc8oJ1bU8qMUQQz_g.ico",
                     url: "http://www.yandex.com.tr/yandsearch?text={searchTerms}",
                     input_encodings: "UTF-8",
                     suggest_url: "http://suggest.yandex.com.tr/suggest-ff.cgi?part={searchTerms}",

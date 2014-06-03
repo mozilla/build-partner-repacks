@@ -21,13 +21,13 @@ const layout = {
             [
                 1024,
                 600,
-                4,
-                2
+                3,
+                3
             ],
             [
                 1024,
                 768,
-                4,
+                3,
                 3
             ],
             [
@@ -65,16 +65,6 @@ const layout = {
                 height.value
             ];
         },
-        getMaxThumbLayout: function Layout_getMaxThumbLayout() {
-            return this._application.preferences.get("ftabs.maxAvailableIncreased", false) ? this.MAX_DIMENSION : this.REGULAR_DIMENSION;
-        },
-        getMaxThumbLayoutXY: function Layout_getMaxThumbLayoutXY() {
-            var maxLayout = this.getMaxThumbLayout();
-            return [
-                maxLayout,
-                maxLayout
-            ];
-        },
         getThumbsNumXY: function Layout_getThumbsNumXY() {
             var thumbsNumX = this._application.preferences.get("ftabs.layoutX", 0);
             var thumbsNumY = this._application.preferences.get("ftabs.layoutY", 0);
@@ -103,41 +93,7 @@ const layout = {
             return x * y;
         },
         getThumbsXYOfThumbsNum: function Layout_getThumbsXYOfThumbsNum(num) {
-            if (num.indexOf("x") !== -1)
-                return num.split("x").map(function (nmb) parseInt(nmb, 10));
-            num = parseInt(num, 10);
-            var defaultLayouts = this._getDefaults();
-            var isDefault = defaultLayouts.some(function (n) n.x * n.y === num);
-            if (!isDefault) {
-                num = this._application.preferences.get("ftabs.oldThumbsLayout", "0x0");
-                return this.getThumbsXYOfThumbsNum(num);
-            }
-            var [
-                    width,
-                    height
-                ] = this.getScreenSize();
-            var xy = [
-                    1,
-                    num
-                ];
-            var y = num;
-            let (x = 1) {
-                for (; x < y; x++) {
-                    y = num / x;
-                    if (x * y === num && y % 1 === 0) {
-                        xy = [
-                            x,
-                            y
-                        ];
-                    }
-                }
-            }
-            if (width > height) {
-                xy.sort(function (a, b) b - a);
-            } else {
-                xy.sort();
-            }
-            return xy;
+            return num.split("x").map(function (nmb) parseInt(nmb, 10));
         },
         getXYLayoutOfScreen: function Layout_getXYLayoutOfScreen() {
             var XY = [];
@@ -146,11 +102,14 @@ const layout = {
                     height
                 ] = this.getScreenSize();
             if (width > 1599) {
-                XY = this.getMaxThumbLayoutXY();
+                XY = [
+                    5,
+                    5
+                ];
             } else if (width < 1024) {
                 XY = [
                     3,
-                    2
+                    3
                 ];
             } else {
                 let conf = this._conf;
@@ -175,61 +134,39 @@ const layout = {
                 }
                 if (maxSum[1] === -1) {
                     XY = [
-                        4,
-                        2
+                        3,
+                        3
                     ];
                 } else {
                     XY = conf[maxSum[1]].slice(2);
                 }
             }
-            if (width < height) {
-                XY.sort();
-            } else {
-                XY.sort(function (x, y) y - x);
-            }
+            XY.sort(function (x, y) y - x);
             return XY;
         },
         _getDefaults: function Layout__getDefaults() {
-            var [
-                    maxX,
-                    maxY
-                ] = this.getMaxThumbLayoutXY();
-            var [
-                    width,
-                    height
-                ] = this.getScreenSize();
-            var isLandScape = width > height ? true : false;
-            var [
-                    minX,
-                    minY
-                ] = isLandScape ? [
-                    3,
-                    2
-                ] : [
-                    2,
-                    3
-                ];
-            var layouts = [];
-            let (x = minX) {
-                for (; x <= maxX; x++) {
-                    let (y = minY) {
-                        for (; y <= maxY; y++) {
-                            if (isLandScape) {
-                                if (y > x && y >= minX && y <= maxX)
-                                    continue;
-                            } else {
-                                if (y < x && x >= minY && x <= maxY)
-                                    continue;
-                            }
-                            layouts.push({
-                                x: x,
-                                y: y
-                            });
-                        }
-                    }
+            return [
+                {
+                    x: 3,
+                    y: 3
+                },
+                {
+                    x: 4,
+                    y: 3
+                },
+                {
+                    x: 4,
+                    y: 4
+                },
+                {
+                    x: 5,
+                    y: 4
+                },
+                {
+                    x: 5,
+                    y: 5
                 }
-            }
-            return layouts;
+            ];
         },
         getPossibleLayouts: function Layout_getPossibleLayouts() {
             var layouts = this._getDefaults();
@@ -241,52 +178,27 @@ const layout = {
                     oldX,
                     oldY
                 ] = this._application.preferences.get("ftabs.oldThumbsLayout", "0x0").split("x").map(function (n) parseInt(n, 10));
-            var current;
-            var addCurrent = true;
-            var addOld = true;
-            let (i = 0) {
-                for (; i < layouts.length; i++) {
-                    if (layouts[i].x === curX && layouts[i].y === curY) {
-                        layouts[i].isCurrent = true;
-                        addCurrent = false;
-                    }
-                    if (oldX === 0 || oldY === 0 || layouts[i].x === oldX && layouts[i].y === oldY || oldX === curX && oldY === curY) {
-                        addOld = false;
-                    }
-                }
-            }
-            if (addCurrent) {
-                layouts.push({
-                    x: curX,
-                    y: curY,
-                    isCurrent: true
-                });
-            }
-            if (addOld) {
+            var current = curX + "x" + curY;
+            layouts.push({
+                x: curX,
+                y: curY
+            });
+            if (oldX && oldY) {
                 layouts.push({
                     x: oldX,
                     y: oldY
                 });
             }
-            layouts.sort(function (a, b) a.x * a.y - b.x * b.y);
-            let (i = 1) {
-                for (; i < layouts.length; i++) {
-                    let cur = layouts[i];
-                    let prev = layouts[i - 1];
-                    if (cur.x * cur.y === prev.x * prev.y) {
-                        prev.text = prev.x + "x" + prev.y;
-                        cur.text = cur.x + "x" + cur.y;
-                    }
-                }
-            }
-            let (i = 0) {
-                for (; i < layouts.length; i++) {
-                    let cur = layouts[i];
-                    if (cur.isCurrent) {
-                        current = cur.text ? cur.text : cur.x * cur.y + "";
-                    }
-                }
-            }
+            var displayed = {};
+            layouts = layouts.map(function (layout) {
+                layout.text = layout.x + "x" + layout.y;
+                return layout;
+            }).filter(function (layout) {
+                if (displayed[layout.text])
+                    return false;
+                displayed[layout.text] = true;
+                return true;
+            }).sort(function (a, b) a.x * a.y - b.x * b.y);
             return {
                 current: current,
                 layouts: layouts.map(function (layout) String(layout.text || layout.x * layout.y))
