@@ -8,8 +8,8 @@ SHA1-Digest: jCy5+JoYHOK2bTDMyVwpC3zlf00=
 
 Name: chrome/aoltoolbar.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: ia0LZXzo1lA+jTnrZl+YTA==
-SHA1-Digest: XvBL0cf7NUlYre44NLxlpYgm/L8=
+MD5-Digest: EoRPlVUdoJn6IgpMKxlwFQ==
+SHA1-Digest: tQGRdbvCLboqD0adMt8UNXsdnm0=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -53,55 +53,75 @@ SHA1-Digest: Vlj3eU/60e0JuFhKe/LhUTiRxWc=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: ZlLPoHPt4fGVqeKYVMpmCg==
-SHA1-Digest: 6hlav9A3LM8DWg6Ga2iyHtOGyy8=
+MD5-Digest: qOt/FAeoeCIx7aUO1BQ7pA==
+SHA1-Digest: Esl5NPR9HOYrfaGMZPM6V0gMeJg=
 
 Name: widgets/amazon.zip
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 5TU3v2xv475Zh+n5wdjhMQ==
-SHA1-Digest: oQKPj8OUxLVgG6Ek68bq0+r/ZL4=
+MD5-Digest: YfTjggu/+eCwWfDOQKAi0Q==
+SHA1-Digest: m3QxFgwrX9n5hHsFXcyCC6YZiFk=
 
 Name: widgets/aolmail.zip
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 0G6qdYZKIx7Eyb9oasw+4w==
-SHA1-Digest: VNJx6xPxkGS4WOPu25S9KXiuDjA=
+MD5-Digest: 8niUks7syqrKr/hLiv5g5w==
+SHA1-Digest: 0gYXvbgHlzXdiQ0xpcInp/Z83d8=
 
 Name: widgets/calendar.zip
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: pN9i5R3XggIAzQKTwNMfbQ==
-SHA1-Digest: 6omnNo0ODNHlDpi+0u4Q9L6g3Ek=
+MD5-Digest: 3lF+FTXOZxPtHCzlaeDrfA==
+SHA1-Digest: bJxWSbNODH1zKsXZzkSGrnCDlk0=
 
 Name: widgets/facebook.zip
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 7sl3jRK8KvS6myc1EwPMfg==
-SHA1-Digest: WTn3MxExvEF41wKneSFQF2z1w68=
+MD5-Digest: pZ+4VfRMAYYyWVdqERxErQ==
+SHA1-Digest: W6pHkEN/ko2m1RbaylnsvBbw5eY=
+
+Name: widgets/flight.zip
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 0f91akPI7zBWjVNJ2Ka2jg==
+SHA1-Digest: ZuBRbMviHkv2xI9Tlef/cCZwCF4=
+
+Name: widgets/pagescraper.zip
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: KKgQZYF84C3U94IaP16AeA==
+SHA1-Digest: e7KpGbS8SSZHNnqNU+7zP+KuLS4=
+
+Name: widgets/parser.zip
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: PLBnSx76HhU2GZLBzM4WEg==
+SHA1-Digest: yW3f5FVJ6gR7/iTFXxe4oS2uI1I=
 
 Name: widgets/pinit.zip
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 2prKHOPUVSyEqHRc6g/I3Q==
-SHA1-Digest: Coy4ni61VxOhHbcLxHzhF7dTHmo=
+MD5-Digest: sQFgxbxfNkZ17TanxpgYIQ==
+SHA1-Digest: i9FIL0ENH5suO3ewOXxWqRTtYtk=
 
 Name: widgets/share.zip
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: mxlNuP1aKtasls3LFYvBdg==
-SHA1-Digest: fUqkczQ6CLoE5WjHNYdHFXMIayI=
+MD5-Digest: BP6eT+JUNrx3NzyG8Kuwxg==
+SHA1-Digest: UYDsUPUduA+BiZQ6Dv73IX7QPjo=
 
 Name: widgets/surfometer.zip
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: XAaKbkfycJ5mv1jxH61Ayw==
-SHA1-Digest: J/cnc8erPcYwe7HO0XLHYjfoMjs=
+MD5-Digest: nHRR7c/9aczBYtZIdPQywQ==
+SHA1-Digest: 21rA5uN2zrlNsqME1UAlgXat+y4=
+
+Name: widgets/ticker.zip
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: a9WCZkM0wnuhPlkErkgIYA==
+SHA1-Digest: OiYx4wbSGnK4jaJLZQ4tr3r1/wk=
 
 Name: widgets/trendingtopics.zip
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: K4FiZRSp9vHSosK4GJo/YA==
-SHA1-Digest: rqBBU3fXCSWQEioVdhGVyKASAeE=
+MD5-Digest: tJPFHA8xKeYgv6p89RFNzg==
+SHA1-Digest: lckMqUGl57rvqKBAn/uep3vWofY=
 
 Name: widgets/weather.zip
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: uGVtQNxGQ+Dijk/lilMZGQ==
-SHA1-Digest: 240bfserlS5ggwzVIgX57NEzakI=
+MD5-Digest: 1Tz0hEXNDX8n+wsz3u6yuw==
+SHA1-Digest: 6amw11qFAh7N9x0Jj+mZVmRbNwM=
 
 Name: widgets/youtube.zip
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: R2B7hinzo+fV7UskY1aLqw==
-SHA1-Digest: 0LUjDYfLyggNODkXX8/mdRe9cEQ=
+MD5-Digest: iZihT2MLp/bhkvp3wOyu6w==
+SHA1-Digest: J0G+GEMbQ4b3ks2/2gss/ZCqGoo=
