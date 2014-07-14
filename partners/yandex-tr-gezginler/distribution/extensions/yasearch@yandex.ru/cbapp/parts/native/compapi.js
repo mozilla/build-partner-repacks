@@ -1,7 +1,4 @@
 "use strict";
-XPCOMUtils.defineLazyGetter(this, "WinRegObject", function WinRegObjectGetter() {
-    return Cu.import("resource://" + application.name + "-mod/WinReg.jsm", {}).WinReg;
-});
 function NativeBarAPI(componentInfo, logger) {
     if (!componentInfo || !(componentInfo.package_ instanceof BarPlatform.ComponentPackage))
         throw new CustomErrors.EArgType("componentInfo", "ComponentInfo", componentInfo);
@@ -16,8 +13,10 @@ function NativeBarAPI(componentInfo, logger) {
         "Controls",
         "Database",
         "DistrData",
+        "ElementsPlatform",
         "Environment",
         "Files",
+        "Integration",
         "Localization",
         "Network",
         "Notifications",
@@ -90,6 +89,7 @@ NativeBarAPI.prototype = {
         } catch (e) {
             this._logger.error("NativeComponents._releaseServices failed. " + strutils.formatError(e));
         }
+        this.ElementsPlatform._finalize();
         this.Settings._finalize();
         this.Autocomplete._finalize();
         this.Browser._finalize();
@@ -119,66 +119,81 @@ NativeBarAPI.Services.prototype = {
 };
 NativeBarAPI.Environment = function Environment() {
 };
-NativeBarAPI.Environment.prototype = {
-    os: {
-        get name() {
-            return sysutils.platformInfo.os.name;
-        }
-    },
-    browser: {
-        get name() {
-            return sysutils.platformInfo.browser.name;
-        },
-        get version() {
-            return sysutils.platformInfo.browser.version;
-        }
-    },
-    addon: {
-        get id() {
-            var id = AddonManager.getAddonId(appCore.extensionPathFile);
-            this.__defineGetter__("id", function NativeAPI_Env_addon_id() id);
-            return this.id;
-        },
-        get version() {
-            var version = AddonManager.getAddonVersion(appCore.extensionPathFile);
-            this.__defineGetter__("version", function NativeAPI_Env_addon_version() version);
-            return this.version;
-        },
-        get locale() {
-            var localeString = application.localeString;
-            var localeComponents = application.locale;
-            var locale = {
-                    toString: function NativeAPI_locale_toString() localeString,
-                    language: localeComponents.language || "",
-                    country: localeComponents.country || "",
-                    region: localeComponents.region || ""
-                };
-            this.__defineGetter__("locale", function NativeAPI_locale() locale);
-            return this.locale;
-        },
-        get userID() {
-            return application.addonStatus.guidString;
-        },
-        get goingToUninstall() {
-            return application.addonManager.isAddonUninstalling;
-        },
-        get type() {
-            return appCore.CONFIG.APP.TYPE;
-        }
-    },
-    barPlatform: {
-        get name() {
-            return appCore.appName;
-        },
-        get version() {
-            return appCore.CONFIG.PLATFORM.VERSION;
-        },
-        get soundsEnabled() {
-            return false;
-        }
+NativeBarAPI.Environment.os = {
+    get name() {
+        return sysutils.platformInfo.os.name;
     }
 };
-NativeBarAPI.Environment.__proto__ = NativeBarAPI.Environment.prototype;
+NativeBarAPI.Environment.browser = {
+    get name() {
+        return sysutils.platformInfo.browser.name;
+    },
+    get version() {
+        return sysutils.platformInfo.browser.version;
+    }
+};
+NativeBarAPI.Environment.addon = {
+    get id() {
+        var id = AddonManager.getAddonId(appCore.extensionPathFile);
+        this.__defineGetter__("id", function NativeAPI_Env_addon_id() id);
+        return this.id;
+    },
+    get version() {
+        var version = AddonManager.getAddonVersion(appCore.extensionPathFile);
+        this.__defineGetter__("version", function NativeAPI_Env_addon_version() version);
+        return this.version;
+    },
+    get locale() {
+        var localeString = application.localeString;
+        var localeComponents = application.locale;
+        var locale = {
+                toString: function NativeAPI_locale_toString() localeString,
+                language: localeComponents.language || "",
+                country: localeComponents.country || "",
+                region: localeComponents.region || ""
+            };
+        this.__defineGetter__("locale", function NativeAPI_locale() locale);
+        return this.locale;
+    },
+    get userID() {
+        return application.addonStatus.guidString;
+    },
+    get goingToUninstall() {
+        return application.addonManager.isAddonUninstalling;
+    },
+    get type() {
+        return appCore.CONFIG.APP.TYPE;
+    }
+};
+NativeBarAPI.Environment.barPlatform = {
+    get name() {
+        return appCore.appName;
+    },
+    get version() {
+        return appCore.CONFIG.PLATFORM.VERSION;
+    },
+    get soundsEnabled() {
+        return false;
+    }
+};
+NativeBarAPI.Environment.branding = {
+    get brandID() {
+        return application.branding.brandID;
+    },
+    expandBrandTemplates: function NativeAPI_branding_expandBrandTemplates(templateString, params, encodeParams) {
+        if (typeof templateString !== "string")
+            throw new TypeError("'templateString' must be a string");
+        if (typeof params !== "undefined" && typeof params !== "string")
+            throw new TypeError("'params' must be an object");
+        if (typeof encodeParams !== "undefined" && typeof encodeParams !== "boolean")
+            throw new TypeError("'encodeParams' must be a boolean");
+        return application.branding.expandBrandTemplates(templateString, params, encodeParams);
+    },
+    expandBrandTemplatesEscape: function NativeAPI_branding_expandBrandTemplatesEscape(templateStr, params) {
+        return this.expandBrandTemplates(templateStr, params, true);
+    }
+};
+NativeBarAPI.Environment.prototype = NativeBarAPI.Environment;
 NativeBarAPI.Controls = function Controls(componentInfo, logger, api) {
     this._componentInfo = componentInfo;
     this._logger = logger;
@@ -297,7 +312,7 @@ NativeBarAPI.Statistics.prototype = {
 NativeBarAPI.Settings = function Settings(componentInfo, logger) {
     this._componentInfo = componentInfo;
     this._logger = logger;
-    this._allSettingsObservers = {};
+    this._allSettingsObservers = Object.create(null);
     this._compSettingsObservers = [];
 };
 NativeBarAPI.Settings.prototype = {
@@ -803,6 +818,9 @@ NativeBarAPI.Protocols.prototype = {
         appCore.protocols.bar.removeDataProvider(protocolHandler);
     }
 };
+XPCOMUtils.defineLazyGetter(this, "WinRegObject", function WinRegObjectGetter() {
+    return Cu.import("resource://" + application.name + "-mod/WinReg.jsm", {}).WinReg;
+});
 NativeBarAPI.WinReg = function WinReg() {
 };
 NativeBarAPI.WinReg.prototype = {
@@ -838,3 +856,40 @@ for (let p in application.notifications) {
         continue;
     NativeBarAPI.Notifications.prototype[p] = application.notifications[p];
 }
+NativeBarAPI.Integration = function NativeAPI_Integration(componentInfo, logger) {
+};
+NativeBarAPI.Integration.prototype = {
+    yandexBrowser: {
+        get isInstalled() {
+            return application.integration.yandexBrowser.isInstalled;
+        },
+        get isDefault() {
+            return application.integration.yandexBrowser.isDefaultBrowser;
+        },
+        openBrowser: function NativeAPI_Integration_YaBrowser_openBrowser(aURL) {
+            return application.integration.yandexBrowser.openBrowser(aURL);
+        }
+    }
+};
+NativeBarAPI.ElementsPlatform = function ElementsPlatform() {
+    this._objectProviders = [];
+};
+NativeBarAPI.ElementsPlatform.prototype = {
+    addObjectProvider: function NativeAPI_ElementsPlatform_addObjectProvider(provider) {
+        if (typeof provider.getListenerForPage !== "function")
+            throw new Error("Bad window object provider interface (no 'getListenerForPage' method).");
+        this._objectProviders.push(provider);
+        application.contentEnvironment.addPlatformObjectProvider(provider);
+    },
+    removeObjectProvider: function NativeAPI_ElementsPlatform_removeObjectProvider(provider) {
+        application.contentEnvironment.removePlatformObjectProvider(provider);
+        this._objectProviders = this._objectProviders.filter(function (p) p !== provider);
+    },
+    _objectProviders: null,
+    _finalize: function NativeAPI_ElementsPlatform__finalize() {
+        this._objectProviders.forEach(function (provider) {
+            this.removeObjectProvider(provider);
+        }, this);
+        this._objectProviders = null;
+    }
+};

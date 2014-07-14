@@ -11,8 +11,8 @@ const packageManager = {
             this._logger = barApplication.getLogger("PacMan");
             this._barApp = barApplication;
             barApplication.core.Lib.sysutils.copyProperties(barApplication.core.Lib, GLOBAL);
-            this._packagesInfo = {};
-            this._cachedPackages = {};
+            this._packagesInfo = Object.create(null);
+            this._cachedPackages = Object.create(null);
             this._constDomains = this._barApp.preferences.get("pacman.const_pkg_domains", true);
             this.rescanPackages();
         },
@@ -22,7 +22,7 @@ const packageManager = {
         rescanPackages: function PacMan_rescanPackages() {
             this._logger.debug("Looking for packages...");
             this._unloadPackages();
-            this._packagesInfo = {};
+            this._packagesInfo = Object.create(null);
             var packagesDir = this._barApp.directories.packagesDir;
             var entries = packagesDir.directoryEntries;
             while (entries.hasMoreElements()) {

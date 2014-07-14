@@ -61,6 +61,14 @@ patterns.NotificationSource.prototype = {
     _listenerRemoved: function NotificationSource__listenerRemoved(topic, listener) {
     }
 };
+patterns.NotificationSource.objectMixIn = function NotificationSource_objectMixIn(object) {
+    var notificationSourceInstance = new this();
+    for (let prop in notificationSourceInstance) {
+        if (prop === "constructor")
+            continue;
+        object[prop] = notificationSourceInstance[prop];
+    }
+};
 patterns.AsyncTaskQueue = function AsyncTaskQueue(watcher, chainTasks) {
     this._chainTasks = !!chainTasks;
     this._pendingTasks = [];

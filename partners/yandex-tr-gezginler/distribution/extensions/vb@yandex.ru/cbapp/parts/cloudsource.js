@@ -17,7 +17,7 @@ var cachedCloudData = Object.create(null);
 const cloudSource = {
         init: function CloudSource_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
-            this.__proto__ = new patterns.NotificationSource();
+            patterns.NotificationSource.objectMixIn(this);
             this.addListener(API_DATA_RECEIVED_EVENT, this);
             this.addListener(SELF_DATA_RECEIVED_EVENT, this);
             this._application = application;

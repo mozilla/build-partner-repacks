@@ -183,11 +183,17 @@ const sync = {
                     view: null,
                     enabled: null
                 };
+            var showButtonPref = this._application.preferences.get("sync.showButton");
             if (!this.svc) {
                 output.status = STATES.NO_SYNC_COMPONENT;
             } else {
                 if (this.svc.expired) {
-                    output.status = STATES.TOKEN_EXPIRED;
+                    if (!showButtonPref) {
+                        output.view = 1;
+                        output.status = STATES.NOT_AUTHORIZED;
+                    } else {
+                        output.status = STATES.TOKEN_EXPIRED;
+                    }
                 } else {
                     if (this.svc.authorized) {
                         output.status = STATES.SYNCING;
@@ -196,7 +202,7 @@ const sync = {
                         output.login = this.svc.username;
                     } else {
                         output.status = STATES.NOT_AUTHORIZED;
-                        if (!this._application.preferences.get("sync.showButton")) {
+                        if (!showButtonPref) {
                             output.view = 1;
                         } else {
                             let showAdvertPref = this._application.preferences.get("sync.advert");

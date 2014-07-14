@@ -21,11 +21,11 @@ function createSliceWrapper(sliceProps, apiInstance, WIID) {
             slice.hide();
         },
         get isOpen() slice.isOpen,
-        notify: function SliceWrapper_notify(message) {
-            var _args = Array.prototype.slice.call(arguments);
+        notify: function SliceWrapper_notify() {
+            var args = Array.prototype.slice.call(arguments);
             platformEnv.onMessage._listeners.forEach(function (listener) {
                 try {
-                    listener.apply(listener, _args);
+                    listener.apply(listener, args);
                 } catch (e) {
                     apiInstance.logger.error("Could not notify slice. " + e);
                 }
@@ -74,6 +74,7 @@ PlatformEnvironment.prototype = {
     resizeWindowTo: function PlatformEnvironment_resizeWindowTo(width, height) {
         application.slices.findSliceByID(this.sliceID).sizeTo(width, height);
     },
+    get isWindowVisible() application.slices.findSliceByID(this.sliceID).isOpen,
     getOption: function PlatformEnvironment_getOption(aKey) {
         var value = this._api.Settings.getValue(aKey, this._WIID);
         if (typeof value === "undefined")
@@ -107,9 +108,8 @@ PlatformEnvironment.prototype = {
         return this._api.Localization.getString(aKey);
     },
     sendMessage: function PlatformEnvironment_sendMessage(aMessage) {
-        if (!this._messageHandler)
-            return;
-        this._messageHandler.apply(this._api.componentCore, arguments);
+        if (this._messageHandler)
+            this._messageHandler.apply(this._api.componentCore, arguments);
     },
     get onMessage() this._messanger,
     getCookie: function PlatformEnvironment_getCookie(aURL, aCookieName, aHTTPOnly) {
@@ -120,7 +120,7 @@ PlatformEnvironment.prototype = {
         return application.locale.language;
     },
     get brandID() {
-        return application.branding.productInfo.BrandID.toString();
+        return application.branding.brandID;
     },
     navigate: function PlatformEnvironment_navigate(aURL, aTarget) {
         this._api.Controls.navigateBrowser({

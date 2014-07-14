@@ -15,7 +15,7 @@ this.__defineGetter__("G_XB_HANDLER", function () {
     return this.G_XB_HANDLER = Cc[XBProtocolHandler.prototype.contractID].getService(Ci.nsIProtocolHandler).wrappedJSObject;
 });
 function XBProtocolHandler() {
-    this._providers = {};
+    this._providers = Object.create(null);
 }
 ;
 XBProtocolHandler.prototype = {

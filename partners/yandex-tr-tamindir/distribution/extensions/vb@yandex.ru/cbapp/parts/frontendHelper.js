@@ -66,6 +66,7 @@ const frontendHelper = {
             if (thumbData.screenshot && this._application.screenshots.useScreenshot(thumbData)) {
                 output.screenshot = this._application.screenshots.createScreenshotInstance(thumbData.source).getDataForThumb();
             }
+            output.statParam = thumbData.thumb.statParam;
             return output;
         },
         getDataForIndex: function FrontendHelper_getFrontendDataForIndex(index) {

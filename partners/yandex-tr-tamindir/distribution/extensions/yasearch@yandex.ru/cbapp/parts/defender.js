@@ -54,7 +54,7 @@ const defender = {
             this._setPref(this.ENABLED_PREF_NAME, !!aValue);
         },
         get changesTime() {
-            var res = {};
+            var res = Object.create(null);
             this._changesTimeWasCalculated = 0;
             var currentTimeValues = this._changesTimeValues;
             if (currentTimeValues.start == 0 && currentTimeValues.total > 0) {
@@ -76,7 +76,7 @@ const defender = {
         set changesTime(val) {
             if (!(val === null && this._changesTimeWasCalculated))
                 return;
-            var newTimesData = {};
+            var newTimesData = Object.create(null);
             if (this._changesTimeWasCalculated & this.TIME_CALCULATED_FLAG_TOTAL)
                 newTimesData.total = 0;
             if (this._changesTimeWasCalculated & this.TIME_CALCULATED_FLAG_PRTWRK)

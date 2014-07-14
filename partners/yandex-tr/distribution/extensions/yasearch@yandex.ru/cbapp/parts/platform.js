@@ -53,7 +53,7 @@ const BarPlatform = {
             return null;
         },
         findBestLocalizedElement: function BarPlatform_findBestLocalizedElement(elementsArray) {
-            var localizedElements = {};
+            var localizedElements = Object.create(null);
             elementsArray.forEach(function (element) {
                 var elemLocaleStr = element.getAttribute("locale") || element.getAttribute("lang") || "";
                 localizedElements[elemLocaleStr] = element;

@@ -10,8 +10,8 @@ NativeComponents.NativePlugin = function NativePlugin(id, modulePath, unit) {
     this._modulePath = modulePath;
     this._unit = unit;
     this._package = unit.unitPackage;
-    this._packageSettings = {};
-    this._settingsMap = {};
+    this._packageSettings = Object.create(null);
+    this._settingsMap = Object.create(null);
     this._logger = NativeComponents._getLogger(BarPlatform.makeCompLoggerName(unit));
 };
 NativeComponents.NativePlugin.prototype = {

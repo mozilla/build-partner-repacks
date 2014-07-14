@@ -108,14 +108,15 @@ const internalStructure = {
                     "title",
                     "backgroundColor",
                     "favicon",
-                    "visits"
+                    "visits",
+                    "statParam"
                 ].forEach(function (fieldName) {
                     if (thumbData[fieldName]) {
                         output.thumb[fieldName] = thumbData[fieldName];
                     }
                 });
                 let screenshot = this._application.screenshots.createScreenshotInstance(thumbData.url);
-                if (screenshot.fileAvailable()) {
+                if (screenshot.nonZeroFileAvailable) {
                     screenshot.color = thumbData.screenshotColor;
                     output.screenshot = screenshot.getDataForThumb();
                 }

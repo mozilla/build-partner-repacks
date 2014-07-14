@@ -1,3 +1,4 @@
+"use strict";
 const EXPORTED_SYMBOLS = ["widgetLibrary"];
 const {
         classes: Cc,
@@ -34,9 +35,9 @@ const widgetLibrary = {
         },
         clear: function WidgetLibrary_clear() {
             this.flushPlugins();
-            this._packages = {};
-            this._knownWidgets = {};
-            this._pluginsData = {};
+            this._packages = Object.create(null);
+            this._knownWidgets = Object.create(null);
+            this._pluginsData = Object.create(null);
         },
         cleanPackageParserCache: function WidgetLibrary_cleanPackageParserCache(packageID) {
             fileutils.removeFileSafe(this._getParserCacheDir(packageID));
@@ -263,11 +264,11 @@ const widgetLibrary = {
         },
         _barApp: null,
         _logger: null,
-        _packages: {},
-        _knownWidgets: {},
+        _packages: Object.create(null),
+        _knownWidgets: Object.create(null),
         _prevPluginsState: undefined,
-        _pluginsData: {},
-        _internalPackagesInfo: {},
+        _pluginsData: Object.create(null),
+        _internalPackagesInfo: Object.create(null),
         _useParserCache: true,
         _registerComponent: function WidgetLibrary__registerComponent(componentID, componentType, dontFail, logStat) {
             var registry = componentType == "widget" ? this._knownWidgets : this._pluginsData;
@@ -501,7 +502,7 @@ const widgetLibrary = {
             return plugin;
         },
         _getPluginActivationMap: function WidgetLibrary__getPluginActivationMap(fromPackageID) {
-            var result = {};
+            var result = Object.create(null);
             for (let pluginID in this._pluginsData) {
                 if (fromPackageID) {
                     let [packageID] = this._barPlatform.parseComponentID(pluginID);
@@ -514,7 +515,7 @@ const widgetLibrary = {
             return result;
         },
         get _defaultActivationMap() {
-            var result = {};
+            var result = Object.create(null);
             this._barApp.defaultPreset.pluginEntries.forEach(function (pluginEntry) {
                 result[pluginEntry.componentID] = [
                     pluginEntry.enabled == pluginEntry.ENABLED_YES,

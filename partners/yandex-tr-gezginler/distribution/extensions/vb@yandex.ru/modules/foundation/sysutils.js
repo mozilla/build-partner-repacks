@@ -125,8 +125,9 @@ const sysutils = {
                     obj.Object_freeze_self();
                     return;
                 }
+                var hasOwnProperty = Object.prototype.hasOwnProperty;
                 for (let key in obj) {
-                    if (obj.hasOwnProperty(key)) {
+                    if (hasOwnProperty.call(obj, key)) {
                         let value = obj[key];
                         if (value && typeof value === "object") {
                             sysutils.freezeObj(value);
@@ -170,8 +171,9 @@ const sysutils = {
                 filterFunc = typeof filter == "function" ? filter : function SysUtils_copyFilter(propName) propName in filter;
             }
             var passValues = filterFunc && filterFunc.length > 1;
+            var hasOwnProperty = Object.prototype.hasOwnProperty;
             for (let propName in from) {
-                if (from.hasOwnProperty(propName) && (!filterFunc || filterFunc(propName, passValues ? from[propName] : undefined)))
+                if (hasOwnProperty.call(from, propName) && (!filterFunc || filterFunc(propName, passValues ? from[propName] : undefined)))
                     to[propName] = from[propName];
             }
         },

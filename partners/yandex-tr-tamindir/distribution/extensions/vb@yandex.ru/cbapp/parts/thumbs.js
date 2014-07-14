@@ -43,11 +43,16 @@ const thumbs = {
                 return;
             }
             this._fetchThumbs(function fetchThumbsOnInitCallback() {
-                if (appInfo.addonUpgraded)
-                    return this.pickupThumbs({ withForceThumbs: true });
-                if (pickupDateDiff > this._pickupInterval)
-                    return this.pickupThumbs({ withForceThumbs: false });
-                this._pickupTimer = new sysutils.Timer(this.pickupThumbs.bind(this), Math.max(this._pickupInterval - pickupDateDiff, 0) * 1000);
+                if (appInfo.addonUpgraded) {
+                    this.pickupThumbs({ withForceThumbs: true });
+                    return;
+                }
+                if (pickupDateDiff > this._pickupInterval) {
+                    if (this.scheduledPickup()) {
+                        return;
+                    }
+                }
+                this._pickupTimer = new sysutils.Timer(this.scheduledPickup.bind(this), Math.max(this._pickupInterval - pickupDateDiff, 0) * 1000);
                 Services.obs.notifyObservers(this, this._application.core.eventTopics.THUMBS_STRUCTURE_READY_EVENT, null);
                 if (this._isRefreshNeeded) {
                     this._refreshThumbsData();
@@ -64,6 +69,10 @@ const thumbs = {
         },
         finalize: function Thumbs_finalize(doCleanup, callback) {
             Services.obs.removeObserver(this, DAILY_IDLE_EVENT);
+            if (this._pickupTimer) {
+                this._pickupTimer.cancel();
+                this._pickupTimer = null;
+            }
             var dbClosedCallback = function Thumbs_finalize_dbClosedCallback() {
                     this.structure = null;
                     this._database = null;
@@ -109,13 +118,18 @@ const thumbs = {
             this._application.internalStructure.removeItem(oldIndex);
             this._application.internalStructure.removeItem(newIndex);
             pos1ThumbData.pinned = true;
+            pos1ThumbData.thumb = pos1ThumbData.thumb || {};
+            pos1ThumbData.thumb.statParam = "userthumb";
             pos1ThumbData.sync = pos1ThumbData.sync || {};
             pos1ThumbData.sync.id = this._application.sync.generateId();
             pos1ThumbData.sync.instance = this._application.name;
             pos1ThumbData.sync.timestamp = Math.round(Date.now() / 1000);
             this._application.internalStructure.overwriteItem(newIndex, pos1ThumbData);
             if (pos2ThumbData) {
+                pos2ThumbData.thumb = pos2ThumbData.thumb || {};
+                pos2ThumbData.thumb.statParam = "userthumb";
                 pos2ThumbData.sync = pos2ThumbData.sync || {};
+                pos2ThumbData.thumb.statParam = "userthumb";
                 pos2ThumbData.sync.id = this._application.sync.generateId();
                 pos2ThumbData.sync.instance = this._application.name;
                 pos2ThumbData.sync.timestamp = Math.round(Date.now() / 1000);
@@ -166,22 +180,10 @@ const thumbs = {
                 }
             }
             this._application.syncPinned.save();
-            var holesExist = false;
             var emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
             var currentThumbsNum = this._application.layout.getThumbsNum();
             if (emptyLastThumb) {
                 currentThumbsNum -= 1;
-            }
-            let (i = 0) {
-                for (; i < currentThumbsNum; i++) {
-                    if (!this._application.internalStructure.getItem(i)) {
-                        holesExist = true;
-                        break;
-                    }
-                }
-            }
-            if (holesExist) {
-                this.pickupThumbs();
             }
             this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
         },
@@ -224,6 +226,7 @@ const thumbs = {
             (currentThumbData || {}).pinned = true;
             if (currentThumbData && currentThumbData.source && currentThumbData.thumb && currentThumbData.source === data.url && currentThumbData.thumb.title !== data.title) {
                 currentThumbData.thumb.title = data.title;
+                currentThumbData.thumb.statParam = "userthumb";
                 this._application.internalStructure.overwriteItem(index, currentThumbData);
                 let evtData = {};
                 evtData[index] = this._application.frontendHelper.getDataForIndex(index);
@@ -259,7 +262,8 @@ const thumbs = {
                     syncId: this._application.sync.generateId(),
                     syncInternalId: this._application.sync.generateId(),
                     syncInstance: this._application.name,
-                    syncTimestamp: Math.round(Date.now() / 1000)
+                    syncTimestamp: Math.round(Date.now() / 1000),
+                    statParam: "userthumb"
                 };
             this._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
                 if (thumbData.source === data.url) {
@@ -297,7 +301,8 @@ const thumbs = {
                         syncId: saveData[index].id,
                         syncInternalId: saveData[index].internalId,
                         syncInstance: saveData[index].instance,
-                        syncTimestamp: saveData[index].timestamp
+                        syncTimestamp: saveData[index].timestamp,
+                        statParam: "userthumb"
                     };
                 var internalThumbData = this._application.internalStructure.convertDbRow(dbRecord, true);
                 this._application.internalStructure.overwriteItem(index, internalThumbData);
@@ -349,6 +354,7 @@ const thumbs = {
             if (structureNeedsChanges) {
                 current = current || {};
                 current.pinned = isPinned;
+                current.thumb.statParam = "userthumb";
                 if (current.source) {
                     current.sync.id = syncId;
                     current.sync.internalId = syncInternalId;
@@ -363,6 +369,30 @@ const thumbs = {
             if (needSync) {
                 this._application.syncPinned.save();
             }
+        },
+        scheduledPickup: function Thumbs_scheduledPickup() {
+            this.resetPickupTimer();
+            var holesExist = false;
+            var emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
+            var currentThumbsNum = this._application.layout.getThumbsNum();
+            if (emptyLastThumb)
+                currentThumbsNum--;
+            let (i = 0) {
+                for (; i < currentThumbsNum; i++) {
+                    if (!this._application.internalStructure.getItem(i)) {
+                        holesExist = true;
+                        break;
+                    }
+                }
+            }
+            var now = Math.round(Date.now() / 1000);
+            var lastPickupTime = this._application.preferences.get("ftabs.lastPickupTime", 0);
+            var timeHasCome = Math.abs(now - lastPickupTime) >= REFRESH_INTERVAL;
+            if (holesExist || timeHasCome) {
+                this.pickupThumbs();
+                return true;
+            }
+            return false;
         },
         pickupThumbs: function Thumbs_pickupThumbs(options) {
             var self = this;
@@ -401,7 +431,8 @@ const thumbs = {
                         favicon: thumbData.thumb ? thumbData.thumb.favicon : null,
                         screenshot: thumbData.screenshot ? thumbData.screenshot : null,
                         position: index,
-                        fixed: 1
+                        fixed: 1,
+                        statParam: thumbData.thumb ? thumbData.thumb.statParam : null
                     };
                     [
                         "id",
@@ -415,27 +446,16 @@ const thumbs = {
                         }
                     });
                 });
-                results.branded = [];
-                Array.forEach(self._application.fastdial.brandingXMLDoc.querySelectorAll("pages > page"), function (page) {
-                    var boost = page.getAttribute("boost");
-                    boost = boost === null ? BRANDING_PAGES_BOOST : parseInt(boost, 10);
-                    results.branded.push({
-                        url: self._application.fastdial.expandBrandingURL(page.getAttribute("url")),
-                        title: page.getAttribute("custom_title"),
-                        fixed: 0,
-                        boost: boost
-                    });
-                });
+                results.branded = self._getBrandedThumbs(results.pinned, false);
                 self._logger.trace("Start data: " + JSON.stringify(results));
                 var blockedDomains = Array.concat(results.unsafe, results.blacklist.domains);
                 var existingPinnedThumbs = results.pinned;
-                var currentThumbsNum = self._application.layout.getThumbsNum();
                 var {
                         local: historyEntries,
                         tophistory: topHistoryEntries
                     } = self._getMergedHistoryQueue(results.topHistory, results.unsafe, results.branded);
                 self._logger.trace("Merged history entries: " + JSON.stringify(historyEntries));
-                var fixedThumbs = options.withForceThumbs ? self._getForceAndPinnedThumbs(self._application.fastdial.brandingXMLDoc, existingPinnedThumbs) : existingPinnedThumbs;
+                var fixedThumbs = options.withForceThumbs ? self._getForceAndPinnedThumbs(existingPinnedThumbs) : existingPinnedThumbs;
                 var pinnedDomains = [];
                 for (let [
                             ,
@@ -464,21 +484,85 @@ const thumbs = {
                     self._logger.debug("Pinned thumbs w/ BP-forced are: " + JSON.stringify(fixedThumbs, null, "	"));
                     self._logger.debug("Most visited queue thumbs are: " + JSON.stringify(mostVisitedList, null, "	"));
                 }
+                var currentThumbsNum = self._application.layout.getThumbsNum();
+                var emptyLastThumb = self._application.preferences.get("ftabs.emptyLastThumb", false);
+                if (emptyLastThumb) {
+                    currentThumbsNum--;
+                }
+                var unpinnedCount = currentThumbsNum - Object.keys(fixedThumbs).length;
                 var newThumbs = {};
                 let (i = 0) {
-                    for (;; i++) {
-                        if (!Object.keys(fixedThumbs).length && !mostVisitedList.length)
-                            break;
-                        let thumbData;
-                        if (fixedThumbs[i]) {
-                            thumbData = fixedThumbs[i];
-                            delete fixedThumbs[i];
-                        } else {
-                            thumbData = mostVisitedList.length ? mostVisitedList.shift() : null;
-                        }
-                        if (!thumbData)
+                    for (; Object.keys(fixedThumbs).length > 0; i++) {
+                        if (!fixedThumbs[i])
                             continue;
+                        let thumbData = fixedThumbs[i];
+                        delete fixedThumbs[i];
                         newThumbs[i] = self._application.internalStructure.convertDbRow(thumbData, thumbData.fixed);
+                    }
+                }
+                var sql = "SELECT thumbs.url, shown.position                 FROM thumbs_shown AS shown LEFT JOIN thumbs ON thumbs.rowid = shown.thumb_id";
+                var rowsData = [];
+                try {
+                    rowsData = self._database.execQuery(sql);
+                } catch (err) {
+                }
+                var urlToPosition = rowsData.reduce(function (obj, item) {
+                        if (item.position < currentThumbsNum)
+                            obj[item.url] = item.position;
+                        return obj;
+                    }, {});
+                if (mostVisitedList.length > 1) {
+                    let isShuffled = true;
+                    while (isShuffled) {
+                        isShuffled = false;
+                        let (i = 1) {
+                            for (; i < mostVisitedList.length; i++) {
+                                let currentItem = mostVisitedList[i];
+                                let prevItem = mostVisitedList[i - 1];
+                                let currentItemPosition = urlToPosition[currentItem.url];
+                                let prevItemPosition = urlToPosition[prevItem.url];
+                                if (typeof currentItemPosition === "number" && prevItem.visits === currentItem.visits) {
+                                    if (typeof prevItemPosition !== "number") {
+                                        [
+                                            mostVisitedList[i - 1],
+                                            mostVisitedList[i]
+                                        ] = [
+                                            currentItem,
+                                            prevItem
+                                        ];
+                                        isShuffled = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                mostVisitedList = mostVisitedList.map(function (thumbData, i) {
+                    var converted = self._application.internalStructure.convertDbRow(thumbData);
+                    converted.position = urlToPosition[thumbData.url];
+                    if (i + 1 > unpinnedCount) {
+                        delete converted.position;
+                    }
+                    return converted;
+                });
+                let (thumbData, newUnpinned = []) {
+                    while (thumbData = mostVisitedList.shift()) {
+                        let prevPosition = thumbData.position;
+                        if (typeof prevPosition === "number") {
+                            if (!newThumbs[prevPosition]) {
+                                newThumbs[prevPosition] = thumbData;
+                            } else {
+                                newUnpinned.push(thumbData);
+                            }
+                        } else {
+                            newUnpinned.push(thumbData);
+                        }
+                    }
+                    let (i = 0) {
+                        for (; newUnpinned.length > 0; i++) {
+                            newThumbs[i] = newThumbs[i] || newUnpinned.shift();
+                        }
                     }
                 }
                 self._application.internalStructure.clear();
@@ -507,11 +591,46 @@ const thumbs = {
                 }
             });
         },
+        _getBrandedThumbs: function Thumbs__getBrandedThumbs(ignoredThumbs, onlyWithForceThumbs) {
+            var domains = {};
+            for (let [
+                        ,
+                        thumb
+                    ] in Iterator(ignoredThumbs)) {
+                let host = this._application.fastdial.getDecodedUrlHost(thumb.url);
+                if (host) {
+                    domains[host] = 1;
+                    this._application.getHostAliases(host).forEach(function (alias) {
+                        domains[alias] = 1;
+                    });
+                }
+            }
+            var branded = [];
+            var query = onlyWithForceThumbs ? "pages > page[force='true']" : "pages > page";
+            Array.forEach(this._application.fastdial.brandingXMLDoc.querySelectorAll(query), function (page) {
+                var boost = page.getAttribute("boost");
+                var index = parseInt(page.getAttribute("index"), 10) - 1;
+                boost = boost === null ? BRANDING_PAGES_BOOST : parseInt(boost, 10);
+                var url = this._application.fastdial.expandBrandingURL(page.getAttribute("url"));
+                var host = this._application.fastdial.getDecodedUrlHost(url);
+                if (!domains[host]) {
+                    branded.push({
+                        url: url,
+                        title: page.getAttribute("custom_title"),
+                        fixed: Number(onlyWithForceThumbs),
+                        preferedIndex: index,
+                        boost: boost,
+                        statParam: "defthumb"
+                    });
+                }
+            }, this);
+            return branded;
+        },
         resetPickupTimer: function Thumbs_resetPickupTimer() {
             if (this._pickupTimer)
                 this._pickupTimer.cancel();
             this._pickupTimer = new sysutils.Timer(function () {
-                this.pickupThumbs();
+                this.scheduledPickup();
             }.bind(this), this._pickupInterval * 1000);
         },
         fastPickup: function Thumbs_fastPickup(unpinned) {
@@ -702,10 +821,19 @@ const thumbs = {
                 visible: true
             }, function (thumbData) {
                 var screenshot = this._application.screenshots.createScreenshotInstance(thumbData.source);
-                if (!screenshot.fileAvailable()) {
+                if (!screenshot.fileAvailable) {
                     screenshot.shot();
                 }
             }.bind(this));
+        },
+        onContextmenu: function Thumbs_onContextmenu(thumbIndex) {
+            this._hoveredThumbIndex = thumbIndex;
+        },
+        get hoveredThumbIndex() {
+            var index = this._hoveredThumbIndex;
+            if (typeof this._hoveredThumbIndex === "undefined")
+                this._hoveredThumbIndex = -1;
+            return this._hoveredThumbIndex;
         },
         get numberOfFilled() {
             var total = 0;
@@ -830,6 +958,7 @@ const thumbs = {
             }
             var mergedLocalHistory = mergedTopHistory.map(function (entry) {
                     entry = sysutils.copyObj(entry);
+                    entry.statParam = "autothumb";
                     if (entry.isLocal)
                         return entry;
                     entry.url = this._application.syncTopHistory.saveLocalClidState(entry.url, historyEntries);
@@ -842,7 +971,7 @@ const thumbs = {
             };
         },
         _fetchThumbs: function Thumbs__fetchThumbs(callback) {
-            var sql = "SELECT thumbs.url, thumbs.title, thumbs.backgroundColor, thumbs.screenshotColor, thumbs.favicon, shown.*             FROM thumbs_shown AS shown LEFT JOIN thumbs ON thumbs.rowid = shown.thumb_id             ORDER BY shown.position";
+            var sql = "SELECT thumbs.url, thumbs.title, thumbs.backgroundColor, thumbs.screenshotColor, thumbs.favicon, thumbs.statParam, shown.*             FROM thumbs_shown AS shown LEFT JOIN thumbs ON thumbs.rowid = shown.thumb_id             ORDER BY shown.position";
             this._database.execQueryAsync(sql, {}, function (rowsData, storageError) {
                 if (storageError)
                     throw new Error(strutils.formatString("Fetch thumbs error: %1 (code %2)", [
@@ -857,46 +986,26 @@ const thumbs = {
                 callback && callback();
             }.bind(this));
         },
-        _getForceAndPinnedThumbs: function Thumbs__getForceAndPinnedThumbs(xmlDoc, existingPinnedThumbs) {
+        _getForceAndPinnedThumbs: function Thumbs__getForceAndPinnedThumbs(existingPinnedThumbs) {
             var output = {};
             var emptyPositions = [];
-            var domains = Object.create(null);
             let (i = 0) {
                 for (; i < MAX_PICKUP_LENGTH; i++) {
                     if (existingPinnedThumbs[i]) {
                         output[i] = existingPinnedThumbs[i];
-                        if (existingPinnedThumbs[i].url) {
-                            let host = this._application.fastdial.getDecodedUrlHost(output[i].url);
-                            if (host) {
-                                domains[host] = 1;
-                            }
-                        }
                     } else {
                         emptyPositions.push(i);
                     }
                 }
             }
-            Array.forEach(xmlDoc.querySelectorAll("pages > page[force='true']"), function (page) {
-                var pageURL = this._application.fastdial.expandBrandingURL(page.getAttribute("url"));
-                var pageDomain = this._application.fastdial.getDecodedUrlHost(pageURL);
-                if (pageDomain && domains[pageDomain])
-                    return;
-                var index = parseInt(page.getAttribute("index"), 10) - 1;
-                var pageTitle = page.getAttribute("custom_title");
-                if (output[index] === undefined) {
-                    output[index] = {
-                        url: pageURL,
-                        title: pageTitle,
-                        fixed: 1
-                    };
+            this._getBrandedThumbs(existingPinnedThumbs, true).forEach(function (brandedThumb) {
+                var pageDomain = this._application.fastdial.getDecodedUrlHost(brandedThumb.url);
+                if (output[brandedThumb.preferedIndex] === undefined) {
+                    output[brandedThumb.preferedIndex] = brandedThumb;
                 } else {
                     if (emptyPositions.length) {
                         let index = emptyPositions.shift();
-                        output[index] = {
-                            url: pageURL,
-                            title: pageTitle,
-                            fixed: 1
-                        };
+                        output[index] = brandedThumb;
                     }
                 }
             }, this);

@@ -124,6 +124,8 @@ ContentHandler.prototype = {
 var checkSum = {
         MAX_DOCUMENT_SIZE: 512 * 1024 - 1,
         calculate: function checkSum_calculate(htmlSource) {
+            if (!htmlSource)
+                return null;
             return htmlSource.substr(0, this.MAX_DOCUMENT_SIZE).replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "").replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "").replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/gi, "").replace(/<(?:a|meta)([^>]*)>/gi, this._parseAttributes).replace(/<\/?[^>]*>/gi, "").replace(/\s|\d/g, "");
         },
         _parseAttributes: function checkSum__parseAttributes(match, p1, offset, string) {

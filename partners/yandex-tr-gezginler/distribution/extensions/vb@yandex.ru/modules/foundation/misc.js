@@ -229,35 +229,30 @@ const misc = {
                     country: 2,
                     region: 1
                 };
-            var results = [];
-            for (let key in map) {
-                if (!map.hasOwnProperty(key))
-                    continue;
-                let weight = 0;
-                if (key) {
-                    let locale = misc.parseLocale(key);
-                    for (let partName in lpWeights) {
-                        if (partName in locale) {
-                            let localePart = locale[partName];
-                            if (partName == "language")
-                                if (localePart in lpWeights)
-                                    weight += lpWeights[localePart];
-                            if (localePart === forLocale[partName])
-                                weight += lpWeights[partName];
+            var results = Object.keys(map).map(function (key) {
+                    var weight = 0;
+                    if (key) {
+                        let locale = misc.parseLocale(key);
+                        for (let partName in lpWeights) {
+                            if (partName in locale) {
+                                let localePart = locale[partName];
+                                if (partName == "language")
+                                    if (localePart in lpWeights)
+                                        weight += lpWeights[localePart];
+                                if (localePart === forLocale[partName])
+                                    weight += lpWeights[partName];
+                            }
                         }
+                    } else {
+                        weight = lpWeights.empty;
                     }
-                } else {
-                    weight = lpWeights.empty;
-                }
-                results.push({
-                    key: key,
-                    weight: weight
+                    return {
+                        key: key,
+                        weight: weight
+                    };
                 });
-            }
             results.sort(function rule(a, b) {
-                if (a.weight == b.weight)
-                    return 0;
-                return a.weight > b.weight ? -1 : +1;
+                return b.weight - a.weight;
             });
             return results[0] && map[results[0].key];
         },

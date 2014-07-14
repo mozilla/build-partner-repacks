@@ -121,8 +121,8 @@ const updater = {
         },
         _gatherUnknownComponents: function Updater__gatherUnknownComponents(preset) {
             var widgetLibrary = this._application.widgetLibrary;
-            var unknownWIDs = {};
-            var unknownPIDs = {};
+            var unknownWIDs = Object.create(null);
+            var unknownPIDs = Object.create(null);
             preset.allEntries.forEach(function (presetEntry) {
                 switch (presetEntry.componentType) {
                 case presetEntry.TYPE_WIDGET:
@@ -154,7 +154,7 @@ const updater = {
         _check4NewManifests: function Updater__check4NewManifests(downloadQueue) {
             this._logger.debug("Checking manifests");
             var pacMan = this._application.packageManager;
-            var manifestsCheckResult = {};
+            var manifestsCheckResult = Object.create(null);
             downloadQueue.finishedTasks.forEach(function (mfsDlTask) {
                 var manifestURL = mfsDlTask.originalURI.spec;
                 manifestsCheckResult[manifestURL] = undefined;
@@ -350,7 +350,7 @@ UpdateProcess.prototype = {
     constructor: UpdateProcess,
     checkUserPackagesUpdates: function UpdateProcess_checkUserPackagesUpdates() {
         this._logger.debug("User components update started.");
-        var packageIDsSet = {};
+        var packageIDsSet = Object.create(null);
         for (let [
                     ,
                     packageID
@@ -365,7 +365,7 @@ UpdateProcess.prototype = {
         }
     },
     updateUserComponents: function UpdateProcess_startPackagesInstallation(packageInfoList) {
-        var packageInfoSet = {};
+        var packageInfoSet = Object.create(null);
         packageInfoList.forEach(function (packageInfo) packageInfoSet[packageInfo.id] = packageInfo);
         this._startPackageDownloads(packageInfoSet, this._onUsrPkgsPreinstalled.bind(this));
     },
@@ -400,7 +400,7 @@ UpdateProcess.prototype = {
     },
     _preinstallPackages: function UpdateProcess__preinstallPackages(packageInfoSet, onPreinstalled, pkgsQueue) {
         const pacMan = barApplication.packageManager;
-        var preinstalledPackages = {};
+        var preinstalledPackages = Object.create(null);
         if (pkgsQueue) {
             pkgsQueue.finishedTasks.forEach(function (pkgDlTask) {
                 try {

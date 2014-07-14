@@ -18,7 +18,7 @@ const metrika = {
             this._addonVersion = this._application.addonManager.addonVersion;
             this._locale = this._application.localeString;
             this._counterId = this._application.preferences.get("metrika.counter");
-            this.__proto__ = new patterns.NotificationSource();
+            patterns.NotificationSource.objectMixIn(this);
             var self = this;
             this._timer = new sysutils.Timer(function () {
                 var tasks = [];

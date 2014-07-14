@@ -311,6 +311,7 @@ const installer = {
             ].indexOf(aQSName) == -1;
         },
         _showWelcomePageOnStartup: function Installer__showWelcomePageOnStartup() {
+            this._setupWelcomePageObjectProvider();
             var wpPrefs = new Preferences(barApp.name + ".welcomepage.");
             if (wpPrefs.get("dontshow", true)) {
                 wpPrefs.reset("dontshow");
@@ -335,6 +336,60 @@ const installer = {
                     target: "new tab"
                 });
             }, 500);
+        },
+        _setupWelcomePageObjectProvider: function Installer__setupWelcomePageObjectProvider() {
+            this._application.contentEnvironment.addPlatformObjectProvider({
+                getListenerForPage: function installer_wppo_getListenerForPage({
+                    url: url,
+                    meta: meta
+                }) {
+                    if (meta !== "ru.yandex.welcomepage")
+                        return null;
+                    var getWidgetItem = function getWidgetItem(componentId) {
+                        var topBrowser = misc.getTopBrowserWindow();
+                        var overlayController = topBrowser && topBrowser[barApp.name + "OverlayController"];
+                        return overlayController && overlayController.getWidgetItems(componentId)[0];
+                    };
+                    return {
+                        onPageMessage: function installer_wppo_onPageMessage(name, data) {
+                            switch (name) {
+                            case "ru.yandex.smartbox": {
+                                    if (data.command === "open") {
+                                        let componentId = "http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox";
+                                        try {
+                                            let omniboxPlugin = installer._application.widgetLibrary.getPlugin(componentId);
+                                            if (omniboxPlugin && omniboxPlugin.enabled) {
+                                                omniboxPlugin.nativeModule.core.showTutorWithText(data.text);
+                                                return true;
+                                            }
+                                        } catch (e) {
+                                            installer._logger.error(e);
+                                        }
+                                    }
+                                }
+                            case "ru.yandex.mail": {
+                                    if (data.command === "openSlice") {
+                                        let componentDOMItem = getWidgetItem("http://bar.yandex.ru/packages/yandexbar#mail");
+                                        if (componentDOMItem) {
+                                            componentDOMItem.showMailSlice();
+                                            return true;
+                                        }
+                                    }
+                                }
+                            case "ru.yandex.weather": {
+                                    if (data.command === "openSlice") {
+                                        let componentDOMItem = getWidgetItem("http://bar.yandex.ru/packages/yandexbar#town");
+                                        if (componentDOMItem) {
+                                            componentDOMItem.mWeatherButton.doCommand();
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+                }
+            });
         },
         _onAddonInstall: function Installer__onAddonInstall() {
             var setupData = this.setupData;
@@ -554,6 +609,7 @@ const installer = {
                         shortName = shortName && shortName.textContent || "";
                         let browserDefaultEngineName = this._getLocalizedPref("browser.search.defaultenginename", "");
                         if (forceSetDefault || shortName != prevDefaultQSName && prevDefaultQSName === browserDefaultEngineName) {
+                            Preferences.set("yasearch.native_comps.http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox.all.settings.searchName", shortName);
                             selectedEngineName = shortName;
                         }
                     }
@@ -694,10 +750,10 @@ const installer = {
                     defqs: "DefaultSearch",
                     statsend: "UsageStat"
                 };
-            for ([
-                    flagName,
-                    checkboxName
-                ] in Iterator(flags)) {
+            for (let [
+                        flagName,
+                        checkboxName
+                    ] in Iterator(flags)) {
                 if (!(checkboxName in this.setupData) || !this.setupData[checkboxName].display)
                     delete flags[flagName];
                 flags[flagName] = this.setupData[checkboxName].checked ? 1 : 0;

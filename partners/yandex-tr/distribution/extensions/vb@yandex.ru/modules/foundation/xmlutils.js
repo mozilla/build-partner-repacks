@@ -5,10 +5,6 @@ const xmlutils = {
             delete this.XMLSerializer;
             return this.XMLSerializer = Cc["@mozilla.org/xmlextras/xmlserializer;1"].getService(Ci.nsIDOMSerializer);
         },
-        get xpathEvaluator() {
-            delete this.xpathEvaluator;
-            return this.xpathEvaluator = Cc["@mozilla.org/dom/xpath-evaluator;1"].getService(Ci.nsIDOMXPathEvaluator);
-        },
         get xsltProcessor() {
             delete this.xsltProcessor;
             return this.xsltProcessor = Cc["@mozilla.org/document-transformer;1?type=xslt"].createInstance(Ci.nsIXSLTProcessor);
@@ -17,8 +13,8 @@ const xmlutils = {
             if (!(contextNode instanceof Ci.nsIDOMNode))
                 throw new CustomErrors.EArgType("contextNode", "nsIDOMNode", contextNode);
             var doc = contextNode instanceof Ci.nsIDOMDocument ? contextNode : contextNode.ownerDocument;
-            var NSResolver = extNSResolver || this.xpathEvaluator.createNSResolver(doc.documentElement);
-            var rawResult = this.xpathEvaluator.evaluate(expr, contextNode, NSResolver, 0, null);
+            var NSResolver = extNSResolver || doc.createNSResolver(doc.documentElement);
+            var rawResult = doc.evaluate(expr, contextNode, NSResolver, 0, null);
             var result;
             switch (rawResult.resultType) {
             case rawResult.NUMBER_TYPE:

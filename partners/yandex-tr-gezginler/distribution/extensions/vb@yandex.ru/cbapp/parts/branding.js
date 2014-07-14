@@ -13,7 +13,7 @@ const branding = {
             this._logger = application.getLogger("Branding");
             this._application = application;
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
-            this.__proto__ = new patterns.NotificationSource();
+            patterns.NotificationSource.objectMixIn(this);
             this._loadPackage();
             try {
                 if (this._application.addonManager.info.addonVersionChanged)
@@ -48,6 +48,11 @@ const branding = {
         },
         get brandPackage() {
             return this._package;
+        },
+        get brandID() {
+            if (!this._productInfo)
+                return null;
+            return String(this.productInfo.BrandID);
         },
         get barless() {
             if (this._barless === null) {

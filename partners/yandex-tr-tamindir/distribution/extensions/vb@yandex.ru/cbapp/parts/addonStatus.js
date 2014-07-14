@@ -123,7 +123,7 @@ const addonStatus = {
                     this._sendRequest(this._appendTimeParamsToURLString(query));
                 break;
             case this._collectTimer:
-                this._logData();
+                this._logData({ stat: "dayuse" });
                 this._collectTimer.initWithCallback(this, this._consts.CHECK_INTERVAL * 1000, this._collectTimer.TYPE_ONE_SHOT);
                 break;
             default:

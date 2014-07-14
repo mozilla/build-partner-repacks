@@ -278,7 +278,7 @@ BarPlatform.WidgetPrototypeBase = Base.extend({
         this._unique = !!unique;
         this._name = name.toString();
         this._iconPath = iconPath || "";
-        this._spawns = {};
+        this._spawns = Object.create(null);
     },
     finalize: function WidgetPrototypeBase_finalize() {
         this._unit = null;

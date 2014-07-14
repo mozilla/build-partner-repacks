@@ -409,6 +409,10 @@ const barApplication = {
                 file: "brand_prov.js"
             },
             {
+                name: "urlRewrite",
+                file: "urlRewrite.js"
+            },
+            {
                 name: "addonStatus",
                 file: "addonStatus.js"
             },
@@ -431,6 +435,10 @@ const barApplication = {
             {
                 name: "vendorCookie",
                 file: "vendorCookie.js"
+            },
+            {
+                name: "contentEnvironment",
+                file: "contentEnvironment.js"
             },
             {
                 name: "overlayProvider",
@@ -463,6 +471,10 @@ const barApplication = {
             {
                 name: "updater",
                 file: "update.js"
+            },
+            {
+                name: "integration",
+                file: "integration.js"
             },
             {
                 name: "safeBrowsing",
@@ -531,7 +543,7 @@ const barApplication = {
                 }
             }, this);
             this._logger.debug("Removing all files");
-            this._barCore.logging = false;
+            this._barCore.stop();
             fileutils.removeFileSafe(this.directories.appRootDir);
         },
         _init: function BarApp__init() {
@@ -685,7 +697,7 @@ const barApplication = {
         },
         _finalizeParts: function BarApp__finalizeParts(doCleanup, partsFinalizedCallback) {
             var partNames = this._partNames;
-            var asyncFinalizingParts = {};
+            var asyncFinalizingParts = Object.create(null);
             var finalizeInProgress = true;
             var callback = function callback() {
                 if (finalizeInProgress)

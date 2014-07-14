@@ -824,10 +824,10 @@ const installer = {
                     defqs: "DefaultSearch",
                     statsend: "UsageStat"
                 };
-            for ([
-                    flagName,
-                    checkboxName
-                ] in Iterator(flags)) {
+            for (let [
+                        flagName,
+                        checkboxName
+                    ] in Iterator(flags)) {
                 if (!(checkboxName in this.setupData) || !this.setupData[checkboxName].display)
                     delete flags[flagName];
                 flags[flagName] = this.setupData[checkboxName].checked ? 1 : 0;
