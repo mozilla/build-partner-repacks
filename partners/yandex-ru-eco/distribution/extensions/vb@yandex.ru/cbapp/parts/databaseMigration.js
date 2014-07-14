@@ -36,8 +36,8 @@ const databaseMigration = {
                 if (installInfo.isFreshAddonInstall) {
                     fileutils.removeFileSafe(dbFile);
                 } else {
-                    let isDbFileOk = dbFile.exists() && dbFile.isFile() && dbFile.isReadable();
                     if (!installInfo.addonVersionChanged) {
+                        let isDbFileOk = dbFile.exists() && dbFile.isFile() && dbFile.isReadable();
                         if (isDbFileOk) {
                             continue;
                         }
@@ -116,6 +116,9 @@ const schema = {
             },
             7: function schema_fastdial_7(database) {
                 database.execQuery("ALTER TABLE thumbs ADD COLUMN screenshotColor TEXT");
+            },
+            8: function schema_fastdial_8(database) {
+                database.execQuery("ALTER TABLE thumbs ADD COLUMN statParam TEXT");
             }
         },
         usageHistory: {

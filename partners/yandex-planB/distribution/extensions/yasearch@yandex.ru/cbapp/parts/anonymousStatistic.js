@@ -74,7 +74,7 @@ const anonymousStatistic = {
         get confidentialURL() {
             var domain = "legal.yandex.ru";
             var postfix = "";
-            switch (this._application.branding.productInfo.BrandID.toString()) {
+            switch (this._application.branding.brandID) {
             case "ua":
                 domain = "legal.yandex.ua";
                 break;

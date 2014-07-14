@@ -141,7 +141,7 @@ const blacklist = {
                     return;
                 }
                 if (!request.responseXML || request.responseXML.documentElement.nodeName !== "list") {
-                    self._logger.error("Not valid XML: " + request.responseText);
+                    self._logger.error("Not valid XML: " + request.responseText.substr(0, 1000));
                     return;
                 }
                 try {

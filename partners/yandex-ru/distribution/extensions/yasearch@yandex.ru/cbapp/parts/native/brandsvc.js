@@ -8,7 +8,7 @@ const brandingService = {
             return branding.brandPackage.getXMLDocument(docPath, privilegedParser);
         },
         getBrandID: function PartnerPackSvc_getBrandID() {
-            return branding.productInfo.BrandID;
+            return branding.brandID;
         },
         getPackageDate: function PartnerPackSvc_getPackageDate() {
             Cu.reportError("PartnerPackSvc_getPackageDate is deprecated.");

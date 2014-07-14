@@ -1,7 +1,7 @@
 "use strict";
 BarPlatform.Preset = Base.extend({
     constructor: function Preset_constructor(content, address) {
-        this._packageIDs = {};
+        this._packageIDs = Object.create(null);
         this._compEntries = [];
         if (address !== undefined) {
             this._baseURI = netutils.ioService.newURI(address, null, null);
@@ -61,7 +61,7 @@ BarPlatform.Preset = Base.extend({
     },
     get importantComponentIDs() {
         function isImportantEntryF(compID, compEntry) compEntry.isImportant
-        var result = {};
+        var result = Object.create(null);
         sysutils.copyProperties(this._widgetIDs, result, isImportantEntryF);
         sysutils.copyProperties(this._pluginIDs, result, isImportantEntryF);
         return result;
@@ -137,13 +137,13 @@ BarPlatform.Preset = Base.extend({
         return this._pluginEntries;
     },
     get _widgetIDs() {
-        var widgetIDs = {};
+        var widgetIDs = Object.create(null);
         this._widgetEntries.forEach(function (entry) widgetIDs[entry.componentID] = entry);
         this.__defineGetter__("_widgetIDs", function () widgetIDs);
         return this._widgetIDs;
     },
     get _pluginIDs() {
-        var pluginIDs = {};
+        var pluginIDs = Object.create(null);
         this._pluginEntries.forEach(function (entry) pluginIDs[entry.componentID] = entry);
         this.__defineGetter__("_pluginIDs", function () pluginIDs);
         return this._pluginIDs;
@@ -329,7 +329,7 @@ BarPlatform.Preset.ComponentEntry.prototype = {
         this._isImportant = !!isImportant;
         if (settings !== undefined && typeof settings != "object")
             throw new CustomErrors.EArgType("settings", "object", settings);
-        this._settings = sysutils.copyObj(settings) || {};
+        this._settings = sysutils.copyObj(settings) || Object.create(null);
         if (forcedSettings !== undefined && typeof forcedSettings != "object")
             throw new CustomErrors.EArgType("forcedSettings", "object", forcedSettings);
         this._forcedSettings = sysutils.copyObj(forcedSettings);
@@ -352,8 +352,8 @@ BarPlatform.Preset.ComponentEntry.prototype = {
                 settingElements[settingName].push(settingElement);
             }
         }
-        var settings = {};
-        var forcedSettings = {};
+        var settings = Object.create(null);
+        var forcedSettings = Object.create(null);
         for (let name in settingElements) {
             let settingElement = BarPlatform.findBestLocalizedElement(settingElements[name]);
             let settingValue = settingElement.textContent;

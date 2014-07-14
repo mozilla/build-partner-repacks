@@ -253,6 +253,8 @@ const animator = {
                 const CONTENT_PATH = "chrome://" + notifications._application.name + "/content/";
                 let hiddenFrame = misc.hiddenWindows.getFrame("notifications-frame", CONTENT_PATH + "overlay/hiddenwindow.xul");
                 let hiddenDoc = hiddenFrame.contentDocument;
+                if (!hiddenDoc)
+                    return null;
                 let styleElement = hiddenDoc.createElementNS("http://www.w3.org/1999/xhtml", "style");
                 hiddenDoc.documentElement.appendChild(styleElement);
                 let stylesheet = styleElement.sheet;

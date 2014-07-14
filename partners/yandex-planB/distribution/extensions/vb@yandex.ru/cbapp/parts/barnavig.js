@@ -205,7 +205,7 @@ const barnavig = {
                     ver: this._application.addonManager.addonVersion,
                     clid: "",
                     yasoft: this._application.core.CONFIG.APP.TYPE,
-                    brandID: this._application.branding.productInfo.BrandID.toString(),
+                    brandID: this._application.branding.brandID,
                     ui: this._guidString,
                     show: 1,
                     post: 0,
@@ -555,7 +555,7 @@ const barnavig = {
         _barnavigR1String: null,
         get _brandId() {
             delete this._brandId;
-            return this._brandId = this._application.branding.productInfo.BrandID.toString();
+            return this._brandId = this._application.branding.brandID;
         }
     };
 const windowMediatorListener = {
@@ -1013,9 +1013,13 @@ const downloadsStat = {
                     throw new Error("Old 'Downloads' module");
                 let that = this;
                 Downloads.getList(Downloads.PUBLIC).then(function (list) list.removeView(that));
-            } catch (e) {
-                const DownloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
-                DownloadManager.removeListener(this);
+            } catch (ex1) {
+                try {
+                    const DownloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
+                    DownloadManager.removeListener(this);
+                } catch (ex2) {
+                    barnavig._logger.error(ex1 + "\n" + ex2);
+                }
             }
             this._activeDownloads = Object.create(null);
             this._downloadsData = [];
@@ -1063,15 +1067,6 @@ const downloadsStat = {
                 aDownload.target.spec
             ].join("|");
         },
-        __httpCacheSession: null,
-        get httpCacheSession() {
-            if (!this.__httpCacheSession) {
-                const CACHE_SERVICE = Cc["@mozilla.org/network/cache-service;1"].getService(Ci.nsICacheService);
-                this.__httpCacheSession = CACHE_SERVICE.createSession("HTTP", Ci.nsICache.STORE_ANYWHERE, true);
-                this.__httpCacheSession.doomEntriesIfExpired = false;
-            }
-            return this.__httpCacheSession;
-        },
         _getMIMETypeFromRequest: function DlStat__getMIMEFromRequest(aRequest) {
             if (aRequest) {
                 try {
@@ -1082,29 +1077,31 @@ const downloadsStat = {
             }
             return null;
         },
-        _getMIMETypeFromCacheEntry: function DlStat__getMIMEFromCacheEntry(aURL) {
+        _getMIMETypeFromCacheEntry: function DlStat__getMIMEFromCacheEntry(url) {
             var defer = promise.defer();
-            var cacheKey = aURL.replace(/#.*$/, "");
+            var cacheKey = url.replace(/#.*$/, "");
             try {
                 cacheKey = barnavig.application.core.Lib.misc.tryCreateFixupURI(cacheKey).asciiSpec;
             } catch (e) {
             }
             var redirects = 0;
-            var cacheSession = this.httpCacheSession;
             var listener = {
-                    onCacheEntryAvailable: function cacheHelper_listener(descriptor, accessGranted, status) {
+                    onCacheEntryCheck: function DlStat_cacheListener_onCacheEntryCheck(entry, appcache) {
+                        return Ci.nsICacheEntryOpenCallback.ENTRY_WANTED;
+                    },
+                    onCacheEntryAvailable: function DlStat_cacheListener_onCacheEntryAvailable(entry, isnew, appcache, status) {
                         var type = null;
-                        if (status === Cr.NS_OK && descriptor) {
+                        if (status === Cr.NS_OK && entry) {
                             let response = "";
                             try {
-                                response = descriptor.getMetaDataElement("response-head");
+                                response = entry.getMetaDataElement("response-head");
                             } catch (e) {
                             }
                             if (redirects++ < 10) {
                                 let location = /^Location:\s*(.+)$/im.exec(response);
                                 location = location && location[1] || null;
                                 if (location) {
-                                    cacheSession.asyncOpenCacheEntry(location.replace(/#.*$/, ""), Ci.nsICache.ACCESS_READ, listener, true);
+                                    asyncOpenCacheEntry(location.replace(/#.*$/, ""));
                                     return;
                                 }
                             }
@@ -1113,11 +1110,44 @@ const downloadsStat = {
                         }
                         defer.resolve(type);
                     },
-                    onCacheEntryDoomed: function cacheHelper_onCacheEntryDoomed() {
+                    onCacheEntryDoomed: function DlStat_cacheListener_onCacheEntryDoomed() {
                     }
                 };
-            cacheSession.asyncOpenCacheEntry(cacheKey, Ci.nsICache.ACCESS_READ, listener, true);
+            var asyncOpenCacheEntry = function asyncOpenCacheEntry(url) {
+                    if (this._diskCacheStorage) {
+                        this._diskCacheStorage.asyncOpenURI(Services.io.newURI(url, null, null), "", Ci.nsICacheStorage.OPEN_READONLY, listener);
+                    } else {
+                        this._httpCacheSession.asyncOpenCacheEntry(url, Ci.nsICache.ACCESS_READ, {
+                            onCacheEntryAvailable: function asyncOpenCacheEntry_onCacheEntryAvailable(entry, accessGranted, status) {
+                                return listener.onCacheEntryAvailable(entry, false, false, status);
+                            },
+                            onCacheEntryDoomed: function asyncOpenCacheEntry_onCacheEntryDoomed() {
+                            }
+                        }, true);
+                    }
+                }.bind(this);
+            asyncOpenCacheEntry(cacheKey);
             return defer.promise;
+        },
+        __httpCacheSession: null,
+        get _httpCacheSession() {
+            if (!this.__httpCacheSession) {
+                this.__httpCacheSession = Services.cache.createSession("HTTP", Ci.nsICache.STORE_ANYWHERE, true);
+                this.__httpCacheSession.doomEntriesIfExpired = false;
+            }
+            return this.__httpCacheSession;
+        },
+        __diskCacheStorage: null,
+        get _diskCacheStorage() {
+            if (this.__diskCacheStorage === null) {
+                if (Services.cache2 && !sysutils.platformInfo.browser.version.isLessThan("30.a1")) {
+                    let {LoadContextInfo: LoadContextInfo} = Cu.import("resource://gre/modules/LoadContextInfo.jsm", null);
+                    this.__diskCacheStorage = Services.cache2.diskCacheStorage(LoadContextInfo.default, false);
+                } else {
+                    this.__diskCacheStorage = false;
+                }
+            }
+            return this.__diskCacheStorage;
         },
         _getExtensionTypeForMIME: function DlStat__getExtensionTypeForMIME(aMIMEType) {
             var mime = (" " + aMIMEType + " ").toLowerCase();
@@ -1205,9 +1235,13 @@ const downloadsStat = {
                         throw new Error("Old 'Downloads' module");
                     let that = this;
                     Downloads.getList(Downloads.PUBLIC).then(function (list) list.addView(that));
-                } catch (e) {
-                    const DownloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
-                    DownloadManager.addListener(this);
+                } catch (ex1) {
+                    try {
+                        const DownloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
+                        DownloadManager.addListener(this);
+                    } catch (ex2) {
+                        barnavig._logger.error(ex1 + "\n" + ex2);
+                    }
                 }
                 break;
             }

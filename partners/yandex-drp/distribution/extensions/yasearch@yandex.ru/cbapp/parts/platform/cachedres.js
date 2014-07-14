@@ -2,8 +2,8 @@
 BarPlatform.CachedResources = {
     __proto__: new patterns.NotificationSource(),
     init: function Cached_init() {
-        this._resources = {};
-        this._downloaders = {};
+        this._resources = Object.create(null);
+        this._downloaders = Object.create(null);
         this._logger = BarPlatform._getLogger("NetResources");
         this._logger.level = Log4Moz.Level.Config;
         var cacheFile = barApp.directories.appRootDir;
@@ -63,7 +63,7 @@ BarPlatform.CachedResources = {
         requestID = parseInt(requestID, 10);
         return !!requestID && requestID < this._requestID && !(requestID in this._activeRequests);
     },
-    _activeRequests: {},
+    _activeRequests: Object.create(null),
     _resources: null,
     _downloaders: null,
     _logger: null,
@@ -226,8 +226,8 @@ function CachedResource(resDescr) {
     this._resDescr = resDescr;
     this._storageKey = this._makeStorageKey(resDescr);
     this._dataExpTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-    this._responseData = {};
-    this._reqFlags = {};
+    this._responseData = Object.create(null);
+    this._reqFlags = Object.create(null);
     this._queryCache();
     if (this._downloader.responseData.status != -1) {
         this._updateFromDownloader();
@@ -299,7 +299,7 @@ CachedResource.prototype = {
                 try {
                     BarPlatform.CachedResources._cache.eraseRecord(this._storageKey);
                 } finally {
-                    this._responseData = {};
+                    this._responseData = Object.create(null);
                     this._currDataTime = undefined;
                     this._onChanged("invalidated");
                 }
@@ -316,7 +316,7 @@ CachedResource.prototype = {
             this.update();
         } else {
             this._dataExpTimer.cancel();
-            this._responseData = {};
+            this._responseData = Object.create(null);
             this._currDataTime = undefined;
             this._onChanged("expired");
         }

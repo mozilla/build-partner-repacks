@@ -37,9 +37,9 @@ const componentsUsage = {
             this._logger.debug("Statistics:" + "\nshort actions:\n" + sysutils.dump(this._shortActions, 2) + "\nsys actions:\n" + sysutils.dump(this._sysActions, 2) + "\ncustom actions:\n" + sysutils.dump(this._customActions, 2));
         },
         clear: function componentsUsage_clear() {
-            this._shortActions = {};
-            this._sysActions = {};
-            this._customActions = {};
+            this._shortActions = Object.create(null);
+            this._sysActions = Object.create(null);
+            this._customActions = Object.create(null);
         },
         logCustomAction: function componentsUsage_logCustomAction(componentID, actionID) {
             this._incAction(this._customActions, componentID, actionID);

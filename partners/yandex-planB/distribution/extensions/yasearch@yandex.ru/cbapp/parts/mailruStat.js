@@ -49,7 +49,7 @@ const mailruStat = {
                 if (installedVersion == "0") {
                     usage = "install";
                 }
-                this._application.preferences.set(ADDON_INSTALLED_VERSION_PREF_NAME, this._sputnik.version);
+                this._application.preferences.set(ADDON_INSTALLED_VERSION_PREF_NAME, String(this._sputnik.version));
                 res.ms = usage + "|" + this._sputnik.version;
             }
             if (this._guard.version) {
@@ -58,7 +58,7 @@ const mailruStat = {
                 if (installedVersion == "0") {
                     usage = "install";
                 }
-                this._application.preferences.set(UTILITY_INSTALLED_VERSION_PREF_NAME, this._guard.version);
+                this._application.preferences.set(UTILITY_INSTALLED_VERSION_PREF_NAME, String(this._guard.version));
                 res.mg = usage + "|" + this._guard.version;
             }
             return res;

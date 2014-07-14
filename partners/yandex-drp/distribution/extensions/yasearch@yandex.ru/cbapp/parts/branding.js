@@ -69,7 +69,7 @@ const branding = {
             return this._brandTemplateMap;
         },
         getYandexFeatureState: new function () {
-            var cache = {};
+            var cache = Object.create(null);
             return function PartnerPack_getYandexFeatureState(aFeatureName) {
                 if (aFeatureName in cache)
                     return cache[aFeatureName];
@@ -332,7 +332,7 @@ const branding = {
         },
         _makeBrandTemplateMap: function PartnerPack__makeBrandTemplateMap(brandPackage) {
             var productInfo = this._getBPProductInfo(brandPackage || this._package);
-            var result = {};
+            var result = Object.create(null);
             result.brandID = productInfo.BrandID;
             for (let [
                         _,

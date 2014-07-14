@@ -7,7 +7,6 @@ const {
         results: Cr
     } = Components;
 Cu.import("resource://gre/modules/Services.jsm");
-const REWRITE_RULES_URL = "https://storage.ape.yandex.net/get/elmt/rlist";
 const ONE_HOUR_IN_SEC = 60 * 60;
 const UNIQUE_SESSION_KEY = Date.now();
 const urlRewrite = {
@@ -22,12 +21,29 @@ const urlRewrite = {
             this._stopObservingRequests();
             this._rewriteRules = null;
             this.__httpCacheSession = null;
+            this.__diskCacheStorage = null;
             this._logger = null;
             this._application = null;
         },
+        get REWRITE_RULES_URL() {
+            var url = "https://storage.ape.yandex.net/get/elmt/";
+            switch (this._application.branding.brandID) {
+            case "ua":
+                url += "rlistua";
+                break;
+            case "tb":
+                url += "rlisttb";
+                break;
+            default:
+                url += "rlist";
+                break;
+            }
+            delete this.REWRITE_RULES_URL;
+            return this.REWRITE_RULES_URL = url;
+        },
         _addRequest: function urlRewrite__addRequest() {
             var descrData = {
-                    url: REWRITE_RULES_URL,
+                    url: this.REWRITE_RULES_URL,
                     method: "GET",
                     updateInterval: this._updateInterval,
                     cacheKeys: { uniqueSessionKey: UNIQUE_SESSION_KEY }
@@ -119,29 +135,58 @@ const urlRewrite = {
         __httpCacheSession: null,
         get _httpCacheSession() {
             if (!this.__httpCacheSession) {
-                const CACHE_SERVICE = Cc["@mozilla.org/network/cache-service;1"].getService(Ci.nsICacheService);
-                this.__httpCacheSession = CACHE_SERVICE.createSession("HTTP", Ci.nsICache.STORE_ANYWHERE, true);
+                this.__httpCacheSession = Services.cache.createSession("HTTP", Ci.nsICache.STORE_ANYWHERE, true);
                 this.__httpCacheSession.doomEntriesIfExpired = false;
             }
             return this.__httpCacheSession;
         },
-        onCacheEntryAvailable: function urlRewrite_onCacheEntryAvailable(descriptor, accessGranted, status) {
-            if (status !== Cr.NS_OK || !descriptor)
+        __diskCacheStorage: null,
+        get _diskCacheStorage() {
+            if (this.__diskCacheStorage === null) {
+                if (Services.cache2 && !this._application.core.Lib.sysutils.platformInfo.browser.version.isLessThan("30.a1")) {
+                    let {LoadContextInfo: LoadContextInfo} = Cu.import("resource://gre/modules/LoadContextInfo.jsm", null);
+                    this.__diskCacheStorage = Services.cache2.diskCacheStorage(LoadContextInfo.default, false);
+                } else {
+                    this.__diskCacheStorage = false;
+                }
+            }
+            return this.__diskCacheStorage;
+        },
+        onCacheEntryAvailable: function urlRewrite_onCacheEntryAvailable(entry, isnew, appcache, status) {
+            if (status !== Cr.NS_OK || !entry)
                 return;
             const CACHE_EXPIRE_DIFF_IN_SEC = 10;
             try {
-                let expirationTime = descriptor.lastModified + (this._updateInterval - CACHE_EXPIRE_DIFF_IN_SEC);
-                descriptor.setExpirationTime(expirationTime);
-                descriptor.markValid();
+                if (entry.lastModified) {
+                    let expirationTime = entry.lastModified + (this._updateInterval - CACHE_EXPIRE_DIFF_IN_SEC);
+                    entry.setExpirationTime(expirationTime);
+                    if ("markValid" in entry)
+                        entry.markValid();
+                }
             } catch (e) {
             }
         },
         onCacheEntryDoomed: function urlRewrite_onCacheEntryDoomed() {
         },
+        onCacheEntryCheck: function urlRewrite_onCacheEntryCheck(entry, appcache) {
+            return Ci.nsICacheEntryOpenCallback.ENTRY_WANTED;
+        },
         _recalculateRewriteRules: function urlRewrite__recalculateRewriteRules() {
             if (!this._cachedResource)
                 return;
-            this._httpCacheSession.asyncOpenCacheEntry(REWRITE_RULES_URL, Ci.nsICache.READ_WRITE, this, true);
+            new this._application.core.Lib.sysutils.Timer(function () {
+                if (this._diskCacheStorage) {
+                    this._diskCacheStorage.asyncOpenURI(Services.io.newURI(this.REWRITE_RULES_URL, null, null), "", Ci.nsICacheStorage.OPEN_READONLY, this);
+                } else {
+                    this._httpCacheSession.asyncOpenCacheEntry(this.REWRITE_RULES_URL, Ci.nsICache.ACCESS_READ, {
+                        onCacheEntryAvailable: function asyncOpenCacheEntry_onCacheEntryAvailable(entry, accessGranted, status) {
+                            return urlRewrite.onCacheEntryAvailable(entry, false, false, status);
+                        },
+                        onCacheEntryDoomed: function asyncOpenCacheEntry_onCacheEntryDoomed() {
+                        }
+                    }, true);
+                }
+            }.bind(this), 1000);
             var json;
             try {
                 json = this._cachedResource.contentAsJSON;

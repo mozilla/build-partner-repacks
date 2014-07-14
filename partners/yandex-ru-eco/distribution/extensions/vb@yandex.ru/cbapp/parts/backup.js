@@ -17,7 +17,7 @@ const backup = {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
             this._logger = application.getLogger("Backup");
-            this.__proto__ = new patterns.NotificationSource();
+            patterns.NotificationSource.objectMixIn(this);
             this._initDatabase();
             var now = Math.round(Date.now() / 1000);
             var lastBackupTimeSec = this._application.preferences.get(PREF_LASTDUMP_NAME, 0);
@@ -139,30 +139,34 @@ const backup = {
                                 let needsUpdate = [
                                         "title",
                                         "backgroundColor",
-                                        "favicon"
+                                        "favicon",
+                                        "screenshotColor",
+                                        "statParam"
                                     ].some(function (field) {
                                         return thumbData.thumb[field] !== rowsData[0][field];
                                     });
                                 needsUpdate = needsUpdate || (!thumbData.screenshot || thumbData.screenshot.color !== rowsData[0].screenshotColor);
                                 if (!needsUpdate)
                                     return callback(null, rowId);
-                                self._database.execQueryAsync("UPDATE thumbs SET title = :title, backgroundColor = :backgroundColor, favicon = :favicon, screenshotColor = :screenshotColor WHERE url = :url", {
+                                self._database.execQueryAsync("UPDATE thumbs SET title = :title, backgroundColor = :backgroundColor, favicon = :favicon, screenshotColor = :screenshotColor, statParam = :statParam WHERE url = :url", {
                                     url: thumbData.source,
                                     title: thumbData.thumb.title || null,
                                     backgroundColor: thumbData.thumb.backgroundColor || null,
                                     favicon: thumbData.thumb.favicon || null,
-                                    screenshotColor: thumbData.screenshot && thumbData.screenshot.color || null
+                                    screenshotColor: thumbData.screenshot && thumbData.screenshot.color || null,
+                                    statParam: thumbData.thumb.statParam || null
                                 }, function (rowsData, storageError) {
                                     callback(storageError, rowId);
                                 });
                             } else {
-                                self._database.execQueryAsync("INSERT INTO thumbs (url, title, backgroundImage, backgroundColor, favicon, insertTimestamp, screenshotColor) VALUES (:url, :title, '', :backgroundColor, :favicon, :ts, :screenshotColor)", {
+                                self._database.execQueryAsync("INSERT INTO thumbs (url, title, backgroundImage, backgroundColor, favicon, insertTimestamp, screenshotColor, statParam) VALUES (:url, :title, '', :backgroundColor, :favicon, :ts, :screenshotColor, :statParam)", {
                                     url: thumbData.source,
                                     title: thumbData.thumb.title || null,
                                     backgroundColor: thumbData.thumb.backgroundColor || null,
                                     favicon: thumbData.thumb.favicon || null,
                                     ts: Math.round(Date.now() / 1000),
-                                    screenshotColor: thumbData.screenshot && thumbData.screenshot.color || null
+                                    screenshotColor: thumbData.screenshot && thumbData.screenshot.color || null,
+                                    statParam: thumbData.thumb.statParam || null
                                 }, function (rowsData, storageError) {
                                     if (storageError)
                                         return callback(storageError);

@@ -10,19 +10,174 @@ const EXTENSION_PATH = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsI
 Cu.import(EXTENSION_PATH + "config.js");
 const APP_NAME = VB_CONFIG.APP.NAME;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+function Log(libs, rootDir) {
+    this._libs = libs;
+    this._rootDir = rootDir;
+    this._prefs = libs.Preferences;
+    const Log4Moz = libs.Log4Moz;
+    Log4Moz.repository.rootLogger.level = Log4Moz.Level.All;
+    this._coreLogger = Log4Moz.repository.getLogger(VB_CONFIG.APP.NAME + ".Core");
+    this._coreLogger.level = Log4Moz.Level.Debug;
+    this._logAppenders = null;
+}
+Log.prototype = {
+    fatal: function Log_fatal(err, msg) {
+        return this._logError("fatal", err, msg);
+    },
+    error: function Log_error(err, msg) {
+        return this._logError("error", err, msg);
+    },
+    start: function Log_start() {
+        this._logAppenders = Log.APPENDERS.map(function (LoggerClass) {
+            return new LoggerClass(this._libs, this._rootDir);
+        }, this);
+        this._logAppenders.forEach(function (logger) {
+            for (let prefName in logger.prefs) {
+                logger.prefs[prefName](this._prefs.get(prefName, null));
+                this._prefs.observe(prefName, this);
+            }
+        }, this);
+    },
+    stop: function Log_stop() {
+        this._logAppenders.forEach(function (logger) {
+            if (logger.prefs) {
+                for (let prefName in logger.prefs) {
+                    this._prefs.ignore(prefName, this);
+                }
+            }
+            logger.stop();
+        }, this);
+        this._logAppenders = null;
+    },
+    observe: function Log_observe(subject, topic, prefName) {
+        if (topic == "nsPref:changed") {
+            this._logAppenders.forEach(function (logger) {
+                if (logger.prefs && logger.prefs[prefName]) {
+                    logger.prefs[prefName](this._prefs.get(prefName, null));
+                }
+            }, this);
+        }
+    },
+    _logError: function Log__logError(level, err, msg) {
+        var text = err.name + ": " + (msg ? msg + ";\n" + err.message : err.message);
+        var fileName = err.fileName || err.filename;
+        if (fileName) {
+            text += "\nin " + fileName + "@" + err.lineNumber;
+        }
+        this._coreLogger[level](text);
+        if (err.stack) {
+            this._coreLogger.debug(err.stack);
+        }
+    }
+};
+Log.getLogLevelHandler = function Log_getLogLevelHandler(appender) {
+    return function LogLevelHandler(level) {
+        level = parseInt(level, 10);
+        level >= 0 ? level : 100;
+        appender.level = level;
+    };
+};
+Log.getPrefName = function (name) {
+    return [
+        "extensions",
+        VB_CONFIG.APP.ID,
+        "logging",
+        name
+    ].join(".");
+};
+Log.APPENDERS = [
+    function Log_APPENDERS_console(libs) {
+        var basicFormatter = new libs.Log4Moz.BasicFormatter();
+        var appender = new libs.Log4Moz.ConsoleAppender(basicFormatter);
+        var appLogger = libs.Log4Moz.repository.getLogger(VB_CONFIG.APP.NAME);
+        appLogger.addAppender(appender);
+        this.stop = function Log_APPENDERS_console_stop() {
+            appLogger.removeAppender(appender);
+        };
+        this.prefs = {};
+        this.prefs[Log.getPrefName("console.level")] = Log.getLogLevelHandler(appender);
+    },
+    function Log_APPENDERS_stdout(libs) {
+        var basicFormatter = new libs.Log4Moz.BasicFormatter();
+        var appender = new libs.Log4Moz.DumpAppender(basicFormatter);
+        var rootLogger = libs.Log4Moz.repository.rootLogger;
+        rootLogger.addAppender(appender);
+        this.stop = function Log_APPENDERS_stdout_stop() {
+            rootLogger.removeAppender(appender);
+        };
+        this.prefs = {};
+        this.prefs[Log.getPrefName("stdout.level")] = Log.getLogLevelHandler(appender);
+    },
+    function Log_APPENDERS_file(libs, rootDir) {
+        rootDir.append("debug.log");
+        var basicFormatter = new libs.Log4Moz.BasicFormatter();
+        var appender = new libs.Log4Moz.RotatingFileAppender(rootDir, basicFormatter);
+        var rootLogger = libs.Log4Moz.repository.rootLogger;
+        rootLogger.addAppender(appender);
+        this.stop = function Log_APPENDERS_file_stop() {
+            appender.closeStream();
+            rootLogger.removeAppender(appender);
+        };
+        this.prefs = {};
+        this.prefs[Log.getPrefName("file.level")] = Log.getLogLevelHandler(appender);
+    },
+    function Log_APPENDERS_socket(libs) {
+        var xmlFormatter = new libs.Log4Moz.XMLFormatter();
+        var rootLogger = libs.Log4Moz.repository.rootLogger;
+        var appender = getSocket("localhost:4448");
+        this.stop = closeSocket;
+        this.prefs = {};
+        this.prefs[Log.getPrefName("socket.level")] = Log.getLogLevelHandler(appender);
+        this.prefs[Log.getPrefName("socket.address")] = function Log_APPENDERS_socket_pref_address(address) {
+            if (address) {
+                closeSocket();
+                appender = getSocket(address);
+            }
+        };
+        function closeSocket() {
+            appender.closeStream();
+            rootLogger.removeAppender(appender);
+        }
+        function getSocket(address) {
+            var [
+                    host,
+                    port
+                ] = address.split(":");
+            var appender = new libs.Log4Moz.SocketAppender(host, port, xmlFormatter);
+            rootLogger.addAppender(appender);
+            return appender;
+        }
+    },
+    function Log_APPENDERS_browserConsole(libs) {
+        var logger = libs.Log4Moz.repository.getLogger("Browser.Console");
+        logger.level = libs.Log4Moz.Level.Error;
+        libs.ConsoleListener.addLogger(logger);
+        this.stop = function Log_APPENDERS_browserConsole_stop() {
+            libs.ConsoleListener.removeLogger(logger);
+        };
+    }
+];
 function VBCore() {
-    this._loadModules();
+    this._libs = this._moduleFileNames.map(function VBCore_map(fileName) {
+        return this._modulesPath + fileName;
+    }, this).reduce(function VBCore_reduce(libs, filePath) {
+        Cu.import(filePath, libs);
+        return libs;
+    }, {});
+    this._log = new Log(this._libs, this.rootDir);
     this._observerService.addObserver(this, "profile-after-change", false);
     this._observerService.addObserver(this, "quit-application", false);
 }
 ;
 VBCore.prototype = {
-    Lib: {},
+    get Lib() {
+        return this._libs;
+    },
     get CONFIG() {
         return VB_CONFIG;
     },
     get appName() {
-        return this._appName;
+        return APP_NAME;
     },
     get buildDate() {
         return new Date(this._buildTimeStamp);
@@ -58,22 +213,13 @@ VBCore.prototype = {
     get eventTopics() {
         return this._globalEvents;
     },
-    get logging() {
-        return this._logging;
-    },
-    set logging(newVal) {
-        if (this._logging == !!newVal)
-            return;
-        this._logging = !this._logging;
-        if (this._logging)
-            this._startLogging();
-        else
-            this._stopLogging();
+    cleanup: function () {
+        this._log.stop();
     },
     observe: function VBCore_observe(subject, topic, data) {
         switch (topic) {
         case "profile-after-change":
-            this._startLogging();
+            this._log.start();
             this._protocol = new this.Lib.SimpleProtocol(VB_CONFIG.APP.PROTOCOL);
             this._initApp();
             break;
@@ -81,28 +227,23 @@ VBCore.prototype = {
             if (this._appObj)
                 this._destroyApp();
             break;
-        case "nsPref:changed":
-            this._updateLoggers(data == this._dumpLogLevelPrefName, data == this._consoleLogLevelPrefName, data == this._fileLogLevelPrefName, data == this._socketLogLevelPrefName);
-            break;
         }
     },
     _buildTimeStamp: Date.parse(VB_CONFIG.BUILD.DATE),
-    _appName: APP_NAME,
-    _modulesPath: "resource://" + APP_NAME + "-mod/",
     _appResPath: "resource://" + APP_NAME + "-app/",
     _appChromePath: "chrome://" + APP_NAME + "/",
+    _modulesPath: "resource://" + APP_NAME + "-mod/",
+    _moduleFileNames: [
+        "Log4Moz.jsm",
+        "Preferences.jsm",
+        "WindowListener.jsm",
+        "AddonManager.jsm",
+        "Foundation.jsm",
+        "SimpleProtocol.jsm"
+    ],
     _protocol: null,
     _appRoot: null,
     _appObj: null,
-    _dumpLogLevelPrefName: "extensions." + VB_CONFIG.APP.ID + ".logging.stdout.level",
-    _consoleLogLevelPrefName: "extensions." + VB_CONFIG.APP.ID + ".logging.console.level",
-    _fileLogLevelPrefName: "extensions." + VB_CONFIG.APP.ID + ".logging.file.level",
-    _socketLogLevelPrefName: "extensions." + VB_CONFIG.APP.ID + ".logging.socket.level",
-    _dumpAppender: null,
-    _consoleAppender: null,
-    _fileAppender: null,
-    _socketAppender: null,
-    _logging: true,
     _globalEvents: {
         CLOUD_DATA_RECEIVED_EVENT: APP_NAME + "-cloud-data-received",
         THUMBS_STRUCTURE_READY_EVENT: APP_NAME + "-internal-thumbs-ready",
@@ -118,81 +259,7 @@ VBCore.prototype = {
         SYNC_SERVICE_PINNED_ENABLED_FINISHED: "ybar:esync:engine:Pinned:init:finish",
         SYNC_SERVICE_PINNED_DISABLED: "ybar:esync:engine:Pinned:finalize:start"
     },
-    _moduleFileNames: [
-        "Log4Moz.jsm",
-        "Preferences.jsm",
-        "WindowListener.jsm",
-        "AddonManager.jsm",
-        "Foundation.jsm",
-        "SimpleProtocol.jsm"
-    ],
     _observerService: Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService),
-    _loadModules: function VBCore__loadModules() {
-        const Lib = this.Lib;
-        const prePath = this._modulesPath;
-        this._moduleFileNames.forEach(function loadModule(fileName) {
-            Cu.import(prePath + fileName, Lib);
-        });
-    },
-    _startLogging: function VBCore__startLogging() {
-        const Log4Moz = this.Lib.Log4Moz;
-        var root = Log4Moz.repository.rootLogger;
-        root.level = Log4Moz.Level.All;
-        var formatter = new Log4Moz.BasicFormatter();
-        this._consoleAppender = new Log4Moz.ConsoleAppender(formatter);
-        root.addAppender(this._consoleAppender);
-        this._dumpAppender = new Log4Moz.DumpAppender(formatter);
-        root.addAppender(this._dumpAppender);
-        var logFile = this.rootDir;
-        logFile.append("debug.log");
-        this._fileAppender = new Log4Moz.RotatingFileAppender(logFile, formatter);
-        root.addAppender(this._fileAppender);
-        var [
-                host,
-                port
-            ] = "localhost:4448".split(":");
-        this._socketAppender = new Log4Moz.SocketAppender(host, port, new Log4Moz.XMLFormatter());
-        root.addAppender(this._socketAppender);
-        this._logger = Log4Moz.repository.getLogger(this.appName + ".Core");
-        this._logger.level = Log4Moz.Level.Debug;
-        this._updateLoggers(true, true, true, true);
-        this.Lib.Preferences.observe(this._dumpLogLevelPrefName, this);
-        this.Lib.Preferences.observe(this._consoleLogLevelPrefName, this);
-        this.Lib.Preferences.observe(this._fileLogLevelPrefName, this);
-        this.Lib.Preferences.observe(this._socketLogLevelPrefName, this);
-    },
-    _stopLogging: function VBCore__stopLogging() {
-        this.Lib.Preferences.ignore(this._dumpLogLevelPrefName, this);
-        this.Lib.Preferences.ignore(this._consoleLogLevelPrefName, this);
-        this.Lib.Preferences.ignore(this._fileLogLevelPrefName, this);
-        this.Lib.Preferences.ignore(this._socketLogLevelPrefName, this);
-        var root = this.Lib.Log4Moz.repository.rootLogger;
-        root.removeAppender(this._consoleAppender);
-        this._consoleAppender = null;
-        root.removeAppender(this._dumpAppender);
-        this._dumpAppender = null;
-        this._fileAppender.closeStream();
-        root.removeAppender(this._fileAppender);
-        this._fileAppender = null;
-        this._socketAppender.closeStream();
-        root.removeAppender(this._socketAppender);
-        this._socketAppender = null;
-    },
-    _updateLoggers: function VBCore__updateLoggers(checkDumpSetting, checkConsoleSetting, checkFileSetting, checkSocketSetting) {
-        const Preferences = this.Lib.Preferences;
-        function readLogLevel(prefName) {
-            var logLevel = parseInt(Preferences.get(prefName, NaN), 10);
-            return isNaN(logLevel) || logLevel < 0 ? 100 : logLevel;
-        }
-        if (checkDumpSetting)
-            this._dumpAppender.level = readLogLevel(this._dumpLogLevelPrefName);
-        if (checkConsoleSetting)
-            this._consoleAppender.level = readLogLevel(this._consoleLogLevelPrefName);
-        if (checkFileSetting)
-            this._fileAppender.level = readLogLevel(this._fileLogLevelPrefName);
-        if (checkSocketSetting)
-            this._socketAppender.level = readLogLevel(this._socketLogLevelPrefName);
-    },
     _initApp: function VBCore__initApp() {
         try {
             let appModule = {};
@@ -201,30 +268,19 @@ VBCore.prototype = {
             this._appObj.init(this);
         } catch (e) {
             this._appObj = null;
-            this._logger.fatal("Couldn't initialize application. " + this._formatError(e));
-            if (e.stack) {
-                this._logger.debug(e.stack);
-            }
+            this._log.fatal(e, "Couldn't initialize application.");
         }
     },
     _destroyApp: function VBCore__destroyApp() {
-        try {
-            this._appObj.finalize(function () {
-                this._stopLogging();
+        this._appObj.finalize(function () {
+            try {
                 this._protocol.unregister();
-                this._appObj = null;
-            }.bind(this));
-        } catch (e) {
-            this._logger.error(this._formatError(e));
-            this._logger.debug(e.stack);
-        }
-    },
-    _formatError: function VBCore__formatError(e) {
-        var text = e.name + ": " + e.message;
-        var fileName = e.fileName || e.filename;
-        if (fileName)
-            text += "\nin " + fileName + "@" + e.lineNumber;
-        return text;
+            } catch (e) {
+                this._log.error(e, "Couldn't unregister protocol.");
+            }
+            this._log.stop();
+            this._appObj = null;
+        }.bind(this));
     },
     classDescription: "Yandex Visual Bookmarks core JS component",
     classID: VB_CONFIG.CORE.CLASS_ID,

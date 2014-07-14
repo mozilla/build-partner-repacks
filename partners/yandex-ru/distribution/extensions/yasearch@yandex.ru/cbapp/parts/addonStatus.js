@@ -113,7 +113,7 @@ const addonStatus = {
                     this._sendRequest(this._appendTimeParamsToURLString(query));
                 break;
             case this._collectTimer:
-                this._logData();
+                this._logData({ stat: "dayuse" });
                 this._collectTimer.initWithCallback(this, this._consts.CHECK_INTERVAL * 1000, this._collectTimer.TYPE_ONE_SHOT);
                 break;
             default:
@@ -140,6 +140,12 @@ const addonStatus = {
         },
         clearAddonEvents: function addonStatus_clearAddonEvents() {
             this._database.execQuery("DELETE FROM addonevents");
+        },
+        testSendStat: function addonStatus_testSendStat() {
+            this.notify(this._requestTimer);
+        },
+        testCollectStat: function addonStatus_testCollectStat() {
+            this.notify(this._collectTimer);
         },
         _collectTimer: null,
         _requestTimer: null,
@@ -366,7 +372,7 @@ const addonStatus = {
             return this._AppType;
         },
         get _appBrandID() {
-            return this._application.branding.productInfo.BrandID.toString();
+            return this._application.branding.brandID;
         },
         get _lastCollectTime() {
             var collectTimePrefValue = this._application.preferences.get(this._consts.LAST_COLLECT_TIME_PREF_NAME, 0);

@@ -11,7 +11,7 @@ function Class($super, $members, $statics) {
     };
     var prototype = {};
     if ($super) {
-        prototype.__proto__ = $super.prototype;
+        prototype = Object.create($super.prototype);
         prototype.constructor = $class;
     }
     $class.$super = $super;

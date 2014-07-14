@@ -180,6 +180,28 @@ const application = {
                 return false;
             }
         },
+        getHostAliases: function VBApp_getHostAliases(searchingHost) {
+            var xmlDoc;
+            try {
+                xmlDoc = this.branding.brandPackage.getXMLDocument("fastdial/domaingroups.xml");
+            } catch (err) {
+            }
+            if (!xmlDoc)
+                return [];
+            var matchedDomainGroupName;
+            var domainGroups = Object.create(null);
+            Array.forEach(xmlDoc.querySelectorAll("domain"), function (domainNode) {
+                var domainGroupName = domainNode.parentNode.getAttribute("name");
+                var domain = domainNode.textContent;
+                if (searchingHost === domain)
+                    matchedDomainGroupName = domainGroupName;
+                domainGroups[domainGroupName] = domainGroups[domainGroupName] || [];
+                domainGroups[domainGroupName].push(domain);
+            });
+            if (matchedDomainGroupName)
+                return domainGroups[matchedDomainGroupName];
+            return [];
+        },
         _consts: {
             DOWNLOAD_HOST_NAME: "download.yandex.ru",
             BARQA_HOST_NAME: "bar.qa.yandex.net",
@@ -241,7 +263,7 @@ const application = {
         _finalCleanup: function VBApp__finalCleanup(aAddonId) {
             this._logger.debug("Cleanup...");
             this._logger.debug("Removing all files");
-            this._barCore.logging = false;
+            this._barCore.cleanup();
             fileutils.removeFileSafe(this.directories.appRootDir);
             this.preferences.resetBranch("");
         },

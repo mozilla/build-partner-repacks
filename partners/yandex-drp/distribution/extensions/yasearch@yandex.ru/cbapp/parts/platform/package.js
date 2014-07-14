@@ -200,8 +200,8 @@ BarPlatform.ComponentPackage = BarPlatform.FilePackage.extend({
         if (typeof id != "string")
             throw new CustomErrors.EArgType("id", "String", id);
         this._id = id;
-        this._settings = {};
-        this._units = {};
+        this._settings = Object.create(null);
+        this._units = Object.create(null);
     },
     finalize: function ComponentPackage_finalize() {
         for (let unitName in this._units) {

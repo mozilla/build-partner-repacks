@@ -54,10 +54,14 @@ Screenshot.prototype = {
         screenshotsCache[this.sourceUrl].color = val;
         screenshotsCache[this.sourceUrl].fontColor = screenshots._application.colors.getFontColorByBackgroundColor(val);
     },
-    fileAvailable: function Screenshot_fileAvailable() {
+    get fileAvailable() {
         return this.file.exists() && this.file.isFile() && this.file.isReadable();
     },
+    get nonZeroFileAvailable() {
+        return this.fileAvailable && this.file.fileSize > 0;
+    },
     shot: function Screenshot_shot() {
+        this.file.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, parseInt("0666", 8));
         var url = this.sourceUrl;
         try {
             this.uri.QueryInterface(Ci.nsIURL);
@@ -78,15 +82,6 @@ Screenshot.prototype = {
             color: this.color,
             fontColor: this.fontColor
         };
-    },
-    needUpdate: function Screenshot_needUpdate() {
-        if (!this.fileAvailable()) {
-            return true;
-        }
-        if (Math.abs(Date.now() - new Date(this.file.lastModifiedTime).getTime()) > SCREENSHOTS_UPDATE_TIME) {
-            return true;
-        }
-        return false;
     },
     remove: function Screenshot_remove() {
         fileutils.removeFileSafe(this.file);
@@ -189,7 +184,7 @@ const screenshots = {
             toBeSaved.forEach(function (almostSaved) {
                 var nugtScreenshot = this.createScreenshotInstance(almostSaved.url);
                 var nugtThumbData = almostSaved.thumbData;
-                if (screenshot.fileAvailable() && screenshot.name !== nugtScreenshot.name) {
+                if (screenshot.nonZeroFileAvailable && screenshot.name !== nugtScreenshot.name) {
                     screenshot.file.copyTo(nugtScreenshot.parent, nugtScreenshot.name);
                 }
                 nugtScreenshot.color = aData.color;

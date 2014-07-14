@@ -12,7 +12,7 @@ const HIDDEN_WND_URLS = {
         "resource://gre-resources/hiddenWindow.html": 1,
         "chrome://browser/content/hiddenWindow.xul": 1
     };
-const SLICES_REGISTRY = {};
+var slicesRegistry = Object.create(null);
 function Slice({
     url: url,
     disposable: disposable,
@@ -26,7 +26,7 @@ function Slice({
         this._id,
         url
     ]);
-    SLICES_REGISTRY[this._id] = this;
+    slicesRegistry[this._id] = this;
     try {
         this._browserId = slices._application.name + "-cb-slices-browser-" + this._id;
         this._windowProperties = windowProperties || {};
@@ -38,7 +38,7 @@ function Slice({
         this._w = this._windowProperties.width || -1;
         this._h = this._windowProperties.height || -1;
     } catch (e) {
-        delete SLICES_REGISTRY[this._id];
+        delete slicesRegistry[this._id];
         slices._logger.error(e);
         slices._logger.debug(e.stack);
     }
@@ -97,7 +97,7 @@ Slice.prototype = {
             if (browser && browser.parentNode)
                 browser.parentNode.removeChild(browser);
         } finally {
-            delete SLICES_REGISTRY[this._id];
+            delete slicesRegistry[this._id];
         }
     },
     onHidden: function Slice_onHidden() {
@@ -139,7 +139,7 @@ const slices = {
             for (let [
                         ,
                         slice
-                    ] in Iterator(SLICES_REGISTRY)) {
+                    ] in Iterator(slicesRegistry)) {
                 try {
                     slice.destroy();
                 } catch (e) {
@@ -153,15 +153,14 @@ const slices = {
             return new Slice(aSliceData);
         },
         findSliceByID: function Slices_findSliceByID(sliceID) {
-            return SLICES_REGISTRY[sliceID] || null;
+            return slicesRegistry[sliceID] || null;
         },
         observe: function Slices_observe(aSubject, aTopic, aData) {
             switch (aTopic) {
             case this._consts.GLOBAL_CHROME_DOC_CREATED:
-                this._setupInnerBrowser(aSubject.window, true);
-                break;
             case this._consts.GLOBAL_CONTENT_DOC_CREATED:
-                this._setupInnerBrowser(aSubject.defaultView || aSubject, false);
+                aSubject.QueryInterface(Ci.nsIDOMWindow);
+                this._setupInnerBrowser(aSubject);
                 break;
             }
         },
@@ -169,27 +168,21 @@ const slices = {
             GLOBAL_CONTENT_DOC_CREATED: "content-document-global-created",
             GLOBAL_CHROME_DOC_CREATED: "chrome-document-global-created"
         },
-        _setupInnerBrowser: function Slices__setupInnerBrowser(win, isChrome) {
+        _setupInnerBrowser: function Slices__setupInnerBrowser(win) {
             if (!win)
                 return;
             var wndNameMatch = this._wndNamePattern.exec(win.name);
             if (!wndNameMatch)
                 return;
             var sliceID = wndNameMatch[1];
-            var slice = SLICES_REGISTRY[sliceID];
+            var slice = slicesRegistry[sliceID];
             if (!slice) {
                 this._logger.warn("Slice not found: " + sliceID);
                 return;
             }
-            var cw = win;
-            if (!cw.wrappedJSObject)
-                cw = new XPCNativeWrapper(cw);
-            var sandbox = new Cu.Sandbox(cw, {
-                    "sandboxName": win.name,
-                    "sandboxPrototype": cw,
-                    "wantXrays": true
-                });
-            win = cw.wrappedJSObject;
+            if (!win.wrappedJSObject)
+                win = new XPCNativeWrapper(win);
+            win = win.wrappedJSObject;
             for (let [
                         propName,
                         propVal

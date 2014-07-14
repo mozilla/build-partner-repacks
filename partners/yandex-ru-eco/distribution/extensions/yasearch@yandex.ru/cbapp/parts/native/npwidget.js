@@ -5,9 +5,9 @@ var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
                 throw new CustomErrors.EArgRange("nativeModulePath", "FilePath", nativeModulePath);
             this.base(protoID, name, unique, iconPath, unit);
             this._nativeModulePath = nativeModulePath;
-            this._settingsMap = {};
-            this._packageSettings = {};
-            this._instSettings = {};
+            this._settingsMap = Object.create(null);
+            this._packageSettings = Object.create(null);
+            this._instSettings = Object.create(null);
             this._logger = NativeComponents._getLogger(BarPlatform.makeCompLoggerName(unit));
         },
         createInstance: function NativeWidgetPrototype_createInstance(instanceID, widgetHost, instanceSettings) {

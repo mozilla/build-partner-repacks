@@ -15,11 +15,16 @@ const PREF_LAST_REQUEST_TIME = "backgroundImages.lastRequestTime";
 const PREF_HEADER_LASTMODIFIED = "backgroundImages.lastModified";
 const PREF_LAST_SYNCED_VERSION = "backgroundImages.lastVersion";
 const PREF_SELECTED_SKIN = "ftabs.backgroundImage";
+const PREF_BACKGROUNDS_ADVERT_REFUSED = "backgroundImages.advertRefused";
+const PREF_LAST_BACKGROUNDS_UPDATE_TIME = "backgroundImages.lastUpdateTime";
 const OVERLAY_FILENAME = "skins_fontcolors.json";
 const OVERLAY_COLOR_WHITE = "ffffff";
 const OVERLAY_COLOR_BLACK = "000000";
 const MODIFICATOR_OVERLAY_NEEDS_BLACK = "vb-sync_status-bg";
 const MAX_DOWNLOAD_BACKGROUND_MS = 30000;
+const BACKGROUND_ADVERT_TIME = 1000 * 60 * 60 * 24;
+const ADVERT_BACKGROUNDS_MIN_COUNT = 3;
+const ADVERT_BACKGROUNDS_MAX_COUNT = 6;
 const backgroundImages = {
         init: function BackgroundImages_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
@@ -33,6 +38,9 @@ const backgroundImages = {
             this._syncTimer = new sysutils.Timer(this._sync.bind(this), requestTimeoutMs, INTERVAL_SEC * 1000);
         },
         finalize: function BackgroundImages_finalize(doCleanup, callback) {
+            if (this._throttleTimer && this._throttleTimer.isRunning) {
+                this._throttleTimer.notify();
+            }
             Object.keys(this._downloadTasks).forEach(function (downloadTask) {
                 downloadTask.abort(Components.results.NS_ERROR_NET_INTERRUPT);
             });
@@ -40,42 +48,50 @@ const backgroundImages = {
             this._logger = null;
         },
         get list() {
-            var cloudSkins = this._cloudSkins;
-            var downloadedCloudSkins = {};
-            var output = {};
-            var previouslySelectedImage;
+            var output = [];
             this._brandingSkins.forEach(function (imgFile) {
                 var uri = BG_IMAGES_BASEPATH + imgFile.leafName;
-                output[imgFile.leafName] = {
+                output.push({
                     id: imgFile.leafName,
                     preview: uri,
                     image: uri
-                };
+                });
             });
+            var userImageURL = this.userImageURL;
+            if (userImageURL) {
+                output.push({
+                    id: userImageURL,
+                    preview: userImageURL,
+                    image: userImageURL,
+                    isUser: true
+                });
+            }
+            var downloadedCloudSkins = {};
             var bgImagesDirEntries = this._imagesDir.directoryEntries;
             while (bgImagesDirEntries.hasMoreElements()) {
                 let imgFile = bgImagesDirEntries.getNext().QueryInterface(Ci.nsIFile);
-                if (/^\./.test(imgFile.leafName) || imgFile.leafName === USER_FILE_LEAFNAME || output[imgFile.leafName] !== undefined) {
+                let leafName = imgFile.leafName;
+                if (!imgFile.isFile() || /^\./.test(leafName) || leafName === USER_FILE_LEAFNAME || output.some(function (skin) skin.id === leafName)) {
                     continue;
                 }
                 let uri = BG_IMAGES_BASEPATH + imgFile.leafName;
-                if (cloudSkins[imgFile.leafName] !== undefined) {
+                if (this._getCloudSkinByLeafName(imgFile.leafName)) {
                     downloadedCloudSkins[imgFile.leafName] = uri;
                 } else {
-                    output[imgFile.leafName] = {
+                    output.push({
                         id: imgFile.leafName,
                         preview: uri,
                         image: uri
-                    };
+                    });
                 }
             }
-            Object.keys(cloudSkins).forEach(function (id) {
-                output[id] = cloudSkins[id];
-                if (downloadedCloudSkins[id]) {
-                    output[id].image = downloadedCloudSkins[id];
+            this._cloudSkins.forEach(function (cloudSkin) {
+                output.push(cloudSkin);
+                if (downloadedCloudSkins[cloudSkin.id]) {
+                    output[output.length - 1].image = downloadedCloudSkins[cloudSkin.id];
                 }
             });
-            return Object.keys(output).map(function (key) output[key]);
+            return output;
         },
         get userImageURL() {
             this._userUploadedRandom = this._userUploadedRandom || Math.floor(Math.random() * Date.now());
@@ -101,7 +117,7 @@ const backgroundImages = {
                     if (fontColors[USER_FILE_LEAFNAME]) {
                         output.color = fontColors[USER_FILE_LEAFNAME];
                     } else {
-                        this._calculateFontColor(USER_FILE_LEAFNAME);
+                        this._calculateFontColor(USER_FILE_LEAFNAME, "user");
                     }
                 }
                 return output;
@@ -125,7 +141,7 @@ const backgroundImages = {
                 } else if (color) {
                     output.color = color;
                 } else {
-                    this._calculateFontColor(image);
+                    this._calculateFontColor(image, id);
                 }
             }, this);
             return output;
@@ -143,10 +159,11 @@ const backgroundImages = {
                 this._application.preferences.set(PREF_SELECTED_SKIN, USER_FILE_LEAFNAME);
                 this._application.fastdial.sendRequest("backgroundChanged", {
                     image: userImageURL,
-                    color: fontColors[USER_FILE_LEAFNAME] || OVERLAY_COLOR_BLACK
+                    color: fontColors[USER_FILE_LEAFNAME] || OVERLAY_COLOR_BLACK,
+                    id: id
                 });
                 if (fontColors[USER_FILE_LEAFNAME] === undefined) {
-                    this._calculateFontColor(USER_FILE_LEAFNAME);
+                    this._calculateFontColor(USER_FILE_LEAFNAME, "user");
                 }
                 return;
             }
@@ -172,8 +189,9 @@ const backgroundImages = {
                 this._logger.trace("Background '" + id + "' has already been downloaded");
                 this._application.preferences.set(PREF_SELECTED_SKIN, leafName);
                 let fontColor;
-                if (this._cloudSkins[leafName] !== undefined) {
-                    fontColor = this._cloudSkins[leafName].color;
+                let cloudSkin = this._getCloudSkinByLeafName(leafName);
+                if (cloudSkin) {
+                    fontColor = cloudSkin.color;
                 } else if (fontColors[leafName] !== undefined) {
                     fontColor = fontColors[leafName];
                 } else {
@@ -181,7 +199,8 @@ const backgroundImages = {
                 }
                 this._application.fastdial.sendRequest("backgroundChanged", {
                     image: BG_IMAGES_BASEPATH + leafName,
-                    color: fontColor
+                    color: fontColor,
+                    id: id
                 });
                 return;
             }
@@ -199,16 +218,18 @@ const backgroundImages = {
                     if (isDownloadOK) {
                         timer.cancel();
                         self._logger.debug("Background '" + id + "' downloaded");
-                        if (self._cloudSkins[leafName] !== undefined) {
-                            fontColors[leafName] = self._cloudSkins[leafName].color;
+                        let cloudSkin = self._getCloudSkinByLeafName(leafName);
+                        if (cloudSkin) {
+                            fontColors[leafName] = cloudSkin.color;
                         } else if (fontColors[leafName] === undefined) {
-                            self._calculateFontColor(skinSelectedData.image);
+                            self._calculateFontColor(skinSelectedData.image, skinSelectedData.id);
                         }
                         if (self._waitingForBackground === skinSelectedData.image) {
                             self._application.preferences.set(PREF_SELECTED_SKIN, leafName);
                             self._application.fastdial.sendRequest("backgroundChanged", {
                                 image: BG_IMAGES_BASEPATH + leafName,
-                                color: fontColors[leafName] || OVERLAY_COLOR_BLACK
+                                color: fontColors[leafName] || OVERLAY_COLOR_BLACK,
+                                id: id
                             });
                         }
                     } else {
@@ -266,7 +287,7 @@ const backgroundImages = {
         },
         get _cloudSkins() {
             var skinsFile = this._skinsFile;
-            var output = {};
+            var output = [];
             var skinsData;
             if (skinsFile.exists() && skinsFile.isFile() && skinsFile.isReadable()) {
                 try {
@@ -284,12 +305,12 @@ const backgroundImages = {
             }) {
                 var leafName = image.split("/").pop();
                 if (preview && image) {
-                    output[leafName] = {
+                    output.push({
                         id: id,
                         preview: preview,
                         image: image,
                         color: Array.isArray(modificators) && modificators[0] === MODIFICATOR_OVERLAY_NEEDS_BLACK ? OVERLAY_COLOR_BLACK : OVERLAY_COLOR_WHITE
-                    };
+                    });
                 }
             });
             return output;
@@ -297,12 +318,24 @@ const backgroundImages = {
         get _brandingSkins() {
             var brandingBgImages = this._application.branding.brandPackage.findFile("fastdial/backgrounds/").directoryEntries;
             var output = [];
+            var xmlDoc;
+            var nameToIndex = Object.create(null);
+            try {
+                xmlDoc = this._application.branding.brandPackage.getXMLDocument("fastdial/backgrounds.xml");
+            } catch (err) {
+            }
+            if (xmlDoc) {
+                Array.forEach(xmlDoc.querySelectorAll("background"), function (elem) {
+                    nameToIndex[elem.getAttribute("filename")] = elem.getAttribute("index");
+                });
+            }
             while (brandingBgImages.hasMoreElements()) {
                 let imgFile = brandingBgImages.getNext().QueryInterface(Ci.nsIFile);
                 if (/^\./.test(imgFile.leafName))
                     continue;
                 output.push(imgFile);
             }
+            output.sort(function (a, b) nameToIndex[a.leafName] - nameToIndex[b.leafName]);
             delete this._brandingSkins;
             return this._brandingSkins = output;
         },
@@ -390,10 +423,27 @@ const backgroundImages = {
                 var lastVersion = self._application.preferences.get(PREF_LAST_SYNCED_VERSION);
                 var newVersion = request.response.version || 1;
                 if (newVersion > lastVersion) {
+                    self._application.preferences.reset(PREF_BACKGROUNDS_ADVERT_REFUSED);
                     self._logger.debug("Replace old skins.json (" + lastVersion + ") with a new one (" + newVersion + ")");
-                    let skins = Array.isArray(request.response.skins) ? request.response.skins : [];
-                    fileutils.jsonToFile(skins, self._skinsFile);
+                    let newSkins = Array.isArray(request.response.skins) ? request.response.skins : [];
+                    let skinsFile = self._skinsFile;
+                    let now = Date.now();
+                    if (skinsFile.exists() && skinsFile.isFile() && skinsFile.isReadable()) {
+                        let oldSkins = [];
+                        try {
+                            oldSkins = fileutils.jsonFromFile(skinsFile);
+                        } catch (err) {
+                        }
+                        let oldImages = oldSkins.reduce(function (obj, skin) {
+                                obj[skin.id] = true;
+                                return obj;
+                            }, {});
+                        newSkins.filter(function (skin) !oldImages[skin.id]).forEach(function (skin) skin.downloadDate = now);
+                    }
+                    fileutils.jsonToFile(newSkins, skinsFile);
                     self._application.preferences.set(PREF_LAST_SYNCED_VERSION, newVersion);
+                    self._application.preferences.set(PREF_LAST_BACKGROUNDS_UPDATE_TIME, now.toString());
+                    self._application.fastdial.sendRequest("newBackgrounds", self.newBackgrounds);
                     let selectedBgImage = self._application.preferences.get(PREF_SELECTED_SKIN);
                     let brandingSkins = self._brandingSkins.map(function (imgFile) imgFile.leafName);
                     let bgImagesDirEntries = self._imagesDir.directoryEntries;
@@ -415,7 +465,18 @@ const backgroundImages = {
             request.addEventListener("error", errorListener, false);
             request.send();
         },
-        _calculateFontColor: function Background__calculateFontColor(url) {
+        _getCloudSkinByLeafName: function backgroundsImages__getCloudSkinByLeafName(leafName) {
+            var res = null;
+            this._cloudSkins.some(function (skin) {
+                if (skin.image.split("/").pop() === leafName) {
+                    res = skin;
+                    return true;
+                }
+                return false;
+            });
+            return res;
+        },
+        _calculateFontColor: function Background__calculateFontColor(url, id) {
             var self = this;
             var fontColorKey = url === USER_FILE_LEAFNAME ? USER_FILE_LEAFNAME : url.split("/").pop();
             var imageURL = url === USER_FILE_LEAFNAME ? this.userImageURL : BG_IMAGES_BASEPATH + fontColorKey;
@@ -439,10 +500,55 @@ const backgroundImages = {
                 if (backgroundImagePref === fontColorKey) {
                     self._application.fastdial.sendRequest("backgroundChanged", {
                         image: imageURL,
-                        color: fontColor
+                        color: fontColor,
+                        id: id
                     });
                 }
             });
+        },
+        refuseNewBackgrounds: function BackgroundImages_refuseNewBackgrounds(timeout) {
+            if (this._throttleTimer)
+                this._throttleTimer.cancel();
+            this._throttleTimer = new sysutils.Timer(this._newBackgroundsRefused.bind(this), timeout);
+        },
+        _newBackgroundsRefused: function BackgroundImages__newBackgroundsRefused() {
+            this._application.preferences.set(PREF_BACKGROUNDS_ADVERT_REFUSED, true);
+            if (this._application.fastdial)
+                this._application.fastdial.sendRequest("newBackgrounds", this.newBackgrounds);
+            this._throttleTimer = null;
+        },
+        get newBackgrounds() {
+            var result = [];
+            if (this._application.preferences.get(PREF_BACKGROUNDS_ADVERT_REFUSED, false))
+                return result;
+            var skinsFile = this._skinsFile;
+            if (skinsFile.exists() && skinsFile.isFile() && skinsFile.isReadable()) {
+                let skins = [];
+                try {
+                    skins = fileutils.jsonFromFile(skinsFile);
+                } catch (err) {
+                }
+                let lastUpdateTime = parseInt(this._application.preferences.get(PREF_LAST_BACKGROUNDS_UPDATE_TIME, "0"), 10);
+                let now = Date.now();
+                let newSkins = skins.filter(function (skin) {
+                        if (!skin.downloadDate)
+                            return false;
+                        return !(Math.abs(now - skin.downloadDate) > BACKGROUND_ADVERT_TIME);
+                    });
+                if (newSkins.length >= ADVERT_BACKGROUNDS_MIN_COUNT) {
+                    newSkins.length = Math.min(newSkins.length, ADVERT_BACKGROUNDS_MAX_COUNT);
+                    result = newSkins.map(function ({
+                        id: id,
+                        preview: preview
+                    }) {
+                        return {
+                            id: id,
+                            preview: preview
+                        };
+                    });
+                }
+            }
+            return result;
         },
         get _fontColors() {
             var colorsData;
@@ -469,5 +575,6 @@ const backgroundImages = {
         _userUploadedRandom: null,
         _waitingForBackground: null,
         _syncTimer: null,
-        _downloadTasks: {}
+        _downloadTasks: {},
+        _throttleTimer: null
     };

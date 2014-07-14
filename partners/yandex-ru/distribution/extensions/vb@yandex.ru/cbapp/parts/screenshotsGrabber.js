@@ -106,7 +106,7 @@ ScreenshotGrabber.prototype = {
         iframe.docShell.allowPlugins = false;
         try {
             webNav.sessionHistory = Cc["@mozilla.org/browser/shistory;1"].createInstance(Ci.nsISHistory);
-            webNav.loadURI(aURL, Ci.nsIWebNavigation.LOAD_FLAGS_NONE, null, null, null);
+            webNav.loadURI(aURL, Ci.nsIWebNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
         } catch (e) {
             this._onPageLoadTimed(iframe, 404);
         }
@@ -206,21 +206,18 @@ ScreenshotGrabber.prototype = {
                 httpStatus: aHttpStatus,
                 checkTime: Date.now()
             };
-        var onFinish = function onFinish() {
-                aTargetFrame.parentNode.removeChild(aTargetFrame);
-                this._onFinishForURL(result);
-            }.bind(this);
-        if (!this._isRequestSuccess(aHttpStatus))
-            return onFinish();
         var doc = aTargetFrame.contentDocument;
         result.title = this._safeUnicode(doc.title.toString());
         result.urlReal = this._safeUnicode(doc.location.toString());
         result.faviconUrl = this._safeUnicode(this._getDocumentFaviconURL(doc));
-        this.requestFrameCanvasData(aTargetFrame, function (streamData, color) {
-            result.img = streamData;
-            result.color = color;
-            onFinish();
-        });
+        new sysutils.Timer(function () {
+            this.requestFrameCanvasData(aTargetFrame, function (streamData, color) {
+                result.img = streamData;
+                result.color = color;
+                aTargetFrame.parentNode.removeChild(aTargetFrame);
+                this._onFinishForURL(result);
+            }.bind(this));
+        }.bind(this), 2000);
     },
     _safeUnicode: function ScreenshotGrabber__safeUnicode(aString) {
         return /[^\r\n\x9\xA\xD\x20-\uD7FF\uE000-\uFFFD\u10000-\u10FFFF]/.test(aString) ? aString.replace(/[^\r\n\x9\xA\xD\x20-\uD7FF\uE000-\uFFFD\u10000-\u10FFFF]/g, "") : aString;
@@ -249,8 +246,10 @@ ScreenshotGrabber.prototype = {
             }, this.CANVAS_CAPTURE_TIMEOUT);
     },
     requestFrameCanvasData: function ScreenshotGrabber_requestFrameCanvasData(aFrame, callback) {
-        var canvas = aFrame.ownerDocument.createElementNS(HTML_NS, "canvas");
         var win = aFrame.contentWindow;
+        if (!win)
+            return;
+        var canvas = aFrame.ownerDocument.createElementNS(HTML_NS, "canvas");
         var sbWidth = {};
         var sbHeight = {};
         try {
@@ -422,13 +421,17 @@ SShotProgressListener.prototype = {
                 return;
             let httpStatus = this._getRequestStatus(targetFrame);
             let cacheListener = {
-                    onCacheEntryAvailable: function SShotCacheListener_onCacheEntryAvailable(descriptor, accessGranted, status) {
-                        descriptor.doom();
-                        descriptor.close();
+                    onCacheEntryAvailable: function SShotCacheListener_onCacheEntryAvailable(entry) {
+                        entry.doom();
+                        entry.close();
                     }
                 };
-            let cacheSession = Cc["@mozilla.org/network/cache-service;1"].getService(Ci.nsICacheService).createSession("HTTP", 0, true);
-            cacheSession.asyncOpenCacheEntry(targetFrame.getAttribute("yaSSURL"), Ci.nsICache.ACCESS_WRITE, cacheListener);
+            let url = targetFrame.getAttribute("yaSSURL");
+            if (this._diskCacheStorage) {
+                this._diskCacheStorage.asyncDoomURI(Services.io.newURI(url, null, null), "", null);
+            } else {
+                this._httpCacheSession.asyncOpenCacheEntry(url, Ci.nsICache.ACCESS_WRITE, cacheListener);
+            }
             this.screenshotGrabber._onPageLoadTimed(targetFrame, httpStatus);
         }
     },
@@ -443,6 +446,26 @@ SShotProgressListener.prototype = {
     },
     onSecurityChange: function SShotProgressListener_onSecurityChange() {
         return 0;
+    },
+    __httpCacheSession: null,
+    get _httpCacheSession() {
+        if (!this.__httpCacheSession) {
+            this.__httpCacheSession = Services.cache.createSession("HTTP", Ci.nsICache.STORE_ANYWHERE, true);
+            this.__httpCacheSession.doomEntriesIfExpired = false;
+        }
+        return this.__httpCacheSession;
+    },
+    __diskCacheStorage: null,
+    get _diskCacheStorage() {
+        if (this.__diskCacheStorage === null) {
+            if (Services.cache2) {
+                let {LoadContextInfo: LoadContextInfo} = Cu.import("resource://gre/modules/LoadContextInfo.jsm", null);
+                this.__diskCacheStorage = Services.cache2.diskCacheStorage(LoadContextInfo.default, false);
+            } else {
+                this.__diskCacheStorage = false;
+            }
+        }
+        return this.__diskCacheStorage;
     },
     QueryInterface: XPCOMUtils.generateQI([
         Ci.nsISupports,

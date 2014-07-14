@@ -207,7 +207,7 @@ var proxyHandlerMaker = function proxyHandlerMaker(obj) {
         },
         enumerate: function proxyHandlerMaker_enumerate() {
             var result = [];
-            for (name in obj) {
+            for (let name in obj) {
                 result.push(name);
             }
             return result;

@@ -186,7 +186,8 @@ const fastdial = {
                     thumbs: this._application.frontendHelper.fullStructure,
                     hasClosedTabs: this._recentlyClosedTabs.length > 0,
                     hasApps: false,
-                    sync: this._application.sync.state
+                    sync: this._application.sync.state,
+                    newBackgrounds: this._application.backgroundImages.newBackgrounds
                 };
             var brandingLogo = this.brandingXMLDoc.querySelector("logo");
             var brandingSearch = this.brandingXMLDoc.querySelector("search");
@@ -252,15 +253,8 @@ const fastdial = {
         requestSettings: function Fastdial_requestSettings(callback) {
             var productInfo = this._application.branding.productInfo;
             var possibleLayouts = this._application.layout.getPossibleLayouts();
-            var userImageURL = this._application.backgroundImages.userImageURL;
-            var userImage = null;
-            if (userImageURL) {
-                userImage = {};
-                userImage[userImageURL] = userImageURL;
-            }
             callback({
                 bgImages: this._application.backgroundImages.list,
-                userImage: userImage,
                 showBookmarks: this._application.preferences.get("ftabs.showBookmarks"),
                 sendStat: this._application.preferences.get("stat.usage.send", false),
                 isHomePage: Preferences.get("browser.startup.homepage").split("|").indexOf(this._application.protocolSupport.url) !== -1,
@@ -275,6 +269,7 @@ const fastdial = {
                 copyright: productInfo.Copyright.fx,
                 rev: this._application.addonManager.addonVersion,
                 build: this._application.core.CONFIG.BUILD.REVISION,
+                softURL: String(productInfo.SoftURL || "") || null,
                 buildDate: Math.round(new Date(this._application.core.CONFIG.BUILD.DATE).getTime() / 1000),
                 sync: this._application.sync.state,
                 thumbStyle: this._application.preferences.get("ftabs.thumbStyle", 1)
@@ -291,7 +286,6 @@ const fastdial = {
             var self = this;
             var oldThumbsNum = this._application.layout.getThumbsNum();
             var layoutXY = this._application.layout.getThumbsXYOfThumbsNum(layout);
-            var needsFastPickup = this._application.layout.layoutX * this._application.layout.layoutY < layoutXY[0] * layoutXY[1];
             var oldShowBookmarks = this._application.preferences.get("ftabs.showBookmarks");
             var ignoreBookmarks;
             if (!oldShowBookmarks && showBookmarks) {
@@ -305,15 +299,6 @@ const fastdial = {
             this._application.layout.layoutX = layoutXY[0];
             this._application.layout.layoutY = layoutXY[1];
             this.requestInit(undefined, ignoreBookmarks);
-            if (needsFastPickup) {
-                let unpinned = {};
-                this._application.internalStructure.iterate({ nonempty: true }, function (thumbData, index) {
-                    if (thumbData.pinned)
-                        return;
-                    unpinned[index] = thumbData;
-                });
-                this._application.thumbs.fastPickup(unpinned);
-            }
             this._application.thumbs.getMissingScreenshots();
         },
         requestRecentlyClosedTabs: function Fastdial_requestRecentlyClosedTabs(callback) {
@@ -462,6 +447,9 @@ const fastdial = {
                         continue;
                     if (pageHost) {
                         excludeDomains[pageHost] = 1;
+                        self._application.getHostAliases(pageHost).forEach(function (alias) {
+                            excludeDomains[alias] = 1;
+                        });
                     }
                     if (!self._historyThumbs[page.url]) {
                         self._historyThumbs[page.url] = self._application.internalStructure.convertDbRow(page, false);
