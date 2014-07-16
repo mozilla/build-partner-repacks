@@ -1,4 +1,0 @@
-<!ENTITY pane.title "Search">
-<!ENTITY ourengine.checkbox.label "Use &brand.name; as search engine">
-<!ENTITY doubleclick.checkbox.label "Double click on word fills search box">
-<!ENTITY goDirectlyToURLs.checkbox.label "Open URL from the search box">

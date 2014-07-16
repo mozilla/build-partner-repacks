@@ -205,7 +205,7 @@ mCollectAutoComplete.prototype =
   startSearch : function(searchString, searchParam, previousResult, listener)
   {
     try {
-      debug("startSearch: " + searchString  + " with " + searchParam);
+      ddebug("startSearch: " + searchString  + " with " + searchParam);
       var engine = null;
       if (searchParam == "local-united")
         engine = new mLocalUnitedSearch(searchString);

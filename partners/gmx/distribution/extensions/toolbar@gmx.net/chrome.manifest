@@ -1,9 +1,8 @@
-content   unitedtb                 content/
-locale    unitedtb   de-DE         locale/de-DE/
-locale    unitedtb   en-US         locale/en-US/
-skin      unitedtb   classic/1.0   skin/
-resource  unitedtb                 content/
-content   unitedtb-searchplugins   searchplugins/
+content   unitedtb                 jar:chrome.jar!/content/
+locale    unitedtb   de-DE         jar:chrome.jar!/locale/de-DE/
+locale    unitedtb   en-US         jar:chrome.jar!/locale/en-US/
+skin      unitedtb   classic/1.0   jar:chrome.jar!/skin/
+resource  unitedtb                 jar:chrome.jar!/content/
 
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/main/toolbar.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/main/home-toolbaritem.xul
@@ -22,6 +21,7 @@ overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/horosc
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/ebay/ebay-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/phish/tab-listener.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/tracking/tracking-hookup.xul
+overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/shopping/shopping-toolbaritem.xul
 
 style chrome://browser/content/newtab/newTab.xul chrome://unitedtb/skin/newtab/firefoxNewTab.css
 
@@ -36,6 +36,7 @@ style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/search
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/webapps/webapps.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/horoscope/horoscope.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/ebay/ebay.css
+style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/shopping/shopping-toolbaritem.css
 
 overlay chrome://unitedtb/content/pref/pref-window.xul   chrome://unitedtb/content/search/pref-search.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/newtab/pref-newtab.xul
@@ -55,5 +56,3 @@ contract @mozilla.org/autocomplete/search;1?name=unitedinternet-mcollect {aec3bc
 
 component {49c4f409-eaf5-4c4d-a96a-280a60c7c6b7} components/aboutNetError.js
 contract @mozilla.org/network/protocol/about;1?what=neterror {49c4f409-eaf5-4c4d-a96a-280a60c7c6b7}
-
-

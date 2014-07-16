@@ -1,9 +1,0 @@
-<!ENTITY neterror.title.label "Server not found. Could not load the page.">
-<!ENTITY neterror.message.label.1 "The page ">
-<!ENTITY neterror.message.label.2 " was not found.">
-<!ENTITY neterror.message.label.3 "Possibly the Internet address (URL) is incorrect.">
-<!ENTITY alternatives.header "Suggestions">
-<!ENTITY search.intro "Use &brand.website.name; Search - and try it again">
-<!ENTITY search.button.label "Search">
-<!ENTITY last-searches.label "Personal Search History">
-<!ENTITY no-last-searches.label "No search terms stored">

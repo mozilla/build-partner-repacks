@@ -1,7 +1,7 @@
 <?xml version="1.0" ?><RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>toolbar@mail.com</em:id>
-    <em:version>2.10</em:version>
+    <em:version>2.11.1</em:version>
     <em:name>mail.com MailCheck</em:name>
     <em:description>Fast and secure email checking.</em:description>
     <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
@@ -9,6 +9,7 @@
     <em:updateURL>https://dl.mail.com/toolbar/firefox/moztoolbar.rdf</em:updateURL>
     <em:iconURL>chrome://unitedtb/skin/brand/icon-32.png</em:iconURL>
     <em:optionsURL>chrome://unitedtb/content/pref/pref-window.xul</em:optionsURL>
+    <em:unpack>true</em:unpack>
     <em:localized>
         <Description>
             <em:locale>en-US</em:locale>

@@ -1,8 +1,0 @@
-textbox[type="embedded"] {
-  -moz-binding: url("chrome://unitedtb/content/util/textbox.xbl#embedded");
-  cursor: default;
-  padding: 0;
-}
-textbox[type="embedded"] .textbox-input-box {
-  margin: 0 3px;
-}
