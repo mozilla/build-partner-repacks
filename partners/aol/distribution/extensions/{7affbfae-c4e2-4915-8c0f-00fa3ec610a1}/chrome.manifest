@@ -3,16 +3,3 @@ content    aoltoolbar    jar:chrome/aoltoolbar.jar!/content/
 skin    aoltoolbar    classic/1.0    jar:chrome/aoltoolbar.jar!/skin/
 locale    aoltoolbar    en-US   jar:chrome/aoltoolbar.jar!/locale/en-US/
 
-# new Firefox 4.0 binary XPCOM registration
-interfaces components/IMailUtil.xpt  
-binary-component components/MailUtil.dll 
-
-
-# new Firefox 4.0 javascript component registration
-# The {classID} here must match the classID in aolAddonObserver.js
-component {cdcc6170-e19b-46a0-b3d1-4b66e348a538} components/aolAddonObserver.js
-contract @toolbar.aol.com/aoladdonobserver;1 {cdcc6170-e19b-46a0-b3d1-4b66e348a538}
-category profile-after-change aolAddonObserver @toolbar.aol.com/aoladdonobserver;1
-
-component {87c57a2d-6812-4ce1-9242-a1656bbe0d1e} components/aolAutoSuggest.js
-contract @mozilla.org/autocomplete/search;1?name=aol-search-suggest {87c57a2d-6812-4ce1-9242-a1656bbe0d1e}

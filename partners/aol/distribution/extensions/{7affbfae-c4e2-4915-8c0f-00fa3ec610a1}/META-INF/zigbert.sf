@@ -6,55 +6,25 @@ Digest-Algorithms: MD5 SHA1
 MD5-Digest: XRyG5I+7yK7gUBcu+ruhUw==
 SHA1-Digest: jCy5+JoYHOK2bTDMyVwpC3zlf00=
 
+Name: bootstrap.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: Ms6R5dw4wyCU0bGWc178AQ==
+SHA1-Digest: YOTg3Cb1EGBUl/j9Baa+PN81zoc=
+
 Name: chrome/aoltoolbar.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: EoRPlVUdoJn6IgpMKxlwFQ==
-SHA1-Digest: tQGRdbvCLboqD0adMt8UNXsdnm0=
+MD5-Digest: vR3SR9E4l7Q11QYEtN494A==
+SHA1-Digest: UP0IGTdACWCKnPXNylyXBz//Pm0=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 6sweJ2UxbZNahYrjG+S0Zw==
-SHA1-Digest: kMRPTvfWeB4FzqDlBTt7VfwrfH0=
-
-Name: components/aolAddonObserver.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: yA0I6i1o6O5D2gr1mRGX/g==
-SHA1-Digest: QGmwK0zZEpulMsDzA8ZtfWH8Ofg=
-
-Name: components/aolAutoSuggest.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: /ZfvNWfqjBw1WVue3AIShg==
-SHA1-Digest: eYGb2M5ITENZnE9d/G6VP7SM3Vo=
-
-Name: components/aolUninstallObserver.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: mHtn1BpSi7hmaxcSaeln9Q==
-SHA1-Digest: WIdK0GrxoWqsobjki5o0HZTugtQ=
-
-Name: components/IaolUninstallObserver.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: jvoKDRGHnu9Lu6Yq2panbg==
-SHA1-Digest: 862ctO90NUDRZVdH9hRR8m+A4Xs=
-
-Name: components/IMailUtil.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: nMx40OByGELyWCpYRRGBxg==
-SHA1-Digest: 2XAe+Dp72+Gq4r3YPuJjp+I/1NM=
-
-Name: components/mailcount.dll
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: +LuJC/X9iPMhYY+qxTmKrw==
-SHA1-Digest: DButDJRAQUpEEnNtyAR5172GfWE=
-
-Name: components/MailUtil.dll
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: NMSJexayLR0CYGEKaqaJNA==
-SHA1-Digest: Vlj3eU/60e0JuFhKe/LhUTiRxWc=
+MD5-Digest: CWBlX1tAc8LNuvrbs/94rA==
+SHA1-Digest: y0hWfzXar8oiaZEgYrr9eq/bTG8=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: qOt/FAeoeCIx7aUO1BQ7pA==
-SHA1-Digest: Esl5NPR9HOYrfaGMZPM6V0gMeJg=
+MD5-Digest: ztX7eDaali/sCcdE4Jkg7g==
+SHA1-Digest: rCJAmO5V+GAMY2z8diTJmalfSVc=
 
 Name: widgets/amazon.zip
 Digest-Algorithms: MD5 SHA1

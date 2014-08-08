@@ -6,55 +6,25 @@ Digest-Algorithms: MD5 SHA1
 MD5-Digest: XRyG5I+7yK7gUBcu+ruhUw==
 SHA1-Digest: jCy5+JoYHOK2bTDMyVwpC3zlf00=
 
+Name: bootstrap.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 5mR6I69r1LiesbdE1JUFNw==
+SHA1-Digest: almS/obnNy/Jm6RFysbjk6pYeI4=
+
 Name: chrome/aoluktoolbar.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: C5AlP73/O4dgvtpW7oQvow==
-SHA1-Digest: PvgFH8lSvE7ZHOm17eZQq3xi3ZQ=
+MD5-Digest: LVQCEnGYPOapbh6fi8ZU/Q==
+SHA1-Digest: iAXCuTXkqvuEqzlDpiLX4rUGkyI=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: xl84WsM1ZSTD4rNbI39R4Q==
-SHA1-Digest: BBUwvjpREX/EcsjyhLCGsHCjrIA=
-
-Name: components/aolukAddonObserver.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: UboJVAbFpynxN/kx6+k9JA==
-SHA1-Digest: jAXmjRRgW/Xw9p9S4+WdJucwK9Y=
-
-Name: components/aolukAutoSuggest.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: 4+ymRlosbA7z9GV/NWHFdw==
-SHA1-Digest: liFsN8FdYmBkU09KtYKS0LWHmwk=
-
-Name: components/aolukUninstallObserver.js
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: BHNk54p39IRo735NA+s49A==
-SHA1-Digest: wqVPwDXrlZ+IwMgn5IC4f85glMw=
-
-Name: components/IaolukUninstallObserver.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: 6Mfe2h6bE0pMNClj3AslIA==
-SHA1-Digest: vQDHLfz+D81EplosPyul7J3dOpU=
-
-Name: components/IMailUtil.xpt
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: nMx40OByGELyWCpYRRGBxg==
-SHA1-Digest: 2XAe+Dp72+Gq4r3YPuJjp+I/1NM=
-
-Name: components/mailcount.dll
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: +LuJC/X9iPMhYY+qxTmKrw==
-SHA1-Digest: DButDJRAQUpEEnNtyAR5172GfWE=
-
-Name: components/MailUtil.dll
-Digest-Algorithms: MD5 SHA1
-MD5-Digest: NMSJexayLR0CYGEKaqaJNA==
-SHA1-Digest: Vlj3eU/60e0JuFhKe/LhUTiRxWc=
+MD5-Digest: om67IL9GakI9ASkH4EIvhw==
+SHA1-Digest: azqO0fehsSztR32EiG39bguiWrg=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 7UP4KrMd+t/gN2zHhr+O6Q==
-SHA1-Digest: idjmgnkbvDGd+bNUsgjGLMoA3HI=
+MD5-Digest: C356r28TQGPh6glz4yAbiA==
+SHA1-Digest: T+JJNPtC0I378+SAdQahs/biLL8=
 
 Name: widgets/amazon.zip
 Digest-Algorithms: MD5 SHA1

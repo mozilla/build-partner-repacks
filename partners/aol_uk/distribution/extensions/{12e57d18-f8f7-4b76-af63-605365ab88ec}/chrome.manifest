@@ -3,16 +3,3 @@ content    aoluktoolbar    jar:chrome/aoluktoolbar.jar!/content/
 skin    aoluktoolbar    classic/1.0    jar:chrome/aoluktoolbar.jar!/skin/
 locale    aoluktoolbar    en-GB   jar:chrome/aoluktoolbar.jar!/locale/en-GB/
 
-# new Firefox 4.0 binary XPCOM registration
-interfaces components/IMailUtil.xpt  
-binary-component components/MailUtil.dll 
-
-
-# new Firefox 4.0 javascript component registration
-# The {classID} here must match the classID in aolukAddonObserver.js
-component {0877d5b4-d89c-43b6-8e2f-bc19383026c6} components/aolukAddonObserver.js
-contract @toolbar.aol.com/aolukaddonobserver;1 {0877d5b4-d89c-43b6-8e2f-bc19383026c6}
-category profile-after-change aolukAddonObserver @toolbar.aol.com/aolukaddonobserver;1
-
-component {c5ea9024-f74e-4d77-95fe-90b30c45c7b5} components/aolukAutoSuggest.js
-contract @mozilla.org/autocomplete/search;1?name=aoluk-search-suggest {c5ea9024-f74e-4d77-95fe-90b30c45c7b5}
