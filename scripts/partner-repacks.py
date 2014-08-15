@@ -413,14 +413,16 @@ class RepackMac(RepackBase):
         os.remove("stage/ ")
 
     def copyFiles(self):
+        if path.exists(path.join("stage", "Firefox.app", "MozResources")):
+            target_dir = path.join("stage", "Firefox.app", "MozResources")
+        else:
+            target_dir = path.join("stage", "Firefox.app", "Contents", "MacOS")
         for i in ['distribution', 'extensions', 'searchplugins']:
             full_path = path.join(self.full_partner_path, i)
             if path.exists(full_path):
-                cp_cmd = "cp -r %s %s" % (full_path,
-                  path.join("stage", "Firefox.app", "Contents", "MacOS"))
+                cp_cmd = "cp -r %s %s" % (full_path, target_dir)
                 shellCommand(cp_cmd)
-        self.createOverrideIni(path.join("stage", "Firefox.app", "Contents",
-                                         "MacOS"))
+        self.createOverrideIni(target_dir)
 
     def repackBuild(self):
         if options.quiet:
