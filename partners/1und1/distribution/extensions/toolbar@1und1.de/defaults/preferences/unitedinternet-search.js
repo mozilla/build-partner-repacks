@@ -4,5 +4,3 @@ pref("extensions.unitedinternet.search.termsJSON", "[]");
 // search-webselectionlistener.js
 pref("extensions.unitedinternet.search.webpageDoubleclick", true);
 pref("extensions.unitedinternet.search.goDirectlyToURLs", false);
-// whether the user accepted to use our search engine
-pref("extensions.unitedinternet.search.opt-in", false);
