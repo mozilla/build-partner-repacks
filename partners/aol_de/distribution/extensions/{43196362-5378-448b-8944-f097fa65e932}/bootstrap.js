@@ -1,15 +1,221 @@
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://gre/modules/AddonManager.jsm");
-const PROPS = "chrome://aoluktoolbar/locale/toolbar_props.properties";
-const CLASS_ID = Components.ID("{0877d5b4-d89c-43b6-8e2f-bc19383026c6}");
-const CLASS_NAME = "aoluk Addon Observer";
-const CONTRACT_ID = "@toolbar.aol.com/aolukaddonobserver;1";
-const TOOLBAR_ID =  "{12e57d18-f8f7-4b76-af63-605365ab88ec}";
-var components = [aolukAddonObserver];
-function aolukAddonObserver() {
-    this.wrappedJSObject = this;  
+Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm")
+Components.utils.import("resource://gre/modules/ctypes.jsm");
+Components.utils.import("resource://gre/modules/AddonManager.jsm");	
+Components.utils.import("resource://gre/modules/FileUtils.jsm");
+
+const C = Components;
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+
+const aolde_GUID = "{43196362-5378-448b-8944-f097fa65e932}";
+const aolde_DATADIR = "aoldeToolbarData";
+const aolde_BRANCHNAME = "aolde_toolbar.";
+const aolde_XUL_ID = "aolde_Toolbar";
+const aolde_CHROMEDIR = "chrome://aoldetoolbar";
+
+
+XPCOMUtils.defineLazyGetter(this, "strings", function() {
+    return loadPropertiesFile(aolde_CHROMEDIR + "/locale/toolbar_props.properties");
+});
+
+function loadPropertiesFile(path)
+{
+    /* HACK: The string bundle cache is cleared on addon shutdown, however it doesn't appear to do so reliably.
+       Errors can erratically happen on next load of the same file in certain instances. (at minimum, when strings are added/removed)
+       The apparently accepted solution to reliably load new versions is to always create bundles with a unique URL so as to bypass the cache.
+       This is accomplished by passing a random number in a parameter after a '?'. (this random ID is otherwise ignored)
+       The loaded string bundle is still cached on startup and should still be cleared out of the cache on addon shutdown.
+       This just bypasses the built-in cache for repeated loads of the same path so that a newly installed update loads cleanly. */
+    return Services.strings.createBundle(aolde_CHROMEDIR + "/locale/toolbar_props.properties" + "?" + Math.random());
 }
-var uninstall_metrics = function() {
+
+
+function getStrings() {
+	    var sbSvc = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
+		return sbSvc.createBundle(aolde_CHROMEDIR + "/locale/toolbar_props.properties");	    
+}
+	
+var log = function(msg) {
+	Services.console.logStringMessage("aoldetoolbar bootstrap.js: " + msg);
+	//Services.prompt.alert(null,"log" , msg);
+};
+
+var logError = function(e, message) {
+    /*
+	Services.prompt.alert(null,"Error" , "aoldetoolbar bootstrap.js: error "
+		+ (message ? message : '')
+		+ ': "' + e + '"'
+		+ (e.fileName ? (' in ' + e.fileName) : '')
+		+ (e.lineNumber ? (':' + e.lineNumber) : ''));*/
+};
+
+var WindowListener = {
+  setupBrowserUI: function(window) {
+  try{
+		let document = window.document;
+		//Services.prompt.alert(null, "Restartless Demo", "setup UI");
+		//if exist , remove it
+		var toolbar = window.document.getElementById(aolde_XUL_ID);
+		if(toolbar){
+			toolbar.parentNode.removeChild(toolbar);
+		}
+		//create a random time number 0 -1000 to work around overlay sequence issue in Mozilla
+		/*
+		var number  = Math.floor((Math.random() * 1000) + 1);
+		
+		var num = 0;	
+		var toolbar = window.document.getElementsByTagName("toolbar");
+		for (var i = 0; i < toolbar.length; i++) { 
+			var id = toolbar[i].getAttribute("id"); 
+			if (id.indexOf("_Toolbar") != -1){
+				num ++;
+			}
+		}*/
+
+		aoldeUILoader.load(window,aolde_CHROMEDIR+"/content/aoltoolbar.xul");
+		aoldeRegisterXPCOMComponent();
+		
+ 	}catch(e){
+			logError(e);
+	}
+  },
+
+  tearDownBrowserUI: function(window) {
+  },
+
+  // nsIWindowMediatorListener functions
+  onOpenWindow: function(xulWindow) {
+    // A new window has opened
+    let domWindow = xulWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+                             .getInterface(Ci.nsIDOMWindow);
+
+    // Wait for it to finish loading
+    domWindow.addEventListener("load", function listener() {
+		  domWindow.removeEventListener("load", listener, false);
+		  // If this is a browser window then setup its UI
+		  if (domWindow.document.documentElement.getAttribute("windowtype") == "navigator:browser")
+			WindowListener.setupBrowserUI(domWindow);
+    }, false);
+  },
+
+  onCloseWindow: function(xulWindow) {
+  },
+
+  onWindowTitleChange: function(xulWindow, newTitle) {
+  }
+};
+
+function install() {
+	addon.userDisabled = false;		
+}
+ 
+function uninstall(data,reason) {
+	aoldeUninstall_metrics.uninstall();
+	aoldeUninstaller.uninstall();			
+}
+ 
+function startup(data, reason) {
+
+  let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+           getService(Ci.nsIWindowMediator);
+  // Get the list of browser windows already open
+  let windows = wm.getEnumerator("navigator:browser");
+  while (windows.hasMoreElements()) {
+    let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
+    WindowListener.setupBrowserUI(domWindow);
+  }
+ 
+  // Wait for any new browser windows to open
+  wm.addListener(WindowListener); 
+}
+
+function shutdown(data, reason) {
+try {
+		if (reason == APP_SHUTDOWN){
+			return;
+		}
+		
+
+		let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
+        
+        //var strings = getStrings();
+		
+		if (reason == ADDON_DISABLE  ){
+		
+			aoldeUninstall_metrics.init(data);
+			
+			var msg = strings.GetStringFromName("uninstall.confirmmessage");
+			var title = strings.GetStringFromName("toolbar.name");
+			
+		    ok = Services.prompt.confirm(null, title, msg  );   
+
+		
+			if(!ok){
+			    aoldeUninstall_metrics.disable("cancel");
+				AddonManager.getAddonByID(aolde_GUID, function(addon) 
+				{  
+					addon.userDisabled = false;
+						//if this is a user uninstall action. cancel uninstall
+					if((addon.pendingOperations & AddonManager.PENDING_UNINSTALL) != 0)  {
+							addon.cancelUninstall();
+					}
+				})	
+			}
+			else{
+			    
+					// remove overlay from all windows
+				var enumerator = Services.wm.getEnumerator("navigator:browser");
+				while (enumerator.hasMoreElements()) {
+					var window = enumerator.getNext();
+					var toolbar = window.document.getElementById(aolde_XUL_ID);
+					toolbar.parentNode.removeChild(toolbar);
+				}
+				
+                aoldeUninstaller.showUninstallPage();
+	            aoldeUninstall_metrics.disable("disable");
+				let registrar = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
+				if(registrar.isCIDRegistered(aolde_gS.classID)){
+					registrar.unregisterFactory(aolde_gS.classID, aolde_gF);
+				}
+			   
+		        wm.removeListener(WindowListener);
+			}
+		}
+  
+	} catch (e) {
+			logError(e);
+	}
+}
+
+
+function loadJavascript(path)
+{
+	var jsloader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
+	jsloader.loadSubScript(path);
+
+}
+
+function aoldeRegisterXPCOMComponent(){
+	try{			
+
+	var gspath = aolde_CHROMEDIR+"/content/components/AutoSuggest.js" ;
+	gspath = gspath.replace(/\\/g, "\/");
+	loadJavascript(gspath);
+	
+	//regist autosuggest xpcom component
+    let registrar = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
+	if(!registrar.isContractIDRegistered(aolde_gS.contractID)){
+		registrar.registerFactory(aolde_gS.classID,aolde_gS.classDescription, aolde_gS.contractID,aolde_gF);
+	}
+	
+	}catch(e){
+		logError(e);
+	}
+}
+
+
+var aoldeUninstall_metrics = function() {
     var _props = "";
     var _version = "";
     var _browser = "";
@@ -18,27 +224,13 @@ var uninstall_metrics = function() {
     var searchUrl = "";
     var toolbar_event = "";
     
-	function getStrings() {
-	    var sbSvc = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
-		return sbSvc.createBundle(_props);	    
-	}
 	
 	function getBranch() {
-	    var strings = getStrings(); 
-		var brandName = strings.GetStringFromName("prefs.branch") + "." ;
 		var service = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-		return service.getBranch(brandName);				
+		return service.getBranch(aolde_BRANCHNAME);				
 	}
-	
-	
-    function log(msg) {
-    
-        var consoleService = Components.classes["@mozilla.org/consoleservice;1"]
-                                 .getService(Components.interfaces.nsIConsoleService);
-        consoleService.logStringMessage(msg);
-    }
-    
-    
+
+     
     function sendRequest(url) {
 	     try {
 	        var req = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
@@ -81,13 +273,13 @@ var uninstall_metrics = function() {
             metric = payloadUpdate;
       
 	    var branch = getBranch();
-		var strings = getStrings();
 		
 		var installId = branch.getCharPref("search.instd");
 		var originalDate = branch.getCharPref("search.oid");
 		var currentDate = branch.getCharPref("search.cid");
 		var installSource = branch.getCharPref("search.source");
 		
+		var strings = getStrings();
 		var searchUrl =  strings.GetStringFromName("search.metrics");
 		searchUrl = searchUrl.replace(/{it}/g, installSource);
 		searchUrl = searchUrl.replace(/{mrud}/g, currentDate);
@@ -98,13 +290,13 @@ var uninstall_metrics = function() {
 		payload_fixed.product = "tlb";
 		payload_fixed.productName = strings.GetStringFromName("toolbar.id");
 		payload_fixed.version = _version;
-		
+
 		var langlocale = strings.GetStringFromName("toolbar.langlocale").toLowerCase().split("-");
 		payload_fixed.language = langlocale[0];
 		payload_fixed.locale = langlocale[1];		
 		payload_fixed.os = _os
 		payload_fixed.browser = _browser;
-		
+
 		var val;
 		val = branch.getCharPref("install.ncid");		
 		payload_fixed.ncid = (val) ? val : '-';
@@ -120,7 +312,7 @@ var uninstall_metrics = function() {
                     payload_fixed.language + "_" +
                     payload_fixed.locale + "_" +
                     payload_fixed.distroID + "_";
-		
+
         // makes sure it's all lower case and only contains a-z, 0-9, and .
 		for(payloadName in metric) {
             if(payloadName !== "invType" && payloadName !== "instd" && payloadName !== "mrud" && payloadName !== "uuid") {
@@ -146,7 +338,8 @@ var uninstall_metrics = function() {
                     ((metric.misc1) ? metric.misc1 : '-') + "_" +
                     ((metric.misc2) ? metric.misc2 : '-');
         eventStr = stripDashes(eventStr);
-        url = searchUrl.replace(/{event}/g, eventStr);           
+        url = searchUrl.replace(/{event}/g, eventStr); 
+        		
         sendRequest(url);
         metric = null;
         log("["+eventStr+"] "+url);            
@@ -158,12 +351,12 @@ var uninstall_metrics = function() {
 	
 	return {
 	
-	    init : function(addon, props) {
+	    init : function(addon) {
 	    
 	        try {
 	            
-	            if (!_props.length) {
-	                _props = props;
+	            
+	                
 	        	    _version = addon.version;
     	        	
     	        	
@@ -195,10 +388,10 @@ var uninstall_metrics = function() {
                         } else if (ua.indexOf("Linux") != -1 ) {
                             _os = "lx";
                         }
-                    }
+                   
                 }
             } catch(e) {
-	            log(e.message);
+	            logError(e);
 	        }
 	    }, 
 	    
@@ -206,7 +399,7 @@ var uninstall_metrics = function() {
 	        try {
 	           registerSearchMetric({compName:"", actionType:"png", actionName:"complete", component:"uninst"});        
 	        } catch(e) {
-	            log(e.message);
+	            logError(e);
 	        }
 	        
 	    },
@@ -215,87 +408,46 @@ var uninstall_metrics = function() {
             try {
                 registerSearchMetric({compName:"disabl", actionType:"clk", actionName:result, component:"pmpt"}); 
             } catch(e) {
-	            log(e.message);
+	            logError(e);;
 	        }                
 	    }
 	}
 }();
-aolukAddonObserver.prototype = {
+
+function _readFile(file) {
+    var data = "";
+    var fstream = Components.classes["@mozilla.org/network/file-input-stream;1"].
+                  createInstance(Components.interfaces.nsIFileInputStream);
+    var cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].
+                  createInstance(Components.interfaces.nsIConverterInputStream);
+    fstream.init(file, -1, 0, 0);
+    cstream.init(fstream, "UTF-8", 0, 0); // you can use another encoding here if you wish
+
+    let (str = {}) {
+      let read = 0;
+      do { 
+        read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
+        data += str.value;
+      } while (read != 0);
+    }
+    cstream.close(); // this closes fstream
+
+    return data;
+}
+
+
+
+
+var aoldeUninstaller = {
 	
 	_init : false,
 	_state : "",
 	_enable:true,
-	_chromeDir:'',
 	_hideToolbar:false,
 	_addon:null,
 	
-    classDescription : CLASS_NAME,
-    contractID : CONTRACT_ID,
-	classID : CLASS_ID,
-   	QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIObserver]),
-    
-    log : function(msg)
-    {
-        var consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-        consoleService.logStringMessage(msg);
-    },
-    
-    uninit : function()
-	{
-	    this.check();	    
-	    AddonManager.removeAddonListener(this.addonListener);
-	},
-	
-    init : function()
-	{
-	    this.log('init');
-	    if (!this._init)
-	    {
-	        this._init = true;			        
-	        try
-		    {			
-	            // register for the shutdown notification
-	    	    var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
-		        observerService.addObserver(this, "quit-application-granted", false);
-			
-		        // create the addon listener
-			    AddonManager.addAddonListener(this.addonListener.init(this, TOOLBAR_ID));
-				this._chromeDir = "chrome://aoluktoolbar/";
-			}
-		    catch(e)
-		    {
-    		    this.log(e.message);    		    
-		    }			    
-    	}		
-	},
-	
-	observe: function(subject,topic,data)
-	{		
-        if (topic == "profile-after-change") 
-		{
-		    this.init();
-		}
-		else if (topic == "quit-application-granted") 
-		{
-		   this.uninit();
-		}
-	},
-	
-	check : function()
-	{
-	    if (this._state == "uninstalling")
-	    {
-	        this.uninstall();
-	    }
-	    else if ((this._state == "installing") || (this._state == "install"))
-	    {
-	        this.update();
-	    }
-	},
-	
 	update : function()
 	{
-	    this.log("update");
 	    
 	    try
         {
@@ -304,7 +456,7 @@ aolukAddonObserver.prototype = {
         }
         catch(e)
         {   
-            this.log(e.message);
+            log(e.message);
 		}        	
 	},
 	
@@ -313,13 +465,10 @@ aolukAddonObserver.prototype = {
 	{	    
         try
         {
-        
-            
-            uninstall_metrics.init(this._addon, PROPS);
-            uninstall_metrics.uninstall();
-        
-            var strings = this.getStrings();	           
-        
+		    var strings = getStrings();
+            this.resetSetting();
+		    
+				           
             // remove the user agent if we set one
             var id = strings.GetStringFromName("ua.id");
             if (id != "")
@@ -335,17 +484,19 @@ aolukAddonObserver.prototype = {
                     }        
                 }
             }
-       
+
             // delete data directory
             var dir = Components.classes["@mozilla.org/file/directory_service;1"]
 							.getService(Components.interfaces.nsIProperties)
 							.get("ProfD", Components.interfaces.nsIFile);
-            dir.append(strings.GetStringFromName("toolbar.directory"));
+            dir.append(aolde_DATADIR);
             if (dir.exists() && dir.isDirectory()) 
             {   
                 dir.remove(true);
-            }                        
-            var name = this.getStrings().GetStringFromName("toolbar.name");
+            }  
+			
+            var name = strings.GetStringFromName("toolbar.name");
+			/*
 			var wrk = Components.classes["@mozilla.org/windows-registry-key;1"].createInstance(Components.interfaces.nsIWindowsRegKey);
 			wrk.open(wrk.ROOT_KEY_CURRENT_USER,"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall" ,wrk.ACCESS_ALL );
 			if (wrk.hasChild(name))
@@ -358,133 +509,29 @@ aolukAddonObserver.prototype = {
 				 wrk.removeChild(name);
 				}
 			}
-			wrk.close();
+			wrk.close();*/
         }
         catch(e)
         {   
-            this.log("uninstall.error: " + e.message);
+            logError(e);
+			
 		}        
 					
-        // delete all prefs
-        this.getBranch().deleteBranch("");                                 
+        this.getBranch().deleteBranch("");
+        		
 	},
 	
-	disabling:function(addon)
-	{
-	    this.log('disabling');
-		this._addon = addon;
-	    this._state = "Disable";	
-	    this.showUninstallPage(addon, false);
-	},
-	
-	
-	uninstalling : function(addon)
-	{   
-	    this.log('uninstalling');
-		this._addon = addon;
-	    this._state = "uninstalling";	
-	    this.showUninstallPage(addon, true);		
-	},
-	
-    installing : function()
-	{   
-	    this.log('installing');
-	    this._state = "installing";	   	    
-	},
-	
-	install : function()
-	{   
-	    this.log('install');
-	    this._state = "install";	   	    
-	},
-	
-	cancel : function()
-	{
-	    this.log('cancel');
-	    this._state = "";
-	},
-		
-	addonListener : {
-	
-	    observer : null,
-	    addonId : "",
-	    
-	    isSelf : function(aid)
-	    {
-	        this.observer.log(aid +" ==  " + this.addonId);
-	        return (aid == this.addonId);
-	    },
-	    init : function(o, i)
-	    {   
-	        this.observer = o;
-	        this.addonId = i;
-	        return this;
-	    },
-	    
-	    onDisabling : function(addon, needsRestart)
-	    {
-	        this.observer.log('onDisabling:' + addon.name);
-			if (this.isSelf(addon.id)) this.observer.disabling(addon);  
-	    },
-	    
-        onDisabled : function(addon)
-        {
-            this.observer.log('onDisabled:' + addon.name);
-        },
-        
-        onEnabling : function(addon, needsRestart)
-	    {
-	        this.observer.log('onEnabling:' + addon.name);
-	    },
-	    
-        onEnabled : function(addon)
-        {
-            this.observer.log('onEnabled:' + addon.name);
-        },
-        
-        onOperationCancelled : function(addon, needsRestart)
-        {
-            this.observer.log('onOperationCancelled:' + addon.name);
-            if (this.isSelf(addon.id)) this.observer.cancel();            
-        },
-        
-        onInstalling : function(addon, needsRestart)
-        {
-            this.observer.log('onInstalling:' + addon.name);
-            if (this.isSelf(addon.id)) this.observer.installing(); 
-        },
-                
-        onInstalled : function(addon)
-        {
-            this.observer.log('onInstalled:' + addon.name);
-            if (this.isSelf(addon.id)) this.observer.install();  
-        },
-        
-        onUninstalling : function(addon, needsRestart)
-        {
-            this.observer.log('onUninstalling:' + addon.name);
-            if (this.isSelf(addon.id)) this.observer.uninstalling(addon);            
-        },
-        
-        onUninstalled : function(addon)
-        {
-            this.observer.log('onUninstalled:' + addon.name);
-            if (this.isSelf(addon.id)) this.observer.uninstall();            
-        }
-	},
 	
 	getStrings : function()
 	{
-	    var sbSvc = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
-		return sbSvc.createBundle(PROPS);	    
+	   return getPropertyValue();
+	    
 	},
 	
 	getBranch : function()
 	{
-	    var strings = this.getStrings(); 
-		var brandName = strings.GetStringFromName("prefs.branch") + "." ;
 		var service = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-		return service.getBranch(brandName);				
+		return service.getBranch(aolde_BRANCHNAME);				
 	},
 	
 	getBaseDomain:function(url) {
@@ -518,17 +565,18 @@ aolukAddonObserver.prototype = {
 	
 	getUninstallUrl : function()
 	{
-	    var uninstallUrl = "";
+	    var uninstallUrl;
 	    try
 	    {	    
             var branch = this.getBranch();
-	        var strings = this.getStrings();	
+	        var strings = getStrings();	    
     	    	        
             var partner = strings.GetStringFromName("toolbar.partner");
+			
             var brand = strings.GetStringFromName("toolbar.brand");
             var langlocale = strings.GetStringFromName("toolbar.langlocale");
 	 	    var name = strings.GetStringFromName("toolbar.name");
-    	 	
+    	 	log(name);	
 	 	    var source;
 	 	    if (branch.prefHasUserValue("search.source"))						
 		    {
@@ -539,12 +587,13 @@ aolukAddonObserver.prototype = {
 			    source = strings.GetStringFromName("toolbar.source");
 		    }
     		
+			log(source);
 		    var iid = "";
 		    if (branch.prefHasUserValue("search.instd"))						
 		    {
 			    iid = branch.getCharPref("search.instd");							
 		    }
-    	 					   
+    	 	log(iid);				   
             var dd = branch.getCharPref("metrics.originalDate");
             if (dd <10) dd = "0" + dd ;
             var mm = branch.getCharPref("metrics.originalMonth");
@@ -552,16 +601,17 @@ aolukAddonObserver.prototype = {
             var yy = branch.getCharPref("metrics.originalYear");
             var insDate = dd + "-"+ mm + "-" + yy;
     						
-            // check for a custom uninstall url
-    						
+            // check for a custom uninstall url			
             var customUrl = strings.GetStringFromName("uninstall.url.custom");					    
-            if (customUrl != "")
+            
+			if (customUrl)
 		    {
 			    uninstallUrl = customUrl;
 		    }
 		    else
 		    {
 			    uninstallUrl = strings.GetStringFromName("uninstall.url.default");
+                if (uninstallUrl) {
 				var type = strings.GetStringFromName("uninstall.type");	
 			 
 				 if(type =="overlay"){
@@ -578,8 +628,9 @@ aolukAddonObserver.prototype = {
 					
 						uninstallUrl +="&hp="+hp+"&srch="+currentEngine.name;
 				}
-			 
 		    }
+		    }
+            if (uninstallUrl) {
 		    uninstallUrl = uninstallUrl.replace(/%source/g , source);
 		    uninstallUrl = uninstallUrl.replace(/%date/g , insDate);
 		    uninstallUrl = uninstallUrl.replace(/%uid/g , iid);
@@ -588,24 +639,25 @@ aolukAddonObserver.prototype = {
 		    uninstallUrl = uninstallUrl.replace(/%brand/g , brand);
 		    uninstallUrl = uninstallUrl.replace(/%browser/g , "ff");
 		}
+		}
 		catch(e)
 		{
-		    this.log(e.message);
+		    logError(e);
 		}
-		this.log(uninstallUrl);
 		return uninstallUrl;
 	},
+	
 	resetSetting :  function() {
 	 try
 	    {	    
             var branch = this.getBranch();
 	 	    var installset,protectionset,hostflag;
 			var presetSearch, presetHomepage, presetNewTab;
-			var strings = this.getStrings();	
-    	    var tempprefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-	        
-            var tb_searchlabel = strings.GetStringFromName("searchengine.label");
 			
+    	    var tempprefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+	        var strings = getStrings();
+            var tb_searchlabel = strings.GetStringFromName("searchengine.label");
+			log(tb_searchlabel);
 			var tb_newtab, tb_homepage;
 			if (branch.prefHasUserValue("install.homepage")){
 				tb_homepage = branch.getCharPref("install.homepage");
@@ -634,7 +686,7 @@ aolukAddonObserver.prototype = {
 				presetNewTab = "about:newtab";
 			}
 			
-	this.log(hostflag + "=" +presetSearch +"="+presetHomepage);
+log(presetNewTab);
 			if( presetSearch != tb_searchlabel ){
 			
 				installset = 0;
@@ -648,16 +700,16 @@ aolukAddonObserver.prototype = {
 				}
 				
 				
-				this.log( "search setting :install.set =" + installset + " prot set="  + protectionset + " hostflag=" + hostflag);
+				log( "search setting :install.set =" + installset + " prot set="  + protectionset + " hostflag=" + hostflag);
 				if (( installset & hostflag) || (protectionset & hostflag)){
 					var searchService = Components.classes["@mozilla.org/browser/search-service;1"].getService(Components.interfaces.nsIBrowserSearchService);	
 					// grab the curent engine in case we have to reset it
 					var currentEngine = searchService.currentEngine;
 					
-					this.log("resetSetting= "+ currentEngine.name  +  tb_searchlabel);
+					
 					if (currentEngine.name == tb_searchlabel){   
 						searchService.removeEngine(currentEngine);
-						this.log("resetSetting remove search");
+						
 					}
 					else{
 					   //just leave it there in the list
@@ -674,10 +726,10 @@ aolukAddonObserver.prototype = {
 							defaulturl = tempprefs.getCharPref("browser.search.defaulturl");
 					}
 					
-					if( defaulturl.indexOf("aol") != -1){
+					if( defaulturl.indexOf("aolde") != -1){
 						tempprefs.deleteBranch("browser.search.defaulturl");
 						tempprefs.deleteBranch("browser.search.defaultenginename");
-						this.log("resetSetting remove pref");
+						
 					}
 				}
 			}
@@ -695,15 +747,14 @@ aolukAddonObserver.prototype = {
 					protectionset = branch.getCharPref("homepageprotection.set");
 				}
 				
-				this.log( "hp setting :install.set =" + installset + " prot set="  + protectionset + " hostflag=" + hostflag);
+				
 				if (( installset & hostflag) || (protectionset & hostflag)){
 					
 					var currenthp = tempprefs.getCharPref("browser.startup.homepage");
-					//tb_homepage= tb_homepage.replace("{mtmhp}","");
-					tb_homepage = this.stripParam(tb_homepage, "mtmhp");
-					tb_homepage = this.stripParam(tb_homepage, "tb_uuid");
-					if( currenthp.indexOf(tb_homepage) != -1){
-					   this.log("resetSetting set homepage = " +currenthp  );
+			
+					var hp=this.getBaseDomain(tb_homepage);
+					if( currenthp.indexOf(hp) != -1){
+					   log("resetSetting set homepage = " +currenthp  );
 					   tempprefs.setCharPref("browser.startup.homepage", "");
 					}
 				}	
@@ -714,24 +765,23 @@ aolukAddonObserver.prototype = {
 					installset = branch.getCharPref("install.setnewtab");
 				}
 				
-				this.log("resetSetting set newtab" + "; installset=" + installset + "; hostflag=" + hostflag );
+				 log("resetSetting set newtab" + "; installset=" + installset + "; hostflag=" + hostflag );
 				
 				if (( installset & hostflag)){
 					var current_newtab = tempprefs.getCharPref("browser.newtab.url");
-					tb_newtab = this.stripParam(tb_newtab, "mtmhp");
-					tb_newtab = this.stripParam(tb_newtab, "tb_uuid");
-					this.log("resetSetting set newtab, current_newtab = " +current_newtab + "; tb_newtab=" + tb_newtab );
-					if (current_newtab.indexOf(tb_newtab) != -1) {
-						this.log("resetSetting set newtab = " +current_newtab  );
+					var taburl = this.getBaseDomain(tb_newtab);
+					log("resetSetting set newtab, current_newtab = " +current_newtab + "; tb_newtab=" + tb_newtab );
+					if (current_newtab.indexOf(taburl) != -1) {
+						log("resetSetting set newtab = " +current_newtab  );
 						tempprefs.setCharPref("browser.newtab.url", "about:newtab");
 					}
 				}	
-			}	
+			}		
 		   
 		}
 		catch(e)
 		{
-		    this.log(e.message);
+		    logError(e);
 		}
 	
 	},
@@ -748,54 +798,160 @@ aolukAddonObserver.prototype = {
 		}
 	},
 	
-    showUninstallPage : function(addon, uninstalling) {
+    showUninstallPage : function() {
 	     try {
             var windowMediator = Components.classes["@mozilla.org/appshell/window-mediator;1"].getService(Components.interfaces.nsIWindowMediator);
             if (windowMediator) {
                 var win = windowMediator.getMostRecentWindow("navigator:browser");
                 if (win) {
-	
-                    uninstall_metrics.init(addon, PROPS);
-				var branch = this.getBranch();
-				var strings = this.getStrings();	
-				var xul_id = strings.GetStringFromName("toolbar.xul.id");
-                    var tb = win.document.getElementById(xul_id);
-				    var path= this._chromeDir + "content/enableBox.xul";
-                    win.openDialog(path, "aol", "modal,centerscreen,titlebar=no", this);
-					
-					    if(this._enable){
-					
-							addon.userDisabled = false;
-							//if this is a user uninstall action. cancel uninstall
-                        if((addon.pendingOperations & AddonManager.PENDING_UNINSTALL) != 0)  {
-								addon.cancelUninstall();
-                        }
-							if(tb && this._hideToolbar){
-								tb.collapsed = true;
-                            uninstall_metrics.disable("hide");	
-                        } else {
-                            uninstall_metrics.disable("cancel");	
-						}
-						
-                    } else {  //if uninstall , show uninstall url  
-                        uninstall_metrics.disable(uninstalling ? "remove" : "disable");	
                         var mainWindow = win.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                        .getInterface(Components.interfaces.nsIWebNavigation)
                        .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
                        .rootTreeItem
                        .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                        .getInterface(Components.interfaces.nsIDOMWindow);
-   
-					this.resetSetting();	
+   	
                     var uri = this.getUninstallUrl();
-                    mainWindow.gBrowser.addTab(uri); 					
+                    if (uri)  {
+						mainWindow.gBrowser.addTab(uri); 					
+					}
 			    }
-			    }
-		    }		    
+		    }		    		    
         } catch(e) {
-		    this.log(e.message);
+		    logError(e);
 		}		    
 	}
     	
 };
-const NSGetFactory = XPCOMUtils.generateNSGetFactory(components);
+
+var aoldeUILoader = (function() {
+	var ajaxRequest = function(url, cb) {
+		var req = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"]
+			.createInstance(Components.interfaces.nsIXMLHttpRequest);
+		req.open("get", url, true);
+		try {
+			req.responseType = "document";
+		} catch(e) {
+			req.overrideMimeType('text/xml; charset=utf-8');
+		}
+		req.addEventListener('load', function(event) {
+			cb(req.responseXML);
+		}, false);
+		req.send();
+	};
+
+	var inheritAttributes = function(newNode, oldNode) {
+		var attributes = oldNode.attributes,
+			i;
+
+		// Iterate over attributes
+		for (i = 0; i < attributes.length; i++) {
+			var attr = attributes.item(i);
+
+			if (attr.namespaceURI) {
+				newNode.setAttributeNS(attr.namespaceURI, attr.localName, attr.value);
+			} else {
+				newNode.setAttribute(attr.localName, attr.value);
+			}
+		}
+	};
+
+	var loadChildren = function(rootElement, childNodes, doc) {
+		var i,
+			node,
+			newNode,
+			winEl;
+
+		if (!childNodes.length) {
+			return;
+		}
+
+		for (i = 0; i < childNodes.length; i++) {
+			node = childNodes[i];
+
+			if ('getAttribute' in node && node.getAttribute('id') &&
+				(winEl = doc.getElementById(node.getAttribute('id'))))
+			{
+				inheritAttributes(winEl, node);
+				loadChildren(winEl, node.childNodes, doc);
+			} else {
+				switch(node.nodeType) {
+					case node.ELEMENT_NODE:
+				
+						if (node.localName === 'script') {
+						
+							var src = node.getAttribute('src');
+							try {
+								Services.scriptloader.loadSubScript(src, doc.defaultView);
+							} catch (e) {
+								logError(e, "loading scrip");
+							}
+							break;
+						}
+
+						
+						newNode = node.cloneNode(false);
+
+						
+						loadChildren(newNode, node.childNodes, doc);
+
+						
+						rootElement.appendChild(newNode);
+						break;
+					case node.TEXT_NODE:
+						// What are those text nodes without any value ?
+						if (!node.value) {
+							break;
+						}
+
+						// Creating same text node
+						newNode = doc.createTextNode(node.value);
+
+						// Append my node
+						rootElement.appendChild(newNode);
+						break;
+					default:
+						log("Do not know what to do with " + node);
+						break;
+				}
+			}
+		}
+	};
+
+	var render = function(window, xmlDocument, callback) {
+		callback = callback || function() {};
+
+		try {
+			var i,
+				document = window.document,
+				documentElement = document.documentElement,
+				node;
+
+			for (i = 0; i < xmlDocument.childNodes.length; i++) {
+				node = xmlDocument.childNodes[i];
+
+				if (node.nodeType === 1) {
+					loadChildren(documentElement, node.childNodes, document);
+				} else {
+				    try{
+						document.insertBefore(node.cloneNode(true), documentElement);
+					}catch(e){
+					}
+				}
+			}
+
+			callback();
+
+		} catch(e) {
+			logError(e, "rendering overlay");
+		}
+	};
+
+	return {
+		load: function(window, url, callback) {
+			ajaxRequest(url, function(xmlDocument) {
+				render(window, xmlDocument, callback);
+			});
+		}
+	};
+}());
