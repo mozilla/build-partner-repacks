@@ -401,7 +401,7 @@ class RepackMac(RepackBase):
                                         working_dir, final_dir,
                                         ftp_platform, repack_info,
                                         signing_command,
-                                        signing_formats=['gpg'])
+                                        signing_formats=['gpg', 'dmgv2'])
         self.mountpoint = path.join("/tmp", "FirefoxInstaller")
 
     def unpackBuild(self):
