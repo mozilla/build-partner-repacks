@@ -9,7 +9,6 @@ overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/main/h
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/main/minimode-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/highlight/highlight-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/email/email-toolbaritem.xul
-overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/ticker/ticker-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/help/help-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/pref/pref-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/newtab/newtab-hookup.xul
@@ -25,7 +24,6 @@ style chrome://browser/content/newtab/newTab.xul chrome://unitedtb/skin/newtab/f
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/toolbar.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/highlight/highlight.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/email/email.css
-style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/ticker/ticker.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/help/help.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/pref/pref.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/search/search.css
@@ -38,7 +36,6 @@ overlay chrome://unitedtb/content/search/pref-search.xul   chrome://unitedtb/con
 overlay chrome://unitedtb/content/search/pref-search.xul   chrome://unitedtb/content/neterror/pref-neterror.xul
 overlay chrome://unitedtb/content/search/pref-search.xul   chrome://unitedtb/content/newtab/pref-store-management.xul
 overlay chrome://unitedtb/content/pref/pref-window.xul   chrome://unitedtb/content/email/pref-login.xul
-overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/ticker/pref-ticker.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/phish/pref-phish.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/pref/pref-updates.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/main/pref-minimode.xul
@@ -48,5 +45,4 @@ contract @mozilla.org/autocomplete/search;1?name=unitedinternet-mcollect {aec3bc
 
 component {49c4f409-eaf5-4c4d-a96a-280a60c7c6b7} components/aboutNetError.js
 contract @mozilla.org/network/protocol/about;1?what=neterror {49c4f409-eaf5-4c4d-a96a-280a60c7c6b7}
-
 
