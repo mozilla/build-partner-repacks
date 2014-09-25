@@ -196,8 +196,12 @@ WindowListener.prototype = {
             let gBrowser = this._window.gBrowser;
             let panelsLen = gBrowser.mPanelContainer.childNodes.length;
             let (i = 0) {
-                for (; i < panelsLen; i++)
-                    this.removeTabEnvironment(gBrowser.getBrowserAtIndex(i));
+                for (; i < panelsLen; i++) {
+                    this.handleEvent({
+                        type: "TabClose",
+                        target: { linkedBrowser: gBrowser.getBrowserAtIndex(i) }
+                    });
+                }
             }
             let container = gBrowser.tabContainer;
             container.removeEventListener("TabOpen", this, false);
@@ -265,7 +269,7 @@ WindowListener.prototype = {
                 this.notifyListeners("TabOpen", { tab: tab });
                 break;
             case "TabClose":
-                this.notifyListeners("TabClose", { tab: tab });
+                this.notifyListenersImmediately("TabClose", { tab: tab });
                 this.removeTabEnvironment(tab);
                 break;
             }
@@ -325,6 +329,11 @@ WindowListener.prototype = {
             }.bind(this, aTopic, aData);
         var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
         timer.initWithCallback({ notify: WindowListener_notifyListeners_timed }, 0, Ci.nsITimer.TYPE_ONE_SHOT);
+    },
+    notifyListenersImmediately: function WindowListener_notifyListenersImmediately(aTopic, aData) {
+        var tabInfo = aData.tab && this._tabsContentInfo.get(aData.tab) || {};
+        aData.docShellProps = tabInfo && tabInfo.docShellProps;
+        this._notifyListeners(aTopic, aData);
     },
     _notifyListeners: function WindowListener__notifyListeners(aTopic, aData) {
         if (!this._listeners)

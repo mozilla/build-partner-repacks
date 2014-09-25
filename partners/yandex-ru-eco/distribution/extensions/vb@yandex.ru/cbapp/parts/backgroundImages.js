@@ -10,7 +10,6 @@ const {
 const SYNC_JSON_URL = "https://download.cdn.yandex.net/bar/vb/bgs.json";
 const BG_IMAGES_BASEPATH = "resource://vb-profile-data/backgroundImages/";
 const USER_FILE_LEAFNAME = "user.jpg";
-const INTERVAL_SEC = 86400;
 const PREF_LAST_REQUEST_TIME = "backgroundImages.lastRequestTime";
 const PREF_HEADER_LASTMODIFIED = "backgroundImages.lastModified";
 const PREF_LAST_SYNCED_VERSION = "backgroundImages.lastVersion";
@@ -32,10 +31,12 @@ const backgroundImages = {
             this._logger = application.getLogger("BackgroundImages");
             this._initFileSystem();
             var now = Math.round(Date.now() / 1000);
-            var lastRequestTime = this._application.preferences.get(PREF_LAST_REQUEST_TIME, 0);
-            var requestDateDiff = Math.abs(now - lastRequestTime);
-            var requestTimeoutMs = Math.max(INTERVAL_SEC - requestDateDiff, 0) * 1000;
-            this._syncTimer = new sysutils.Timer(this._sync.bind(this), requestTimeoutMs, INTERVAL_SEC * 1000);
+            this._application.alarms.restoreOrCreate("syncBackgrounds", {
+                isInterval: true,
+                timeout: 60 * 24,
+                triggerIfCreated: true,
+                handler: this._sync.bind(this)
+            });
         },
         finalize: function BackgroundImages_finalize(doCleanup, callback) {
             if (this._throttleTimer && this._throttleTimer.isRunning) {
@@ -378,13 +379,20 @@ const backgroundImages = {
                         forceChangeBg = true;
                     }
                 }
-                let backgroundElem = this.brandingXMLDoc.querySelector("background");
+                let defaultBackground = this.defaultBackground;
                 let hasJustMigrated = appInfo.isFreshAddonInstall && this._application.preferences.get("yabar.migrated", false) || appInfo.addonUpgraded && /^1\./.test(appInfo.addonLastVersion);
-                let force = forceChangeBg || backgroundElem.getAttribute("force") === "true" || hasJustMigrated && this._application.preferences.get(PREF_SELECTED_SKIN).length === 0;
+                let force = forceChangeBg || defaultBackground.force || hasJustMigrated && this._application.preferences.get(PREF_SELECTED_SKIN).length === 0;
                 if (force || appInfo.isFreshAddonInstall && this._application.preferences.get("yabar.migrated", false) === false) {
-                    this._application.preferences.set(PREF_SELECTED_SKIN, backgroundElem.getAttribute("file"));
+                    this._application.preferences.set(PREF_SELECTED_SKIN, defaultBackground.file);
                 }
             }
+        },
+        get defaultBackground() {
+            var backgroundElem = this.brandingXMLDoc.querySelector("background");
+            return {
+                force: backgroundElem.getAttribute("force") === "true",
+                file: backgroundElem.getAttribute("file")
+            };
         },
         _sync: function BackgroundImages_sync() {
             var self = this;
@@ -456,6 +464,9 @@ const backgroundImages = {
                         self._logger.debug("Remove " + imgFile.leafName + " skin");
                         fileutils.removeFileSafe(imgFile);
                     }
+                    if (self.newBackgrounds.length > 0) {
+                        self._application.fastdial.sendClickerRequest("ad.background.show");
+                    }
                 }
             });
             var errorListener = function BackgroundImages_sync_errorListener(evt) {
@@ -512,6 +523,10 @@ const backgroundImages = {
             this._throttleTimer = new sysutils.Timer(this._newBackgroundsRefused.bind(this), timeout);
         },
         _newBackgroundsRefused: function BackgroundImages__newBackgroundsRefused() {
+            var newBackgroundSelected = this.newBackgrounds.map(function (skin) skin.id).indexOf(this.currentSelected.id) !== -1;
+            if (newBackgroundSelected) {
+                this._application.fastdial.sendClickerRequest("ad.background.backchanged");
+            }
             this._application.preferences.set(PREF_BACKGROUNDS_ADVERT_REFUSED, true);
             if (this._application.fastdial)
                 this._application.fastdial.sendRequest("newBackgrounds", this.newBackgrounds);

@@ -10,7 +10,7 @@ const VB_CONFIG = function () {
                     PROTOCOL: "yafd"
                 },
                 BUILD: {
-                    DATE: "Thu Jul 10 2014 06:43:32 GMT+0000",
+                    DATE: "Wed Aug 20 2014 05:02:40 GMT+0000",
                     REVISION: "1_15"
                 },
                 CORE: {
