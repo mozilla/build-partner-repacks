@@ -273,8 +273,12 @@ const barApplication = {
             if (!isFirstWindow)
                 return;
             try {
-                if (this._introducedWEntries.length > 0)
-                    controller.placeWidgets(this._introducedWEntries, false, true);
+                if (this._introducedWEntries.length > 0) {
+                    let widgetsToAdd = this._introducedWEntries.filter(function (widget) {
+                            return widget.isImportant && widget.enabled === widget.ENABLED_YES;
+                        });
+                    controller.placeWidgets(widgetsToAdd);
+                }
             } catch (e) {
                 this._logger.error("Could not place introduced widgets on toolbar. " + strutils.formatError(e));
             }
@@ -312,7 +316,7 @@ const barApplication = {
         _navigatorID: 0,
         _localeString: null,
         _wndControllerName: undefined,
-        _yandexHostsPattern: /(^|\.)yandex\.(ru|ua|by|kz|net|com)$/i,
+        _yandexHostsPattern: /(^|\.)yandex\.(ru|ua|by|kz|net|com(\.tr)?)$/i,
         _dirs: {
             get appRootDir() {
                 if (!this._appRoot)
@@ -515,6 +519,10 @@ const barApplication = {
             {
                 name: "bookmarksStat",
                 file: "bookmarksStat.js"
+            },
+            {
+                name: "dayuse",
+                file: "dayuse.js"
             }
         ],
         _finalCleanup: function BarApp__finalCleanup(aAddonId) {

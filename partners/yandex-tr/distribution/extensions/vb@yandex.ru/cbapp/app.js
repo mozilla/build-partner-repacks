@@ -262,10 +262,19 @@ const application = {
         },
         _finalCleanup: function VBApp__finalCleanup(aAddonId) {
             this._logger.debug("Cleanup...");
+            [
+                this.preferencesBranch,
+                "yandex-vb."
+            ].forEach(function (prefBranch) {
+                try {
+                    Preferences.resetBranch(prefBranch);
+                } catch (e) {
+                    this._logger.error("Final cleanup: can't reset branch '" + prefBranch + "'. " + strutils.formatError(e));
+                }
+            }, this);
             this._logger.debug("Removing all files");
             this._barCore.cleanup();
             fileutils.removeFileSafe(this.directories.appRootDir);
-            this.preferences.resetBranch("");
         },
         _init: function VBApp__init() {
             this._logger.config(strutils.formatString("Initializing '%1' application: r%2 dated %3", [
@@ -381,152 +390,176 @@ const application = {
         _parts: {},
         _partNames: [
             {
-                "name": "addonManager",
-                "file": "addonmgr.js"
+                name: "addonManager",
+                file: "addonmgr.js"
             },
             {
-                "name": "addonFS",
-                "file": "addonfs.js"
+                name: "addonFS",
+                file: "addonfs.js"
             },
             {
-                "name": "appStrings",
-                "file": "strbundle.js"
+                name: "appStrings",
+                file: "strbundle.js"
             },
             {
-                "name": "FilePackage",
-                "file": "package.js"
+                name: "FilePackage",
+                file: "package.js"
             },
             {
-                "name": "frontendHelper",
-                "file": "frontendHelper.js"
+                name: "alarms",
+                file: "alarms.js"
             },
             {
-                "name": "internalStructure",
-                "file": "internalStructure.js"
+                name: "frontendHelper",
+                file: "frontendHelper.js"
             },
             {
-                "name": "clids",
-                "file": "clids.js"
+                name: "internalStructure",
+                file: "internalStructure.js"
             },
             {
-                "name": "branding",
-                "file": "branding.js"
+                name: "clids",
+                file: "clids.js"
             },
             {
-                "name": "brandingPlus",
-                "file": "dataprovider.js"
+                name: "branding",
+                file: "branding.js"
             },
             {
-                "name": "addonStatus",
-                "file": "addonStatus.js"
+                name: "brandingPlus",
+                file: "dataprovider.js"
             },
             {
-                "name": "installer",
-                "file": "installer.js"
+                name: "addonStatus",
+                file: "addonStatus.js"
             },
             {
-                "name": "yCookie",
-                "file": "ycookie.js"
+                name: "installer",
+                file: "installer.js"
             },
             {
-                "name": "aboutSupport",
-                "file": "aboutSupport.js"
+                name: "yCookie",
+                file: "ycookie.js"
             },
             {
-                "name": "barnavig",
-                "file": "barnavig.js"
+                name: "integration",
+                file: "integration.js"
             },
             {
-                "name": "metrika",
-                "file": "metrika.js"
+                name: "aboutSupport",
+                file: "aboutSupport.js"
             },
             {
-                "name": "databaseMigration",
-                "file": "databaseMigration.js"
+                name: "barnavig",
+                file: "barnavig.js"
             },
             {
-                "name": "migration",
-                "file": "migration.js"
+                name: "metrika",
+                file: "metrika.js"
             },
             {
-                "name": "backgroundImages",
-                "file": "backgroundImages.js"
+                name: "databaseMigration",
+                file: "databaseMigration.js"
             },
             {
-                "name": "blacklist",
-                "file": "blacklist.js"
+                name: "migration",
+                file: "migration.js"
             },
             {
-                "name": "usageHistory",
-                "file": "usageHistory.js"
+                name: "commonUtils",
+                file: "common-utils.js"
             },
             {
-                "name": "protocolSupport",
-                "file": "protocolSupport.js"
+                name: "backgroundImages",
+                file: "backgroundImages.js"
             },
             {
-                "name": "layout",
-                "file": "layout.js"
+                name: "commonAdvertisement",
+                file: "common-advertisement.js"
             },
             {
-                "name": "syncTopHistory",
-                "file": "syncTopHistory.js"
+                name: "advertisement",
+                file: "advertisement.js"
             },
             {
-                "name": "syncPinned",
-                "file": "syncPinned.js"
+                name: "blacklist",
+                file: "blacklist.js"
             },
             {
-                "name": "sync",
-                "file": "sync.js"
+                name: "usageHistory",
+                file: "usageHistory.js"
             },
             {
-                "name": "safebrowsing",
-                "file": "safebrowsing.js"
+                name: "protocolSupport",
+                file: "protocolSupport.js"
             },
             {
-                "name": "colors",
-                "file": "colors.js"
+                name: "layout",
+                file: "layout.js"
             },
             {
-                "name": "bookmarks",
-                "file": "bookmarks.js"
+                name: "syncTopHistory",
+                file: "syncTopHistory.js"
             },
             {
-                "name": "cloudSource",
-                "file": "cloudsource.js"
+                name: "syncPinned",
+                file: "syncPinned.js"
             },
             {
-                "name": "favicons",
-                "file": "favicons.js"
+                name: "sync",
+                file: "sync.js"
             },
             {
-                "name": "searchSuggest",
-                "file": "searchSuggest.js"
+                name: "safebrowsing",
+                file: "safebrowsing.js"
             },
             {
-                "name": "screenshots",
-                "file": "screenshots.js"
+                name: "colors",
+                file: "colors.js"
             },
             {
-                "name": "screenshotsGrabber",
-                "file": "screenshotsGrabber.js"
+                name: "bookmarks",
+                file: "bookmarks.js"
             },
             {
-                "name": "fastdial",
-                "file": "fastdial.js"
+                name: "cloudSource",
+                file: "cloudsource.js"
             },
             {
-                "name": "thumbs",
-                "file": "thumbs.js"
+                name: "favicons",
+                file: "favicons.js"
             },
             {
-                "name": "searchExample",
-                "file": "searchExample.js"
+                name: "searchSuggest",
+                file: "searchSuggest.js"
             },
             {
-                "name": "backup",
-                "file": "backup.js"
+                name: "screenshots",
+                file: "screenshots.js"
+            },
+            {
+                name: "screenshotsGrabber",
+                file: "screenshotsGrabber.js"
+            },
+            {
+                name: "fastdial",
+                file: "fastdial.js"
+            },
+            {
+                name: "thumbs",
+                file: "thumbs.js"
+            },
+            {
+                name: "searchExample",
+                file: "searchExample.js"
+            },
+            {
+                name: "backup",
+                file: "backup.js"
+            },
+            {
+                name: "dayuse",
+                file: "dayuse.js"
             }
         ],
         _delayMultiplier: 0,

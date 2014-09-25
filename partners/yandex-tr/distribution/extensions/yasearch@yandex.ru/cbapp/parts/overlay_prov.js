@@ -41,9 +41,7 @@ const overlayProvider = {
             return null;
         },
         get currentSetIds() {
-            if (!this._currentSetIds)
-                this._currentSetIds = this._readCurrentSetIds();
-            return this._currentSetIds;
+            return this._readCurrentSetIds();
         },
         parseWidgetItemId: function Overlay_parseWidgetItemId(itemID, fullMode) {
             var match;
@@ -287,7 +285,6 @@ const overlayProvider = {
             var state;
             if (browserCustomizableUI) {
                 let migratedAustralis = this._application.preferences.get("migrated.australis", false);
-                this._application.preferences.set("migrated.australis", true);
                 try {
                     state = JSON.parse(Preferences.get("browser.uiCustomization.state", "{}"));
                 } catch (e) {
@@ -300,6 +297,7 @@ const overlayProvider = {
                         if (Array.isArray(elementIds))
                             result = result.concat(elementIds);
                     }
+                    this._application.preferences.set("migrated.australis", true);
                     return result;
                 }
                 if (migratedAustralis)

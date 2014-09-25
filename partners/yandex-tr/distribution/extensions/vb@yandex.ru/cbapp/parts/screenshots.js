@@ -105,6 +105,7 @@ const screenshots = {
             if (!originalURL || originalURL === "about:blank" || originalURL === shownURL)
                 originalURL = null;
             var existURLs = Object.create(null);
+            this._application.cloudSource.getManifestFromDocument(windowListenerData.tab.contentDocument, originalURL || shownURL);
             this._application.internalStructure.iterate({ nonempty: true }, function (thumbData, index) {
                 if (thumbData.source === originalURL)
                     existURLs[originalURL] = true;
@@ -113,8 +114,11 @@ const screenshots = {
             });
             Object.keys(existURLs).forEach(function (thumbURL) {
                 var screenshot = this.createScreenshotInstance(thumbURL);
-                var result = { url: thumbURL };
-                this.grabber.waitCompleteAndRequestFrameCanvasData(windowListenerData.tab, function (streamData, color) {
+                var result = {
+                        url: thumbURL,
+                        urlReal: shownURL
+                    };
+                this.grabber.waitCompleteAndRequestFrameCanvasData(windowListenerData.tab, null, function (streamData, color) {
                     result.img = streamData;
                     result.color = color;
                     this.onScreenshotCreated(result);
@@ -127,7 +131,7 @@ const screenshots = {
                 this._grabber = this._application.screenshotsGrabber.newInstance(this);
             return this._grabber;
         },
-        createScreenshotInstance: function () {
+        createScreenshotInstance: function Screenshots_createScreenshotInstanceMaker() {
             var cache = Object.create(null);
             return function Screenshots_createScreenshotsInstance(url) {
                 cache[url] = cache[url] || new Screenshot(url);
@@ -179,6 +183,7 @@ const screenshots = {
             var screenshot = this.createScreenshotInstance(screenshotData.url);
             screenshot.color = aData.color;
             screenshotData.thumbData.screenshot = screenshot.getDataForThumb();
+            screenshotData.thumbData.thumb.title = screenshotData.thumbData.thumb.title || aData.title || null;
             dataStructure[screenshotData.index] = screenshotData.thumbData;
             this.saveStream(aData.img, screenshot.file);
             toBeSaved.forEach(function (almostSaved) {
@@ -189,6 +194,7 @@ const screenshots = {
                 }
                 nugtScreenshot.color = aData.color;
                 nugtThumbData.screenshot = screenshot.getDataForThumb();
+                nugtThumbData.thumb.title = nugtThumbData.thumb.title || aData.title || null;
                 dataStructure[almostSaved.index] = nugtThumbData;
             }.bind(this));
             var historyThumb = this._application.fastdial.cachedHistoryThumbs[screenshotData.url];
@@ -197,7 +203,35 @@ const screenshots = {
                 this._application.fastdial.sendRequest("historyThumbChanged", this._application.frontendHelper.getDataForThumb(historyThumb));
             }
             this._application.internalStructure.setItem(dataStructure);
-            this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
+            var onFaviconReady = function onFaviconReady(favicon, color) {
+                    if (favicon || color) {
+                        for (let index in dataStructure) {
+                            let thumbData = this._application.internalStructure.getItem(index);
+                            dataStructure[index] = thumbData;
+                            if (favicon) {
+                                thumbData.thumb.favicon = favicon;
+                            }
+                            if (color) {
+                                thumbData.thumb.backgroundColor = color;
+                            }
+                            this._application.internalStructure.setItem(index, thumbData);
+                        }
+                    }
+                    for (let [
+                                ,
+                                thumbData
+                            ] in Iterator(dataStructure)) {
+                        this._application.thumbs.getMissingData(thumbData);
+                    }
+                    this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
+                }.bind(this);
+            if (aData.faviconUrl) {
+                this._application.colors.requestImageDominantColor(aData.faviconUrl, function (err, color) {
+                    onFaviconReady(aData.faviconUrl, color);
+                });
+            } else {
+                this._application.favicons.requestFaviconForURL(aData.urlReal, onFaviconReady);
+            }
         },
         useScreenshot: function Screenshots_useScreenshot(thumbData) {
             switch (this._application.preferences.get("ftabs.thumbStyle", 1)) {
