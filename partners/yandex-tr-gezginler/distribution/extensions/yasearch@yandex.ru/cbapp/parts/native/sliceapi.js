@@ -23,6 +23,22 @@ function createSliceWrapper(sliceProps, apiInstance, WIID) {
         get isOpen() slice.isOpen,
         notify: function SliceWrapper_notify() {
             var args = Array.prototype.slice.call(arguments);
+            var exposeProps = function exposeProps(obj) {
+                if (!(obj && typeof obj === "object"))
+                    return;
+                var exposedPropsObject = {};
+                for (let [
+                            propName,
+                            propValue
+                        ] in Iterator(obj)) {
+                    exposedPropsObject[propName] = "r";
+                    exposeProps(propValue);
+                }
+                obj.__exposedProps__ = exposedPropsObject;
+            };
+            args.forEach(function (arg) {
+                exposeProps(arg);
+            });
             platformEnv.onMessage._listeners.forEach(function (listener) {
                 try {
                     listener.apply(listener, args);
@@ -107,9 +123,18 @@ PlatformEnvironment.prototype = {
     getLocalizedString: function PlatformEnvironment_getLocalizedString(aKey) {
         return this._api.Localization.getString(aKey);
     },
-    sendMessage: function PlatformEnvironment_sendMessage(aMessage) {
-        if (this._messageHandler)
-            this._messageHandler.apply(this._api.componentCore, arguments);
+    sendMessage: function PlatformEnvironment_sendMessage(aMessageObject, aCallback) {
+        if (!this._messageHandler)
+            return;
+        var proxyCallback = aCallback && function proxyCallback(data) {
+                if (!aCallback)
+                    return;
+                Services.tm.currentThread.dispatch(function PlatformEnvironment_sendMessageCallback() {
+                    this(data);
+                }.bind(aCallback), Ci.nsIThread.DISPATCH_NORMAL);
+                aCallback = null;
+            };
+        this._messageHandler(aMessageObject, proxyCallback);
     },
     get onMessage() this._messanger,
     getCookie: function PlatformEnvironment_getCookie(aURL, aCookieName, aHTTPOnly) {
@@ -145,6 +170,7 @@ PlatformEnvironment.prototype = {
         "sliceID": "r",
         "currentPage": "r",
         "resizeWindowTo": "r",
+        "isWindowVisible": "r",
         "getOption": "r",
         "setOption": "r",
         "observeSettings": "r",

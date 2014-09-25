@@ -13,6 +13,7 @@ const SELF_DATA_RECEIVED_EVENT = "ftabs-self-data-received";
 const CLOUD_API_URL = "http://api.browser.yandex.ru/dashboard/v2/get/?nodes=";
 const MAX_LOGO_WIDTH = 150;
 const MAX_LOGO_HEIGHT = 60;
+const REFRESH_INTERVAL = 86400 * 7 * 1000;
 var cachedCloudData = Object.create(null);
 const cloudSource = {
         init: function CloudSource_init(application) {
@@ -47,19 +48,17 @@ const cloudSource = {
         },
         observe: function CloudSource_observe(aSubject, aTopic, aData) {
             switch (aTopic) {
-            case API_DATA_RECEIVED_EVENT:
-                let self = this;
-                this._database.execQueryAsync("SELECT domain, logo, backgroundColor FROM cloud_data WHERE domain = :domain AND user_supplied = 1", { domain: aData.domain }, function (rowsData, storageError) {
-                    if (storageError) {
-                        let msg = strutils.formatString("DB error while selecting local cloud data: %1 (code %2)", [
-                                storageError.message,
-                                storageError.result
-                            ]);
-                        throw new Error(msg);
-                    }
-                    if (rowsData.length)
+            case API_DATA_RECEIVED_EVENT: {
+                    if (!aData.logo && !aData.color) {
+                        this._database.execQueryAsync("INSERT OR REPLACE INTO cloud_data (domain, logo, backgroundColor, user_supplied, last_api_request) VALUES (:domain, :logo, :color, 0, :now)", {
+                            domain: aData.domain,
+                            logo: null,
+                            color: null,
+                            now: Date.now().toString()
+                        });
                         return;
-                    var newData = {
+                    }
+                    let newData = {
                             backgroundImage: aData.logo,
                             backgroundColor: aData.color,
                             domain: aData.domain
@@ -68,31 +67,33 @@ const cloudSource = {
                         backgroundColor: aData.color,
                         backgroundImage: aData.logo
                     };
-                    self._database.execQueryAsync("INSERT INTO cloud_data (domain, logo, backgroundColor, user_supplied) VALUES (:domain, :logo, :color, 0)", {
+                    this._database.execQueryAsync("INSERT OR REPLACE INTO cloud_data (domain, logo, backgroundColor, user_supplied, last_api_request) VALUES (:domain, :logo, :color, 0, :now)", {
+                        domain: aData.domain,
+                        logo: aData.logo,
+                        color: aData.color,
+                        now: Date.now().toString()
+                    });
+                    Services.obs.notifyObservers(this, this._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT, JSON.stringify(newData));
+                    break;
+                }
+            case SELF_DATA_RECEIVED_EVENT: {
+                    let newData = {
+                            backgroundImage: aData.logo,
+                            backgroundColor: aData.color,
+                            domain: aData.domain
+                        };
+                    this._database.execQueryAsync("INSERT OR REPLACE INTO cloud_data (domain, logo, backgroundColor, user_supplied) VALUES (:domain, :logo, :color, 1)", {
                         domain: aData.domain,
                         logo: aData.logo,
                         color: aData.color
                     });
-                    Services.obs.notifyObservers(self, self._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT, JSON.stringify(newData));
-                });
-                break;
-            case SELF_DATA_RECEIVED_EVENT:
-                let newData = {
-                        backgroundImage: aData.logo,
+                    cachedCloudData[aData.domain] = {
                         backgroundColor: aData.color,
-                        domain: aData.domain
+                        backgroundImage: aData.logo
                     };
-                this._database.execQueryAsync("INSERT OR REPLACE INTO cloud_data (domain, logo, backgroundColor, user_supplied) VALUES (:domain, :logo, :color, 1)", {
-                    domain: aData.domain,
-                    logo: aData.logo,
-                    color: aData.color
-                });
-                cachedCloudData[aData.domain] = {
-                    backgroundColor: aData.color,
-                    backgroundImage: aData.logo
-                };
-                Services.obs.notifyObservers(this, this._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT, JSON.stringify(newData));
-                break;
+                    Services.obs.notifyObservers(this, this._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT, JSON.stringify(newData));
+                    break;
+                }
             }
         },
         getCachedExistingData: function CloudSource_getCachedData(host) {
@@ -102,7 +103,7 @@ const cloudSource = {
             if (cachedCloudData[host])
                 return callback(null, cachedCloudData[host]);
             this._database.execQueryAsync("SELECT domain, logo, backgroundColor FROM cloud_data WHERE domain = :domain", { domain: host }, function CloudSource_requestTileFromDatabase_onDataReady(rowsData, storageError) {
-                if (storageError || !rowsData.length)
+                if (storageError || !rowsData.length || !rowsData[0].logo)
                     return callback(storageError);
                 cachedCloudData[host] = {
                     backgroundImage: rowsData[0].logo,
@@ -121,10 +122,23 @@ const cloudSource = {
             if (!host)
                 return;
             uri.host = uri.host.replace(/^www\./, "");
-            this._requestAPI(uri);
-            if (useBothSources && !this._application.isYandexHost(uri.host)) {
-                this._requestPageManifest(uri);
-            }
+            this._database.execQueryAsync("SELECT last_api_request, user_supplied FROM cloud_data WHERE domain = :domain", { domain: uri.host }, function (rowsData, storageError) {
+                if (storageError) {
+                    let msg = strutils.formatString("DB error while selecting local cloud data: %1 (code %2)", [
+                            storageError.message,
+                            storageError.result
+                        ]);
+                    throw new Error(msg);
+                }
+                var needApiRequest = rowsData.some(function (row) {
+                        return Math.abs(Date.now() - parseInt(row.last_api_request || "0", 10)) > REFRESH_INTERVAL || Boolean(row.user_supplied);
+                    }) || rowsData.length === 0;
+                if (needApiRequest)
+                    this._requestAPI(uri);
+                if (useBothSources && !this._application.isYandexHost(uri.host)) {
+                    this._requestPageManifest(uri);
+                }
+            }.bind(this));
         },
         _requestPageManifest: function CloudSource__requestPageManifest(uri) {
             if (!uri.spec || this._pagesLoadQueue[uri.spec])
@@ -155,11 +169,7 @@ const cloudSource = {
                 }
                 if (!xmlDocument)
                     return;
-                var link = xmlDocument.querySelector("link[rel='yandex-tableau-widget']");
-                if (!link)
-                    return;
-                var manifestUrl = netutils.resolveRelativeURL(link.getAttribute("href"), uri);
-                self._validatePageManifest(manifestUrl, uri.asciiHost);
+                self.getManifestFromDocument(xmlDocument, uri);
             });
             var errorHandler = function errorHandler(e) {
                 delete self._pagesLoadQueue[uri.spec];
@@ -167,6 +177,21 @@ const cloudSource = {
             xhr.addEventListener("error", errorHandler, false);
             xhr.addEventListener("abort", errorHandler, false);
             xhr.send();
+        },
+        getManifestFromDocument: function CloudSource_getManifestFromDocument(document, uri) {
+            if (typeof uri === "string") {
+                try {
+                    uri = Services.io.newURI(uri, null, null);
+                } catch (e) {
+                }
+            }
+            if (!uri.asciiHost)
+                return;
+            var link = document.querySelector("link[rel='yandex-tableau-widget']");
+            if (!link)
+                return;
+            var manifestUrl = netutils.resolveRelativeURL(link.getAttribute("href"), uri);
+            this._validatePageManifest(manifestUrl, uri.asciiHost);
         },
         _validatePageManifest: function CloudSource__validatePageManifest(url, domain) {
             if (this._manifestLoadQueue[url])
@@ -255,8 +280,14 @@ const cloudSource = {
                 delete self._cloudDataDomainsQueue[host];
                 if (!xhr.response)
                     return self._logger.error("Server response is not a valid JSON: " + xhr.responseText);
-                if (xhr.response.error || !xhr.response[0].color || !xhr.response[0].resources.logo)
+                if (xhr.response.error || !xhr.response[0].color || !xhr.response[0].resources.logo) {
+                    self._notifyListeners(API_DATA_RECEIVED_EVENT, {
+                        domain: host,
+                        color: null,
+                        logo: null
+                    });
                     return;
+                }
                 self._notifyListeners(API_DATA_RECEIVED_EVENT, {
                     domain: host,
                     color: xhr.response[0].color.replace(/^#/, ""),

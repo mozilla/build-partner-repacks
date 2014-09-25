@@ -108,7 +108,7 @@ ScreenshotGrabber.prototype = {
             webNav.sessionHistory = Cc["@mozilla.org/browser/shistory;1"].createInstance(Ci.nsISHistory);
             webNav.loadURI(aURL, Ci.nsIWebNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
         } catch (e) {
-            this._onPageLoadTimed(iframe, 404);
+            this.waitCompleteAndRequestFrameCanvasData(iframe, 404);
         }
     },
     _onFinishForURL: function ScreenshotGrabber__onFinishForURL(aPageData) {
@@ -175,43 +175,20 @@ ScreenshotGrabber.prototype = {
             break;
         }
     },
-    _onPageLoadTimed: function ScreenshotGrabber__onPageLoadTimed(aTargetFrame, aHttpStatus) {
-        this._setFrameEventListeners(aTargetFrame, false);
-        var timeout = this.CANVAS_CAPTURE_TIMEOUT;
-        var pageLoadCall = function pageLoadCall() {
-                this._onPageLoad(aTargetFrame, aHttpStatus);
-            }.bind(this);
-        var checker = new sysutils.Timer(function () {
-                var doc = aTargetFrame.contentDocument;
-                if (!doc)
-                    return;
-                if (doc.readyState !== "complete")
-                    return;
-                checker.cancel();
-                forcer.cancel();
-                pageLoadCall();
-            }, 1000, true);
-        var forcer = new sysutils.Timer(function () {
-                try {
-                    checker.cancel();
-                    pageLoadCall();
-                } catch (e) {
-                    Cu.reportError(e);
-                }
-            }, timeout);
-    },
     _onPageLoad: function ScreenshotGrabber__onPageLoad(aTargetFrame, aHttpStatus) {
+        var url = aTargetFrame.getAttribute("yaSSURL");
         var result = {
-                url: aTargetFrame.getAttribute("yaSSURL"),
+                url: url,
                 httpStatus: aHttpStatus,
                 checkTime: Date.now()
             };
         var doc = aTargetFrame.contentDocument;
-        result.title = this._safeUnicode(doc.title.toString());
-        result.urlReal = this._safeUnicode(doc.location.toString());
+        result.title = this._safeUnicode(doc.title);
+        result.urlReal = this._safeUnicode(doc.location.href);
         result.faviconUrl = this._safeUnicode(this._getDocumentFaviconURL(doc));
+        screenshotsGrabber._application.cloudSource.getManifestFromDocument(doc, doc.location.href);
         new sysutils.Timer(function () {
-            this.requestFrameCanvasData(aTargetFrame, function (streamData, color) {
+            this.requestFrameImageData(aTargetFrame, function (streamData, color) {
                 result.img = streamData;
                 result.color = color;
                 aTargetFrame.parentNode.removeChild(aTargetFrame);
@@ -222,9 +199,16 @@ ScreenshotGrabber.prototype = {
     _safeUnicode: function ScreenshotGrabber__safeUnicode(aString) {
         return /[^\r\n\x9\xA\xD\x20-\uD7FF\uE000-\uFFFD\u10000-\u10FFFF]/.test(aString) ? aString.replace(/[^\r\n\x9\xA\xD\x20-\uD7FF\uE000-\uFFFD\u10000-\u10FFFF]/g, "") : aString;
     },
-    waitCompleteAndRequestFrameCanvasData: function ScreenshotGrabber_waitCompleteAndRequestFrameCanvasData(frame, callback) {
+    waitCompleteAndRequestFrameCanvasData: function ScreenshotGrabber_waitCompleteAndRequestFrameCanvasData(frame, httpStatus, callback) {
+        if (httpStatus !== null) {
+            this._setFrameEventListeners(frame, false);
+        }
         var pageLoadCall = function pageLoadCall() {
-                this.requestFrameCanvasData(frame, callback);
+                if (httpStatus) {
+                    this._onPageLoad(frame, httpStatus);
+                } else {
+                    this.requestFrameImageData(frame, callback);
+                }
             }.bind(this);
         var checker = new sysutils.Timer(function () {
                 var doc = frame.contentDocument;
@@ -245,7 +229,7 @@ ScreenshotGrabber.prototype = {
                 }
             }, this.CANVAS_CAPTURE_TIMEOUT);
     },
-    requestFrameCanvasData: function ScreenshotGrabber_requestFrameCanvasData(aFrame, callback) {
+    requestFrameImageData: function ScreenshotGrabber_requestFrameImageData(aFrame, callback) {
         var win = aFrame.contentWindow;
         if (!win)
             return;
@@ -312,27 +296,13 @@ ScreenshotGrabber.prototype = {
             }
         }
     },
-    _createFaviconURL: function ScreenshotGrabber__createFaviconURL(aURL) {
-        var url, uri = null;
-        try {
-            uri = netutils.ioService.newURI(aURL, null, null);
-        } catch (e) {
-        }
-        if (uri === null) {
-            return;
-        }
-        if (uri && /^https?$/.test(uri.scheme)) {
-            url = uri.prePath + "/favicon.ico";
-        }
-        return url;
-    },
     _getDocumentFaviconURL: function ScreenshotGrabber__getDocumentFaviconURL(aDocument) {
         var url = Array.slice(aDocument.getElementsByTagName("link")).filter(function (aLinkElement) {
                 return !!(/icon/.test(aLinkElement.rel) && /^https?:\/\//.test(aLinkElement.href));
             })[0];
         if (url)
             url = url.href;
-        return url || this._createFaviconURL(aDocument.location) || "";
+        return url || null;
     }
 };
 function YaCanvasQueue(aGrabber) {
@@ -432,7 +402,7 @@ SShotProgressListener.prototype = {
             } else {
                 this._httpCacheSession.asyncOpenCacheEntry(url, Ci.nsICache.ACCESS_WRITE, cacheListener);
             }
-            this.screenshotGrabber._onPageLoadTimed(targetFrame, httpStatus);
+            this.screenshotGrabber.waitCompleteAndRequestFrameCanvasData(targetFrame, httpStatus);
         }
     },
     onProgressChange: function SShotProgressListener_onProgressChange() {
