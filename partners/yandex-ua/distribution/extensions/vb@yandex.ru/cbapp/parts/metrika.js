@@ -146,7 +146,10 @@ const metrika = {
             delete this._logAppender;
             var appender = Object.create(Log4Moz.Appender.prototype);
             Log4Moz.Appender.call(appender, this._logFormatter);
+            const APP_NAME = this._application.name;
             appender.doAppend = function (aMessage) {
+                if (aMessage.module.indexOf(APP_NAME) !== 0)
+                    return;
                 metrika.param(aMessage.msg, 0, aMessage);
             };
             appender.level = Log4Moz.Level.Error;

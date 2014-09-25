@@ -262,7 +262,7 @@ UnitInfoParser.prototype = {
             name: componentElement.getAttribute("name") || "",
             isUnique: componentElement.getAttribute("unique") != "false",
             barAPI: componentElement.getAttribute("bar-api") || "xb",
-            iconPath: componentElement.getAttribute("icon") || ""
+            iconPath: componentElement.getAttribute("icon-vector") || componentElement.getAttribute("icon") || ""
         };
     },
     _componentElementRE: /(<([a-z]:)*(plugin|widget)[^>]+)>[^]*/m
