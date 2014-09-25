@@ -39,7 +39,7 @@ const RECENTLY_CLOSED_TABS = 15;
 const BAR_EXTENSION_ID = "yasearch@yandex.ru";
 const NATIVE_RESTORETAB_PREFIX = "current-tab-";
 const NATIVE_RESTOREWIN_PREFIX = "current-win-";
-const CLCK_URL = "http://clck.yandex.ru/click/dtype=stred/pid=12/cid=72480/path=%p/*http://yandex.ru";
+const CLCK_URL = "http://clck.yandex.ru/click/dtype=stred/pid=12/cid=72480/path=%p/*";
 const fastdial = {
         init: function Fastdial_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
@@ -187,7 +187,8 @@ const fastdial = {
                     hasClosedTabs: this._recentlyClosedTabs.length > 0,
                     hasApps: false,
                     sync: this._application.sync.state,
-                    newBackgrounds: this._application.backgroundImages.newBackgrounds
+                    newBackgrounds: this._application.backgroundImages.newBackgrounds,
+                    advertisement: this._application.advertisement.frontendState
                 };
             var brandingLogo = this.brandingXMLDoc.querySelector("logo");
             var brandingSearch = this.brandingXMLDoc.querySelector("search");
@@ -262,6 +263,7 @@ const fastdial = {
                     0,
                     2
                 ].indexOf(this._application.preferences.get("ftabs.searchStatus")) !== -1,
+                showAdvertisement: this._application.advertisement.enabled,
                 selectedBgImage: this._application.backgroundImages.currentSelected.id,
                 layouts: possibleLayouts.layouts,
                 currentLayout: possibleLayouts.current,
@@ -282,7 +284,7 @@ const fastdial = {
             }
             return this.expandBrandingURL(node.getAttribute("value"));
         },
-        applySettings: function Fastdial_applySettings(layout, showBookmarks, showSearchForm, thumbStyle) {
+        applySettings: function Fastdial_applySettings(layout, showBookmarks, showSearchForm, showAdvertisement, thumbStyle) {
             var self = this;
             var oldThumbsNum = this._application.layout.getThumbsNum();
             var layoutXY = this._application.layout.getThumbsXYOfThumbsNum(layout);
@@ -293,6 +295,7 @@ const fastdial = {
             } else {
                 ignoreBookmarks = true;
             }
+            this._application.advertisement.enabled = showAdvertisement;
             this._application.preferences.set("ftabs.showBookmarks", showBookmarks);
             this._application.preferences.set("ftabs.searchStatus", showSearchForm ? 0 : 1);
             this._application.preferences.set("ftabs.thumbStyle", thumbStyle);
@@ -835,7 +838,7 @@ const fastdial = {
         sendClickerRequest: function Fastdial_sendClickerRequest(param) {
             var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
             request.mozBackgroundRequest = true;
-            request.open("GET", CLCK_URL.replace("%p", param), true);
+            request.open("GET", CLCK_URL.replace("%p", encodeURIComponent(param)), true);
             request.setRequestHeader("Cache-Control", "no-cache");
             request.send();
         },

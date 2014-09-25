@@ -62,7 +62,7 @@ const searchSuggest = {
             var i = 0;
             while (i < result.root.childCount && output.length < MAX_RESULTS) {
                 let node = result.root.getChild(i);
-                if (/^(https?|ftp):\/\//.test(node.uri)) {
+                if (/^(https?|ftp):\/\//.test(node.uri) && !this._isSerpUrl(node.uri)) {
                     output.push([
                         node.uri,
                         node.title || node.uri
@@ -72,6 +72,9 @@ const searchSuggest = {
             }
             result.root.containerOpen = false;
             callback(searchQuery, output);
+        },
+        _isSerpUrl: function searchSuggest__isSerpUrl(uri) {
+            return /^https?:\/\/yandex\.(ru|com(\.tr)?|ua|by|kz)\/clck\/jsredir/.test(uri) || /^https?:\/\/yandex\.(ru|com(\.tr)?|ua|by|kz)\/yandsearch\?/.test(uri) || /^https?:\/\/(www\.)?google\.(ru|com(\.tr)?|ua|by|kz)\/search\?/.test(uri) || /^https?:\/\/(www\.)?google\.(ru|com(\.tr)?|ua|by|kz)\/url\?/.test(uri);
         },
         useExample: function searchSuggest_useExample(query) {
             var gURLBar = misc.getTopBrowserWindow().gURLBar;
@@ -102,19 +105,6 @@ const searchSuggest = {
                 0,
                 2
             ].indexOf(this._application.preferences.get("ftabs.searchStatus")) !== -1;
-        },
-        get alternativeEngines() {
-            var brandingXMLDoc = this._application.branding.brandPackage.getXMLDocument("fastdial/alternate.xml");
-            var engines = [];
-            Array.forEach(brandingXMLDoc.querySelectorAll("engines > engine"), function (engine) {
-                engines.push({
-                    id: engine.getAttribute("id"),
-                    title: engine.getAttribute("title"),
-                    url: this._application.branding.expandBrandTemplates(engine.getAttribute("query"))
-                });
-            }, this);
-            delete this.alternativeEngines;
-            return this.alternativeEngines = engines;
         },
         _makeURLForQuery: function searchSuggest__makeURLForQuery(queryString) {
             return this._application.branding.expandBrandTemplatesEscape(this._brandingSuggestURL, { "searchTerms": queryString });

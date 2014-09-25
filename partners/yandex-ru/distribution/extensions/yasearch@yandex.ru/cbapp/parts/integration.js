@@ -21,6 +21,11 @@ const integration = {
             var yb = new YandexBrowser(this._application);
             delete this.yandexBrowser;
             return this.yandexBrowser = yb;
+        },
+        get yandexDisk() {
+            var yandexDisk = new YandexDisk(this._application, this._logger);
+            delete this.yandexDisk;
+            return this.yandexDisk = yandexDisk;
         }
     };
 function YandexBrowser(aApplication) {
@@ -196,5 +201,56 @@ YandexBrowser.prototype = {
             this._app.core.Lib.fileutils.removeFileSafe(tmpFile);
         }
         return result;
+    }
+};
+function YandexDisk(aApplication, aLogger) {
+    this._app = aApplication;
+    this._logger = aLogger;
+    this._platform = this._app.core.Lib.sysutils.platformInfo.os.name;
+}
+YandexDisk.prototype = {
+    constructor: YandexDisk,
+    get version() {
+        var diskVersion = null;
+        switch (this._platform) {
+        case "windows": {
+                let regPath = "Software\\Yandex\\Yandex.Disk.Installer3";
+                let regName = "FullVersion";
+                diskVersion = this._winReg.read("HKCU", regPath, regName) || this._winReg.read("HKLM", regPath, regName) || null;
+                if (!/^\d+/.test(diskVersion))
+                    diskVersion = null;
+                break;
+            }
+        case "mac": {
+                let tmpDir = Services.dirsvc.get("TmpD", Ci.nsIFile);
+                let tmpFile = tmpDir.clone();
+                tmpFile.append("integration-yd-bash-out.txt");
+                tmpFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, parseInt("0666", 8));
+                let args = [
+                        "-c",
+                        "IFS=$'\n'; for f in $(mdfind \"kMDItemCFBundleIdentifier=ru.yandex.desktop.disk\");                      do defaults read \"$f/Contents/Info.plist\" CFBundleShortVersionString 2> /dev/null;                      done | sort -n -r > " + tmpFile.path.replace(/\W/g, "\\$&")
+                    ];
+                let bashFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+                bashFile.initWithPath("/bin/bash");
+                let process = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
+                try {
+                    process.init(bashFile);
+                    process.runw(true, args, args.length);
+                    diskVersion = this._app.core.Lib.fileutils.readTextFile(tmpFile).split("\n")[0] || null;
+                    if (!/^\d+/.test(diskVersion))
+                        diskVersion = null;
+                } catch (e) {
+                    this._logger.error("Can not run process for get Yandex.Disk version.");
+                    this._logger.debug(e);
+                }
+                break;
+            }
+        }
+        return diskVersion;
+    },
+    get _winReg() {
+        var winReg = Cu.import("resource://" + this._app.name + "-mod/WinReg.jsm", {}).WinReg;
+        this.__defineGetter__("_winReg", function _winReg() winReg);
+        return this._winReg;
     }
 };
