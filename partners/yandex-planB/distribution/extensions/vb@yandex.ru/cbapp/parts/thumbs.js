@@ -43,10 +43,6 @@ const thumbs = {
                 return;
             }
             this._fetchThumbs(function fetchThumbsOnInitCallback() {
-                if (appInfo.addonUpgraded) {
-                    this.pickupThumbs({ withForceThumbs: true });
-                    return;
-                }
                 if (pickupDateDiff > this._pickupInterval) {
                     if (this.scheduledPickup()) {
                         return;
@@ -129,7 +125,6 @@ const thumbs = {
                 pos2ThumbData.thumb = pos2ThumbData.thumb || {};
                 pos2ThumbData.thumb.statParam = "userthumb";
                 pos2ThumbData.sync = pos2ThumbData.sync || {};
-                pos2ThumbData.thumb.statParam = "userthumb";
                 pos2ThumbData.sync.id = this._application.sync.generateId();
                 pos2ThumbData.sync.instance = this._application.name;
                 pos2ThumbData.sync.timestamp = Math.round(Date.now() / 1000);
@@ -275,9 +270,11 @@ const thumbs = {
             this._application.internalStructure.overwriteItem(index, internalThumbData);
             var evtData = {};
             evtData[index] = this._application.frontendHelper.getDataForIndex(index);
+            if (!evtData[index].favicon)
+                evtData[index].favicon = this._application.favicons.getYandexNetFaviconURL(uri);
             this._application.fastdial.sendRequest("thumbChanged", evtData);
             this._application.syncPinned.save();
-            this.getMissingData(internalThumbData, { force: true });
+            this.getMissingData(internalThumbData, { getTileFromApi: true });
             this.getMissingScreenshots();
         },
         updateCurrentSet: function Thumbs_updateCurrentSet(removePositions, saveData) {
@@ -565,6 +562,27 @@ const thumbs = {
                         }
                     }
                 }
+                var urlsToMissingData = {};
+                self._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
+                    var thumb = thumbData.thumb;
+                    urlsToMissingData[thumbData.source] = {
+                        favicon: thumb ? thumb.favicon : null,
+                        backgroundColor: thumb ? thumb.backgroundColor : null,
+                        statParam: thumb ? thumb.statParam : null
+                    };
+                });
+                for (let [
+                            index,
+                            thumbData
+                        ] in Iterator(newThumbs)) {
+                    let urlToMissingData = urlsToMissingData[thumbData.source];
+                    if (urlToMissingData) {
+                        thumbData.thumb = thumbData.thumb || {};
+                        thumbData.thumb.favicon = urlToMissingData.favicon;
+                        thumbData.thumb.backgroundColor = urlToMissingData.backgroundColor;
+                        thumbData.thumb.statParam = urlToMissingData.statParam;
+                    }
+                }
                 self._application.internalStructure.clear();
                 self._application.internalStructure.setItem(newThumbs);
                 Services.obs.notifyObservers(this, self._application.core.eventTopics.THUMBS_STRUCTURE_READY_EVENT, null);
@@ -579,6 +597,7 @@ const thumbs = {
                 }
                 self._application.safebrowsing.checkUnpinnedDomains(options.num, topHistoryEntries);
                 self.getMissingScreenshots();
+                self.getMissingData({ getTileFromApi: true });
                 var existingScreenshotNames = Object.create(null);
                 self._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
                     existingScreenshotNames[this._application.screenshots.createScreenshotInstance(thumbData.source).name] = true;
@@ -642,6 +661,9 @@ const thumbs = {
                 try {
                     let domain = thumbData.location.asciiHost.replace(/^www\./, "");
                     blockedDomains.push(domain);
+                    this._application.getHostAliases(domain).forEach(function (alias) {
+                        blockedDomains.push(alias);
+                    });
                 } catch (ex) {
                 }
             }, this);
@@ -718,11 +740,10 @@ const thumbs = {
                     null
                 ];
             var backgroundImageMissing = stopValues.indexOf(thumbData.cloud.backgroundImage) !== -1;
-            var screenshotMissing = stopValues.indexOf(thumbData.screenshot) !== -1;
             var thumbDataMerged = thumbData;
             var cachedHistoryData;
             options = options || {};
-            if (stopValues.indexOf(thumbData.thumb.title) !== -1) {
+            if (stopValues.indexOf(thumbData.thumb.title) !== -1 && !options.getTileFromApi) {
                 this._application.fastdial.requestTitleForURL(thumbData.source, function (err, title) {
                     if (err)
                         return;
@@ -742,7 +763,7 @@ const thumbs = {
                     }
                 });
             }
-            if (stopValues.indexOf(thumbData.thumb.favicon) !== -1 || options.force) {
+            if ((stopValues.indexOf(thumbData.thumb.favicon) !== -1 || options.force) && !options.getTileFromApi) {
                 this._application.favicons.requestFaviconForURL(thumbData.location, function (faviconData, dominantColor) {
                     if (!faviconData)
                         return;
@@ -763,7 +784,7 @@ const thumbs = {
                         self._application.fastdial.sendRequest("historyThumbChanged", self._application.frontendHelper.getDataForThumb(cachedHistoryData));
                     }
                 });
-            } else if (stopValues.indexOf(thumbData.thumb.favicon) === -1 && stopValues.indexOf(thumbData.thumb.backgroundColor) !== -1) {
+            } else if (stopValues.indexOf(thumbData.thumb.favicon) === -1 && stopValues.indexOf(thumbData.thumb.backgroundColor) !== -1 && !options.getTileFromApi) {
                 this._application.colors.requestImageDominantColor(thumbData.thumb.favicon, function (err, dominantColor) {
                     if (err || dominantColor === null)
                         return;
@@ -783,15 +804,14 @@ const thumbs = {
                     }
                 });
             }
-            if (backgroundImageMissing || options.force) {
+            if (backgroundImageMissing || options.force || options.getTileFromApi) {
                 let host = self._application.fastdial.getDecodedUrlHost(thumbData.source);
                 if (host) {
                     this._application.cloudSource.requestExistingTile(host, function Thumbs_getMissingData_onTileDataReady(err, cloudData) {
                         if (err)
                             throw new Error(err);
                         if (!cloudData || options.force && !options.syncOnly) {
-                            self._application.cloudSource.fetchTileFromWeb(thumbData.location, options.force || options.historyOnly);
-                            return;
+                            self._application.cloudSource.fetchTileFromWeb(thumbData.location, options.historyOnly);
                         }
                         if (!cloudData)
                             return;
@@ -887,16 +907,11 @@ const thumbs = {
             this._logger.debug("Start updating thumbs' data...");
             var now = Math.round(Date.now() / 1000);
             var lastRefreshTime = this._application.preferences.get("ftabs.lastRefreshThumbsTime", now);
-            var lastRefreshBgTime = this._application.preferences.get("ftabs.lastRefreshBackgroundsTime");
-            var updateBackgroundImage = !lastRefreshBgTime || Date.now() - REFRESH_INTERVAL * 7 * 1000 > lastRefreshBgTime * 1000;
             this._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
-                this.getMissingData(thumbData, { force: updateBackgroundImage });
+                this.getMissingData(thumbData, { force: true });
             }, this);
             this._application.preferences.set("ftabs.lastRefreshThumbsTime", now);
             this._refreshThumbsTimer = new sysutils.Timer(this._refreshThumbsData.bind(this), REFRESH_INTERVAL * 1000);
-            if (updateBackgroundImage) {
-                this._application.preferences.set("ftabs.lastRefreshBackgroundsTime", now);
-            }
             this.getMissingScreenshots();
         },
         _getMergedHistoryQueue: function Thumbs__getMergedHistoryQueue(topHistoryData, unsafeDomains, branded) {

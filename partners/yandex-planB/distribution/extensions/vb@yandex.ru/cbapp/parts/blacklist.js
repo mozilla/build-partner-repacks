@@ -17,7 +17,12 @@ const blacklist = {
             this._application = application;
             this._logger = application.getLogger("Blacklist");
             this._initDatabase();
-            this._initServerSync();
+            this._application.alarms.restoreOrCreate("syncBlacklist", {
+                isInterval: true,
+                timeout: 60 * 24,
+                triggerIfCreated: true,
+                handler: this._syncServerXML.bind(this)
+            });
         },
         finalize: function Blacklist_finalize(doCleanup, callback) {
             if (this._timer && this._timer.isRunning)
@@ -111,12 +116,6 @@ const blacklist = {
             dbFile.append(DB_FILENAME);
             this._database = new Database(dbFile);
         },
-        _initServerSync: function Blacklist__initServerSync() {
-            var lastSyncTime = this._application.preferences.get("blacklist.lastSyncTime", 0);
-            var now = Math.round(Date.now() / 1000);
-            var delay = Math.max(SYNC_INTERVAL_SEC - Math.abs(now - lastSyncTime), 0);
-            this._timer = new sysutils.Timer(this._syncServerXML.bind(this), delay * 1000, SYNC_INTERVAL_SEC * 1000);
-        },
         _syncServerXML: function Blacklist__syncServerXML() {
             var self = this;
             this._logger.debug("Sync blacklist data");
@@ -131,13 +130,8 @@ const blacklist = {
             var timer = new sysutils.Timer(request.abort.bind(request), 5000);
             request.addEventListener("load", function () {
                 timer.cancel();
-                var setLastSyncTime = function setLastSyncTime() {
-                    var now = Math.round(Date.now() / 1000);
-                    self._application.preferences.set("blacklist.lastSyncTime", now);
-                };
                 if (request.status === 304) {
                     self._logger.debug("XML file on server has not yet changed, status = 304");
-                    setLastSyncTime();
                     return;
                 }
                 if (!request.responseXML || request.responseXML.documentElement.nodeName !== "list") {
@@ -148,7 +142,6 @@ const blacklist = {
                     let serializedXML = xmlutils.serializeXML(request.responseXML);
                     fileutils.writeTextFile(self._serverFile, serializedXML);
                     self._logger.debug("XML is valid, saved into filesystem");
-                    setLastSyncTime();
                     let lastModified = request.getResponseHeader("last-modified");
                     if (lastModified) {
                         self._application.preferences.set("blacklist.lastModified", lastModified);

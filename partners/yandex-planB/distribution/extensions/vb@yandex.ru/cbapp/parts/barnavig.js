@@ -36,6 +36,7 @@ XPCOMUtils.defineLazyGetter(this, "mozWorker", function () {
     });
     return mozWorker;
 });
+XPCOMUtils.defineLazyServiceGetter(this, "UUID_GENERATOR", "@mozilla.org/uuid-generator;1", "nsIUUIDGenerator");
 function isErrorRequest(aReq) !!(!aReq || aReq.type == "error" || !aReq.target || aReq.target.status != 200)
 function getWindowListenerForWindow(window) {
     var controllerName = barnavig._application.name + "OverlayController";
@@ -46,12 +47,38 @@ function getTabDataForTab(tab, key) {
     return winListener && winListener.getTabData(tab, key) || null;
 }
 const ABOUT_BLANK_URI = Services.io.newURI("about:blank", null, null);
+function BrowsersData() {
+    this._browsersMap = new WeakMap();
+}
+BrowsersData.prototype = {
+    get: function BrowsersData_get(browser, key) {
+        var data = this._browsersMap.get(browser) || Object.create(null);
+        return typeof key === "undefined" ? data : data[key];
+    },
+    set: function BrowsersData_set(browser, key, value) {
+        var data = this.get(browser);
+        data[key] = value;
+        this._browsersMap.set(browser, data);
+    },
+    getBrowserId: function BrowsersData_getBrowserId(browser) {
+        return this.get(browser, "id");
+    },
+    generateBrowserId: function BrowsersData_generateBrowserId(browser) {
+        var id = this.getBrowserId(browser);
+        if (!id) {
+            id = UUID_GENERATOR.generateUUID().toString().replace(/[-{}]/g, "");
+            this.set(browser, "id", id);
+        }
+        return id;
+    }
+};
 const barnavig = {
         init: function BarNavig_init(application) {
             application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
             this._application = application;
             this._logger = application.getLogger("BarNavig");
             this._dataProviders = [];
+            this._browsersData = new BrowsersData();
             this.transmissionEnabled = true;
             this.listenStatEventsEnabled = true;
             try {
@@ -67,6 +94,7 @@ const barnavig = {
             this.transmissionEnabled = false;
             if (aDoCleanup)
                 this._application.core.Lib.fileutils.removeFileSafe(this._barnavigR1File);
+            this._browsersData = null;
             this._dataProviders = [];
             this._logger = null;
             this._application = null;
@@ -99,9 +127,11 @@ const barnavig = {
             }
             if (this._listenStatEvents) {
                 downloadsStat.init();
+                tabsInfoListener.init();
                 windowMediatorListener.enable();
             } else {
                 downloadsStat.finalize();
+                tabsInfoListener.finalize();
                 windowMediatorListener.disable();
             }
         },
@@ -209,7 +239,6 @@ const barnavig = {
                     ui: this._guidString,
                     show: 1,
                     post: 0,
-                    urlinfo: 0,
                     referer: null,
                     oldurl: null
                 };
@@ -268,6 +297,9 @@ const barnavig = {
             var referringURI = webNavigation.referringURI;
             if (referringURI && !referringURI.userPass)
                 params.referer = referringURI.spec;
+            var realReferer = linkClickListener.getRealReferer(browser);
+            if (realReferer)
+                params["real-referer"] = realReferer;
             if (browser.contentTitle)
                 params.title = String(browser.contentTitle || "").substr(0, 1000);
             var {
@@ -278,6 +310,7 @@ const barnavig = {
                 params.oldurl = originalURL;
             if (responseStatus)
                 params.httpstatus = parseInt(responseStatus, 10) || 0;
+            params["tab-id"] = this._browsersData.generateBrowserId(browser);
             return params;
         },
         get BAR_NAVIG_URL() {
@@ -577,6 +610,7 @@ const windowMediatorListener = {
                 if (winListener) {
                     win.addEventListener("unload", function WML_win_onUnload() {
                         win.removeEventListener("unload", WML_win_onUnload, false);
+                        winListener.removeListener("TabClose", tabsInfoListener);
                         win.removeEventListener("click", linkClickListener, true);
                         winListener.removeListener("PageStateStart", linkClickListener);
                         winListener.removeListener("WindowLocationChange", windowEventsListener);
@@ -586,6 +620,7 @@ const windowMediatorListener = {
                     winListener.addListener("PageLoad", windowEventsListener);
                     winListener.addListener("PageStateStart", linkClickListener);
                     win.addEventListener("click", linkClickListener, true);
+                    winListener.addListener("TabClose", tabsInfoListener);
                 }
                 break;
             }
@@ -605,9 +640,35 @@ const linkClickListener = {
             var tabData = winListener.getTabData(tab, "linkClick");
             if (!tabData)
                 return;
-            if (tabData.linkText)
-                barNavigParams.lt = tabData.linkText;
-            winListener.removeTabData(tab, "linkClick");
+            if (!tabData.linkText)
+                return;
+            barNavigParams.lt = tabData.linkText;
+            tabData.linkText = null;
+        },
+        getRealReferer: function linkClickListener_getRealReferer(tab) {
+            var webNavigation = tab.webNavigation;
+            var referringURI = webNavigation.referringURI;
+            if (!referringURI)
+                return null;
+            var sessionHistory = webNavigation.sessionHistory;
+            var prevSHEntryIndex = sessionHistory.index - 1;
+            if (prevSHEntryIndex < 0) {
+                let winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
+                if (!winListener)
+                    return;
+                let tabData = winListener.getTabData(tab, "linkClick");
+                if (!tabData)
+                    return;
+                return tabData.lastViewLocation || null;
+            }
+            try {
+                let prevSHEntry = sessionHistory.getEntryAtIndex(prevSHEntryIndex, false);
+                let uri = prevSHEntry.URI;
+                if (uri && !uri.userPass && /^https?$/.test(uri.scheme))
+                    return prevSHEntry.URI.spec;
+            } catch (e) {
+            }
+            return null;
         },
         handleEvent: function linkClickListener_handleEvent(event) {
             if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false)
@@ -616,16 +677,17 @@ const linkClickListener = {
             case "click":
                 this._lastActionText = this._getLinkText(event);
                 this._lastActionTimestamp = Date.now();
+                this._lastActionViewLocation = this._getViewLocation(event);
                 break;
             }
         },
         observe: function linkClickListener_observe(subject, topic, data) {
             switch (topic) {
-            case "PageStateStart":
-                this._onPageStateStart(data);
-                break;
             case "http-on-modify-request":
                 this._onModifyRequest(subject);
+                break;
+            case "PageStateStart":
+                this._onPageStateStart(data);
                 break;
             }
         },
@@ -645,33 +707,26 @@ const linkClickListener = {
                 target = target.parentNode;
             return target && target.textContent.trim().substr(0, 500) || null;
         },
-        _onPageStateStart: function linkClickListener__onPageStateStart({
-            tab: tab,
-            request: request
-        }) {
-            if (Date.now() - this._lastActionTimestamp > this.PAGE_START_WAIT_TIME)
-                return;
-            if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false)
-                return;
-            var winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
-            if (!winListener)
-                return;
-            var tabData = winListener.getTabData(tab, "linkClick");
-            if (!tabData)
-                return;
-            var requestName;
-            try {
-                requestName = request.name;
-            } catch (e) {
+        _getViewLocation: function linkClickListener__getViewLocation(event) {
+            var view = event.view;
+            if (view.location.protocol === "chrome:") {
+                let target = event.originalTarget;
+                if (target.localName === "menuitem" && target.parentNode && target.parentNode.id === "contentAreaContextMenu") {
+                    if (target.parentNode.triggerNode) {
+                        view = target.parentNode.triggerNode.ownerDocument.defaultView;
+                    }
+                }
             }
-            if (!requestName || tabData.lastURL !== requestName)
-                winListener.removeTabData(tab, "linkClick");
+            if (!/^https?:$/.test(view.location.protocol))
+                return null;
+            return view.location.toString();
         },
         _onModifyRequest: function linkClickListener__onModifyRequest(channel) {
-            if (!this._lastActionText)
+            if (!(this._lastActionText || this._lastActionViewLocation))
                 return;
             if (Date.now() - this._lastActionTimestamp > this.ACTION_LIVE_TIME) {
                 this._lastActionText = null;
+                this._lastActionViewLocation = null;
                 return;
             }
             try {
@@ -686,7 +741,26 @@ const linkClickListener = {
                 return;
             tabData.linkText = this._lastActionText;
             tabData.lastURL = channel.URI.spec;
+            tabData.lastViewLocation = this._lastActionViewLocation;
             this._lastActionText = null;
+            this._lastActionViewLocation = null;
+        },
+        _onPageStateStart: function linkClickListener__onPageStateStart({
+            tab: tab,
+            request: request
+        }) {
+            if (Date.now() - this._lastActionTimestamp > this.PAGE_START_WAIT_TIME)
+                return;
+            if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false)
+                return;
+            var winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
+            if (!winListener)
+                return;
+            var tabData = winListener.getTabData(tab, "linkClick");
+            if (!tabData)
+                return;
+            if (tabData.lastURL !== request.URI.spec)
+                tabData.linkText = null;
         },
         _getTabDataForChannel: function linkClickListener__getTabDataForChannel(channel) {
             var win = this._getDOMWindowForChannel(channel);
@@ -1370,4 +1444,82 @@ const searchPersonalization = {
             });
             return defer.promise;
         }
+    };
+const tabsInfoListener = {
+        init: function tabsInfoListener_init() {
+            Services.obs.addObserver(this, "quit-application", false);
+        },
+        finalize: function tabsInfoListener_finalize() {
+            Services.obs.removeObserver(this, "quit-application");
+        },
+        observe: function tabsInfoListener_observe(subject, topic, data) {
+            switch (topic) {
+            case "TabClose":
+                if (barnavig.listenStatEventsEnabled) {
+                    this._onTabClose(data);
+                }
+                break;
+            case "quit-application":
+                this._sendSync();
+                break;
+            }
+        },
+        _onTabClose: function tabsInfoListener__onTabClose(windowListenerData) {
+            var tabId = barnavig._browsersData.getBrowserId(windowListenerData.tab);
+            if (!tabId)
+                return;
+            this._collectedTabIds.push(tabId);
+            this._setSendTimer();
+        },
+        _setSendTimer: function tabsInfoListener__setSendTimer() {
+            if (this._sendTimer)
+                return;
+            this._sendTimer = new sysutils.Timer(this._send.bind(this), this.SEND_TIMER_INTERVAL);
+        },
+        _stopSendTimer: function tabsInfoListener__stopSendTimer() {
+            if (this._sendTimer) {
+                this._sendTimer.cancel();
+                this._sendTimer = null;
+            }
+        },
+        _collectedTabIds: [],
+        _sendTimer: null,
+        _sendSync: function tabsInfoListener__sendSync() {
+            try {
+                this._send(true);
+            } catch (e) {
+                Cu.reportError(e);
+            }
+        },
+        _send: function tabsInfoListener__send(syncSend) {
+            this._stopSendTimer();
+            var closedTabIds = this._collectedTabIds.join(".");
+            this._collectedTabIds = [];
+            if (!closedTabIds)
+                return;
+            if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false)
+                return;
+            var url = "https://" + barnavig.BARNAVIG_URL_PATH;
+            var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+            request.mozBackgroundRequest = true;
+            if (syncSend) {
+                request.timeout = 400;
+                request.open("POST", url, false);
+            } else {
+                request.open("POST", url, true);
+            }
+            request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            request.setRequestHeader("Connection", "close");
+            var params = [];
+            for (let [
+                        key,
+                        value
+                    ] in Iterator(barnavig._emptyBarNavigParamsObject)) {
+                if (value !== null)
+                    params.push(key + "=" + encodeURIComponent(String(value)));
+            }
+            params.push("ctab-ids=" + encodeURIComponent(closedTabIds));
+            request.send(params.join("&"));
+        },
+        SEND_TIMER_INTERVAL: 10 * 1000
     };
