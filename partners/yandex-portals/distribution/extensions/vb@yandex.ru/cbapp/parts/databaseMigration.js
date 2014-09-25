@@ -119,6 +119,9 @@ const schema = {
             },
             8: function schema_fastdial_8(database) {
                 database.execQuery("ALTER TABLE thumbs ADD COLUMN statParam TEXT");
+            },
+            9: function schema_fastdial_9(database) {
+                database.execQuery("ALTER TABLE cloud_data ADD COLUMN last_api_request TEXT");
             }
         },
         usageHistory: {

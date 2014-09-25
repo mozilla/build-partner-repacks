@@ -22,44 +22,34 @@ const favicons = {
             this._logger = null;
         },
         requestFaviconForURL: function Favicons_requestFaviconForURL(uri, callback) {
-            if (!uri.asciiHost)
-                return callback(null);
-            var bFFversionIsUnder14 = sysutils.platformInfo.browser.version.isLessThan(14);
-            var faviconData;
-            if (bFFversionIsUnder14) {
+            if (typeof uri === "string") {
                 try {
-                    faviconData = FAVICON_SRV.getFaviconDataAsDataURL(uri);
-                    if (faviconData) {
-                        return callback(faviconData);
-                    }
+                    uri = Services.io.newURI(uri, null, null);
                 } catch (e) {
                 }
-                if (!faviconData) {
-                    faviconData = /\.yandex\-team\.ru$/.test(uri.asciiHost) ? "http://" + uri.asciiHost + "/favicon.ico" : FAVICON_URL + uri.asciiHost;
+            }
+            if (!(uri && uri.asciiHost))
+                return callback(null);
+            var self = this;
+            FAVICON_SRV.getFaviconDataForPage(uri, function Favicons_requestFaviconForURL_onDataGot(aURI, aDataLen, aData, aMimeType) {
+                var faviconData;
+                if (aURI) {
+                    faviconData = !aURI.schemeIs("chrome") && aDataLen > 0 ? new DataURI({
+                        contentType: aMimeType,
+                        base64: true
+                    }, aData).toString() : aURI.spec;
+                } else {
+                    faviconData = /\.yandex\-team\.ru$/.test(uri.asciiHost) ? "http://" + uri.asciiHost + "/favicon.ico" : self.getYandexNetFaviconURL(uri);
                 }
-                this._application.colors.requestImageDominantColor(faviconData, function (err, color) {
+                self._application.colors.requestImageDominantColor(faviconData, function (err, color) {
                     if (err || color === null)
                         return callback();
                     callback(faviconData, color);
                 });
-            } else {
-                let self = this;
-                FAVICON_SRV.getFaviconDataForPage(uri, function Favicons_requestFaviconForURL_onDataGot(aURI, aDataLen, aData, aMimeType) {
-                    if (aURI) {
-                        faviconData = !aURI.schemeIs("chrome") && aDataLen > 0 ? new DataURI({
-                            contentType: aMimeType,
-                            base64: true
-                        }, aData).toString() : aURI.spec;
-                    } else {
-                        faviconData = /\.yandex\-team\.ru$/.test(uri.asciiHost) ? "http://" + uri.asciiHost + "/favicon.ico" : FAVICON_URL + uri.asciiHost;
-                    }
-                    self._application.colors.requestImageDominantColor(faviconData, function (err, color) {
-                        if (err || color === null)
-                            return callback();
-                        callback(faviconData, color);
-                    });
-                });
-            }
+            });
+        },
+        getYandexNetFaviconURL: function Favicons_getYandexNetFaviconURL(uri) {
+            return FAVICON_URL + uri.asciiHost;
         },
         EMPTY_ICON: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAD9JREFUeNpiZGBgYAdiASBmZiAN/AXiD4xAQpwMzXBDQAZIMVAARg0YNWAYGUBJZvoHMoADmp2ZyMjOHwECDADJLweHaL6l7AAAAABJRU5ErkJggg==",
         _application: null,

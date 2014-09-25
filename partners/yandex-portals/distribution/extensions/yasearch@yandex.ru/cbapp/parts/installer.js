@@ -33,7 +33,7 @@ const installer = {
                     this._onAddonUpdated();
             }
             AddonManager.addAddonListener(this);
-            if (addonManagerInfo.isFreshAddonInstall)
+            if (!this._application.preferences.get("general.install.time"))
                 this._application.preferences.set("general.install.time", Math.round(Date.now() / 1000));
             this._application.branding.addListener(PKG_UPD_TOPIC, this);
         },
@@ -303,12 +303,16 @@ const installer = {
             return this.isQSOverridable(selectedEngineName);
         },
         isQSOverridable: function Installer_isQSOverridable(aQSName) {
-            return [
-                "Яндекс",
+            return this._overridableQSNames.indexOf(aQSName) == -1;
+        },
+        get _overridableQSNames() {
+            delete this._overridableQSNames;
+            return this._overridableQSNames = [
+                strutils.utf8Converter.ConvertToUnicode("Яндекс"),
                 "Yandex",
                 "Seznam",
                 "Bozzon"
-            ].indexOf(aQSName) == -1;
+            ];
         },
         _showWelcomePageOnStartup: function Installer__showWelcomePageOnStartup() {
             this._setupWelcomePageObjectProvider();
@@ -635,11 +639,17 @@ const installer = {
                             continue;
                         }
                     }
-                    let image = qs.querySelector("Image");
-                    if (image && image.textContent) {
-                        let imageFile = branding.brandPackage.findFile(image.textContent);
-                        if (imageFile)
-                            image.textContent = DataURI.fromFile(imageFile);
+                    let images = qs.querySelectorAll("Image");
+                    let (j = 0, len = images.length) {
+                        for (; j < len; j++) {
+                            let image = images[j];
+                            if (image && image.textContent) {
+                                let imageFile = branding.brandPackage.findFile(image.textContent);
+                                if (imageFile) {
+                                    image.textContent = DataURI.fromFile(imageFile);
+                                }
+                            }
+                        }
                     }
                     let description = qs.querySelector("Description");
                     description = description.textContent || "";
@@ -657,8 +667,19 @@ const installer = {
                     }
                     let searchURLElement = qs.querySelector("Url[type='text/html']");
                     let searchURL = searchURLElement && searchURLElement.getAttribute("template") || null;
-                    if (searchURL)
-                        searchService.addEngineWithDetails(shortName, image.textContent, shortName, description, "get", searchURL);
+                    if (searchURL) {
+                        let existsEngine = searchService.getEngineByName(shortName);
+                        if (existsEngine) {
+                            this._logger.debug("Search engine with name '" + shortName + "' exists. Remove it.");
+                            searchService.removeEngine(existsEngine);
+                        }
+                        this._logger.debug("Add search engine '" + shortName + "'.");
+                        try {
+                            searchService.addEngineWithDetails(shortName, images[0] && images[0].textContent || null, shortName, description, "get", searchURL);
+                        } catch (e) {
+                            this._logger.error(e);
+                        }
+                    }
                     let searchFormURLElement = qs.querySelector("Url[rel='search-form'][type='text/html']");
                     if (searchFormURLElement) {
                         let searchFormURL = searchFormURLElement.getAttribute("template");
