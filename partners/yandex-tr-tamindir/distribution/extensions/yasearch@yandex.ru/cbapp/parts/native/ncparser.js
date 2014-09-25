@@ -13,7 +13,7 @@ const nativeComponentsParser = {
                 throw new BarPlatform.Unit.EUnitSyntax(componentElement.nodeName, "No component name");
             var thisPackage = unit.unitPackage;
             var compID = thisPackage.id + "#" + unit.name;
-            var iconPath = componentElement.getAttribute("icon") || undefined;
+            var iconPath = componentElement.getAttribute("icon-vector") || componentElement.getAttribute("icon") || undefined;
             var nativeModulePath = this._chooseNativeModule(componentElement);
             if (!thisPackage.findFile(nativeModulePath)) {
                 throw new BarPlatform.Unit.EUnitSyntax(componentElement.nodeName, strutils.formatString("Native module file not found ('%1')", [nativeModulePath]));

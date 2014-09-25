@@ -20,6 +20,7 @@ function NativeBarAPI(componentInfo, logger) {
         "Localization",
         "Network",
         "Notifications",
+        "Overlay",
         "Package",
         "Promise",
         "Protocols",
@@ -261,6 +262,27 @@ NativeBarAPI.Controls.prototype = {
         return createSliceWrapper(sliceProps, this._api, WIID);
     }
 };
+NativeBarAPI.Overlay = function Overlay(componentInfo, logger) {
+    this._componentInfo = componentInfo;
+    this._logger = logger;
+};
+NativeBarAPI.Overlay.prototype = {
+    checkWidgetsInCurrentSet: function NativeAPI_checkWidgetsInCurrentSet(aWidgetProtoIds) {
+        var currentSetIds = application.overlayProvider.currentSetIds;
+        var result = Object.create(null);
+        if (!Array.isArray(aWidgetProtoIds)) {
+            aWidgetProtoIds = [aWidgetProtoIds];
+        }
+        aWidgetProtoIds.forEach(function (widgetID) {
+            if (!application.widgetLibrary.isKnownWidget(widgetID)) {
+                result[widgetID] = null;
+            } else {
+                result[widgetID] = widgetID in currentSetIds;
+            }
+        });
+        return result;
+    }
+};
 NativeBarAPI.Statistics = function Statistics(componentInfo, logger) {
     this._componentInfo = componentInfo;
     this._logger = logger;
@@ -276,6 +298,60 @@ NativeBarAPI.Statistics.prototype = {
     logButtonClick: function NativeAPI_logButtonClick() {
     },
     logMenuClick: function NativeAPI_logMenuClick() {
+    },
+    logClickStatistics: function NativeAPI_logClickStatistics({
+        dtype: dtype,
+        pid: pid,
+        cid: cid,
+        path: path
+    }) {
+        if (typeof dtype === "undefined")
+            dtype = "stred";
+        if (typeof pid === "undefined")
+            pid = 12;
+        if (typeof dtype === "string") {
+            if (!dtype)
+                throw new RangeError("dtype is empty string");
+        } else {
+            throw new TypeError("Invalid dtype type ('" + typeof dtype + "')");
+        }
+        if (typeof pid === "number") {
+            if (pid < 0)
+                throw new RangeError("Invalid pid value (" + pid + ")");
+        } else {
+            throw new TypeError("Wrong pid type ('" + typeof pid + "'). Number required.");
+        }
+        if (typeof cid === "number") {
+            if (cid <= 0)
+                throw new RangeError("Invalid cid value (" + cid + ")");
+        } else {
+            throw new TypeError("Wrong cid type ('" + typeof cid + "'). Number required.");
+        }
+        var url = "http://clck.yandex.ru/click" + "/dtype=" + encodeURIComponent(dtype) + "/pid=" + pid + "/cid=" + cid + "/path=" + encodeURIComponent(path);
+        var extraString = "";
+        var processedKeys = [
+                "dtype",
+                "pid",
+                "cid",
+                "path"
+            ];
+        for (let [
+                    key,
+                    value
+                ] in Iterator(arguments[0])) {
+            if (processedKeys.indexOf(key) !== -1)
+                continue;
+            if (key === "*") {
+                extraString = value;
+                continue;
+            }
+            url += "/" + key + "=" + encodeURIComponent(value);
+        }
+        url += "/*" + extraString;
+        var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+        request.mozBackgroundRequest = true;
+        request.open("GET", url, true);
+        request.send(null);
     },
     logAddonEvents: function NativeAPI_logAddonEvents(eventsMap) {
         application.addonStatus.logAddonEvents(eventsMap);
@@ -679,13 +755,12 @@ NativeBarAPI.Localization.prototype = {
     _getMessagesXMLDoc: function Localization__getMessagesXMLDoc(fileName) {
         try {
             let package_ = this._componentInfo.package_;
-            if (!package_.findFile(fileName))
-                return null;
-            return package_.getXMLDocument(fileName);
-        } catch (ex) {
+            if (package_.findFile(fileName))
+                return package_.getXMLDocument(fileName);
+        } catch (e) {
             this._logger.warn("Could not parse " + fileName + ". " + e);
-            return null;
         }
+        return null;
     }
 };
 NativeBarAPI.SysUtils = function SysUtils(componentInfo, logger) {

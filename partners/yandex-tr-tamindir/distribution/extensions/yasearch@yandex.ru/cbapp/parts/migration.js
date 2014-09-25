@@ -47,7 +47,36 @@ const migration = {
         },
         currentset: {
             replaceIds: function migration_currentset_replaceIds(replacer) {
-                this._replaceIdsInLocalStore(replacer);
+                var browserCustomizableUI = this._browserCustomizableUI;
+                if (!browserCustomizableUI) {
+                    this._replaceIdsInLocalStore(replacer);
+                    return;
+                }
+                browserCustomizableUI.areas.map(function (area) browserCustomizableUI.getWidgetIdsInArea(area)).reduce(function (a, b) a.concat(b)).forEach(function (id) {
+                    var newId = replacer(id);
+                    if (id === newId || typeof newId === "undefined")
+                        return;
+                    var placement = browserCustomizableUI.getPlacementOfWidget(id);
+                    if (!placement)
+                        return;
+                    migration.logger.debug("Replace '" + id + "' with '" + newId + "'");
+                    browserCustomizableUI.addWidgetToArea(newId, placement.area, placement.position);
+                    browserCustomizableUI.removeWidgetFromArea(id);
+                });
+            },
+            addIds: function migration_currentset_addIds(ids) {
+                var browserCustomizableUI = this._browserCustomizableUI;
+                if (!browserCustomizableUI)
+                    return;
+                browserCustomizableUI.beginBatchUpdate();
+                ids.forEach(function (id) {
+                    browserCustomizableUI.addWidgetToArea(id, browserCustomizableUI.AREA_NAVBAR);
+                });
+                browserCustomizableUI.endBatchUpdate();
+            },
+            get _browserCustomizableUI() {
+                delete this.browserCustomizableUI;
+                return this.browserCustomizableUI = Cu.import("resource:///modules/CustomizableUI.jsm", {}).CustomizableUI;
             },
             _replaceIdsInLocalStore: function migration_currentset__replaceIdsInLocalStore(replacer) {
                 var allResources = this._localStoreRDF.GetAllResources();
@@ -184,6 +213,10 @@ const migration = {
             {
                 name: "l-8.3.0",
                 file: "l-8_3_0.js"
+            },
+            {
+                name: "l-8.5.0",
+                file: "l-8_5_0.js"
             }
         ],
         _migrationConfig: {
