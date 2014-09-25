@@ -45,13 +45,6 @@ const sync = {
             Services.obs.addObserver(this, topics.SYNC_SERVICE_PINNED_DISABLED, false);
             if (this.svc)
                 this._application.syncPinned.engine.addListener("data", this);
-            var appInfo = this._application.addonManager.info;
-            if (appInfo.isFreshAddonInstall || appInfo.addonUpgraded) {
-                this._application.preferences.set("sync.advert", true);
-                if (appInfo.addonUpgraded) {
-                    this._application.preferences.reset("sync.showButton");
-                }
-            }
         },
         finalize: function Fastdial_finalize(doCleanup, callback) {
             var topics = this._application.core.eventTopics;
@@ -74,17 +67,6 @@ const sync = {
         observe: function Fastdial_observe(aSubject, aTopic, aData) {
             this._logger.trace("Event caught: " + aTopic);
             switch (aTopic) {
-            case this._application.core.eventTopics.APP_TAB_SHOWN:
-                if (!this._application.preferences.get("sync.advert", true))
-                    return;
-                let now = Math.round(Date.now() / 1000);
-                let installTime = this._application.preferences.get("general.install.time");
-                let daysPassedAfterInstall = Math.floor((now - installTime) / 86400);
-                if (daysPassedAfterInstall >= 1 && aData > 3) {
-                    this._application.preferences.set("sync.advert", false);
-                    this._application.fastdial.sendRequest("sync", this.state);
-                }
-                break;
             case this._application.core.eventTopics.SYNC_AUTH_CHANGED:
                 try {
                     aData = JSON.parse(aData);
@@ -100,9 +82,6 @@ const sync = {
                         LOGIN_STATES.EXPIRED
                     ].indexOf(aData.state) !== -1) {
                     this._application.fastdial.sendRequest("sync", this.state);
-                    if (aData.state === LOGIN_STATES.AUTH) {
-                        this._application.preferences.reset("sync.showButton");
-                    }
                 }
                 break;
             case this._application.core.eventTopics.SYNC_COMPONENT_ENABLED:
@@ -179,54 +158,24 @@ const sync = {
             var output = {
                     status: null,
                     login: null,
-                    offer: null,
-                    view: null,
                     enabled: null
                 };
-            var showButtonPref = this._application.preferences.get("sync.showButton");
             if (!this.svc) {
                 output.status = STATES.NO_SYNC_COMPONENT;
             } else {
                 if (this.svc.expired) {
-                    if (!showButtonPref) {
-                        output.view = 1;
-                        output.status = STATES.NOT_AUTHORIZED;
-                    } else {
-                        output.status = STATES.TOKEN_EXPIRED;
-                    }
+                    output.status = STATES.TOKEN_EXPIRED;
                 } else {
                     if (this.svc.authorized) {
                         output.status = STATES.SYNCING;
                         output.enabled = this._application.syncPinned.engine.enabled && this._application.syncTopHistory.engine.enabled;
-                        output.offer = output.enabled || !this._application.preferences.get("sync.offer") ? 0 : 1;
                         output.login = this.svc.username;
                     } else {
                         output.status = STATES.NOT_AUTHORIZED;
-                        if (!showButtonPref) {
-                            output.view = 1;
-                        } else {
-                            let showAdvertPref = this._application.preferences.get("sync.advert");
-                            let now = Math.round(Date.now() / 1000);
-                            let installTime = this._application.preferences.get("general.install.time");
-                            let daysPassedAfterInstall = Math.floor((now - installTime) / 86400);
-                            output.view = showAdvertPref && daysPassedAfterInstall >= 1 ? 3 : 2;
-                        }
                     }
                 }
             }
             return output;
-        },
-        suppressAdvert: function Sync_suppressAdvert() {
-            this._application.preferences.set("sync.advert", false);
-            this._application.fastdial.sendRequest("sync", this.state);
-        },
-        suppressOffer: function Sync_suppressOffer() {
-            this._application.preferences.set("sync.offer", false);
-            this._application.fastdial.sendRequest("sync", this.state);
-        },
-        hideBlockUI: function Sync_hideBlockUI() {
-            this._application.preferences.set("sync.showButton", false);
-            this._application.fastdial.sendRequest("sync", this.state);
         },
         prepareUrlForServer: function Sync_prepareUrlForServer(url) {
             var uri;
@@ -285,7 +234,6 @@ const sync = {
             if (this._application.preferences.get("sync.enabled", false))
                 return;
             this._application.preferences.set("sync.enabled", true);
-            this._application.preferences.set("sync.offer", false);
             var evtData = this.state;
             evtData.offer = 0;
             this._application.fastdial.sendRequest("sync", evtData);
