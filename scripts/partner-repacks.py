@@ -805,6 +805,17 @@ if __name__ == '__main__':
                         filename, full_partner_dir, local_filepath,
                         working_dir, final_dir, ftp_platform,
                         repack_info, signing_command)
+                    # MERGE DAY: remove the following hack when
+                    # mozilla-release is >= 34. See bug 1077374
+                    if ftp_platform == "mac":
+                        major_version = int(options.version.split(".")[0])
+                        if major_version < 34:
+                            repackObj = repack_build[ftp_platform](
+                                filename, full_partner_dir, local_filepath,
+                                working_dir, final_dir, ftp_platform,
+                                repack_info, signing_command,
+                                signing_formats=['gpg'])
+                    # MERGE DAY: end
                     repackObj.doRepack()
                     rmdirRecursive(working_dir)
                 else:
