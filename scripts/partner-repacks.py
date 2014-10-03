@@ -364,12 +364,13 @@ class RepackBase(object):
 
 class RepackLinux(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 ftp_platform, repack_info, signing_command):
+                 ftp_platform, repack_info, signing_command,
+                 signing_formats=['gpg']):
         super(RepackLinux, self).__init__(build, partner_dir, build_dir,
                                           working_dir, final_dir,
                                           ftp_platform, repack_info,
                                           signing_command,
-                                          signing_formats=['gpg'])
+                                          signing_formats=signing_formats)
         self.uncompressed_build = build.replace('.bz2', '')
 
     def unpackBuild(self):
@@ -396,12 +397,13 @@ class RepackLinux(RepackBase):
 
 class RepackMac(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 ftp_platform, repack_info, signing_command):
+                 ftp_platform, repack_info, signing_command,
+                 signing_formats=['gpg', 'dmgv2']):
         super(RepackMac, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
                                         ftp_platform, repack_info,
                                         signing_command,
-                                        signing_formats=['gpg', 'dmgv2'])
+                                        signing_formats=signing_formats)
         self.mountpoint = path.join("/tmp", "FirefoxInstaller")
 
     def unpackBuild(self):
@@ -441,12 +443,13 @@ class RepackMac(RepackBase):
 
 class RepackWin(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 ftp_platform, repack_info, signing_command):
+                 ftp_platform, repack_info, signing_command,
+                 signing_formats=['gpg', 'signcode']):
         super(RepackWin, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
                                         ftp_platform, repack_info,
                                         signing_command,
-                                        signing_formats=['gpg', 'signcode'])
+                                        signing_formats=signing_formats)
 
     def copyFiles(self):
         super(RepackWin, self).copyFiles(WINDOWS_DEST_DIR)
