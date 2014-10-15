@@ -7,6 +7,7 @@ from os import path
 from shutil import copy, copytree, move
 from subprocess import Popen
 from optparse import OptionParser
+from util.retry import retry
 import urllib
 import logging
 
@@ -219,7 +220,7 @@ def parseRepackConfig(filename, platforms):
         if isValidPlatform(key):
             ftp_platform = getFtpPlatform(key)
             if ftp_platform in [getFtpPlatform(p)
-                                      for p in platforms] \
+                                for p in platforms] \
                and value.lower() == 'true':
                 config['platforms'].append(ftp_platform)
             continue
@@ -432,8 +433,8 @@ class RepackMac(RepackBase):
         else:
             quiet_flag = ""
         pkg_cmd = "%s --source stage/ --target \"%s\" --volname 'Firefox' " \
-        "--icon stage/.VolumeIcon.icns --symlink '/Applications':' ' %s" \
-        % (options.pkg_dmg, self.build, quiet_flag)
+            "--icon stage/.VolumeIcon.icns --symlink '/Applications':' ' %s" \
+            % (options.pkg_dmg, self.build, quiet_flag)
         shellCommand(pkg_cmd)
 
     def cleanup(self):
@@ -516,7 +517,8 @@ def retrieveFile(url, file_path):
     log.info('CWD: %s' % os.getcwd())
     try:
         # use URLopener, which handles errors properly
-        StrictFancyURLopener().retrieve(url, file_path)
+        retry(StrictFancyURLopener().retrieve,
+              kwargs=dict(url=url, filename=file_path))
     except IOError:
         log.error("Error downloading %s" % url, exc_info=True)
         success = False
@@ -543,8 +545,7 @@ if __name__ == '__main__':
                     'linux-x86_64':  RepackLinux,
                     'mac':           RepackMac,
                     'win32':         RepackWin,
-                    'win64-x86_64':  RepackWin,
-    }
+                    'win64-x86_64':  RepackWin, }
     signing_command = os.environ.get('MOZ_SIGN_CMD')
 
     parser = OptionParser(usage="usage: %prog [options]")
@@ -649,7 +650,7 @@ if __name__ == '__main__':
         options.platforms = default_platforms
 
     if options.use_signed:
-       log.warning("Warning: use of --signed is deprecated. It is now the default.")
+        log.warning("Warning: use of --signed is deprecated. It is now the default.")
 
     # We only care about the tools if we're actually going to
     # do some repacking.
@@ -705,9 +706,9 @@ if __name__ == '__main__':
         printSeparator()
 
     # For each partner in the partners dir
-    ##    Read/check the config file
-    ##    Download required builds (if not already on disk)
-    ##    Perform repacks
+    #    Read/check the config file
+    #    Download required builds (if not already on disk)
+    #    Perform repacks
 
     failed_downloads = {}
     for partner in os.listdir(options.partners_dir):
