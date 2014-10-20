@@ -416,8 +416,8 @@ class RepackMac(RepackBase):
         os.remove("stage/ ")
 
     def copyFiles(self):
-        if path.exists(path.join("stage", "Firefox.app", "MozResources")):
-            target_dir = path.join("stage", "Firefox.app", "MozResources")
+        if path.exists(path.join("stage", "Firefox.app", "Contents", "Resources", "defaults")):
+            target_dir = path.join("stage", "Firefox.app", "Contents", "Resources")
         else:
             target_dir = path.join("stage", "Firefox.app", "Contents", "MacOS")
         for i in ['distribution', 'extensions', 'searchplugins']:
