@@ -277,7 +277,7 @@ def getFileExtension(platform):
 class RepackBase(object):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  ftp_platform, repack_info, signing_command, file_mode=0644,
-                 signing_formats=None):
+                 external_signing_formats=None, internal_signing_formats=None):
         self.base_dir = os.getcwd()
         self.build = build
         self.full_build_path = path.join(build_dir, build)
@@ -291,7 +291,8 @@ class RepackBase(object):
         self.repack_info = repack_info
         self.file_mode = file_mode
         self.signing_command = signing_command
-        self.signing_formats = signing_formats
+        self.external_signing_formats = external_signing_formats
+        self.internal_signing_formats = internal_signing_formats
         mkdir(self.working_dir)
 
     def announceStart(self):
@@ -328,13 +329,15 @@ class RepackBase(object):
     def addPadding(self):
         pass
 
+    def internallySignBuild(self):
+        pass
+
     def repackBuild(self):
         pass
 
-    def signBuild(self):
-        assert isinstance(self.signing_formats, (list, tuple))
+    def externallySignBuild(self):
         signing_cmd = self.signing_command
-        for f in self.signing_formats:
+        for f in self.external_signing_formats:
             signing_cmd += ' --formats %s' % f
         signing_cmd += ' "%s"' % self.build
         shellCommand(signing_cmd)
@@ -343,7 +346,7 @@ class RepackBase(object):
         move(self.build, self.final_dir)
         os.chmod(path.join(self.final_dir, path.basename(self.build)),
                  self.file_mode)
-        if self.signing_command and 'gpg' in self.signing_formats:
+        if self.signing_command and 'gpg' in self.external_signing_formats:
             move('%s.asc' % self.build, self.final_dir)
             os.chmod(path.join(self.final_dir,
                                path.basename('%s.asc' % self.build)),
@@ -355,9 +358,11 @@ class RepackBase(object):
         self.unpackBuild()
         self.copyFiles()
         self.addPadding()
+        if self.signing_command and self.internal_signing_formats:
+            self.internallySignBuild()
         self.repackBuild()
-        if self.signing_command:
-            self.signBuild()
+        if self.signing_command and self.external_signing_formats:
+            self.externallySignBuild()
         self.announceSuccess()
         self.cleanup()
         os.chdir(self.base_dir)
@@ -366,12 +371,12 @@ class RepackBase(object):
 class RepackLinux(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  ftp_platform, repack_info, signing_command,
-                 signing_formats=['gpg']):
+                 external_signing_formats=['gpg']):
         super(RepackLinux, self).__init__(build, partner_dir, build_dir,
                                           working_dir, final_dir,
                                           ftp_platform, repack_info,
                                           signing_command,
-                                          signing_formats=signing_formats)
+                                          external_signing_formats=external_signing_formats)
         self.uncompressed_build = build.replace('.bz2', '')
 
     def unpackBuild(self):
@@ -399,12 +404,14 @@ class RepackLinux(RepackBase):
 class RepackMac(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  ftp_platform, repack_info, signing_command,
-                 signing_formats=['gpg', 'dmgv2']):
+                 external_signing_formats=['gpg'],
+                 internal_signing_formats=['dmgv2']):
         super(RepackMac, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
                                         ftp_platform, repack_info,
                                         signing_command,
-                                        signing_formats=signing_formats)
+                                        external_signing_formats=external_signing_formats,
+                                        internal_signing_formats=internal_signing_formats)
         self.mountpoint = path.join("/tmp", "FirefoxInstaller")
 
     def unpackBuild(self):
@@ -427,6 +434,18 @@ class RepackMac(RepackBase):
                 shellCommand(cp_cmd)
         self.createOverrideIni(target_dir)
 
+    def internallySignBuild(self):
+        cwd = os.getcwd()
+        try:
+            os.chdir("stage")
+            signing_cmd = self.signing_command
+            for f in self.internal_signing_formats:
+                signing_cmd += " --formats %s" % f
+            signing_cmd += " Firefox.app"
+            shellCommand(signing_cmd)
+        finally:
+            os.chdir(cwd)
+
     def repackBuild(self):
         if options.quiet:
             quiet_flag = "--verbosity 0"
@@ -445,12 +464,12 @@ class RepackMac(RepackBase):
 class RepackWin(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  ftp_platform, repack_info, signing_command,
-                 signing_formats=['gpg', 'signcode']):
+                 external_signing_formats=['gpg', 'signcode']):
         super(RepackWin, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
                                         ftp_platform, repack_info,
                                         signing_command,
-                                        signing_formats=signing_formats)
+                                        external_signing_formats=external_signing_formats)
 
     def copyFiles(self):
         super(RepackWin, self).copyFiles(WINDOWS_DEST_DIR)
@@ -818,7 +837,7 @@ if __name__ == '__main__':
                                 filename, full_partner_dir, local_filepath,
                                 working_dir, final_dir, ftp_platform,
                                 repack_info, signing_command,
-                                signing_formats=['gpg'])
+                                external_signing_formats=['gpg'])
                     # MERGE DAY: end
                     repackObj.doRepack()
                     rmdirRecursive(working_dir)
