@@ -837,7 +837,8 @@ if __name__ == '__main__':
                                 filename, full_partner_dir, local_filepath,
                                 working_dir, final_dir, ftp_platform,
                                 repack_info, signing_command,
-                                external_signing_formats=['gpg'])
+                                external_signing_formats=['gpg'],
+                                internal_signing_formats=[])
                     # MERGE DAY: end
                     repackObj.doRepack()
                     rmdirRecursive(working_dir)
