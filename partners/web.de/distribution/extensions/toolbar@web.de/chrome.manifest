@@ -1,6 +1,8 @@
 content   unitedtb                 jar:chrome.jar!/content/
 locale    unitedtb   de-DE         jar:chrome.jar!/locale/de-DE/
 locale    unitedtb   en-US         jar:chrome.jar!/locale/en-US/
+locale    unitedtb   zh-CN         jar:chrome.jar!/locale/zh-CN/
+locale    unitedtb   zh-TW         jar:chrome.jar!/locale/zh-TW/
 skin      unitedtb   classic/1.0   jar:chrome.jar!/skin/
 resource  unitedtb                 jar:chrome.jar!/content/
 
@@ -16,7 +18,6 @@ overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/search
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/search/search-listener.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/webapps/webapps-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/ebay/ebay-toolbaritem.xul
-overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/phish/tab-listener.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/tracking/tracking-hookup.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/shopping/shopping-toolbaritem.xul
 
@@ -38,7 +39,6 @@ overlay chrome://unitedtb/content/search/pref-search.xul   chrome://unitedtb/con
 overlay chrome://unitedtb/content/search/pref-search.xul   chrome://unitedtb/content/neterror/pref-neterror.xul
 overlay chrome://unitedtb/content/search/pref-search.xul   chrome://unitedtb/content/newtab/pref-store-management.xul
 overlay chrome://unitedtb/content/pref/pref-window.xul   chrome://unitedtb/content/email/pref-login.xul
-overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/phish/pref-phish.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/pref/pref-updates.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/main/pref-minimode.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/webapps/pref-mailto.xul
