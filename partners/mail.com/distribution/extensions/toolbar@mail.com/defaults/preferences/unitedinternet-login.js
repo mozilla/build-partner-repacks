@@ -4,3 +4,4 @@ pref("extensions.unitedinternet.login.logoutConfirm", true);
 pref("extensions.unitedinternet.email.notification.sound.enabled", true);
 pref("extensions.unitedinternet.email.notification.desktop.enabled", true);
 pref("extensions.unitedinternet.email.shownOffer", false);
+pref("extensions.unitedinternet.mail.jump", "homepage");
