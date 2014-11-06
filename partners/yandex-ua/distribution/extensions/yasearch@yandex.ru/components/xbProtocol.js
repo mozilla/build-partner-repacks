@@ -1,10 +1,10 @@
 "use strict";
 const {
-        classes: Cc,
-        interfaces: Ci,
-        results: Cr,
-        utils: Cu
-    } = Components;
+    classes: Cc,
+    interfaces: Ci,
+    results: Cr,
+    utils: Cu
+} = Components;
 const EXTENSION_PATH = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService).newFileURI(__LOCATION__.parent.parent).spec;
 Cu.import(EXTENSION_PATH + "config.js");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -28,14 +28,16 @@ XBProtocolHandler.prototype = {
         return this;
     },
     setDataProvider: function XBProtocolHandler_setDataProvider(aUUID, aProvider) {
-        if (aProvider)
+        if (aProvider) {
             this._providers[aUUID] = aProvider;
-        else
+        } else {
             delete this._providers[aUUID];
+        }
     },
     getDataProvider: function XBProtocolHandler_getDataProvider(aUUID) {
-        if (!(aUUID in this._providers))
+        if (!(aUUID in this._providers)) {
             throw Cr.NS_ERROR_NOT_AVAILABLE;
+        }
         return this._providers[aUUID];
     },
     get scheme() {
@@ -51,18 +53,19 @@ XBProtocolHandler.prototype = {
         return false;
     },
     newURI: function XBProtocolHandler_newURI(aSpec, aOriginalCharset, aBaseURI) {
-        var uri = new XBProtocolHandler.XBURI(aSpec, aOriginalCharset, aBaseURI);
+        let uri = new XBProtocolHandler.XBURI(aSpec, aOriginalCharset, aBaseURI);
         return uri;
     },
     newChannel: function XBProtocolHandler_newChannel(aURI) {
-        var uri = aURI.wrappedJSObject;
+        let uri = aURI.wrappedJSObject;
         try {
             var provider = uri.dataProvider;
         } catch (e) {
             Cu.reportError("XB protocol couldn't get data provider for URI: " + aURI.spec);
         }
-        if (!provider)
+        if (!provider) {
             throw Cr.NS_ERROR_FAILURE;
+        }
         return provider.newChannel(uri);
     },
     _destroy: function XBProtocolHandler__destroy() {
@@ -70,7 +73,7 @@ XBProtocolHandler.prototype = {
     }
 };
 XBProtocolHandler.XBURI = function XBURI(aSpec, aOriginalCharset, aBaseURI) {
-    var standardURL = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIStandardURL);
+    let standardURL = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIStandardURL);
     standardURL.init(standardURL.URLTYPE_STANDARD, -1, aSpec, aOriginalCharset, aBaseURI);
     standardURL.QueryInterface(Ci.nsIURL);
     this.spec = standardURL.spec;
@@ -81,8 +84,9 @@ XBProtocolHandler.XBURI.prototype = {
         return this;
     },
     get dataProvider() {
-        if (!this._dataProvider)
+        if (!this._dataProvider) {
             this._dataProvider = G_XB_HANDLER.getDataProvider(this._host);
+        }
         return this._dataProvider.wrappedJSObject;
     },
     QueryInterface: XPCOMUtils.generateQI([
@@ -172,17 +176,22 @@ XBProtocolHandler.XBURI.prototype = {
         return aURI.spec.split("#")[0] === this.spec.split("#")[0];
     },
     resolve: function XBURI_resolve(aRelativePath) {
-        if (typeof aRelativePath != "string")
+        if (typeof aRelativePath != "string") {
             throw Cr.NS_ERROR_MALFORMED_URI;
+        }
         if (aRelativePath) {
-            if (aRelativePath.indexOf(this.scheme + "://") == 0)
+            if (aRelativePath.indexOf(this.scheme + "://") == 0) {
                 return aRelativePath;
-            if (aRelativePath.indexOf("//") == 0)
+            }
+            if (aRelativePath.indexOf("//") == 0) {
                 return this.scheme + ":" + aRelativePath;
-            if (aRelativePath[0] == "/")
+            }
+            if (aRelativePath[0] == "/") {
                 return this.scheme + "://" + this.host + aRelativePath;
-            if (aRelativePath[0] == "#")
+            }
+            if (aRelativePath[0] == "#") {
                 return this.scheme + "://" + this.host + this.path + aRelativePath;
+            }
         }
         return this.scheme + "://" + this.host + this.path.replace(/[^\/]*$/, "") + aRelativePath;
     },
@@ -275,7 +284,7 @@ XBProtocolHandler.XBURI.prototype = {
             Cu.reportError(this._ERR_MALFORMED_URI);
             throw Cr.NS_ERROR_MALFORMED_URI;
         }
-        var standardURL = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIStandardURL);
+        let standardURL = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIStandardURL);
         standardURL.init(standardURL.URLTYPE_STANDARD, -1, this._spec, null, null);
         standardURL = standardURL.QueryInterface(Ci.nsIURL);
         [
@@ -295,7 +304,9 @@ XBProtocolHandler.XBURI.prototype = {
             "fileExtension",
             "query",
             "ref"
-        ].forEach(function (p) this["_" + p] = standardURL[p], this);
+        ].forEach(function (p) {
+            this["_" + p] = standardURL[p];
+        }, this);
         if (this._scheme !== SCHEME) {
             Cu.reportError(this._ERR_MALFORMED_URI + this._spec);
             throw Cr.NS_ERROR_MALFORMED_URI;

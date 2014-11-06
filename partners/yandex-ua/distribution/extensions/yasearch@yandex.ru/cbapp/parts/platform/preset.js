@@ -7,15 +7,16 @@ BarPlatform.Preset = Base.extend({
             this._baseURI = netutils.ioService.newURI(address, null, null);
             this._address = address;
         }
-        var loggerName = this._baseURI ? this._baseURI.QueryInterface(Ci.nsIURL).fileBaseName : "?";
+        let loggerName = this._baseURI ? this._baseURI.QueryInterface(Ci.nsIURL).fileBaseName : "?";
         this._logger = BarPlatform._getLogger("Preset." + loggerName);
         try {
             if (content instanceof Ci.nsIFile) {
                 this._loadFromFile(content);
             } else if (content instanceof Ci.nsIDOMDocument) {
                 this._loadFromDocument(content);
-            } else
+            } else {
                 throw new CustomErrors.EArgType("content", "nsIFile|nsIDOMDocument", typeof content);
+            }
         } catch (e) {
             throw new Error("Can not parse preset document from [" + address + "] \n" + strutils.formatError(e));
         }
@@ -60,8 +61,10 @@ BarPlatform.Preset = Base.extend({
         return sysutils.mergeObj(this._widgetIDs, this._pluginIDs);
     },
     get importantComponentIDs() {
-        function isImportantEntryF(compID, compEntry) compEntry.isImportant
-        var result = Object.create(null);
+        function isImportantEntryF(compID, compEntry) {
+            return compEntry.isImportant;
+        }
+        let result = Object.create(null);
         sysutils.copyProperties(this._widgetIDs, result, isImportantEntryF);
         sysutils.copyProperties(this._pluginIDs, result, isImportantEntryF);
         return result;
@@ -79,7 +82,9 @@ BarPlatform.Preset = Base.extend({
         return sysutils.copyObj(this._widgetEntries, false);
     },
     get visibleWidgetEntries() {
-        return this.widgetEntries.filter(function passVisible(widgetEntry) widgetEntry.enabled == widgetEntry.ENABLED_YES);
+        return this.widgetEntries.filter(function passVisible(widgetEntry) {
+            return widgetEntry.enabled == widgetEntry.ENABLED_YES;
+        });
     },
     get pluginEntries() {
         return sysutils.copyObj(this._pluginEntries, false);
@@ -88,7 +93,7 @@ BarPlatform.Preset = Base.extend({
         return sysutils.copyObj(this._compEntries, false);
     },
     appendEntry: function Preset_appendEntry(entryDescr) {
-        var componentEntry = new BarPlatform.Preset.ComponentEntry(entryDescr);
+        let componentEntry = new BarPlatform.Preset.ComponentEntry(entryDescr);
         this._compEntries.push(componentEntry);
         this._packageIDs[componentEntry.packageID] = undefined;
         if (componentEntry.componentType == componentEntry.TYPE_WIDGET) {
@@ -110,11 +115,11 @@ BarPlatform.Preset = Base.extend({
         ERR_NO_COMP_ID: "No component ID"
     },
     _updateModes: {
-        "default": 0,
-        "silent": 2,
-        "reset": 3,
+        default: 0,
+        silent: 2,
+        reset: 3,
         "soft-reset": 4,
-        "reorder": 5
+        reorder: 5
     },
     _address: undefined,
     _baseURI: null,
@@ -127,48 +132,61 @@ BarPlatform.Preset = Base.extend({
     _packageIDs: null,
     _compEntries: undefined,
     get _widgetEntries() {
-        var widgetEntries = this._compEntries.filter(function passWidgets(compEntry) compEntry.componentType == compEntry.TYPE_WIDGET);
-        this.__defineGetter__("_widgetEntries", function () widgetEntries);
+        let widgetEntries = this._compEntries.filter(function passWidgets(compEntry) {
+            return compEntry.componentType == compEntry.TYPE_WIDGET;
+        });
+        this.__defineGetter__("_widgetEntries", function () {
+            return widgetEntries;
+        });
         return this._widgetEntries;
     },
     get _pluginEntries() {
-        var pluginEntries = this._compEntries.filter(function passPlugins(compEntry) compEntry.componentType == compEntry.TYPE_PLUGIN);
-        this.__defineGetter__("_pluginEntries", function () pluginEntries);
+        let pluginEntries = this._compEntries.filter(function passPlugins(compEntry) {
+            return compEntry.componentType == compEntry.TYPE_PLUGIN;
+        });
+        this.__defineGetter__("_pluginEntries", function () {
+            return pluginEntries;
+        });
         return this._pluginEntries;
     },
     get _widgetIDs() {
-        var widgetIDs = Object.create(null);
-        this._widgetEntries.forEach(function (entry) widgetIDs[entry.componentID] = entry);
-        this.__defineGetter__("_widgetIDs", function () widgetIDs);
+        let widgetIDs = Object.create(null);
+        this._widgetEntries.forEach(entry => widgetIDs[entry.componentID] = entry);
+        this.__defineGetter__("_widgetIDs", function () {
+            return widgetIDs;
+        });
         return this._widgetIDs;
     },
     get _pluginIDs() {
-        var pluginIDs = Object.create(null);
-        this._pluginEntries.forEach(function (entry) pluginIDs[entry.componentID] = entry);
-        this.__defineGetter__("_pluginIDs", function () pluginIDs);
+        let pluginIDs = Object.create(null);
+        this._pluginEntries.forEach(entry => pluginIDs[entry.componentID] = entry);
+        this.__defineGetter__("_pluginIDs", function () {
+            return pluginIDs;
+        });
         return this._pluginIDs;
     },
     _loadFromFile: function Preset__loadFromFile(presetFile) {
         this._loadFromDocument(fileutils.xmlDocFromFile(presetFile));
     },
     _loadFromDocument: function Preset__loadFromDocument(XMLDocument) {
-        var rootName = XMLDocument.documentElement.localName;
-        if (rootName != this._consts.STR_PRESET_ELEMENT_NAME)
+        let rootName = XMLDocument.documentElement.localName;
+        if (rootName != this._consts.STR_PRESET_ELEMENT_NAME) {
             throw new BarPlatform.Preset.EPresetSyntax(rootName, "Wrong root element name");
+        }
         this._parsePreset(XMLDocument.documentElement);
         this._originalDocument = XMLDocument;
     },
     _parsePreset: function Preset__parsePreset(presetElement) {
         this._version = presetElement.getAttribute("version") || "1.0";
         this._formatVersion = presetElement.getAttribute("format-version") || "1.0";
-        var updateMode = presetElement.hasAttribute(this._consts.UPDMODE_ATTR_NAME) ? presetElement.getAttribute(this._consts.UPDMODE_ATTR_NAME) : this._consts.DEF_UPDMODE;
+        let updateMode = presetElement.hasAttribute(this._consts.UPDMODE_ATTR_NAME) ? presetElement.getAttribute(this._consts.UPDMODE_ATTR_NAME) : this._consts.DEF_UPDMODE;
         if (!(updateMode in this._updateModes)) {
             this._logger.warn("Invalid update mode: '" + updateMode + "'. Will use 'default'.");
             updateMode = this._consts.DEF_UPDMODE;
         }
         this._updateMode = updateMode;
-        var appLang = misc.parseLocale(barApp.localeString).language;
-        var urlNode = BarPlatform.findBestLocalizedElement(xmlutils.queryXMLDoc("./url", presetElement));
+        let appLang = misc.parseLocale(barApp.localeString).language;
+        let urlNode = BarPlatform.findBestLocalizedElement(xmlutils.queryXMLDoc("./url", presetElement));
         this._url = urlNode ? urlNode.textContent : undefined;
         if (!this._baseURI) {
             try {
@@ -177,35 +195,39 @@ BarPlatform.Preset = Base.extend({
                 this._logger.warn("Preset URL in the <url> node is malformed.");
             }
         }
-        var authorNode = BarPlatform.findBestLocalizedElement(xmlutils.queryXMLDoc("./author", presetElement));
-        if (!authorNode)
+        let authorNode = BarPlatform.findBestLocalizedElement(xmlutils.queryXMLDoc("./author", presetElement));
+        if (!authorNode) {
             throw new BarPlatform.Preset.EPresetSyntax("preset", "Missing 'author' element");
+        }
         this._author = authorNode.textContent;
-        var nameNode = BarPlatform.findBestLocalizedElement(xmlutils.queryXMLDoc("./name", presetElement));
-        if (!nameNode)
+        let nameNode = BarPlatform.findBestLocalizedElement(xmlutils.queryXMLDoc("./name", presetElement));
+        if (!nameNode) {
             throw new BarPlatform.Preset.EPresetSyntax("preset", "Missing 'name' element");
+        }
         this._name = nameNode.textContent;
-        var iconNode = BarPlatform.findBestLocalizedElement(xmlutils.queryXMLDoc("./icon", presetElement));
-        var iconRelPath = strutils.trimSpaces(iconNode && iconNode.textContent);
+        let iconNode = BarPlatform.findBestLocalizedElement(xmlutils.queryXMLDoc("./icon", presetElement));
+        let iconRelPath = strutils.trimSpaces(iconNode && iconNode.textContent);
         this._icon = iconRelPath && this._baseURI ? netutils.resolveRelativeURL(iconRelPath, this._baseURI) : iconRelPath;
-        var compElements = xmlutils.queryXMLDoc("(.|./firefox)/widget|(.|./firefox)/plugin", presetElement);
+        let compElements = xmlutils.queryXMLDoc("(.|./firefox)/widget|(.|./firefox)/plugin", presetElement);
         if (compElements) {
             compElements.forEach(function (compElement) {
-                var compEntry = new BarPlatform.Preset.ComponentEntry(compElement, this._baseURI);
+                let compEntry = new BarPlatform.Preset.ComponentEntry(compElement, this._baseURI);
                 this._packageIDs[compEntry.packageID] = undefined;
                 this._compEntries.push(compEntry);
             }, this);
         }
     },
     _createEntryElement: function Preset__createEntryElement(componentEntry) {
-        var isWidget = componentEntry.componentType == componentEntry.TYPE_WIDGET;
-        var compElemName = isWidget ? "widget" : "plugin";
-        var entryElement = this._originalDocument.createElement(compElemName);
+        let isWidget = componentEntry.componentType == componentEntry.TYPE_WIDGET;
+        let compElemName = isWidget ? "widget" : "plugin";
+        let entryElement = this._originalDocument.createElement(compElemName);
         entryElement.setAttribute("id", componentEntry.componentID);
-        if (componentEntry.enabled != componentEntry.ENABLED_YES)
+        if (componentEntry.enabled != componentEntry.ENABLED_YES) {
             entryElement.setAttribute(isWidget ? "visible" : "enabled", componentEntry.enabled);
-        if (componentEntry.isImportant)
+        }
+        if (componentEntry.isImportant) {
             entryElement.setAttribute("important", "true");
+        }
         if (componentEntry.settingsMap) {
             for (let [
                         settingName,
@@ -221,17 +243,19 @@ BarPlatform.Preset = Base.extend({
     }
 });
 BarPlatform.Preset.ComponentEntry = function PresetComponentEntry(entrySource, presetURI) {
-    if (presetURI && !(presetURI instanceof Ci.nsIURI))
+    if (presetURI && !(presetURI instanceof Ci.nsIURI)) {
         throw new CustomErrors.EArgType("presetURI", "nsIURI", presetURI);
+    }
     this._presetURI = presetURI;
-    var loggerName = this._presetURI ? this._presetURI.QueryInterface(Ci.nsIURL).fileBaseName : "?";
+    let loggerName = this._presetURI ? this._presetURI.QueryInterface(Ci.nsIURL).fileBaseName : "?";
     this._logger = BarPlatform._getLogger("Preset." + loggerName);
     if (entrySource instanceof Ci.nsIDOMElement) {
         this._createFromDOMElement(entrySource);
     } else if (sysutils.isObject(entrySource)) {
         this._createFromObject(entrySource);
-    } else
+    } else {
         throw new CustomErrors.EArgType("entrySource", "nsIDOMElement or Object", entrySource);
+    }
 };
 BarPlatform.Preset.ComponentEntry.prototype = {
     constructor: BarPlatform.Preset.ComponentEntry,
@@ -246,12 +270,15 @@ BarPlatform.Preset.ComponentEntry.prototype = {
     get ENABLED_YES() "true",
     get ENABLED_AUTO() "auto",
     set enabled(newVal) {
-        if (this._enabled == newVal)
+        if (this._enabled == newVal) {
             return;
-        if (newVal != this.ENABLED_AUTO && newVal != this.ENABLED_YES && newVal != this.ENABLED_NO)
+        }
+        if (newVal != this.ENABLED_AUTO && newVal != this.ENABLED_YES && newVal != this.ENABLED_NO) {
             throw new CustomErrors.EArgRange("enabled", "ENABLED_NO or ENABLED_YES or ENABLED_AUTO", enabled);
-        if (this._srcElement)
+        }
+        if (this._srcElement) {
             this._srcElement.setAttribute(this._type == this.TYPE_WIDGET ? "visible" : "enabled", newVal);
+        }
         this._enabled = newVal;
     },
     get isImportant() this._isImportant,
@@ -273,16 +300,18 @@ BarPlatform.Preset.ComponentEntry.prototype = {
     },
     _isImportant: false,
     _createFromDOMElement: function ComponentEntry__createFromDOMElement(srcElement) {
-        var compElemName = srcElement.localName;
-        if (compElemName == "widget")
+        let compElemName = srcElement.localName;
+        if (compElemName == "widget") {
             this._type = this.TYPE_WIDGET;
-        else if (compElemName == "plugin")
+        } else if (compElemName == "plugin") {
             this._type = this.TYPE_PLUGIN;
-        else
+        } else {
             throw new BarPlatform.Preset.EPresetSyntax(compElemName, "Unknown component type");
-        var compID = srcElement.getAttribute("id");
-        if (!compID)
+        }
+        let compID = srcElement.getAttribute("id");
+        if (!compID) {
             throw new BarPlatform.Preset.EPresetSyntax(srcElement.localName, "Missing 'id' attribute");
+        }
         if (this._presetURI) {
             compID = netutils.resolveRelativeURL(compID, this._presetURI);
         }
@@ -291,13 +320,14 @@ BarPlatform.Preset.ComponentEntry.prototype = {
             this._packageID,
             this._name
         ] = BarPlatform.parseComponentID(this._componentID);
-        var enabledAttrVal = srcElement.getAttribute(this._type == this.TYPE_WIDGET ? "visible" : "enabled");
-        if (enabledAttrVal === null || enabledAttrVal == "true")
+        let enabledAttrVal = srcElement.getAttribute(this._type == this.TYPE_WIDGET ? "visible" : "enabled");
+        if (enabledAttrVal === null || enabledAttrVal == "true") {
             this._enabled = this.ENABLED_YES;
-        else if (enabledAttrVal == "auto")
+        } else if (enabledAttrVal == "auto") {
             this._enabled = this.ENABLED_AUTO;
-        else
+        } else {
             this._enabled = this.ENABLED_NO;
+        }
         this._isImportant = srcElement.getAttribute("important") === "true";
         [
             this._settings,
@@ -305,62 +335,59 @@ BarPlatform.Preset.ComponentEntry.prototype = {
         ] = this._parseSettings(srcElement);
         this._srcElement = srcElement;
     },
-    _createFromObject: function ComponentEntry__createFromObject({
-        componentType: componentType,
-        componentID: componentID,
-        enabled: enabled,
-        isImportant: isImportant,
-        settings: settings,
-        forcedSettings: forcedSettings
-    }) {
-        if (componentType != this.TYPE_WIDGET && componentType != this.TYPE_PLUGIN)
+    _createFromObject: function ComponentEntry__createFromObject({componentType, componentID, enabled, isImportant, settings, forcedSettings}) {
+        if (componentType != this.TYPE_WIDGET && componentType != this.TYPE_PLUGIN) {
             throw new CustomErrors.EArgRange("componentType", "TYPE_WIDGET or TYPE_PLUGIN", componentType);
+        }
         this._type = componentType;
-        var [
-                packageID,
-                compName
-            ] = BarPlatform.parseComponentID(componentID);
+        let [
+            packageID,
+            compName
+        ] = BarPlatform.parseComponentID(componentID);
         this._componentID = componentID;
         this._packageID = packageID;
         this._name = compName;
-        if (enabled != this.ENABLED_NO && enabled != this.ENABLED_YES && enabled != this.ENABLED_AUTO)
+        if (enabled != this.ENABLED_NO && enabled != this.ENABLED_YES && enabled != this.ENABLED_AUTO) {
             throw new CustomErrors.EArgRange("enabled", "ENABLED_NO or ENABLED_YES or ENABLED_AUTO", enabled);
+        }
         this._enabled = enabled;
-        this._isImportant = !!isImportant;
-        if (settings !== undefined && typeof settings != "object")
+        this._isImportant = Boolean(isImportant);
+        if (settings !== undefined && typeof settings != "object") {
             throw new CustomErrors.EArgType("settings", "object", settings);
+        }
         this._settings = sysutils.copyObj(settings) || Object.create(null);
-        if (forcedSettings !== undefined && typeof forcedSettings != "object")
+        if (forcedSettings !== undefined && typeof forcedSettings != "object") {
             throw new CustomErrors.EArgType("forcedSettings", "object", forcedSettings);
+        }
         this._forcedSettings = sysutils.copyObj(forcedSettings);
     },
     _parseSettings: function ComponentEntry__parseSettings(srcElement) {
-        var settingElements = Object.create(null);
-        let (settingIndex = srcElement.childNodes.length) {
-            for (; settingIndex--;) {
-                let settingElement = srcElement.childNodes[settingIndex];
-                if (settingElement.nodeType != settingElement.ELEMENT_NODE || settingElement.localName != "setting") {
-                    continue;
-                }
-                let settingName = settingElement.getAttribute("name");
-                if (!settingName) {
-                    this._logger.warn("Widget setting was ignored because of syntax errors");
-                    continue;
-                }
-                if (!(settingName in settingElements))
-                    settingElements[settingName] = [];
-                settingElements[settingName].push(settingElement);
+        let settingElements = Object.create(null);
+        for (let settingIndex = srcElement.childNodes.length; settingIndex--;) {
+            let settingElement = srcElement.childNodes[settingIndex];
+            if (settingElement.nodeType != settingElement.ELEMENT_NODE || settingElement.localName != "setting") {
+                continue;
             }
+            let settingName = settingElement.getAttribute("name");
+            if (!settingName) {
+                this._logger.warn("Widget setting was ignored because of syntax errors");
+                continue;
+            }
+            if (!(settingName in settingElements)) {
+                settingElements[settingName] = [];
+            }
+            settingElements[settingName].push(settingElement);
         }
-        var settings = Object.create(null);
-        var forcedSettings = Object.create(null);
+        let settings = Object.create(null);
+        let forcedSettings = Object.create(null);
         for (let name in settingElements) {
             let settingElement = BarPlatform.findBestLocalizedElement(settingElements[name]);
             let settingValue = settingElement.textContent;
             settings[name] = settingValue;
             let forceVal = settingElement.getAttribute("force");
-            if (strutils.xmlAttrToBool(forceVal))
+            if (strutils.xmlAttrToBool(forceVal)) {
                 forcedSettings[name] = settingValue;
+            }
         }
         return [
             settings,

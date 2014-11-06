@@ -1,10 +1,10 @@
 "use strict";
 const {
-        classes: Cc,
-        interfaces: Ci,
-        results: Cr,
-        utils: Cu
-    } = Components;
+    classes: Cc,
+    interfaces: Ci,
+    results: Cr,
+    utils: Cu
+} = Components;
 const EXTENSION_DIR = __LOCATION__.parent.parent;
 const EXTENSION_PATH = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService).newFileURI(EXTENSION_DIR).spec;
 Cu.import(EXTENSION_PATH + "config.js");
@@ -59,8 +59,8 @@ Log.prototype = {
         }
     },
     _logError: function Log__logError(level, err, msg) {
-        var text = err.name + ": " + (msg ? msg + ";\n" + err.message : err.message);
-        var fileName = err.fileName || err.filename;
+        let text = err.name + ": " + (msg ? msg + ";\n" + err.message : err.message);
+        let fileName = err.fileName || err.filename;
         if (fileName) {
             text += "\nin " + fileName + "@" + err.lineNumber;
         }
@@ -87,9 +87,9 @@ Log.getPrefName = function (name) {
 };
 Log.APPENDERS = [
     function Log_APPENDERS_console(libs) {
-        var basicFormatter = new libs.Log4Moz.BasicFormatter();
-        var appender = new libs.Log4Moz.ConsoleAppender(basicFormatter);
-        var appLogger = libs.Log4Moz.repository.getLogger(VB_CONFIG.APP.NAME);
+        let basicFormatter = new libs.Log4Moz.BasicFormatter();
+        let appender = new libs.Log4Moz.ConsoleAppender(basicFormatter);
+        let appLogger = libs.Log4Moz.repository.getLogger(VB_CONFIG.APP.NAME);
         appLogger.addAppender(appender);
         this.stop = function Log_APPENDERS_console_stop() {
             appLogger.removeAppender(appender);
@@ -98,9 +98,9 @@ Log.APPENDERS = [
         this.prefs[Log.getPrefName("console.level")] = Log.getLogLevelHandler(appender);
     },
     function Log_APPENDERS_stdout(libs) {
-        var basicFormatter = new libs.Log4Moz.BasicFormatter();
-        var appender = new libs.Log4Moz.DumpAppender(basicFormatter);
-        var rootLogger = libs.Log4Moz.repository.rootLogger;
+        let basicFormatter = new libs.Log4Moz.BasicFormatter();
+        let appender = new libs.Log4Moz.DumpAppender(basicFormatter);
+        let rootLogger = libs.Log4Moz.repository.rootLogger;
         rootLogger.addAppender(appender);
         this.stop = function Log_APPENDERS_stdout_stop() {
             rootLogger.removeAppender(appender);
@@ -110,9 +110,9 @@ Log.APPENDERS = [
     },
     function Log_APPENDERS_file(libs, rootDir) {
         rootDir.append("debug.log");
-        var basicFormatter = new libs.Log4Moz.BasicFormatter();
-        var appender = new libs.Log4Moz.RotatingFileAppender(rootDir, basicFormatter);
-        var rootLogger = libs.Log4Moz.repository.rootLogger;
+        let basicFormatter = new libs.Log4Moz.BasicFormatter();
+        let appender = new libs.Log4Moz.RotatingFileAppender(rootDir, basicFormatter);
+        let rootLogger = libs.Log4Moz.repository.rootLogger;
         rootLogger.addAppender(appender);
         this.stop = function Log_APPENDERS_file_stop() {
             appender.closeStream();
@@ -122,9 +122,9 @@ Log.APPENDERS = [
         this.prefs[Log.getPrefName("file.level")] = Log.getLogLevelHandler(appender);
     },
     function Log_APPENDERS_socket(libs) {
-        var xmlFormatter = new libs.Log4Moz.XMLFormatter();
-        var rootLogger = libs.Log4Moz.repository.rootLogger;
-        var appender = getSocket("localhost:4448");
+        let xmlFormatter = new libs.Log4Moz.XMLFormatter();
+        let rootLogger = libs.Log4Moz.repository.rootLogger;
+        let appender = getSocket("localhost:4448");
         this.stop = closeSocket;
         this.prefs = {};
         this.prefs[Log.getPrefName("socket.level")] = Log.getLogLevelHandler(appender);
@@ -139,17 +139,17 @@ Log.APPENDERS = [
             rootLogger.removeAppender(appender);
         }
         function getSocket(address) {
-            var [
-                    host,
-                    port
-                ] = address.split(":");
-            var appender = new libs.Log4Moz.SocketAppender(host, port, xmlFormatter);
+            let [
+                host,
+                port
+            ] = address.split(":");
+            let appender = new libs.Log4Moz.SocketAppender(host, port, xmlFormatter);
             rootLogger.addAppender(appender);
             return appender;
         }
     },
     function Log_APPENDERS_browserConsole(libs) {
-        var logger = libs.Log4Moz.repository.getLogger("Browser.Console");
+        let logger = libs.Log4Moz.repository.getLogger("Browser.Console");
         logger.level = libs.Log4Moz.Level.Error;
         libs.ConsoleListener.addLogger(logger);
         this.stop = function Log_APPENDERS_browserConsole_stop() {
@@ -248,6 +248,7 @@ VBCore.prototype = {
         CLOUD_DATA_RECEIVED_EVENT: APP_NAME + "-cloud-data-received",
         THUMBS_STRUCTURE_READY_EVENT: APP_NAME + "-internal-thumbs-ready",
         APP_TAB_SHOWN: APP_NAME + "-tab-shown",
+        BACKGROUNDS_SYNCED: APP_NAME + "-bgs-synced",
         SYNC_COMPONENT_ENABLED: "ybar:esync:plugin:enable",
         SYNC_COMPONENT_READY: "ybar:esync:service:ready",
         SYNC_COMPONENT_DISABLED: "ybar:esync:plugin:disable",

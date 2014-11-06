@@ -1,12 +1,12 @@
 "use strict";
 const EXPORTED_SYMBOLS = ["WinReg"];
 const {
-        classes: Cc,
-        interfaces: Ci,
-        utils: Cu
-    } = Components;
+    classes: Cc,
+    interfaces: Ci,
+    utils: Cu
+} = Components;
 const nsIWindowsRegKey = Ci.nsIWindowsRegKey || null;
-const WINDOW_OS = !!nsIWindowsRegKey;
+const WINDOW_OS = Boolean(nsIWindowsRegKey);
 var WinReg;
 if (!WINDOW_OS) {
     WinReg = {
@@ -22,40 +22,41 @@ if (!WINDOW_OS) {
     };
 } else {
     const KEY_NAMES_HASH = {
-            "CURRENT_USER": [
-                "HKCU",
-                "USER",
-                "CURRENT_USER"
-            ],
-            "CLASSES_ROOT": [
-                "HKCR",
-                "ROOT",
-                "CLASSES_ROOT"
-            ],
-            "LOCAL_MACHINE": [
-                "HKLM",
-                "MACHINE",
-                "LOCAL_MACHINE"
-            ]
-        };
+        CURRENT_USER: [
+            "HKCU",
+            "USER",
+            "CURRENT_USER"
+        ],
+        CLASSES_ROOT: [
+            "HKCR",
+            "ROOT",
+            "CLASSES_ROOT"
+        ],
+        LOCAL_MACHINE: [
+            "HKLM",
+            "MACHINE",
+            "LOCAL_MACHINE"
+        ]
+    };
     let convertName2Key = function convertName2Key(aKeyName) {
         aKeyName = aKeyName.replace(/^(HKEY_)/i, "").toUpperCase();
-        var keyName;
+        let keyName;
         for (let kName in KEY_NAMES_HASH) {
             if (KEY_NAMES_HASH[kName].indexOf(aKeyName) !== -1) {
                 keyName = kName;
                 break;
             }
         }
-        if (!keyName)
+        if (!keyName) {
             throw new TypeError("Wrong key name");
+        }
         return nsIWindowsRegKey["ROOT_KEY_" + keyName];
     };
     WinReg = {
         read: function WinReg_read(aKey, aPath, aName) {
-            var result = null;
-            var key = convertName2Key(aKey);
-            var wrk = this._getWRK();
+            let result = null;
+            let key = convertName2Key(aKey);
+            let wrk = this._getWRK();
             try {
                 wrk.open(key, aPath, wrk.ACCESS_READ);
                 result = this._readValue(wrk, aName);
@@ -68,8 +69,8 @@ if (!WINDOW_OS) {
             return result;
         },
         write: function WinReg_write(aKey, aPath, aName, aValue, aValueType) {
-            var key = convertName2Key(aKey);
-            var wrk = this._getWRK();
+            let key = convertName2Key(aKey);
+            let wrk = this._getWRK();
             try {
                 wrk.create(key, aPath, wrk.ACCESS_WRITE);
                 this._writeValue(wrk, aName, aValue, aValueType);
@@ -81,14 +82,15 @@ if (!WINDOW_OS) {
             }
         },
         remove: function WinReg_remove(aKey, aPath, aName) {
-            var key = convertName2Key(aKey);
-            var wrk = this._getWRK();
+            let key = convertName2Key(aKey);
+            let wrk = this._getWRK();
             try {
                 wrk.open(key, aPath, wrk.ACCESS_ALL);
-                if (typeof aName == "undefined")
+                if (typeof aName == "undefined") {
                     this._removeChildren(wrk);
-                else
+                } else {
                     wrk.removeChild(aName);
+                }
             } catch (e) {
             }
             try {
@@ -133,14 +135,12 @@ if (!WINDOW_OS) {
             }
         },
         _removeChildren: function WinReg__removeChildren(wrk) {
-            let (i = wrk.childCount - 1) {
-                for (; i >= 0; i--) {
-                    let name = wrk.getChildName(i);
-                    let subkey = wrk.openChild(name, wrk.ACCESS_ALL);
-                    this._removeChildren(subkey);
-                    subkey.close();
-                    wrk.removeChild(name);
-                }
+            for (let i = wrk.childCount - 1; i >= 0; i--) {
+                let name = wrk.getChildName(i);
+                let subkey = wrk.openChild(name, wrk.ACCESS_ALL);
+                this._removeChildren(subkey);
+                subkey.close();
+                wrk.removeChild(name);
             }
         },
         _getWRK: function WinReg__getWRK() {

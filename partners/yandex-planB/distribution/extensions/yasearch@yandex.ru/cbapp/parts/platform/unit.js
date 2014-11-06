@@ -9,14 +9,18 @@ BarPlatform._ParserConsts = {
     }
 };
 BarPlatform.Unit = function CBPUnit(fileName, package_, name) {
-    if (typeof fileName != "string")
+    if (typeof fileName != "string") {
         throw new CustomErrors.EArgType("fileName", "String", fileName);
-    if (!(package_ instanceof BarPlatform.ComponentPackage))
+    }
+    if (!(package_ instanceof BarPlatform.ComponentPackage)) {
         throw new CustomErrors.EArgType("package_", "ComponentPackage", package_);
-    if (typeof name != "string")
+    }
+    if (typeof name != "string") {
         throw new CustomErrors.EArgType("name", "String", name);
-    if (name.length < 1)
+    }
+    if (name.length < 1) {
         throw new CustomErrors.EArgRange("name", "/.+/", name);
+    }
     this._fileName = fileName;
     this._package = package_;
     this._name = name;
@@ -44,9 +48,10 @@ BarPlatform.Unit.prototype = {
         return this._component;
     },
     tryCacheComponent: function CBPUnit_tryCacheComponent(toFile) {
-        if (!(toFile instanceof Ci.nsIFile))
+        if (!(toFile instanceof Ci.nsIFile)) {
             throw new CustomErrors.EArgType("toFile", "nsIFile", toFile);
-        var compParser = BarPlatform._getParser(this._componentInfo.barAPI, this._componentInfo.type);
+        }
+        let compParser = BarPlatform._getParser(this._componentInfo.barAPI, this._componentInfo.type);
         if (typeof compParser.serializeComponent == "function") {
             let cacheLoadStartTime = Date.now();
             try {
@@ -62,8 +67,9 @@ BarPlatform.Unit.prototype = {
     checkSecurity: function CBPUnit_checkSecurity() {
         if (this._componentInfo.barAPI == "native") {
             let thisPackageID = this._package.id;
-            if (!barApp.isPrivilegedPackageURL(thisPackageID))
+            if (!barApp.isPrivilegedPackageURL(thisPackageID)) {
                 throw new CustomErrors.ESecurityViolation("Creating native component", thisPackageID);
+            }
         }
     },
     finalize: function CBPUnit_finalize() {
@@ -77,25 +83,29 @@ BarPlatform.Unit.prototype = {
         this._logger = null;
     },
     get _componentInfo() {
-        var result;
-        var channel = this._package.newChannelFromPath(this._fileName);
+        let result;
+        let channel = this._package.newChannelFromPath(this._fileName);
         try {
             let infoParser = new UnitInfoParser();
             result = infoParser.parseFromStream(channel.contentStream, channel.originalURI);
             result.id = this._package.id + "#" + this._name;
-            if (result.iconPath)
+            if (result.iconPath) {
                 result.iconURL = this._package.resolvePath(result.iconPath);
+            }
             result.package_ = this._package;
         } finally {
             channel.contentStream.close();
         }
         delete this._componentInfo;
-        this.__defineGetter__("_componentInfo", function () result);
+        this.__defineGetter__("_componentInfo", function () {
+            return result;
+        });
         return this._componentInfo;
     },
     _load: function CBPUnit__load(cacheFile) {
         try {
-            let compLoaded, component;
+            let compLoaded;
+            let component;
             let thisCompInfo = this._componentInfo;
             let componentType = thisCompInfo.type;
             let compParser = BarPlatform._getParser(thisCompInfo.barAPI, componentType);
@@ -119,15 +129,16 @@ BarPlatform.Unit.prototype = {
             this._logger.error(this._consts.ERR_PARSING_COMPONENT + ". " + strutils.formatError(e));
             if (!(e instanceof BarPlatform.Unit.EWidgetSyntax)) {
                 let stackTrace = e.stack;
-                if (stackTrace)
+                if (stackTrace) {
                     this._logger.debug(stackTrace);
+                }
             }
         }
     },
     _parseComponent: function CBPUnit__parseComponent(compParser) {
-        var parseStartTime = Date.now();
-        var unitDoc = this._package.getXMLDocument(this._fileName);
-        var component = compParser.parseFromDoc(unitDoc, this);
+        let parseStartTime = Date.now();
+        let unitDoc = this._package.getXMLDocument(this._fileName);
+        let component = compParser.parseFromDoc(unitDoc, this);
         this._logger.debug("Component parsed in " + (Date.now() - parseStartTime) + "ms");
         return component;
     },
@@ -140,12 +151,13 @@ BarPlatform.Unit.prototype = {
     _package: null
 };
 BarPlatform.Unit.parseSetting = function CBPUnit_parseSetting(settingElement, defaultScope) {
-    var settingName = settingElement.getAttribute("name");
-    if (!settingName)
+    let settingName = settingElement.getAttribute("name");
+    if (!settingName) {
         throw new BarPlatform.Unit.EUnitSyntax(settingElement.nodeName, this._consts.ERR_NO_SETTING_NAME);
-    var settingScope = this.evalScope(settingElement.getAttribute("scope") || undefined, defaultScope);
-    var defaultValue = settingElement.getAttribute("default");
-    var settingTypes = BarPlatform.Unit.settingTypes;
+    }
+    let settingScope = this.evalScope(settingElement.getAttribute("scope") || undefined, defaultScope);
+    let defaultValue = settingElement.getAttribute("default");
+    let settingTypes = BarPlatform.Unit.settingTypes;
     function evalValueType(valTypeName) {
         switch (valTypeName) {
         case "number":
@@ -159,8 +171,8 @@ BarPlatform.Unit.parseSetting = function CBPUnit_parseSetting(settingElement, de
             return settingTypes.STYPE_STRING;
         }
     }
-    var settingType = settingTypes.STYPE_STRING;
-    var controlElement = settingElement.getElementsByTagNameNS("*", "control")[0];
+    let settingType = settingTypes.STYPE_STRING;
+    let controlElement = settingElement.getElementsByTagNameNS("*", "control")[0];
     if (controlElement) {
         switch (controlElement.getAttribute("type")) {
         case "checkbox":
@@ -193,8 +205,9 @@ BarPlatform.Unit.evalScope = function CBPUnit_evalScope(scopeName, defaultScope)
     case "instance":
         return this.scopes.ENUM_SCOPE_INSTANCE;
     case undefined:
-        if (defaultScope !== undefined)
+        if (defaultScope !== undefined) {
             return defaultScope;
+        }
     default:
         throw new CustomErrors.EArgRange("scopeName", "package|widget|plugin|instance|{default}", scopeName);
     }
@@ -253,10 +266,11 @@ UnitInfoParser.prototype = {
     constructor: UnitInfoParser,
     parseFromStream: function UnitInfoParser_parseFromStream(inputStream, baseURI) {
         BarPlatform._getLogger("IParser").trace("Parsing component info " + baseURI.spec);
-        var componentText = fileutils.readStringFromStream(inputStream).replace(this._componentElementRE, "$1/>");
-        var componentElement = xmlutils.getDOMParser(baseURI, baseURI, false).parseFromString(componentText, "text/xml").documentElement;
-        if (!(componentElement.localName in BarPlatform._ParserConsts.COMPONENT_TYPES))
+        let componentText = fileutils.readStringFromStream(inputStream).replace(this._componentElementRE, "$1/>");
+        let componentElement = xmlutils.getDOMParser(baseURI, baseURI, false).parseFromString(componentText, "text/xml").documentElement;
+        if (!(componentElement.localName in BarPlatform._ParserConsts.COMPONENT_TYPES)) {
             throw new Error(componentElement.localName + " is not allowed as component type.");
+        }
         return {
             type: componentElement.localName,
             name: componentElement.getAttribute("name") || "",
@@ -269,13 +283,15 @@ UnitInfoParser.prototype = {
 };
 BarPlatform.WidgetPrototypeBase = Base.extend({
     constructor: function WidgetPrototypeBase(id, name, unique, iconPath, unit) {
-        if (!id)
+        if (!id) {
             throw new CustomErrors.EArgRange("id", "/.+/", id);
-        if (!(unit instanceof BarPlatform.Unit))
+        }
+        if (!(unit instanceof BarPlatform.Unit)) {
             throw new CustomErrors.EArgType("unit", "Unit", unit);
+        }
         this._id = id.toString();
         this._unit = unit;
-        this._unique = !!unique;
+        this._unique = Boolean(unique);
         this._name = name.toString();
         this._iconPath = iconPath || "";
         this._spawns = Object.create(null);
@@ -309,7 +325,7 @@ BarPlatform.WidgetPrototypeBase = Base.extend({
         return misc.mapKeysToArray(this._spawns);
     },
     getAllWidgetItems: function WidgetPrototypeBase_getAllWidgetItems() {
-        var result = [];
+        let result = [];
         for (let [
                     ,
                     spawnRec
@@ -324,10 +340,11 @@ BarPlatform.WidgetPrototypeBase = Base.extend({
         return result;
     },
     getAllWidgetItemsOfInstance: function WidgetPrototypeBase_getAllWidgetItemsOfInstance(WIID) {
-        var spawnRec = this._spawns[WIID];
-        if (!spawnRec)
+        let spawnRec = this._spawns[WIID];
+        if (!spawnRec) {
             throw new Error("Invalid widget instance ID");
-        var result = [];
+        }
+        let result = [];
         for (let [
                     ,
                     widgetProjection
@@ -337,13 +354,13 @@ BarPlatform.WidgetPrototypeBase = Base.extend({
         return result;
     },
     instanceFinalized: function WidgetPrototypeBase_instanceFinalized(widgetInstance) {
-        var WIID = widgetInstance.id;
-        var spawnRec = this._spawns[WIID];
+        let WIID = widgetInstance.id;
+        let spawnRec = this._spawns[WIID];
         if (!spawnRec) {
             this._logger.warn("Somebody said that " + WIID + " instance is finalized but I don't remember this one.");
             return;
         }
-        spawnRec.projections = spawnRec.projections.filter(function (wInst) wInst != widgetInstance);
+        spawnRec.projections = spawnRec.projections.filter(wInst => wInst != widgetInstance);
         if (spawnRec.projections.length < 1) {
             try {
                 this._noMoreInstProjections(WIID, spawnRec);
@@ -361,7 +378,7 @@ BarPlatform.WidgetPrototypeBase = Base.extend({
     _unique: false,
     _spawns: null,
     _makeSpawnRecord: function WidgetPrototypeBase__makeSpawnRecord(instanceID) {
-        var spawnRec = { projections: [] };
+        let spawnRec = { projections: [] };
         return spawnRec;
     },
     _noMoreInstProjections: function WidgetPrototypeBase__noMoreInstProjections(WIID, spawnRec) {

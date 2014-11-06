@@ -6,7 +6,7 @@ BarPlatform.CachedResources = {
         this._downloaders = Object.create(null);
         this._logger = BarPlatform._getLogger("NetResources");
         this._logger.level = Log4Moz.Level.Config;
-        var cacheFile = barApp.directories.appRootDir;
+        let cacheFile = barApp.directories.appRootDir;
         cacheFile.append("netcache.sqlite");
         this._cache = new Database.DatedValues(cacheFile);
     },
@@ -42,11 +42,12 @@ BarPlatform.CachedResources = {
         return false;
     },
     getResource: function Cached_getResource(resDescr) {
-        if (!(resDescr instanceof ResDescriptor))
+        if (!(resDescr instanceof ResDescriptor)) {
             throw new CustomErrors.EArgType("resDescr", "ResDescriptor", resDescr);
-        var resHash = resDescr.hash;
+        }
+        let resHash = resDescr.hash;
         this._logger.debug("Looking for resource with hash \"" + resHash + "\"");
-        var resource = this._resources[resHash];
+        let resource = this._resources[resHash];
         if (!resource) {
             this._logger.debug("Creating new resource");
             try {
@@ -61,7 +62,7 @@ BarPlatform.CachedResources = {
     },
     requestFinished: function Cached_requestFinished(requestID) {
         requestID = parseInt(requestID, 10);
-        return !!requestID && requestID < this._requestID && !(requestID in this._activeRequests);
+        return requestID > 0 && requestID < this._requestID && !(requestID in this._activeRequests);
     },
     _activeRequests: Object.create(null),
     _resources: null,
@@ -69,10 +70,11 @@ BarPlatform.CachedResources = {
     _logger: null,
     _requestID: 1,
     _getDownloader: function Cached__getDownloader(resDescr) {
-        if (!(resDescr instanceof BarPlatform.CachedResources.ResDescriptor))
+        if (!(resDescr instanceof BarPlatform.CachedResources.ResDescriptor)) {
             throw new CustomErrors.EArgType("resDescr", "ResDescriptor", resDescr);
-        var dlHash = this._dlHash(resDescr);
-        var downloader = this._downloaders[dlHash];
+        }
+        let dlHash = this._dlHash(resDescr);
+        let downloader = this._downloaders[dlHash];
         if (!downloader) {
             downloader = new ResourceDownloader(resDescr);
             this._downloaders[dlHash] = downloader;
@@ -80,7 +82,7 @@ BarPlatform.CachedResources = {
         return downloader;
     },
     _getNewRequestID: function Cached__getNewRequestID() {
-        var requestID = this._requestID++;
+        let requestID = this._requestID++;
         this._activeRequests[requestID] = 1;
         return requestID;
     },
@@ -96,60 +98,54 @@ BarPlatform.CachedResources = {
         this._notifyListeners(requestID);
     }
 };
-const ResDescriptor = BarPlatform.CachedResources.ResDescriptor = function ResDescriptor({
-        url: url,
-        method: method,
-        updateInterval: updateInterval,
-        expireInterval: expireInterval,
-        validStatusRange: validStatusRange,
-        validXpath: validXpath,
-        cacheKeys: cacheKeys,
-        isPrivate: isPrivate
-    }) {
-        this._uri = netutils.newURI(url);
-        this._url = url;
-        if (method !== undefined) {
-            sysutils.ensureValueTypeIs(method, "string");
-            this._method = method;
+const ResDescriptor = BarPlatform.CachedResources.ResDescriptor = function ResDescriptor({url, method, updateInterval, expireInterval, validStatusRange, validXpath, cacheKeys, isPrivate}) {
+    this._uri = netutils.newURI(url);
+    this._url = url;
+    if (method !== undefined) {
+        sysutils.ensureValueTypeIs(method, "string");
+        this._method = method;
+    } else {
+        this._method = "GET";
+    }
+    sysutils.ensureValueTypeIs(updateInterval, "number");
+    if (updateInterval < 0) {
+        throw new RangeError("Invalid update interval: " + updateInterval);
+    }
+    this._updateInterval = updateInterval || Number.POSITIVE_INFINITY;
+    if (expireInterval !== undefined) {
+        sysutils.ensureValueTypeIs(expireInterval, "number");
+        if (expireInterval < 0) {
+            throw new RangeError("Invalid expiration time: " + expireInterval);
+        }
+        this._expirationInterval = expireInterval;
+    } else {
+        this._expirationInterval = 0;
+    }
+    if (validStatusRange) {
+        if (sysutils.isNumber(validStatusRange.start) && sysutils.isNumber(validStatusRange.end) && validStatusRange.start >= 100 && validStatusRange.end <= 599 && validStatusRange.start <= validStatusRange.end) {
+            this._statusMin = validStatusRange.start;
+            this._statusMax = validStatusRange.end;
         } else {
-            this._method = "GET";
+            throw new TypeError("Invalid status range parameter: " + sysutils.dump(validStatusRange));
         }
-        sysutils.ensureValueTypeIs(updateInterval, "number");
-        if (updateInterval < 0)
-            throw new RangeError("Invalid update interval: " + updateInterval);
-        this._updateInterval = updateInterval || Number.POSITIVE_INFINITY;
-        if (expireInterval !== undefined) {
-            sysutils.ensureValueTypeIs(expireInterval, "number");
-            if (expireInterval < 0)
-                throw new RangeError("Invalid expiration time: " + expireInterval);
-            this._expirationInterval = expireInterval;
-        } else {
-            this._expirationInterval = 0;
-        }
-        if (validStatusRange) {
-            if (sysutils.isNumber(validStatusRange.start) && sysutils.isNumber(validStatusRange.end) && validStatusRange.start >= 100 && validStatusRange.end <= 599 && validStatusRange.start <= validStatusRange.end) {
-                this._statusMin = validStatusRange.start;
-                this._statusMax = validStatusRange.end;
-            } else
-                throw new TypeError("Invalid status range parameter: " + sysutils.dump(validStatusRange));
-        } else {
-            this._statusMin = 100;
-            this._statusMax = 399;
-        }
-        if (validXpath) {
-            sysutils.ensureValueTypeIs(validXpath, "string");
-            this._checkXpathExpr = validXpath;
-        }
-        if (cacheKeys) {
-            this._cacheKeys = sysutils.copyObj(cacheKeys);
-        }
-        if (isPrivate !== undefined) {
-            sysutils.ensureValueTypeIs(isPrivate, "boolean");
-            this._isPrivate = isPrivate;
-        } else {
-            this._isPrivate = true;
-        }
-    };
+    } else {
+        this._statusMin = 100;
+        this._statusMax = 399;
+    }
+    if (validXpath) {
+        sysutils.ensureValueTypeIs(validXpath, "string");
+        this._checkXpathExpr = validXpath;
+    }
+    if (cacheKeys) {
+        this._cacheKeys = sysutils.copyObj(cacheKeys);
+    }
+    if (isPrivate !== undefined) {
+        sysutils.ensureValueTypeIs(isPrivate, "boolean");
+        this._isPrivate = isPrivate;
+    } else {
+        this._isPrivate = true;
+    }
+};
 ResDescriptor.prototype = {
     constructor: BarPlatform.CachedResources.ResDescriptor,
     get uri() this._uri,
@@ -166,9 +162,10 @@ ResDescriptor.prototype = {
         };
     },
     get cacheKeysStr() {
-        if (this._spHash)
+        if (this._spHash) {
             return this._spHash;
-        var resultParts = [];
+        }
+        let resultParts = [];
         for (let key in this._cacheKeys) {
             resultParts.push(key + ":" + this._cacheKeys[key]);
         }
@@ -188,8 +185,9 @@ ResDescriptor.prototype = {
         ].join("#"));
     },
     equalsTo: function ReqData_equalsTo(other) {
-        if (!sysutils.valueTypeIs(other, this.constructor))
+        if (!sysutils.valueTypeIs(other, this.constructor)) {
             return false;
+        }
         return this._fields.every(function (field) {
             return this[field] == other[field];
         }, this);
@@ -221,7 +219,7 @@ ResDescriptor.prototype = {
 function CachedResource(resDescr) {
     sysutils.ensureValueTypeIs(resDescr, ResDescriptor);
     patterns.NotificationSource.apply(this);
-    var resFileName = decodeURIComponent(resDescr.uri.path.split("/").slice(-1)) || "[NOFILE]";
+    let resFileName = decodeURIComponent(resDescr.uri.path.split("/").slice(-1)) || "[NOFILE]";
     this._logger = BarPlatform._getLogger("NetRes." + resFileName + "." + ++CachedResource._instCounter);
     this._resDescr = resDescr;
     this._storageKey = this._makeStorageKey(resDescr);
@@ -252,14 +250,16 @@ CachedResource.prototype = {
     get headers() this._responseData.headers || undefined,
     get statusCode() this._responseData.status || undefined,
     update: function CachedResource_update(bypassBrowserCache, invalidateCache) {
-        var requestId = this._downloader.update(bypassBrowserCache);
-        if (invalidateCache)
+        let requestId = this._downloader.update(bypassBrowserCache);
+        if (invalidateCache) {
             this._reqFlags[requestId] = this._REQ_FLAG_INVALIDATE_CACHE;
+        }
         return requestId;
     },
     _finalize: function CachedResource_finalize() {
-        if (!this._resDescr)
+        if (!this._resDescr) {
             return;
+        }
         this._logger.debug("Finalizing");
         delete BarPlatform.CachedResources._resources[this.descriptor.hash];
         this._tryCancelCacheQuery();
@@ -278,18 +278,20 @@ CachedResource.prototype = {
         this.removeAllListeners();
     },
     observe: function CachedResource_observe(subject, topic, data) {
-        if (subject == null)
+        if (subject == null) {
             this._logger.debug("CachedResource.observe(): HTTP-status: " + this.statusCode);
+        }
         if (subject != this._downloader || topic != "finished") {
             return;
         }
-        var requestId = data;
+        let requestId = data;
         try {
             if (this._updateFromDownloader()) {
                 try {
                     this._resetExpiryTimer();
-                    if (this._resDescr.expirationInterval == 0)
+                    if (this._resDescr.expirationInterval == 0) {
                         return;
+                    }
                     this._logger.debug("Storing to cache: " + this._storageKey);
                     BarPlatform.CachedResources._cache.store(this._storageKey, this._responseData);
                 } finally {
@@ -347,14 +349,17 @@ CachedResource.prototype = {
         ]));
     },
     _onCacheResults: function CachedResource__onCacheResults(cachedDataStr, cacheTimestamp, storageError) {
-        if (!this._resDescr)
+        if (!this._resDescr) {
             return;
-        var cacheIsValid = false;
+        }
+        let cacheIsValid = false;
         try {
-            if (storageError)
+            if (storageError) {
                 this._logger.error(this._consts.ERR_LOAD_CACHE + ". " + storageError.message);
-            if (!cachedDataStr)
+            }
+            if (!cachedDataStr) {
                 return;
+            }
             let responseData = JSON.parse(cachedDataStr);
             if (this._validate(responseData.status, responseData.bodyText)) {
                 cacheIsValid = true;
@@ -402,8 +407,9 @@ CachedResource.prototype = {
         }
     },
     _listenerAdded: function CachedResource__listenerAdded(topic, listener) {
-        if (this._subscribed)
+        if (this._subscribed) {
             return;
+        }
         this._downloader.addListener("finished", this);
         this._subscribed = true;
         if (!this._pendingCacheQuery && this._noData) {
@@ -412,13 +418,15 @@ CachedResource.prototype = {
         }
     },
     _listenerRemoved: function CachedResource__listenerRemoved(topic, listener) {
-        if (!this._hasListeners)
+        if (!this._hasListeners) {
             this._finalize();
+        }
     },
     _updateFromDownloader: function CachedResource__updateFromDownloader() {
-        var responseData = this._downloader.responseData;
-        if (!this._validate(responseData.status, responseData.bodyText))
+        let responseData = this._downloader.responseData;
+        if (!this._validate(responseData.status, responseData.bodyText)) {
             return false;
+        }
         this._tryCancelCacheQuery();
         this._responseData = {
             status: responseData.status,
@@ -433,16 +441,17 @@ CachedResource.prototype = {
         this._notifyListeners("changed");
     },
     _validate: function CachedResource__validate(status, bodyText) {
-        var minStatus = this._resDescr.statusRange.start;
-        var maxStatus = this._resDescr.statusRange.end;
-        var statusIsValid = minStatus <= status && status <= maxStatus;
-        var structIsValid = true;
+        let minStatus = this._resDescr.statusRange.start;
+        let maxStatus = this._resDescr.statusRange.end;
+        let statusIsValid = minStatus <= status && status <= maxStatus;
+        let structIsValid = true;
         if (this._resDescr.xpathExpression) {
             try {
                 let contentDoc = fileutils.xmlDocFromStream(strutils.utf8Converter.convertToInputStream(bodyText));
                 let queryResult = xmlutils.queryXMLDoc(this._resDescr.xpathExpression, contentDoc);
-                if (Array.isArray(queryResult) && !queryResult.length || !queryResult)
+                if (Array.isArray(queryResult) && !queryResult.length || !queryResult) {
                     throw new Error("Empty validation query result");
+                }
             } catch (e) {
                 this._logger.debug("Content validation failed. " + strutils.formatError(e));
                 structIsValid = false;
@@ -458,8 +467,9 @@ CachedResource.prototype = {
     },
     _resetExpiryTimer: function CachedResource__resetExpiryTimer() {
         this._dataExpTimer.cancel();
-        if (this._resDescr.expirationInterval)
+        if (this._resDescr.expirationInterval) {
             this._dataExpTimer.initWithCallback(this, this._resDescr.expirationInterval * 1000, this._dataExpTimer.TYPE_ONE_SHOT);
+        }
     },
     _makeStorageKey: function CachedResource__makeStorageKey(resDescr) {
         return [
@@ -485,7 +495,7 @@ function ResourceDownloader(resDescr) {
         headers: null
     };
     this._timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-    var resFileName = decodeURIComponent(resDescr.uri.path.split("/").slice(-1)) || "[NOFILE]";
+    let resFileName = decodeURIComponent(resDescr.uri.path.split("/").slice(-1)) || "[NOFILE]";
     this._logger = BarPlatform._getLogger("NetDlr." + resFileName + "." + ++ResourceDownloader._instCounter);
     this._logger.debug("Downloader created for " + this._resDescr.url);
 }
@@ -495,9 +505,9 @@ ResourceDownloader.prototype = {
     __proto__: patterns.NotificationSource.prototype,
     constructor: ResourceDownloader,
     update: function ResDownloader_update(bypassCache) {
-        var requestId = this._sendRequest(!!bypassCache);
+        let requestId = this._sendRequest(Boolean(bypassCache));
         this._timer.cancel();
-        if (!!bypassCache) {
+        if (Boolean(bypassCache)) {
             this._errorsCounter = 0;
         }
         return requestId;
@@ -506,8 +516,9 @@ ResourceDownloader.prototype = {
         return this._responseData;
     },
     _finalize: function ResDownloader_finalize() {
-        if (!this._resDescr)
+        if (!this._resDescr) {
             return;
+        }
         this._logger.debug("Finalizing " + this._resDescr.url);
         delete BarPlatform.CachedResources._downloaders[BarPlatform.CachedResources._dlHash(this._resDescr)];
         this._timer.cancel();
@@ -531,12 +542,14 @@ ResourceDownloader.prototype = {
     _logger: null,
     _errorsCounter: 0,
     _listenerAdded: function ResDownloader__listenerAdded(topic, listener) {
-        var addedInterval = listener.descriptor.updateInterval;
-        if (addedInterval < this._currentInterval)
+        let addedInterval = listener.descriptor.updateInterval;
+        if (addedInterval < this._currentInterval) {
             this._currentInterval = addedInterval;
+        }
         if (this._getListeners("finished").length == 1) {
-            if (this._currentInterval != Number.POSITIVE_INFINITY)
+            if (this._currentInterval != Number.POSITIVE_INFINITY) {
                 this._resetReqTimer(this._currentInterval);
+            }
         }
         this._logger.debug(strutils.formatString(this._consts.MSG_STATUS_REPORT, [
             this._getListeners("finished").length,
@@ -551,8 +564,9 @@ ResourceDownloader.prototype = {
             this._resDescr.url,
             this._currentInterval
         ]));
-        if (!this._hasListeners)
+        if (!this._hasListeners) {
             this._finalize();
+        }
     },
     _resetReqTimer: function ResDownloader__resetReqTimer(newInterval) {
         this._timer.cancel();
@@ -561,24 +575,25 @@ ResourceDownloader.prototype = {
         }
     },
     _updateInterval: function ResDownloader__updateInterval() {
-        var minInterval = Number.POSITIVE_INFINITY;
+        let minInterval = Number.POSITIVE_INFINITY;
         this._getListeners("finished").forEach(function (netRes) {
-            var resInterval = netRes.descriptor.updateInterval;
-            if (resInterval < minInterval)
+            let resInterval = netRes.descriptor.updateInterval;
+            if (resInterval < minInterval) {
                 minInterval = resInterval;
+            }
         });
         this._resetReqTimer(minInterval);
         this._currentInterval = minInterval;
     },
     _sendRequest: function ResDownloader__sendRequest(bypassCache) {
-        var requestId = BarPlatform.CachedResources._getNewRequestID();
+        let requestId = BarPlatform.CachedResources._getNewRequestID();
         this._logger.debug(strutils.formatString("Request #%1: %2 %3 from %4", [
             requestId,
             this._resDescr.method,
             this._resDescr.isPrivate ? "private" : "public",
             this._resDescr.url
         ]));
-        var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+        let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
         request.mozBackgroundRequest = true;
         request.open(this._resDescr.method, this._resDescr.url, true);
         if (!this._resDescr.isPrivate) {
@@ -587,16 +602,17 @@ ResourceDownloader.prototype = {
         if (bypassCache) {
             request.channel.loadFlags |= Ci.nsIRequest.LOAD_BYPASS_CACHE;
         }
-        var target = request.QueryInterface(Ci.nsIDOMEventTarget);
-        var requestHandler = this._handleResponse.bind(this, requestId);
+        let target = request.QueryInterface(Ci.nsIDOMEventTarget);
+        let requestHandler = this._handleResponse.bind(this, requestId);
         target.addEventListener("load", requestHandler, false);
         target.addEventListener("error", requestHandler, false);
         request.send(null);
         return requestId;
     },
     _handleResponse: function ResDownloader__handleResponse(requestId, reqEvent) {
-        if (!this._resDescr)
+        if (!this._resDescr) {
             return;
+        }
         try {
             let request = reqEvent.target;
             this._logger.debug("Handling response #" + requestId + " for " + this._resDescr.url);
@@ -605,7 +621,11 @@ ResourceDownloader.prototype = {
             let headers = Object.create(null);
             try {
                 request.channel.QueryInterface(Ci.nsIHttpChannel);
-                request.channel.visitResponseHeaders({ visitHeader: function ResDownloader_visitHeader(name, value) headers[name] = value });
+                request.channel.visitResponseHeaders({
+                    visitHeader: function ResDownloader_visitHeader(name, value) {
+                        headers[name] = value;
+                    }
+                });
             } catch (ex) {
             }
             this._responseData.headers = headers;

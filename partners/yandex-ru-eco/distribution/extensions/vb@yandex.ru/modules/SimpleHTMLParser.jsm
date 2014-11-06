@@ -7,20 +7,23 @@ SimpleHTMLParser.prototype = {
     set contentHandler(val) this._contentHandler = val,
     get currentPosition() this._currentPosition,
     parseFromString: function SimpleHTMLParser_parseFromString(htmlString) {
-        if (!this._contentHandler)
+        if (!this._contentHandler) {
             throw new Error("No content handler.");
+        }
         var treatAsChars = true;
         this._currentPosition = 0;
         this._totalLength = htmlString.length;
-        if (!(this._stopped & this._CANCEL_FLAG) && "start" in this._contentHandler)
+        if (!(this._stopped & this._CANCEL_FLAG) && "start" in this._contentHandler) {
             this._contentHandler.start();
+        }
         while (!this._stopped && htmlString) {
             var specialTag = null;
             if (htmlString.substring(0, 4) === "<!--") {
                 var index = htmlString.indexOf("-->");
                 if (index !== -1) {
-                    if ("comment" in this._contentHandler)
+                    if ("comment" in this._contentHandler) {
                         this._contentHandler.comment(htmlString.substring(4, index));
+                    }
                     htmlString = htmlString.substring(index + 3);
                     treatAsChars = false;
                 } else {
@@ -48,25 +51,30 @@ SimpleHTMLParser.prototype = {
             if (treatAsChars || specialTag) {
                 var index = -1;
                 if (specialTag) {
-                    if (new RegExp("</" + specialTag + ">", "im").test(htmlString))
+                    if (new RegExp("</" + specialTag + ">", "im").test(htmlString)) {
                         index = RegExp.leftContext.length;
+                    }
                 } else {
                     index = htmlString.indexOf("<");
                 }
-                if (index === -1)
+                if (index === -1) {
                     index = htmlString.length;
-                if ("characters" in this._contentHandler)
+                }
+                if ("characters" in this._contentHandler) {
                     this._contentHandler.characters(htmlString.substring(0, index));
+                }
                 htmlString = htmlString.substring(index);
             }
             treatAsChars = true;
             var currentPosition = this._totalLength - htmlString.length;
-            if (this._currentPosition === currentPosition)
+            if (this._currentPosition === currentPosition) {
                 throw "Parse Error: " + htmlString.substring(0, 100);
+            }
             this._currentPosition = currentPosition;
         }
-        if (!(this._stopped & this._CANCEL_FLAG) && "end" in this._contentHandler)
+        if (!(this._stopped & this._CANCEL_FLAG) && "end" in this._contentHandler) {
             this._contentHandler.end();
+        }
     },
     tryParseFromString: function SimpleHTMLParser_tryParseFromString(htmlString) {
         try {

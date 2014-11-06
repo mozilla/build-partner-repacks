@@ -3,8 +3,9 @@ EXPORTED_SYMBOLS.push("CustomErrors");
 const CustomErrors = {};
 CustomErrors.ECustom = function ECustom(message) {
     this._stackFrame = Components.stack.caller;
-    if (message)
+    if (message) {
         this._message = message.toString();
+    }
 };
 CustomErrors.ECustom.prototype = {
     get name() {
@@ -30,7 +31,7 @@ CustomErrors.ECustom.prototype = {
     _message: "Unknown error",
     _details: undefined,
     _makeStackStr: function ECustom__makeStackStr(stackFrame) {
-        var result = "";
+        let result = "";
         do {
             let frameLine = stackFrame.name + "(...)@" + stackFrame.filename + ":" + stackFrame.lineNumber + "\n";
             result += frameLine;
@@ -63,10 +64,11 @@ CustomErrors.EArgType = function EArgType(argName, expectedTypeName, actualTypeN
     CustomErrors.ECustom.apply(this, arguments);
     this._argName = argName.toString();
     this._expectedTypeName = expectedTypeName.toString();
-    if (typeof actualTypeNameOrValue == "string" && actualTypeNameOrValue.length)
+    if (typeof actualTypeNameOrValue == "string" && actualTypeNameOrValue.length) {
         this._actualTypeName = actualTypeNameOrValue.toString();
-    else
+    } else {
         this._actualTypeName = this._guessType(actualTypeNameOrValue);
+    }
 };
 CustomErrors.EArgType.prototype = {
     _name: "EArgType",
@@ -82,14 +84,14 @@ CustomErrors.EArgType.prototype = {
         this._actualTypeName
     ],
     _guessType: function EArgType__guessType(value) {
-        if (value === null || value === undefined)
-            return "" + value;
-        else {
-            if (value instanceof Components.interfaces.nsISupports)
-                return value.toString();
-            let constr = value.constructor;
-            return constr ? constr.name : "Unknown";
+        if (value === null || value === undefined) {
+            return String(value);
         }
+        if (value instanceof Components.interfaces.nsISupports) {
+            return value.toString();
+        }
+        let constr = value.constructor;
+        return constr ? constr.name : "Unknown";
     }
 };
 CustomErrors.ENoInterface = function ENoInterface(interfaceName, missingProperties) {
@@ -105,9 +107,10 @@ CustomErrors.ENoInterface.prototype = {
     _intfName: undefined,
     _missing: undefined,
     get _details() {
-        var details = [this._intfName];
-        if (this._missing)
+        let details = [this._intfName];
+        if (this._missing) {
             details.push("missing properties: " + this._missing);
+        }
         return details;
     }
 };

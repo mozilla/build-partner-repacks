@@ -1,11 +1,14 @@
 "use strict";
 NativeComponents.NativePlugin = function NativePlugin(id, modulePath, unit) {
-    if (!id)
+    if (!id) {
         throw new CustomErrors.EArgRange("id", "/.+/", id);
-    if (!modulePath)
+    }
+    if (!modulePath) {
         throw new CustomErrors.EArgRange("modulePath", "/.+/", modulePath);
-    if (!(unit instanceof BarPlatform.Unit))
+    }
+    if (!(unit instanceof BarPlatform.Unit)) {
         throw new CustomErrors.EArgRange("unit", "Unit", unit);
+    }
     this._id = id;
     this._modulePath = modulePath;
     this._unit = unit;
@@ -29,23 +32,26 @@ NativeComponents.NativePlugin.prototype = {
         return this._enabled;
     },
     set enabled(value) {
-        if (!!value)
+        if (Boolean(value)) {
             this.enable(false);
-        else
+        } else {
             this.disable(false);
+        }
     },
     set enabledManually(value) {
-        if (!!value)
+        if (Boolean(value)) {
             this.enable(true);
-        else
+        } else {
             this.disable(true);
+        }
     },
     enable: function NativePlugin_enable(manually) {
-        if (this._enabled)
+        if (this._enabled) {
             return;
+        }
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_BEFORE_ENABLED, null);
-        var pluginCore = this._module.core;
-        if (pluginCore && typeof pluginCore.init == "function") {
+        let pluginCore = this._module.core;
+        if (pluginCore && typeof pluginCore.init === "function") {
             this._nativeAPIInst = new NativeBarAPI({
                 type: "plugin",
                 id: this._id,
@@ -61,10 +67,11 @@ NativeComponents.NativePlugin.prototype = {
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_ENABLED, null);
     },
     disable: function NativePlugin_disable(manually) {
-        if (!this._enabled)
+        if (!this._enabled) {
             return;
+        }
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_BEFORE_DISABLED, null);
-        var pluginCore = this._module.core;
+        let pluginCore = this._module.core;
         if (pluginCore && typeof pluginCore.finalize == "function") {
             try {
                 pluginCore.finalize({ stateSwitchedManually: manually });
@@ -90,43 +97,46 @@ NativeComponents.NativePlugin.prototype = {
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_DISABLED, null);
     },
     get browserStyles() {
-        if (this._styleURLs)
+        if (this._styleURLs) {
             return this._styleURLs;
+        }
         this._styleURLs = [];
-        var browserResources = this._browserResources;
+        let browserResources = this._browserResources;
         if (browserResources) {
             let declaredStyles = browserResources.styles;
             if (Array.isArray(declaredStyles)) {
                 this._styleURLs = declaredStyles.map(function (stylePath) {
                     return this._package.resolvePath(stylePath);
                 }, this);
-            } else
+            } else {
                 this._logger.warn("Plugin resources.browser.styles is not an Array");
+            }
         }
         return this._styleURLs;
     },
     get urlBarItems() {
-        if (this._foundURLBarItems)
+        if (this._foundURLBarItems) {
             return this._foundURLBarItems;
+        }
         this._foundURLBarItems = [];
-        var browserResources = this._browserResources;
+        let browserResources = this._browserResources;
         if (browserResources) {
             let declaredItems = browserResources.urlBarItems;
             if (Array.isArray(declaredItems)) {
                 declaredItems.forEach(function (itemName) {
-                    var itemInfo = {
-                            name: itemName,
-                            priority: 0
-                        };
+                    let itemInfo = {
+                        name: itemName,
+                        priority: 0
+                    };
                     this._foundURLBarItems.push(itemInfo);
                 }, this);
             } else {
                 for (let itemName in declaredItems) {
                     let priority = Math.max(0, parseInt(declaredItems[itemName], 10) || 0);
                     let itemInfo = {
-                            name: itemName,
-                            priority: priority
-                        };
+                        name: itemName,
+                        priority: priority
+                    };
                     this._foundURLBarItems.push(itemInfo);
                 }
             }
@@ -143,26 +153,28 @@ NativeComponents.NativePlugin.prototype = {
         return sysutils.copyObj(this._packageSettings);
     },
     getSettingValue: function NativePlugin_getSettingValue(settingName) {
-        var rawValue;
-        var settingData;
+        let rawValue;
+        let settingData;
         if (settingName in this._settingsMap) {
             settingData = this._settingsMap[settingName];
             rawValue = Preferences.get(NativeComponents.makeWidgetPrefPath(this._id, settingName), settingData.defaultValue);
         } else if (settingName in this._packageSettings) {
             settingData = this._packageSettings[settingName];
             rawValue = Preferences.get(NativeComponents.makePackagePrefPath(this._package.id, settingName), settingData.defaultValue);
-        } else
+        } else {
             throw new Error(strutils.formatString(this._consts.MSG_SETTING_NOT_REGISTERED, [settingName]));
+        }
         return NativeComponents._interpretSettingValue(rawValue, settingData.type);
     },
     applySetting: function NativePlugin_applySetting(settingName, value) {
         if (settingName in this._settingsMap) {
             let prefPath = NativeComponents.makeWidgetPrefPath(this._id, settingName);
             Preferences.overwrite(prefPath, value);
-        } else if (settingName in this._packageSettings)
+        } else if (settingName in this._packageSettings) {
             Preferences.overwrite(NativeComponents.makePackagePrefPath(this._package.id, settingName), value);
-        else
+        } else {
             throw new Error(strutils.formatString(this._consts.MSG_SETTING_NOT_REGISTERED, [settingName]));
+        }
     },
     applySettings: function NativePlugin_applySettings(settingsMap, noFail) {
         for (let name in settingsMap) {
@@ -170,8 +182,9 @@ NativeComponents.NativePlugin.prototype = {
                 this.applySetting(name, settingsMap[name]);
             } catch (e) {
                 this._logger.error("Couldn't apply plugin setting. " + strutils.formatError(e));
-                if (!noFail)
+                if (!noFail) {
                     throw e;
+                }
             }
         }
     },
@@ -194,13 +207,14 @@ NativeComponents.NativePlugin.prototype = {
             };
             break;
         default:
-            throw new CustomErrors.EArgType("settingScope", "ENUM_SCOPE_PLUGIN | ENUM_SCOPE_PACKAGE", "" + settingScope);
+            throw new CustomErrors.EArgType("settingScope", "ENUM_SCOPE_PLUGIN | ENUM_SCOPE_PACKAGE", String(settingScope));
         }
     },
     finalize: function NativePlugin_finalize() {
         this.disable();
-        for (let settingName in this._packageSettings)
+        for (let settingName in this._packageSettings) {
             this._package.removeSettingUser(settingName, this.id);
+        }
         this._module = this._unit = this._package = null;
         this._packageSettings = null;
         this._settingsMap = null;
@@ -220,14 +234,16 @@ NativeComponents.NativePlugin.prototype = {
             switch (topic) {
             case appCore.eventTopics.EVT_BEFORE_GLOBAL_RESET: {
                     let pluginCore = this._module.core;
-                    if (pluginCore && typeof pluginCore.onBeforeReset == "function")
+                    if (pluginCore && typeof pluginCore.onBeforeReset == "function") {
                         pluginCore.onBeforeReset();
+                    }
                     break;
                 }
             case appCore.eventTopics.EVT_AFTER_GLOBAL_RESET: {
                     let pluginCore = this._module.core;
-                    if (pluginCore && typeof pluginCore.onAfterReset == "function")
+                    if (pluginCore && typeof pluginCore.onAfterReset == "function") {
                         pluginCore.onAfterReset();
+                    }
                     break;
                 }
             default:
@@ -257,14 +273,15 @@ NativeComponents.NativePlugin.prototype = {
         this._moduleObj = newValue;
     },
     _loadModule: function NativePlugin__loadModule() {
-        var module = {};
+        let module = {};
         Cu.import(this._package.resolvePath(this._modulePath), module);
         return module;
     },
     get _browserResources() {
-        var resources = this._module.resources;
-        if (resources)
+        let resources = this._module.resources;
+        if (resources) {
             return resources.browser;
+        }
     },
     _tryNotify: function NativePlugin__tryNotify(topic, data) {
         try {

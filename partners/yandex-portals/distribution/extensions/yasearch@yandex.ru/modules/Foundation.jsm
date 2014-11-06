@@ -1,11 +1,11 @@
 "use strict";
 const EXPORTED_SYMBOLS = [];
 const {
-        classes: Cc,
-        interfaces: Ci,
-        utils: Cu,
-        results: Cr
-    } = Components;
+    classes: Cc,
+    interfaces: Ci,
+    utils: Cu,
+    results: Cr
+} = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 const FOUNDATION_DIR = __LOCATION__.parent;

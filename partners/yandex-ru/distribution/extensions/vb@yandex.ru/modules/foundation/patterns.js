@@ -7,22 +7,26 @@ patterns.NotificationSource = function NotificationSource() {
 patterns.NotificationSource.prototype = {
     constructor: patterns.NotificationSource,
     addListener: function NotificationSource_addListener(topic, listener) {
-        var topicListeners = this._listeners[topic] || (this._listeners[topic] = []);
-        if (topicListeners.indexOf(listener) >= 0)
+        let topicListeners = this._listeners[topic] || (this._listeners[topic] = []);
+        if (topicListeners.indexOf(listener) >= 0) {
             return;
+        }
         topicListeners.push(listener);
         this._listenerAdded(topic, listener);
     },
     removeListener: function NotificationSource_removeListener(topic, listener) {
-        var topicListeners = this._listeners[topic] || (this._listeners[topic] = []);
-        if (!topicListeners)
+        let topicListeners = this._listeners[topic] || (this._listeners[topic] = []);
+        if (!topicListeners) {
             return;
-        var listenerIdx = topicListeners.indexOf(listener);
-        if (listenerIdx < 0)
+        }
+        let listenerIdx = topicListeners.indexOf(listener);
+        if (listenerIdx < 0) {
             return;
+        }
         topicListeners.splice(listenerIdx, 1);
-        if (topicListeners.length < 1)
+        if (topicListeners.length < 1) {
             delete this._listeners[topic];
+        }
         this._listenerRemoved(topic, listener);
     },
     removeAllListeners: function NotificationSource_removeAllListeners() {
@@ -37,8 +41,9 @@ patterns.NotificationSource.prototype = {
                     topic,
                     list
                 ] in Iterator(this._listeners)) {
-            if (list && list.length)
+            if (list && list.length) {
                 return true;
+            }
         }
         return false;
     },
@@ -46,11 +51,12 @@ patterns.NotificationSource.prototype = {
         return this._listeners[topic] || [];
     },
     _notifyListeners: function NotificationSource__notifyListeners(topic, data) {
-        var topicListeners = this._getListeners(topic);
+        let topicListeners = this._getListeners(topic);
         topicListeners.forEach(function NotificationSource__notificatorFunc(listener) {
             try {
-                if (this._listeners[topic].indexOf(listener) != -1)
+                if (this._listeners[topic].indexOf(listener) != -1) {
                     listener.observe(this, topic, data);
+                }
             } catch (e) {
                 Cu.reportError("Could not notify event listener. " + e + "\n" + e.stack);
             }
@@ -62,15 +68,16 @@ patterns.NotificationSource.prototype = {
     }
 };
 patterns.NotificationSource.objectMixIn = function NotificationSource_objectMixIn(object) {
-    var notificationSourceInstance = new this();
+    let notificationSourceInstance = new this();
     for (let prop in notificationSourceInstance) {
-        if (prop === "constructor")
+        if (prop === "constructor") {
             continue;
+        }
         object[prop] = notificationSourceInstance[prop];
     }
 };
 patterns.AsyncTaskQueue = function AsyncTaskQueue(watcher, chainTasks) {
-    this._chainTasks = !!chainTasks;
+    this._chainTasks = Boolean(chainTasks);
     this._pendingTasks = [];
     this._runningTasks = [];
     this._finishedTasks = [];
@@ -100,18 +107,22 @@ patterns.AsyncTaskQueue.prototype = {
         return this._finishedTasks.slice();
     },
     addTask: function AsyncTaskQueue_addTask(task) {
-        if (!(task instanceof patterns.AsyncTask))
+        if (!(task instanceof patterns.AsyncTask)) {
             throw new CustomErrors.EArgType("task", "AsyncTask", asyncTask);
+        }
         this._pendingTasks.push(task);
     },
     startTasks: function AsyncTaskQueue_doTasks(parallelTasks) {
         if (parallelTasks !== undefined) {
-            if (typeof parallelTasks != "number")
+            if (typeof parallelTasks != "number") {
                 throw new CustomErrors.EArgType("parallelTasks", "number", parallelTasks);
-            if (isNaN(parallelTasks) || parallelTasks < 1)
+            }
+            if (isNaN(parallelTasks) || parallelTasks < 1) {
                 throw new CustomErrors.EArgRange("parallelTasks", "1+", parallelTasks);
-            if (this._chainTasks && parallelTasks > 1)
+            }
+            if (this._chainTasks && parallelTasks > 1) {
                 throw new Error("Can't parallel chained tasks");
+            }
             this._parallelTasks = Math.floor(parallelTasks);
         }
         this._proceed();
@@ -119,7 +130,7 @@ patterns.AsyncTaskQueue.prototype = {
     abortTasks: function AsyncTaskQueue_abortTasks(reason) {
         this._finishedTasks = this._finishedTasks.concat(this._pendingTasks);
         this._pendingTasks = [];
-        var currIndex = 0;
+        let currIndex = 0;
         while (currIndex < this._runningTasks.length) {
             let task = this._runningTasks[currIndex];
             try {
@@ -131,17 +142,20 @@ patterns.AsyncTaskQueue.prototype = {
                 this._finishedTasks.push(task);
             }
         }
-        if (this._runningTasks.length < 1)
+        if (this._runningTasks.length < 1) {
             this._finish();
+        }
     },
     onTaskProgress: function AsyncTaskQueue_onTaskProgress(task) {
-        if (this._runningTasks.length > 0)
+        if (this._runningTasks.length > 0) {
             this._notyfyTaskProgress(task);
+        }
     },
     onTaskFinished: function AsyncTaskQueue_onTaskFinished(task) {
-        var runIndex = this._runningTasks.indexOf(task);
-        if (runIndex < 0)
+        let runIndex = this._runningTasks.indexOf(task);
+        if (runIndex < 0) {
             throw new Error("Alien task");
+        }
         this._runningTasks.splice(runIndex, 1);
         this._finishedTasks.push(task);
         this._notyfyTaskFinished(task);
@@ -160,38 +174,44 @@ patterns.AsyncTaskQueue.prototype = {
                 this._finishedTasks.push(task);
                 this._notyfyTaskFinished(task);
             }
-            if (this._runningTasks.length < this._parallelTasks)
+            if (this._runningTasks.length < this._parallelTasks) {
                 this._proceed();
+            }
         } else if (this._runningTasks.length < 1) {
             this._finish();
         }
     },
     _notyfyTaskFinished: function AsyncTaskQueue__notyfyTaskFinished(task) {
-        if (!this._owner)
+        if (!this._owner) {
             return;
+        }
         try {
-            if (typeof this._owner.onTaskFinished == "function")
+            if (typeof this._owner.onTaskFinished == "function") {
                 this._owner.onTaskFinished(task);
+            }
         } catch (e) {
             Cu.reportError(e);
         }
     },
     _notyfyTaskProgress: function AsyncTaskQueue__notyfyTaskProgress(task) {
-        if (!this._owner)
+        if (!this._owner) {
             return;
+        }
         try {
-            if (typeof this._owner.onTaskProgress == "function")
+            if (typeof this._owner.onTaskProgress == "function") {
                 this._owner.onTaskProgress(task);
+            }
         } catch (e) {
             Cu.reportError(e);
         }
     },
     _finish: function AsyncTaskQueue__finish() {
         this._finished = true;
-        var context = this._owner;
-        var func = context ? context.onTasksFinished : this._onComplete;
-        if (!func)
+        let context = this._owner;
+        let func = context ? context.onTasksFinished : this._onComplete;
+        if (!func) {
             return;
+        }
         try {
             func.call(context, this);
         } catch (e) {

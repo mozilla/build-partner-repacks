@@ -15,20 +15,22 @@ function getTypeFromFile(aFile) {
     return null;
 }
 const DataURI = function DataURI(aHeaders, aContent) {
-    if (!(this instanceof DataURI))
+    if (!(this instanceof DataURI)) {
         return new DataURI(aHeaders, aContent);
+    }
     this.headers = {};
-    for (let key in aHeaders)
+    for (let key in aHeaders) {
         this.headers[key] = aHeaders[key];
-    this.content = Array.isArray(aContent) ? btoa(aContent.map(function (b) String.fromCharCode(b)).join("")) : aContent;
+    }
+    this.content = Array.isArray(aContent) ? btoa(String.fromCharCode.apply(null, aContent)) : aContent;
     return this;
 };
 DataURI.fromFile = function DataURI_fromFile(aFile, aContentType) {
-    var contentType = aContentType || getTypeFromFile(aFile) || "";
+    let contentType = aContentType || getTypeFromFile(aFile) || "";
     const headers = {
-            contentType: contentType,
-            base64: true
-        };
+        contentType: contentType,
+        base64: true
+    };
     const content = DataURI.encodeFile(aFile);
     const dataURI = DataURI(headers, content);
     return dataURI;
@@ -39,15 +41,17 @@ DataURI.prototype.headers = {
 };
 DataURI.prototype.content = "";
 DataURI.prototype.toString = function DataURI_toString() {
-    var headers = this.headers;
-    var base64 = headers.base64;
-    var content = this.content;
-    if (!base64)
+    let headers = this.headers;
+    let base64 = headers.base64;
+    let content = this.content;
+    if (!base64) {
         content = encodeURIComponent(content);
-    var uri = "data:";
+    }
+    let uri = "data:";
     uri += headers.contentType || "";
-    if (base64)
+    if (base64) {
         uri += ";base64";
+    }
     uri += "," + content;
     return uri;
 };
@@ -66,6 +70,6 @@ DataURI.encodeFileStream = function DataURI_encodeFileStream(aFileStream) {
     return encoded;
 };
 DataURI.encodeBinStream = function DataURI_encodeBinStream(aBinStream) {
-    var bytes = aBinStream.readByteArray(aBinStream.available());
-    return btoa(bytes.map(function (b) String.fromCharCode(b)).join(""));
+    let bytes = aBinStream.readByteArray(aBinStream.available());
+    return btoa(String.fromCharCode.apply(null, bytes));
 };

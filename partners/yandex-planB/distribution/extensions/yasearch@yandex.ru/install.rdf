@@ -71,7 +71,7 @@
     <em:name>Yandex Elements</em:name>
     <em:type>2</em:type>
     <em:unpack>true</em:unpack>
-    <em:version>8.5.1</em:version>
+    <em:version>8.7.1</em:version>
     <em:description>Quick access to all Yandex features</em:description>
     <em:creator>Yandex</em:creator>
     <em:contributor>Aleksey Rybakov</em:contributor>
@@ -101,8 +101,8 @@
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>17.0</em:minVersion>
-        <em:maxVersion>33.*</em:maxVersion>
+        <em:minVersion>27.0</em:minVersion>
+        <em:maxVersion>35.*</em:maxVersion>
       </Description>
     </em:targetApplication>
 

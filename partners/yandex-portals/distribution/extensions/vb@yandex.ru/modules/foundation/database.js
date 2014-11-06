@@ -2,15 +2,17 @@
 EXPORTED_SYMBOLS.push("Database");
 const storageSvc = Cc["@mozilla.org/storage/service;1"].getService(Ci.mozIStorageService);
 function Database(storageFile, initStatements) {
-    if (storageFile)
+    if (storageFile) {
         this.open(storageFile, initStatements);
+    }
 }
 ;
 Database.prototype = {
     constructor: Database,
     open: function Database_open(storageFile, initStatements) {
-        if (!(storageFile instanceof Ci.nsIFile))
+        if (!(storageFile instanceof Ci.nsIFile)) {
             throw new TypeError("nsIFile required");
+        }
         this.close();
         try {
             this._connectAndInit(storageFile, initStatements);
@@ -27,44 +29,45 @@ Database.prototype = {
             case Cr.NS_ERROR_STORAGE_IOERR:
                 Cu.reportError("Database: will try to remove corrupt DB file");
                 fileutils.removeFileSafe(storageFile);
-                if (storageFile.exists())
+                if (storageFile.exists()) {
                     Cu.reportError("Database: can not remove corrupt DB file");
-                else
+                } else {
                     Cu.reportError("Database: corrupt DB file removed");
+                }
             }
             this._connectAndInit(storageFile, initStatements);
         }
     },
     close: function Database_close(callback) {
-        if (callback && typeof callback != "function")
+        if (callback && typeof callback != "function") {
             throw new CustomErrors.EArgType("callback", "Function", callback);
+        }
         if (this._connection) {
-            if ("asyncClose" in this._connection)
+            if ("asyncClose" in this._connection) {
                 this._connection.asyncClose(callback ? {
                     complete: function Database_closeComplete() {
                         callback();
                     }
                 } : undefined);
-            else {
+            } else {
                 this._connection.close();
-                if (callback)
+                if (callback) {
                     callback();
+                }
             }
             this._connection = null;
         }
     },
     execQuery: function Database_execQuery(query, parameters) {
-        var result = [];
-        var statement = this._createStatement(query, parameters, false);
+        let result = [];
+        let statement = this._createStatement(query, parameters, false);
         try {
             let columnNames = this._getStatementColumnNames(statement);
             while (statement.executeStep()) {
                 let row = {};
-                let (i = columnNames.length) {
-                    for (; i--;) {
-                        let colName = columnNames[i];
-                        row[colName] = statement.row[colName];
-                    }
+                for (let i = columnNames.length; i--;) {
+                    let colName = columnNames[i];
+                    row[colName] = statement.row[colName];
                 }
                 result.push(row);
             }
@@ -75,18 +78,22 @@ Database.prototype = {
         return result;
     },
     execSimpleQuery: function Database_execSimpleQuery(query, parameters) {
-        var firstResult = this.execQuery(query, parameters)[0];
-        if (firstResult)
-            for (let p in firstResult)
-                if (firstResult.hasOwnProperty(p))
+        let firstResult = this.execQuery(query, parameters)[0];
+        if (firstResult) {
+            for (let p in firstResult) {
+                if (firstResult.hasOwnProperty(p)) {
                     return firstResult[p];
+                }
+            }
+        }
         return undefined;
     },
     execQueryAsync: function Database_execQueryAsync(query, parameters, callback) {
-        if (callback && typeof callback != "function")
+        if (callback && typeof callback != "function") {
             throw new TypeError("Third argument must be a function.");
-        var statement = this._createStatement(query, parameters, false);
-        var columnNames = callback && this._getStatementColumnNames(statement);
+        }
+        let statement = this._createStatement(query, parameters, false);
+        let columnNames = callback && this._getStatementColumnNames(statement);
         try {
             let callbackObj = this._createStmtCallback(statement, columnNames, callback);
             return statement.executeAsync(callbackObj);
@@ -94,23 +101,43 @@ Database.prototype = {
             statement.finalize();
         }
     },
-    executeQueryAsync: function Database_executeQueryAsync({
-        query: query,
-        parameters: parameters,
-        columns: columns,
-        callback: callback
-    }) {
-        if (typeof query !== "string")
+    executeQueryAsync: function Database_executeQueryAsync({query, parameters, columns, callback}) {
+        if (typeof query !== "string") {
             throw new TypeError("'query' must be a string.");
-        if (callback && typeof callback !== "function")
+        }
+        if (callback && typeof callback !== "function") {
             throw new TypeError("'callback' must be a function.");
-        var statement = this._createStatement(query, parameters, true);
+        }
+        let statement = this._createStatement(query, parameters, true);
         try {
             let callbackObj = this._createStmtCallback(statement, columns || undefined, callback);
             return statement.executeAsync(callbackObj);
         } finally {
             statement.finalize();
         }
+    },
+    execQuerySpinningly: function Database_execQuerySpinningly(query, parameters) {
+        let working = true;
+        let result;
+        let error;
+        try {
+            this.execQueryAsync(query, parameters, function Database_execQuerySpinningly_onCompletion(res, err) {
+                working = false;
+                result = res;
+                error = err;
+            });
+        } catch (ex) {
+            working = false;
+            error = ex;
+        }
+        let thread = Services.tm.currentThread;
+        while (working) {
+            thread.processNextEvent(true);
+        }
+        if (error) {
+            throw error;
+        }
+        return result;
     },
     get lastInsertRowID() {
         return this._connection && this._connection.lastInsertRowID || 0;
@@ -122,8 +149,9 @@ Database.prototype = {
         return this._connection.schemaVersion;
     },
     set schemaVersion(version) {
-        if (version < 1 || parseInt(version, 10) !== version)
+        if (version < 1 || parseInt(version, 10) !== version) {
             throw new Error("Database schema version must be a positive number.");
+        }
         this._connection.schemaVersion = version;
     },
     get storageFile() this._connection && this._connection.databaseFile,
@@ -132,31 +160,37 @@ Database.prototype = {
     _connection: null,
     _connectAndInit: function Database__connectAndInit(storageFile, initStatements) {
         this._connection = storageSvc.openDatabase(storageFile);
-        if (!this._connection.connectionReady)
+        if (!this._connection.connectionReady) {
             throw new Error(this._connection.lastError);
-        if (!initStatements)
+        }
+        if (!initStatements) {
             return;
-        (Array.isArray(initStatements) ? initStatements : [initStatements]).forEach(function (statement) this.execQuery(statement), this);
+        }
+        (Array.isArray(initStatements) ? initStatements : [initStatements]).forEach(function (statement) {
+            this.execQuery(statement);
+        }, this);
     },
     _createStmtCallback: function Database__createStmtCallback(statement, columnNames, onCompletion) {
-        if (!onCompletion)
+        if (!onCompletion) {
             return;
+        }
         return {
             _results: [],
             _error: undefined,
             handleResult: function Database_callback_handleResult(aResultSet) {
-                var row;
+                let row;
                 while (row = aResultSet.getNextRow()) {
                     if (Array.isArray(columnNames)) {
                         let resultRow = Object.create(null);
-                        columnNames.forEach(function (name, index) resultRow[name] = row.getResultByIndex(index));
+                        columnNames.forEach(function (name, index) {
+                            resultRow[name] = row.getResultByIndex(index);
+                        });
                         this._results.push(resultRow);
                     } else {
                         let resultRow = [];
                         try {
-                            let (index = 0) {
-                                for (;; index++)
-                                    resultRow.push(row.getResultByIndex(index));
+                            for (let index = 0;; index++) {
+                                resultRow.push(row.getResultByIndex(index));
                             }
                         } catch (e) {
                         }
@@ -168,17 +202,20 @@ Database.prototype = {
                 this._error = aError;
             },
             handleCompletion: function Database_callback_handleCompletion(aReason) {
-                if (aReason === Ci.mozIStorageStatementCallback.REASON_CANCELED)
+                if (aReason === Ci.mozIStorageStatementCallback.REASON_CANCELED) {
                     return;
-                if (onCompletion)
+                }
+                if (onCompletion) {
                     onCompletion(this._results, this._error);
+                }
             }
         };
     },
     _createStatement: function Database__createStatement(query, parameters, asyncStatement) {
-        if (!this._connection)
+        if (!this._connection) {
             throw new Error("Can't create statement. Database is closed.");
-        var statement;
+        }
+        let statement;
         try {
             statement = asyncStatement ? this._connection.createAsyncStatement(query) : this._connection.createStatement(query);
         } catch (e) {
@@ -193,7 +230,7 @@ Database.prototype = {
             if (Array.isArray(parameters)) {
                 let params = statement.newBindingParamsArray();
                 parameters.forEach(function (value, index) {
-                    var bp = params.newBindingParams();
+                    let bp = params.newBindingParams();
                     bp.bindByIndex(index, value);
                     params.addParams(bp);
                 });
@@ -202,17 +239,17 @@ Database.prototype = {
                 for (let [
                             key,
                             value
-                        ] in Iterator(parameters))
+                        ] in Iterator(parameters)) {
                     statement.params[key] = value;
+                }
             }
         }
         return statement;
     },
     _getStatementColumnNames: function Database__getStatementColumnNames(statement) {
-        var columnNames = [];
-        let (i = 0, len = statement.columnCount) {
-            for (; i < len; i++)
-                columnNames.push(statement.getColumnName(i));
+        let columnNames = [];
+        for (let i = 0, len = statement.columnCount; i < len; i++) {
+            columnNames.push(statement.getColumnName(i));
         }
         return columnNames;
     }
@@ -230,9 +267,10 @@ Database.DatedValues.prototype = {
         }.bind(this));
     },
     store: function DatedValues_store(key, value) {
-        if (sysutils.isObject(value))
+        if (sysutils.isObject(value)) {
             value = JSON.stringify(value);
-        var storeTime = this._currentTimestampSecs;
+        }
+        let storeTime = this._currentTimestampSecs;
         return this._database.execQueryAsync(this._consts.INSERT_QUERY, {
             id: key,
             time: storeTime,
@@ -240,8 +278,8 @@ Database.DatedValues.prototype = {
         });
     },
     startSearch: function DatedValues_startSearch(key, notOlderThan, callback) {
-        var treshold = notOlderThan ? this._currentTimestampSecs - notOlderThan : 0;
-        var dbCallback = this._onSearchComplete.bind(this, callback);
+        let treshold = notOlderThan ? this._currentTimestampSecs - notOlderThan : 0;
+        let dbCallback = this._onSearchComplete.bind(this, callback);
         return this._database.execQueryAsync(this._consts.SEARCH_QUERY, {
             id: key,
             treshold: treshold
@@ -266,8 +304,8 @@ Database.DatedValues.prototype = {
         return parseInt(Date.now() / 1000, 10);
     },
     _onSearchComplete: function DatedValues__onSearchComplete(userCallback, rows, storageError) {
-        var cachedData;
-        var cacheTimestamp;
+        let cachedData;
+        let cacheTimestamp;
         if (!storageError) {
             let row = rows[0];
             if (row) {

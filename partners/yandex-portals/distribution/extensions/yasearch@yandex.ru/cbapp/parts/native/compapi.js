@@ -1,10 +1,12 @@
 "use strict";
 function NativeBarAPI(componentInfo, logger) {
-    if (!componentInfo || !(componentInfo.package_ instanceof BarPlatform.ComponentPackage))
+    if (!componentInfo || !(componentInfo.package_ instanceof BarPlatform.ComponentPackage)) {
         throw new CustomErrors.EArgType("componentInfo", "ComponentInfo", componentInfo);
+    }
     this._componentInfo = componentInfo;
-    if (!logger)
+    if (!logger) {
         throw new CustomErrors.EArgType("logger", "Object", logger);
+    }
     this._logger = logger;
     [
         "Async",
@@ -68,15 +70,18 @@ NativeBarAPI.prototype = {
         return this._logger;
     },
     queryAPIVersion: function NativeAPI_queryAPIVersion(version) {
-        var apiVer = Number(version);
-        if (apiVer > 0 && apiVer <= this.Environment.barPlatform.version)
+        let apiVer = Number(version);
+        if (apiVer > 0 && apiVer <= this.Environment.barPlatform.version) {
             return this;
+        }
         throw new Error(strutils.formatString("API version %1 is not available", [version]));
     },
     get shareableAPI() {
-        var logger = Log4Moz.repository.getLogger(appCore.appName + ".NativeAPI." + this._componentInfo.package_.id);
-        var shareableAPI = new NativeBarAPI(new NoCompInfo(this._componentInfo.package_), logger);
-        this.__defineGetter__("shareableAPI", function _shareableAPI() shareableAPI);
+        let logger = Log4Moz.repository.getLogger(appCore.appName + ".NativeAPI." + this._componentInfo.package_.id);
+        let shareableAPI = new NativeBarAPI(new NoCompInfo(this._componentInfo.package_), logger);
+        this.__defineGetter__("shareableAPI", function _shareableAPI() {
+            return shareableAPI;
+        });
         return this.shareableAPI;
     },
     finalize: function NativeAPI_finalize() {
@@ -135,25 +140,33 @@ NativeBarAPI.Environment.browser = {
 };
 NativeBarAPI.Environment.addon = {
     get id() {
-        var id = AddonManager.getAddonId(appCore.extensionPathFile);
-        this.__defineGetter__("id", function NativeAPI_Env_addon_id() id);
+        let id = AddonManager.getAddonId(appCore.extensionPathFile);
+        this.__defineGetter__("id", function NativeAPI_Env_addon_id() {
+            return id;
+        });
         return this.id;
     },
     get version() {
-        var version = AddonManager.getAddonVersion(appCore.extensionPathFile);
-        this.__defineGetter__("version", function NativeAPI_Env_addon_version() version);
+        let version = AddonManager.getAddonVersion(appCore.extensionPathFile);
+        this.__defineGetter__("version", function NativeAPI_Env_addon_version() {
+            return version;
+        });
         return this.version;
     },
     get locale() {
-        var localeString = application.localeString;
-        var localeComponents = application.locale;
-        var locale = {
-                toString: function NativeAPI_locale_toString() localeString,
-                language: localeComponents.language || "",
-                country: localeComponents.country || "",
-                region: localeComponents.region || ""
-            };
-        this.__defineGetter__("locale", function NativeAPI_locale() locale);
+        let localeString = application.localeString;
+        let localeComponents = application.locale;
+        let locale = {
+            toString: function NativeAPI_locale_toString() {
+                return localeString;
+            },
+            language: localeComponents.language || "",
+            country: localeComponents.country || "",
+            region: localeComponents.region || ""
+        };
+        this.__defineGetter__("locale", function NativeAPI_locale() {
+            return locale;
+        });
         return this.locale;
     },
     get userID() {
@@ -182,16 +195,25 @@ NativeBarAPI.Environment.branding = {
         return application.branding.brandID;
     },
     expandBrandTemplates: function NativeAPI_branding_expandBrandTemplates(templateString, params, encodeParams) {
-        if (typeof templateString !== "string")
+        if (typeof templateString !== "string") {
             throw new TypeError("'templateString' must be a string");
-        if (typeof params !== "undefined" && typeof params !== "string")
+        }
+        if (typeof params !== "undefined" && typeof params !== "string") {
             throw new TypeError("'params' must be an object");
-        if (typeof encodeParams !== "undefined" && typeof encodeParams !== "boolean")
+        }
+        if (typeof encodeParams !== "undefined" && typeof encodeParams !== "boolean") {
             throw new TypeError("'encodeParams' must be a boolean");
+        }
         return application.branding.expandBrandTemplates(templateString, params, encodeParams);
     },
     expandBrandTemplatesEscape: function NativeAPI_branding_expandBrandTemplatesEscape(templateStr, params) {
         return this.expandBrandTemplates(templateStr, params, true);
+    },
+    findFile: function NativeAPI_branding_findFile(filePath) {
+        return application.branding.brandPackage.findFile(filePath);
+    },
+    getXMLDocument: function NativeAPI_branding_getXMLDocument(docPath, privilegedParser) {
+        return application.branding.brandPackage.getXMLDocument(docPath, privilegedParser);
     }
 };
 NativeBarAPI.Environment.prototype = NativeBarAPI.Environment;
@@ -211,16 +233,17 @@ NativeBarAPI.Controls.prototype = {
         return BarPlatform.navigateBrowser(navigateData);
     },
     addWidget: function NativeAPI_addWidget(widgetID, browserWindow, relativeTo, placeAfter) {
-        if (!browserWindow)
+        if (!browserWindow) {
             browserWindow = misc.getTopBrowserWindow();
-        else if (!(browserWindow instanceof Ci.nsIDOMWindow))
+        } else if (!(browserWindow instanceof Ci.nsIDOMWindow)) {
             throw new TypeError("XUL window required " + browserWindow);
-        var wndController = NativeComponents._getWindowController(browserWindow);
+        }
+        let wndController = NativeComponents._getWindowController(browserWindow);
         widgetID = widgetID || this._componentInfo.id;
-        var [
-                ,
-                widgetElement
-            ] = wndController.placeWidget(widgetID, relativeTo, placeAfter, undefined, true);
+        let [
+            ,
+            widgetElement
+        ] = wndController.placeWidget(widgetID, relativeTo, placeAfter, undefined, true);
         return [
             widgetElement.wdgtInstanceID,
             widgetElement
@@ -228,28 +251,33 @@ NativeBarAPI.Controls.prototype = {
     },
     removeWidget: function NativeAPI_removeWidget(WIIDorElement, browserWindow) {
         if (!browserWindow) {
-            if (WIIDorElement instanceof Ci.nsIDOMElement)
+            if (WIIDorElement instanceof Ci.nsIDOMElement) {
                 browserWindow = WIIDorElement.ownerDocument.defaultView;
-            else
+            } else {
                 browserWindow = misc.getTopBrowserWindow();
+            }
         }
-        if (!(browserWindow instanceof Ci.nsIDOMWindow))
+        if (!(browserWindow instanceof Ci.nsIDOMWindow)) {
             throw new TypeError("XUL window required " + browserWindow);
+        }
         NativeComponents._getWindowController(browserWindow).removeItem(WIIDorElement);
     },
     get allWidgetInstanceIDs() {
-        if (this._componentInfo.type != "widget")
+        if (this._componentInfo.type != "widget") {
             throw new Error(NativeBarAPI.CONSTS.NOT_A_WIDGET);
+        }
         return this._componentInfo.component.spawnedIDs;
     },
     getAllWidgetItems: function NativeAPI_getAllWidgetItems() {
-        if (this._componentInfo.type != "widget")
+        if (this._componentInfo.type != "widget") {
             throw new Error(NativeBarAPI.CONSTS.NOT_A_WIDGET);
+        }
         return this._componentInfo.component.getAllWidgetItems();
     },
     getAllWidgetItemsOfInstance: function NativeAPI_getAllWidgetItemsOfInstance(WIID) {
-        if (this._componentInfo.type != "widget")
+        if (this._componentInfo.type != "widget") {
             throw new Error(NativeBarAPI.CONSTS.NOT_A_WIDGET);
+        }
         return this._componentInfo.component.getAllWidgetItemsOfInstance(WIID);
     },
     enablePlugin: function NativeAPI_enablePlugin(pluginID) {
@@ -257,6 +285,12 @@ NativeBarAPI.Controls.prototype = {
     },
     disablePlugin: function NativeAPI_disablePlugin(pluginID) {
         application.widgetLibrary.getPlugin(pluginID).disable();
+    },
+    isPluginEnabled: function NativeAPI_isPluginEnabled(aPluginID) {
+        if (!application.widgetLibrary.isKnownPlugin(aPluginID)) {
+            return null;
+        }
+        return application.widgetLibrary.pluginEnabled(aPluginID);
     },
     createSlice: function NativeAPI_createSlice(sliceProps, WIID) {
         return createSliceWrapper(sliceProps, this._api, WIID);
@@ -268,8 +302,8 @@ NativeBarAPI.Overlay = function Overlay(componentInfo, logger) {
 };
 NativeBarAPI.Overlay.prototype = {
     checkWidgetsInCurrentSet: function NativeAPI_checkWidgetsInCurrentSet(aWidgetProtoIds) {
-        var currentSetIds = application.overlayProvider.currentSetIds;
-        var result = Object.create(null);
+        let currentSetIds = application.overlayProvider.currentSetIds;
+        let result = Object.create(null);
         if (!Array.isArray(aWidgetProtoIds)) {
             aWidgetProtoIds = [aWidgetProtoIds];
         }
@@ -299,59 +333,8 @@ NativeBarAPI.Statistics.prototype = {
     },
     logMenuClick: function NativeAPI_logMenuClick() {
     },
-    logClickStatistics: function NativeAPI_logClickStatistics({
-        dtype: dtype,
-        pid: pid,
-        cid: cid,
-        path: path
-    }) {
-        if (typeof dtype === "undefined")
-            dtype = "stred";
-        if (typeof pid === "undefined")
-            pid = 12;
-        if (typeof dtype === "string") {
-            if (!dtype)
-                throw new RangeError("dtype is empty string");
-        } else {
-            throw new TypeError("Invalid dtype type ('" + typeof dtype + "')");
-        }
-        if (typeof pid === "number") {
-            if (pid < 0)
-                throw new RangeError("Invalid pid value (" + pid + ")");
-        } else {
-            throw new TypeError("Wrong pid type ('" + typeof pid + "'). Number required.");
-        }
-        if (typeof cid === "number") {
-            if (cid <= 0)
-                throw new RangeError("Invalid cid value (" + cid + ")");
-        } else {
-            throw new TypeError("Wrong cid type ('" + typeof cid + "'). Number required.");
-        }
-        var url = "http://clck.yandex.ru/click" + "/dtype=" + encodeURIComponent(dtype) + "/pid=" + pid + "/cid=" + cid + "/path=" + encodeURIComponent(path);
-        var extraString = "";
-        var processedKeys = [
-                "dtype",
-                "pid",
-                "cid",
-                "path"
-            ];
-        for (let [
-                    key,
-                    value
-                ] in Iterator(arguments[0])) {
-            if (processedKeys.indexOf(key) !== -1)
-                continue;
-            if (key === "*") {
-                extraString = value;
-                continue;
-            }
-            url += "/" + key + "=" + encodeURIComponent(value);
-        }
-        url += "/*" + extraString;
-        var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
-        request.mozBackgroundRequest = true;
-        request.open("GET", url, true);
-        request.send(null);
+    logClickStatistics: function NativeAPI_logClickStatistics(statData) {
+        return application.statistics.logClickStatistics(statData);
     },
     logAddonEvents: function NativeAPI_logAddonEvents(eventsMap) {
         application.addonStatus.logAddonEvents(eventsMap);
@@ -363,12 +346,13 @@ NativeBarAPI.Statistics.prototype = {
         return application.barnavig.barnavigR1String || "";
     },
     set barnavigR1String(aR1String) {
-        if (typeof aR1String != "string")
+        if (typeof aR1String != "string") {
             throw new TypeError("aR1String must be a string");
+        }
         application.barnavig.barnavigR1String = aR1String;
     },
     get alwaysSendUsageStat() {
-        return application.barnavig.alwaysSendUsageStat;
+        return application.statistics.alwaysSendUsageStat;
     },
     BarNavig: {
         addDataProvider: function NativeAPI_addDataProvider(aProvider) {
@@ -393,19 +377,22 @@ NativeBarAPI.Settings = function Settings(componentInfo, logger) {
 };
 NativeBarAPI.Settings.prototype = {
     getValue: function NativeAPI_getValue(settingName, WIID) {
-        if (this._componentInfo.type == "widget")
+        if (this._componentInfo.type == "widget") {
             return this._componentInfo.component.lookupGetSettingValue(settingName, WIID);
+        }
         return this._componentInfo.component.getSettingValue(settingName);
     },
     setValue: function NativeAPI_setValue(settingName, newValue, WIID) {
-        if (this._componentInfo.type == "widget")
+        if (this._componentInfo.type == "widget") {
             this._componentInfo.component.lookupSetSettingValue(settingName, WIID, newValue);
-        else
+        } else {
             this._componentInfo.component.applySetting(settingName, newValue);
+        }
     },
     observeChanges: function NativeAPI_observeChanges(observer, WIID) {
-        if (!observer || typeof observer.onSettingChange != "function")
+        if (!observer || typeof observer.onSettingChange != "function") {
             throw new TypeError("Observer must be an object with 'onSettingChange' method");
+        }
         this._watchSettings();
         if (!WIID) {
             let observers = this._compSettingsObservers;
@@ -441,7 +428,7 @@ NativeBarAPI.Settings.prototype = {
                 this._compSettingsObservers.splice(ind, 1);
             }
         }
-        var isEmpty = function isEmpty(object) {
+        let isEmpty = function isEmpty(object) {
             for (let x in object) {
                 return false;
             }
@@ -484,8 +471,9 @@ NativeBarAPI.Settings.prototype = {
         delete this._compSettingsObservers;
     },
     observe: function NativeAPI_observe(subject, topic, data) {
-        if (topic != "nsPref:changed")
+        if (topic != "nsPref:changed") {
             return;
+        }
         try {
             let prefProperties = BarPlatform.parsePrefPath(data, this._componentInfo.component.id);
             if (this._isRelevantPrefChange(prefProperties)) {
@@ -497,20 +485,22 @@ NativeBarAPI.Settings.prototype = {
         }
     },
     _watchSettings: function NativeAPI__watchSettings() {
-        if (this._watchingCommonSettings)
+        if (this._watchingCommonSettings) {
             return;
-        var component = this._componentInfo.component;
+        }
+        let component = this._componentInfo.component;
         Preferences.observe2(NativeComponents.makePackagePrefPath(component.pkg.id), this);
         Preferences.observe2(NativeComponents.makeWidgetPrefPath(component.id), this);
         this._watchingCommonSettings = true;
     },
     _watchInstSettings: function NativeAPI__watchInstSettings(WIID) {
-        if (WIID in this._allSettingsObservers)
+        if (WIID in this._allSettingsObservers) {
             throw new Error("Widget instance " + WIID + " settings are already being watched");
+        }
         Preferences.observe2(NativeComponents.makeInstancePrefPath(this._componentInfo.component.id, WIID), this);
     },
     _ignoreSettings: function NativeAPI__ignoreSettings() {
-        var component = this._componentInfo.component;
+        let component = this._componentInfo.component;
         Preferences.ignore2(NativeComponents.makePackagePrefPath(component.pkg.id), this);
         Preferences.ignore2(NativeComponents.makeWidgetPrefPath(component.id), this);
         this._watchingCommonSettings = false;
@@ -519,8 +509,8 @@ NativeBarAPI.Settings.prototype = {
         Preferences.ignore2(NativeComponents.makeInstancePrefPath(this._componentInfo.component.id, WIID), this);
     },
     _isRelevantPrefChange: function NativeAPI__isRelevantPrefChange(prefProperties) {
-        var component = this._componentInfo.component;
-        var settingName = prefProperties.settingName;
+        let component = this._componentInfo.component;
+        let settingName = prefProperties.settingName;
         if (this._componentInfo.type == "widget") {
             return prefProperties.isInstancePref && settingName in component._instSettings || prefProperties.isComponentPref && settingName in component.widgetSettings || prefProperties.isPackagePref && settingName in component.packageSettings;
         } else {
@@ -528,14 +518,15 @@ NativeBarAPI.Settings.prototype = {
         }
     },
     _notifyRelevantObservers: function NativeAPI__notifyRelevantObservers(prefProperties) {
-        var settingName = prefProperties.settingName;
-        var newValue = this.getValue(settingName, prefProperties.instanceID);
-        if (!prefProperties.isInstancePref)
+        let settingName = prefProperties.settingName;
+        let newValue = this.getValue(settingName, prefProperties.instanceID);
+        if (!prefProperties.isInstancePref) {
             this._notifyCompSettingsObservers(settingName, newValue);
+        }
         this._notifyAllSettingsObservers(settingName, newValue, prefProperties.instanceID);
     },
     _notifyAllSettingsObservers: function NativeAPI__notifyAllSettingsObservers(settingName, newValue, instanceID) {
-        var observersList;
+        let observersList;
         if (instanceID) {
             observersList = this._allSettingsObservers[instanceID];
         } else {
@@ -543,8 +534,9 @@ NativeBarAPI.Settings.prototype = {
             for (let [
                         ,
                         instList
-                    ] in Iterator(this._allSettingsObservers))
+                    ] in Iterator(this._allSettingsObservers)) {
                 observersList = observersList.concat(instList);
+            }
         }
         this._callEachOnSettingChange(observersList, [
             settingName,
@@ -564,8 +556,9 @@ NativeBarAPI.Settings.prototype = {
                     observer
                 ] in Iterator(observersList)) {
             try {
-                if (observersList.indexOf(observer) != -1)
+                if (observersList.indexOf(observer) != -1) {
                     observer.onSettingChange.apply(observer, args);
+                }
             } catch (e) {
                 this._logger.error("Settings observer failed in 'onSettingChange'. " + strutils.formatError(e));
                 this._logger.debug(e.stack);
@@ -585,25 +578,27 @@ NativeBarAPI.Package.prototype = {
         return this._package.resolvePath(path, basePath);
     },
     fileExists: function NativeAPI_fileExists(path) {
-        return !!this._package.findFile(path);
+        return Boolean(this._package.findFile(path));
     },
     getFileInputChannel: function NativeAPI_getFileInputChannel(path) {
         return this._package.newChannelFromPath(path);
     },
     readTextFile: function NativeAPI_readTextFile(path) {
-        var fileStream = this.getFileInputChannel(path).contentStream;
-        var fileContent = fileutils.readStringFromStream(fileStream);
+        let fileStream = this.getFileInputChannel(path).contentStream;
+        let fileContent = fileutils.readStringFromStream(fileStream);
         fileStream.close();
         return fileContent;
     },
     get info() {
-        var packageInfo = application.packageManager.getPackageInfo(this._package.id);
-        var info = {
-                id: packageInfo.id,
-                version: packageInfo.version,
-                platformMin: packageInfo.platformMin
-            };
-        this.__defineGetter__("info", function _info() info);
+        let packageInfo = application.packageManager.getPackageInfo(this._package.id);
+        let info = {
+            id: packageInfo.id,
+            version: packageInfo.version,
+            platformMin: packageInfo.platformMin
+        };
+        this.__defineGetter__("info", function _info() {
+            return info;
+        });
         return this.info;
     }
 };
@@ -613,28 +608,31 @@ NativeBarAPI.Files = function Files(componentInfo, logger) {
 };
 NativeBarAPI.Files.prototype = {
     getPackageStorage: function NativeAPI_getPackageStorage(create) {
-        var result = NativeComponents.getPackageStorage(this._componentInfo.package_.id);
+        let result = NativeComponents.getPackageStorage(this._componentInfo.package_.id);
         this.getPackageStorage = function NativeAPI_getPackageStorage(inCreate) {
-            if (inCreate)
+            if (inCreate) {
                 fileutils.forceDirectories(result);
+            }
             return result.clone();
         };
         return this.getPackageStorage(create);
     },
     getWidgetStorage: function NativeAPI_getWidgetStorage(create) {
-        var result = NativeComponents.getComponentStorage(this._componentInfo.id);
+        let result = NativeComponents.getComponentStorage(this._componentInfo.id);
         this.getWidgetStorage = function NativeAPI_getWidgetStorage(inCreate) {
-            if (inCreate)
+            if (inCreate) {
                 fileutils.forceDirectories(result);
+            }
             return result.clone();
         };
         return this.getWidgetStorage(create);
     },
     getInstanceStorage: function NativeAPI_getInstanceStorage(WIID, create) {
-        var result = this.getWidgetStorage();
+        let result = this.getWidgetStorage();
         result.append(WIID);
-        if (create)
+        if (create) {
             fileutils.forceDirectories(result);
+        }
         return result;
     },
     forceDirectories: function NativeAPI_forceDirectories(file) {
@@ -666,24 +664,44 @@ NativeBarAPI.Database.prototype = {
 NativeBarAPI.Async = function NativeBarAPI_Async(componentInfo, logger) {
 };
 NativeBarAPI.Async.prototype = {
-    parallel: function NativeAPI_Async_parallel() async.parallel.apply(async, arguments),
-    series: function NativeAPI_Async_series() async.series.apply(async, arguments),
-    waterfall: function NativeAPI_Async_waterfall() async.waterfall.apply(async, arguments),
-    nextTick: function NativeAPI_Async_nextTick() async.nextTick.apply(async, arguments)
+    parallel: function NativeAPI_Async_parallel() {
+        return async.parallel.apply(async, arguments);
+    },
+    series: function NativeAPI_Async_series() {
+        return async.series.apply(async, arguments);
+    },
+    waterfall: function NativeAPI_Async_waterfall() {
+        return async.waterfall.apply(async, arguments);
+    },
+    nextTick: function NativeAPI_Async_nextTick() {
+        return async.nextTick.apply(async, arguments);
+    }
 };
 NativeBarAPI.Promise = function NativeBarAPI_Promise(componentInfo, logger) {
 };
 NativeBarAPI.Promise.prototype = {
-    defer: function NativeAPI_Promise_defer() promise.defer.apply(promise, arguments),
-    resolve: function NativeAPI_Promise_resolve() promise.resolve.apply(promise, arguments),
-    reject: function NativeAPI_Promise_reject() promise.reject.apply(promise, arguments),
-    promised: function NativeAPI_Promise_promised() promise.promised.apply(promise, arguments)
+    defer: function NativeAPI_Promise_defer() {
+        return promise.defer.apply(promise, arguments);
+    },
+    resolve: function NativeAPI_Promise_resolve() {
+        return promise.resolve.apply(promise, arguments);
+    },
+    reject: function NativeAPI_Promise_reject() {
+        return promise.reject.apply(promise, arguments);
+    },
+    promised: function NativeAPI_Promise_promised() {
+        return promise.promised.apply(promise, arguments);
+    }
 };
 NativeBarAPI.Task = function NativeBarAPI_Task(componentInfo, logger) {
 };
 NativeBarAPI.Task.prototype = {
-    spawn: function NativeAPI_Task_spawn() task.spawn.apply(task, arguments),
-    Result: function NativeAPI_Task_Result() task.Result.apply(task, arguments)
+    spawn: function NativeAPI_Task_spawn() {
+        return task.spawn.apply(task, arguments);
+    },
+    Result: function NativeAPI_Task_Result() {
+        return task.Result.apply(task, arguments);
+    }
 };
 NativeBarAPI.XMLUtils = function XMLUtils(componentInfo, logger) {
     this._logger = logger;
@@ -730,7 +748,7 @@ NativeBarAPI.Localization = function Localization(componentInfo, logger) {
 };
 NativeBarAPI.Localization.prototype = {
     createStringBundle: function Localization_createStringBundle(aURL) {
-        var url = /^[a-z]+:\/\//.test(aURL) ? aURL : this._componentInfo.package_.resolvePath(aURL);
+        let url = /^[a-z]+:\/\//.test(aURL) ? aURL : this._componentInfo.package_.resolvePath(aURL);
         return new application.appStrings.StringBundle(url);
     },
     getString: function Localization_getString(key) {
@@ -742,11 +760,10 @@ NativeBarAPI.Localization.prototype = {
             this.__messagesHash = Object.create(null);
             let xmlDoc = this._getMessagesXMLDoc(this._componentInfo.component.unit.name + ".messages.xml") || this._getMessagesXMLDoc("messages.xml");
             let nodes = xmlDoc && xmlutils.queryXMLDoc("/Messages/Message", xmlDoc) || [];
-            let (i = 0, node) {
-                for (; node = nodes[i++];) {
-                    let key = node.getAttribute("key");
-                    if (key)
-                        this.__messagesHash[key] = node.getAttribute("value");
+            for (let i = 0, node; node = nodes[i++];) {
+                let key = node.getAttribute("key");
+                if (key) {
+                    this.__messagesHash[key] = node.getAttribute("value");
                 }
             }
         }
@@ -755,8 +772,9 @@ NativeBarAPI.Localization.prototype = {
     _getMessagesXMLDoc: function Localization__getMessagesXMLDoc(fileName) {
         try {
             let package_ = this._componentInfo.package_;
-            if (package_.findFile(fileName))
+            if (package_.findFile(fileName)) {
                 return package_.getXMLDocument(fileName);
+            }
         } catch (e) {
             this._logger.warn("Could not parse " + fileName + ". " + e);
         }
@@ -772,7 +790,7 @@ NativeBarAPI.SysUtils.prototype = {
         return new sysutils.Timer(aCallback, aDelay, aRepeating, aMaxTimes);
     },
     createDataContainer: function SysUtils_createDataContainer(aDataContainerProperties) {
-        var dc = new sysutils.DataContainer(aDataContainerProperties);
+        let dc = new sysutils.DataContainer(aDataContainerProperties);
         this._createdDataContainers.push(dc);
         return dc;
     },
@@ -815,8 +833,9 @@ NativeBarAPI.Browser.prototype = {
     HIDDEN_CHROME_WINDOW_URL: "chrome://" + application.name + "/content/overlay/hiddenwindow.xul",
     _hiddenFrameAccessed: false,
     _finalize: function NativeAPI_Browser__finalize() {
-        if (this._hiddenFrameAccessed)
+        if (this._hiddenFrameAccessed) {
             this.removeHiddenFrame();
+        }
     }
 };
 NativeBarAPI.Network = function Network() {
@@ -848,22 +867,26 @@ NativeBarAPI.Autocomplete.prototype = {
     commonHistoryCategory: appCore.appName + "-history",
     searchComponentName: appCore.appName + "-autocomplete",
     addSearchProvider: function NativeAPI_Autocomplete_addSearchProvider(aSearchId, aProvider) {
-        var ok = this._autocompleteSearchService.addSearchProvider(aSearchId, aProvider);
-        if (!ok)
+        let ok = this._autocompleteSearchService.addSearchProvider(aSearchId, aProvider);
+        if (!ok) {
             throw new Error(strutils.formatString("Could not add search provider '%1'", [aSearchId]));
+        }
         this._providers[aSearchId] = aProvider;
     },
     removeSearchProvider: function NativeAPI_Autocomplete_removeSearchProvider(aSearchId) {
-        var ok = this._autocompleteSearchService.removeSearchProvider(aSearchId, this._providers[aSearchId]);
+        let ok = this._autocompleteSearchService.removeSearchProvider(aSearchId, this._providers[aSearchId]);
         delete this._providers[aSearchId];
-        if (!ok)
+        if (!ok) {
             throw new Error(strutils.formatString("Could not remove search provider '%1'", [aSearchId]));
+        }
     },
     _providers: null,
     get _autocompleteSearchService() {
-        var serviceId = "@mozilla.org/autocomplete/search;1?name=" + this.searchComponentName;
-        var autocompleteSearchService = Cc[serviceId].getService().wrappedJSObject;
-        this.__defineGetter__("_autocompleteSearchService", function NativeAPI_Autocomplete__autocompleteSearchService() autocompleteSearchService);
+        let serviceId = "@mozilla.org/autocomplete/search;1?name=" + this.searchComponentName;
+        let autocompleteSearchService = Cc[serviceId].getService().wrappedJSObject;
+        this.__defineGetter__("_autocompleteSearchService", function NativeAPI_Autocomplete__autocompleteSearchService() {
+            return autocompleteSearchService;
+        });
         return this._autocompleteSearchService;
     },
     _finalize: function NativeAPI_Autocomplete__finalize() {
@@ -899,9 +922,15 @@ XPCOMUtils.defineLazyGetter(this, "WinRegObject", function WinRegObjectGetter() 
 NativeBarAPI.WinReg = function WinReg() {
 };
 NativeBarAPI.WinReg.prototype = {
-    read: function NativeAPI_WinReg_read() WinRegObject.read.apply(WinRegObject, arguments),
-    write: function NativeAPI_WinReg_write() WinRegObject.write.apply(WinRegObject, arguments),
-    remove: function NativeAPI_WinReg_remove() WinRegObject.remove.apply(WinRegObject, arguments)
+    read: function NativeAPI_WinReg_read() {
+        return WinRegObject.read.apply(WinRegObject, arguments);
+    },
+    write: function NativeAPI_WinReg_write() {
+        return WinRegObject.write.apply(WinRegObject, arguments);
+    },
+    remove: function NativeAPI_WinReg_remove() {
+        return WinRegObject.remove.apply(WinRegObject, arguments);
+    }
 };
 NativeBarAPI.Notifications = function Notifications(componentInfo) {
     this._componentId = componentInfo.id;
@@ -927,8 +956,9 @@ NativeBarAPI.Notifications.prototype = {
     }
 };
 for (let p in application.notifications) {
-    if (!/^(CLICK_TARGET_|CLOSE_REASON_|TEMPLATE_)/.test(p))
+    if (!/^(CLICK_TARGET_|CLOSE_REASON_|TEMPLATE_)/.test(p)) {
         continue;
+    }
     NativeBarAPI.Notifications.prototype[p] = application.notifications[p];
 }
 NativeBarAPI.Integration = function NativeAPI_Integration(componentInfo, logger) {
@@ -951,14 +981,15 @@ NativeBarAPI.ElementsPlatform = function ElementsPlatform() {
 };
 NativeBarAPI.ElementsPlatform.prototype = {
     addObjectProvider: function NativeAPI_ElementsPlatform_addObjectProvider(provider) {
-        if (typeof provider.getListenerForPage !== "function")
+        if (typeof provider.getListenerForPage !== "function") {
             throw new Error("Bad window object provider interface (no 'getListenerForPage' method).");
+        }
         this._objectProviders.push(provider);
         application.contentEnvironment.addPlatformObjectProvider(provider);
     },
     removeObjectProvider: function NativeAPI_ElementsPlatform_removeObjectProvider(provider) {
         application.contentEnvironment.removePlatformObjectProvider(provider);
-        this._objectProviders = this._objectProviders.filter(function (p) p !== provider);
+        this._objectProviders = this._objectProviders.filter(p => p !== provider);
     },
     _objectProviders: null,
     _finalize: function NativeAPI_ElementsPlatform__finalize() {
