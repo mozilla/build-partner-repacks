@@ -14,7 +14,7 @@ if [[ "$1" == "" ]]; then
 fi
 
 # get the distros that are updated from the patch
-DISTROS=`grep -o -E "/partners/([a-zA-Z0-9\.]*)" $1 | uniq | sed 's/\/partners\///g'`
+DISTROS=`grep -o -E "/partners/([a-zA-Z0-9\.-]*)" $1 | uniq | sed 's/\/partners\///g'`
 for p in $DISTROS
 do
   echo "partner $p"
@@ -120,6 +120,17 @@ hg qimp $PATCH_FILE
 hg qpush
 hg qser -s -v
 
+# lets examine the difference between the different distros, for the most part,
+# most should be very very similar
+read BASE __ <<< "$DISTROS"
+for i in $DISTROS
+do
+  if [[ $BASE != $1 ]]
+  then
+    diff -w -r -u -N --exclude="META-INF" $BASE_DIR/partners/$BASE $BASE_DIR/partners/$i > $BASE.$i.diff
+  fi
+done
+
 # unpack the patched sources
 for i in $DISTROS
 do
@@ -176,11 +187,13 @@ then
 fi
 
 hg qpop
-hg qdel $(basename "$PATCH_FILE")
+# keeping the patch in queue for now
+#hg qdel $(basename "$PATCH_FILE")
 
 # produce our diff and load it
 for i in $DISTROS
 do
   diff -w -r -u -N --exclude="META-INF" $TEST_TMP/$i.1 $TEST_TMP/$i.2 > $i.diff
-  $EDITOR $i.diff
+  # diffs can be very large
+  #$EDITOR $i.diff
 done
