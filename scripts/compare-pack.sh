@@ -193,7 +193,7 @@ hg qpop
 # produce our diff and load it
 for i in $DISTROS
 do
-  diff -w -r -u -N $TEST_TMP/$i.1 $TEST_TMP/$i.2 > $i.diff
+  diff -w -r -u -N --exclude="META-INF" $TEST_TMP/$i.1 $TEST_TMP/$i.2 > $i.diff
   # diffs can be very large
   #$EDITOR $i.diff
 done
