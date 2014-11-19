@@ -139,17 +139,15 @@ hg qpush
 hg qser -s -v
 
 # unpack the patched sources
+read BASE __ <<< "$DISTROS"
 for i in $DISTROS
 do
   unpack $i 2
   jsbeautify $i 2
-done
-
-# lets examine the difference between the different distros, for the most part,
-# most should be very very similar
-read BASE __ <<< "$DISTROS"
-for i in $DISTROS
-do
+  # diff now since some full runs can take a long time
+  diff -w -r -u -N --exclude="META-INF" $TEST_TMP/$i.1 $TEST_TMP/$i.2 > $i.diff
+  # lets examine the difference between the different distros, for the most part,
+  # most should be very very similar
   if [[ $BASE != $i ]]
   then
     diff -w -r -u -N --exclude="META-INF" $BASE_DIR/partners/$BASE $BASE_DIR/partners/$i > $BASE.$i.diff
@@ -207,11 +205,3 @@ fi
 hg qpop
 # keeping the patch in queue for now
 #hg qdel $(basename "$PATCH_FILE")
-
-# produce our diff and load it
-for i in $DISTROS
-do
-  diff -w -r -u -N --exclude="META-INF" $TEST_TMP/$i.1 $TEST_TMP/$i.2 > $i.diff
-  # diffs can be very large
-  #$EDITOR $i.diff
-done
