@@ -3,6 +3,11 @@
 # this should work from whereever you run it, as long as you set the BASE_DIR
 # that contains your hg clone of partner-repacks
 
+# some useful prereqs to help review
+# install Komodo
+# pip install jsbeautifier
+# brew install expat
+
 BASE_DIR=`pwd`
 if [[ ! -d "$BASE_DIR/partners" ]]; then
   echo "execute this script from the partner-repacks repo"
@@ -109,10 +114,23 @@ function unpack {
   popd
 }
 
+
+function jsbeautify {
+  echo Beautify JavaScript files in $1.$2
+  for f in `find $TEST_TMP/$1.$2 -name "*.js" -o -name "*.jsm"`
+  do
+    # beautify
+    js-beautify -o $f.tmp $f
+    rm $f
+    mv $f.tmp $f
+  done  
+}
+
 # unpack the unpatched sources
 for i in $DISTROS
 do
   unpack $i 1
+  jsbeautify $i 1
 done
 
 # patch the partner
@@ -124,6 +142,7 @@ hg qser -s -v
 for i in $DISTROS
 do
   unpack $i 2
+  jsbeautify $i 2
 done
 
 # lets examine the difference between the different distros, for the most part,
@@ -137,10 +156,9 @@ do
   fi
 done
 
-
 # syntax check the changes
 function checkjs {
-  echo Checking JavaScript files in $1
+  echo Syntax Checking JavaScript files in $1
   for f in `find $TEST_TMP/$1.2 -name "*.js" -o -name "*.jsm"`
   do
     OUT=`"$JS" -c $f 2>&1`
