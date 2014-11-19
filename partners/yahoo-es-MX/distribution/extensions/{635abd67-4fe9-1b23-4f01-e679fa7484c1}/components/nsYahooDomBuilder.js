@@ -19,6 +19,10 @@ var alertIDsWithInterval=multiplealerts_data["alrt"].split(",");for(i in alertID
 {alertdata["alrt"]=alertIDs[0];}
 if(alertIDs[1]!=undefined)
 {alertdata["alint"]=alertIDs[1]*60;}
+else if(multiplealerts_data['alint']!=undefined)
+{alertdata["alint"]=multiplealerts_data['alint'];}
+if(alertdata["alint"]==undefined)
+{alertdata["alint"]=420;}
 if(multiplealerts_data["algst"]!=undefined)
 {alertdata["algst"]=multiplealerts_data["algst"];}
 if(multiplealerts_data["alco"]!=undefined)
@@ -26,7 +30,7 @@ if(multiplealerts_data["alco"]!=undefined)
 if(multiplealerts_data["displayElement"]!=undefined)
 {alertdata["displayElement"]=multiplealerts_data["displayElement"];}
 alert_array.push(alertdata);}
-_mLocalStorage.putObject("alert",new WrapperClass(alert_array));}else{yahooDebug("Yahoo LocalStorage Failed");}}else{}}catch(e){yahooError("Error in _collectAlertData "+e);}}
+_mLocalStorage.putObject("alert",new WrapperClass(alert_array));}else{}}else{}}catch(e){yahooError("Error in _collectAlertData "+e);}}
 function _createSplitter(){var splitter=_mToolbarDocument.createElementNS(_mNS,"splitter");splitter.id="yahoo-toolbar-splitter";splitter.setAttribute("resizebefore","grow");splitter.setAttribute("resizeafter","grow");splitter.setAttribute("class","searchbox-splitter");splitter.setAttribute("onmouseup","YAHOO.YTFF.ToolbarBuilder.splitterResize()");splitter.setAttribute("onclick","YAHOO.YTFF.ToolbarBuilder.setSearchboxSize()");return splitter;}
 function _buildSearchBox(node,hash){var search=null;var dom=_mToolbarDocument.createElementNS(_mNS,"toolbaritem");dom.setAttribute("class","ytff-searchbox-container");dom.setAttribute("flex","1");dom.setAttribute("minwidth","80");dom.setAttribute("width","300");dom.setAttribute("maxheight","26");dom.setAttribute("align","center");if(hash["usesd"]=="1"){dom.style.margin="3px 0px 3px 3px";}
 if(_mColorSearchButtonOutline!="")
@@ -55,19 +59,18 @@ _mConfigManager.setCharValue("installer.activeVertical",hash["vertid"],true);}
 function _prepareNormalButton(dom,node){try{var builder=_mGradientGenerator;dom.setAttribute("bgImage","");dom.setAttribute("bgImageNormal","");var NORMAL_BUTTON_HOVER=(_mHoverImage!="")?_self.buildImageUrl(_mHoverImage):"chrome://ytoolbar/skin/button-hover-shortcut.png";var DROPMARKER_BUTTON_HOVER=(_mAppHoverImage!="")?_self.buildImageUrl(_mAppHoverImage):"chrome://ytoolbar/skin/button-hover-shortcut.png";var Active_Hover=(_mHoverImage!="")?_self.buildImageUrl(_mHoverImage):"chrome://ytoolbar/skin/button-hover-shortcut.png";var Passive_Hover=(_mHoverImage!="")?_self.buildImageUrl(_mHoverImage):"chrome://ytoolbar/skin/button-hover-shortcut.png";_mFileIO.fetchNCacheImg((node.type==node.BUTTON_TYPE?NORMAL_BUTTON_HOVER:DROPMARKER_BUTTON_HOVER),"bgImageHover",dom);_mFileIO.fetchNCacheImg((node.type==node.BUTTON_TYPE?NORMAL_BUTTON_HOVER:DROPMARKER_BUTTON_HOVER),"bgImagePress",dom);_mFileIO.fetchNCacheImg((node.type==node.BUTTON_TYPE?NORMAL_BUTTON_HOVER:DROPMARKER_BUTTON_HOVER),"bgImageClick",dom);_mFileIO.fetchNCacheImg(Active_Hover,"bgImageActive",dom);_mFileIO.fetchNCacheImg(Passive_Hover,"bgImagePassive",dom);var dropArrowUp,dropArrowDown,dropArrowDownHover;if(_mDropArrow!=""){var stateIndex=_mDropArrow.lastIndexOf(".png");dropArrowUp=_mDropArrow.substring(0,stateIndex)+"_p"+".png";dropArrowUp=_self.buildImageUrl(dropArrowUp);dropArrowDown=_self.buildImageUrl(_mDropArrow);dropArrowDownHover=_mDropArrow.substring(0,stateIndex)+"_h"+".png";dropArrowDownHover=_self.buildImageUrl(dropArrowDownHover);}
 var defaultDropArrow="chrome://ytoolbar/skin/arrow_dn.png";var defaultDropArrowUp="chrome://ytoolbar/skin/arrow_up.png";_mFileIO.fetchNCacheImg((defaultDropArrowUp),"dropmarkerUpImage",dom);_mFileIO.fetchNCacheImg((dropArrowDownHover?dropArrowDownHover:defaultDropArrow),"dropmarkerDownImage",dom);_mFileIO.fetchNCacheImg((dropArrowDown?dropArrowDown:defaultDropArrow),"dropmarkerImageNormal",dom);_mFileIO.fetchNCacheImg((dropArrowDown?dropArrowDown:defaultDropArrow),"dropmarkerImage",dom);if(node.id=="yahoo-toolbar-vsrch"||node.id=="yahoo-toolbar-fin_quotes"){dom.setAttribute("buttonTextColor",_mColorSearchButtonText);dom.setAttribute("arrowUpImage",dropArrowUp?dropArrowUp:defaultDropArrowUp);dom.setAttribute("arrowDownImage",dropArrowDown?dropArrowDown:defaultDropArrow);dom.setAttribute("arrowImageStyle",dropArrowDown?dropArrowDown:defaultDropArrow);}else{dom.setAttribute("buttonTextColor",_mColorButtonText);dom.setAttribute("iconLabelStyle","color:"+_mColorButtonText);}}catch(e){yahooError(e);}}
 function _setDomFont(dom,value){var fontParams=value.split(";")
-for(var idx=0;idx<fontParams.length;idx++){var kv=fontParams[idx].split(":");switch(kv[0]){case"c":dom.style.color=kv[1];break;case"ff":dom.style.fontFamily=kv[1];break;case"fs":dom.style.fontSize=""+(parseInt(kv[1])+2)+"px";break;case"fw":var weight="normal"
+for(var idx=0;idx<fontParams.length;idx++){var kv=fontParams[idx].split(":");switch(kv[0]){case"c":dom.style.color=kv[1];dom.setAttribute("buttonTextColor",kv[1]);dom.setAttribute("buttonTextColor_p",kv[1]);dom.setAttribute("iconLabelStyle","color:"+kv[1]);break;case"ff":dom.style.fontFamily=kv[1];break;case"fs":dom.style.fontSize=""+(parseInt(kv[1])+2)+"px";break;case"fw":var weight="normal"
 if(kv[1]=="b"){weight="bold";}
 dom.style.fontWeight=weight;break;}}}
-function _processYHash(node,dom,hash){_mImagePath=_self.buildImageUrl('','');for(name in hash){var value=hash[name];var idx=0;switch(name){case"f_1":case"f_2":case"f_0":case"f":_setDomFont(dom,value);break;case"backn":dom.setAttribute("bgImage",_mImagePath+value);dom.setAttribute("bgImageNormal",_mImagePath+value);dom.setAttribute("bgImageHover",_mImagePath+value);dom.setAttribute("bgImagePress",_mImagePath+value);dom.setAttribute("bgImageClick",_mImagePath+value);break;case"backp":dom.setAttribute("bgImagePress",_mImagePath+value);dom.setAttribute("bgImageClick",_mImagePath+value);break;case"backh":dom.setAttribute("bgImageHover",_mImagePath+value);break;case"gedge":if(node.id=='yahoo-toolbar-vsrch')
-{dom.style.margin="0px "+value+"px "+"0px 0px";}
-else if((node.id!='yahoo-toolbar-srch_ebox')||(hash["usesd"]!='1'))
+function _processYHash(node,dom,hash){_mImagePath=_self.buildImageUrl('','');for(name in hash){var value=hash[name];var idx=0;switch(name){case"f_1":case"f_2":case"f_0":case"f":_setDomFont(dom,value);break;case"backn":dom.setAttribute("bgImage",_mImagePath+value);dom.setAttribute("bgImageNormal",_mImagePath+value);dom.setAttribute("bgImageHover",_mImagePath+value);dom.setAttribute("bgImagePress",_mImagePath+value);dom.setAttribute("bgImageClick",_mImagePath+value);break;case"backp":dom.setAttribute("bgImagePress",_mImagePath+value);dom.setAttribute("bgImageClick",_mImagePath+value);break;case"backh":dom.setAttribute("bgImageHover",_mImagePath+value);break;case"adjoin":if(value=='l')
+{dom.style.margin="0px 4px 0px 0px";}
+else if((value=='r')||(hash["usesd"]!='1'))
 {dom.style.margin="2px 0px 2px 4px";}
 dom.setAttribute(name,value);break;case"gedgec":if(!dom.hasAttribute("outlineColor"))
 dom.setAttribute("outlineColor",value);break;case"width":dom.setAttribute("y_width",value);break;case"minw":dom.setAttribute("y_min_width",value);dom.setAttribute("y_grp_min_width",value-60);break;case"maxw":dom.setAttribute("y_max_width",value);dom.setAttribute("y_grp_max_width",value-60);break;case"tbhod":case"usesd":case"popx":case"popy":dom.setAttribute(name,value);break;}}}
-function _processBookmarks(node,hash){if(node.id=="yahoo-toolbar-boo"&&hash.prm&&hash.api){_self.bm2Feed=(unescape(hash.api)+"?"+unescape(hash.prm));if(hash.bmfoldersave){yahooDebug("Has bmfoldersave: "+hash.bmfoldersave);_self.bm2FolderSave=unescape(hash.bmfoldersave);}else{yahooDebug("NO bmboldersave");}
-if(hash.bmimporturl){_self.bm2FFBMImportUrl=unescape(hash.bmimporturl);yahooDebug("Has bmimporturl: "+hash.bmimporturl);}
-yahooDebug("FEED: "+_self.bm2Feed);}
-if("yahoo-toolbar-boo_m/boo_m_6/boo_m_6_1"==node.id&&hash.bmimport){if(hash.bmimport){_self.bm2FFBMImportCrumb=unescape(hash.bmimport);yahooDebug("Has bmimport: "+hash.bmimport);}}}
+function _processBookmarks(node,hash){if(node.id=="yahoo-toolbar-boo"&&hash.prm&&hash.api){_self.bm2Feed=(unescape(hash.api)+"?"+unescape(hash.prm));if(hash.bmfoldersave){_self.bm2FolderSave=unescape(hash.bmfoldersave);}else{yahooDebug("NO bmboldersave");}
+if(hash.bmimporturl){_self.bm2FFBMImportUrl=unescape(hash.bmimporturl);}}
+if("yahoo-toolbar-boo_m/boo_m_6/boo_m_6_1"==node.id&&hash.bmimport){if(hash.bmimport){_self.bm2FFBMImportCrumb=unescape(hash.bmimport);}}}
 function _makeDomAccessible(dom){dom.setAttribute("tabindex",_mTabIndex++);dom.setAttribute("accesibileType",1023);}
 function _createToolbarChild(node,parent,hash){if(node&&node.id&&node.id.indexOf("yahoo-toolbar-spr")>-1){var dom=parent.ownerDocument.createElementNS(_mNS,"splitter");var popup=null;}else{var dom=parent.ownerDocument.createElementNS(_mNS,"toolbarbutton");var popup=null;}
 switch(node.type){case node.BUTTON_TYPE:dom.setAttribute("class","ytff-button-highlightbackground");if(node&&node.id&&node.id.indexOf("yahoo-toolbar-spt_liv")>-1){dom.setAttribute("class","ytff-button-live-game");}
@@ -156,7 +159,7 @@ this.buildImageUrl=function(image,iconSubDirectory){if(image&&(image.indexOf("ch
 var iconHost="l.yimg.com";var iconDir="\/nt\/i\/tb\/icons";if(_mLocalStorage.getString("i")!=null){iconHost=_mLocalStorage.getString("i");}
 if(_mLocalStorage.getString("iu")!=null){iconDir=_mLocalStorage.getString("iu");}
 if(iconSubDirectory&&image){imageUrl="http:\/\/"+iconHost+iconDir+"\/"+iconSubDirectory+"\/"+image;}else if(image){imageUrl="http:\/\/"+iconHost+iconDir+"\/"+image;}else{imageUrl="http:\/\/"+iconHost+iconDir+"\/";}
-return imageUrl;};this.setSkinParams=function(node){if(node){var hash=node.hash;hash=hash.replace(/%2F/g,"/");hash=hash.replace(/%23/g,"#");yahooDebug(hash);this.skinData=hash;var sk=yahooUtils.JSON.parse(hash);var skin_base=_self.buildImageUrl('','');if(sk.skin_bk!=""){_mContainer.style.background="url('"+skin_base+sk.skin_bk
+return imageUrl;};this.setSkinParams=function(node){if(node){var hash=node.hash;hash=hash.replace(/%2F/g,"/");hash=hash.replace(/%23/g,"#");this.skinData=hash;var sk=yahooUtils.JSON.parse(hash);var skin_base=_self.buildImageUrl('','');if(sk.skin_bk!=""){_mContainer.style.background="url('"+skin_base+sk.skin_bk
 +"') repeat-x ";}
 if(sk.skin_left!=""){_mReqBtns.style.background="url('"+skin_base+sk.skin_left
 +"') no-repeat";}

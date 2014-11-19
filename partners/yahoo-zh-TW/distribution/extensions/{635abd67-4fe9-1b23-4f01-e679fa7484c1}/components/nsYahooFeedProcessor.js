@@ -22,7 +22,7 @@ _self.domBuilder.clear();_self.domBuilder.setSkinParams(skinNode);for(var i=0;i<
 for(var i=0;i<userSecFeedNodeCollection.length;i++){buildDOM(userSecFeedNodeCollection.queryElementAt(i,CI.nsIYahooFeedNode),null);}
 if(!_self.loaded){_self.loaded=true;notifier.notifyObservers(_self,"yahoo-feed-updated",null);notifier.notifyObservers(_self,"yahoo-feed-alerts-updated",null);if(!toolbarmanager.isGuestMode()){_self.bookmarkManager.processBookmarks(false);}}},1);}};this.getLayout=function(groupID){var retLayout=layout;if(groupID!=""&&_self.domBuilder.groupId!=""&&groupID==_self.domBuilder.groupId){retLayout=_self.domBuilder.groupLayout;}
 if(retLayout[retLayout.length-1]==','){retLayout=retLayout.substr(0,retLayout.length-1);}
-yahooDebug("getLayout -> "+retLayout);return retLayout;};this.getLayoutForType=function(buttonType){var layout=[];var node=null;for(var i=0;i<feedNodeCollection.length;i++){node=feedNodeCollection.queryElementAt(i,CI.nsIYahooFeedNode);if((node!=null)&&(node.id!=null)&&((node.type==buttonType)||(buttonType==null))){var eval_hash=yahooUtils.JSON.parse(node.hash);if(eval_hash.id!=null)
+return retLayout;};this.getLayoutForType=function(buttonType){var layout=[];var node=null;for(var i=0;i<feedNodeCollection.length;i++){node=feedNodeCollection.queryElementAt(i,CI.nsIYahooFeedNode);if((node!=null)&&(node.id!=null)&&((node.type==buttonType)||(buttonType==null))){var eval_hash=yahooUtils.JSON.parse(node.hash);if(eval_hash.id!=null)
 layout.push(eval_hash.id);}}
 for(i=0;i<userSecFeedNodeCollection.length;i++){node=userSecFeedNodeCollection.queryElementAt(i,CI.nsIYahooFeedNode);if((node!=null)&&(node.id!=null)&&((node.type==buttonType)||(buttonType==null))){var eval_hash=yahooUtils.JSON.parse(node.hash);if(eval_hash.id!=null)
 layout.push(eval_hash.id);}}
@@ -35,7 +35,7 @@ else
 value=value.replace(/\"/g,"\\\"");value=value.replace(/,$/,'');var file=mFileIO.getUserCacheDir();file.appendRelativePath(key);mFileIO.writeUnicodeFile(file,value);}
 ybCache=ybCache.replace(/\"/g,"\\\"");var file=mFileIO.getUserCacheDir();file.appendRelativePath("ybcache");mFileIO.writeFile(file,ybCache);}}catch(e){yahooError("Error in processCaches"+e);}};processJSONBHFeed=function(){var Errorstate=0;_self.raw=_self.raw.replace(/\\t/g,"\\\\t");if(CC["@mozilla.org/xre/app-info;1"].getService(CI.nsIXULAppInfo).platformVersion.split(".")[0]>"1"){_self.raw=_self.raw.replace(/\ca/g,"\\u0001");_self.raw=_self.raw.replace(/\cb/g,"\\u0002");_self.raw=_self.raw.replace(/\cc/g,"\\u0003");_self.raw=_self.raw.replace(/\cd/g,"\\u0004");_self.raw=_self.raw.replace(/\ce/g,"\\u0005");_self.raw=_self.raw.replace(/\cf/g,"\\u0006");_self.raw=_self.raw.replace(/\cg/g,"\\u0007");_self.raw=_self.raw.replace(/\ch/g,"\\u0008");_self.raw=_self.raw.replace(/\ci/g,"\\u0009");_self.raw=_self.raw.replace(/\cn/g,"\\u000E");_self.raw=_self.raw.replace(/\co/g,"\\u000F");_self.raw=_self.raw.replace(/\cx/g,"\\u0018");_self.raw=_self.raw.replace(/\cy/g,"\\u0019");_self.raw=_self.raw.replace(/\x82/g,"\\u0082");_self.raw=_self.raw.replace(/\n/g,"");}
 try{yahooStartTrace("JSON Parse Feed");Errorstate=1;var now,parsetime,uitime,start=(new Date).getTime();var ding=yahooUtils.JSON.parse(_self.raw);Errorstate=2;yahooStopTrace("JSON Parse Feed");if(ding!==undefined){localstorage.clearKey('alias');localstorage.clearKeysWithPrefix("yahoo-toolbar-");}
-yahooDebug("Eval Success - Correct JSON Feed");yahooStartTrace("ProcessFeed");yahooStartTrace("Process Feed Values");if(ding.v!==undefined){processValuesSection(ding.v);}
+yahooStartTrace("ProcessFeed");yahooStartTrace("Process Feed Values");if(ding.v!==undefined){processValuesSection(ding.v);}
 Errorstate=3;yahooStopTrace("Process Feed Values");yahooStartTrace("Process Sensitive Values");if(ding.s!==undefined){processSensitiveSection(ding.s);}
 Errorstate=4;yahooStopTrace("Process Sensitive Values");yahooStartTrace("Process Feed Params");if(ding.p!==undefined){processParamsSection(ding.p);}
 Errorstate=5;yahooStopTrace("Process Feed Params");yahooStartTrace("Process Fixed Section");if(ding.y!==undefined){processYahooSection(ding.y);}
@@ -43,11 +43,11 @@ Errorstate=6;yahooStopTrace("Process Fixed Section");yahooStartTrace("Process Us
 Errorstate=7;yahooStopTrace("Process User Section");yahooStopTrace("ProcessFeed");now=(new Date).getTime();parsetime=now-start;start=now;yahooStartTrace("Build DOM");yahooStartTrace("Build FixedSection DOM");for(var i=0;i<feedNodeCollection.length;i++){buildDOM(feedNodeCollection.queryElementAt(i,CI.nsIYahooFeedNode),null);}
 Errorstate=8;yahooStopTrace("Build FixedSection DOM");yahooStartTrace("Build UserSection DOM");for(var i=0;i<userSecFeedNodeCollection.length;i++){buildDOM(userSecFeedNodeCollection.queryElementAt(i,CI.nsIYahooFeedNode),null);}
 Errorstate=9;yahooStopTrace("Build UserSection DOM");yahooStopTrace("Build DOM");uitime=(new Date).getTime()-start;if(!_self.mbIsCached){yahooTracking.ult_tracking("ultip",{'clicktracking':false,'tstart':localstorage.getString('startTime'),'tfeedd':_self.nDownloadTime.duration,'tfeedp':parsetime,'tui':uitime});}
-var prefSrvc=CC["@mozilla.org/preferences-service;1"].getService(CI.nsIPrefBranch);if(toolbarmanager.isGuestMode()&&!prefSrvc.prefHasUserValue('yahoo.ytff.toolbar.layout')){saveLayoutToPref(layout);}
-Errorstate=10;var layout=unescape(localstorage.getString("lay"))||'';if((layout!='')&&_self.localButtonProcessor.getUserOpt_SaveLocal()){saveLayoutToPref(unescape(localstorage.getString("lay")));}
+var prefSrvc=CC["@mozilla.org/preferences-service;1"].getService(CI.nsIPrefBranch);if(!_self.mbIsCached&&toolbarmanager.isGuestMode()&&!prefSrvc.prefHasUserValue('yahoo.ytff.toolbar.layout')){saveLayoutToPref(layout);}
+Errorstate=10;var layout=unescape(localstorage.getString("lay"))||'';var svlay=localstorage.getString("svlay");if(!_self.mbIsCached&&(svlay=="1")&&(layout!='')&&_self.localButtonProcessor.getUserOpt_SaveLocal()){saveLayoutToPref(unescape(layout));}
 Errorstate=11;if(localstorage.getString("port")!=null)
 {mConfigMgr.setCharValue('layout.portable',localstorage.getString("port"),true);}
-var svlay="";svlay=localstorage.getString("svlay");if(svlay=="1"){feedFetcher.pushLayoutToServer(1,layout,toolbarmanager.isGuestMode(),null);}
+if(svlay=="1"){feedFetcher.pushLayoutToServer(1,layout,toolbarmanager.isGuestMode(),null);}
 toolbarmanager.AlertManager.initAlertPolltime();toolbarmanager.AlertManager.refreshAllAlert();Errorstate=12;var alias="";alias=localstorage.getString("alias");if(alias)
 {mConfigMgr.setBoolValue('isFeedSignedIn',true,true);}
 else
@@ -91,7 +91,7 @@ if(parent===null&&node.id!="yahoo-toolbar-acs"){localstorage.putObject(node.id,n
 {usedlist=mConfigMgr.getCharValue('ybButtons.used');usedlist=usedlist+","+ybId;mConfigMgr.setCharValue('ybButtons.used',usedlist,true);}
 else
 {mConfigMgr.setCharValue('ybButtons.used',ybId,true);}
-var fileContent=mFileIO.readUnicodeFile(bfile);fileContent=fileContent.replace(/\\\"/g,"\"");yahooDebug("file exists"+fileContent);if(fileContent.substr(fileContent.length-1)==","){fileContent=fileContent.substr(0,fileContent.length-1);}
+var fileContent=mFileIO.readUnicodeFile(bfile);fileContent=fileContent.replace(/\\\"/g,"\"");if(fileContent.substr(fileContent.length-1)==","){fileContent=fileContent.substr(0,fileContent.length-1);}
 if(CC["@mozilla.org/xre/app-info;1"].getService(CI.nsIXULAppInfo).platformVersion.split(".")[0]>"1"){fileContent=fileContent.replace(/\ca/g,"\\u0001");fileContent=fileContent.replace(/\cb/g,"\\u0002");fileContent=fileContent.replace(/\cc/g,"\\u0003");fileContent=fileContent.replace(/\cd/g,"\\u0004");fileContent=fileContent.replace(/\ce/g,"\\u0005");fileContent=fileContent.replace(/\cf/g,"\\u0006");fileContent=fileContent.replace(/\cg/g,"\\u0007");fileContent=fileContent.replace(/\ch/g,"\\u0008");fileContent=fileContent.replace(/\ci/g,"\\u0009");fileContent=fileContent.replace(/\cn/g,"\\u000E");fileContent=fileContent.replace(/\co/g,"\\u000F");fileContent=fileContent.replace(/\cx/g,"\\u0018");fileContent=fileContent.replace(/\cy/g,"\\u0019");fileContent=fileContent.replace(/\x82/g,"\\u0082");fileContent=fileContent.replace(/\n/g,"");}
 pos=yahooUtils.JSON.parse(fileContent);}
 if(pos){elem=preProcessElement(pos);}else{return null;}}
@@ -114,7 +114,7 @@ else if(node.name.indexOf("all_alt_ssl")==0)
 break;}
 break;case 0x05:node.type=node.BUTTONMENU_TYPE;break;case 253:node.type=node.BUTTONMENU_TYPE;break;}
 processStyles(node,elem[5],elem[7]);var isSlideout=processHash(node,hash,pos);setIconUrl(node,hash);processFunctionDefition(node);if(node.id){if((node.id.indexOf("rss_")>-1&&node.type==node.BUTTONMENU_TYPE)||_self.localButtonProcessor.isLocalRSS(node.id)){if(_self.rssButtons.indexOf(node.id)<0)
-_self.rssButtons+=node.id+",";yahooDebug("rss added"+_self.rssButtons);}
+_self.rssButtons+=node.id+",";}
 node.id=((parent&&parent.id)?parent.id:"yahoo-toolbar")+"-"+node.id;}
 populateLocalStorage(parent,node,pos);switch(node.name){case"1":{yahooStartTrace('Process CD section');processCaches(elem[2]);yahooStopTrace('Process CD section');}
 break;case"-":case"vsep":case"spr":case"spr_div":case"sep":node.type=node.SEPARATOR_TYPE;break;}
@@ -124,7 +124,7 @@ if(node.type==node.SKIN_TYPE){yahooStartTrace("Setup Skin");skinNode=node;_self.
 else if(node.type==node.INJECTO_TYPE){yahooStartTrace("Setup Injecto");if(toolbarmanager.InjectoManager){toolbarmanager.InjectoManager.addInjecto(node);}
 yahooStopTrace("Setup Injecto");}
 else if(parent===null&&node.id=="yahoo-toolbar-etp"){yahooStartTrace("Setup Event Tips");toolbarmanager.EventTipManager.addEventTip(node);yahooStopTrace("Setup Event Tips");}
-else if(parent===null&&(node.hash.indexOf("partner_clsid")>-1)){yahooDebug("Adding PlugIn CLSID to PlugIn Map");mPluginManager.addToPlugInMap(node.id,node.hash);}
+else if(parent===null&&(node.hash.indexOf("partner_clsid")>-1)){mPluginManager.addToPlugInMap(node.id,node.hash);}
 return((parent===null&&node.id!="yahoo-toolbar-acs"&&node.id!="yahoo-toolbar-etp")?node:null);}}catch(e){yahooError(e.message);}};processStyles=function(node,styles,extStyles){try{if(!styles&&!extStyles){return;}
 var nodeStyles=",";var key;if(styles!=0){var stdBits=stylesMapping.std;for(key in stdBits){if(styles&key){nodeStyles+=stdBits[key]+",";}}}
 if(extStyles!=0){var extBits=stylesMapping.ext;for(key in extBits){if(extStyles&key){nodeStyles+=extBits[key]+",";}}}

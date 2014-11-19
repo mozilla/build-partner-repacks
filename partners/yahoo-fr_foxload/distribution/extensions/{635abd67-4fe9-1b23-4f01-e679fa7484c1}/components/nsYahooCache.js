@@ -20,7 +20,7 @@ var mmFile=this.yFileIO.getUserCacheDir();mmFile.appendRelativePath("mastermanif
 {var content="";var parser=yahooCC["@mozilla.org/xmlextras/domparser;1"].createInstance(yahooCI.nsIDOMParser);try{var yFileIO=yahooCC["@yahoo.com/fileio;1"].getService(yahooCI.nsIYahooFileIO2);var manifestFile=yFileIO.getUserCacheDir();manifestFile.appendRelativePath("mastermanifest.xml");if(manifestFile.exists())
 {var inStream=yahooCC["@mozilla.org/network/file-input-stream;1"].createInstance(yahooCI.nsIFileInputStream);inStream.init(manifestFile,0x01,0666,0);var handle=yahooCC["@mozilla.org/scriptableinputstream;1"].createInstance(yahooCI.nsIScriptableInputStream);handle.init(inStream);var size;while((size=inStream.available())){content+=handle.read(size);}
 handle.close();var manifestXML=parser.parseFromString(content,"application/xml");if(manifestXML.tagName==="parserError")
-{yahooDebug("Error in parsing Master Manifest XML");return;}
+{return;}
 else
 {var ysotsa=manifestXML.getElementsByTagName("ysots");if(ysotsa)
 {this.confMgr.setCharValue("ysots",ysotsa[0].childNodes[0].nodeValue,true);}
