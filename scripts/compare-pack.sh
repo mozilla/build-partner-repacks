@@ -14,7 +14,7 @@ if [[ "$1" == "" ]]; then
 fi
 
 # get the distros that are updated from the patch
-DISTROS=`grep -o -E "/partners/([a-zA-Z0-9\.\-\_]*)" $1 | uniq | sed 's/\/partners\///g'`
+DISTROS=`grep -o -E "/partners/([a-zA-Z0-9\.\_-]*)" $1 | uniq | sed 's/\/partners\///g'`
 for p in $DISTROS
 do
   echo "partner $p"
