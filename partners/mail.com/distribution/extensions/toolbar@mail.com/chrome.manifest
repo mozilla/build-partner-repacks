@@ -16,6 +16,7 @@ overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/pref/p
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/newtab/newtab-hookup.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/search/search-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/search/search-listener.xul
+overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/webapps/webapps-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/ebay/ebay-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/tracking/tracking-hookup.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/shopping/shopping-toolbaritem.xul
@@ -28,6 +29,7 @@ style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/email/
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/help/help.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/pref/pref.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/search/search.css
+style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/webapps/webapps.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/ebay/ebay.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/shopping/shopping-toolbaritem.css
 
@@ -39,10 +41,11 @@ overlay chrome://unitedtb/content/search/pref-search.xul   chrome://unitedtb/con
 overlay chrome://unitedtb/content/pref/pref-window.xul   chrome://unitedtb/content/email/pref-login.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/pref/pref-updates.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/main/pref-minimode.xul
+overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/webapps/pref-mailto.xul
+overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/webapps/pref-mailjump.xul
 
 component {aec3bc83-0b7d-4612-b625-4f22070a9b33} components/mCollectAutoComplete.js
 contract @mozilla.org/autocomplete/search;1?name=unitedinternet-mcollect {aec3bc83-0b7d-4612-b625-4f22070a9b33}
 
 component {49c4f409-eaf5-4c4d-a96a-280a60c7c6b7} components/aboutNetError.js
 contract @mozilla.org/network/protocol/about;1?what=neterror {49c4f409-eaf5-4c4d-a96a-280a60c7c6b7}
-
