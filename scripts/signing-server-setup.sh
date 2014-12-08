@@ -1,6 +1,7 @@
 #!/bin/bash
 
-signing_server="signing4.srv.releng.scl3.mozilla.com:9120"
+signing_server="gpg:osslsigncode:signcode:mar:jar:b2gmar:emevoucher:signing4.srv.releng.scl3.mozilla.com:9120"
+mac_signing_server="dmgv2:mac-v2-signing1.srv.releng.scl3.mozilla.com:9120"
 my_ip=`/sbin/ifconfig | grep inet | grep "10\." | cut -f2 -d" "`
 token_file="`pwd`/token"
 nonce_file="`pwd`/nonce"
@@ -24,4 +25,4 @@ else
 fi
 python $signing_dir/get_token.py -c $signing_dir/host.cert -u cltsign -p $token_password -H $signing_server -d 7200 -i $my_ip > $token_file
 echo "Copy and paste the following line to set-up the signing server:"
-echo export MOZ_SIGN_CMD="\"python $signing_dir/signtool.py -t $token_file -n $nonce_file -c $signing_dir/host.cert -H $signing_server\""
+echo export MOZ_SIGN_CMD="\"python $signing_dir/signtool.py -t $token_file -n $nonce_file -c $signing_dir/host.cert -H $signing_server -H $mac_signing_server\""
