@@ -255,8 +255,8 @@ SHA1-Digest: FVawefKvSYlNpPHqtks9vaVa+JE=
 
 Name: chrome/ytoolbar.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: WH5dZLWW42jl8DxeFfCaEA==
-SHA1-Digest: sXwa8lAzl1qtN0xiUCuZedssPyI=
+MD5-Digest: VDOGK4JStNMmry2hDbzbZA==
+SHA1-Digest: XH4/cnGJFccvLyXfSdLGfJb9G5o=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
