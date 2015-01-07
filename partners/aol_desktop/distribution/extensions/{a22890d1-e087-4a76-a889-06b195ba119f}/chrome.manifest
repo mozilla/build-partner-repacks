@@ -1,0 +1,5 @@
+overlay  chrome://browser/content/browser.xul    chrome://aoldesktoptoolbar/content/aoltoolbar.xul
+content    aoldesktoptoolbar    jar:chrome/aoldesktoptoolbar.jar!/content/
+skin    aoldesktoptoolbar    classic/1.0    jar:chrome/aoldesktoptoolbar.jar!/skin/
+locale    aoldesktoptoolbar    en-US   jar:chrome/aoldesktoptoolbar.jar!/locale/en-US/
+
