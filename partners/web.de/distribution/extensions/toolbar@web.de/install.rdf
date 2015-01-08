@@ -6,7 +6,7 @@
     <em:description>Schnell und sicher E-Mails abrufen.</em:description>
     <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
     <em:homepageURL>http://go.web.de/home</em:homepageURL>
-    
+    <em:updateURL>https://dl.web.de/toolbar/firefox/moztoolbar.rdf</em:updateURL>
     <em:iconURL>chrome://unitedtb/skin/brand/icon-32.png</em:iconURL>
     <em:optionsURL>chrome://unitedtb/content/pref/pref-window.xul</em:optionsURL>
     <em:unpack>true</em:unpack>

@@ -6,7 +6,7 @@
     <em:description>Fast and secure email checking.</em:description>
     <em:creator>1&amp;1 Mail &amp; Media GmbH</em:creator>
     <em:homepageURL>http://go.mail.com/home</em:homepageURL>
-    
+    <em:updateURL>https://dl.mail.com/toolbar/firefox/moztoolbar.rdf</em:updateURL>
     <em:iconURL>chrome://unitedtb/skin/brand/icon-32.png</em:iconURL>
     <em:optionsURL>chrome://unitedtb/content/pref/pref-window.xul</em:optionsURL>
     <em:unpack>true</em:unpack>
