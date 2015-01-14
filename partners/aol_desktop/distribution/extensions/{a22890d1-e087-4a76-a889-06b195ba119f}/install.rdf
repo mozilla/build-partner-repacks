@@ -7,7 +7,7 @@
   <em:homepageURL>http://toolbar.aol.com/aoldesktop/aoldesktop</em:homepageURL>
   <em:id>{a22890d1-e087-4a76-a889-06b195ba119f}</em:id>
   <em:name>AOL Desktop Toolbar</em:name>
-  <em:version>5.224.1.10274</em:version>
+  <em:version>5.224.1.10276</em:version>
   <em:optionsURL>chrome://aoldesktoptoolbar/content/settings.xul</em:optionsURL>
   <em:iconURL>chrome://aoldesktoptoolbar/locale/images/icon.png</em:iconURL>
   <em:updateURL>https://client.web.aol.com/toolbarfiles/Prod/Content/aoldesktop/ffhostfiles/update.rdf</em:updateURL>
