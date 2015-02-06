@@ -171,7 +171,7 @@ def isWin32(platform):
 
 
 def isWin64(platform):
-    return ('win64' in platform or 'win64-x86_64' in platform)
+    return 'win64' in platform
 
 
 def isValidPlatform(platform):
@@ -244,7 +244,7 @@ def getFtpPlatform(platform):
     if isMac(platform):
         return "mac"
     if isWin64(platform):
-        return "win64-x86_64"
+        return "win64"
     if isWin(platform):
         return "win32"
     return None
@@ -461,18 +461,9 @@ class RepackMac(RepackBase):
         rmdirRecursive("stage")
 
 
-class RepackWin(RepackBase):
-    def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
-                 ftp_platform, repack_info, signing_command,
-                 external_signing_formats=['gpg', 'signcode']):
-        super(RepackWin, self).__init__(build, partner_dir, build_dir,
-                                        working_dir, final_dir,
-                                        ftp_platform, repack_info,
-                                        signing_command,
-                                        external_signing_formats=external_signing_formats)
-
+class RepackWinBase(RepackBase):
     def copyFiles(self):
-        super(RepackWin, self).copyFiles(WINDOWS_DEST_DIR)
+        super(RepackWinBase, self).copyFiles(WINDOWS_DEST_DIR)
 
     def addPadding(self):
         if 'padding' in self.repack_info:
@@ -493,6 +484,28 @@ class RepackWin(RepackBase):
                                          targets,
                                          zip_redirect)
         shellCommand(zip_cmd)
+
+
+class RepackWin(RepackWinBase):
+    def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
+                 ftp_platform, repack_info, signing_command,
+                 external_signing_formats=['gpg', 'signcode']):
+        super(RepackWin, self).__init__(build, partner_dir, build_dir,
+                                        working_dir, final_dir,
+                                        ftp_platform, repack_info,
+                                        signing_command,
+                                        external_signing_formats=external_signing_formats)
+
+
+class RepackWin64(RepackWinBase):
+    def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
+                 ftp_platform, repack_info, signing_command,
+                 external_signing_formats=['gpg', 'osslsigncode']):
+        super(RepackWin64, self).__init__(build, partner_dir, build_dir,
+                                        working_dir, final_dir,
+                                        ftp_platform, repack_info,
+                                        signing_command,
+                                        external_signing_formats=external_signing_formats)
 
 
 def repackSignedBuilds(repack_dir):
@@ -559,12 +572,12 @@ def getSingleFileFromHg(filename):
 if __name__ == '__main__':
     error = False
     partner_builds = {}
-    default_platforms = ['linux-i686', 'linux-x86_64', 'mac', 'win32']
+    default_platforms = ['linux-i686', 'linux-x86_64', 'mac', 'win32', 'win64']
     repack_build = {'linux-i686':    RepackLinux,
                     'linux-x86_64':  RepackLinux,
                     'mac':           RepackMac,
                     'win32':         RepackWin,
-                    'win64-x86_64':  RepackWin, }
+                    'win64':         RepackWin64, }
     signing_command = os.environ.get('MOZ_SIGN_CMD')
 
     parser = OptionParser(usage="usage: %prog [options]")
@@ -674,13 +687,12 @@ if __name__ == '__main__':
     # We only care about the tools if we're actually going to
     # do some repacking.
     if not options.verify_only:
-        if "win32" in options.platforms and not which(SEVENZIP_BIN):
+        if ("win32" in options.platforms or "win64" in options.platforms) and not which(SEVENZIP_BIN):
             log.error("Error: couldn't find the %s executable in PATH." %
                       SEVENZIP_BIN)
             error = True
 
-        if "win32" in options.platforms and \
-           not which(UPX_BIN):
+        if ("win32" in options.platforms or "win64" in options.platforms) and not which(UPX_BIN):
             log.error("Error: couldn't find the %s executable in PATH." %
                       UPX_BIN)
             error = True
