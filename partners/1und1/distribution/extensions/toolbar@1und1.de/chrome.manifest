@@ -17,6 +17,7 @@ overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/newtab
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/search/search-toolbaritem.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/search/search-listener.xul
 overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/tracking/tracking-hookup.xul
+overlay chrome://browser/content/browser.xul    chrome://unitedtb/content/support/support-toolbaritem.xul
 
 style chrome://browser/content/newtab/newTab.xul chrome://unitedtb/skin/newtab/firefoxNewTab.css
 
@@ -26,6 +27,7 @@ style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/email/
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/help/help.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/pref/pref.css
 style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/search/search.css
+style chrome://global/content/customizeToolbar.xul chrome://unitedtb/skin/support/support-toolbaritem.css
 
 overlay chrome://unitedtb/content/pref/pref-window.xul   chrome://unitedtb/content/search/pref-search.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/newtab/pref-newtab.xul

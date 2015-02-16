@@ -49,3 +49,4 @@ contract @mozilla.org/autocomplete/search;1?name=unitedinternet-mcollect {aec3bc
 
 component {49c4f409-eaf5-4c4d-a96a-280a60c7c6b7} components/aboutNetError.js
 contract @mozilla.org/network/protocol/about;1?what=neterror {49c4f409-eaf5-4c4d-a96a-280a60c7c6b7}
+
