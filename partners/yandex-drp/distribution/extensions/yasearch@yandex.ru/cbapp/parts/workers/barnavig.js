@@ -1,11 +1,16 @@
+"use strict";
 var stemmer;
 var searchDictionary = {
     getWordPosition: function searchDictionary_getWordPosition(word) {
         var position = this._dictionaryHash[word];
         return position >= 0 ? position : null;
     },
-    get version() this._version,
-    get dictionaryHash() this._dictionaryHash,
+    get version() {
+        return this._version;
+    },
+    get dictionaryHash() {
+        return this._dictionaryHash;
+    },
     set dictionaryHash(val) {
         var dictionaryHash = Object.create(null);
         var version = 0;
@@ -119,8 +124,12 @@ ContentHandler.prototype = {
         }
         this.result = stat;
     },
-    get htmlParser() this._htmlParser,
-    set htmlParser(val) this._htmlParser = val,
+    get htmlParser() {
+        return this._htmlParser;
+    },
+    set htmlParser(val) {
+        this._htmlParser = val;
+    },
     _checkTimeLimit: function ContentHandler__checkTimeLimit() {
         if (Date.now() - this._startTime < this.MAX_PARSE_TIME) {
             return false;
@@ -175,13 +184,13 @@ var checkSum = {
             }
             if (p1[i] == "\\") {
                 var ch = p1[i];
-                if (p1[i + 1] && (p1[i + 1] == "\"" || p1[i] == "'")) {
+                if (p1[i + 1] && (p1[i + 1] == "'" || p1[i] == "\"")) {
                     ch = p1[++i];
                 }
                 buf += ch;
                 continue;
             }
-            if ((p1[i] == "\"" || p1[i] == "'") && !startSym) {
+            if ((p1[i] == "'" || p1[i] == "\"") && !startSym) {
                 startSym = p1[i];
                 continue;
             }
@@ -203,7 +212,7 @@ var checkSum = {
         return Object.keys(dict).sort().map(key => key + dict[key]).join("");
     }
 };
-onmessage = function onmessage(event) {
+this.onmessage = function onmessage(event) {
     var type = event.data.type;
     var data = event.data.data;
     var taskId = event.data.taskId;
@@ -241,6 +250,5 @@ onmessage = function onmessage(event) {
         break;
     default:
         throw new Error("Wrong message type ('" + type + "')");
-        break;
     }
 };

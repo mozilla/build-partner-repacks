@@ -1,0 +1,33 @@
+<!ENTITY product.name.nom "Візуальні закладки">
+<!ENTITY product.name.gen "Візуальних закладок">
+<!ENTITY product.name.dat "Візуальним закладкам">
+<!ENTITY product.name.acc "Візуальні закладки">
+<!ENTITY product.name.ins "Візуальними закладками">
+<!ENTITY product.name.pre "Про візуальні закладки">
+<!ENTITY product.name.loc "Візуальних закладках">
+
+<!ENTITY product.shortname.nom "ВЗ">
+<!ENTITY product.shortname.gen "ВЗ">
+<!ENTITY product.shortname.dat "ВЗ">
+<!ENTITY product.shortname.acc "ВЗ">
+<!ENTITY product.shortname.ins "ВЗ">
+<!ENTITY product.shortname.pre "Про ВЗ">
+<!ENTITY product.shortname.loc "Візуальних закладках">
+
+<!ENTITY vendor.name.nom "Яндекс">
+<!ENTITY vendor.name.gen "Яндекса">
+<!ENTITY vendor.name.dat "Яндексу">
+<!ENTITY vendor.name.acc "Яндекс">
+<!ENTITY vendor.name.ins "Яндексом">
+<!ENTITY vendor.name.pre "Яндексі">
+<!ENTITY vendor.name.loc "Яндексі">
+
+<!ENTITY product.description "Візуальні закладки – це сторінка, на якій зібрано ваші улюблені сайти. Щоб перейти до одного з них, достатньо клікнути на мініатюру. Змінюйте кількість мініатюр на сторінці, перемішуйте, перейменовуйте, вибирайте тло на власний розсуд, а також шукайте в інтернеті – пошуковий рядок Яндекса завжди поруч.">
+<!ENTITY product.note.fx "для Firefox">
+<!ENTITY product.note.ie "для Internet Explorer">
+<!ENTITY product.homepage "http://visual.yandex.ua">
+<!ENTITY product.copyright "© 2012—2014 ТОВ «[Яндекс](http://www.yandex.ua)»">
+<!ENTITY product.copyright.ie "&product.copyright;">
+<!ENTITY product.copyright.fx "© 2012—2014 ТОВ «[Яндекс](http://www.yandex.ua)»">
+<!ENTITY product.license.url.ie "http://legal.yandex.ua/desktop_software_agreement/">
+<!ENTITY product.license.url.fx "http://legal.yandex.ua/desktop_software_agreement/">

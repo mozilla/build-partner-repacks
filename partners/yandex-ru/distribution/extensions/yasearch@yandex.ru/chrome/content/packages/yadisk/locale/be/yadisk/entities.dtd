@@ -1,0 +1,56 @@
+
+<!ENTITY context-menu.upload-image "Запампаваць выяву">
+<!ENTITY context-menu.upload-title "Захаваць выяву на Яндекс.Дыск">
+<!ENTITY error.limit "Скончылася вольнае месца на Я.Дыску">
+<!ENTITY slice.link-copied "Спасылка скапіявана">
+<!ENTITY slice.link-copied-buffer "Спасылка скапіявана ў кішэню">
+<!ENTITY slice.links "Спасылкі">
+<!ENTITY slice.load-file "Заладаваць файл">
+<!ENTITY slice.loads "Ладаванні">
+<!ENTITY slice.month.short.1 "{D} студз">
+<!ENTITY slice.month.short.10 "{D} кастр">
+<!ENTITY slice.month.short.11 "{D} ліст">
+<!ENTITY slice.month.short.12 "{D} снеж">
+<!ENTITY slice.month.short.2 "{D} лют">
+<!ENTITY slice.month.short.3 "{D} сак">
+<!ENTITY slice.month.short.4 "{D} крас">
+<!ENTITY slice.month.short.5 "{D} трав">
+<!ENTITY slice.month.short.6 "{D} чэр">
+<!ENTITY slice.month.short.7 "{D} ліп">
+<!ENTITY slice.month.short.8 "{D} жніўня">
+<!ENTITY slice.month.short.9 "{D} вер">
+<!ENTITY slice.notif.errors "{N} файл не запампаваны;{N} файлы не запампаваныя;{N} файлаў не запампавана">
+<!ENTITY slice.notif.saved "Файл захаваны">
+<!ENTITY slice.notif.saved-chrome "Файл захаваны ў Яндекс.Дыск">
+<!ENTITY slice.notif.saves "{N} файл захаваны;{N} файлы захаваныя;{N} файлаў захавана">
+<!ENTITY slice.tooltip.cancel "Спыніць запампаванне файла на Яндекс.Дыск">
+<!ENTITY slice.tooltip.download "Спампаваць файл">
+<!ENTITY slice.tooltip.homelink "Перайсці на Яндекс.Дыск">
+<!ENTITY slice.tooltip.retry "Паўтарыць запампаванне файла на Яндекс.Дыск">
+<!ENTITY slice.tooltip.share "Атрымаць публічную спасылку на файл">
+<!ENTITY title "Яндекс.Дыск">
+<!ENTITY widget.button.authorized "Спіс апошніх захаваных файлаў на Яндекс.Дыск">
+<!ENTITY widget.button.unauthorized "Калі ласка, аўтарызуйцеся на Яндексе">
+<!ENTITY widget.button.upload-complete "Файл паспяхова захаваны на Яндекс.Дыск">
+<!ENTITY widget.button.upload-error "Не атрымалася захаваць файл на Яндекс.Дыск">
+<!ENTITY widget.button.uploading "Адбываецца запампаванне файлаў на Яндекс.Дыск">
+<!ENTITY widget.description "Яндекс.Дыск">
+<!ENTITY widget.menu.save "Захаваць на Яндекс.Дыск">
+<!ENTITY widget.name "Яндекс.Дыск">
+<!ENTITY widget.options.save-checkbox.title "Паказваць значак захавання па навядзенні">
+<!ENTITY widget.pagebutton.title "Захаваць">
+<!ENTITY widget.pagebutton.tooltip "Захаваць файл на Яндекс.Дыск">
+<!ENTITY widget.save-button.title "Захаваць выяву на Яндекс.Дыск">
+<!ENTITY widget.save-file-button.title "Захаваць файл на Яндекс.Дыск">
+<!ENTITY error.cmd.try-again "Паспрабуйце *зноў*">
+<!ENTITY error.network "Памылка злучэння">
+<!ENTITY slice.empty-list "Спіс запампаваных файлаў на Яндекс.Дыск пусты.">
+<!ENTITY slice.empty-list-2 "Як запампаваць файл">
+<!ENTITY widget.chrome-name "Элементы Яндекса: Дыск">
+<!ENTITY slice.waiting-upload-url "Адбываецца запыт...">
+<!ENTITY widget.chrome-description "Захоўвайце файлы і выявы з інтэрнэта на Яндекс.Дыск адным пстрыкам">
+<!ENTITY widget.chrome-full-description "Дадатак дазволіць вам захоўваць файлы і выявы з інтэрнэта ў воблацы Яндекс.Дыска і адчыняць іх з любой прылады. Каб ён пачаў працаваць, трэба ўвесці свой лагін і пароль на Яндексе.">
+<!ENTITY widget.opera.forbidden "Для працы дадатку Дыск неабходная Opera версіі 26 і вышэйшых.">
+<!ENTITY error.cmd-auth "Калі ласка, *аўтарызуйцеся*">
+<!ENTITY slice.error.file-not-loaded "Файл не запампаваны">
+<!ENTITY slice.error.filename-not-loaded "{filename} не запампаваны">

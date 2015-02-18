@@ -1,0 +1,105 @@
+<!ENTITY vk.name "My VK profile">
+<!ENTITY settings.show_name "Show username">
+<!ENTITY settings.hide_notifications "Disable notifications">
+<!ENTITY settings.msg_button "My Messages">
+<!ENTITY settings.friends_button "My Friends">
+<!ENTITY settings.events_button "My Events">
+<!ENTITY settings.groups_button "My Groups">
+<!ENTITY settings.photo_button "My Photos">
+<!ENTITY settings.video_button "My Videos">
+<!ENTITY settings.notes_button "My Notes">
+<!ENTITY settings.update.label "Update interval">
+<!ENTITY settings.update.after "min.">
+<!ENTITY vk.menu.update "Update">
+<!ENTITY vk.menu.no_name "Unknown">
+<!ENTITY vk.tooltip.need_auth "Please log in">
+<!ENTITY vk.main.tooltip "Go to my VKontakte profile">
+<!ENTITY vk.main.tooltip_auth "Lets you go to your profile on VKontakte">
+<!ENTITY vk.main.menu.mypage "My Profile">
+<!ENTITY vk.main.menu.msg "My Messages">
+<!ENTITY vk.main.menu.friends "My Friends">
+<!ENTITY vk.main.menu.events "My Events">
+<!ENTITY vk.main.menu.groups "My Groups">
+<!ENTITY vk.main.menu.photo "My Photos">
+<!ENTITY vk.main.menu.video "My Videos">
+<!ENTITY vk.main.menu.notes "My Notes">
+<!ENTITY vk.main.menu.audio "My Music">
+<!ENTITY vk.main.menu.feed "My News">
+<!ENTITY vk.main.menu.fave "My Bookmarks">
+<!ENTITY vk.main.menu.matches "Proposals">
+<!ENTITY vk.main.menu.opinions "Opinions">
+<!ENTITY vk.main.menu.apps "Apps">
+<!ENTITY vk.main.menu.questions "Questions">
+<!ENTITY vk.main.menu.settings "Settings">
+<!ENTITY vk.main.menu.logout "Log out">
+<!ENTITY vk.msg.tooltip_empty "My VKontakte messages">
+<!ENTITY vk.msg.tooltip_auth "Displays your new VKontakte messages">
+
+<!ENTITY vk.msg.tooltip "One new message;\d new messages">
+<!ENTITY vk.msg.menu.mymsg "My Messages">
+<!ENTITY vk.photo.tooltip_empty "My VKontakte photos">
+<!ENTITY vk.photo.tooltip_auth "Displays your VKontakte photos">
+<!ENTITY vk.video.tooltip_empty "My VKontakte videos">
+<!ENTITY vk.video.tooltip_auth "Displays your VKontakte videos">
+
+<!ENTITY vk.friend.tooltip "One friend request;\d friend requests">
+<!ENTITY vk.friend.tooltip_empty "My VKontakte friends">
+<!ENTITY vk.friend.tooltip_auth "Displays your VKontakte friends">
+<!ENTITY vk.friend.menu.myfriends "My Friends">
+<!ENTITY vk.friend.menu.my_new_friends "My recently added friends">
+<!ENTITY vk.event.tooltip "My VKontakte events">
+<!ENTITY vk.event.tooltip_auth "Displays your VKontakte events">
+<!ENTITY vk.group.tooltip "My VKontakte groups">
+<!ENTITY vk.group.tooltip_auth "Displays your VKontakte groups">
+<!ENTITY vk.note.tooltip "My VKontakte notes">
+<!ENTITY vk.note.tooltip_auth "Displays your VKontakte notes">
+<!ENTITY vk.notify.settings "Settings">
+<!ENTITY vk.notify.close "Close">
+<!ENTITY error.connect "Please check your internet connection">
+<!ENTITY error.auth "Unable to log in">
+<!ENTITY error.auth.net "Unable to connect to VKontakte for log in">
+
+<!ENTITY plural.rule "1">
+
+<!ENTITY vk.notify.follow "Sent a friend request">
+<!ENTITY vk.notify.wall "Wrote on your wall">
+<!ENTITY vk.notify.comment_post "Commented on your publication">
+<!ENTITY vk.notify.comment_photo "Commented on your photo">
+<!ENTITY vk.notify.comment_video "Commented on your video">
+<!ENTITY vk.notify.reply_comment "Responded to your comment">
+<!ENTITY vk.notify.reply_topic "Responded to your comment">
+
+<!ENTITY vk.notify.follow_f "Sent a friend request">
+<!ENTITY vk.notify.wall_f "Wrote on your wall">
+<!ENTITY vk.notify.comment_post_f "Commented on your publication">
+<!ENTITY vk.notify.comment_photo_f "Commented on your photo">
+<!ENTITY vk.notify.comment_video_f "Commented on your video">
+<!ENTITY vk.notify.reply_comment_f "Responded to your comment">
+<!ENTITY vk.notify.reply_topic_f "Responded to your comment">
+
+<!ENTITY vk.notify.g.message "{N} new message;{N} new messages;{N} new messages">
+<!ENTITY vk.notify.g.wall "{N} new wall comment;{N} new wall comments;{N} new wall comments">
+<!ENTITY vk.notify.g.comment "{N} a new comment;{N} new comments;{N} new comments">
+<!ENTITY vk.notify.g.reply_topic "{N} new reply in the discussion;{N} new replies in the discussion;{N} new replies in the discussion">
+<!ENTITY settings.show_notifications "Show notifications">
+<!ENTITY vk.notify.friend_request "sent friend request">
+<!ENTITY vk.notify.friend_request_f "sent friend request">
+<!ENTITY settings.show_comment_notifications "Show notifications of comments and discussions">
+<!ENTITY settings.show_friend_notifications "Show friend request and follower notifications">
+<!ENTITY settings.show_mention_notifications "Show notifications of your mentions in publications and comments">
+<!ENTITY settings.show_message_notifications "Show message notifications">
+<!ENTITY vk.friend.tooltip_not_empty0 "\d friend request">
+<!ENTITY vk.friend.tooltip_not_empty1 "\d friend requests">
+<!ENTITY vk.friend.tooltip_not_empty2 "\d friend requests">
+<!ENTITY vk.msg.tooltip_not_empty0 "\d new message">
+<!ENTITY vk.msg.tooltip_not_empty1 "\d new messages">
+<!ENTITY vk.msg.tooltip_not_empty2 "\d new messages">
+<!ENTITY vk.notify.g.mention "You were mentioned in {N} publication;You were mentioned in {N} publications;You were mentioned in {N} publications">
+<!ENTITY vk.notify.mention "mentioned you in Publications">
+<!ENTITY vk.notify.mention_comment "Mentioned you in a comment">
+<!ENTITY vk.notify.mention_comment_f "Mentioned you in a comment">
+<!ENTITY vk.notify.mention_f "mentioned you in Publications">
+<!ENTITY vk.notify.messages_file "Sent you a message">
+<!ENTITY vk.notify.messages_file_f "Sent you a message">
+<!ENTITY vk.notify.g.follow "{N} friend request;{N} friend requests;{N} friend requests">
+<!ENTITY error.update "Unfortunately, information could not be retrieved">

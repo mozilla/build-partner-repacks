@@ -1,0 +1,28 @@
+html{background-color:#fff;color:#000;font:message-box}
+body{width:92%;margin-left:4%;margin-right:4%}
+h1{font-size:2.2em;font-weight:700}
+h2{margin-top:1.6em;margin-bottom:.8em;font-size:1.4em;text-align:start;font-weight:700}
+legend{font-size:1.2em;font-weight:700;padding:.5em}
+#collect-info{font-size:1.2em;color:#777;padding-left:27px;background:url(throbber.gif) 5px 50% no-repeat;display:none}
+#collect-info.wait{display:block}
+ul{margin:.2em 0 1em;padding:0;list-style-type:none;font-size:1.2em}
+#send-info a{display:inline-block;width:11px;height:11px;background-image:url(link.png);opacity:.8}
+#send-info a:hover{opacity:1}
+button{font-size:1.2em;line-height:1.6em;font-weight:700}
+#restore{margin-top:1em}
+#contents{margin-top:3em}
+table{background-color:#f0f0f0;color:#000;font:message-box;text-align:start;width:100%;border:1px solid #e6e6e6;border-spacing:0}
+th,td{border:1px solid #e6e6e6;padding:3px;text-align:start}
+thead th{text-align:center}
+th{background-color:#777;color:#fff}
+th.column{white-space:nowrap;width:0}
+span.backup-name{padding-left:.5em}
+.hidden{display:none}
+.bold{font-weight:700}
+.center{text-align:center}
+.packageName{color:#999}
+.componentName{padding-left:3em}
+.prefs-table{width:100%;table-layout:fixed}
+.prefs-table td{white-space:nowrap;overflow:hidden}
+.pref-name{width:60%}
+.pref-value{width:40%}

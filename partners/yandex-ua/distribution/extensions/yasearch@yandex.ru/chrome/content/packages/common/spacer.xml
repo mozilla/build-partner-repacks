@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget [
+<!ENTITY % widget SYSTEM "/native/fx/separators.dtd">
+%widget;
+]>
+<widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/native/fx/separators/spacer.png" name="&spacer.name;" unique="false">
+    <modules>
+        <module browser="firefox" file="/native/fx/separators/spacer.jsm"/>
+    </modules>
+</widget>

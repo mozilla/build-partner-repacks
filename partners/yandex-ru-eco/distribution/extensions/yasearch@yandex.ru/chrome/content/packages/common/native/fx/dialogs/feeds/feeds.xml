@@ -1,0 +1,37 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % locale SYSTEM "/native/fx/lenta.dtd">
+%locale;
+]>
+
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <binding extends="chrome://global/content/bindings/textbox.xml#textbox" id="textbox-withclose">
+        <resources>
+            <stylesheet src="feeds.css"/>
+        </resources>
+
+        <content>
+            <children/>
+            <xul:hbox align="center" flex="1">
+                <html:input anonid="input" class="input-with-close-input" flex="1" type="text"/>
+                <xul:image class="close-input" onclick="onclose(event);"/>
+            </xul:hbox>
+        </content>
+
+        <implementation>
+            <field name="_onclose">null</field>
+            <property name="onclose">
+                <getter><![CDATA[    return this._onclose || function () {
+    };]]></getter>
+                <setter><![CDATA[    if (val instanceof Function) {
+        this._onclose = val;
+    }]]></setter>
+            </property>
+        </implementation>
+
+        <handlers>
+            <handler action="onclose(event);" event="keypress" keycode="VK_ESCAPE"/>
+        </handlers>
+    </binding>
+
+</bindings>

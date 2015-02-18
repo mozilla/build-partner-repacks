@@ -1,0 +1,30 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="chrome://global/skin/"?>
+<?xml-stylesheet href="../../../../skin/dialogs/chevron-welcome/toolbar-installed.css"?>
+
+<!DOCTYPE window [
+<!ENTITY % chevronWelcomeDTD SYSTEM "../../../../locale/chevron-welcome/welcome.dtd">
+%chevronWelcomeDTD;
+<!ENTITY % appDTD SYSTEM "../../bar.dtd">
+%appDTD;
+]>
+
+<window onload="resizeWindowOnLoad();" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <vbox>
+        <hbox>
+            <description>&notification.toolbar.installed;</description>
+        </hbox>
+        <hbox>
+            <description class="close" onclick="window.close()">&welcome.close;</description>
+        </hbox>
+    </vbox>
+
+    <script type="application/x-javascript"><![CDATA[
+        function resizeWindowOnLoad() {
+            let contentBO = document.documentElement.firstChild.boxObject;
+            window.resizeWindowTo(contentBO.width, contentBO.height);
+        }
+    ]]></script>
+
+</window>

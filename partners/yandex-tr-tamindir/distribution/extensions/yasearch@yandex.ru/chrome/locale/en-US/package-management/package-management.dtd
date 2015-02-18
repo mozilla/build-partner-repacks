@@ -1,0 +1,89 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+
+<!ENTITY button.update "Update">
+<!ENTITY button.postpone "Postpone">
+<!ENTITY button.cancel "Cancel">
+<!ENTITY button.accept "Continue">
+<!ENTITY button.install "Install">
+<!ENTITY button.save "Save">
+<!ENTITY button.repeat "Repeat">
+<!ENTITY button.finish "Finish">
+
+
+<!ENTITY placement.placement.label "Add buttons:">
+
+
+<!ENTITY more.opened "hide">
+<!ENTITY more.closed "adjust settings">
+
+
+<!ENTITY error.more.opened "&more.opened;">
+<!ENTITY error.more.closed "details">
+<!ENTITY error.head.title "Oops...">
+<!ENTITY error.head.description "Unknown error">
+
+
+
+<!ENTITY component.save "save">
+<!ENTITY component.update "update">
+
+
+<!ENTITY install.dialog.title "Component installation">
+<!ENTITY install.head.title "&install.dialog.title;">
+<!ENTITY disclaimer "You are installing components from a not trusted source. This may be unsafe.">
+<!ENTITY install.download.label "Loading...">
+<!ENTITY install.conflict.head.title "Oops...">
+<!ENTITY install.conflict.head.description "After installation some components will no longer work. Select the components you would like to keep.">
+<!ENTITY install.placement.head.title "Installation completed successfully">
+<!ENTITY install.placement.head.description "New components are available">
+
+
+<!ENTITY update.dialog.title "Components update">
+<!ENTITY update.select.head.title "Component updates are available">
+<!ENTITY update.select.head.description "To proceed press the &#171;Update&#187; button">
+<!ENTITY update.select.list.description "Updates for the following components are available:">
+<!ENTITY update.download.head.title "Updating components in progress">
+<!ENTITY update.download.head.description "Downloading...">
+<!ENTITY update.conflict.head.title "Oops...">
+<!ENTITY update.conflict.head.description "After the updates have been installed some components will no longer work. Select the components you would like to keep.">
+<!ENTITY update.placement.head.title "Update completed successfully">
+<!ENTITY update.placement.head.description "New components became available after the build update">
+<!ENTITY update.finish.head.title "Update completed successfully">
+<!ENTITY update.finish.head.description "Your updated components are now ready for use.">
+
+
+<!ENTITY notification.update.title "Updates are available">
+<!ENTITY notification.update.message "New versions of components found.">
+<!ENTITY notification.update.install "Install">
+<!ENTITY notification.update.custom "Adjust">
+
+
+<!ENTITY ban.notification.title "Changes in &product1.nom;">
+<!ENTITY ban.notification.message "Updates are available for a number of components">
+<!ENTITY ban.notification.show "Learn more">
+<!ENTITY ban.notification.close "Close">
+<!ENTITY ban.dialog.title "Changes in &product1.nom;">
+<!ENTITY ban.dialog.head.title "Updates are available for the following components:">
+<!ENTITY ban.dialog.praise "We care about your safety and constantly see to it that all the standards are complied with and that add-ons behave correctly.">
+<!ENTITY ban.dialog.ok "OK">
+<!ENTITY ban.package.unban "Unblocked">
+
+
+<!ENTITY permissions.title "Permission is needed for: "> 
+<!ENTITY permissions.title.preset "Add-ons are asking permission for: "> 
+<!ENTITY permissions.title.package "Add-ons are asking permission for: "> 
+<!ENTITY permission.private.one_domain "access to personal data on the site "> 
+<!ENTITY permission.private.many_domains "access to personal data on the sites: "> 
+<!ENTITY permission.private.all_domains "access to personal data on any sites">
+<!ENTITY permission.public.one_domain "obtaining data from the site "> 
+<!ENTITY permission.public.many_domains "obtaining data from the sites: "> 
+<!ENTITY permission.public.all_domains "obtaining data from any site">
+<!ENTITY permission.navigate.one_domain "opening the page at the address "> 
+<!ENTITY permission.navigate.many_domains "opening pages at the addresses: "> 
+<!ENTITY permission.navigate.all_domains "opening pages at any address">
+<!ENTITY permission.pageInfo.one_domain "access to information on the open page at the address "> 
+<!ENTITY permission.pageInfo.many_domains "access to information on the open page at the addresses: "> 
+<!ENTITY permission.pageInfo.all_domains "access to information on the open page at any address">
+<!ENTITY permission.clipboard "access to the contents of the buffer">

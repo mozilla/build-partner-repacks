@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!DOCTYPE widget [
+<!ENTITY % hotmail SYSTEM "/hotmail.dtd">
+<!ENTITY % widget SYSTEM "/widget.dtd">
+%hotmail;
+%widget;
+]>
+
+<widget bar-api="native" xmlns:f="&bar.functional.ns;" icon="&widget.icon;" name="&hotmail.name;" unique="true">
+    <modules>
+        <module browser="firefox" file="/code/sklib/bootstrap.js"/>
+    </modules>
+
+    <f:setting default="hotmail.Application" name="sklib.StartupClass" scope="widget"/>
+    <f:setting default="true" name="store-last-login-after-logout" scope="widget"/>
+
+    <f:setting default="5" name="update-interval" scope="widget">
+        <control empty-default="5" label="&hotmail.settings.update-interval.label;" label-after="&hotmail.settings.update-interval.label-after;" max="1000" min="3" spin="1" type="textedit" value-type="int"/>
+    </f:setting>
+</widget>

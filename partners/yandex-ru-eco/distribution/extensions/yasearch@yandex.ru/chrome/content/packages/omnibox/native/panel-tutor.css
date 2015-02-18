@@ -1,0 +1,16 @@
+@namespace url(http://www.w3.org/1999/xhtml);@namespace xul url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);xul|vbox.searchTutorBox{margin:0!important;border-top:1px solid #f0f0ef;background-color:#f6f5f3;font-weight:400!important;font-family:Arial,"Lucida Grande",sans-serif!important;font-size:13px!important}
+.searchTutorVariants{padding-bottom:7px}
+xul|vbox.searchTutorBox>xul|vbox>div{margin:5px 0}
+*|*{color:#000;cursor:default}
+p{margin:0;padding:.1em 0}
+.searchTutorExamples{font-size:15px!important}
+.searchTutorExamples>div{display:none}
+.searchTutorExamples>div.selected{display:block}
+.searchTutorExamples a{color:#0054a6;text-decoration:none}
+.searchTutorVariants span{color:rgba(0,0,0,.3);white-space:nowrap;margin-right:.2em;border:1px solid transparent;border-radius:4px;padding:.2em .4em}
+.searchTutorVariants span.selected{border-color:rgba(0,0,0,.2)}
+.searchTutorVariants span:hover{border-color:rgba(0,0,0,.4)}
+xul|hbox.searchTutorClose{margin:0 10px -14px 0;-moz-box-pack:end}
+xul|hbox.searchTutorClose xul|image{opacity:.3;width:11px;height:11px;list-style-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3NpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDIxIDc5LjE1NTc3MiwgMjAxNC8wMS8xMy0xOTo0NDowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo4NTczZTgzNC0yZmVkLTQ4MDItYjM5MS05YWRhMDIzNDYzM2EiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NjkyNzM1RjQ0NjIxMTFFNEJFRTJDRjhFRjhGQjY4NEMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NjkyNzM1RjM0NjIxMTFFNEJFRTJDRjhFRjhGQjY4NEMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6ZGQ1MjQzZmUtM2M5ZS00YmUzLWE2Y2YtYWRiY2RiNDBlYjAzIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjg1NzNlODM0LTJmZWQtNDgwMi1iMzkxLTlhZGEwMjM0NjMzYSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrhanD8AAABRSURBVHjajI9bCgAgCAT3+unNvJIfPaAgNLWF/dEZQQDQWUKetjnwbE+Etvd8BpHgwEgIQStIBZ7IJaQhc5kqkIunHWjnVIFPQT++XqAOAQYAscopTYqpuhAAAAAASUVORK5CYII=)}
+xul|hbox.searchTutorClose:hover xul|image{opacity:.5}
+xul|hbox.searchTutorClose:active xul|image{opacity:.4}

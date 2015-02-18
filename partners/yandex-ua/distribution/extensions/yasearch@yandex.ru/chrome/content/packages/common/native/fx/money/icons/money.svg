@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="14px" height="16px" viewBox="0 0 14 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.1 (8751) - http://www.bohemiancoding.com/sketch -->
+    <title>Money</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Dark" sketch:type="MSLayerGroup" transform="translate(-133.000000, -56.000000)" fill="#F3792B">
+            <g id="Money" transform="translate(133.000000, 30.000000)" sketch:type="MSShapeGroup">
+                <g transform="translate(0.000000, 26.000000)">
+                    <path d="M7.876,5.13903995 C8.408,4.78403995 8.916,4.89803995 9.008,5.39503995 C9.099,5.89203995 8.791,6.52403995 8.258,6.87803995 C7.725,7.23203995 7.218,7.11903995 7.126,6.62203995 C7.035,6.12503995 7.342,5.49303995 7.876,5.13903995 M12.712,5.10903995 L12,5.10903995 L12,10.76204 C12,11.69504 11.793,12.23804 10.608,12.51004 L2.649,14.06104 C2.649,14.06104 2.004,14.23504 2.004,13.65004 C2.004,13.17404 2.544,13.10504 2.656,13.02204 L9.93,10.87204 C10.496,10.55404 10.961,9.82403995 10.961,9.25003995 L10.961,0.89803995 C10.961,-0.40096005 9.694,0.0430399501 9.418,0.20803995 C9.117,0.38603995 1.029,4.83503995 1.029,4.83503995 C0.463,5.15403995 0,5.88303995 0,6.46003995 L0,14.65404 C0,15.22904 0.821,15.99604 1.349,16.00004 L12.712,16.00004 C13.39,16.00204 13.945,15.53104 13.945,14.95404 L13.945,6.15603995 C13.945,5.57903995 13.39,5.10903995 12.712,5.10903995"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

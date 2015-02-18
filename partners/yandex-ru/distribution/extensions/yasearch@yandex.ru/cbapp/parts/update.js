@@ -167,7 +167,10 @@ const updater = {
                 try {
                     let manifestDoc = fileutils.xmlDocFromStream(mfsDlTask.getContentInputStream(), mfsDlTask.originalURI);
                     let packageManifest = new this._application.BarPlatform.PackageManifest(manifestURL, manifestDoc, this._application.isTrustedPackageURL(manifestURL));
-                    let [newPkgInfo] = this._application.selectBestPackage(packageManifest);
+                    let [
+                        newPkgInfo,
+                        newPkgInfo2
+                    ] = this._application.selectBestPackage(packageManifest);
                     if (!newPkgInfo) {
                         return;
                     }
@@ -256,7 +259,7 @@ const updater = {
         const pacMan = this._application.packageManager;
         let missingWIDs = [];
         let missingPIDs = [];
-        this._logger.debug("Expecting widgets: \"" + misc.mapKeysToArray(expectedWidgets) + "\"." + "Expecting plugins: \"" + misc.mapKeysToArray(expectedPlugins) + "\".");
+        this._logger.debug("Expecting widgets: '" + misc.mapKeysToArray(expectedWidgets) + "'." + "Expecting plugins: '" + misc.mapKeysToArray(expectedPlugins) + "'.");
         for (let widgetID in expectedWidgets) {
             try {
                 let [
@@ -327,8 +330,8 @@ const updater = {
         let prevPluginsState = widgetLibrary.getCurrentPluginsState(packageID);
         this._application.switchWidgets(packageID, false);
         try {
-            let widgetsChanged = widgetLibrary.forgetWidgets(removedWIDs, true);
-            let pluginsChanged = widgetLibrary.forgetPlugins(removedPIDs, true);
+            let widgetsChanged = widgetLibrary.forgetWidgets(removedWIDs);
+            let pluginsChanged = widgetLibrary.forgetPlugins(removedPIDs);
             widgetLibrary.persist(widgetsChanged > 0, pluginsChanged > 0);
             widgetLibrary.flushWidgets(packageID);
             widgetLibrary.cleanPackageParserCache(packageID);
@@ -528,13 +531,13 @@ UpdateProcess.prototype = {
         let widgetsChanged = 0;
         let pluginsChanged = 0;
         for (let widgetID in newWIDsSet) {
-            if (widgetLibrary.registerWidgets(widgetID, true, true)) {
+            if (widgetLibrary.registerWidgets(widgetID, true)) {
                 widgetsChanged++;
                 this._tryAddToAllPalettes([widgetID]);
             }
         }
         for (let pluginID in newPIDsSet) {
-            pluginsChanged += widgetLibrary.registerPlugins(pluginID, true, true);
+            pluginsChanged += widgetLibrary.registerPlugins(pluginID, true);
         }
         widgetLibrary.persist(widgetsChanged > 0, pluginsChanged > 0);
     },

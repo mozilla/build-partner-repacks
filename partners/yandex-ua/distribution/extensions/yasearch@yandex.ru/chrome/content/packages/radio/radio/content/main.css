@@ -1,0 +1,11 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbaritem[flashenable=true] toolbarbutton[item-href=gfp],toolbaritem[flashenable=false] toolbarbutton[anonid=radio-button-main]{display:none!important}
+toolbarbutton[item-href=gfp]{list-style-image:url(img/noflash.svg)!important}
+toolbarbutton[anonid=radio-button-main],menuitem[curr-station=true]{list-style-image:url(img/off.svg)!important}
+toolbarbutton[anonid=radio-button-main][play-state=play],toolbarbutton[anonid=radio-button-main][play-state=play] menuitem[curr-station=true],toolbarbutton[anonid=radio-button-main][play-state=throbber] menuitem[curr-station=true]{list-style-image:url(img/on.svg)!important}
+toolbarbutton[anonid=radio-button-main][play-state=error],toolbarbutton[anonid=radio-button-main][play-state=error] menuitem[curr-station=true]{list-style-image:url(img/error.svg)!important}
+[cb-theme-color=dark] toolbarbutton[item-href=gfp]{list-style-image:url(img/noflash-inverted.svg)!important}
+[cb-theme-color=dark] toolbarbutton[anonid=radio-button-main],[cb-theme-color=dark] menuitem[curr-station=true]{list-style-image:url(img/off-inverted.svg)!important}
+[cb-theme-color=dark] toolbarbutton[anonid=radio-button-main][play-state=play],[cb-theme-color=dark] toolbarbutton[anonid=radio-button-main][play-state=play] menuitem[curr-station=true],[cb-theme-color=dark] toolbarbutton[anonid=radio-button-main][play-state=throbber] menuitem[curr-station=true]{list-style-image:url(img/on-inverted.svg)!important}
+[cb-theme-color=dark] toolbarbutton[anonid=radio-button-main][play-state=error],[cb-theme-color=dark] toolbarbutton[anonid=radio-button-main][play-state=error] menuitem[curr-station=true]{list-style-image:url(img/error-inverted.svg)!important}
+toolbarbutton[anonid=radio-button-main][play-state=throbber]{list-style-image:url(/-common/img/throbber.gif)!important}
+menuitem[item-command=settings]{list-style-image:url(/-common/img/settings.png)!important}

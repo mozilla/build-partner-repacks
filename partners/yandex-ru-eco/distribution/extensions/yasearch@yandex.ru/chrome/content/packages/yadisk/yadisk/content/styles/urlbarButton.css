@@ -1,0 +1,7 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);[yb-native-widget-name="http://bar-widgets.yandex.ru/packages/approved/288/manifest.xml#yadisk-urlbar"]{margin:0 1px!important}
+[anonid=container]{color:rgba(0,0,0,.85);background:rgba(0,0,0,.13);border-radius:3px;font-size:13px;line-height:20px!important;font-family:Arial,sans-serif;height:20px!important;margin:0!important;cursor:pointer!important;text-shadow:1px 0 0 rgba(255,255,255,.5)!important}
+label{border-radius:3px 0 0 3px;margin:0!important;padding:0 10px!important;cursor:pointer!important}
+[anonid=image-container]{border-radius:0 3px 3px 0}
+[anonid=container]:hover{background:rgba(0,0,0,.2)}
+[anonid=container]:active{background:rgba(0,0,0,.25)}
+[anonid=yadisk-image]{list-style-image:url(../icons/menu.png);margin:0;margin-top:1px;-moz-margin-end:10px}

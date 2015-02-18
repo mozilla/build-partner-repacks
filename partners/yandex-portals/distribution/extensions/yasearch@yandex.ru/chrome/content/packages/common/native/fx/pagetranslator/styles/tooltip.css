@@ -1,0 +1,5 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);[anonid=content-area]{-moz-box-pack:center}
+[anonid=notification-icon-image]{list-style-image:url(/icons/pagetranslator.png)}
+[anonid=notification-icon]{-moz-margin-end:.667em}
+[anonid=text-container] label{margin:0!important}
+label[anonid=button-example]{background:rgba(0,0,0,.13);border-radius:.2307em;font-size:.867em;line-height:1.8461em;margin:0 .76923em!important;padding:0 .76923em}

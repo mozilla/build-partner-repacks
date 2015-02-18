@@ -1,0 +1,21 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace html url(http://www.w3.org/1999/xhtml);[id="http://bar.yandex.ru/packages/yandexbar#altsearch-panel"]{font-size:15px;background:-moz-linear-gradient(top,#f6f6f6,#e1e1e1);border-top:1px solid rgba(0,0,0,.2)}
+[id="http://bar.yandex.ru/packages/yandexbar#altsearch-panel"][data-ya-os=linux]{font-size:1.1em}
+[anonid=container]{padding:.5333em 0}
+[anonid=search-engines]{margin-top:.0667em}
+[anonid=search-box]{overflow:hidden}
+label:first-child,label[anonid],label[anonid]+label{-moz-margin-start:0!important;-moz-margin-end:0!important}
+[anonid=image-box] image{margin:0}
+[anonid=image-box]>hbox:first-child{-moz-margin-start:110px}
+[anonid=image-box]>hbox{-moz-margin-end:20px}
+[anonid=setting-image]{list-style-image:url(/icons/settings.png)}
+[anonid=close-image]{list-style-image:url(/icons/close.png)}
+.bold{font-weight:700}
+.clickable{cursor:pointer}
+.hoverable .hoverable-item{opacity:.7}
+.hoverable:hover .hoverable-item{opacity:1}
+button{-moz-appearance:none;color:#000;background:0 0;border:1px solid rgba(0,0,0,.25);border-radius:.2307em;font:.8667em/1em Arial,sans-serif;min-width:2em;margin:0;padding:.30769em .7692em .23076em;-moz-margin-start:.7692em;-moz-margin-end:.7692em}
+button:hover{border-color:rgba(0,0,0,.4)}
+button:active{background-color:rgba(0,0,0,.08);border-color:rgba(0,0,0,.25)}
+button::-moz-focus-inner{border:1px solid #ff00ff;padding:0}
+button>.button-box{border:0;margin:0;padding:0}
+button+button,[anonid=search-engines]>button:first-child{-moz-margin-end:0}

@@ -1,0 +1,600 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % mc SYSTEM "/mc.dtd">
+%mc;
+<!ENTITY % mc-links SYSTEM "/links/mc.dtd">
+%mc-links;
+]>
+
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="button">
+        <resources>
+            <stylesheet src="/styles/mc/button.css"/>
+        </resources>
+
+        <content label="&mc.widget.name;">
+            <xul:image anonid="mc-alertable-image" hidden="true" tooltiptext="&mc.widget.name;"/>
+        </content>
+
+        <implementation implements="nsIDOMEventListener, nsIObserver">
+            <field name="NOTIFICATION_NAME" readonly="true">"mistype-corrector-notification"</field>
+            <field name="SUGGEST_URL">"&mc.suggest.url;"</field>
+            <field name="BARNAVIG_HOST">"&mc.barnavig.host;"</field>
+
+            <field name="api" readonly="true">this.module.api</field>
+            <field name="wListener" readonly="true">this.api.Browser.getWindowListener(window)</field>
+            <field name="mAlertableImage" readonly="true">this._elementByAttr("anonid", "mc-alertable-image")</field>
+            <field name="fixupService" readonly="true">Components.classes["@mozilla.org/docshell/urifixup;1"].createInstance(Components.interfaces.nsIURIFixup)</field>
+
+            <field name="_packageVersion"><![CDATA[    {
+        let version = "0";
+        if (this.api.Package.info && this.api.Package.info.version) {
+            version = this.api.Package.info.version;
+        }
+        version = version.replace(".", "-", "g");
+    }]]></field>
+
+            <property name="userInputCheckStatus">
+                <getter><![CDATA[    return {
+        "verifying": "verifying",
+        "verified": "verified",
+        "showed": "showed",
+        "failed": "failed"
+    };]]></getter>
+            </property>
+
+            <property name="mistyped">
+                <getter><![CDATA[    let tabData = this.wListener.getTabData(gBrowser.mCurrentBrowser, this.NOTIFICATION_NAME);
+    return tabData.userInput;]]></getter>
+            </property>
+
+            <property name="urlbarValue">
+                <getter><![CDATA[    let urlbar = document.getElementById("urlbar");
+    return urlbar && urlbar.value || "";]]></getter>
+            </property>
+
+            <property name="barR1">
+                <getter><![CDATA[    return this.api.Statistics.barnavigR1String;]]></getter>
+
+                <setter><![CDATA[    this.api.Statistics.barnavigR1String = val;]]></setter>
+            </property>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this.mAlertableImage.addEventListener("click", this, false);
+    this.wListener.addListener("WindowLocationChange", this);
+    window.setTimeout(function (e) {
+        if ("_attachToNavigateElements" in this) {
+            this._attachToNavigateElements();
+        }
+    }.bind(this), 0);
+    let observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+    observerService.addObserver(this, this.module.WIDGET_ID + ".clear-tab-data", false);
+    let hs = Components.classes["@mozilla.org/browser/nav-history-service;1"].getService(Components.interfaces.nsINavHistoryService);
+    let mce = this;
+    let historyObserver = {
+        mce: mce,
+        onBeginUpdateBatch: function () {
+        },
+        onEndUpdateBatch: function () {
+        },
+        onVisit: function (aURI, aVisitID, aTime, aSessionID, aReferringID, aTransitionType) {
+            if (aTransitionType === Components.interfaces.nsINavHistoryService.TRANSITION_BOOKMARK) {
+                this.mce._clearUserSuggest(gBrowser.mCurrentBrowser);
+            }
+        },
+        onTitleChanged: function (aURI, aPageTitle) {
+        },
+        onBeforeDeleteURI: function (aURI) {
+        },
+        onDeleteURI: function (aURI) {
+        },
+        onClearHistory: function () {
+        },
+        onPageChanged: function (aURI, aWhat, aValue) {
+        },
+        onDeleteVisits: function () {
+        },
+        QueryInterface: XPCOMUtils.generateQI([
+            Components.interfaces.nsINavHistoryObserver,
+            Components.interfaces.nsISupportsWeakReference
+        ])
+    };
+    this._historyObserver = historyObserver;
+    hs.addObserver(historyObserver, true);]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    this.mAlertableImage.removeEventListener("click", this, false);
+    this.wListener.removeListener("WindowLocationChange", this);
+    this._detachFromNavigateElements();
+    let observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+    observerService.removeObserver(this, this.module.WIDGET_ID + ".clear-tab-data");
+    let hs = Components.classes["@mozilla.org/browser/nav-history-service;1"].getService(Components.interfaces.nsINavHistoryService);
+    hs.removeObserver(this._historyObserver);
+    this._historyObserver = null;
+    gBrowser.browsers.forEach(function (tab) {
+        let notification = this._getNotification(tab);
+        if (!notification) {
+            return;
+        }
+        notification.close();
+    }, this);]]></body>
+            </method>
+
+            <method name="_elementByAttr">
+                <parameter name="attr"/>
+                <parameter name="value"/>
+                <body><![CDATA[    return document.getAnonymousElementByAttribute(this, attr, value);]]></body>
+            </method>
+
+            <method name="showUrlbarImage">
+                <parameter name="setTabData"/>
+                <parameter name="aTab"/>
+                <body><![CDATA[    this.mAlertableImage.hidden = false;
+    if (setTabData) {
+        aTab = aTab || gBrowser.mCurrentBrowser;
+        let tabData = this.wListener.getTabData(aTab, this.NOTIFICATION_NAME);
+        tabData.redirect = {
+            from: this.getValidURL(tabData.userInput),
+            to: this.getValidURL(this.module.getNavigateLink(tabData.userInput)),
+            count: 0
+        };
+    }]]></body>
+            </method>
+
+            <method name="hideUrlbarImage">
+                <body><![CDATA[    this.mAlertableImage.hidden = true;]]></body>
+            </method>
+
+            <method name="getValidURL">
+                <parameter name="aURL"/>
+                <body><![CDATA[    if (!aURL) {
+        return;
+    }
+    if (!/^https?:\/\//.test(aURL)) {
+        aURL = "http://" + aURL;
+    }
+    return aURL;]]></body>
+            </method>
+
+            <method name="_getNotification">
+                <parameter name="aTab"/>
+                <body><![CDATA[    aTab = aTab || gBrowser.mCurrentBrowser;
+    let notificationBox = gBrowser.getNotificationBox(aTab);
+    return notificationBox.getNotificationWithValue(this.NOTIFICATION_NAME);]]></body>
+            </method>
+
+            <method name="_closeNotification">
+                <parameter name="aTab"/>
+                <body><![CDATA[    aTab = aTab || gBrowser.mCurrentBrowser;
+    let notification = this._getNotification(aTab);
+    if (notification) {
+        notification.close();
+    }]]></body>
+            </method>
+
+            <method name="_showNotification">
+                <parameter name="tab"/>
+                <parameter name="notificationProperties"/>
+                <body><![CDATA[    tab = tab || gBrowser.mCurrentBrowser;
+    let type = "suggestionURL" in notificationProperties ? "suggest" : "redirect";
+    if (type === "suggest" && this.isEqualDomains(tab.currentURI.spec, notificationProperties.suggestionURL)) {
+        this._clearUserSuggest(tab);
+        return;
+    }
+    let tabData = this.wListener.getTabData(tab, this.NOTIFICATION_NAME);
+    tabData.notificationProperties = notificationProperties;
+    let notificationBox = gBrowser.getNotificationBox(tab);
+    let notification = this._getNotification(tab);
+    if (notification)
+        return;
+    let priority = type === "redirect" ? notificationBox.PRIORITY_CRITICAL_BLOCK : notificationBox.PRIORITY_WARNING_MEDIUM;
+    notification = notificationBox.appendNotification("", this.NOTIFICATION_NAME, "", priority, []);
+    notification.mistypeCorrectorElement = this;
+    notification.mistypeType = type;
+    notification.notificationProperties = notificationProperties;
+    notification.setAttribute("anonid", this.NOTIFICATION_NAME);
+    return notification;]]></body>
+            </method>
+
+            <method name="isEqualDomains">
+                <parameter name="one"/>
+                <parameter name="two"/>
+                <body><![CDATA[    return this.extractDomain(one) === this.extractDomain(two);]]></body>
+            </method>
+
+            <method name="extractDomain">
+                <parameter name="value"/>
+                <body><![CDATA[    return this.cleanPreDomain(value).split("/")[0];]]></body>
+            </method>
+
+            <method name="cleanPreDomain">
+                <parameter name="value"/>
+                <body><![CDATA[    return (value || "").replace(/^https?:\/\//, "").replace(/^www\./, "");]]></body>
+            </method>
+
+            <method name="_normalizeURI">
+                <parameter name="userInput"/>
+                <body><![CDATA[    userInput = userInput.toLowerCase();
+    let uri;
+    try {
+        uri = this.fixupService.createFixupURI(userInput, this.fixupService.FIXUP_NO_FLAGS);
+    } catch (e) {
+        return userInput;
+    }
+    let url = uri.spec;
+    if (!(uri.path && uri.path.split("/")[1])) {
+        url = uri.prePath;
+    }
+    return this.cleanPreDomain(url);]]></body>
+            </method>
+
+            <method name="_showRollbackNotification">
+                <parameter name="notificationProperties"/>
+                <body><![CDATA[    this._showNotification(gBrowser.mCurrentBrowser, notificationProperties);]]></body>
+            </method>
+
+            <method name="_checkUserInput">
+                <body><![CDATA[    let tab = gBrowser.mCurrentBrowser;
+    this._closeNotification(tab);
+    this.wListener.removeTabData(tab, this.NOTIFICATION_NAME);
+    let tabData = this.wListener.getTabData(tab, this.NOTIFICATION_NAME);
+    tabData.lastUserHistoryIndex = tab.webNavigation.sessionHistory.index;
+    setTimeout(function () {
+        this._checkUserInputDelayed(tab, this.urlbarValue);
+    }.bind(this), 0);]]></body>
+            </method>
+
+            <method name="_checkUserInputDelayed">
+                <parameter name="tab"/>
+                <parameter name="userInput"/>
+                <body><![CDATA[    if (!userInput) {
+        return;
+    }
+    if (/^(https|file):\/\//.test(userInput)) {
+        return;
+    }
+    userInput = this._normalizeURI(userInput);
+    let tabData = this.wListener.getTabData(tab, this.NOTIFICATION_NAME);
+    tabData.userInput = userInput;
+    tabData.userInputStatus = this.userInputCheckStatus.verifying;
+    tabData.whitelisted = false;
+    tabData.savedlink = false;
+    if (userInput.indexOf("moz-action:") === 0) {
+        return;
+    }
+    let whitelistCount = this.module.getWhitelistValue(userInput);
+    if (whitelistCount >= 2) {
+        tabData.whitelisted = true;
+        tabData.userInputStatus = this.userInputCheckStatus.verified;
+        this.showUrlbarImage(true);
+        return;
+    }
+    let savedLink = this.module.getNavigateLink(userInput);
+    if (savedLink) {
+        tabData.userInputStatus = this.userInputCheckStatus.verified;
+        tabData.savedlink = true;
+        this.showUrlbarImage(true);
+        openUILink(savedLink);
+        this.api.Statistics.logShortAction(5320);
+        return;
+    }
+    this._requestCorrectURL(tab, userInput);]]></body>
+            </method>
+
+            <method name="_requestCorrectURL">
+                <parameter name="tab"/>
+                <parameter name="userInput"/>
+                <body><![CDATA[    let xhr = new XMLHttpRequest();
+    let url = "http://" + this.BARNAVIG_HOST + "/u";
+    xhr.open("POST", url, true);
+    xhr.onreadystatechange = function _requestCorrectURL_xhr_onready() {
+        if (xhr.readyState !== 4)
+            return;
+        if (xhr.status !== 200 || !xhr.responseXML) {
+            this._getSuggest(tab, userInput);
+            return;
+        }
+        let validURL = this._handleURLResponseBarNavig(xhr.responseXML);
+        if (!validURL) {
+            this._getSuggest(tab, userInput);
+            return;
+        }
+        this._handleURLResponse(tab, userInput, validURL);
+    }.bind(this);
+    let api = this.api;
+    let clid4Data = api.DistrData && api.DistrData.getRecord("clid4");
+    let clid4 = clid4Data && clid4Data.clid || "";
+    let dataToSend = [
+        "yasoft=barff",
+        "ver=" + api.Environment.addon.version,
+        "rnd=" + Date.now(),
+        "show=1",
+        "url=" + encodeURIComponent(userInput),
+        "spoton=1",
+        "clid=" + encodeURIComponent(clid4),
+        "ui=" + encodeURIComponent(api.Environment.addon.userID)
+    ];
+    if (this.barR1) {
+        dataToSend.push("r1=" + encodeURIComponent(this.barR1));
+    }
+    xhr.send(dataToSend.join("&"));]]></body>
+            </method>
+
+            <method name="_getSuggest">
+                <parameter name="tab"/>
+                <parameter name="userInput"/>
+                <body><![CDATA[    let url = this.SUGGEST_URL + encodeURIComponent(this.extractDomain(userInput));
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.onreadystatechange = function _getSuggest_xhr_onready() {
+        if (xhr.readyState !== 4 || xhr.status !== 200)
+            return;
+        let [
+            url,
+            firstResult
+        ] = this._handleURLResponseSuggest(xhr.responseText);
+        if (!url) {
+            return;
+        }
+        this._handleURLResponse(tab, userInput, url, firstResult);
+    }.bind(this);
+    xhr.send(null);]]></body>
+            </method>
+
+            <method name="_handleURLResponseBarNavig">
+                <parameter name="response"/>
+                <body><![CDATA[    let r1Element = response.getElementsByTagName("r1")[0];
+    if (r1Element) {
+        let r1 = r1Element.childNodes[0].nodeValue;
+        if (r1 && r1 !== this.barR1) {
+            this.barR1 = r1;
+        }
+    }
+    let validURL = response.getElementsByTagName("MisspellResult")[0];
+    if (!validURL) {
+        return false;
+    }
+    validURL = validURL.getElementsByTagName("text")[0].childNodes[0].nodeValue;
+    if (!validURL || validURL.indexOf(" ") !== -1 || validURL.indexOf(".") === -1 || validURL.indexOf(".ру") !== -1) {
+        return false;
+    }
+    return validURL;]]></body>
+            </method>
+
+            <method name="_handleURLResponseSuggest">
+                <parameter name="response"/>
+                <body><![CDATA[    let url;
+    let firstResult;
+    try {
+        url = JSON.parse(response)[2][1];
+    } catch (e) {
+    }
+    try {
+        firstResult = JSON.parse(response)[1][0];
+    } catch (e) {
+    }
+    return [
+        url,
+        firstResult
+    ];]]></body>
+            </method>
+
+            <method name="_handleURLResponse">
+                <parameter name="tab"/>
+                <parameter name="userInput"/>
+                <parameter name="suggestionURL"/>
+                <parameter name="suggestionFirstResult"/>
+                <body><![CDATA[    let tabData = this.wListener.getTabData(tab, this.NOTIFICATION_NAME);
+    let tabUserInput = tabData.userInput;
+    if (tabUserInput != userInput || !suggestionURL) {
+        return;
+    }
+    if (this.isEqualDomains(userInput, suggestionURL)) {
+        tabData.userInputStatus = this.userInputCheckStatus.failed;
+        return;
+    }
+    if (suggestionFirstResult && this.isEqualDomains(userInput, suggestionFirstResult)) {
+        tabData.userInputStatus = this.userInputCheckStatus.failed;
+        return;
+    }
+    if (!/^https?:\/\//.test(suggestionURL)) {
+        suggestionURL = "http://" + suggestionURL;
+    }
+    this._setUserSuggestData(tab, { suggestionURL: suggestionURL });
+    return true;]]></body>
+            </method>
+
+            <method name="_setUserSuggestData">
+                <parameter name="tab"/>
+                <parameter name="notificationProperties"/>
+                <body><![CDATA[    let tabData = this.wListener.getTabData(tab, this.NOTIFICATION_NAME);
+    tabData.userInputStatus = this.userInputCheckStatus.verified;
+    tabData.notificationProperties = notificationProperties;]]></body>
+            </method>
+
+            <method name="_clearUserSuggest">
+                <parameter name="tab"/>
+                <body><![CDATA[    if (!tab) {
+        return;
+    }
+    this.wListener.removeTabData(tab, this.NOTIFICATION_NAME);
+    this._closeNotification();
+    this.mAlertableImage.hidden = true;]]></body>
+            </method>
+
+            <method name="_attachToNavigateElements">
+                <body><![CDATA[    let urlbar = document.getElementById("urlbar");
+    if (urlbar) {
+        urlbar.addEventListener("keydown", this, false);
+        urlbar.addEventListener("focus", this, false);
+    }
+    let gobutton = document.getElementById("urlbar-go-button") || document.getElementById("go-button");
+    if (gobutton)
+        gobutton.addEventListener("click", this, false);]]></body>
+            </method>
+
+            <method name="_detachFromNavigateElements">
+                <body><![CDATA[    let urlbar = document.getElementById("urlbar");
+    if (urlbar) {
+        urlbar.removeEventListener("keydown", this, false);
+        urlbar.removeEventListener("focus", this, false);
+    }
+    let gobutton = document.getElementById("urlbar-go-button") || document.getElementById("go-button");
+    if (gobutton)
+        gobutton.removeEventListener("click", this, false);]]></body>
+            </method>
+
+            <method name="_showNotificationHandler">
+                <parameter name="tab"/>
+                <parameter name="originialUserInput"/>
+                <body><![CDATA[    this._showNotificationHandlerTimer = null;
+    let tabData = this.wListener.getTabData(tab, this.NOTIFICATION_NAME);
+    let currentUserInput = tabData.userInput;
+    if (currentUserInput !== originialUserInput) {
+        return;
+    }
+    if (tabData.userInputStatus && tabData.userInputStatus == this.userInputCheckStatus.verifying) {
+        if (!tabData.veryfyingCounter) {
+            tabData.veryfyingCounter = 0;
+        }
+        if (tabData.veryfyingCounter++ < 20) {
+            this._showNotificationHandlerTimer = setTimeout(this._showNotificationHandler.bind(this), 50, tab, originialUserInput);
+        } else {
+            this._clearUserSuggest(tab);
+        }
+        return;
+    }
+    if (tabData.userInputStatus && (tabData.userInputStatus == this.userInputCheckStatus.verified || tabData.userInputStatus == this.userInputCheckStatus.showed)) {
+        let showIcon = !!("redirect" in tabData);
+        this.mAlertableImage.hidden = !showIcon;
+        if (tabData.notificationProperties) {
+            this._showNotification(tab, tabData.notificationProperties);
+            tabData.userInputStatus = this.userInputCheckStatus.showed;
+        }
+        return;
+    }
+    if (tabData.userInputStatus && tabData.userInputStatus == this.userInputCheckStatus.failed) {
+        this._clearUserSuggest(tab);
+        return;
+    }]]></body>
+            </method>
+
+            <method name="sendStatistic">
+                <parameter name="aPath"/>
+                <parameter name="aFrom"/>
+                <parameter name="aTo"/>
+                <body><![CDATA[    let version = this._packageVersion;
+    let params = {
+        cid: 71560,
+        path: "fx." + version + "." + aPath,
+        from: aFrom,
+        to: aTo
+    };
+    this.api.Statistics.logClickStatistics(params);]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "focus": {
+            let notification = this._getNotification();
+            if (notification) {
+                let type = "suggestionURL" in notification.notificationProperties ? "suggest" : "request";
+                let destURL = notification.destinationURL();
+                this.sendStatistic((type === "suggest" ? "redir" : "del") + ".hide", this.mistyped, destURL);
+            }
+            this._clearUserSuggest(gBrowser.mCurrentBrowser);
+            break;
+        }
+    case "click":
+        let target = aEvent.target;
+        if (target === this.mAlertableImage) {
+            let tab = gBrowser.mCurrentBrowser;
+            let tabData = this.wListener.getTabData(tab, this.NOTIFICATION_NAME);
+            if (tabData.whitelisted) {
+                let userInput = tabData.userInput;
+                tabData.userInputStatus = this.userInputCheckStatus.verifying;
+                this._requestCorrectURL(tab, userInput);
+                this._showNotificationHandler(tab, userInput);
+                return;
+            }
+            if (tabData.redirect) {
+                this._showRollbackNotification({
+                    changedFromURL: tabData.redirect.from,
+                    changedToURL: tabData.redirect.to
+                });
+            } else {
+                this.hideUrlbarImage();
+            }
+            return;
+        }
+        if (target && (target.id === "urlbar-go-button" || target.id === "go-button")) {
+            this._checkUserInput();
+        }
+        break;
+    case "keydown":
+        if (aEvent.keyCode !== KeyEvent.DOM_VK_RETURN) {
+            return;
+        }
+        if (!(aEvent.target && aEvent.target.id === "urlbar")) {
+            return;
+        }
+        this._checkUserInput();
+        break;
+    }]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="aSubject"/>
+                <parameter name="aTopic"/>
+                <parameter name="aData"/>
+                <body><![CDATA[    switch (aTopic) {
+    case "WindowLocationChange":
+        if (this._showNotificationHandlerTimer) {
+            clearTimeout(this._showNotificationHandlerTimer);
+            this._showNotificationHandlerTimer = null;
+        }
+        let tab = aData.tab;
+        let tabData = this.wListener.getTabData(tab, this.NOTIFICATION_NAME);
+        let userInput = tabData.userInput;
+        if (!userInput) {
+            this._clearUserSuggest(tab);
+            return;
+        }
+        let tabHistory = tab.webNavigation.sessionHistory;
+        let maxHistoryIndex = tabHistory.count - 1;
+        if (tabData.lastUserHistoryIndex !== undefined && tabData.lastUserHistoryIndex >= tabHistory.index && tabHistory.index != maxHistoryIndex) {
+            this._clearUserSuggest(tab);
+            return;
+        }
+        this.module.couldPerform({ tab: tab }).then(function (value) {
+            if (!value)
+                return;
+            this._showNotificationHandler(tab, userInput);
+        }.bind(this));
+        return;
+    default:
+        break;
+    }
+    if (aTopic === this.module.WIDGET_ID + ".clear-tab-data") {
+        this._clearUserSuggest(aSubject);
+        return;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

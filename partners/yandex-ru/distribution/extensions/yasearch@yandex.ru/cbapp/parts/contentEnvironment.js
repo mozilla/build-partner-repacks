@@ -291,7 +291,7 @@ const windowEventsListener = {
         }
         let pageURL = window.document.documentURI;
         if (/^https?:\/\//.test(pageURL)) {
-            if (!/^https?:\/\/([^\/]+\.)?(yandex\.(ru|ua|by|kz|net|com(\.tr)?)|(ya|narod|moikrug)\.ru)\//i.test(pageURL)) {
+            if (!/^https?:\/\/([^\/]+\.)?(yandex\.(ru|ua|by|kz|net|com(\.tr)?)|(ya|kinopoisk|moikrug)\.ru)\//i.test(pageURL)) {
                 return;
             }
         } else {

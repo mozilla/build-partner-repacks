@@ -1,0 +1,9 @@
+[anonid=menulist-langs-container]{-moz-binding:url(../bindings/notification.xbl#pagetranslator-menulist)}
+[anonid=revert]{list-style-image:url(../icons/arrow.png)}
+[anonid=revert] image{-moz-margin-end:.7692em}
+[anonid=pagetranslator-container] label{margin:0!important;padding:0!important}
+[anonid=revert]{-moz-margin-start:0;-moz-margin-end:2.3076em}
+hbox[anonid=preloader]>description{-moz-margin-start:.667em!important}
+hbox.promt button,hbox.promt button *{background:none!important;border:0!important;box-shadow:none!important;-moz-appearance:none}
+hbox.promt button{margin:0 3px!important;cursor:pointer;text-decoration:underline}
+hbox.promt image{list-style-image:url(../icons/promt.png);-moz-image-region:rect(0,16px,16px,0)}

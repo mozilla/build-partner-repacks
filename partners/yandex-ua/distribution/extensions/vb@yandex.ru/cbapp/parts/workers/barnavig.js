@@ -1,11 +1,16 @@
+"use strict";
 var stemmer;
 var searchDictionary = {
     getWordPosition: function searchDictionary_getWordPosition(word) {
         var position = this._dictionaryHash[word];
         return position >= 0 ? position : null;
     },
-    get version() this._version,
-    get dictionaryHash() this._dictionaryHash,
+    get version() {
+        return this._version;
+    },
+    get dictionaryHash() {
+        return this._dictionaryHash;
+    },
     set dictionaryHash(val) {
         var dictionaryHash = Object.create(null);
         var version = 0;
@@ -29,8 +34,9 @@ function ContentHandler() {
 }
 ContentHandler.prototype = {
     startElement: function ContentHandler_startElement(tagName, attrs) {
-        if (this._checkTimeLimit())
+        if (this._checkTimeLimit()) {
             return;
+        }
         switch (tagName.toLowerCase()) {
         case "script":
         case "style":
@@ -42,13 +48,15 @@ ContentHandler.prototype = {
         }
     },
     endElement: function ContentHandler_endElement(tagName) {
-        if (this._checkTimeLimit())
+        if (this._checkTimeLimit()) {
             return;
+        }
         switch (tagName.toLowerCase()) {
         case "script":
         case "style":
-            if (this._ignoreText)
+            if (this._ignoreText) {
                 this._ignoreText = false;
+            }
             break;
         case "body":
             this._htmlParser.cancel();
@@ -56,20 +64,25 @@ ContentHandler.prototype = {
         }
     },
     characters: function ContentHandler_characters(text) {
-        if (this._checkTimeLimit())
+        if (this._checkTimeLimit()) {
             return;
-        if (this._ignoreText)
+        }
+        if (this._ignoreText) {
             return;
+        }
         text.toLowerCase().replace(/[\u0430-\u044f\u0451\-]{3,}/gm, function (word) {
-            if (this._checkTimeLimit())
+            if (this._checkTimeLimit()) {
                 return;
+            }
             var stemmedWord = stemmer.stem(word);
-            if (!stemmedWord)
+            if (!stemmedWord) {
                 return;
+            }
             if (!(stemmedWord in this._statHash)) {
                 var indexInDictionary = searchDictionary.getWordPosition(stemmedWord);
-                if (indexInDictionary === null)
+                if (indexInDictionary === null) {
                     return;
+                }
                 this._statHash[stemmedWord] = {
                     indexInDictionary: indexInDictionary,
                     positions: []
@@ -79,38 +92,48 @@ ContentHandler.prototype = {
         }.bind(this));
     },
     end: function ContentHandler_end() {
-        if (this._htmlParser.canceled)
+        if (this._htmlParser.canceled) {
             return;
+        }
         var stat = [];
         for (var [
                     k,
                     v
-                ] in Iterator(this._statHash))
+                ] in Iterator(this._statHash)) {
             stat.push(v);
+        }
         stat = stat.sort((a, b) => b.positions.length - a.positions.length).map(function (v) {
             return [
                 v.indexInDictionary,
                 v.positions.join(this.POSITION_DELIMITER)
             ].join(this.WORD_DELIMITER);
         }.bind(this)).join(this.STATISTIC_DELIMITER);
-        if (!stat.length)
+        if (!stat.length) {
             return;
+        }
         stat = searchDictionary.version + this.VERSION_DELIMITER + stat;
         if (stat.length > this.MAX_RESULT_STRING_LENGTH) {
             stat = stat.substring(0, this.MAX_RESULT_STRING_LENGTH);
             var lastDelimiterIndex = stat.lastIndexOf(this.STATISTIC_DELIMITER);
-            if (lastDelimiterIndex === -1)
+            if (lastDelimiterIndex === -1) {
                 lastDelimiterIndex = stat.lastIndexOf(this.POSITION_DELIMITER);
-            if (lastDelimiterIndex !== -1)
+            }
+            if (lastDelimiterIndex !== -1) {
                 stat = stat.substring(0, lastDelimiterIndex);
+            }
         }
         this.result = stat;
     },
-    get htmlParser() this._htmlParser,
-    set htmlParser(val) this._htmlParser = val,
+    get htmlParser() {
+        return this._htmlParser;
+    },
+    set htmlParser(val) {
+        this._htmlParser = val;
+    },
     _checkTimeLimit: function ContentHandler__checkTimeLimit() {
-        if (Date.now() - this._startTime < this.MAX_PARSE_TIME)
+        if (Date.now() - this._startTime < this.MAX_PARSE_TIME) {
             return false;
+        }
         this._htmlParser.cancel();
         return true;
     },
@@ -124,8 +147,9 @@ ContentHandler.prototype = {
 var checkSum = {
     MAX_DOCUMENT_SIZE: 512 * 1024 - 1,
     calculate: function checkSum_calculate(htmlSource) {
-        if (!htmlSource)
+        if (!htmlSource) {
             return null;
+        }
         return htmlSource.substr(0, this.MAX_DOCUMENT_SIZE).replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "").replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "").replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/gi, "").replace(/<(?:a|meta)([^>]*)>/gi, this._parseAttributes).replace(/<\/?[^>]*>/gi, "").replace(/\s|\d/g, "");
     },
     _parseAttributes: function checkSum__parseAttributes(match, p1, offset, string) {
@@ -160,13 +184,13 @@ var checkSum = {
             }
             if (p1[i] == "\\") {
                 var ch = p1[i];
-                if (p1[i + 1] && (p1[i + 1] == "\"" || p1[i] == "'")) {
+                if (p1[i + 1] && (p1[i + 1] == "'" || p1[i] == "\"")) {
                     ch = p1[++i];
                 }
                 buf += ch;
                 continue;
             }
-            if ((p1[i] == "\"" || p1[i] == "'") && !startSym) {
+            if ((p1[i] == "'" || p1[i] == "\"") && !startSym) {
                 startSym = p1[i];
                 continue;
             }
@@ -188,7 +212,7 @@ var checkSum = {
         return Object.keys(dict).sort().map(key => key + dict[key]).join("");
     }
 };
-onmessage = function onmessage(event) {
+this.onmessage = function onmessage(event) {
     var type = event.data.type;
     var data = event.data.data;
     var taskId = event.data.taskId;
@@ -226,6 +250,5 @@ onmessage = function onmessage(event) {
         break;
     default:
         throw new Error("Wrong message type ('" + type + "')");
-        break;
     }
 };

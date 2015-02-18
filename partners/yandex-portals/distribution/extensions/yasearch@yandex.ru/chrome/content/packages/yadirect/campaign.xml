@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "campaign/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="campaign/content/icons/ico.png" icon-vector="campaign/content/icons/ico.svg" name="&camp.name;" xmlns:ui="http://bar.yandex.ru/dev/gui" unique="false">
+
+    <f:setting default="15" name="update-interval" scope="widget">
+        <control empty-default="15" label="&camp.setting.update_interval;" label-after="&camp.setting.minutes;" max="10000" min="0" spin="5" type="textedit" value-type="int"/>
+    </f:setting>
+
+    <f:setting name="campaign" scope="instance">
+        <control label="&camp.number;" max="2000000000" min="0" spin="1" type="textedit" value-type="int"/>
+    </f:setting>
+
+    <f:setting default="0" name="lastUpdate" scope="widget"/>
+
+    <modules>
+        <module browser="firefox" file="campaign/core/widget.jsm"/>
+    </modules>
+</widget>

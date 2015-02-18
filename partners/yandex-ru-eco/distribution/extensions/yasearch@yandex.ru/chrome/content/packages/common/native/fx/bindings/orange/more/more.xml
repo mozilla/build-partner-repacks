@@ -1,0 +1,48 @@
+<?xml version='1.0'?>
+
+<bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="more" inheritstyle="false">
+        <resources>
+            <stylesheet src="more.css"/>
+        </resources>
+
+        <content>
+            <xul:button class="button" oncommand="open = !open;">
+                <xul:label class="label-opened" xbl:inherits="value=label-opened" value="свернуть"/>
+                <xul:label class="label-closed" xbl:inherits="value=label-closed" value="развернуть"/>
+                <xul:image class="image-more"/>
+            </xul:button>
+            <xul:vbox class="content">
+                <children/>
+            </xul:vbox>
+        </content>
+
+        <implementation>
+            <property name="open">
+                <getter><![CDATA[    return this.hasAttribute("open");]]></getter>
+                <setter><![CDATA[    this.setAttribute("open", val);]]></setter>
+            </property>
+            <method name="setAttribute">
+                <parameter name="strAtr"/>
+                <parameter name="strVal"/>
+                <body><![CDATA[    if (strAtr === "open") {
+        if (strVal) {
+            this.__proto__.__proto__.setAttribute.apply(this, arguments);
+        } else {
+            this.removeAttribute("open");
+        }
+        this.onToggle();
+    } else {
+        this.__proto__.__proto__.setAttribute.apply(this, arguments);
+    }]]></body>
+            </method>
+            <method name="onToggle">
+                <body><![CDATA[    let newEvent = document.createEvent("Events");
+    newEvent.initEvent("more", true, true);
+    this.dispatchEvent(newEvent);
+    window.document.documentElement.sizeToContent();]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

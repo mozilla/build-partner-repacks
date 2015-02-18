@@ -1,0 +1,24 @@
+<!ENTITY browseroffer.name "Паказваць кантэкстныя прапановы Яндекс.Браўзера">
+
+<!ENTITY browseroffer.menu.openLink "Адчыніць спасылку ў Яндекс.Браўзеры">
+
+<!ENTITY browseroffer.settings.openLink "Паказваць пункт &#171;Адчыніць спасылку ў Яндекс.Браўзеры&#187;">
+
+<!ENTITY browseroffer.notification.button.noYaBrowser "Падрабязней">
+<!ENTITY browseroffer.notification.button.yaBrowser "Адчыніць">
+<!ENTITY browseroffer.notification.text.noYaBrowser "Для прагляду некаторых элементаў на гэтай старонцы патрэбны Flash&browseroffer.notification.text.rmark; Player. Спампуйце Яндекс.Браўзер з убудаваным плэерам">
+<!ENTITY browseroffer.notification.text.yaBrowser "Для прагляду некаторых элементаў на гэтай старонцы патрэбны Flash&browseroffer.notification.text.rmark; Player. Адкрыйце яе ў Яндекс.Браўзеры з убудаваным плэерам">
+<!ENTITY browseroffer.notification.tooltip.close "Зачыніць апавяшчэнне">
+<!ENTITY browseroffer.notification.text.rmark "&#60;html:sup&#62;&#174;&#60;/html:sup&#62;">
+<!ENTITY browseroffer.notification.button.add "Так">
+<!ENTITY browseroffer.notification.wdgt-suggest.fb "Facebook">
+<!ENTITY browseroffer.notification.wdgt-suggest.ok "«Аднакласнікі»">
+<!ENTITY browseroffer.notification.wdgt-suggest.text "Хочаце атрымліваць апавяшчэнні пра новыя паведамленні ад сяброў з {button}?">
+<!ENTITY browseroffer.notification.wdgt-suggest.vk "«Вконтакте»">
+<!ENTITY browseroffer.settings.showSuggest "Паказваць кантэкстныя прапановы кнопак Элементаў Яндекса">
+<!ENTITY browseroffer.notification.button.deny "Не">
+<!ENTITY browseroffer.notification.button.no "Не">
+<!ENTITY pagetranslator.tutorial.button.noYaBrowser "больш падрабязна">
+<!ENTITY pagetranslator.tutorial.button.yaBrowser "Адчыніць">
+<!ENTITY pagetranslator.tutorial.text.noYaBrowser "Паспрабуйце ўсе магчымасці перакладу ў Яндекс.Браўзеры.">
+<!ENTITY pagetranslator.tutorial.text.yaBrowser "Паспрабуйце ўсе магчымасці перакладу ў Яндекс.Браўзеры.">

@@ -80,7 +80,8 @@ const migration = {
         },
         get _browserCustomizableUI() {
             delete this.browserCustomizableUI;
-            return this.browserCustomizableUI = Cu.import("resource:///modules/CustomizableUI.jsm", {}).CustomizableUI;
+            this.browserCustomizableUI = Cu.import("resource:///modules/CustomizableUI.jsm", {}).CustomizableUI;
+            return this.browserCustomizableUI;
         },
         _replaceIdsInLocalStore: function migration_currentset__replaceIdsInLocalStore(replacer) {
             let allResources = this._localStoreRDF.GetAllResources();
@@ -158,7 +159,7 @@ const migration = {
                             alias,
                             operation
                         ] in Iterator(this._migrationConfig)) {
-                    if (scriptName.indexOf(alias + "-") != 0) {
+                    if (scriptName.indexOf(alias + "-") !== 0) {
                         continue;
                     }
                     let version = scriptName.replace(alias + "-", "");
@@ -235,6 +236,10 @@ const migration = {
         {
             name: "l-8.7.0",
             file: "l-8_7_0.js"
+        },
+        {
+            name: "l-8.8.0",
+            file: "l-8_8_0.js"
         }
     ],
     _migrationConfig: {
@@ -242,7 +247,7 @@ const migration = {
         le: a => a <= 0,
         g: a => a > 0,
         l: a => a < 0,
-        e: a => a == 0
+        e: a => a === 0
     },
     _addonVersionForMigration: null
 };

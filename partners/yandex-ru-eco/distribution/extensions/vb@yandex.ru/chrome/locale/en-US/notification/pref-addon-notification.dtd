@@ -1,0 +1,4 @@
+<!ENTITY pref-addon-notification.label "A new app to replace Yandex Visual Bookmarks has been installed. Would you like to save these changes?">
+<!ENTITY pref-addon-notification.fix "No, I want to keep Visual Bookmarks">
+<!ENTITY pref-addon-notification.disable "Yes">
+<!ENTITY pref-addon-notification.notice "Your browser needs to restart">

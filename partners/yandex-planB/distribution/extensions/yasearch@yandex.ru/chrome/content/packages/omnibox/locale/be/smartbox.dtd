@@ -1,0 +1,31 @@
+<!ENTITY wgt.smartbox.name "Разумны радок">
+<!ENTITY wgt.smartbox.changeSearchEngine "Сістэмы пошуку">
+<!ENTITY wgt.smartbox.searchEngineSettings "Наладкі пошуку">
+<!ENTITY wgt.smartbox.nowUsedSearch "зараз выкарыстоўваецца">
+
+<!ENTITY wgt.smartbox.action.switchToTab.label "перайсці на ўкладку">
+<!ENTITY wgt.smartbox.action.searchBy.label "Пашукаць у {providerName}">
+<!ENTITY wgt.smartbox.action.navigate.label "Перайсці">
+
+<!ENTITY wgt.smartbox.popup.desc "Увядзіце пошукавы запыт, і ў падказках вы ўбачыце папулярныя запыты, спасылкі на наведаныя раней сайты і вашыя закладкі.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.desc "Расшыренне не працуе ў Вашым браўзеры. Абнавiць браўзер.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.url "http://browser.yandex.ru">
+
+<!ENTITY wgt.smartbox.dropDownOptions.toggleExpandedState "Наладка пошуку">
+<!ENTITY wgt.smartbox.dropDownOptions.disableSuggest "Адключаць падказкі (не адпраўляць націсканні клавіш у {providerName})">
+<!ENTITY wgt.smartbox.dropDownOptions.enabledSuggest "Уключаць падказкі (адпраўляць націсканні клавіш у {providerName})">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.label "Дадаць пастаўшчыка пошука">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.url "http://go.microsoft.com/fwlink/?LinkId=122812">
+<!ENTITY wgt.smartbox.qs.window.title "Перадвызначаны пошук">
+<!ENTITY wgt.smartbox.qs.tree.col "Пошук">
+<!ENTITY wgt.smartbox.qs.add "Дадаць">
+<!ENTITY wgt.smartbox.qs.button.ok "Гатова">
+<!ENTITY wgt.smartbox.qs.addsearch "Дадаць пошук">
+<!ENTITY wgt.smartbox.qs.searchsettings "Наладзіць пошук">
+<!ENTITY wgt.smartbox.qs.search "Шукаць">
+<!ENTITY wgt.smartbox.qs.searchYandex "Шукаць Яндексом">
+<!ENTITY wgt.smartbox.addressbarLabel "Увядзіце запыт для пошуку">
+<!ENTITY wgt.smartbox.searchSettings "Наладка пошуку">
+<!ENTITY wgt.smartbox.restoreDefaultEngine "Зрабіць {providerName} перадвызначаным пошукам">
+<!ENTITY wgt.smartbox.searchSettings.menu.defaultEngine.label "Перадвызначаны пошук">
+<!ENTITY wgt.smartbox.searchSettings.menu.settings.label "Наладкі">

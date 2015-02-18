@@ -1,0 +1,27 @@
+<!ENTITY mailru.widget.name "Mail.Ru">
+<!ENTITY mailru.settings.update-time.label "Update interval:">
+<!ENTITY mailru.settings.update-time.label_after "min.">
+<!ENTITY mailru.settings.show-button-main-text "Show “Mail.Ru” button name">
+<!ENTITY mailru.settings.show-button-newmsg-text "Show “Compose message” button name">
+<!ENTITY mailru.settings.new-message.show "Show &#34;Compose&#34; button name">
+<!ENTITY mailru.main-button.text "Mail.Ru">
+<!ENTITY mailru.main-button.tooltiptext.auth_none "Shows new Mail.Ru messages&#13;Please log in">
+<!ENTITY mailru.main-button.tooltiptext.update_failed "Unfortunately, information about your mailbox could not be updated.">
+
+<!ENTITY mailru.main-button.tooltiptext.ok_template "You have {$new_msg_wordform} in {$address}">
+<!ENTITY mailru.main-button.tooltiptext.ok_template.no_messages "no new messages">
+
+<!ENTITY mailru.main-button.tooltiptext.ok_template.plural_forms "one new message;{N} new messages">
+<!ENTITY mailru.main-button.menu.check_mail "Check mail">
+<!ENTITY mailru.main-button.menu.new_message "Compose message">
+<!ENTITY mailru.main-button.menu.read_mail "Read mail">
+<!ENTITY mailru.main-button.menu.open_address_book "Open address book">
+<!ENTITY mailru.main-button.menu.show_settings "Settings">
+<!ENTITY mailru.main-button.menu.logout "Log out">
+<!ENTITY mailru.new-message.text "Compose">
+<!ENTITY mailru.new-message.tooltiptext.auth_none "Use this to compose a message.&#13;Please log in">
+<!ENTITY mailru.new-message.tooltiptext.auth_ok "Compose message">
+<!ENTITY error.connect "Please check your internet connection">
+<!ENTITY error.auth "Unable to log in">
+<!ENTITY error.auth.net "Unable to connect to Mail.Ru for log in">
+<!ENTITY settings.show_notifications "Show notifications">

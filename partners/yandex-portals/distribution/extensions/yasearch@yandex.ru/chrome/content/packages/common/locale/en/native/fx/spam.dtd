@@ -1,0 +1,4 @@
+<!ENTITY spam.name "This is spam">
+<!ENTITY spam.tooltiptext "Think this is spam? Report it">
+<!ENTITY spam.action.label "I think this is spam">
+<!ENTITY spam.help.label "What does &#171;this is spam&#187; mean?">

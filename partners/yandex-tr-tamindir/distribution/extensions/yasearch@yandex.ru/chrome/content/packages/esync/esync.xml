@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE plugin SYSTEM "esync.dtd"><plugin bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/skin/icons/16.png" name="&esync.name;" xmlns="http://bar.yandex.ru/dev/gui">
+
+    
+    <f:setting default="" name="store.birthday" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <f:setting default="false" name="debugServer" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting default="" name="auth.username" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting default="" name="auth.token" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <f:setting default="1" name="auth.lastState" scope="plugin">
+        <control fx-value-type="int" type="custom"/>
+    </f:setting>
+
+    <f:setting default="true" name="auth.neverHasAuthBefore" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting default="0" name="scheduler.nextSync" scope="plugin">
+        <control fx-value-type="int" type="custom"/>
+    </f:setting>
+
+    <f:setting default="3600" name="scheduler.syncInterval" scope="plugin">
+        <control fx-value-type="int" type="custom"/>
+    </f:setting>
+
+    <f:setting default="3600" name="scheduler.idleInterval" scope="plugin">
+        <control fx-value-type="int" type="custom"/>
+    </f:setting>
+
+    <f:setting default="600" name="scheduler.activeInterval" scope="plugin">
+        <control fx-value-type="int" type="custom"/>
+    </f:setting>
+
+    <f:setting default="90" name="scheduler.immediateInterval" scope="plugin">
+        <control fx-value-type="int" type="custom"/>
+    </f:setting>
+
+    <f:setting default="300" name="scheduler.idleTime" scope="plugin">
+        <control fx-value-type="int" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting default="Bookmarks,Autofill,Nigori,Passwords,Pinned,Tophistory,Typedurls,Deviceinfo" name="registeredEngines" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting default="true" name="engine.Autofill.enabled" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Autofill.token" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Autofill.version" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting default="true" name="engine.Bookmarks.enabled" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Bookmarks.token" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Bookmarks.version" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting default="true" name="engine.Nigori.enabled" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Nigori.token" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Nigori.version" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting default="true" name="engine.Passwords.enabled" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Passwords.token" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Passwords.version" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting default="true" name="engine.Pinned.enabled" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Pinned.token" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Pinned.version" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting default="true" name="engine.Tophistory.enabled" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Tophistory.token" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Tophistory.version" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting default="true" name="engine.Typedurls.enabled" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Typedurls.token" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Typedurls.version" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <f:setting default="600" name="engine.Typedurls.syncDelay" scope="plugin">
+        <control fx-value-type="int" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting default="true" name="engine.Deviceinfo.enabled" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Deviceinfo.token" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <f:setting name="engine.Deviceinfo.version" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    
+    <f:setting name="xmpp.token" scope="plugin">
+        <control fx-value-type="string" type="custom"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="/content/module.js"/>
+    </modules>
+</plugin>

@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style type="text/css">
+    html, body, div {
+        width: 100%; min-height: 500px; padding: 0; margin: 0; border: 0;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    body {
+        background: transparent url('images/noise.gif') 0 0 repeat;
+    }
+    div {
+        white-space: nowrap;
+        background: transparent;
+        text-align:center;
+        top: 50%;
+        margin-top: -50px;
+        font: 32px Arial, Helvetica, sans-serif;
+    }
+    </style>
+    <script type="text/javascript">
+    window.onload = function() {
+        var er = /_error=([^&]+)/i.test(location.href) ? decodeURIComponent(RegExp.$1) : '';
+        if(er) {
+            document.getElementById("error_message").innerHTML = er.replace(/\n/g, '<br />');
+        }
+    };
+    </script>
+</head>
+<body>
+    <div id="error_message">Internet connection error.</div>
+</body>
+</html>

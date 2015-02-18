@@ -7,7 +7,6 @@ const {
     results: Cr
 } = Components;
 const GLOBAL = this;
-const PKG_UPD_TOPIC = "package updated";
 let branding;
 const brandProviders = {
     init: function brandProviders_init(aApplication) {
@@ -16,10 +15,8 @@ const brandProviders = {
         branding = aApplication.branding;
         this._barApp.core.protocols[this._barApp.name].addDataProvider(appProtocolHandler);
         this._barApp.core.xbProtocol.setDataProvider(brandNamesProvider.UUID, brandNamesProvider);
-        branding.addListener(PKG_UPD_TOPIC, brandNamesProvider);
     },
     finalize: function brandProviders_finalize(aDoCleanup) {
-        branding.removeListener(PKG_UPD_TOPIC, brandNamesProvider);
         this._barApp.core.xbProtocol.setDataProvider(brandNamesProvider.UUID, null);
         this._barApp.core.protocols[this._barApp.name].removeDataProvider(appProtocolHandler);
     }
@@ -36,14 +33,12 @@ const appProtocolHandler = {
     }
 };
 const brandNamesProvider = {
-    observe: function xbBrandProv_observe(subject, topic, data) {
-        if (subject != branding || topic != PKG_UPD_TOPIC) {
-            return;
-        }
-        this._namesStr = undefined;
+    get wrappedJSObject() {
+        return this;
     },
-    get wrappedJSObject() this,
-    get UUID() this._domain,
+    get UUID() {
+        return this._domain;
+    },
     newChannel: function xbBrandProv_newChannel(aURI) {
         let dataString = this._getData(aURI);
         let inputStream = strutils.utf8Converter.convertToInputStream(dataString);

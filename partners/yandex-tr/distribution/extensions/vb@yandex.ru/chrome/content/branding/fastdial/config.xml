@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE fastdial SYSTEM "config.dtd"><fastdial>
+    <logo alt="&logo.alt;" img_clear="logo.png" title="&logo.title;" url="http://www.yandex.com.tr/?clid={clid7}"/>
+
+    <auth mail="https://mail.yandex.com.tr/" main="https://www.yandex.com.tr/" passport="https://passport.yandex.com.tr/passport?mode=passport" redirect="http://api.browser.yandex.com.tr/elements/embeddedauth.html" settings="https://tune.yandex.com.tr/"/>
+
+    <search design="arrow" example_domain="http://api.browser.yandex.com.tr" navigate_title="&search.navigate.title;" placeholder="&search.placeholder;" suggest="http://api.browser.yandex.com.tr/suggest/get-elements?part={searchTerms}&amp;brandID={brandID}" suggest_url="http://suggest-internal.yandex.com.tr/suggest-v-tablo?part={searchTerms}" url="http://yandex.com.tr/yandsearch?text={searchTerms}&amp;clid={clid8}"/>
+
+    <background file="earth.jpg" force="false"/>
+
+    <pages>
+        <page custom_title="&thumb.yandex;" force="true" index="1" url="http://www.yandex.com.tr/?clid={clid7}"/>
+        <page boost="10" custom_title="&thumb.yamail;" force="true" index="2" url="http://mail.yandex.com.tr/?from={vbID}"/>
+        <page custom_title="&thumb.yamaps;" force="true" index="3" url="http://harita.yandex.com.tr/?from={vbID}"/>
+        <page boost="10" custom_title="&thumb.yamarket;" force="true" index="4" url="http://market.yandex.com.tr/?clid={clid20}"/>
+        <page custom_title="&thumb.yasoft;" force="false" index="5" url="http://soft.yandex.com.tr/?from=vb_dist"/>
+        <page custom_title="&thumb.mynet;" force="false" index="6" url="http://mynet.com/"/>
+        <page custom_title="&thumb.facebook;" force="false" index="7" url="http://facebook.com/"/>
+        <page custom_title="&thumb.milliyet;" force="false" index="8" url="http://milliyet.com.tr/"/>
+        <page boost="0" custom_title="&thumb.youtube;" force="false" index="9" url="http://youtube.com/"/>
+    </pages>
+</fastdial>

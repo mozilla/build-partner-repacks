@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html [
+    <!ENTITY % appDTD SYSTEM "chrome://__APP_NAME__/content/bar.dtd"> %appDTD;
+    <!ENTITY % aboutSupportDTD SYSTEM "chrome://__APP_NAME__/locale/support/about.dtd"> %aboutSupportDTD;
+]>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>&aboutSupport.pageTitle;</title>
+        <link rel="stylesheet" href="chrome://&app.name;/skin/support/about.css" type="text/css"/>
+        <link rel="icon" href="__APP_PROTOCOL__://branding/about/logo-fx-small.png"/>
+        <script type="application/x-javascript">
+            const APP_NAME = "&app.name;";
+        </script>
+        <script type="application/javascript;version=1.7" src="chrome://&app.name;/content/support/about.js"/>
+        <script type="application/javascript;version=1.7" src="chrome://&app.name;/content/support/snapshoter.js"/>
+    </head>
+
+    <body>
+        <h1>&aboutSupport.pageTitle;</h1>
+
+        <fieldset>
+            <legend>&aboutSupport.supportInfo.title;</legend>
+
+            <div id="collect-info">&aboutSupport.collectingInfo.label;</div>
+
+            <form id="send-info" class="hidden">
+                <ul>
+                    <li id="screenshot-to-send" class="hidden">
+                        <label>
+                            <input type="checkbox" checked="checked"/>
+                            &aboutSupport.browserScreenshot.label;
+                        </label>
+                        <a title="&aboutSupport.openInNewTab.label;"/>
+                    </li>
+                    <li id="info-to-send" class="hidden">
+                        <label>
+                            <input type="checkbox" checked="checked"/>
+                            &aboutSupport.snapshotData.label;
+                        </label>
+                        <a title="&aboutSupport.openInNewTab.label;"/>
+                    </li>
+                    <li id="fastdial-to-send" class="hidden">
+                        <label>
+                            <input type="checkbox" checked="checked"/>
+                            &aboutSupport.fastdialData.label;
+                        </label>
+                        <a title="&aboutSupport.openInNewTab.label;"/>
+                    </li>
+                    <li id="log-to-send" class="hidden">
+                        <label>
+                            <input type="checkbox" checked="checked"/>
+                            &aboutSupport.debugLog.label;
+                        </label>
+                        <a title="&aboutSupport.openInNewTab.label;"/>
+                    </li>
+                </ul>
+                <button id="save-info-button" onclick="savePack(this);">
+                    &aboutSupport.savePack.label;
+                </button>
+            </form>
+
+            <button id="rebuild-pack" class="hidden" onclick="window.location.reload();">
+                &aboutSupport.rebuildPack.label;
+            </button>
+        </fieldset>
+
+        <fieldset id="restore">
+            <legend>&aboutSupport.restore.title;</legend>
+
+            <form id="backup-list" class="hidden">
+                <ul id="backup-list-elem"/>
+                <button id="restore-button" onclick="restoreBackup();">
+                    &aboutSupport.restore.button;
+                </button>
+            </form>
+
+            <div id="no-backups" class="hidden">&aboutSupport.restore.nothing;.</div>
+        </fieldset>
+
+        <div id="contents">
+
+            <div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th class="column">
+                                &aboutSupport.basicsVersion;
+                            </th>
+                            <td id="version-box"/>
+                        </tr>
+
+                        <tr>
+                            <th class="column">
+                                &aboutSupport.basicsDate;
+                            </th>
+                            <td id="date-box"/>
+                        </tr>
+
+                        <tr>
+                            <th class="column">
+                                &aboutSupport.basicsBrowser;
+                            </th>
+                            <td id="browser-box"/>
+                        </tr>
+
+                        <tr>
+                            <th class="column">
+                                &aboutSupport.basicsUserAgent;
+                            </th>
+                            <td id="useragent-box"/>
+                        </tr>
+
+                        <tr class="hidden">
+                            <th class="column">
+                                &aboutSupport.basicsTheme;
+                            </th>
+                            <td id="theme-box"/>
+                        </tr>
+
+                        <tr class="hidden">
+                            <th class="column">
+                                &aboutSupport.basicsLightTheme;
+                            </th>
+                            <td id="lightweightTheme-box"/>
+                        </tr>
+
+                        <tr>
+                            <th class="column">
+                                &aboutSupport.basicsOS;
+                            </th>
+                            <td id="os-box"/>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                <h2>&aboutSupport.extensionsTitle;</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                &aboutSupport.columnName;
+                            </th>
+                            <th>
+                                &aboutSupport.columnVersion;
+                            </th>
+                            <th>
+                                &aboutSupport.columnEnabled;
+                            </th>
+                            <th>
+                                &aboutSupport.columnId;
+                            </th>
+                            <th>
+                                &aboutSupport.columnURL;
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="extensions-tbody"/>
+                </table>
+            </div>
+
+            <div id="components" class="hidden">
+                <h2>&aboutSupport.componentsTitle;</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                &aboutSupport.columnName;
+                            </th>
+                            <th>
+                                &aboutSupport.columnEnabled;
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="components-tbody"/>
+                </table>
+            </div>
+
+            <div>
+                <h2>&aboutSupport.extensionPreferencesTitle;</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                &aboutSupport.columnName;
+                            </th>
+                            <th>
+                                &aboutSupport.columnValue;
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="extension-preferences-tbody"/>
+                </table>
+            </div>
+
+            <div>
+                <h2>&aboutSupport.browserPreferencesTitle;</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                &aboutSupport.columnName;
+                            </th>
+                            <th>
+                                &aboutSupport.columnValue;
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="browser-preferences-tbody"/>
+                </table>
+            </div>
+
+        </div>
+
+        <canvas id="screenshot-canvas" style="display:none"/>
+    </body>
+</html>

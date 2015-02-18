@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <title>Gmail</title>
+    <description>Created with Sketch (http://www.bohemiancoding.com/sketch)</description>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Light" sketch:type="MSLayerGroup" transform="translate(0.000000, -182.000000)">
+            <g id="Social" sketch:type="MSShapeGroup">
+                <g id="Gmail" transform="translate(0.000000, 184.000000)">
+                    <path d="M0,11 L16,11 L16,0 L0,0 L0,11 Z" id="Fill-28" fill="#ECE9D9"></path>
+                    <path d="M13.979,3 L8,7.76 L14.002,10.991 L13.979,3 Z" id="Fill-30" fill="#B8B6B1"></path>
+                    <path d="M7.996,7 L2.008,10.253 L2,10.744 L8.002,7.513 L7.996,7 Z" id="Fill-31" fill="#B8B6B1"></path>
+                    <path d="M14,0.008 L14,10.992 L16,10.992 L16,0 L14,0.008 Z" id="Fill-32" fill="#CF0000"></path>
+                    <path d="M14.002,0 L7.982,5.127 L5.85652724,3.3150115 L1.968,0 L0,0 L0,11 L1.994,11 L1.994,3.042 L8.01,7.781 L16,1.453 L16,0 L14.002,0 Z" id="Fill-33" fill="#FF001B"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

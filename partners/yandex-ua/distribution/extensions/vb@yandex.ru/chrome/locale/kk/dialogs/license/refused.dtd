@@ -1,0 +1,8 @@
+<!ENTITY % brandNames SYSTEM "yafd://plus.branding/names.dtd">
+%brandNames;
+
+<!ENTITY refused.title "&product1.nom; сөндірілген">
+
+<!ENTITY refused.desc.1 "&product1.ins; жұмыс жүргізу үшін Лицензиялық келісімнің шарттарын қабылдауыңыз қажет">
+<!ENTITY refused.desc.2 "Кеңейтудің жұмысын браузердің мәзірінен жалғастыруыңызға болады: &#34;Құралдар-&#62; Қосымшалар-&#62; Кеңейтулер&#34;">
+<!ENTITY refused.desc.3 "Бұл жағдайда сіз келісімнің шарттарын автоматты түрде қабылдайсыз">

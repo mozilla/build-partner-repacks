@@ -1,0 +1,11 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);*{-moz-appearance:none!important;border:0}
+radio{-moz-box-align:center}
+.radio-icon{-moz-margin-end:2px;border:0}
+.radio-label{margin:0!important}
+.radio-label:empty{display:none}
+radio>.radio-check{background:0 0;list-style-image:url(radio.png);-moz-image-region:rect(0,19px,19px,0);min-height:19px;min-width:19px;max-height:19px;max-width:19px}
+radio[disabled=true]>.radio-check{-moz-image-region:rect(19px,19px,38px,0)!important}
+radio:hover>.radio-check,radio:active>.radio-check{-moz-image-region:rect(38px,19px,57px,0)}
+radio[selected=true]>.radio-check{-moz-image-region:rect(0,38px,19px,19px)}
+radio[selected=true][disabled=true]>.radio-check{-moz-image-region:rect(19px,38px,38px,19px)!important}
+radio[selected=true]:hover>.radio-check,radio[selected=true]:active>.radio-check{-moz-image-region:rect(38px,38px,57px,19px)}

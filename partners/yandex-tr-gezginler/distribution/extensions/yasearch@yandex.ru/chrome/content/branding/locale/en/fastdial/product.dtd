@@ -1,0 +1,25 @@
+<!ENTITY product.name.nom "Visual bookmarks">
+<!ENTITY product.name.gen "">
+<!ENTITY product.name.dat "">
+<!ENTITY product.name.acc "">
+<!ENTITY product.name.ins "">
+<!ENTITY product.name.pre "">
+<!ENTITY product.name.loc "">
+
+<!ENTITY product.shortname.nom "Visual bookmarks">
+<!ENTITY product.shortname.gen "">
+<!ENTITY product.shortname.dat "">
+<!ENTITY product.shortname.acc "">
+<!ENTITY product.shortname.ins "">
+<!ENTITY product.shortname.pre "">
+<!ENTITY product.shortname.loc "">
+
+<!ENTITY vendor.name.nom "Yandex">
+<!ENTITY vendor.name.gen "Yandex">
+<!ENTITY vendor.name.dat "Yandex">
+<!ENTITY vendor.name.acc "Yandex">
+<!ENTITY vendor.name.ins "Yandex">
+<!ENTITY vendor.name.pre "Yandex">
+<!ENTITY vendor.name.loc "Yandex">
+
+<!ENTITY product.copyright "© 2012—2014 Yandex">

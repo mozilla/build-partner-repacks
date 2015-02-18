@@ -1,0 +1,61 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % settings SYSTEM "/native/fx/fotki.dtd">
+%settings;
+<!ENTITY % auth SYSTEM "/native/fx/login.dtd">
+%auth;
+]>
+
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="../../bindings/buttons.xbl#ycounter-widget" id="widget">
+        <resources>
+            <stylesheet src="../styles/fotki.css"/>
+        </resources>
+
+        <content>
+            <toolbarbutton anonid="fotki-button" class="chromeclass-toolbar-additional toolbarbutton-1 label2 ycounter-button" label="&fotki.name;" noauth-tooltip-text="&fotki.noauthtooltiptext;" tooltip="fotki-tooltip" tooltip-text="&fotki.tooltiptext;" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" yb-icon-overlay="true" yb-second-tooltip-text="&noauth.label;">
+                <menupopup anonid="fotki-menupopup">
+                    <menuitem label="&fotki.reloadCounter.label;" oncommand="refreshData(event)"/>
+                    <menuseparator/>
+                    <menuitem label="&fotki.link.favAuth.label;" yb-widget-command="gotoFavAuth"/>
+                    <menuitem label="&fotki.link.myPhotos.label;" yb-widget-command="gotoMyPhotos"/>
+                    <menuitem label="&fotki.link.Comments.label;" yb-widget-command="gotoComments"/>
+                    <menuseparator/>
+                    <menuitem label="&fotki.link.UploadPhotos.label;" yb-widget-command="gotoUploadPhotos"/>
+                </menupopup>
+            </toolbarbutton>
+        </content>
+
+        <implementation>
+            <field name="title">"&fotki.name;"</field>
+
+            <field name="_button" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "fotki-button")</field>
+            <field name="_menu" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "fotki-menupopup")</field>
+
+            <method name="onAuthCommand">
+                <body><![CDATA[    this.module.onButtonClick();]]></body>
+            </method>
+
+            <method name="_sendClickStat">
+                <parameter name="event"/>
+                <parameter name="middle"/>
+                <body><![CDATA[    var menuItem = event.originalTarget.localName == "menuitem";
+    if (!middle || !menuItem) {
+        this.module.utils.statistics.logWidget("fx.fotki." + (menuItem ? "menuclick" : "button"));
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="popupshowing"><![CDATA[    if (event.originalTarget.localName == "menupopup") {
+        this.module.utils.statistics.logWidget("fx.fotki.menu");
+    }]]></handler>
+
+            <handler button="1" event="click"><![CDATA[    this._sendClickStat(event, true);]]></handler>
+
+            <handler event="command"><![CDATA[    this._sendClickStat(event, false);]]></handler>
+        </handlers>
+    </binding>
+
+</bindings>

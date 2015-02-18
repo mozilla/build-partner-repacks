@@ -1,0 +1,7 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbar toolbaritem[cb-app=yasearch] toolbarbutton[type=menu-button][checked=true]{background-color:rgba(232,232,232,.4)!important}
+toolbaritem[cb-app=yasearch] toolbarbutton[type=menu-button][checked=true]{border-color:transparent!important}
+:-moz-any(toolbar[mode=icons]) toolbaritem[cb-app=yasearch] toolbarbutton[type=menu-button][checked=true]{background-color:transparent!important}
+:-moz-any(toolbar[mode=icons]) toolbaritem[cb-app=yasearch] toolbarbutton[type=menu-button][checked=true] .toolbarbutton-menubutton-button{background-image:-moz-linear-gradient(bottom,#dcdcdc,#b4b4b4)!important}
+#yasearch-bar toolbarseparator,#yasearch-bar .toolbarbutton-1,#yasearch-bar toolbaritem[cb-proto-id="http://bar.yandex.ru/packages/yandexbar#search"] textbox{margin-left:1px!important;margin-right:1px!important}
+#yasearch-bar[mode=full] toolbaritem[cb-app=yasearch]>toolbarbutton>toolbarbutton{padding-left:1px!important;padding-right:1px!important}
+#yasearch-bar[mode=full] toolbaritem[cb-app=yasearch] .toolbarbutton-menubutton-dropmarker{padding-left:0!important;padding-right:0!important}

@@ -1,0 +1,36 @@
+<!ENTITY product.name.nom "Елементи Яндекса">
+<!ENTITY product.name.gen "Елементів Яндекса">
+<!ENTITY product.name.dat "Елементам Яндекса">
+<!ENTITY product.name.acc "Елементи Яндекса">
+<!ENTITY product.name.ins "Елементами Яндекса">
+<!ENTITY product.name.pre "Елементах Яндекса">
+<!ENTITY product.name.loc "Елементах Яндекса">
+
+<!ENTITY product.shortname.nom "Елементи">
+<!ENTITY product.shortname.gen "Елементів">
+<!ENTITY product.shortname.dat "Елементам">
+<!ENTITY product.shortname.acc "Елементи">
+<!ENTITY product.shortname.ins "Елементами">
+<!ENTITY product.shortname.pre "Елементах">
+<!ENTITY product.shortname.loc "Елементах">
+
+<!ENTITY vendor.name.nom "Яндекс">
+<!ENTITY vendor.name.gen "Яндекса">
+<!ENTITY vendor.name.dat "Яндексу">
+<!ENTITY vendor.name.acc "Яндекс">
+<!ENTITY vendor.name.ins "Яндексом">
+<!ENTITY vendor.name.pre "Яндексi">
+<!ENTITY vendor.name.loc "Яндексi">
+
+<!ENTITY product.description "Швидкий доступ до всіх можливостей Яндекса">
+<!ENTITY product.note.fx "для Firefox">
+<!ENTITY product.note.ie "для Internet Explorer">
+<!ENTITY product.homepage "https://element.yandex.ru">
+<!ENTITY product.copyright "© 2012—2014 ООО «ЯНДЕКС»">
+<!ENTITY product.copyright.ie "&product.copyright;">
+<!ENTITY product.copyright.fx "© 2012—2014 ООО «ЯНДЕКС»">
+<!ENTITY product.license.url.ie "http://legal.yandex.ru/desktop_software_agreement/?lang=uk">
+<!ENTITY product.license.url.fx "http://legal.yandex.ru/desktop_software_agreement/?lang=uk">
+<!ENTITY product.help.url.ie "http://help.yandex.ru/element">
+
+<!ENTITY product.welcomepage "https://element.yandex.ua/welcome">

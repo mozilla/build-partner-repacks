@@ -43,7 +43,9 @@ const widgetLibrary = {
         fileutils.removeFileSafe(this._getParserCacheDir(packageID));
     },
     activatePlugins: function WidgetLibrary_activatePlugins() {
+        let timeStart = Date.now();
         this._activatePlugins(undefined, this._prevPluginsState || this._defaultActivationMap, true);
+        this._logger.debug("Plugins activated in " + (Date.now() - timeStart) + "ms");
     },
     setDefaultPluginsState: function WidgetLibrary_setDefaultPluginsState(noDefaultSettings) {
         this._activatePlugins(undefined, this._defaultActivationMap, false, noDefaultSettings);
@@ -62,7 +64,7 @@ const widgetLibrary = {
     getComponentsInfo: function WidgetLibrary_getComponentsInfo(fromPackageID) {
         return this.getWidgetsInfo(fromPackageID).concat(this.getPluginsInfo(fromPackageID));
     },
-    registerWidgets: function WidgetLibrary_registerWidgets(newWidgetIDs, dontFail, logStat) {
+    registerWidgets: function WidgetLibrary_registerWidgets(newWidgetIDs, dontFail) {
         let registered = 0;
         if (!Array.isArray(newWidgetIDs)) {
             newWidgetIDs = [newWidgetIDs];
@@ -71,14 +73,14 @@ const widgetLibrary = {
                     ,
                     widgetID
                 ] in Iterator(newWidgetIDs)) {
-            registered += this._registerComponent(widgetID, "widget", dontFail, logStat);
+            registered += this._registerComponent(widgetID, "widget", dontFail);
         }
         if (registered > 0) {
             this._logger.debug("Registered " + registered + " widgets.");
         }
         return registered;
     },
-    registerPlugins: function WidgetLibrary_registerPlugins(newPluginIDs, dontFail, logStat) {
+    registerPlugins: function WidgetLibrary_registerPlugins(newPluginIDs, dontFail) {
         let registered = 0;
         if (!Array.isArray(newPluginIDs)) {
             newPluginIDs = [newPluginIDs];
@@ -87,15 +89,14 @@ const widgetLibrary = {
                     ,
                     pluginID
                 ] in Iterator(newPluginIDs)) {
-            registered += this._registerComponent(pluginID, "plugin", dontFail, logStat);
+            registered += this._registerComponent(pluginID, "plugin", dontFail);
         }
         if (registered > 0) {
             this._logger.debug("Registered " + registered + " plugins.");
         }
         return registered;
     },
-    forgetWidgets: function WidgetLibrary_forgetWidget(protoIDsArray, logStat) {
-        let componentsUsage = this._barApp.componentsUsage;
+    forgetWidgets: function WidgetLibrary_forgetWidget(protoIDsArray) {
         let unregistered = 0;
         protoIDsArray.forEach(function (protoID) {
             if (!(protoID in this._knownWidgets)) {
@@ -104,9 +105,6 @@ const widgetLibrary = {
             let widgetInfo = this.getWidgetInfo(protoID);
             unregistered++;
             delete this._knownWidgets[protoID];
-            if (logStat) {
-                componentsUsage.logSysAction(protoID, componentsUsage.ACTIONS.COMP_REMOVE);
-            }
             if (widgetInfo.barAPI == "xb") {
                 fileutils.removeFileSafe(this._getParserCacheFile(protoID));
             } else {
@@ -118,8 +116,7 @@ const widgetLibrary = {
         }
         return unregistered;
     },
-    forgetPlugins: function WidgetLibrary_forgetPlugins(pluginIDsArray, logStat) {
-        let componentsUsage = this._barApp.componentsUsage;
+    forgetPlugins: function WidgetLibrary_forgetPlugins(pluginIDsArray) {
         let unregistered = 0;
         pluginIDsArray.forEach(function (pluginID) {
             if (!(pluginID in this._pluginsData)) {
@@ -127,9 +124,6 @@ const widgetLibrary = {
             }
             unregistered++;
             delete this._pluginsData[pluginID];
-            if (logStat) {
-                componentsUsage.logSysAction(pluginID, componentsUsage.ACTIONS.COMP_REMOVE);
-            }
             fileutils.removeFileSafe(this._barApp.NativeComponents.getComponentStorage(pluginID));
         }, this);
         if (unregistered > 0) {
@@ -137,13 +131,13 @@ const widgetLibrary = {
         }
         return unregistered;
     },
-    forgetComponents: function WidgetLibrary_forgetComponents(compIDsArray, logStat) {
+    forgetComponents: function WidgetLibrary_forgetComponents(compIDsArray) {
         let unregistered = 0;
         compIDsArray.forEach(function (compID) {
             if (compID in this._knownWidgets) {
-                this.forgetWidgets([compID], logStat);
+                this.forgetWidgets([compID]);
             } else if (compID in this._pluginsData) {
-                this.forgetPlugins([compID], logStat);
+                this.forgetPlugins([compID]);
             } else {
                 return;
             }
@@ -213,7 +207,9 @@ const widgetLibrary = {
             }
         }, this);
     },
-    get noKnownPlugins() sysutils.isEmptyObject(this._pluginsData),
+    get noKnownPlugins() {
+        return sysutils.isEmptyObject(this._pluginsData);
+    },
     getWidgetInfo: function WidgetLibrary_getWidgetInfo(protoID) {
         if (!(protoID in this._knownWidgets)) {
             throw new Error(strutils.formatString(this._consts.ERR_NO_SUCH_WIDGET, [protoID]));
@@ -256,7 +252,9 @@ const widgetLibrary = {
             return protoID;
         });
     },
-    get noKnownWidgets() sysutils.isEmptyObject(this._knownWidgets),
+    get noKnownWidgets() {
+        return sysutils.isEmptyObject(this._knownWidgets);
+    },
     isKnownWidget: function WidgetLibrary_isKnownWidget(protoID) {
         return protoID in this._knownWidgets;
     },
@@ -311,12 +309,11 @@ const widgetLibrary = {
     _pluginsData: Object.create(null),
     _internalPackagesInfo: Object.create(null),
     _useParserCache: true,
-    _registerComponent: function WidgetLibrary__registerComponent(componentID, componentType, dontFail, logStat) {
+    _registerComponent: function WidgetLibrary__registerComponent(componentID, componentType, dontFail) {
         let registry = componentType == "widget" ? this._knownWidgets : this._pluginsData;
         if (componentID in registry) {
             return 0;
         }
-        const componentsUsage = this._barApp.componentsUsage;
         try {
             let componentInfo = this._loadComponentInfo(componentID);
             if (componentInfo.barAPI === "xb") {
@@ -333,13 +330,10 @@ const widgetLibrary = {
                 component: null,
                 info: componentInfo
             };
-            if (logStat) {
-                componentsUsage.logSysAction(componentID, componentsUsage.ACTIONS.COMP_INSTALL);
-            }
             return 1;
         } catch (e) {
             if (dontFail) {
-                this._logger.warn("Could not register component \"" + componentID + "\". " + strutils.formatError(e));
+                this._logger.warn("Could not register component '" + componentID + "'. " + strutils.formatError(e));
                 return 0;
             }
             throw e;
@@ -411,7 +405,7 @@ const widgetLibrary = {
                 }
                 this._barApp.addonFS.copySource("$content/packages/" + packageDirName, packagesDir, destPackageDirName);
             } catch (e) {
-                this._logger.error("Couldn't extract package \"" + packageID + "\". " + strutils.formatError(e));
+                this._logger.error("Couldn't extract package '" + packageID + "'. " + strutils.formatError(e));
                 let stackTace = e.stack;
                 if (stackTace) {
                     this._logger.debug(stackTace);
@@ -429,13 +423,16 @@ const widgetLibrary = {
         let result = [];
         for (let componentID in componentsMap) {
             if (fromPackageID) {
-                let [packageID] = this._barPlatform.parseComponentID(componentID);
+                let [
+                    packageID,
+                    compName
+                ] = this._barPlatform.parseComponentID(componentID);
                 if (packageID !== fromPackageID) {
                     continue;
                 }
             }
             let component = callback.call(this, componentID);
-            if (component != null) {
+            if (Boolean(component)) {
                 result.push(component);
             }
         }
@@ -505,12 +502,11 @@ const widgetLibrary = {
         return info;
     },
     _activatePlugins: function WidgetLibrary__activatePlugins(packageID, activationMap, ignoreOthers, noDefaultSettings) {
-        let failedPlugins = [];
         this._forEachKnownPlugin(packageID, function __loadPlugin(pluginID) {
+            if (ignoreOthers && !(pluginID in activationMap)) {
+                return;
+            }
             try {
-                if (ignoreOthers && !(pluginID in activationMap)) {
-                    return;
-                }
                 let plugin = this.getPlugin(pluginID);
                 try {
                     let active;
@@ -533,16 +529,12 @@ const widgetLibrary = {
                     ]));
                 }
             } catch (e) {
-                failedPlugins.push(pluginID);
                 this._logger.error(strutils.formatString("Could not create plugin %1. %2", [
                     pluginID,
                     strutils.formatError(e)
                 ]));
             }
         });
-        failedPlugins.forEach(function __removeFailed(pluginID) {
-            delete this._pluginsData[pluginID];
-        }, this);
     },
     _loadPlugin: function WidgetLibrary__loadPlugin(pluginID) {
         let [
@@ -565,7 +557,10 @@ const widgetLibrary = {
         let result = Object.create(null);
         for (let pluginID in this._pluginsData) {
             if (fromPackageID) {
-                let [packageID] = this._barPlatform.parseComponentID(pluginID);
+                let [
+                    packageID,
+                    compName
+                ] = this._barPlatform.parseComponentID(pluginID);
                 if (packageID !== fromPackageID) {
                     continue;
                 }
@@ -592,9 +587,9 @@ const widgetLibrary = {
             this._logger.error(this._consts.ERR_COULDNT_WRITE_WLIST + strutils.formatError(e));
         }
     },
-    _trySavePluginsList: function WidgetLibrary__trySavePluginsList(stateMap) {
+    _trySavePluginsList: function WidgetLibrary__trySavePluginsList() {
         try {
-            this._savePluginsList(stateMap);
+            this._savePluginsList();
         } catch (e) {
             this._logger.error(this._consts.ERR_COULDNT_WRITE_PLIST + strutils.formatError(e));
         }
@@ -605,10 +600,10 @@ const widgetLibrary = {
         let writeWhat = JSON.stringify(this.getWidgetIDs());
         fileutils.writeTextFile(dataFile, writeWhat);
     },
-    _savePluginsList: function WidgetLibrary__savePluginsList(stateMap) {
+    _savePluginsList: function WidgetLibrary__savePluginsList() {
         let dataFile = this._barApp.directories.appRootDir;
         dataFile.append(this._consts.STR_KNOWN_PLUGINS_FILE_NAME);
-        let writeWhat = JSON.stringify(stateMap || this._getPluginActivationMap());
+        let writeWhat = JSON.stringify(this._getPluginActivationMap());
         fileutils.writeTextFile(dataFile, writeWhat);
     }
 };

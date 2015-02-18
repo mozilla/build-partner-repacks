@@ -1,0 +1,11 @@
+<?xml version='1.0'?>
+<!DOCTYPE overlay [
+<!ENTITY % appDTD SYSTEM "../bar.dtd">
+%appDTD;
+]>
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <script type="application/x-javascript">
+        const CB_APP_NAME = "&app.name;";
+    </script>
+    <script position="999" src="customizeToolbar.js" type="application/javascript"/>
+</overlay>

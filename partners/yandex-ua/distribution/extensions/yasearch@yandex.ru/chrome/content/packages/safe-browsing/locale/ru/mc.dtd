@@ -1,0 +1,13 @@
+﻿<!ENTITY mc.widget.name "Точно по адресу">
+
+<!ENTITY mc.widget.suggestion.label "Возможно, вы хотели открыть">
+
+<!ENTITY mc.widget.changedFrom.label "Исправлено с">
+<!ENTITY mc.widget.changedTo.label "на">
+<!ENTITY mc.widget.changedTo2.label "">
+
+<!ENTITY mc.widget.removeRule.label "Удалить правило">
+<!ENTITY mc.widget.cancel.label "Закрыть подсказку">
+
+<!ENTITY mc.widget.go.label "Перейти">
+<!ENTITY mc.widget.close.label "Закрыть">

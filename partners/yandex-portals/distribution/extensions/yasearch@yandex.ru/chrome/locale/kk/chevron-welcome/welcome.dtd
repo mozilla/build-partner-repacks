@@ -1,0 +1,9 @@
+<!ENTITY welcome.newfeature "Енді барлық панельдерді жасыру үшін бір басу жеткілікті.">
+<!ENTITY welcome.howitworks "{button} батырмасын басын, оның жұмысын көріңіз.">
+<!ENTITY welcome.closeallpanels "Бапрлық панельдерді жасыру">
+
+<!ENTITY notification.thanks "Мен хабардармын, рахмет">
+<!ENTITY notification.toolbar.installed "Жаңа тулбар басқалармен бірге осы жерде ">
+
+<!ENTITY welcome.close "жабу">
+<!ENTITY welcome.openpanels "Тақталарды ашу">

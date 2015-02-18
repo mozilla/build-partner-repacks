@@ -90,7 +90,7 @@ const yCookie = {
         let ySubCookies = (aCookieValue || "").split("#");
         let found = false;
         for (let i = ySubCookies.length; i--;) {
-            if (ySubCookies[i].indexOf(aFieldName + ".") == 0) {
+            if (ySubCookies[i].indexOf(aFieldName + ".") === 0) {
                 found = true;
                 ySubCookies[i] = aFieldValue === null ? null : aFieldName + "." + aFieldValue;
                 break;

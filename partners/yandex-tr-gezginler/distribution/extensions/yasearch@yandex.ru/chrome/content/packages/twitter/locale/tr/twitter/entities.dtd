@@ -1,0 +1,71 @@
+<!ENTITY action.hide-message-foto "resmi gizle">
+<!ENTITY action.show-message-foto "resmi göster">
+<!ENTITY html.network-error.net "Sunucu bağlantısı kurulamadı">
+<!ENTITY html.network-error.aut "Oturum açılamadı">
+<!ENTITY html.network-error.aut-2 "Lütfen ağ bağlantısını kontrol edin">
+<!ENTITY overlay.action.direct-msg "Kişisel mesaj yaz">
+<!ENTITY sad-bird.no-msg-limit "Sorgu sınırlaması aşıldı. Lütfen 15 dakika bekleyip yeniden deneyin.">
+<!ENTITY slice.composer.desc.dm "{username} için mesaj">
+<!ENTITY slice.msg.error.nofriend "Sadece takipçilerinize mesaj gönderebilirsiniz">
+
+<!ENTITY twitter.tooltip.ie.lock "Twitter&#39;da tweetleri okuyabilir ve tweet gönderebilirsiniz&#13;Lütfen giriş yapın">
+<!ENTITY twitter.tooltip.ie.good "Kullanıcının Twitter hesabı ">
+<!ENTITY twitter.auth.ie "Twitter / Uygulamaya giriş">
+
+<!ENTITY twitter.toolbarbutton.tooltip-unregistered "Twitter&#39;da tweetleri okuyabilir ve tweet gönderebilirsiniz\nLütfen giriş yapın">
+<!ENTITY twitter.toolbarbutton.tooltip-registered "{username} kullanıcısının Twitter hesabı">
+
+<!ENTITY twitter.slice.title "Twitter ">
+<!ENTITY twitter.slice.logout "Çıkış">
+<!ENTITY twitter.slice.throbber-tooltip "Güncelle ">
+<!ENTITY twitter.slice.overlay-close "Kapat ">
+<!ENTITY twitter.slice.composer.cancel "İptal ">
+<!ENTITY twitter.slice.composer.send-button.text "Gönder ">
+<!ENTITY twitter.slice.composer.shorten-button.title "Sayfanın kısa URL&#39;sini ekle">
+<!ENTITY twitter.slice.tab-home.title "Ana sayfa">
+<!ENTITY twitter.slice.tab-mentions.title "Bahsedenler">
+<!ENTITY twitter.slice.tab-dms.title "İletiler">
+<!ENTITY twitter.slice.tab.load-more "Daha fazlası ">
+<!ENTITY twitter.slice.tab-search.title "Web arama">
+<!ENTITY twitter.widget.name "Twitter ">
+<!ENTITY twitter.widget.setting.show-username "Kullanıcı adını göster">
+<!ENTITY twitter.widget.setting.update-interval "Güncelleme sıklığı ">
+<!ENTITY twitter.widget.setting.update-interval-units "dk.">
+<!ENTITY twitter.dialog.auth.default-title "Başlatılıyor...">
+<!ENTITY twitter.dialog.post.title "Paylaş ">
+<!ENTITY twitter.dialog.share.title "Twitter&#39;da paylaş">
+<!ENTITY slice.msg.sending "Mesaj gönderiliyor...">
+<!ENTITY slice.msg.sent "Mesaj gönderildi">
+<!ENTITY slice.msg.error "Gönderim hatası">
+<!ENTITY slice.msg.error.duplicate "Mesajın kopyası">
+<!ENTITY slice.msg.error.shorten-failed "Mevcut sayfanın URL&#39;si kısaltılamadı">
+<!ENTITY msg.user-info "Kullanıcı bilgileri">
+<!ENTITY msg.user-follow "Takip et">
+<!ENTITY msg.user-unfollow "Takibi bırak">
+<!ENTITY action.share "Retweetle ">
+<!ENTITY action.reply "Yanıtla">
+<!ENTITY action.direct-reply "Yanıtla">
+<!ENTITY action.delete "Sil">
+<!ENTITY action.favorite "Favoriler">
+<!ENTITY sad-bird.default-text "Tweet yok">
+<!ENTITY sad-bird.no-home-1 "Şu anda liste boş görünebilir. Ancak başka kullanıcıları takip etmeye başladığınızda, onların tweetlerini okuyabileceksiniz. Bu yüzden">
+<!ENTITY sad-bird.no-home-2 "ilginizi çekebilecek kullanıcıları eklemeye başlayın">
+<!ENTITY sad-bird.no-home-3 "! Etrafınızda nelerin olup bittiğini&#160;tüm dünyaya anlatın.">
+<!ENTITY sad-bird.no-mentions "Sizden bahseden tweetleri burada görebilirsiniz.">
+<!ENTITY sad-bird.no-dms "Direkt mesaj yok.">
+<!ENTITY sad-bird.no-search-1 "Bu sorgu için tweet yok &#34;">
+<!ENTITY sad-bird.no-search-2 "&#34;">
+<!ENTITY sad-bird.no-home-net "Ana sayfa içeriği alınamıyor. Lütfen ağ bağlantınızı kontrol edin.">
+<!ENTITY sad-bird.no-mentions-net "Sizden bahseden tweetler alınamadı. Lütfen ağ bağlantınızı kontrol edin.">
+<!ENTITY sad-bird.no-dms-net "Kişisel bilgiler alınamadı. Lütfen ağ bağlantınızı kontrol edin.">
+<!ENTITY sad-bird.no-search-net-1 "Bu sorgu için tweet bulunamadı &#34;">
+<!ENTITY sad-bird.no-search-net-2 "&#34;. Lütfen ağ bağlantınızı kontrol edin.">
+<!ENTITY overlay.view-fool-profile-link "tüm profili görüntüle">
+<!ENTITY overlay.action.follow "takip et">
+<!ENTITY overlay.action.following "takip ediyor">
+<!ENTITY overlay.action.unfollow "takibi bırak">
+<!ENTITY overlay.tweet-count "tweetler">
+<!ENTITY overlay.friends-count "takip ettikleri">
+<!ENTITY overlay.followers-count "takipçiler">
+<!ENTITY overlay.lists-count "listeler">
+<!ENTITY settings.show_notifications "Bildirimleri göster">

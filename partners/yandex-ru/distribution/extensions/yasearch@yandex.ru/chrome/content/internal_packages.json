@@ -1,0 +1,56 @@
+{
+  "http://bar.yandex.ru/packages/yandexbar": {
+    "dirName": "common"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml": {
+    "dirName": "omnibox"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/283/manifest.xml": {
+    "dirName": "altsearch"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/284/manifest.xml": {
+    "dirName": "esync"
+  },
+  "http://bar-widgets.yandex.ru/packages/100/manifest.xml": {
+    "dirName": "mail_2"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/17/manifest.xml": {
+    "dirName": "yadirect"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/75/manifest.xml": {
+    "dirName": "rambler"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/76/manifest.xml": {
+    "dirName": "webmaster"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/82/manifest.xml": {
+    "dirName": "mailru"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/91/manifest.xml": {
+    "dirName": "vkontakte"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/97/manifest.xml": {
+    "dirName": "gmail"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml": {
+    "dirName": "facebook"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/118/manifest.xml": {
+    "dirName": "radio"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/140/manifest.xml": {
+    "dirName": "odnoklassniki"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml": {
+    "dirName": "safe-browsing"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml": {
+    "dirName": "twitter"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/286/manifest.xml": {
+    "dirName": "browseroffer"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/288/manifest.xml": {
+    "dirName": "yadisk"
+  }
+}

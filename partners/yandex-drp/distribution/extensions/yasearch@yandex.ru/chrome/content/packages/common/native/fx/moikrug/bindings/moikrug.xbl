@@ -1,0 +1,42 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % settings SYSTEM "/native/fx/moikrug.dtd">
+%settings;
+<!ENTITY % auth SYSTEM "/native/fx/login.dtd">
+%auth;
+]>
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="../../bindings/buttons.xbl#ycounter-widget" id="widget">
+        <resources>
+            <stylesheet src="../styles/moikrug.css"/>
+        </resources>
+
+        <content>
+            <toolbarbutton anonid="moikrug-button" class="chromeclass-toolbar-additional toolbarbutton-1 label2 ycounter-button" label="&moikrug.name;" noauth-tooltip-text="&moikrug.noauthtooltiptext;" tooltip="moikrug-tooltip" tooltip-text="&moikrug.tooltiptext;" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" yb-icon-overlay="true" yb-second-tooltip-text="&noauth.label;">
+                <menupopup anonid="moikrug-menupopup">
+                    <menuitem label="&moikrug.reloadCounter.label;" oncommand="refreshData(event)"/>
+                    <menuseparator/>
+                    <menuitem label="&moikrug.home.label;" navURL="http://moikrug.ru/threads/?from=bar" statCode="1660" yb-widget-command="handleMenuCommand"/>
+                    <menuitem label="&moikrug.firstcircle.label;" navURL="http://moikrug.ru/circles/first/users/" statCode="1610" yb-widget-command="handleMenuCommand"/>
+                    <menuitem label="&moikrug.profile.label;" navURL="http://moikrug.ru/profile/" statCode="1620" yb-widget-command="handleMenuCommand"/>
+                    <menuitem label="&moikrug.search.label;" navURL="http://moikrug.ru/search/?&#38;ok=0" statCode="1630" yb-widget-command="handleMenuCommand"/>
+                    <menuitem label="&moikrug.vacancies.label;" navURL="http://moikrug.ru/vacancies/dashboard/" statCode="1640" yb-widget-command="handleMenuCommand"/>
+                    <menuitem label="&moikrug.services.label;" navURL="http://moikrug.ru/services/" statCode="1650" yb-widget-command="handleMenuCommand"/>
+                </menupopup>
+            </toolbarbutton>
+        </content>
+
+        <implementation>
+            <field name="title">"&moikrug.name;"</field>
+
+            <field name="_menu" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "moikrug-menupopup");]]></field>
+
+            <field name="_button" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "moikrug-button");]]></field>
+
+            <method name="onAuthCommand">
+                <body><![CDATA[    this.module.onButtonClick();]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

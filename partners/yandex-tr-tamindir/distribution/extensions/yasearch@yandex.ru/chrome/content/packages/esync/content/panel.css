@@ -1,0 +1,13 @@
+@import url(bindings/islands/islands.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace islands url(http://bar.yandex.ru/ui/islands);hbox[id="http://bar.yandex.ru/packages/yandexbar#esync-panel"]{background:-moz-linear-gradient(top,#f6f6f6,#e1e1e1);border-top:1px solid #cbcbcb;font-size:1.25em;min-height:2.8em}
+hbox[id="http://bar.yandex.ru/packages/yandexbar#esync-panel"][data-ya-os=linux]{font-size:1.1em}
+[anonid=container]{padding:.25em 1.25em;-moz-box-align:center}
+[anonid=container-inner]{-moz-box-align:baseline}
+[anonid=user-message] [anonid=message-ico]{margin-right:.625em}
+[anonid=user-message]>*,[anonid=user-buttons]>*{-moz-box-align:center}
+[anonid=ok]>hbox,[anonid=warning]>hbox{-moz-box-align:baseline}
+[anonid=warning] [anonid=message-ico]{list-style-image:url(/icons/ico_pling.png)}
+[anonid=close-button] image{list-style-image:url(/icons/close.png)}
+islands|button{-moz-margin-start:.667em!important;-moz-margin-end:.667em!important}
+.a-labels{cursor:pointer;margin-left:1.25em}
+.a-labels image{margin-top:.2em;margin-left:.667em;opacity:.7}
+.a-labels:hover image{opacity:1}

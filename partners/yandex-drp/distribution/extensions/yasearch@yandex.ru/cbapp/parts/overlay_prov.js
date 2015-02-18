@@ -45,8 +45,8 @@ const overlayProvider = {
         return this._readCurrentSetIds();
     },
     parseWidgetItemId: function Overlay_parseWidgetItemId(itemID, fullMode) {
-        let match;
-        if (match = itemID.match(this._commonItemPattern)) {
+        let match = itemID.match(this._commonItemPattern);
+        if (match) {
             return {
                 prototypeID: match[1],
                 instanceID: match[2],
@@ -142,7 +142,7 @@ const overlayProvider = {
         if (!idsToInsert.length) {
             return;
         }
-        let insertIndex = undefined;
+        let insertIndex;
         [
             "bookmarks-menu-button-container",
             "bookmarks-menu-button",
@@ -346,31 +346,37 @@ const overlayProvider = {
             result = result.concat(aCurrenSetString.split(","));
         }
         let rdfService = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService);
-        let localStoreDataSource = rdfService.GetDataSource("rdf:local-store");
-        let allResources = localStoreDataSource.GetAllResources();
-        let currentSetResource = rdfService.GetResource("currentset");
-        while (allResources.hasMoreElements()) {
-            let res = allResources.getNext().QueryInterface(Ci.nsIRDFResource);
-            let tool = res.Value;
-            if (tool) {
-                if (tool == "chrome://browser/content/browser.xul#customToolbars") {
-                    let customToolbarsResource = rdfService.GetResource(tool);
-                    let index = 0;
-                    let currentSetTarget;
-                    do {
-                        let toolbarResource = rdfService.GetResource("toolbar" + ++index);
-                        currentSetTarget = localStoreDataSource.GetTarget(customToolbarsResource, toolbarResource, true);
+        let localStoreDataSource;
+        try {
+            localStoreDataSource = rdfService.GetDataSource("rdf:local-store");
+        } catch (e) {
+        }
+        if (localStoreDataSource) {
+            let allResources = localStoreDataSource.GetAllResources();
+            let currentSetResource = rdfService.GetResource("currentset");
+            while (allResources.hasMoreElements()) {
+                let res = allResources.getNext().QueryInterface(Ci.nsIRDFResource);
+                let tool = res.Value;
+                if (tool) {
+                    if (tool == "chrome://browser/content/browser.xul#customToolbars") {
+                        let customToolbarsResource = rdfService.GetResource(tool);
+                        let index = 0;
+                        let currentSetTarget;
+                        do {
+                            let toolbarResource = rdfService.GetResource("toolbar" + ++index);
+                            currentSetTarget = localStoreDataSource.GetTarget(customToolbarsResource, toolbarResource, true);
+                            if (currentSetTarget instanceof Ci.nsIRDFLiteral) {
+                                let ids = currentSetTarget.Value.split(":");
+                                ids.shift();
+                                _getIdsFromCurrentset(ids.join(":"));
+                            }
+                        } while (currentSetTarget);
+                    } else {
+                        let toolbarResource = rdfService.GetResource(tool);
+                        let currentSetTarget = localStoreDataSource.GetTarget(toolbarResource, currentSetResource, true);
                         if (currentSetTarget instanceof Ci.nsIRDFLiteral) {
-                            let ids = currentSetTarget.Value.split(":");
-                            ids.shift();
-                            _getIdsFromCurrentset(ids.join(":"));
+                            _getIdsFromCurrentset(currentSetTarget.Value);
                         }
-                    } while (currentSetTarget);
-                } else {
-                    let toolbarResource = rdfService.GetResource(tool);
-                    let currentSetTarget = localStoreDataSource.GetTarget(toolbarResource, currentSetResource, true);
-                    if (currentSetTarget instanceof Ci.nsIRDFLiteral) {
-                        _getIdsFromCurrentset(currentSetTarget.Value);
                     }
                 }
             }

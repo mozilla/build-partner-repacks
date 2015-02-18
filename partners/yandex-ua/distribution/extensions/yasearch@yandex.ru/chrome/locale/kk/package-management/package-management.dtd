@@ -1,0 +1,89 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+
+<!ENTITY button.update "Жаңарту">
+<!ENTITY button.postpone "Кейінге қалдыру">
+<!ENTITY button.cancel "Болдырмау">
+<!ENTITY button.accept "Жалғастыру">
+<!ENTITY button.install "Орнату">
+<!ENTITY button.save "Сақтау">
+<!ENTITY button.repeat "Қайта байқап көру">
+<!ENTITY button.finish "Жабу">
+
+
+<!ENTITY placement.placement.label "Келесі пернелерді қосу:">
+
+
+<!ENTITY more.opened "жасыру">
+<!ENTITY more.closed "баптау">
+
+
+<!ENTITY error.more.opened "&more.opened;">
+<!ENTITY error.more.closed "толығырақ">
+<!ENTITY error.head.title "Ой...">
+<!ENTITY error.head.description "Белгісіз қате">
+
+
+
+<!ENTITY component.save "сақтау">
+<!ENTITY component.update "жаңарту">
+
+
+<!ENTITY install.dialog.title "Компоненттерді орнату">
+<!ENTITY install.head.title "&product1.nom;: &install.dialog.title;">
+<!ENTITY disclaimer "Сіз сенімсіз қайнар көзден компоненттерді орнатып отырсыз, бұл потенциалды қауіпті болуы мүмкін.">
+<!ENTITY install.download.label "Жүктеу...">
+<!ENTITY install.conflict.head.title "Ой...">
+<!ENTITY install.conflict.head.description "Орнату кезінде кейбір компоненттер жұмысын тоқтатады. Сақталуы тиіс компоненттерді таңдаңыз.">
+<!ENTITY install.placement.head.title "Сәтті орнатылды">
+<!ENTITY install.placement.head.description "Жаңа компоненттер қол жетімді">
+
+
+<!ENTITY update.dialog.title "Компоненттерді жаңарту">
+<!ENTITY update.select.head.title "Компоненттер жаңартулары қол жетімді">
+<!ENTITY update.select.head.description "Жалғастыру үшін &#171;Жаңарту&#187; пернесін басыңыз">
+<!ENTITY update.select.list.description "Келесі компоненттер үшін жаңартулар қол жетімді:">
+<!ENTITY update.download.head.title "Компоненттер жаңартылып жатыр">
+<!ENTITY update.download.head.description "Жүктеу...">
+<!ENTITY update.conflict.head.title "Ой...">
+<!ENTITY update.conflict.head.description "Жаңарту кезінде кейбір компоненттер жұмысын тоқтатады. Сақталуы тиіс компоненттерді таңдаңыз.">
+<!ENTITY update.placement.head.title "Сәтті жаңартылды">
+<!ENTITY update.placement.head.description "Құрастыруларды жаңарту кезінде жаңа компоненттер қол жетімді болды">
+<!ENTITY update.finish.head.title "Сәтті жаңартылды">
+<!ENTITY update.finish.head.description "Енді сіз компоненттердің жаңа нұсқаларын пайдалануыңызға болады">
+
+
+<!ENTITY notification.update.title "Жаңартулар қол жетімді">
+<!ENTITY notification.update.message "Компоненттердің жаңа нұсқалары табылды.">
+<!ENTITY notification.update.install "Орнату">
+<!ENTITY notification.update.custom "Баптау">
+
+
+<!ENTITY ban.notification.title "&product1.loc; өзгертулері">
+<!ENTITY ban.notification.message "&product1.gen; құрылымы өзгерді">
+<!ENTITY ban.notification.show "Нақтылау">
+<!ENTITY ban.notification.close "Жабу">
+<!ENTITY ban.dialog.title "&product1.loc; өзгертулері">
+<!ENTITY ban.dialog.head.title "&product1.gen; құрылымы өзгерді:">
+<!ENTITY ban.dialog.praise "Біз сіздің қауіпсіздігіңізді ескере отырып, компоненттердің дұрыс жұмыс істеуін және стандарттарды ұстануын бақылыаймыз.">
+<!ENTITY ban.dialog.ok "OK">
+<!ENTITY ban.package.unban "Бұғаттан шығару">
+
+
+<!ENTITY permissions.title "Келесі әрекеттерге рұқсат ету қажет: "> 
+<!ENTITY permissions.title.preset "Компоненттер келесі әрекеттерге рұқсат сұрайды: "> 
+<!ENTITY permissions.title.package "Компоненттер келесі әрекеттерге рұқсат сұрайды: "> 
+<!ENTITY permission.private.one_domain "келесі сайттағы жеке мәліметтерге қол жеткізу: "> 
+<!ENTITY permission.private.many_domains "келесі сайттардағы жеке мәліметтерге қол жеткізу: "> 
+<!ENTITY permission.private.all_domains "кез-келген сайттардағы жеке мәліметтерге қол жеткізу">
+<!ENTITY permission.public.one_domain "келесі сайттан деректер алу: "> 
+<!ENTITY permission.public.many_domains "келесі сайттардан деректер алу: "> 
+<!ENTITY permission.public.all_domains "кез-келген сайттардан деректер алу">
+<!ENTITY permission.navigate.one_domain "келесі мекен-жай бойынша беттерді ашу: "> 
+<!ENTITY permission.navigate.many_domains "келесі мекен-жайлар бойынша беттерді ашу: "> 
+<!ENTITY permission.navigate.all_domains "кез-келген мекен-жайлар бойынша беттерді ашу">
+<!ENTITY permission.pageInfo.one_domain "келесі мекен-жай бойынша ашылған бет туралы ақпаратқа қол жеткізу:"> 
+<!ENTITY permission.pageInfo.many_domains "келесі мекен-жайлар бойынша ашылған бет туралы ақпаратқа қол жеткізу: "> 
+<!ENTITY permission.pageInfo.all_domains "кез-келген мекен-жайлар бойынша ашылған бет туралы ақпаратқа қол жеткізу">
+<!ENTITY permission.clipboard "аралық сақтағыш мазмұнына қол жеткізу">

@@ -1,0 +1,5 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY settings.title "Настройки">
+<!ENTITY settings.titleProduct "Настроить &product2.nom;">

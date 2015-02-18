@@ -1,0 +1,80 @@
+<!ENTITY suggestions.url "http://suggest.yandex.ua/suggest-ff.cgi?part={searchTerms}">
+
+<!ENTITY yandex.label "Yandex">
+<!ENTITY yandex.context.label "Search Yandex: &#34;{searchTermsCropped}&#34;">
+<!ENTITY yandex.url "http://www.yandex.ua">
+<!ENTITY yandex.search.tooltip "Search in Yandex">
+<!ENTITY yandex.search.url "http://yandex.ua/yandsearch?text={searchTerms}">
+<!ENTITY yandex.qs.url "http://yandex.ua/yandsearch?clid={clid6}&amp;text={searchTerms}">
+<!ENTITY yandex.qs.suggestions "&suggestions.url;">
+
+<!ENTITY catalog.label "Catalog">
+<!ENTITY catalog.search.url "http://yaca.yandex.ua/yca?text={searchTerms}&amp;yaca=1">
+
+<!ENTITY market.label "Market">
+<!ENTITY market.search.url "http://market.yandex.ua/search.xml?text={searchTerms}">
+
+<!ENTITY auto.label "Auto">
+<!ENTITY auto.search.url "http://auto.yandex.ua/search.xml?text={searchTerms}">
+
+<!ENTITY images.label "Images">
+<!ENTITY images.search.url "http://images.yandex.ua/yandsearch?stype=image&amp;text={searchTerms}">
+
+<!ENTITY blogs.label "Blogs">
+<!ENTITY blogs.search.url "http://blogs.yandex.ua/search.xml?how=tm&amp;rd=2&amp;text={searchTerms}">
+
+<!ENTITY dicts.label "Dictionaries">
+<!ENTITY dicts.search.url "http://slovari.yandex.ua/search.xml?text={searchTerms}">
+
+<!ENTITY lingvo.label "Lingvo">
+<!ENTITY lingvo.context.find.label "Find a translation of &#34;{searchTermsCropped}&#34;">
+<!ENTITY lingvo.search.find.url "http://slovari.yandex.ru/{searchTerms}/перевод">
+
+<!ENTITY maps.label "Maps">
+<!ENTITY maps.search.url "http://maps.yandex.ua/?text={searchTerms}">
+
+<!ENTITY job.label "Jobs">
+<!ENTITY job.search.url "http://rabota.yandex.ua/search.xml?text={searchTerms}">
+
+<!ENTITY photos.label "Fotki">
+<!ENTITY photos.search.url "http://fotki.yandex.ua/search.xml?text={searchTerms}">
+
+<!ENTITY mycircle.label "Moi Krug">
+<!ENTITY mycircle.search.url "http://moikrug.ru/search/?ok=1&amp;charset=utf-8&amp;keywords={searchTerms}">
+
+<!ENTITY find.label "Searches">
+<!ENTITY find.search.url "http://nahodki.yandex.ua/results.xml?search={searchTerms}">
+
+<!ENTITY news.label "News">
+<!ENTITY news.search.url "http://news.yandex.ua/yandsearch?rpt=nnews2&amp;grhow=clutop&amp;text={searchTerms}">
+
+<!ENTITY tv.label "TV">
+<!ENTITY tv.search.url "http://tv.yandex.ua/search/?text={searchTerms}">
+
+<!ENTITY video.label "Video">
+<!ENTITY video.search.url "http://video.yandex.ua/search.xml?text={searchTerms}">
+
+<!ENTITY afisha.label "Afisha">
+<!ENTITY afisha.search.url "http://afisha.yandex.ua/search/?text={searchTerms}">
+
+<!ENTITY cards.label "Cards">
+<!ENTITY cards.url "http://cards.yandex.ua">
+<!ENTITY games.label "Games">
+<!ENTITY games.url "http://play.yandex.ru">
+<!ENTITY google.label "Google">
+<!ENTITY google.search.site-url "&google.search.url;&amp;as_sitesearch={searchSite}">
+<!ENTITY google.search.suggestions-url "http://suggestqueries.google.com.ua/complete/search?output=firefox&amp;client=firefox&amp;hl=en&amp;q={searchTerms}">
+<!ENTITY google.search.tooltip "Search in Google">
+<!ENTITY google.search.url "http://www.google.com.ua/search?hl=en&amp;as_q={searchTerms}">
+<!ENTITY google.url "http://www.google.com">
+<!ENTITY rambler.label "Rambler">
+<!ENTITY rambler.search.site-url "&rambler.search.url;&amp;filter={searchSite}">
+<!ENTITY rambler.search.suggestions-url "http://nova.rambler.ru/suggest?v=3&amp;query={searchTerms}">
+<!ENTITY rambler.search.tooltip "Search in Rambler">
+<!ENTITY rambler.search.url "http://nova.rambler.ru/srch?query={searchTerms}">
+<!ENTITY rambler.url "http://www.rambler.ru">
+<!ENTITY wiki.label "Wikipedia">
+<!ENTITY wiki.search.suggestions-url "http://uk.wikipedia.org/w/api.php?action=opensearch&amp;search={searchTerms}&amp;namespace=0&amp;suggest=">
+<!ENTITY wiki.search.tooltip "Search in Wikipedia">
+<!ENTITY wiki.search.url "http://uk.wikipedia.org/wiki/{searchTerms}">
+<!ENTITY wiki.url "http://uk.wikipedia.org">

@@ -1,0 +1,58 @@
+<!ENTITY notify.friend_request "просіць дадаць яго да сяброў">
+<!ENTITY notify.friend_request_f "просіць дадаць яе да сяброў">
+
+<!ENTITY notify.friends "{N} запыт на дадаванне да сяброў;{N} запыты на дадаванне да сяброў;{N} запытаў на дадаванне да сяброў">
+<!ENTITY plural.rule "7">
+<!ENTITY facebook.widget.name "Facebook">
+<!ENTITY facebook.settings.label "Інтэрвал абнаўлення">
+<!ENTITY facebook.settings.label_after "хв.">
+<!ENTITY facebook.settings.friend "Паказваць кнопку «Сябры» на панэлі">
+<!ENTITY facebook.settings.messages "Паказваць кнопку «Новыя паведамленні» на панэлі">
+<!ENTITY facebook.settings.notifications "Паказваць кнопку «Апавяшчэнні» на панэлі">
+<!ENTITY facebook.settings.share "Паказваць кнопку «Падзяліцца» на панэлі">
+<!ENTITY facebook.settings.msgsys "Выкарыстоўваць новую сістэму паведамленняў (Facebook Messages)">
+<!ENTITY facebook.settings.hideallbtn "Хаваць дадатковыя кнопкі пры адсутнасці аўтарызацыі">
+<!ENTITY menu.refresh "Абнавіць дадзеныя">
+<!ENTITY menu.lenta "Стужка навін">
+<!ENTITY menu.wall "Сцяна">
+<!ENTITY menu.friends "Спіс сяброў">
+<!ENTITY menu.messages "Паведамленні">
+<!ENTITY menu.notif "Апавяшчэнні">
+<!ENTITY menu.share "Падзяліцца спасылкай">
+<!ENTITY menu.setstatus "Напісаць паведамленне">
+<!ENTITY menu.fotovideo "Фотаздымкі/Відэа">
+<!ENTITY menu.notes "Нататкі">
+<!ENTITY menu.groups "Групы">
+<!ENTITY menu.events "Мерапрыемствы">
+<!ENTITY menu.logout "Выйсці">
+<!ENTITY please.auth "Калі ласка, аўтарызуйцеся">
+<!ENTITY main.tooltip "Мая старонка ў Facebook">
+<!ENTITY inet.error.main "На жаль, не атрыманая інфармацыя пра абнаўленні">
+<!ENTITY friend.tooltip "Запыты на дадаванне ў сябры ў Facebook">
+<!ENTITY inet.error.friend "На жаль, не атрыманая інфармацыя пра запыты">
+<!ENTITY menu.friend.req "Запыт ад {username}">
+<!ENTITY messages.tooltip "Новыя паведамленні ў Facebook">
+<!ENTITY inet.error.msg "На жаль, не атрыманая інфармацыя пра паведамленні">
+<!ENTITY menu.message.from "Паведамленне ад {username}">
+<!ENTITY notif.tooltip "Апавяшчэнні ў Facebook">
+<!ENTITY inet.error.notif "На жаль, не атрыманая інфармацыя пра апавяшчэнні">
+<!ENTITY share.tooltip "Падзяліцца спасылкай у Facebook">
+<!ENTITY user1 "карыстальніка">
+<!ENTITY user2 "Карыстальнік">
+<!ENTITY error.connect "Калі ласка, праверце сеткавае злучэнне">
+<!ENTITY error.auth "Не атрымалася аўтарызавацца">
+<!ENTITY error.net "Не атрымалася падключыцца да сервера Facebook">
+<!ENTITY error.unk "Невядомая памылка">
+
+<!ENTITY notify.messages "{N} новае паведамленне;{N} новыя паведамленні;{N} новых паведамленняў">
+
+<!ENTITY notify.notifications "{N} новае апавяшчэнне;{N} новыя апавяшчэнні;{N} новых апавяшчэнняў">
+<!ENTITY settings.show_notifications "Паказваць апавяшчэнні">
+<!ENTITY notify.fiends "{N} запыт на дадаванне да сяброў;{N} запыты на дадаванне да сяброў;{N} запытаў на дадаванне да сяброў">
+<!ENTITY notify.messages.foto "Адаслаў вам фота">
+<!ENTITY notify.messages.foto_f "Адаслала вам фота">
+<!ENTITY notify.messages_file "Адправіў вам паведамленне">
+<!ENTITY notify.messages_file_f "Адправіў вам паведамленне">
+<!ENTITY settings.show_friend_notifications "Паказваць усплывальныя апавяшчэнні пра запыты ў сябры">
+<!ENTITY settings.show_message_notifications "Паказваць усплывальныя апавяшчэнні пра паведамленні">
+<!ENTITY settings.show_notification_notifications "Паказваць усплывальныя апавяшчэнні пра іншыя падзеі">

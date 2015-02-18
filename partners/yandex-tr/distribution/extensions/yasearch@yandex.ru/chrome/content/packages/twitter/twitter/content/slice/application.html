@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+
+        
+
+        <script type="text/javascript" src="js/json.js"></script>
+        <script type="text/javascript" src="widget/xjsont.js"></script>
+        <script type="text/javascript" src="widget/platform.js"></script>
+        <script type="text/javascript" src="widget/http.js"></script>
+        <script type="text/javascript" src="widget/utils.js"></script>
+        <script type="text/javascript" src="widget/slice-commands.js"></script>
+        <script type="text/javascript" src="widget/twitter-api.js"></script>
+        <script type="text/javascript" src="js/counters.js"></script>
+
+        <script type="text/javascript" src="js/y.depends.js"></script>
+        <script type="text/javascript" src="js/y.js"></script>
+        <script type="text/javascript" src="js/y.anim.js"></script>
+        <script type="text/javascript" src="js/y.xml.js"></script>
+        <script type="text/javascript" src="js/y.localization.js"></script>
+        <script type="text/javascript" src="js/dtconverter.js"></script>
+        <script type="text/javascript" src="js/y.ui.js"></script>
+        <script type="text/javascript" src="js/y.ui.BodyEscHandler.js"></script>
+        <script type="text/javascript" src="js/y.ui.TabController.js"></script>
+        <script type="text/javascript" src="js/y.ui.MessageComposer.js"></script>
+        <script type="text/javascript" src="js/y.ui.Message.js"></script>
+        <script type="text/javascript" src="js/y.ui.Overlay.js"></script>
+        <script type="text/javascript" src="js/y.ui.Throbber.js"></script>
+        <script type="text/javascript" src="js/y.ui.MainRenderer.js"></script>
+        <script type="text/javascript" src="js/y.ui.Renderer.js"></script>
+        <script type="text/javascript" src="js/y.ui.DiffTimer.js"></script>
+        <script type="text/javascript" src="js/y.ui.Search.js"></script>
+        <script type="text/javascript" src="js/y.ui.Translate.js"></script>
+        <script type="text/javascript" src="js/y.ui.GetMore.js"></script>
+        <script type="text/javascript" src="js/twitlink.js"></script>
+        <link rel="stylesheet" href="style.css"></link>
+    </head>
+    <body id="body" onload="Y.init()" tabindex="1" class="-ui-CSSFixer">
+        <div id="layout-container">
+            <div class="layout layout-Messages -ui-MainRenderer">
+                <div class="top-area">
+                    <div class="view view-Login">
+                        <span class="login"></span>
+                        <a href="javascript:twitlink.logout()" class="action-link"><span class="-ui-Translate" message="twitter.slice.logout"></span></a>
+                    </div>
+                    <div class="view view-PostMessage">
+                        <div class="avatar-mini">
+                            <img class="avatar-mini-picture" />
+                        </div>
+                        <div class="message-composer -ui-MessageComposer">
+                            <div class="message-wrapper">
+                                <div class="bg bg-tl"><div></div></div>
+                                <div class="bg bg-tr"><div></div></div>
+                                <div class="bg bg-bl"><div></div></div>
+                                <div class="bg bg-br"><div></div></div>
+                                <div class="message-poster">
+                                    <div class="message-poster-header"></div>
+                                    <div class="charcounter-container">
+                                        <div class="charcounter"></div>
+                                        <div class="clear-all -ui-TranslateTitle" title-message="twitter.slice.composer.cancel"></div>
+                                    </div>
+                                    <textarea class="textarea"></textarea>
+                                </div>
+                            </div>
+                            <div class="message-status message-status-error">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <div class="value -message-status-text"></div>
+                                        </td>
+                                        <td>
+                                            <div class="buttons">
+                                                <button class="message-composer-send-iefake" title=""></button>
+                                                <button class="message-composer-shorten -ui-TranslateTitle" title-message="twitter.slice.composer.shorten-button.title"><img src="i/cut-url.png" /></button>
+                                                <button class="message-composer-send -ui-Translate" title-message="twitter.slice.composer.send-button.title" message="twitter.slice.composer.send-button.text"></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="messages-area">
+                    <div class="update-roller -ui-Throbber -ui-TranslateTitle" title-message="twitter.slice.throbber-tooltip">
+                        <div class="update-sprite"></div>
+                    </div>
+                    <div class="messages-area-content">
+                        <dl class="tabs -ui-TabController">
+                            <dt id="tab:home" class="tab tab-selected">
+                                <div class="tab-bg tab-bg-tl"></div><div class="tab-bg tab-bg-tr"></div><div class="tab-bg tab-bg-br"></div>
+                                <div class="tab-label">
+                                    <span class="d">
+                                        <span class="-ui-Translate" message="twitter.slice.tab-home.title"></span>
+                                        <span class="msg-counter -ui-HomeCounter"></span>
+                                    </span>
+                                    <div class="d-strut">
+                                        <span class="msg-counter -ui-Translate" message="twitter.slice.tab-home.title"></span>
+                                        <span class="msg-counter -ui-HomeCounter"></span>
+                                    </div>
+                                </div>
+                            </dt>
+                            <dd id="tab:home:content" class="tab-content">
+                                <div class="message-list -ui-HomeRenderer">
+                                    <div class="more -ui-GetMoreHome"></div>
+                                </div>
+
+                            </dd>
+
+                            <dt id="tab:mentions" class="tab">
+                                <div class="tab-bg tab-bg-tl"></div>
+                                <div class="tab-bg tab-bg-tr"></div>
+                                <div class="tab-bg tab-bg-br"></div>
+                                <div class="tab-label">
+                                    <span class="d">
+                                        <span class="-ui-Translate" message="twitter.slice.tab-mentions.title"></span>
+                                        <span class="msg-counter -ui-MentionsCounter"></span></span>
+                                    <div class="d-strut">
+                                        <span class="-ui-Translate" message="twitter.slice.tab-mentions.title"></span>
+                                        <span class="msg-counter -ui-MentionsCounter"></span></div>
+                                </div>
+                            </dt>
+                            <dd id="tab:mentions:content" class="tab-content">
+                                <div class="message-list -ui-MentionsRenderer">
+                                    <div class="more -ui-GetMoreMentions"></div>
+                                </div>
+                            </dd>
+
+                            <dt class="tab" id="tab:dms">
+                                <div class="tab-bg tab-bg-tl"></div>
+                                <div class="tab-bg tab-bg-tr"></div>
+                                <div class="tab-bg tab-bg-br"></div>
+                                <div class="tab-label">
+                                    <span class="d">
+                                        <span class="-ui-Translate" message="twitter.slice.tab-dms.title"></span>
+                                        <span class="msg-counter -ui-DMSCounter"></span></span>
+                                    <div class="d-strut">
+                                        <span class="-ui-Translate" message="twitter.slice.tab-dms.title"></span>
+                                        <span class="msg-counter -ui-DMSCounter"></span>
+                                    </div>
+                                </div>
+                            </dt>
+                            <dd id="tab:dms:content" class="tab-content">
+                                <div class="message-list -ui-DMRenderer">
+                                    <div class="more -ui-GetMoreDMS"></div>
+                                </div>
+                            </dd>
+
+                            <dt id="tab:search" class="tab">
+                                <div class="tab-bg tab-bg-tl"></div>
+                                <div class="tab-bg tab-bg-tr"></div>
+                                <div class="tab-bg tab-bg-br"></div>
+                                <div class="tab-label">
+                                    <span class="d">
+                                        <span class="-ui-Translate" message="twitter.slice.tab-search.title"></span>
+                                    </span>
+                                    <div class="d-strut">
+                                        <span class="-ui-Translate" message="twitter.slice.tab-search.title"></span>
+                                   	</div>
+                                </div>
+                            </dt>
+                            <dd id="tab:search:content" class="tab-content">
+                                <div class="message-list">
+                                    <div class="searchbox -ui-Search">
+                                        <input type="text" class="searchbox-input" />
+                                        <div class="search-icon"></div>
+                                    </div>
+                                    <div class="search-results -ui-SearchRenderer"></div>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                <div id="overlay" class="overlay -ui-Overlay"></div>
+            </div>
+        </div>
+    </body>
+</html>

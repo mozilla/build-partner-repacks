@@ -1,0 +1,6 @@
+<!ENTITY news.title "Новости">
+<!ENTITY news.tooltip "Новости онлайн">
+<!ENTITY news.interval_prefix "Интервал обновления">
+<!ENTITY news.interval_suffix "мин.">
+<!ENTITY news.error_message "Не удалось загрузить новости. Проверьте соединение с Интернет.">
+<!ENTITY news.absent_message "В данной категории нет новостей.">

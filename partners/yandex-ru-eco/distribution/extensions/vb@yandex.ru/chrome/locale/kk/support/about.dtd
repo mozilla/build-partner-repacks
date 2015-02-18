@@ -1,0 +1,39 @@
+<!ENTITY % brandNames SYSTEM "yafd://plus.branding/names.dtd">
+%brandNames;
+
+<!ENTITY aboutSupport.pageTitle "&product1.nom;">
+
+<!ENTITY aboutSupport.supportInfo.title "Қолдау қызметіне арналған мәліметтер">
+<!ENTITY aboutSupport.collectingInfo.label "мәліметтерді дайындау жүргізілуде">
+<!ENTITY aboutSupport.rebuildPack.label "Жаңарту">
+<!ENTITY aboutSupport.browserScreenshot.label "браузердің жаңа қойындыдағы түсірілімі">
+<!ENTITY aboutSupport.snapshotData.label "кеңейтімдер мен баптаулар туралы мәліметтер">
+<!ENTITY aboutSupport.debugLog.label "ретке келтіруші лог">
+<!ENTITY aboutSupport.fastdialData.label "көрнекі бетбелгілер туралы деректер">
+<!ENTITY aboutSupport.openInNewTab.label "Жаңа қойындыдан ашу">
+<!ENTITY aboutSupport.savePack.label "Былайша сақтау...">
+
+<!ENTITY aboutSupport.columnName "Аталым">
+<!ENTITY aboutSupport.columnVersion "Нұсқа">
+<!ENTITY aboutSupport.columnEnabled "Қосулы">
+<!ENTITY aboutSupport.columnId "ID">
+<!ENTITY aboutSupport.columnURL "URL">
+<!ENTITY aboutSupport.columnValue "Мәні">
+<!ENTITY aboutSupport.columnType "Үлгісі">
+
+<!ENTITY aboutSupport.basicsVersion "Нұсқа">
+<!ENTITY aboutSupport.basicsDate "Шығарылған күні">
+<!ENTITY aboutSupport.basicsOS "Жүйе">
+<!ENTITY aboutSupport.basicsBrowser "Браузер">
+<!ENTITY aboutSupport.basicsUserAgent "User-Agent">
+<!ENTITY aboutSupport.basicsTheme "Безендіру тақырыбы">
+<!ENTITY aboutSupport.basicsLightTheme "Безендіру тақырыбы (жеңіл)">
+
+<!ENTITY aboutSupport.extensionsTitle "Браузер кеңейтімі">
+<!ENTITY aboutSupport.componentsTitle "Компоненттер">
+<!ENTITY aboutSupport.extensionPreferencesTitle "Кеңейтім баптаулары">
+<!ENTITY aboutSupport.browserPreferencesTitle "Браузер баптаулары">
+
+<!ENTITY aboutSupport.restore.button "Қалпына келтіру">
+<!ENTITY aboutSupport.restore.title "Мұрағаттан қалпына келтіру">
+<!ENTITY aboutSupport.restore.nothing "Сақталған құжаттар әлі жоқ">

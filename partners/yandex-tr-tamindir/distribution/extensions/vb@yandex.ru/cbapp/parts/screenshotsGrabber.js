@@ -23,22 +23,36 @@ const screenshotsGrabber = {
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         this._application = application;
         this._logger = application.getLogger("ScreenshotsGrabber");
+        this._messageManagersMap = new WeakMap();
     },
     finalize: function ScreenshotsGrabber_finalize(doCleanup, callback) {
+        this._messageManagersMap = null;
         this._application = null;
         this._logger = null;
     },
     newInstance: function ScreenshotsGrabber_newInstance(aListener) {
         return new ScreenshotGrabber(aListener);
-    }
+    },
+    getWindowMessageManager: function ScreenshotsGrabber_getWindowMessageManager(window) {
+        if (!this._messageManagersMap.has(window)) {
+            let scriptURI = Services.io.newURI(__URI__, null, null);
+            let scriptURL = scriptURI.resolve("./contentScripts/screenshotsGrabber.js");
+            let messageManager = window.frameLoader.messageManager;
+            messageManager.loadFrameScript(scriptURL, false);
+            this._messageManagersMap.set(window, messageManager);
+        }
+        return this._messageManagersMap.get(window);
+    },
+    _messageManagersMap: null
 };
 function getPixelsDominantColor() {
     let colors = screenshotsGrabber._application.colors;
     return colors.getPixelsDominantColor.apply(colors, arguments);
 }
 function ScreenshotGrabber(aListener) {
-    if (!(aListener && "onScreenshotCreated" in aListener))
+    if (!(aListener && "onScreenshotCreated" in aListener)) {
         throw new Error("ScreenshotGrabber needs onScreenshotCreated for listener");
+    }
     this._listener = aListener;
     this._progressListener = new SShotProgressListener(this);
     this._canvasQueue = new YaCanvasQueue(this);
@@ -98,7 +112,7 @@ ScreenshotGrabber.prototype = {
         let iframe = doc.createElement("iframe");
         iframe.setAttribute("type", "content");
         iframe.setAttribute("yaSSURL", aURL);
-        iframe.setAttribute("style", "width: {W}px !important; height: {H}px !important;                  max-width: {W}px !important; max-height: {H}px !important;                  min-width: {W}px !important; min-height: {H}px !important;                  overflow: hidden !important;".replace(/\{W\}/g, this.SIZE.SCREEN.WIDTH).replace(/\{H\}/g, this.SIZE.SCREEN.HEIGHT));
+        iframe.setAttribute("style", ("width: {W}px !important; height: {H}px !important; " + "max-width: {W}px !important; max-height: {H}px !important; " + "min-width: {W}px !important; min-height: {H}px !important; " + "overflow: hidden !important;").replace(/\{W\}/g, this.SIZE.SCREEN.WIDTH).replace(/\{H\}/g, this.SIZE.SCREEN.HEIGHT));
         doc.lastChild.appendChild(iframe);
         let webNav = iframe.docShell.QueryInterface(Ci.nsIWebNavigation);
         webNav.stop(Ci.nsIWebNavigation.STOP_ALL);
@@ -125,8 +139,9 @@ ScreenshotGrabber.prototype = {
         } catch (e) {
             Cu.reportError(e);
         }
-        if (!hiddenWindow)
+        if (!hiddenWindow) {
             return null;
+        }
         delete this._hiddenWindow;
         this.__defineGetter__("_hiddenWindow", () => hiddenWindow);
         return this._hiddenWindow;
@@ -156,11 +171,12 @@ ScreenshotGrabber.prototype = {
         return this._framesArray.filter(aFrame => aFrame.contentDocument === aTarget)[0];
     },
     _isRequestSuccess: function ScreenshotGrabber__isRequestSuccess(aHttpStatus) {
-        return !!(aHttpStatus >= 200 && aHttpStatus <= 299 || aHttpStatus === 304);
+        return aHttpStatus >= 200 && aHttpStatus <= 299 || aHttpStatus === 304;
     },
     handleEvent: function ScreenshotGrabber_handleEvent(aEvent) {
-        if (!aEvent.isTrusted)
+        if (!aEvent.isTrusted) {
             return;
+        }
         switch (aEvent.type) {
         case "pageshow":
             if (this.__frameLoader && aEvent.target == this.__frameLoader.contentDocument) {
@@ -188,8 +204,8 @@ ScreenshotGrabber.prototype = {
         result.faviconUrl = this._safeUnicode(this.getDocumentFaviconURL(doc));
         screenshotsGrabber._application.cloudSource.getManifestFromDocument(doc, doc.location.href);
         new sysutils.Timer(function () {
-            this.requestFrameImageData(aTargetFrame, function (streamData, color) {
-                result.img = streamData;
+            this.requestFrameImageData(aTargetFrame, function (imgDataURL, color) {
+                result.imgDataURL = imgDataURL;
                 result.color = color;
                 aTargetFrame.parentNode.removeChild(aTargetFrame);
                 this._onFinishForURL(result);
@@ -212,15 +228,17 @@ ScreenshotGrabber.prototype = {
         }.bind(this);
         let checker = new sysutils.Timer(function () {
             let doc = frame.contentDocument;
-            if (!doc)
+            if (!doc) {
                 return;
-            if (doc.readyState !== "complete")
+            }
+            if (doc.readyState !== "complete") {
                 return;
+            }
             checker.cancel();
             forcer.cancel();
             pageLoadCall();
         }, 1000, true);
-        let forcer = new sysutils.Timer(function () {
+        var forcer = new sysutils.Timer(function () {
             try {
                 checker.cancel();
                 pageLoadCall();
@@ -230,69 +248,33 @@ ScreenshotGrabber.prototype = {
         }, this.CANVAS_CAPTURE_TIMEOUT);
     },
     requestFrameImageData: function ScreenshotGrabber_requestFrameImageData(aFrame, callback) {
-        let win = aFrame.contentWindow;
-        if (!win)
-            return;
-        let canvas = aFrame.ownerDocument.createElementNS(HTML_NS, "canvas");
-        let sbWidth = {};
-        let sbHeight = {};
-        try {
-            win.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils).getScrollbarSize(false, sbWidth, sbHeight);
-        } catch (e) {
-            sbWidth.value = sbHeight.value = 0;
-        }
-        let winWidth = win.innerWidth - sbWidth.value;
-        let winHeight = win.innerHeight - sbHeight.value;
-        canvas.mozImageSmoothingEnabled = true;
-        canvas.width = this.SIZE.CANVAS.WIDTH;
-        canvas.height = this.SIZE.CANVAS.HEIGHT;
-        let scale = Math.min(Math.max(canvas.width / winWidth, canvas.height / winHeight), 1);
-        let scaledWidth = winWidth * scale;
-        let scaledHeight = winHeight * scale;
-        if (scaledHeight > canvas.height)
-            winHeight -= Math.floor(Math.abs(scaledHeight - canvas.height) * scale);
-        if (scaledWidth > canvas.width)
-            winWidth -= Math.floor(Math.abs(scaledWidth - canvas.width) * scale);
-        let ctx = canvas.getContext("2d");
-        ctx.save();
-        ctx.scale(scale, scale);
-        ctx.drawWindow(win, 0, 0, winWidth, winHeight, "rgb(255,255,255)", ctx.DRAWWINDOW_DO_NOT_FLUSH);
-        ctx.restore();
-        if (this.smoothEnabled)
-            this._smoothCanvas(canvas);
-        let imgPixels = ctx.getImageData(0, 0, this.SIZE.CANVAS.WIDTH, this.SIZE.CANVAS.HEIGHT);
-        let color = getPixelsDominantColor(imgPixels, {
-            startX: 0,
-            startY: 0,
-            preventSkipColors: false
-        });
-        let asyncStreamCallback = {
-            onInputStreamReady: function (streamData) {
-                callback(streamData, color);
-            },
-            QueryInterface: XPCOMUtils.generateQI([
-                Ci.nsISupports,
-                Ci.nsIInputStreamCallback
-            ])
+        let screenId = [
+            Date.now(),
+            Math.random()
+        ].join(":");
+        const MESSAGE_NAME_PREFIX = "vb@yandex.ru:screenshotsGrabber:";
+        let messageManager = screenshotsGrabber.getWindowMessageManager(aFrame);
+        let messageListener = function messageListener({data}) {
+            if (data.screenId !== screenId) {
+                return;
+            }
+            messageManager.removeMessageListener(MESSAGE_NAME_PREFIX + "didCapture", messageListener);
+            let color = getPixelsDominantColor(data.imgPixels, {
+                startX: 0,
+                startY: 0,
+                preventSkipColors: false
+            });
+            callback(data.imgDataURL, color);
         };
-        Services.tm.currentThread.dispatch(function () {
-            canvas.mozFetchAsStream(asyncStreamCallback);
-        }.bind(this), Ci.nsIThread.DISPATCH_NORMAL);
-    },
-    _smoothCanvas: function ScreenshotGrabber__smoothCanvas(aCanvas) {
-        let w = aCanvas.width;
-        let h = aCanvas.height;
-        let tmpCanvas = aCanvas.ownerDocument.createElementNS(HTML_NS, "canvas");
-        let ctx = aCanvas.getContext("2d");
-        let tmpCtx = tmpCanvas.getContext("2d");
-        for (let i = 0; i < 1; i++) {
-            let _w = Math.round(w - i);
-            let _h = Math.round(h - i);
-            tmpCanvas.width = _w;
-            tmpCanvas.height = _h;
-            tmpCtx.drawImage(aCanvas, 0, 0, _w, _h);
-            ctx.drawImage(tmpCanvas, 0, 0, w, h);
-        }
+        messageManager.addMessageListener(MESSAGE_NAME_PREFIX + "didCapture", messageListener);
+        messageManager.sendAsyncMessage(MESSAGE_NAME_PREFIX + "capture", {
+            screenId: screenId,
+            canvasSize: {
+                width: this.SIZE.CANVAS.WIDTH,
+                height: this.SIZE.CANVAS.HEIGHT
+            },
+            smoothEnabled: this.smoothEnabled
+        });
     },
     getDocumentFaviconURL: function ScreenshotGrabber__getDocumentFaviconURL(aDocument) {
         function getSize(element) {
@@ -353,8 +335,9 @@ YaCanvasQueue.prototype = {
         this._elements.length = 0;
     },
     add: function YaCanvasQueue_add(aURL) {
-        if (this.isURLInQueue(aURL))
+        if (this.isURLInQueue(aURL)) {
             return false;
+        }
         this._elements.push({
             url: aURL,
             active: false
@@ -373,8 +356,9 @@ YaCanvasQueue.prototype = {
         return this._elements.filter(el => el.active === true).length;
     },
     checkNeedProccess: function YaCanvasQueue_checkNeedProccess() {
-        if (this.isEmpty || !this._grabber.isGrabberFrameReady)
+        if (this.isEmpty || !this._grabber.isGrabberFrameReady) {
             return false;
+        }
         let element;
         while (this.activeElementsLength < this._activeElementsMaxLength && (element = this.nextElement)) {
             element.active = true;
@@ -409,11 +393,13 @@ SShotProgressListener.prototype = {
     onStateChange: function SShotProgressListener_onStateChange(aWebProgress, aRequest, aStateFlags, aStatus) {
         if (aStateFlags & Ci.nsIWebProgressListener.STATE_IS_WINDOW && aStateFlags & Ci.nsIWebProgressListener.STATE_IS_NETWORK && aStateFlags & Ci.nsIWebProgressListener.STATE_STOP) {
             aWebProgress.QueryInterface(Ci.nsIWebNavigation);
-            if (!aWebProgress.document)
+            if (!aWebProgress.document) {
                 return;
+            }
             let targetFrame = this.screenshotGrabber._getFrameForDocument(aWebProgress.document);
-            if (!targetFrame)
+            if (!targetFrame) {
                 return;
+            }
             let httpStatus = this._getRequestStatus(targetFrame);
             let cacheListener = {
                 onCacheEntryAvailable: function SShotCacheListener_onCacheEntryAvailable(entry) {

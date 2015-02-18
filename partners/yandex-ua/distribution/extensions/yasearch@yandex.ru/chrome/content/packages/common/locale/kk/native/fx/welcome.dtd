@@ -1,0 +1,45 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY welcome.dialog.title "Менің &product2.nom;ым"> 
+
+<!ENTITY welcome.login.button.label "Кіру">
+
+<!ENTITY welcome.enter.label "Кіру">
+<!ENTITY welcome.mybar.label "&product1.nom;">
+
+<!ENTITY welcome.login.label "Пайдаланушының аты">
+<!ENTITY welcome.login.vaild.tooltiptext "Пайдаланушының аты латын рәміздері, цифрлерден жалаң дефис немесе нүктеден тұрып, әріптен басталып&#160;әріп немесе цифрмен аяқталуына тиіс">
+<!ENTITY welcome.password.label "Құпиясөз">
+<!ENTITY welcome.store-password.label "мені есте сақтаңыз">
+<!ENTITY welcome.remember-password.1.label "құпиясөзді">
+<!ENTITY welcome.remember-password.2.label "ұмыттыңыз&#160;ба">
+<!ENTITY welcome.registration.label "тіркеу">
+
+<!ENTITY welcome.show.label "көрсету">
+<!ENTITY welcome.hide.label "жасыру">
+
+<!ENTITY welcome.maxErrors1.label "мына арқылы кіріп көріңіз&#160;">
+<!ENTITY welcome.maxErrors2.label "Яндекс.Паспорт">
+
+<!ENTITY welcome.status.request.error.label "Көңіл-күй жіберілмей қалды!">
+<!ENTITY welcome.status.request.error.close.label "жабу">
+<!ENTITY welcome.status.empty.label "көңіл-күйсіз">
+
+<!ENTITY welcome.status.request.label "Кіру орындалып жатыр">
+<!ENTITY welcome.status.error.label "Логин мен құпиясөздің дұрыстығын тексеріңіз">
+<!ENTITY welcome.status.neterror.label "Жүйемен байланысты тексеріңіз">
+
+<!ENTITY welcome.user.switch.label "Пайдаланушыны ауыстыру">
+<!ENTITY welcome.user.exit.label "Шығу">
+
+<!ENTITY services.iuse.label "Мен пайдаланып жатырмын">
+<!ENTITY services.iuse.all.label "Менің барлық сервистерім">
+<!ENTITY services.status.request.label "Мәліметтер алынып жатыр">
+<!ENTITY services.status.error.label "Мәліметтердің алынуына байланысты қателік">
+
+<!ENTITY welcome.go.registration.label "тіркелу">
+<!ENTITY welcome.go.remember.password.label "құпиясөзді еске түсіру">
+<!ENTITY welcome.or.label "немесе">
+<!ENTITY welcome.social.enter.label "арқылы кіру">
+<!ENTITY welcome.strange.computer.label "бөгде компьютер">

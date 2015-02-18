@@ -1,0 +1,53 @@
+<?xml version='1.0'?>
+<!DOCTYPE component SYSTEM "/native/fx/pagetranslator.dtd"><gui:component xmlns:gui="http://bar.yandex.ru/dev/native/gui" xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <html:script type="application/javascript;version=1.8"><![CDATA[
+        let JSProtoObject = {
+            onShow: function () {
+                let tlang = this._pluginCore.translator.language;
+
+                let menulist = document.getElementById("{{UNIC_STR}}-menulist-tlang");
+                let menuitems = menulist.menupopup.childNodes;
+                for (let i = 0, length = menuitems.length; i < length; i++) {
+                    let item = menuitems[i];
+                    if (item.value === tlang) {
+                        menulist.selectedItem = item;
+                        break;
+                    }
+                }
+            },
+
+            onApply: function () {
+                let menulist = document.getElementById("{{UNIC_STR}}-menulist-tlang");
+                if (menulist) {
+                    this._pluginCore.Prefs.setValue("tlang", menulist.selectedItem.value);
+                }
+            },
+
+            _pluginCore: JSNativeModule.core
+        };
+    ]]>
+    </html:script>
+
+    <preferences>
+        <preference id="tlang" name="tlang" gui:resetOnRestore="true" type="string"/>
+    </preferences>
+
+    <gui:gui onapply="JSProtoObject.onApply()" onshown="JSProtoObject.onShow()">
+
+        <gui:nodes>
+            <vbox align="start">
+                <label>&pagetranslator.settings.tlang.label;</label>
+                <menulist id="{{UNIC_STR}}-menulist-tlang">
+                    <menupopup>
+                        <menuitem label="&pagetranslator.notification.english.nom;" value="en"/>
+                        <menuitem label="&pagetranslator.notification.russian.nom;" value="ru"/>
+                        <menuitem label="&pagetranslator.notification.ukrainian.nom;" value="uk"/>
+                        <menuitem label="&pagetranslator.notification.turkish.nom;" value="tr"/>
+                    </menupopup>
+                </menulist>
+            </vbox>
+        </gui:nodes>
+    </gui:gui>
+
+</gui:component>

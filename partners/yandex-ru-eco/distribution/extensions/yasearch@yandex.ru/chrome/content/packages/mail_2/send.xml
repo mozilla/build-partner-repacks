@@ -1,0 +1,315 @@
+<?xml version="1.0"?>
+<widget icon="icons/send.png" name="Мой Мир. Мои сообщения" xmlns="http://bar.yandex.ru/dev/gui" xmlns:f="http://bar.yandex.ru/dev/functional">
+   
+    <f:setting default="10" name="update-interval" scope="widget">
+        <control label="Интервал обновления:" label-after="мин." max="1000" min="0" type="textedit" value-type="int"/>
+    </f:setting>
+    
+     <f:setting default="false" name="showText" scope="widget">
+      <control label="Показывать текст на кнопке" type="checkbox"/>
+     </f:setting>
+    
+    <f:variable name="update-id" scope="instance"/>
+	
+	<f:variable name="update-id-1" scope="instance"/>
+    
+    <f:variable name="throbber-end-time" scope="instance"/>
+    
+    <f:data name="show-throbber">
+        <f:not>
+            <f:or>
+                <f:is-empty>
+                    <f:value-of name="update-id"/>
+                </f:is-empty>
+                <f:and>
+                    <f:finished>
+                        <f:value-of name="update-id"/>
+                    </f:finished>
+                    <f:time-arrived>
+                        <f:value-of name="throbber-end-time"/>
+                    </f:time-arrived>
+                </f:and>
+            </f:or>
+        </f:not>
+    </f:data>
+    
+<f:data name="cookie">
+        <f:cookie>
+            <f:value type="string">http://win.mail.ru/</f:value>
+            <f:value type="string">Mpop</f:value>
+        </f:cookie>
+</f:data>
+
+<f:data name="username">
+        <f:try>
+        <f:regex-search expression="[^@]+">
+                <f:regex-search expression=":[^:]*:([^:]*)">
+      
+                    <f:value-of name="cookie"/>
+    
+            </f:regex-search>
+            </f:regex-search>
+            <f:param name="...">
+                <f:value type="empty"/>
+            </f:param>
+        </f:try>
+</f:data>
+
+<f:data name="server">
+        <f:try>
+        <f:regex-search expression="\w+">
+        	<f:regex-search expression="@\w+">
+            		<f:regex-search expression=":[^:]*:([^:]*)">
+      
+                    <f:value-of name="cookie"/>
+    			</f:regex-search>
+            </f:regex-search>
+        </f:regex-search>
+            <f:param name="...">
+                <f:value type="empty"/>
+            </f:param>
+        </f:try>
+</f:data>
+
+<f:data name="friends">
+        <f:request>
+            <f:param name="url">
+                    <f:value type="string">http://my.mail.ru/my/friends</f:value>
+            </f:param>
+            <f:param name="format">
+                	<f:value type="string">text</f:value>
+            </f:param>
+            <f:param name="update">
+                <f:mul>
+                    <f:value-of name="update-interval"/>
+                    <f:value type="number">60</f:value>
+                </f:mul>
+            </f:param>
+            <f:param name="expire">
+                <f:value type="number">0</f:value>
+            </f:param>
+            <f:param name="hidden.login">
+                <f:value-of name="cookie"/>
+            </f:param>
+        </f:request>
+</f:data>
+   
+<f:data name="send">
+        <f:request>
+            <f:param name="url">
+            <f:concat>
+                    <f:value type="string">http://my.mail.ru/</f:value>
+                    <f:value-of name="server"/>
+                    <f:value type="string">/</f:value>
+                    <f:value-of name="username"/>
+                    <f:value type="string">/</f:value>
+            </f:concat>
+            </f:param>
+            <f:param name="format">
+                	<f:value type="string">text</f:value>
+            </f:param>
+            <f:param name="update">
+                <f:mul>
+                    <f:value-of name="update-interval"/>
+                    <f:value type="number">60</f:value>
+                </f:mul>
+            </f:param>
+            <f:param name="expire">
+                <f:value type="number">0</f:value>
+            </f:param>
+            <f:param name="hidden.login">
+                <f:value-of name="cookie"/>
+            </f:param>
+        </f:request>
+</f:data>
+
+<f:data name="send-serch">
+        <f:try>
+        <f:regex-search expression="\d+">
+            <f:regex-search>
+                <f:value type="string">Сообщения\D{1,65}\mf_navInfNew booster-sc\D+\d+</f:value>
+                <f:content>
+                    <f:value-of name="send"/>
+                </f:content>
+            </f:regex-search>
+            </f:regex-search>
+            <f:param name="...">
+                <f:value type="empty"/>
+            </f:param>
+        </f:try>
+</f:data> 
+
+<f:data name="username_error_1">
+<f:try>
+            <f:regex-search>
+                <f:value type="string">новые предложения дружбы</f:value>
+                <f:content>
+                    <f:value-of name="friends"/>
+                </f:content>
+            </f:regex-search>
+            <f:param name="...">
+                <f:value type="empty"/>
+            </f:param>
+        </f:try>
+</f:data> 
+ 
+<f:data name="username_error">
+        <f:if>
+                    	<f:try>
+                       	 	<f:not-equal>
+                          	  	<f:value-of name="username_error_1"/>
+                         	  	 <f:value type="string">новые предложения дружбы</f:value>
+                       		 </f:not-equal>
+                   	 </f:try>
+                   	 	<f:value type="string">true</f:value>
+                   	 	<f:value type="string">false</f:value>
+                       </f:if>
+</f:data>
+
+<f:data name="text">
+        <f:if>
+          <f:try>
+                       	 	<f:not-equal>
+                          	  	<f:value-of name="send-serch"/>
+                         	  	 <f:value type="string"></f:value>
+                       		 </f:not-equal>
+                   	 </f:try>
+                   	 	<f:concat>
+                  			<f:value type="string">&#160;(</f:value>
+               				<f:value-of name="send-serch"/>
+                    			<f:value type="string">)</f:value>
+            			</f:concat>
+                   	 	<f:value type="string"></f:value>
+                       </f:if>
+</f:data>
+
+<f:data name="tooltip">
+        <f:if>
+          <f:try>
+                       	 	<f:equal>
+                          	  	<f:value-of name="send-serch"/>
+                         	  	 <f:value type="string"></f:value>
+                       		 </f:equal>
+                   	 </f:try>
+                   	 	<f:value type="string">Мои сообщения в Моем Мире</f:value>
+                   	 	<f:value type="string">Новые сообщения в Моем Мире</f:value>
+                   	 	
+                       </f:if>
+</f:data>
+
+<f:data name="send_text">
+<f:if>
+			<f:try>
+                       	 	<f:not-equal>
+                          	  	<f:value-of name="send-serch"/>
+                         	  	 <f:value type="string"></f:value>
+                       		 </f:not-equal>
+            </f:try>
+                   	 	<f:concat>
+                  			<f:value type="string">&#160;</f:value>
+               				<f:value-of name="send-serch"/>
+            			</f:concat>
+                   	 	<f:value type="string"></f:value>
+        </f:if>
+</f:data>
+
+    <button>
+    
+    	<icon>            
+			<f:if>
+                <f:value-of name="show-throbber"/>
+                <f:value type="string">xb://toolkit/images/throbber.gif</f:value>
+                <f:value type="string">icons/send.png</f:value>
+            </f:if>
+        </icon>
+        			
+       	<text>
+       	
+       	<f:optional>       
+			<f:value-of name="showText"/>
+		
+		Мои сообщения
+		
+		 <style font-weight="bold"><f:value-of name="text"/></style>
+       	</f:optional>
+       	
+       	<f:optional>       
+       			<f:not>
+					<f:value-of name="showText"/>
+       			</f:not>
+       	
+		<style font-weight="bold"><f:value-of name="send_text"/></style>
+        
+        </f:optional>
+        
+       	</text>
+		
+       	<url>http://my.mail.ru/dialogues</url>
+		
+       	<f:optional>       
+			<f:value-of name="username_error"/>
+			
+			<tooltip>Вы не авторизированны</tooltip>
+	
+		</f:optional>
+	
+	
+	
+       	<f:optional>
+		 <f:not>
+                <f:value-of name="username_error"/>
+            	 </f:not>
+
+         <tooltip><f:value-of name="tooltip"/></tooltip>
+       
+       
+
+	
+	
+	<menu>
+	<menuitem>
+	<icon>icons/send.png</icon>
+	<text>Мои сообщения</text>
+	<url>http://my.mail.ru/dialogues</url>
+	</menuitem>
+	
+	<menuitem>
+	<icon>icons/1.png</icon>
+	<text>Написать сообщение</text>
+	<url>http://my.mail.ru/my/dialogues?sendmsg</url>
+	</menuitem>
+	
+	<menuitem>
+	<icon>icons/2.png</icon>
+	<text>Начать конференцию</text>
+	<url>http://my.mail.ru/my/conference?create=1</url>
+	</menuitem>
+	
+<separator/>
+  
+	<menuitem>     
+                <text>Обновить</text>
+                <action>
+                    <f:assign name="update-id">
+                        <f:update>
+							<f:value-of name="send"/>
+						</f:update>
+					</f:assign>
+					<f:assign name="update-id-1">
+                        <f:update>
+							<f:value-of name="friends"/>
+						</f:update>
+					</f:assign>
+                  <f:assign name="throbber-end-time">
+                        <f:add>
+                            <f:timestamp/>
+                            <f:value type="number">3</f:value>
+                        </f:add>
+                    </f:assign>
+                </action>
+         </menuitem>
+	</menu>
+      	</f:optional>
+    	</button>
+    	
+</widget>

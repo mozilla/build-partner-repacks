@@ -1,0 +1,71 @@
+<!ENTITY action.hide-message-foto "Hide photo">
+<!ENTITY action.show-message-foto "Show photo">
+<!ENTITY html.network-error.net "Unable to connect to server">
+<!ENTITY html.network-error.aut "The authorization has failed">
+<!ENTITY html.network-error.aut-2 "Please check your network connection">
+<!ENTITY overlay.action.direct-msg "Write a direct message">
+<!ENTITY sad-bird.no-msg-limit "The allowable number of queries has been exceeded. Please way 15 minutes and try again.">
+<!ENTITY slice.composer.desc.dm "Message for {username}">
+<!ENTITY slice.msg.error.nofriend "You can send messages only to your followers">
+
+<!ENTITY twitter.tooltip.ie.lock "Read and post Twitter messages&#13;Please log in">
+<!ENTITY twitter.tooltip.ie.good "User&#39;s Twitter ">
+<!ENTITY twitter.auth.ie "Twitter / Authorize the application">
+
+<!ENTITY twitter.toolbarbutton.tooltip-unregistered "Read and post Twitter messages\nPlease log in">
+<!ENTITY twitter.toolbarbutton.tooltip-registered "User&#39;s Twitter {username}">
+
+<!ENTITY twitter.slice.title "Twitter">
+<!ENTITY twitter.slice.logout "Log out">
+<!ENTITY twitter.slice.throbber-tooltip "Refresh">
+<!ENTITY twitter.slice.overlay-close "Close">
+<!ENTITY twitter.slice.composer.cancel "Cancel">
+<!ENTITY twitter.slice.composer.send-button.text "Send">
+<!ENTITY twitter.slice.composer.shorten-button.title "Paste shortened address of the current page">
+<!ENTITY twitter.slice.tab-home.title "Home">
+<!ENTITY twitter.slice.tab-mentions.title "Mentions">
+<!ENTITY twitter.slice.tab-dms.title "Direct messages">
+<!ENTITY twitter.slice.tab.load-more "Show more">
+<!ENTITY twitter.slice.tab-search.title "Search">
+<!ENTITY twitter.widget.name "Twitter">
+<!ENTITY twitter.widget.setting.show-username "Show user name">
+<!ENTITY twitter.widget.setting.update-interval "Refresh in">
+<!ENTITY twitter.widget.setting.update-interval-units "min.">
+<!ENTITY twitter.dialog.auth.default-title "Loading...">
+<!ENTITY twitter.dialog.post.title "Share">
+<!ENTITY twitter.dialog.share.title "Share via Twitter">
+<!ENTITY slice.msg.sending "Sending message...">
+<!ENTITY slice.msg.sent "Message sent">
+<!ENTITY slice.msg.error "Sending error">
+<!ENTITY slice.msg.error.duplicate "Duplicate message">
+<!ENTITY slice.msg.error.shorten-failed "Could not shorten current page address">
+<!ENTITY msg.user-info "User info">
+<!ENTITY msg.user-follow "Follow">
+<!ENTITY msg.user-unfollow "Unfollow">
+<!ENTITY action.share "Retweet">
+<!ENTITY action.reply "Reply">
+<!ENTITY action.direct-reply "Reply">
+<!ENTITY action.delete "Delete">
+<!ENTITY action.favorite "Favorites">
+<!ENTITY sad-bird.default-text "No tweets">
+<!ENTITY sad-bird.no-home-1 "The feed appears rather empty now. When you add other users, their messages will start appearing here. So hurry ">
+<!ENTITY sad-bird.no-home-2 "to find interesting people">
+<!ENTITY sad-bird.no-home-3 "! Let the world know&#160;about what is happening.">
+<!ENTITY sad-bird.no-mentions "Replies and tweets mentioning you appear here.">
+<!ENTITY sad-bird.no-dms "No private messages.">
+<!ENTITY sad-bird.no-search-1 "No tweets matching the query “">
+<!ENTITY sad-bird.no-search-2 "”">
+<!ENTITY sad-bird.no-home-net "Could not retrieve messages from the feed. Check network connection.">
+<!ENTITY sad-bird.no-mentions-net "Could not retrieve replies and tweets mentioning you. Check network connection.">
+<!ENTITY sad-bird.no-dms-net "Could not retrieve private messages. Check network connection.">
+<!ENTITY sad-bird.no-search-net-1 "Could not retrieve tweets matching the query “">
+<!ENTITY sad-bird.no-search-net-2 "”. Check network connection.">
+<!ENTITY overlay.view-fool-profile-link "view complete profile">
+<!ENTITY overlay.action.follow "follow">
+<!ENTITY overlay.action.following "following">
+<!ENTITY overlay.action.unfollow "unfollow">
+<!ENTITY overlay.tweet-count "tweet count">
+<!ENTITY overlay.friends-count "fiends count">
+<!ENTITY overlay.followers-count "followers">
+<!ENTITY overlay.lists-count "lists">
+<!ENTITY settings.show_notifications "Show notifications">

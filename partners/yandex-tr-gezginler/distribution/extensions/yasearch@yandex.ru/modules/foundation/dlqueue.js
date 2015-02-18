@@ -7,13 +7,12 @@ function DownloadQueue(queue, callback, progressmeter) {
     if (this.progressmeter) {
         this.progressmeter.value = 0;
     }
-    if (this.queue.length == 0) {
+    if (this.queue.length === 0) {
         this.checkDefer();
         return;
     }
     this.start();
 }
-;
 DownloadQueue.prototype = {
     start: function DownloadQueue_start() {
         let failed = false;

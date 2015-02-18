@@ -1,0 +1,9 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbar[mode=full] toolbarbutton>.toolbarbutton-icon,toolbar[mode=full] toolbarbutton:not([class~=yb-no-label])>toolbarbutton>.icons-holder{margin-right:4px!important}
+toolbar[mode=full] toolbarbutton[class~=yb-no-label] .toolbarbutton-text{display:none}
+toolbar[mode=full] toolbarbutton[class~=yb-no-label] .toolbarbutton-icon{margin:0!important}
+toolbarbutton[type=menu-button].label2{-moz-binding:url(../bindings/buttons.xbl#extended-menu-toolbarbutton)}
+toolbarbutton[type=menu-button].label2 toolbarbutton{-moz-binding:url(../bindings/buttons.xbl#extended-toolbarbutton)}
+toolbarbutton.label2{-moz-binding:url(../bindings/buttons.xbl#extended-toolbarbutton)}
+toolbarbutton[type=menu-button].yauth-button toolbarbutton,toolbarbutton:not([type=menu-button]).yauth-button{-moz-binding:url(../bindings/buttons.xbl#yauth-toolbarbutton)}
+toolbarbutton[type=menu-button].ycounter-button toolbarbutton,toolbarbutton:not([type=menu-button]).ycounter-button{-moz-binding:url(../bindings/buttons.xbl#ycounter-toolbarbutton)}
+toolbarbutton[type=menu-button][loading=true].label2,toolbarbutton[type=menu-button][loading=true].label2 toolbarbutton{list-style-image:url(xb://toolkit/images/throbber.gif)!important;-moz-image-region:rect(0,0,0,0)!important}

@@ -1,0 +1,27 @@
+<!ENTITY mailru.widget.name "Почта Mail.Ru">
+<!ENTITY mailru.settings.update-time.label "Интервал обновления:">
+<!ENTITY mailru.settings.update-time.label_after "мин.">
+<!ENTITY mailru.settings.show-button-main-text "Отображать название кнопки «Mail.Ru»">
+<!ENTITY mailru.settings.show-button-newmsg-text "Отображать название кнопки «Написать письмо»">
+<!ENTITY mailru.settings.new-message.show "Отображать кнопку «Написать письмо»">
+<!ENTITY mailru.main-button.text "Mail.Ru">
+<!ENTITY mailru.main-button.tooltiptext.auth_none "Показывает новые сообщения в почте Mail.Ru&#13;Пожалуйста, авторизуйтесь">
+<!ENTITY mailru.main-button.tooltiptext.update_failed "Почта Mail.Ru&#13;К сожалению, информацию о ваших письмах получить не удалось">
+
+<!ENTITY mailru.main-button.tooltiptext.ok_template "В вашем почтовом ящике&#13;{$address}&#13;{$new_msg_wordform}">
+<!ENTITY mailru.main-button.tooltiptext.ok_template.no_messages "нет новых сообщений">
+
+<!ENTITY mailru.main-button.tooltiptext.ok_template.plural_forms "{N} новое сообщение;{N} новых сообщения;{N} новых сообщений">
+<!ENTITY mailru.main-button.menu.check_mail "Проверить почту">
+<!ENTITY mailru.main-button.menu.new_message "Написать письмо">
+<!ENTITY mailru.main-button.menu.read_mail "Читать письма">
+<!ENTITY mailru.main-button.menu.open_address_book "Открыть адресную книгу">
+<!ENTITY mailru.main-button.menu.show_settings "Настройки">
+<!ENTITY mailru.main-button.menu.logout "Выход">
+<!ENTITY mailru.new-message.text "Написать">
+<!ENTITY mailru.new-message.tooltiptext.auth_none "Позволяет быстро перейти к написанию письма.&#13;Пожалуйста, авторизуйтесь">
+<!ENTITY mailru.new-message.tooltiptext.auth_ok "Написать письмо">
+<!ENTITY error.connect "Пожалуйста, проверьте сетевое соединение">
+<!ENTITY error.auth "Не удалось авторизоваться">
+<!ENTITY error.auth.net "Не удалось подключиться к серверу Mail.Ru для авторизации">
+<!ENTITY settings.show_notifications "Показывать уведомления">

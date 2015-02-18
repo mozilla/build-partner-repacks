@@ -1,0 +1,8 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY widget.name "&vendor.nom;">
+<!ENTITY widget.action.openSettingsDialod.label "Ayarlar">
+<!ENTITY widget.action.openSettingsDialod.tooltip "Ayarlar penceresini aç">
+<!ENTITY widget.action.openAboutDialog.label "Hakkında">
+<!ENTITY widget.action.openAboutDialog.tooltip "Hakkında">

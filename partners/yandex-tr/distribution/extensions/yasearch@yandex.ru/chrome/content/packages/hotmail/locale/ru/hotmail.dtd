@@ -1,0 +1,25 @@
+<!ENTITY hotmail.name "Почта Hotmail">
+
+<!ENTITY hotmail.settings.update-interval.label "Интервал обновления">
+<!ENTITY hotmail.settings.update-interval.label-after "мин.">
+<!ENTITY hotmail.settings.show-button-name.label "Показывать название кнопки">
+
+<!ENTITY hotmail.tooltip.AUTH_NONE "Новые сообщения в почте Windows Live Hotmail\nПожалуйста, авторизуйтесь">
+<!ENTITY hotmail.tooltip.AUTH_UNKNOWN "Windows Live Hotmail\n$mailbox\nК сожалению, информацию о ваших письмах получить не удалось">
+<!ENTITY hotmail.tooltip.AUTH_OK "Windows Live Hotmail\nВаши сообщения в почтовом ящике\n$mailbox\nНовые: $unreadCount">
+
+<!ENTITY hotmail.button.text "Hotmail">
+
+<!ENTITY hotmail.menu.refresh "Проверить почту">
+<!ENTITY hotmail.menu.write_letter "Написать письмо">
+<!ENTITY hotmail.menu.read_letter "Читать письма">
+<!ENTITY hotmail.menu.addressbook "Открыть контакты">
+<!ENTITY hotmail.menu.logout "Выход">
+
+<!ENTITY hotmail.loginform.title "Доступ к Hotmail">
+<!ENTITY hotmail.loginform.save-password "Сохранить">
+<!ENTITY hotmail.loginform.sign-in "Войти">
+<!ENTITY hotmail.loginform.cancel "Отмена">
+<!ENTITY hotmail.loginform.password "Пароль:">
+<!ENTITY hotmail.loginform.error.server "Не удалось подключиться к серверу">
+<!ENTITY hotmail.loginform.error.auth "Неверный логин или пароль">

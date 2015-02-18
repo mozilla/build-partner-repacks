@@ -1,0 +1,82 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % games SYSTEM "/games.dtd">
+%games;
+]>
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <binding extends="//toolkit/native/bindings/widget.xml#widget" id="widget">
+        <content>
+            <xul:toolbarbutton anonid="games-button" class="chromeclass-toolbar-additional toolbarbutton-1" oncommand="toggleWindow();" style="list-style-image: url('/icons/games.svg'); padding: 3px;" tooltiptext="&games.tooltip;" type="button"/>
+        </content>
+        <implementation>
+
+            <field name="mButton" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "games-button");]]></field>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this.module.checkFlashInstalled())
+        this.setButtonStatus();
+    else
+        this.setDisabled();]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[]]></body>
+            </method>
+
+            <method name="toggleWindow">
+                <body><![CDATA[    if (!this.module.popupWindow || this.module.popupWindow.closed) {
+        this.module.statLog("button");
+        this.module.popupWindow = window.openDialog(this.savedLocation || this.module.popupURL, null, [
+            "alwaysRaised=no",
+            "resizable=no",
+            "scrollbars=no",
+            "dialog=yes",
+            "dependent=no",
+            "minimizable=yes"
+        ].join(","), null);
+        this.module.popupWindow.barApi = this.module.barApi;
+        this._setPosition(this.module.popupWindow);
+    } else {
+        this.module.popupWindow.close();
+    }
+    this.module.checkOnClose();]]></body>
+            </method>
+
+            <method name="setButtonStatus">
+                <body><![CDATA[    setTimeout(function (me) {
+        me.mButton.checked = me.module.popupWindow ? !me.module.popupWindow.closed : false;
+        let iconUrl = me.mButton.checked ? me.module.iconCheckedURL : me.module.iconURL;
+        me.mButton.style.setProperty("list-style-image", "url('" + iconUrl + "')", "important");
+    }, 1, this);]]></body>
+            </method>
+
+            <method name="setDisabled">
+                <body><![CDATA[    this.mButton.style.setProperty("list-style-image", "url('" + this.module.iconDisabledURL + "')", "important");
+    this.mButton.setAttribute("tooltiptext", this.module.getString("getFlash"));
+    let self = this;
+    this.toggleWindow = function (event) {
+        this.module.statLog("button");
+        self.module._api.Controls.navigateBrowser({
+            url: self.module.GET_FLASH_URL,
+            event: event,
+            target: "new tab"
+        });
+    };]]></body>
+            </method>
+
+            <method name="_setPosition">
+                <parameter name="aPopup"/>
+                <body><![CDATA[    let savedPosition = this.module.getOption("position");
+    if (savedPosition && savedPosition.x && savedPosition.y) {
+        aPopup.moveTo(savedPosition.x, savedPosition.y);
+        return;
+    }
+    let y1 = aPopup.moveTo(parseInt(Math.max(window.screenX + (window.outerWidth - 720) / 2, 1)), parseInt(Math.max(window.screenY + (window.outerHeight - 500) / 2, 1)));]]></body>
+            </method>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+        </implementation>
+    </binding>
+</bindings>

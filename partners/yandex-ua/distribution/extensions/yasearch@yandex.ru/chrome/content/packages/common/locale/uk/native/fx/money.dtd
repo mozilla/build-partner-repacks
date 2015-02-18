@@ -1,0 +1,7 @@
+<!ENTITY money.name "Яндекс.Гроші">
+<!ENTITY money.tooltiptext "Стан рахунку в системі Яндекс.Гроші">
+<!ENTITY money.noauthtooltiptext "Показує стан рахунку в системі Яндекс.Гроші">
+<!ENTITY money.tooltiptext.notauth "Будь ласка, авторизуйтеся">
+<!ENTITY money.reloadCounter.label "Оновити дані про гроші">
+<!ENTITY money.link.shop.label "Оплатити послуги">
+<!ENTITY money.link.prepay.label "Внести гроші">

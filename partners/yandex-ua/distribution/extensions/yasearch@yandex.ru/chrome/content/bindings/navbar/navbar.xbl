@@ -1,0 +1,213 @@
+<?xml version='1.0'?>
+
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="chrome://global/content/bindings/toolbar.xml#toolbar-drag" id="navbar-binding">
+        <resources>
+            <stylesheet src="navbar.css"/>
+        </resources>
+
+        <content>
+            <xul:stack flex="1">
+                <xul:vbox align="right" id="yaplate-container">
+                    <xul:hbox flex="1" id="yaplate"/>
+                </xul:vbox>
+                <xul:hbox flex="1" id="nav-bar-inner">
+                    <children/>
+                </xul:hbox>
+            </xul:stack>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="mPlate"><![CDATA[    document.getAnonymousElementByAttribute(this, "id", "yaplate");]]></field>
+
+            <field name="mToolbar">document.getElementById("nav-bar")</field>
+            <field name="mToolbarHeight">null</field>
+            <field name="mMargin">null</field>
+
+            <field name="NO_RESIZE_TOOLBARITEM_IDS"><![CDATA[    [
+        "unified-back-forward-button",
+        "urlbar-container"
+    ];]]></field>
+
+
+            <property name="isInited">
+                <getter><![CDATA[    return this.getAttribute("isInited");]]></getter>
+                <setter><![CDATA[    this.setAttribute("isInited", Boolean(val));]]></setter>
+            </property>
+
+
+            <constructor><![CDATA[    if (document.readyState === "complete") {
+        this.init();
+    } else {
+        let that = this;
+        document.addEventListener("readystatechange", function readystatechangeHandler() {
+            if (document.readyState !== "complete") {
+                return;
+            }
+            document.removeEventListener("readystatechange", readystatechangeHandler, false);
+            that.init();
+        }, false);
+    }]]></constructor>
+
+            <destructor><![CDATA[    this.isInited = false;
+    this.mToolbar.removeEventListener("DOMNodeInserted", this);
+    this.mToolbar.removeEventListener("DOMNodeRemoved", this);
+    gNavToolbox.removeEventListener("beforecustomization", this);]]></destructor>
+
+            <method name="init">
+                <body><![CDATA[    if (this.isInited) {
+        return;
+    }
+    let that = this;
+    that._resizeHorizontal();
+    window.addEventListener("resize", () => that._resizeHorizontal(), false);
+    this.isInited = true;
+    let handler;
+    this.mToolbar.addEventListener("DOMSubtreeModified", function (e) {
+        if (handler) {
+            return;
+        }
+        handler = setTimeout(function () {
+            that._resizeHorizontal();
+            clearTimeout(handler);
+            handler = null;
+        }, 5);
+    }, false);
+    this._resizeHorizontal();
+    this.mToolbar.addEventListener("DOMNodeInserted", this, false);
+    this.mToolbar.addEventListener("DOMNodeRemoved", this, false);
+    gNavToolbox.addEventListener("beforecustomization", this, false);]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "DOMNodeInserted":
+        setTimeout(function (that) {
+            if (that.mToolbar.getAttribute("customizing") !== "true") {
+                that._onDOMNodeInserted(aEvent.target);
+            }
+        }, 0, this);
+        break;
+    case "DOMNodeRemoved":
+        setTimeout(function (that) {
+            if (that.mToolbar.getAttribute("customizing") !== "true") {
+                that._onDOMNodeRemoved(aEvent.target);
+            }
+        }, 0, this);
+        break;
+    case "beforecustomization":
+        this._unresizeVertical();
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+
+            <method name="_onDOMNodeInserted">
+                <parameter name="node"/>
+                <body><![CDATA[    let toolbarHeight = this.mToolbar.clientHeight;
+    if (toolbarHeight === this.mToolbarHeight) {
+        if (!this.mMargin) {
+            return;
+        }
+        let navbar = document.getElementById("nav-bar");
+        let id = node.getAttribute("id");
+        if (node.nodeType != node.ELEMENT_NODE || navbar !== node.parentNode || this.NO_RESIZE_TOOLBARITEM_IDS.indexOf(id) === -1) {
+            return;
+        }
+        let marginStr = this.mMargin + "px";
+        this._resizeItemVertical(node, marginStr);
+    } else {
+        this._resizeVertical();
+    }
+    this.mToolbarHeight = this.mToolbar.clientHeight;]]></body>
+            </method>
+
+            <method name="_onDOMNodeRemoved">
+                <parameter name="node"/>
+                <body><![CDATA[    let toolbarHeight = this.mToolbar.clientHeight;
+    if (toolbarHeight === this.mToolbarHeight) {
+        return;
+    }
+    this._resizeVertical();
+    this.mToolbarHeight = this.mToolbar.clientHeight;]]></body>
+            </method>
+
+            <method name="_resizeHorizontal">
+                <body><![CDATA[    let plate = document.getElementById("yaplate");
+    let urlbarContainer = document.getElementById("urlbar-container");
+    if (!(plate && urlbarContainer && this.mToolbar)) {
+        return;
+    }
+    let win = this.mToolbar.ownerDocument.defaultView;
+    let toolbarStyle = win.getComputedStyle(this.mToolbar);
+    let toolbarInnerWidth = this.mToolbar.clientWidth - parseInt(toolbarStyle.paddingRight, 10);
+    let width = toolbarInnerWidth - urlbarContainer.getBoundingClientRect().right;
+    plate.setAttribute("width", width);]]></body>
+            </method>
+
+
+            <method name="_resizeVertical">
+                <body><![CDATA[    let diffHeight = this._getDiffHeight();
+    this.mMargin = Math.floor(diffHeight / 2);
+    let marginStr = this.mMargin + "px";
+    let navbar = document.getElementById("nav-bar");
+    let childNodes = navbar.childNodes;
+    for (let i = 0, length = childNodes.length; i < length; i++) {
+        let node = childNodes[i];
+        if (node.nodeType !== node.ELEMENT_NODE) {
+            continue;
+        }
+        let id = node.getAttribute("id");
+        if (this.NO_RESIZE_TOOLBARITEM_IDS.indexOf(id) === -1) {
+            continue;
+        }
+        this._resizeItemVertical(node, marginStr);
+    }
+    this.mPlate.parentNode.style.setProperty("padding-top", marginStr, "important");
+    this.mPlate.parentNode.style.setProperty("padding-bottom", marginStr, "important");]]></body>
+            </method>
+
+            <method name="_unresizeVertical">
+                <body><![CDATA[    let navbar = document.getElementById("nav-bar");
+    let childNodes = navbar.childNodes;
+    for (let i = 0, length = childNodes.length; i < length; i++) {
+        let node = childNodes[i];
+        if (node.nodeType !== node.ELEMENT_NODE) {
+            continue;
+        }
+        let id = node.getAttribute("id");
+        if (this.NO_RESIZE_TOOLBARITEM_IDS.indexOf(id) === -1) {
+            continue;
+        }
+        node.style.removeProperty("margin-top");
+        node.style.removeProperty("margin-bottom");
+    }
+    this.mPlate.parentNode.style.removeProperty("padding-top");
+    this.mPlate.parentNode.style.removeProperty("padding-bottom");
+    this.mToolbarHeight = null;
+    this.mMargin = null;]]></body>
+            </method>
+
+            <method name="_resizeItemVertical">
+                <parameter name="node"/>
+                <parameter name="marginStr"/>
+                <body><![CDATA[    if (!node || !marginStr) {
+        return;
+    }
+    node.style.setProperty("margin-top", marginStr, "important");
+    node.style.setProperty("margin-bottom", marginStr, "important");]]></body>
+            </method>
+
+            <method name="_getDiffHeight">
+                <body><![CDATA[    let urlbarCmpStyle = window.getComputedStyle(gURLBar);
+    let toolbarCmpStyle = window.getComputedStyle(this.mToolbar);
+    let urlbarHeight = parseInt(urlbarCmpStyle.height, 10) + parseInt(urlbarCmpStyle.borderTopWidth, 10) + parseInt(urlbarCmpStyle.borderBottomWidth, 10);
+    return parseInt(toolbarCmpStyle.height, 10) - urlbarHeight;]]></body>
+            </method>
+
+        </implementation>
+    </binding>
+</bindings>

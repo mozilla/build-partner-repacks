@@ -1,0 +1,6 @@
+<!ENTITY esync.open.barsync.page "Баптаулар бетін ашу">
+
+<!ENTITY esync.panel.sync.outdated.header "Синхрондау">
+<!ENTITY esync.panel.sync.outdated.message "авторизациялау деректері ескірген">
+<!ENTITY esync.panel.sync.outdated.button.label "Түзету">
+<!ENTITY esync.panel.close.tooltip "Хабарландыруды жабу">

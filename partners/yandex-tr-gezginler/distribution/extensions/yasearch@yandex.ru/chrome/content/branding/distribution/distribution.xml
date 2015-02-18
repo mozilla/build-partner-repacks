@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE Distribution>
+<Distribution>
+    <Browsers>
+        <Browser name="Chrome"   onInstall="2" onUpdate="0"/>
+        <Browser name="Chromium" onInstall="2" onUpdate="0"/>
+    </Browsers>
+</Distribution>

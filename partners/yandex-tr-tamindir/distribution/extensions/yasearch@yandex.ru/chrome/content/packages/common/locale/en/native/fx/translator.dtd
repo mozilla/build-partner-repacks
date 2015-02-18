@@ -1,0 +1,23 @@
+<!ENTITY translate.name "Translate words">
+
+<!ENTITY translate.button.tooltip_before "Translate words">
+<!ENTITY translate.button.tooltip_no_dir "Choose language combination">
+<!ENTITY translate.menu.enable "Enable word translator">
+<!ENTITY translate.menu.onmouse "Translate word under pointer">
+<!ENTITY translate.menu.onkey "Translate using hotkey">
+<!ENTITY translate.menu.source_lang "Source language">
+<!ENTITY translate.menu.target_lang "Target language">
+<!ENTITY translate.linklabel "Find all translations">
+
+<!ENTITY translate.settings.translate_on "Translate words:">
+<!ENTITY translate.settings.radio_hover "under pointer">
+<!ENTITY translate.settings.radio_hotkey "using hotkey">
+<!ENTITY translate.settings.hotkey_value "Translation hotkey:">
+
+<!ENTITY translate.alt_key "Alt">
+<!ENTITY translate.shift_key "Shift">
+<!ENTITY translate.ctrl_key "Ctrl">
+
+
+
+<!ENTITY translate.showYandex "http://www.yandex.com">

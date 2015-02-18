@@ -23,27 +23,33 @@ const statistics = {
         return this._application.preferences.get("stat.usage.send", null);
     },
     logClickStatistics: function statistics_logClickStatistics({dtype, pid, cid, path}) {
-        if (!this.alwaysSendUsageStat)
+        if (!this.alwaysSendUsageStat) {
             return;
-        if (typeof dtype === "undefined")
+        }
+        if (typeof dtype === "undefined") {
             dtype = "stred";
-        if (typeof pid === "undefined")
+        }
+        if (typeof pid === "undefined") {
             pid = 12;
+        }
         if (typeof dtype === "string") {
-            if (!dtype)
+            if (!dtype) {
                 throw new RangeError("dtype is empty string");
+            }
         } else {
             throw new TypeError("Invalid dtype type ('" + typeof dtype + "')");
         }
         if (typeof pid === "number") {
-            if (pid < 0)
+            if (pid < 0) {
                 throw new RangeError("Invalid pid value (" + pid + ")");
+            }
         } else {
             throw new TypeError("Wrong pid type ('" + typeof pid + "'). Number required.");
         }
         if (typeof cid === "number") {
-            if (cid <= 0)
+            if (cid <= 0) {
                 throw new RangeError("Invalid cid value (" + cid + ")");
+            }
         } else {
             throw new TypeError("Wrong cid type ('" + typeof cid + "'). Number required.");
         }
@@ -59,8 +65,9 @@ const statistics = {
                     key,
                     value
                 ] in Iterator(arguments[0])) {
-            if (processedKeys.indexOf(key) !== -1)
+            if (processedKeys.indexOf(key) !== -1) {
                 continue;
+            }
             if (key === "*") {
                 extraString = value;
                 continue;
@@ -80,11 +87,13 @@ const statistics = {
             Cu.import(statisticsDirPath + subscriptName, this._subscripts);
             subscriptName = subscriptName.replace(/\.js$/, "");
             let subscript = this._subscripts[subscriptName];
-            if (!subscript)
+            if (!subscript) {
                 throw new Error("Subscript " + subscriptName + " not loaded!");
+            }
             this[subscriptName] = subscript;
-            if (typeof subscript.init === "function")
+            if (typeof subscript.init === "function") {
                 subscript.init(this._application);
+            }
         }, this);
     },
     _finalizeSubscripts: function statistics__finalizeSubscripts() {
@@ -101,16 +110,14 @@ const statistics = {
     },
     get _subscriptsNames() {
         let subscriptNames = [];
-        let statisticsScriptsDir = this._application.core.extensionPathFile;
-        "cbapp/parts/statistics".split("/").forEach(s => statisticsScriptsDir.append(s));
-        if (statisticsScriptsDir.exists() && statisticsScriptsDir.isDirectory()) {
-            let entries = statisticsScriptsDir.directoryEntries;
-            while (entries.hasMoreElements()) {
-                let entry = entries.getNext().QueryInterface(Ci.nsIFile);
-                if (!entry.isFile())
-                    continue;
-                if (/.+\.js$/.test(entry.leafName))
-                    subscriptNames.push(entry.leafName);
+        let statisticsScriptsDir = this._application.addonFS.getEntry("cbapp/parts/statistics/");
+        if (statisticsScriptsDir.exists()) {
+            let scripts = statisticsScriptsDir.directoryEntries;
+            while (scripts.hasMoreElements()) {
+                let script = scripts.getNext();
+                if (script.isFile() && /.+\.js$/.test(script.leafName)) {
+                    subscriptNames.push(script.leafName);
+                }
             }
         }
         delete this._subscriptsNames;

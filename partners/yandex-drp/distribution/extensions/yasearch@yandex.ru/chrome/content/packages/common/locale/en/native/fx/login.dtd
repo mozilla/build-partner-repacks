@@ -1,0 +1,15 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY login.name "Authorization">
+<!ENTITY login.enter.label "Log in">
+<!ENTITY login.hidden-login.label "My &product2.nom;">
+<!ENTITY login.tooltiptext "&login.name; on Yandex">
+<!ENTITY login.switch.label "Switch user">
+<!ENTITY login.logout.label "Log out">
+
+<!ENTITY login.showLogin.label "Display login on bar">
+
+<!ENTITY noauth.label "Please, log in">
+<!ENTITY login.passport.label "Passport">
+<!ENTITY login.settings.label "&vendor.gen; settings">

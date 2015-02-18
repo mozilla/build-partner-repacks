@@ -1,0 +1,5 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);.toolbar-container{overflow:hidden!important}
+toolbar[xb-toolbar-multiline]>*>.toolbar-container{display:block;overflow:inherit!important;padding-top:1px;padding-bottom:1px}
+toolbar:not([cb-toolbar-overflow=true]) toolbaritem#toggle-multiline-toolbaritem{display:none}
+toolbox#navigator-toolbox[cb-barless=true] toolbaritem#toggle-multiline-toolbaritem{display:none}
+#toggle-multiline-button{-moz-binding:url(../chevron/chevron.xml#toggle-multiline-button)!important}

@@ -1,0 +1,8 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY widget.name "&vendor.nom;">
+<!ENTITY widget.action.openSettingsDialod.label "Баптаулар">
+<!ENTITY widget.action.openSettingsDialod.tooltip "Баптаулар терезесін ашу">
+<!ENTITY widget.action.openAboutDialog.label "Бағдарлама туралы">
+<!ENTITY widget.action.openAboutDialog.tooltip "Бағдарлама туралы">

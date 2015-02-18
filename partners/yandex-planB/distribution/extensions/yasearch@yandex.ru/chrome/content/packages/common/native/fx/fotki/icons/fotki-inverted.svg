@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <title>fotki-light</title>
+    <description>Created with Sketch (http://www.bohemiancoding.com/sketch)</description>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Dark" sketch:type="MSLayerGroup" transform="translate(-362.000000, -3.000000)">
+            <g id="Group" transform="translate(362.000000, 5.000000)" sketch:type="MSShapeGroup">
+                <path d="M0,11.994 L16,11.994 L16,2 L0,2 L0,11.994 Z" id="Fill-85" fill="#A6A192"></path>
+                <path d="M5,7.003 C5,8.662 6.338,10.007 7.987,10.007 C9.636,10.007 10.974,8.662 10.974,7.003 C10.974,5.345 9.636,4 7.987,4 C6.338,4 5,5.345 5,7.003 Z" id="Fill-86" fill="#FFCF00"></path>
+                <path d="M10.973,0 L5.026,0 L4,2.008 L12,2.008 L10.973,0 Z" id="Fill-87" fill="#8A8679"></path>
+                <path d="M14.004,3 C13.45,3 13,3.441 13,3.985 C13,4.528 13.45,4.969 14.004,4.969 C14.558,4.969 15.008,4.528 15.008,3.985 C15.008,3.441 14.558,3 14.004,3" id="Fill-88" fill="#F7F6F3"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -19,7 +19,7 @@ const migrator = {
             try {
                 item.action();
             } catch (ex) {
-                this._migrationModule.logger.error("Failed to perform migration action '" + item.id + "':" + strutils.formatError(ex));
+                this._migrationModule.logger.error("Failed to perform migration action '" + item.id + "': " + strutils.formatError(ex));
                 this._migrationModule.logger.debug(ex.stack);
             }
         }, this);
@@ -76,8 +76,9 @@ const migrator = {
                     let dirEntries = theTempDir.directoryEntries;
                     while (dirEntries.hasMoreElements()) {
                         let file = dirEntries.getNext().QueryInterface(Ci.nsIFile);
-                        if (!file.isFile())
+                        if (!file.isFile()) {
                             continue;
+                        }
                         if (/^\d{13}$/.test(file.leafName)) {
                             fileutils.removeFileSafe(file);
                         }
@@ -107,7 +108,9 @@ const migrator = {
             } catch (ex) {
                 backbone = defaultXY;
             }
-            let newLayoutX, newLayoutY, maxAvailableIncreased = false;
+            let newLayoutX = false;
+            let newLayoutY = false;
+            let maxAvailableIncreased = false;
             let filledPages = xmlDoc.querySelectorAll("pages > page:not([url=''])");
             let filledPagesNum = 0;
             let totalPagesNum = backbone[0] * backbone[1];
@@ -189,9 +192,9 @@ const migrator = {
                             database.lastInsertRowID,
                             title
                         ];
-                        this._migrationModule.logger.debug("Thumb '" + url + "' inserted with rowid " + insertedURLs[url][0]);
+                        this._migrationModule.logger.debug("Thumb '" + url + "' inserted " + "with rowid " + insertedURLs[url][0]);
                     } else {
-                        this._migrationModule.logger.debug("Thumb '" + url + "' has been already inserted with rowid " + insertedURLs[url][0]);
+                        this._migrationModule.logger.debug("Thumb '" + url + "' has been already " + "inserted with rowid " + insertedURLs[url][0]);
                         if (insertedURLs[url][1] === null && title !== null) {
                             database.execQuery("UPDATE thumbs SET title = :title WHERE rowid = :id", {
                                 title: title,
@@ -206,7 +209,7 @@ const migrator = {
                     });
                     this._migrationModule.logger.debug("Thumb info inserted");
                 } catch (e) {
-                    this._migrationModule.logger.error("Failed to migrate thumb with URL '" + url + "':" + strutils.formatError(e));
+                    this._migrationModule.logger.error("Failed to migrate thumb with URL '" + url + "': " + strutils.formatError(e));
                     this._migrationModule.logger.debug(e.stack);
                     throw e;
                 }
@@ -221,7 +224,8 @@ const migrator = {
         }
     },
     _getDefaultThumbsNumXY: function migrator__getDefaultThumbsNumXY() {
-        let thumbsNumX, thumbsNumY;
+        let thumbsNumX;
+        let thumbsNumY;
         let width = {};
         let height = {};
         let primaryScreen = Cc["@mozilla.org/gfx/screenmanager;1"].getService(Ci.nsIScreenManager).primaryScreen;

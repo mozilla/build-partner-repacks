@@ -1,0 +1,74 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY _gen.descr.text "And:">
+
+<!ENTITY vendor.title "&vendor.nom;">
+
+<!ENTITY bar.title "&product1.nom;">
+<!ENTITY bar.descr.title "is a toolbox for Web search and&#160;quick&#160;access to your personalized &vendor.gen; services.">
+<!ENTITY bar.text.1 "Easy-to-use search">
+<!ENTITY bar.text.2 "News&#160;from services">
+<!ENTITY bar.text.3 "Weather info">
+
+<!ENTITY mail.title "Yandex.Mail">
+<!ENTITY mail.descr.title "is unlimited mailbox space that features robust antispam and antivirus protection.">
+<!ENTITY mail.text.1 "Rapid mail delivery">
+<!ENTITY mail.text.2 "Mobile version">
+<!ENTITY mail.text.3 "Send up to 5GB files">
+
+<!ENTITY pdd.title "Yandex.Mail for domain">
+<!ENTITY pdd.descr.title "this service enables you to create mail boxes with&#160;the name of your domain or site.">
+<!ENTITY pdd.text.1 "Unlimited mail box">
+<!ENTITY pdd.text.2 "Spam&#160;and virus protection">
+<!ENTITY pdd.text.3 "Rapid mail delivery">
+
+<!ENTITY narod.title "Narod">
+<!ENTITY narod.descr.title "">
+<!ENTITY narod.text.1 "Free website hosting">
+<!ENTITY narod.text.2 "Virus protection">
+<!ENTITY narod.text.3 "File storage">
+<!ENTITY narod.text.4 "File sharing">
+
+<!ENTITY fotki.title "Yandex.Fotki">
+<!ENTITY fotki.descr.title "is unlimited space for your photos and possibility to view shots made by other members.">
+<!ENTITY fotki.text.1 "Simple upload">
+<!ENTITY fotki.text.2 "Brilliant photos">
+<!ENTITY fotki.text.3 "Interesting competitions">
+
+<!ENTITY yaru.title "Ya.ru">
+<!ENTITY yaru.descr.title "is your personalized profile in the Internet and the way to stay informed of all your friends&#39; actions.">
+<!ENTITY yaru.text.1 "Communities">
+<!ENTITY yaru.text.2 "Wish lists">
+<!ENTITY yaru.text.3 "Friends&#39; mood">
+
+<!ENTITY moikrug.title "MoiKrug">
+<!ENTITY moikrug.descr.title "is your business profile in the Web and&#160;opportunity&#160;to find services recommended by others.">
+<!ENTITY moikrug.text.1 "Job hunting">
+<!ENTITY moikrug.text.2 "Service&#160;ads">
+<!ENTITY moikrug.text.3 "Business contacts">
+
+<!ENTITY money.title "Yandex.Money">
+<!ENTITY money.descr.title "is a payment system for purchasing goods and services through Internet you can rely on — no fee, anytime.">
+<!ENTITY money.descr.text "With Yandex.Money you can pay for:">
+<!ENTITY money.text.1 "Telecom services, games">
+<!ENTITY money.text.2 "Domains, hosting">
+<!ENTITY money.text.3 "Tickets">
+
+<!ENTITY bookmarks.title "Yandex.Bookmarks">
+<!ENTITY bookmarks.descr.title "is a service that allows you to save your links and use them from any computer.">
+<!ENTITY bookmarks.text.1 "Links sorting">
+<!ENTITY bookmarks.text.2 "One&#160;click saving">
+<!ENTITY bookmarks.text.3 "Import&#160;and export">
+
+<!ENTITY calendar.title "Yandex.Calendar">
+
+<!ENTITY lenta.title "Yandex.Feeds">
+<!ENTITY lenta.descr.title "is a service which helps you to aggregate and read all news you are interested in on one page.">
+<!ENTITY lenta.text.1 "Broadcasting blogs">
+<!ENTITY lenta.text.2 "News sorting">
+<!ENTITY lenta.text.3 "News subscription">
+
+<!ENTITY cards.title "Yandex.Postcards">
+
+<!ENTITY play.title "Yandex.Games">

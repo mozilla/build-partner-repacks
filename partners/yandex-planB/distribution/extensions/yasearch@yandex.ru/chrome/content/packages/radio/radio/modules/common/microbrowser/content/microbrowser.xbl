@@ -1,0 +1,90 @@
+<?xml version='1.0'?>
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <binding id="microbrowser">
+        <content>
+            <xul:panel id="mbr_popup_autocomplete" noautofocus="true" type="autocomplete"/>
+            <xul:vbox anonid="browser-parent-box" flex="1">
+                <xul:browser anonid="browser" autocompletepopup="mbr_popup_autocomplete" disablehistory="true" flex="1" type="content-primary"/>
+            </xul:vbox>
+        </content>
+        <implementation>
+            <field name="parentBox">document.getAnonymousElementByAttribute(this, "anonid", "browser-parent-box")</field>
+            <field name="browser">document.getAnonymousElementByAttribute(this, "anonid", "browser")</field>
+            <method name="loadUrl">
+                <parameter name="url"/>
+                <body><![CDATA[    this.browser.loadURI(url);
+    window.focus();]]></body>
+            </method>
+            <method name="cancelTimer">
+                <body><![CDATA[    if (this.titleTimer) {
+        this.titleTimer.cancel();
+        this.titleTimer = null;
+    }]]></body>
+            </method>
+            <method name="setTitle">
+                <parameter name="title"/>
+                <body><![CDATA[    if (title) {
+        document.title = title;
+        this.cancelTimer();
+    } else {
+        document.title = "";
+        if (!this.titleTimer) {
+            this.titleTimer = Components.classes["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer);
+            var browser0 = this.browser;
+            this.titleTimer.initWithCallback(function () {
+                document.title = browser0.contentDocument.title || "";
+            }, 300, this.titleTimer.TYPE_REPEATING_SLACK);
+        }
+    }]]></body>
+            </method>
+            <method name="autocompleteReg">
+                <parameter name="aLocation"/>
+                <body><![CDATA[]]></body>
+            </method>
+            <constructor><![CDATA[    var args = window.arguments[0];
+    var browser0 = this.browser;
+    var parentBox0 = this.parentBox;
+    var empty = function () {
+    };
+    browser0.docShell.allowPlugins = !!args.allowPlugins;
+    if (args.init) {
+        args.init.call(this, this.browser);
+    }
+    browser0.addEventListener("DOMContentLoaded", function () {
+        args.inject(browser0.contentDocument);
+    }, true, true);
+    if (args.onclose) {
+        window.mbr_onclose = function () {
+            args.onclose.call(args.scope);
+        };
+        window.addEventListener("close", window.mbr_onclose, false);
+    }
+    if (args.progressListener) {
+        browser0.addProgressListener(args.progressListener, args.notifyMask);
+    }
+    if (args.htmlOnly) {
+        browser0.docShell.allowImages = false;
+    }
+    this.setTitle(args.title);
+    args.callbacks.scope = this;
+    var timer = Components.classes["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer);
+    timer.init(function () {
+        args.onxulready();
+    }, 5, timer.TYPE_ONE_SHOT);]]></constructor>
+            <destructor><![CDATA[    var args = window.arguments[0];
+    if (args.callbacks) {
+        args.callbacks.scope = null;
+    }
+    if (window.mbr_onclose) {
+        try {
+            window.removeEventListener("close", window.mbr_onclose, false);
+        } catch (e) {
+        }
+    }
+    try {
+        this.cancelTimer();
+    } catch (e) {
+    }]]></destructor>
+        </implementation>
+    </binding>
+</bindings>

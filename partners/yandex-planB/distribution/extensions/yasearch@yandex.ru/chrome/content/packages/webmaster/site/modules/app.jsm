@@ -1,0 +1,212 @@
+"use strict";
+const EXPORTED_SYMBOLS = ["module"];
+var module = function (app, common) {
+    const MINIMUM_DELAY_MS = 5000;
+    const MAX_UPDATE_ERROR_MS = 3600000;
+    let timers = Object.create(null);
+    let yauthMgr = null;
+    function metrikaURL(url) {
+        function leadingZero(value) {
+            return ("0" + value).substr(-2, 2);
+        }
+        return function (params) {
+            let d1 = new Date(Date.now() - 518400 * 1000);
+            let d2 = new Date();
+            let d1Str = d1.getFullYear() + leadingZero(d1.getMonth() + 1) + leadingZero(d1.getDate());
+            let d2Str = d2.getFullYear() + leadingZero(d2.getMonth() + 1) + leadingZero(d2.getDate());
+            return url.replace("{date1}", d1Str).replace("{date2}", d2Str).replace("{PARAMS}", params || "");
+        };
+    }
+    app.config = {
+        useClickStatistics: true,
+        observeBranding: false,
+        uniqueWidget: false,
+        statName: "site",
+        navigateUrl: {
+            tcy: "http://webmaster.yandex.ru/site/?host={PARAM}",
+            pages: "http://webmaster.yandex.ru/site/indexed-pages.xml?host={PARAM}",
+            snippets: "http://webmaster.yandex.ru/site/ext_plugins.xml?host={PARAM}",
+            metrika: metrikaURL("http://metrika.yandex.ru/stat/traffic/summary/?goal_id=&reverse=&per_page=500&table_mode=&filter=&date1={date1}&date2={date2}&group=day&{PARAMS}")
+        }
+    };
+    app.init = function site_init() {
+        this.module = this.importModule("api");
+        this.module.init({
+            api: this.api,
+            onUpdate: this.onUpdate.bind(this)
+        });
+        let yauthTimer = null;
+        yauthMgr = app.commonModule("yauth");
+        yauthMgr.init(function yauthMgr_init(login) {
+            if (yauthTimer) {
+                yauthTimer.cancel();
+                yauthTimer = null;
+            }
+            if (login && !yauthMgr.userLogin) {
+                yauthTimer = common.timers.setTimeout(yauthMgr_init.bind(this, login), 50);
+                return;
+            }
+            if (login) {
+                this.onLogin();
+            }
+            this.updateData();
+        }, this);
+        if (this.isAuth()) {
+            this.module.configure("user", yauthMgr.userLogin);
+        }
+    };
+    app.finalize = function site_finalize() {
+        yauthMgr = null;
+        this._cancelUpdateTimer();
+    };
+    app.dayuseStatProvider = {
+        isAuthorized: function dayuseStatProvider_isAuthorized() {
+            return app.isAuth();
+        },
+        hasSavedLogins: function dayuseStatProvider_hasSavedLogins() {
+            return common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.ru" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.ua" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.com.tr" });
+        }
+    };
+    app.instancePrototype = {
+        init: function site_instancePrototype_init() {
+            app.updateData(this.WIID);
+        },
+        finalize: function site_instansePrototype_finalize() {
+            app.cleanData(this.WIID);
+        },
+        _notifySettingsChanges: function site__notifySettingsChanges(action, instanceId) {
+            common.observerService.notify(action, JSON.stringify({ wiid: instanceId }));
+        },
+        onSettingChange: function site_onSettingChange(key, value, instanceId) {
+            switch (key) {
+            case "show-sitename":
+            case "customSitename":
+                this._notifySettingsChanges("label", instanceId);
+                break;
+            case "show-warning":
+                this._notifySettingsChanges("tooltipwarns", instanceId);
+                break;
+            case "selectedSitenameSetting":
+                app.cleanData(instanceId);
+                app.updateData(instanceId, true);
+                break;
+            case "updateInterval":
+                let updateInterval = app.module.getUpdateInterval(this.WIID, true) * 1000;
+                let lastUpdate = app.module.getLastUpdateTime(this.WIID);
+                let delay = updateInterval - (Date.now() - lastUpdate);
+                delay = Math.max(delay, MINIMUM_DELAY_MS);
+                app.cleanData(this.WIID);
+                app._setUpdateTimer(this.WIID, delay);
+                break;
+            }
+        }
+    };
+    app.uiCommands = {
+        auth: function site_uiCommands_auth(command, eventInfo) {
+            let url = "http://passport.yandex.ru/passport?retpath=";
+            let wiid = eventInfo.widget && eventInfo.widget.WIID;
+            let str = "http://metrika.yandex.ru/";
+            if (this.api.Settings.getValue("metrikaSaveId", wiid)) {
+                str = "http://metrika.yandex.ru/stat/dashboard/?counter_id=" + this.api.Settings.getValue("metrikaSaveId", wiid);
+            } else if (this.api.Settings.getValue("masterSaveId", wiid)) {
+                str = "http://webmaster.yandex.ru/site/?host=" + this.api.Settings.getValue("masterSaveId", wiid);
+            }
+            url += encodeURIComponent(str);
+            this.api.Controls.navigateBrowser({
+                unsafeURL: url,
+                eventInfo: eventInfo.event
+            });
+        },
+        update: function site_uiCommands_update(command, eventInfo) {
+            let widget = eventInfo.widget;
+            widget._setIcon();
+            this.updateData(widget.WIID, true);
+        },
+        go: function site_uiCommands_go(command, eventInfo) {
+            let wiid = eventInfo.widget && eventInfo.widget.WIID;
+            if (!wiid) {
+                return;
+            }
+            let siteName = this.api.Settings.getValue("selectedSitenameSetting", wiid);
+            let data = this.getUserData(wiid);
+            let url = "http://metrika.yandex.ru";
+            let metrikaSavedId = this.api.Settings.getValue("metrikaSaveId", wiid);
+            let masterSavedId = this.api.Settings.getValue("masterSaveId", wiid);
+            if (metrikaSavedId) {
+                url = "http://metrika.yandex.ru/stat/dashboard/?counter_id=" + metrikaSavedId;
+            } else if (masterSavedId) {
+                url = "http://webmaster.yandex.ru/site/?host=" + masterSavedId;
+            }
+            this.api.Controls.navigateBrowser({
+                unsafeURL: url,
+                eventInfo: eventInfo.event
+            });
+        }
+    };
+    app._cancelUpdateTimer = function site_cancelTimer(aWIID) {
+        function cancelTimer(aWIID) {
+            let timer = timers[aWIID];
+            if (timer) {
+                timer.cancel();
+                timers[aWIID] = null;
+            }
+        }
+        if (aWIID) {
+            cancelTimer(aWIID);
+            return;
+        }
+        for (let wiid in timers) {
+            cancelTimer(wiid);
+        }
+    };
+    app._setUpdateTimer = function site__setUpdateTimer(aWIID, aDelay) {
+        this._cancelUpdateTimer(aWIID);
+        if (typeof aDelay == "undefined") {
+            aDelay = MINIMUM_DELAY_MS;
+        }
+        timers[aWIID] = new this.api.SysUtils.Timer(this.updateData.bind(this, aWIID, false, true), aDelay);
+    };
+    app.updateData = function site_updateData(aWIID, manual, force) {
+        this._cancelUpdateTimer(aWIID);
+        if (!this.isAuth()) {
+            this.onLogout();
+            this.onUpdate();
+            return;
+        }
+        if (manual) {
+            force = true;
+            common.observerService.notify("throbber", aWIID ? JSON.stringify({
+                wiid: aWIID,
+                value: true
+            }) : null);
+        }
+        if (!aWIID) {
+            let widgets = this.api.Controls.getAllWidgetItems();
+            widgets.forEach(function update_updater(item) {
+                this.module.update(item.WIID, force);
+            }.bind(this));
+        } else {
+            this.module.update(aWIID, force);
+        }
+    };
+    app.isAuth = function site_isAuth() {
+        return yauthMgr.isAuth();
+    };
+    app.getUserData = function site_getUserData(aWIID, aAction) {
+        return this.module.getUserData(aWIID, aAction);
+    };
+    app.cleanData = function site_cleanData(aWIID) {
+        this.module.cleanData(aWIID);
+    };
+    app.onLogin = function site_onLogin() {
+        this.module.configure("user", yauthMgr.userLogin);
+    };
+    app.onLogout = function site_onLogout() {
+        this.cleanData();
+    };
+    app.onUpdate = function site_onUpdate(aWIID) {
+        let notificationObject = aWIID ? JSON.stringify({ wiid: aWIID }) : null;
+        common.observerService.notify("throbber", notificationObject);
+        common.observerService.notify("display", notificationObject);
+    };
+};

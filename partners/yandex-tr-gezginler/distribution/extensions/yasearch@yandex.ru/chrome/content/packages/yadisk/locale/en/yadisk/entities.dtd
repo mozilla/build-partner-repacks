@@ -1,0 +1,56 @@
+
+<!ENTITY context-menu.upload-image "Upload image">
+<!ENTITY context-menu.upload-title "Save image to Yandex.Disk">
+<!ENTITY error.limit "You&#39;ve ran out of space on Yandex.Disk">
+<!ENTITY slice.link-copied "Link copied">
+<!ENTITY slice.link-copied-buffer "Link copied to clipboard">
+<!ENTITY slice.links "Links">
+<!ENTITY slice.load-file "Upload file">
+<!ENTITY slice.loads "Downloads">
+<!ENTITY slice.month.short.1 "{D} Jan">
+<!ENTITY slice.month.short.10 "{D} Oct">
+<!ENTITY slice.month.short.11 "{D} Nov">
+<!ENTITY slice.month.short.12 "{D} Dec">
+<!ENTITY slice.month.short.2 "{D} Feb">
+<!ENTITY slice.month.short.3 "{D} Mar">
+<!ENTITY slice.month.short.4 "{D} Apr">
+<!ENTITY slice.month.short.5 "{D} May">
+<!ENTITY slice.month.short.6 "{D} Jun">
+<!ENTITY slice.month.short.7 "{D} Jul">
+<!ENTITY slice.month.short.8 "{D} Aug">
+<!ENTITY slice.month.short.9 "{D} Sep">
+<!ENTITY slice.notif.errors "{N} file not uploaded;{N} files not uploaded;{N} files not uploaded">
+<!ENTITY slice.notif.saved "File saved">
+<!ENTITY slice.notif.saved-chrome "File saved to Yandex.Disk">
+<!ENTITY slice.notif.saves "{N} file saved;{N} files saved;{N} files saved">
+<!ENTITY slice.tooltip.cancel "Cancel file upload to Yandex.Disk">
+<!ENTITY slice.tooltip.download "Download file">
+<!ENTITY slice.tooltip.homelink "Go to Yandex.Disk">
+<!ENTITY slice.tooltip.retry "Retry file upload to Yandex.Disk">
+<!ENTITY slice.tooltip.share "Get public link to file">
+<!ENTITY title "Yandex.Disk">
+<!ENTITY widget.button.authorized "List of recently saved files on Yandex.Disk">
+<!ENTITY widget.button.unauthorized "Please sign in to Yandex">
+<!ENTITY widget.button.upload-complete "File saved successfully to Yandex.Disk">
+<!ENTITY widget.button.upload-error "Failed to save file to Yandex.Disk">
+<!ENTITY widget.button.uploading "File is being saved to Yandex.Disk">
+<!ENTITY widget.description "Yandex.Disk">
+<!ENTITY widget.menu.save "Save to Yandex Disk">
+<!ENTITY widget.name "Yandex.Disk">
+<!ENTITY widget.options.save-checkbox.title "Show save icon while mousing over images">
+<!ENTITY widget.pagebutton.title "Save">
+<!ENTITY widget.pagebutton.tooltip "Save file to Yandex.Disk">
+<!ENTITY widget.save-button.title "Save image to Yandex.Disk">
+<!ENTITY widget.save-file-button.title "Save file to Yandex.Disk">
+<!ENTITY error.cmd.try-again "Try *again*">
+<!ENTITY error.network "Connection error.">
+<!ENTITY slice.empty-list "List of uploaded files on Yandex.Disk empty.">
+<!ENTITY slice.empty-list-2 "How to upload file">
+<!ENTITY widget.chrome-name "Yandex Elements: Disk">
+<!ENTITY slice.waiting-upload-url "Sending request...">
+<!ENTITY widget.chrome-description "Save files and images from the internet to Yandex.Disk in one click">
+<!ENTITY widget.chrome-full-description "This add-on lets you save files and images from the internet to the Yandex.Disk cloud and open them using any device. You need to enter your Yandex username and password for it to work.">
+<!ENTITY widget.opera.forbidden "You need to have Opera version 26 or later for the Disk extension to work.">
+<!ENTITY error.cmd-auth "Please go through *authorization*">
+<!ENTITY slice.error.file-not-loaded "File not loaded">
+<!ENTITY slice.error.filename-not-loaded "{filename} not loaded">

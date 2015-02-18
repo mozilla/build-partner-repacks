@@ -1,0 +1,59 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY pref.window.title "&product2.nom;: баптау">
+
+
+<!ENTITY prefpane.widgets.delete.button "Қол жетімділерден жою">
+<!ENTITY prefpane.widgets.extra2.button "Алғашқы баптауларды қалпына келтіру">
+
+<!ENTITY prefpane.widgets.label "Пернелер">
+
+<!ENTITY registered.widgets.list.title "Қол жетімді батырмалар">
+<!ENTITY active.widgets.list.title "Ағымдық батырмалар">
+
+<!ENTITY add.widgets.label "Қосу">
+<!ENTITY remove.widgets.label "Жою">
+
+<!ENTITY move.widgets.up.label "Жоғарырақ">
+<!ENTITY move.widgets.down.label "Төменірек">
+
+<!ENTITY global.setting.tooltip.prefix "Бұл баптау келесі батырмаларға қолданылады &#37;S">
+
+<!ENTITY controls.combobox.creating.label "тізімді жүктеу">
+
+
+<!ENTITY prefpane.plugins.delete.button "Кеңейтуді жою">
+
+<!ENTITY prefpane.plugins.label "Кеңейтулер">
+
+<!ENTITY registered.plugins.list.title "Қол жетімді кеңейтулер">
+
+<!ENTITY registered.plugins.enable.label "Іске қосу">
+
+
+<!ENTITY prefpane.about.label "Бағдарлама туралы">
+
+
+<!ENTITY updates.check.text "Жаңартуларды тексеру">
+<!ENTITY updates.check.install "Орнату">
+<!ENTITY updates.check.setup "Баптау">
+
+
+<!ENTITY prefpane.misc.label "Баптаулар">
+
+<!ENTITY yasearch.pref.urlbar.caption "Мекен-жай жолағы">
+
+<!ENTITY yasearch.pref.misc.caption "Әр-түрлі">
+<!ENTITY yasearch.pref.links.target.label "&product2.gen; барлық сілтемелерді жаңа қойындыда ашу">
+<!ENTITY yasearch.pref.sounds.enable.label "Дыбыстарды жаңғыртуға рұқсат беру">
+<!ENTITY yasearch.pref.silent.trusted.updates.label "&#171;Батырмалар библиотекасы&#187; компоненттерін автоматты түрде жаңарту">
+
+<!ENTITY yasearch.pref.defence.homepage.caption "Үй парағы">
+<!ENTITY yasearch.pref.defence.homepage.label "Үй парағын қорғауды қосу">
+<!ENTITY yasearch.pref.defence.homepage.description "&product1.nom; Сізге басқа бағдарламалардың үй парағын өзгерту әрекеттері туралы хабарлайды.">
+
+<!ENTITY yasearch.pref.confidentiality.caption "Құпиялылық">
+<!ENTITY yasearch.pref.stat.usage.send.label "Яндекстің сервистерін жақсартуға қатысу: браузерді пайдаланудың &#60;html:a href=&#34;http://legal.yandex.kz/confidential/&#34;&#62;аноним статистикасын&#60;/html:a&#62; автоматты түрде жіберу">
+
+<!ENTITY prefpane.software.label "Басқа бағдарламалар">

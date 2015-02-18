@@ -1,0 +1,176 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings SYSTEM "/ts.dtd"><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="button">
+        <implementation implements="nsIObserver">
+            <field name="NOTIFICATION_NAME" readonly="true">"typosquatting-notification"</field>
+            <field name="NOTIFICATION_OBJECT_NAME" readonly="true">this.module.WIDGET_ID</field>
+
+            <field name="api" readonly="true">this.module.API</field>
+            <field name="mWindowListener" readonly="true">this.api.Browser.getWindowListener(window)</field>
+            <field name="checkStatus">this.module.checkStatus</field>
+
+            <field name="_packageVersion"><![CDATA[    {
+        let version = "0";
+        if (this.api.Package.info && this.api.Package.info.version) {
+            version = this.api.Package.info.version;
+        }
+        version = version.replace(".", "-", "g");
+    }]]></field>
+
+            <property name="_statDict">
+                <getter><![CDATA[    return {
+        "1": "showuri",
+        "2": "showuri.uri",
+        "3": "showuri.buttonuri",
+        "4": "showuri.closeuri",
+        "5": "whitelist",
+        "6": "show",
+        "7": "show.button",
+        "8": "show.close",
+        "9": "showuri.ignoreuri",
+        "10": "show.ignore",
+        "11": "showuri.icon",
+        "12": "show.icon"
+    };]]></getter>
+            </property>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this.mWindowListener.addListener("WindowLocationChange", this);
+    this._checkTab(gBrowser.mCurrentBrowser);]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    this.mWindowListener.removeListener("WindowLocationChange", this);
+    this.mWindowListener.removeAllTabData(this.NOTIFICATION_OBJECT_NAME);
+    gBrowser.browsers.forEach(function (tab) {
+        let notification = this._getNotification(tab);
+        if (!notification) {
+            return;
+        }
+        notification.close();
+    }, this);]]></body>
+            </method>
+
+            <method name="_getLoweredURL">
+                <parameter name="uri"/>
+                <body><![CDATA[    try {
+        return uri.spec.toLowerCase();
+    } catch (e) {
+    }
+    return null;]]></body>
+            </method>
+
+            <method name="_checkTab">
+                <parameter name="tab"/>
+                <body><![CDATA[    if (!tab) {
+        return;
+    }
+    let tabData = this.mWindowListener.getTabData(tab, this.NOTIFICATION_OBJECT_NAME);
+    if (/^(chrome|about|yafd|bar):/.test(tab.currentURI && tab.currentURI.spec || "")) {
+        tabData.status = this.checkStatus.failed;
+        return;
+    }
+    if (tabData.show) {
+        if (tabData.action) {
+            return;
+        }
+        this._showNotification(tab);
+        return;
+    }
+    tabData.status = this.checkStatus.verifying;
+    let url = this._getLoweredURL(tab.currentURI);
+    let referringURI = tab.webNavigation.referringURI;
+    let referrer = referringURI && referringURI.spec || "";
+    this.module.promiseCheckURL(url).then(function (result) {
+        if (tab !== this.mWindowListener.currentTab) {
+            tabData.status = null;
+            return;
+        }
+        if (result.block === false) {
+            this.sendStatistic(5, url, referrer);
+        }
+        if (result.block) {
+            tabData.status = this.checkStatus.verified;
+            this._showNotification(tab, url, result.redirectURL);
+            return;
+        }
+        tabData.status = this.checkStatus.failed;
+    }.bind(this));]]></body>
+            </method>
+
+            <method name="_getNotification">
+                <parameter name="aTab"/>
+                <body><![CDATA[    aTab = aTab || gBrowser.mCurrentBrowser;
+    let notificationBox = gBrowser.getNotificationBox(aTab);
+    return notificationBox.getNotificationWithValue(this.NOTIFICATION_NAME);]]></body>
+            </method>
+
+            <method name="_showNotification">
+                <parameter name="tab"/>
+                <parameter name="maliciousHost"/>
+                <parameter name="targetHost"/>
+                <body><![CDATA[    let notificationBox = gBrowser.getNotificationBox(tab);
+    let notification = this._getNotification(tab);
+    if (notification) {
+        return;
+    }
+    notification = notificationBox.appendNotification("", this.NOTIFICATION_NAME, "", notificationBox.PRIORITY_WARNING_HIGH, []);
+    notification.typo = this;
+    notification.notificationProperties = {
+        targetURL: targetHost || "",
+        maliciousHost: maliciousHost || ""
+    };
+    notification.setAttribute("anonid", this.NOTIFICATION_NAME);
+    return notification;]]></body>
+            </method>
+
+            <method name="sendStatistic">
+                <parameter name="aCodeID"/>
+                <parameter name="aBadurl"/>
+                <parameter name="aReferrer"/>
+                <parameter name="aTo"/>
+                <body><![CDATA[    this.api.Statistics.logCustomAction(aCodeID);
+    let path = this._statDict[aCodeID];
+    let version = this._packageVersion;
+    let params = {
+        cid: 72200,
+        path: "fx." + version + "." + path
+    };
+    if (aBadurl) {
+        params.badurl = aBadurl;
+    }
+    if (aReferrer) {
+        params.refbadurl = aReferrer;
+    }
+    if (aTo) {
+        params.navbadurl = aTo;
+    }
+    this.api.Statistics.logClickStatistics(params);]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="aSubject"/>
+                <parameter name="aTopic"/>
+                <parameter name="aData"/>
+                <body><![CDATA[    switch (aTopic) {
+    case "WindowLocationChange":
+        this._checkTab(aData.tab);
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

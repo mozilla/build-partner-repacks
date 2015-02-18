@@ -1,0 +1,27 @@
+<!ENTITY mailru.widget.name "Пошта Mail.Ru">
+<!ENTITY mailru.settings.update-time.label "Інтэрвал абнаўлення:">
+<!ENTITY mailru.settings.update-time.label_after "хв.">
+<!ENTITY mailru.settings.show-button-main-text "Адлюстроўваць назву кнопкі «Mail.Ru»">
+<!ENTITY mailru.settings.show-button-newmsg-text "Адлюстроўваць назву кнопкі «Напісаць ліст»">
+<!ENTITY mailru.settings.new-message.show "Адлюстроўваць кнопку «Напісаць ліст»">
+<!ENTITY mailru.main-button.text "Mail.Ru">
+<!ENTITY mailru.main-button.tooltiptext.auth_none "Паказвае новыя паведамленні ў пошце Mail.Ru&#13;Калі ласка, аўтарызуйцеся">
+<!ENTITY mailru.main-button.tooltiptext.update_failed "Пошта Mail.Ru&#13;На жаль, інфармацыя пра вашы лісты не атрыманая">
+
+<!ENTITY mailru.main-button.tooltiptext.ok_template "У вашай паштовай скрыні&#13;{$address}&#13;{$new_msg_wordform}">
+<!ENTITY mailru.main-button.tooltiptext.ok_template.no_messages "няма новых паведамленняў">
+
+<!ENTITY mailru.main-button.tooltiptext.ok_template.plural_forms "{N} новае паведамленне;{N} новыя паведамленні;{N} новых паведамленняў">
+<!ENTITY mailru.main-button.menu.check_mail "Праверыць пошту">
+<!ENTITY mailru.main-button.menu.new_message "Напісаць ліст">
+<!ENTITY mailru.main-button.menu.read_mail "Чытаць лісты">
+<!ENTITY mailru.main-button.menu.open_address_book "Разгарнуць адрасную кнігу">
+<!ENTITY mailru.main-button.menu.show_settings "Наладкі">
+<!ENTITY mailru.main-button.menu.logout "Выхад">
+<!ENTITY mailru.new-message.text "Напісаць">
+<!ENTITY mailru.new-message.tooltiptext.auth_none "Дазваляе хутка перайсці да напісання ліста.&#13;Калі ласка аўтарызуйтесь.">
+<!ENTITY mailru.new-message.tooltiptext.auth_ok "Напісаць ліст">
+<!ENTITY error.connect "Калі ласка, праверце сеціўнае злучэнне">
+<!ENTITY error.auth "Не атрымалася аўтарызавацца">
+<!ENTITY error.auth.net "Не атрымалася падключыцца да сервера Mail.Ru для аўтарызацыі">
+<!ENTITY settings.show_notifications "Паказваць апавяшчэнні">

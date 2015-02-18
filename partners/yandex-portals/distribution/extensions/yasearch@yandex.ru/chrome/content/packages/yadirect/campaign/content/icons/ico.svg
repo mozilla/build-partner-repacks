@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <title>direkt-company</title>
+    <description>Created with Sketch (http://www.bohemiancoding.com/sketch)</description>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Light" sketch:type="MSLayerGroup" transform="translate(-183.000000, -27.000000)"></g>
+        <g id="Oval-43-+-Rectangle-71-copy" sketch:type="MSLayerGroup">
+            <path d="M8,16 C12.4182782,16 16,12.4182782 16,8 C16,3.58172178 12.4182782,0 8,0 C3.58172178,0 0,3.58172178 0,8 C0,12.4182782 3.58172178,16 8,16 Z" id="Oval-43" fill="#48007F" sketch:type="MSShapeGroup"></path>
+            <path d="M4,10 L12,10 L12,9 L4,9 L4,10 Z M6,12 L10,12 L10,11 L6,11 L6,12 Z M4,8 L12,8 L12,7 L4,7 L4,8 Z M4,6 L12,6 L12,5 L4,5 L4,6 Z" id="Fill-38-copy" fill="#D397FF" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

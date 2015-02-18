@@ -1,0 +1,58 @@
+<!ENTITY notify.friend_request "достарға қосуыңызды сұрайды">
+<!ENTITY notify.friend_request_f "достарға қосуыңызды сұрайды">
+
+<!ENTITY notify.friends "{N} достасуға сұраным">
+<!ENTITY plural.rule "0">
+<!ENTITY facebook.widget.name "Facebook">
+<!ENTITY facebook.settings.label "Жаңарту интервалы">
+<!ENTITY facebook.settings.label_after "мин.">
+<!ENTITY facebook.settings.friend "Тақтадан «Достар» батырмасын көрсету">
+<!ENTITY facebook.settings.messages "Тақтадан «Жаңа хабарламалар» батырмасын көрсету">
+<!ENTITY facebook.settings.notifications "Тақтадан «Хабарландырулар» батырмасын көрсету">
+<!ENTITY facebook.settings.share "Тақтадан «Бөлісу» батырмасын көрсету">
+<!ENTITY facebook.settings.msgsys "Хабарламалардың жаңа жүйесін қолдану (Facebook Messages)">
+<!ENTITY facebook.settings.hideallbtn "Авторизациялау болмаған жағдайда қосымша батырмаларды жасыру">
+<!ENTITY menu.refresh "Деректерді жаңарту">
+<!ENTITY menu.lenta "Жаңалықтар таспасы">
+<!ENTITY menu.wall "Бет">
+<!ENTITY menu.friends "Достар тізімі">
+<!ENTITY menu.messages "Хабарламалар">
+<!ENTITY menu.notif "Хабарландырулар">
+<!ENTITY menu.share "Бет туралы айту">
+<!ENTITY menu.setstatus "Хабарлама жазу">
+<!ENTITY menu.fotovideo "Фотосуреттер/Видео">
+<!ENTITY menu.notes "Естеліктер">
+<!ENTITY menu.groups "Топтар">
+<!ENTITY menu.events "Іс-шаралар">
+<!ENTITY menu.logout "Шығу">
+<!ENTITY please.auth "Авторизациядан өтуіңізді сұраймыз">
+<!ENTITY main.tooltip "Facebook-тегі бетім">
+<!ENTITY inet.error.main "Өкінішке орай, жаңартулар туралы ақпарат алу мүмкін болмады">
+<!ENTITY friend.tooltip "Facebook-та достар қатарына қосылу сұранымдары">
+<!ENTITY inet.error.friend "Өкінішке орай, сұранымдар туралы ақпарат алу мүмкін болмады">
+<!ENTITY menu.friend.req "{username} сұранымы">
+<!ENTITY messages.tooltip "Facebook-тегі жаңа хабарламалар">
+<!ENTITY inet.error.msg "Өкінішке орай, хабарламалар туралы ақпарат алу мүмкін болмады">
+<!ENTITY menu.message.from "{username} хабарламасы">
+<!ENTITY notif.tooltip "Facebook-тегі хабарландырулар">
+<!ENTITY inet.error.notif "Өкінішке орай, хабарландырулар туралы ақпарат алу мүмкін болмады">
+<!ENTITY share.tooltip "Facebook-та сілтемемен бөлісу">
+<!ENTITY user1 "пайдаланушының">
+<!ENTITY user2 "Пайдаланушы">
+<!ENTITY error.connect "Желілік байланысты тексеруіңізді сұраймыз">
+<!ENTITY error.auth "Авторизациядан өту іске аспады">
+<!ENTITY error.net "Facebook серверіне қосылу мүмкін болмады">
+<!ENTITY error.unk "Белгісіз қате">
+
+<!ENTITY notify.messages "{N} жаңа хабарлама">
+
+<!ENTITY notify.notifications "{N} жаңа хабарландыру">
+<!ENTITY settings.show_notifications "Хабарландыруларды көрсету">
+<!ENTITY notify.fiends "{N} достасуға сұраным">
+<!ENTITY notify.messages.foto "Сізге фото жіберді">
+<!ENTITY notify.messages.foto_f "Сізге фото жіберді">
+<!ENTITY notify.messages_file "Сізге хабарлама жіберді">
+<!ENTITY notify.messages_file_f "Сізге хабарлама жолдады">
+<!ENTITY settings.show_friend_notifications "Достар қатарына қосу туралы қалқымалы хабарландыруларды көрсету">
+<!ENTITY settings.show_message_notifications "Хабарламалар туралы қалқымалы хабарландыруларды көрсету">
+<!ENTITY settings.show_notification_notifications "Басқа оқиғалар туралы қалқымалы хабарландыруларды көрсету">

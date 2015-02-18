@@ -1,0 +1,19 @@
+<!ENTITY widget.name "Іздестіру алаңы">
+
+<!ENTITY cmd_engineManager.label "Іздеу плагиндерін басқару...">
+
+<!ENTITY searchbox.checkbox.site.label "келесі сайтта іздеу">
+<!ENTITY searchbox.button.label "Іздестіру">
+<!ENTITY searchbox.button.context.label "&#34;Іздестіру&#34; түймесін жасыру">
+<!ENTITY searchbox.resizer.tooltiptext "Іздеудің мәтін өрісінің енін өзгерту">
+
+<!ENTITY searchbox.highlighter.tooltiptext "Табылғанның көмескі жарығы">
+<!ENTITY searchbox.highlighter.highlight.label "Табылғанның көмескі жарығын қосу">
+<!ENTITY searchbox.highlighter.teleport.label "Бірінші көмескі жарығы бар сөзге бұрап келу">
+<!ENTITY searchbox.highlighter.serp.label "Табылған беттегі сұраған сөздерге көмескі жарық түсіру">
+
+<!ENTITY searchbox.preferences.history.label "Сұрау салулардың тарихы">
+<!ENTITY searchbox.preferences.history.enable.label "Сұрау салулардың тарихын сақтау">
+<!ENTITY searchbox.preferences.history.clear.label "Жою">
+<!ENTITY searchbox.preferences.highlighter.enabled.label "Көрсету түймені &#171;табылғанның көмескі жарығы&#187;">
+<!ENTITY searchbox.preferences.show.site.search.label "Көрсету опцияны &#171;осы сайтта іздеу&#187;">

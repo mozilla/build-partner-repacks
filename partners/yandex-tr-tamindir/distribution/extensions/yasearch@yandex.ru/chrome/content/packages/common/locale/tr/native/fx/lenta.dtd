@@ -1,0 +1,34 @@
+<!ENTITY lenta.name "Subscriptions">
+<!ENTITY lenta.tooltiptext "New messages in Yandex.Subscriptions">
+<!ENTITY lenta.noauthtooltiptext "Shows new messages in Yandex.Subscriptions">
+<!ENTITY lenta.addFeed.label "Subscribe to a stream from this page">
+<!ENTITY lenta.add "Adding RSS stream to Subscriptions">
+<!ENTITY lenta.reloadCounter.label "Refresh messages">
+<!ENTITY lenta.link.readMessages.label "Read messages">
+
+
+<!ENTITY feeds.dialog.title "Add a stream to Subscriptions">
+<!ENTITY feeds.page.label "Page">
+<!ENTITY feeds.name.label "Stream">
+<!ENTITY feeds.name.accesskey "S">
+<!ENTITY feeds.groups.label "To folder">
+<!ENTITY feeds.groups.accesskey "F">
+<!ENTITY feeds.groups.loader.label "Downloading folders list...">
+
+<!ENTITY feeds.addgroup.label "To new folder">
+<!ENTITY feeds.addgroup.accesskey "n">
+
+<!ENTITY feeds.groups.manual.refresh.label "refresh">
+
+<!ENTITY feeds.showwebform.label "Open Add a stream page">
+<!ENTITY feeds.showwebform.accesskey "p">
+
+<!ENTITY feeds.dialog.MenuAllFeedsLabel "Out of folders">
+<!ENTITY feeds.dialog.MenuNewGroupLabel "To new folder...">
+<!ENTITY feeds.dialog.ErrorFeedGroupsRefreshTitle "Error refreshing folder list">
+
+
+<!ENTITY lenta.alert.text.label "Show text notifications for new messages">
+<!ENTITY lenta.alert.sound.label "Play sound notifications for new messages">
+<!ENTITY lenta.alert.sound.select.label "Select">
+<!ENTITY lenta.alert.sound.preview.label "Listen">

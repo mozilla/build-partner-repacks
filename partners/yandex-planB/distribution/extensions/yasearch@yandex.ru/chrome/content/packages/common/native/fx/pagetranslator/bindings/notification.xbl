@@ -1,0 +1,491 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "/native/fx/pagetranslator.dtd"><bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/native/fx/bindings/common/notification.xbl#notification-base" id="panel">
+        <resources>
+            <stylesheet src="../styles/panel.css"/>
+        </resources>
+
+        <content>
+            <deck anonid="main" flex="1" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <hbox align="baseline" anonid="pagetranslator-container">
+                    <button anonid="revert" label="&pagetranslator.notification.revert;"/>
+
+                    <hbox align="baseline" anonid="info"/>
+
+                    <hbox align="baseline" anonid="promt" class="promt">
+                        <description>&pagetranslator.notification.promt.preambula;<button anonid="promt-button">&pagetranslator.notification.promt.name;</button><image/></description>
+                    </hbox>
+                </hbox>
+
+                <hbox align="center" anonid="preloader">
+                    <svg height="20px" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" version="1.1" viewBox="0 0 20 20" width="20px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+                        <title>Oval 1 + Oval 2</title>
+                        <g fill="none" fill-rule="evenodd" id="Page-1" stroke="none" stroke-width="1" sketch:type="MSPage">
+                            <g id="Oval-1-+-Oval-2" sketch:type="MSLayerGroup">
+                                <circle cx="10" cy="10" fill="#FFFFFF" id="Oval-1" r="10" sketch:type="MSShapeGroup"/>
+                                <path d="M10,2 C5.581722,2 2,5.581722 2,10 C2,14.418278 5.581722,18 10,18 L10,16 C6.6862915,16 4,13.3137085 4,10 C4,6.6862915 6.6862915,4 10,4 L10,2 Z" fill="#FFCC00" id="Oval-2" sketch:type="MSShapeGroup">
+                                    <animateTransform attributeName="transform" attributeType="XML" dur="1.3s" from="0 10 10" repeatCount="indefinite" to="360 10 10" type="rotate"/>
+                                </path>
+                            </g>
+                        </g>
+                    </svg>
+                    <description>&pagetranslator.notification.process;</description>
+                </hbox>
+
+                <hbox align="baseline" anonid="error">
+                    <description>&pagetranslator.notification.error;<button anonid="repeat" label="&pagetranslator.notification.error.repeat;"/></description>
+                </hbox>
+            </deck>
+
+            <xul:hbox anonid="close-button" class="hoverable"/>
+
+            <xul:hbox hidden="true">
+                <children/>
+            </xul:hbox>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="_moduleElement">this._notification.pageTranslator</field>
+
+            <field name="api" readonly="true">this._moduleElement.api</field>
+            <field name="mDeck">this._getElementByAttr("anonid", "main")</field>
+            <field name="mError">this._getElementByAttr("anonid", "error")</field>
+            <field name="mInfo">this._getElementByAttr("anonid", "info")</field>
+            <field name="mMenuList">this._getElementByAttr("anonid", "menulist-langs")</field>
+            <field name="mPageTranslatorContainer">this._getElementByAttr("anonid", "pagetranslator-container")</field>
+            <field name="mPreloader">this._getElementByAttr("anonid", "preloader")</field>
+            <field name="mPROMT">this._getElementByAttr("anonid", "promt")</field>
+            <field name="mPROMTButton">this._getElementByAttr("anonid", "promt-button")</field>
+            <field name="mRepeatButton">this._getElementByAttr("anonid", "repeat")</field>
+            <field name="mNotificationBox">gBrowser.getNotificationBox()</field>
+            <field name="mStringBundleService">Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService)</field>
+            <field name="mPROMTPairs">[]</field>
+            <field name="mMenuListContainer">null</field>
+
+            <field name="_contentMessageName">'yasearch@yandex.ru:pagetranslator:event'</field>
+
+            <field name="_contentMessageListener"><![CDATA[    {
+        let messageListener = function messageListener({data}) {
+            switch (data.type) {
+            case "finish":
+                this.show("info");
+                break;
+            case "error":
+                this.show("error");
+                break;
+            default:
+                break;
+            }
+        }.bind(this);
+        messageListener;
+    }]]></field>
+
+            <property name="mRevertNodes" readonly="true">
+                <getter><![CDATA[    return [this._getElementByAttr("anonid", "revert")];]]></getter>
+            </property>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this._browser.messageManager.addMessageListener(this._contentMessageName, this._contentMessageListener);
+    this.generateInfo();
+    this.show("preloader");
+    let lang = this._notification.getAttribute("lang");
+    this._notification.removeAttribute("lang");
+    this.setLang(lang);
+    this._notification.remove = this.remove.bind(this);]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    this._removeMessageListener();]]></body>
+            </method>
+
+            <method name="show">
+                <parameter name="type"/>
+                <body><![CDATA[    let selectedChild = null;
+    switch (type) {
+    case "preloader":
+        selectedChild = this.mPreloader;
+        break;
+    case "error":
+        selectedChild = this.mError;
+        break;
+    case "info":
+    default:
+        selectedChild = this.mPageTranslatorContainer;
+        break;
+    }
+    this.mDeck.selectedPanel = selectedChild;]]></body>
+            </method>
+
+            <method name="generateInfo">
+                <body><![CDATA[    let bundlePath = this.api.Package.resolvePath("/native/fx/pagetranslator.properties");
+    let bundle = this.mStringBundleService.createBundle(bundlePath);
+    let xulString = bundle.GetStringFromName("pagetranslator.notification.info");
+    let xulNS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+    let menuListContainer = document.createElementNS(xulNS, "hbox");
+    menuListContainer.setAttribute("anonid", "menulist-langs-container");
+    menuListContainer.mNotification = this;
+    this.mMenuListContainer = menuListContainer;
+    let that = this;
+    xulString.replace(/([\s\S]*?)%lang([\s\S]*)/g, function (str, p1, p2) {
+        let prefix = p1.trim();
+        let postfix = p2.trim();
+        if (prefix) {
+            let preLabel = document.createElementNS(xulNS, "label");
+            preLabel.setAttribute("value", prefix);
+            preLabel.className = "text";
+            that.mInfo.appendChild(preLabel);
+        }
+        that.mInfo.appendChild(menuListContainer);
+        if (postfix) {
+            let postLabel = document.createElementNS(xulNS, "label");
+            postLabel.setAttribute("value", postfix);
+            postLabel.className = "text";
+            that.mInfo.appendChild(postLabel);
+        }
+    });]]></body>
+            </method>
+
+            <method name="translateOn">
+                <parameter name="lang"/>
+                <body><![CDATA[    this.show("preloader");
+    if (lang) {
+        this.setLang(lang);
+    }
+    gBrowser.mCurrentBrowser.messageManager.sendAsyncMessage(this._contentMessageName, {
+        type: "translate",
+        language: lang
+    });]]></body>
+            </method>
+
+            <method name="remove">
+                <parameter name="skipAnimation"/>
+                <body><![CDATA[    this._removeMessageListener();
+    this._notification.close();]]></body>
+            </method>
+
+            <method name="undoTranslation">
+                <body><![CDATA[    gBrowser.mCurrentBrowser.messageManager.sendAsyncMessage(this._contentMessageName, { type: "revert" });]]></body>
+            </method>
+
+            <method name="reloadPage">
+                <body><![CDATA[    this.remove();
+    this._moduleElement.reloadPage();]]></body>
+            </method>
+
+            <method name="setLang">
+                <parameter name="lang"/>
+                <body><![CDATA[    if (this.mMenuListContainer) {
+        this.mMenuListContainer.setLang(lang);
+    }
+    let pair = this._moduleElement.translator.getLangPair(lang, this._moduleElement.translator.language);
+    if (this.mPROMTPairs.indexOf(pair) === -1) {
+        this._hidePROMT();
+    } else {
+        this._showPROMT();
+    }]]></body>
+            </method>
+
+            <method name="openPROMTPage">
+                <body><![CDATA[    this.api.Controls.navigateBrowser({ url: "http://translate.ru" });]]></body>
+            </method>
+
+            <method name="_showPROMT">
+                <body><![CDATA[    this.mPROMT.style.setProperty("display", "-moz-box", "important");]]></body>
+            </method>
+
+            <method name="_hidePROMT">
+                <body><![CDATA[    this.mPROMT.style.setProperty("display", "none", "important");]]></body>
+            </method>
+
+            <method name="_removeMessageListener">
+                <body><![CDATA[    this._browser.messageManager.removeMessageListener(this._contentMessageName, this._contentMessageListener);]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="0" event="click" phase="capturing"><![CDATA[    let target = event.originalTarget;
+    let currentTarget = target;
+    let anonid = target.getAttribute("anonid");
+    while (!anonid && currentTarget.parentNode) {
+        currentTarget = currentTarget.parentNode;
+        anonid = currentTarget.getAttribute("anonid");
+    }
+    if (anonid == "close-button") {
+        pageTranslator.sendStatistic("pagetranslator", "bar.close");
+        this.remove();
+        return;
+    }
+    for (let i = 0, length = this.mRevertNodes.length; i < length; i++) {
+        let node = this.mRevertNodes[i];
+        if (node && node.contains(target)) {
+            pageTranslator.sendStatistic("pagetranslator", "bar.back");
+            this._moduleElement.revert();
+            return;
+        }
+    }
+    if (this.mRepeatButton.contains(target)) {
+        this.translateOn();
+        return;
+    }
+    if (this.mPROMTButton.contains(target)) {
+        this.openPROMTPage();
+    }]]></handler>
+        </handlers>
+    </binding>
+
+    <binding id="pagetranslator-menulist">
+        <content>
+            <xul:menulist anonid="menulist-langs">
+                <xul:menupopup>
+                    <xul:menuitem label="&pagetranslator.notification.english.gen;" value="en"/>
+                    <xul:menuitem label="&pagetranslator.notification.russian.gen;" value="ru"/>
+                    <xul:menuitem label="&pagetranslator.notification.german.gen;" value="de"/>
+                    <xul:menuitem label="&pagetranslator.notification.spanish.gen;" value="es"/>
+                    <xul:menuitem label="&pagetranslator.notification.italian.gen;" value="it"/>
+                    <xul:menuitem label="&pagetranslator.notification.french.gen;" value="fr"/>
+                    <xul:menuitem label="&pagetranslator.notification.ukrainian.gen;" value="uk"/>
+                    <xul:menuitem label="&pagetranslator.notification.turkish.gen;" value="tr"/>
+                    <xul:menuitem label="&pagetranslator.notification.polish.gen;" value="pl"/>
+                </xul:menupopup>
+            </xul:menulist>
+        </content>
+
+        <implementation>
+            <field name="mMenuList">
+                document.getAnonymousElementByAttribute(this, "anonid", "menulist-langs");
+            </field>
+
+            <field name="mLang">null</field>
+
+            <constructor><![CDATA[    this._generateItems();
+    this.mMenuList.addEventListener("command", this.translateOn.bind(this), false);]]></constructor>
+
+            <destructor><![CDATA[    this.mNotification = null;]]></destructor>
+
+            <method name="_generateItems">
+                <body><![CDATA[    let pageTranslator = this.mNotification._moduleElement;
+    let items = this.mMenuList.menupopup.childNodes;
+    let tlang = pageTranslator.translator.language;
+    for (let i = 0, length = items.length; i < length; i++) {
+        let item = items[i];
+        let slang = item.value;
+        let pair = slang + "-" + tlang;
+        if (pageTranslator.translator.getAvailablePair(pair)) {
+            item.style.setProperty("display", "-moz-box", "important");
+        } else {
+            item.style.setProperty("display", "none", "important");
+        }
+    }]]></body>
+            </method>
+
+            <method name="translateOn">
+                <body><![CDATA[    let menuitem = this.mMenuList.selectedItem;
+    if (this.mLang === menuitem.value) {
+        return;
+    }
+    let lang = menuitem.value;
+    this.mNotification._moduleElement.sendStatistic("pagetranslator", "bar.langchange");
+    this.mNotification.undoTranslation();
+    this.mNotification.translateOn(lang);]]></body>
+            </method>
+
+            <method name="setLang">
+                <parameter name="lang"/>
+                <body><![CDATA[    let menuitem = document.getAnonymousElementByAttribute(this.mMenuList, "value", lang);
+    this.mLang = lang;
+    if (menuitem) {
+        this.mMenuList.selectedItem = menuitem;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding extends="/native/fx/bindings/common/notification.xbl#notification-base" id="tooltip">
+        <resources>
+            <stylesheet src="../styles/tooltip.css"/>
+        </resources>
+
+        <content>
+            <hbox anonid="content-area" flex="1" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <hbox anonid="notification-icon">
+                    <image anonid="notification-icon-image"/>
+                </hbox>
+                <hbox>
+                    <description anonid="text-container" yb-label="&pagetranslator.notification.tooltip;"><label/><label anonid="button-example">&pagetranslator.translate;</label><label/></description>
+                </hbox>
+            </hbox>
+
+            <xul:hbox anonid="close-button" class="hoverable"/>
+
+            <xul:hbox hidden="true">
+                <children/>
+            </xul:hbox>
+        </content>
+
+        <implementation>
+            <constructor><![CDATA[    let buttonExample = this._getElementByAttr("anonid", "button-example");
+    let textContainer = this._getElementByAttr("anonid", "text-container");
+    let panelText = textContainer.getAttribute("yb-label");
+    if (panelText) {
+        let textChunks = panelText.split("{button}");
+        let labels = textContainer.querySelectorAll("label");
+        for (let i = 0; i < labels.length; i++) {
+            let label = labels[i];
+            if (label === buttonExample) {
+                continue;
+            }
+            let text = (textChunks.shift() || "").trim();
+            if (text === "") {
+                label.hidden = true;
+            } else {
+                label.setAttribute("value", text);
+            }
+        }
+    }]]></constructor>
+
+            <method name="remove">
+                <body><![CDATA[    this._notification.close();]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="0" event="click"><![CDATA[    let target = event.originalTarget;
+    let anonid = this.getSelfOrAncestorAnonid(target);
+    if (anonid === "close-button") {
+        this.remove();
+    }]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="/native/fx/bindings/common/notification.xbl#notification-base" id="suggest">
+        <resources>
+            <stylesheet src="../styles/suggest.css"/>
+        </resources>
+
+        <content>
+            <hbox align="center" anonid="content-area" flex="1" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <hbox anonid="notification-icon">
+                    <image anonid="notification-icon-image"/>
+                </hbox>
+
+                <hbox align="baseline">
+                    <description>&pagetranslator.notification.suggest;</description>
+                    <deck anonid="message-container">
+                        <hbox align="baseline">
+                            <button anonid="open-button" label="&pagetranslator.notification.suggest.button.yaBrowser;"/>
+                        </hbox>
+                        <hbox align="baseline">
+                            <button anonid="more-button" label="&pagetranslator.notification.suggest.button.noYaBrowser;"/>
+                        </hbox>
+                    </deck>
+                </hbox>
+            </hbox>
+
+            <xul:hbox anonid="close-button" class="hoverable"/>
+
+            <xul:hbox hidden="true">
+                <children/>
+            </xul:hbox>
+        </content>
+
+        <implementation>
+            <field name="api" readonly="true">this._moduleElement.api</field>
+
+            <field name="_moduleElement" readonly="true">this._notification.pageTranslator</field>
+
+            <field name="_wasShowed">false</field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    let browserInstalled = this.api.Integration.yandexBrowser.isInstalled;
+    let deck = this._getElementByAttr("anonid", "message-container");
+    if (deck && !browserInstalled) {
+        deck.selectedIndex = 1;
+    }
+    this._notification.remove = this.remove.bind(this);
+    this._checkShowed();]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;]]></body>
+            </method>
+
+            <method name="remove">
+                <body><![CDATA[    this._notification.close();]]></body>
+            </method>
+
+            <method name="_checkShowed">
+                <body><![CDATA[    if (this._notification.control.currentNotification === this._notification) {
+        this._wasShowed = true;
+        this._sendStatistic(this.api.Integration.yandexBrowser.isInstalled ? "addbbrun" : "addbbinstall");
+    } else {
+        this._checkShowedTimeout = setTimeout(this._checkShowed.bind(this), 1000);
+    }]]></body>
+            </method>
+
+            <method name="_sendStatistic">
+                <parameter name="aAction"/>
+                <body><![CDATA[    let me = this._moduleElement;
+    if (me && typeof me.sendStatistic == "function") {
+        me.sendStatistic("suggest", aAction);
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="click"><![CDATA[    let target = event.originalTarget;
+    let mButton = event.button;
+    if (!(mButton === 0 || mButton === 1)) {
+        return;
+    }
+    let anonid = this.getSelfOrAncestorAnonid(target);
+    let userAction = "close";
+    switch (anonid) {
+    case "close-button":
+        let browserInstalled = this.api.Integration.yandexBrowser.isInstalled;
+        statAction = browserInstalled ? "runclose" : "installclose";
+        break;
+    case "open-button":
+        statAction = "run";
+        this.api.Statistics.BarNavig.sendRequest({ addbb: "trbb" });
+        this.api.Integration.yandexBrowser.openBrowser(gBrowser.mCurrentBrowser.documentURI.spec);
+        break;
+    case "more-button":
+        statAction = "install";
+        this.api.Controls.navigateBrowser({
+            unsafeURL: this._moduleElement.module.promoURL,
+            eventInfo: event
+        });
+        break;
+    default:
+        return;
+    }
+    this._moduleElement.onNotificationAction("suggest", userAction);
+    this._sendStatistic(statAction);
+    this.remove();]]></handler>
+        </handlers>
+    </binding>
+</bindings>

@@ -141,9 +141,8 @@ const xmlutils = {
                     };
                     break;
                 case subNode.ELEMENT_NODE:
-                    let element = subNode;
-                    let propName = element.nodeName;
-                    let propValue = this.domElement2jsObj(element, treeWalker);
+                    let propName = subNode.nodeName;
+                    let propValue = this.domElement2jsObj(subNode, treeWalker);
                     result.childElements.push(propValue);
                     if (!(propName in result)) {
                         result[propName] = propValue;

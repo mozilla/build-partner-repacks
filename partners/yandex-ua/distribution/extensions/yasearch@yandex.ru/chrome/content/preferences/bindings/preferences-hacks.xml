@@ -1,0 +1,255 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings><bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="chrome://global/content/bindings/preferences.xml#prefwindow" id="prefWindow">
+        <implementation>
+            <property name="instantApply" onget="return true;" onset=""/>
+        </implementation>
+    </binding>
+
+    <binding id="prefWindow-dlgbuttons">
+        <content style="max-height:1px; overflow: hidden; visibility: hidden">
+            <grid xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <columns flex="1">
+                    <column style="width:15em"/>
+                    <column/>
+                    <column flex="1"/>
+                    <column/>
+                </columns>
+                <rows flex="1">
+                    <row flex="1">
+                        <vbox><richlistbox/></vbox>
+                        <vbox class="buttons-container"><button class="minimal arrow-right"/></vbox>
+                        <vbox><richlistbox/></vbox>
+                        <vbox class="buttons-container"><button class="minimal arrow-up"/></vbox>
+                    </row>
+                    <row anonid="sizes-hack"><hbox><button flex="1"/></hbox><hbox/><button/><hbox/></row>
+                </rows>
+            </grid>
+        </content>
+
+        <implementation>
+            <constructor><![CDATA[    window.setTimeout(function (me) {
+        me.constructorEx();
+    }, 0, this);]]></constructor>
+
+            <method name="constructorEx">
+                <body><![CDATA[    const dialog = document.documentElement;
+    if (dialog.hasAttribute("prefWindow-dlgbuttons-hack")) {
+        return;
+    }
+    dialog.setAttribute("prefWindow-dlgbuttons-hack", "true");
+    function setAttributes(aElement, aAttributes) {
+        for (let [
+                    name,
+                    val
+                ] in Iterator(aAttributes)) {
+            aElement.setAttribute(name, val);
+        }
+    }
+    let hackChildNodes = document.getAnonymousElementByAttribute(this, "anonid", "sizes-hack").childNodes;
+    let [
+        ,
+        w2,
+        w3,
+        w4
+    ] = Array.slice(hackChildNodes).map(aNode => aNode.boxObject.width);
+    let w1 = hackChildNodes[0].firstChild.boxObject.width;
+    let extra2Button = dialog.getButton("extra2");
+    let container = extra2Button.parentNode;
+    let subContainer = document.createElement("hbox");
+    container.insertBefore(subContainer, extra2Button);
+    let removeWidgetsButton = document.createElement("button");
+    setAttributes(removeWidgetsButton, {
+        command: "cmd_deleteWidgets",
+        observes: "canDeleteWidgetsBroadcaster",
+        class: "dialog-button",
+        dlgtype: "customDeleteWidgets",
+        width: w1
+    });
+    if (dialog.hasAttribute("buttonlabeldeletewidgets")) {
+        let label = document.createElement("label");
+        setAttributes(label, {
+            flex: "1",
+            crop: "end",
+            class: "plain",
+            value: dialog.getAttribute("buttonlabeldeletewidgets"),
+            style: "text-align: center;"
+        });
+        removeWidgetsButton.appendChild(label);
+    }
+    subContainer.appendChild(removeWidgetsButton);
+    let removePluginsButton = document.createElement("button");
+    setAttributes(removePluginsButton, {
+        command: "cmd_deletePlugins",
+        observes: "canDeletePluginsBroadcaster",
+        class: "dialog-button",
+        dlgtype: "customDeletePlugins",
+        width: w1
+    });
+    if (dialog.hasAttribute("buttonlabeldeleteplugins")) {
+        let label = document.createElement("label");
+        setAttributes(label, {
+            flex: "1",
+            crop: "end",
+            class: "plain",
+            value: dialog.getAttribute("buttonlabeldeleteplugins"),
+            style: "text-align: center;"
+        });
+        removePluginsButton.appendChild(label);
+    }
+    subContainer.appendChild(removePluginsButton);
+    let hbox = document.createElement("hbox");
+    hbox.setAttribute("width", w2);
+    container.insertBefore(hbox, extra2Button);
+    hbox = document.createElement("hbox");
+    hbox.setAttribute("width", w4);
+    container.appendChild(hbox);]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/preferences.xml#preference" id="preference">
+        <implementation>
+            <property name="valueFromPreferences">
+                <getter><![CDATA[    return Preferences.barCore.Lib.Preferences.get(this.name, null);]]></getter>
+                <setter><![CDATA[    if (this.readonly || this.valueFromPreferences == val) {
+        return val;
+    }
+    if (typeof val == "undefined") {
+        this.preferences.rootBranch.clearUserPref(this.name);
+        return val;
+    }
+    let prefs = Preferences.barCore.Lib.Preferences;
+    let fullPrefPath = this.name;
+    try {
+        prefs.set(this.name, val);
+    } catch (e) {
+        let rootBranchInternal = this.preferences.rootBranchInternal;
+        rootBranchInternal.removeObserver(this.name, this.preferences);
+        prefs.reset(this.name);
+        rootBranchInternal.addObserver(val, this.preferences, false);
+        prefs.set(this.name, val);
+    }
+    if (!this.batching) {
+        this.preferences.service.savePrefFile(null);
+    }
+    return val;]]></setter>
+            </property>
+
+            <method name="setElementValue">
+                <parameter name="aElement"/>
+                <body><![CDATA[    if (this.locked) {
+        aElement.disabled = true;
+    }
+    if (!this.isElementEditable(aElement)) {
+        return;
+    }
+    let rv;
+    if (aElement.hasAttribute("onsyncfrompreference")) {
+        try {
+            let event = document.createEvent("Events");
+            event.initEvent("syncfrompreference", true, true);
+            let f = new Function("event", aElement.getAttribute("onsyncfrompreference"));
+            rv = f.call(aElement, event);
+        } catch (e) {
+            Components.utils.reportError(e);
+        }
+    }
+    let val = typeof rv != "undefined" ? rv : this.valueFromPreferences;
+    if (val === undefined) {
+        val = this.defaultValue;
+    }
+    const GUI_NS = "http://bar.yandex.ru/dev/native/gui";
+    const defValueAttrName = "xbDefaultValue";
+    if (val === null && aElement.hasAttributeNS(GUI_NS, defValueAttrName)) {
+        val = aElement.getAttributeNS(GUI_NS, defValueAttrName);
+    }
+    function setValue(element, attribute, value) {
+        if (attribute in element) {
+            element[attribute] = value;
+        } else {
+            element.setAttribute(attribute, value);
+        }
+    }
+    switch (aElement.localName) {
+    case "checkbox":
+    case "listitem":
+        setValue(aElement, "checked", typeof val == "boolean" ? val : val === "true");
+        break;
+    case "colorpicker":
+        setValue(aElement, "color", val);
+        break;
+    case "textbox":
+        if (aElement.getAttribute("type") == "number") {
+            if (aElement.decimalPlaces === 0) {
+                val = parseInt(val, 10);
+            } else {
+                val = parseFloat(val);
+            }
+        }
+        if (aElement.value !== val) {
+            setValue(aElement, "value", val);
+        }
+        break;
+    default:
+        setValue(aElement, "value", val);
+        break;
+    }]]></body>
+            </method>
+
+            <method name="getElementValue">
+                <parameter name="aElement"/>
+                <body><![CDATA[    if (aElement.hasAttribute("onsynctopreference")) {
+        try {
+            let event = document.createEvent("Events");
+            event.initEvent("synctopreference", true, true);
+            let f = new Function("event", aElement.getAttribute("onsynctopreference"));
+            let rv = f.call(aElement, event);
+            if (typeof rv != "undefined") {
+                return rv;
+            }
+        } catch (e) {
+            Components.utils.reportError(e);
+        }
+    }
+    function getValue(element, attribute) {
+        return attribute in element ? element[attribute] : element.getAttribute(attribute);
+    }
+    let value;
+    switch (aElement.localName) {
+    case "checkbox":
+    case "listitem":
+        value = getValue(aElement, "checked");
+        break;
+    case "colorpicker":
+        value = getValue(aElement, "color");
+        break;
+    default:
+        value = getValue(aElement, "value");
+        break;
+    }
+    let prefType = "string";
+    switch (aElement.localName) {
+    case "checkbox":
+        prefType = "bool";
+        break;
+    case "textbox":
+        if (aElement.getAttribute("type") == "number" && aElement.decimalPlaces === 0) {
+            prefType = "int";
+        }
+        break;
+    default:
+        break;
+    }
+    switch (prefType) {
+    case "int":
+        return parseInt(value, 10) || 0;
+    case "bool":
+        return typeof value == "boolean" ? value : value == "true";
+    }
+    return value;]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

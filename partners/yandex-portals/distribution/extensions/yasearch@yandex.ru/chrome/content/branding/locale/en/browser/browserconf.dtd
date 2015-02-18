@@ -1,0 +1,5 @@
+<!ENTITY category.services "Search in services: &#34;{searchTermsCropped}&#34;">
+<!ENTITY locationbar.search.url "http://yandex.ru/yandsearch?clid={clid9}&amp;text=">
+<!ENTITY yandex.qs.keywordsearch "http://yandex.ru/yandsearch?clid={clid9}&amp;text={searchTerms}">
+
+<!ENTITY yandex.imagesearch.label "Search for this image on Yandex">

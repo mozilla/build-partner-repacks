@@ -1,0 +1,7 @@
+<!ENTITY games.title "Oyunlar">
+<!ENTITY games.menutitle "Tüm Oyunlar">
+<!ENTITY games.tooltip "Çevrimiçi oyun oyna">
+<!ENTITY games.error_connect "Oyun yüklenemedi.">
+<!ENTITY games.error_connect2 "İnternet bağlantınızı kontrol edin">
+<!ENTITY games.error_flash "Oyunu başlatmak için, Flash Player programını karşıdan yüklemeniz ve bilgisayarınıza kurmanız gerekmektedir.&#13;Karşıdan yükleme sayfasına gitmek için tıklayın.">
+<!ENTITY games.source "Kaynak">

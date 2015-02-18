@@ -1,0 +1,12 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#logo"]{-moz-binding:url(logo/button.xbl#widget)!important}
+toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#search"]{-moz-binding:url(search/widget.xbl#searchbox)!important}
+toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#settings"]{-moz-binding:url(settings/settings.xbl)!important}
+toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#money"]{-moz-binding:url(money/bindings/money.xbl)!important}
+toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#fotki"]{-moz-binding:url(fotki/bindings/fotki.xbl)!important}
+toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#lenta"]{-moz-binding:url(lenta/bindings/lenta.xbl)!important}
+toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#mail"]{-moz-binding:url(mail/bindings/mail-widget.xbl#widget)!important}
+toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#login"]{-moz-binding:url(login/bindings/login-widget.xbl)!important}
+toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#spam"]{-moz-binding:url(spam/spam.xbl)!important}
+toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#cy"]{-moz-binding:url(cy/bindings/cy-widget.xbl)!important}
+toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#moikrug"]{-moz-binding:url(moikrug/bindings/moikrug.xbl)!important}
+toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#music"]{-moz-binding:url(music/music.xbl#widget)!important}

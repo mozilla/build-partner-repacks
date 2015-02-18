@@ -1,0 +1,6 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);window:-moz-lwtheme #yaplate-container{padding:0}
+window:-moz-lwtheme #yaplate,window:not(:-moz-system-metric(windows-classic)) #navigator-toolbox[cb-os=windows][cb-default-theme=true][tabsontop=false] #yaplate{border-radius:3px;background-image:-moz-linear-gradient(top,rgba(255,255,255,.95),rgba(255,255,255,.65));-moz-appearance:none}
+#urlbar-container{margin-right:6px!important}
+#navigator-toolbox>#nav-bar{padding-right:4px}
+toolbox[cb-barless=true][cb-default-theme=true][iconsize=small] #yaplate-container{padding:1px 0!important}
+toolbox#navigator-toolbox[cb-barless=false] toolbaritem#yasearch-toggle-barless-toolbaritem{display:none}

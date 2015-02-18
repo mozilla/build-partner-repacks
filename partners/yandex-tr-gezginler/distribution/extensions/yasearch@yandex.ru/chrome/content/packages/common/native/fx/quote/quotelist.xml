@@ -1,0 +1,519 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<quotes>
+  <group icon="currency" region="225" title="Курсы валют ЦБ РФ">
+    <quote id="1">
+      <name>USD ЦБ РФ</name>
+      <shortname>USD</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1.html</url>
+    </quote>
+    <quote id="23">
+      <name>EUR ЦБ РФ</name>
+      <shortname>EUR</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/23.html</url>
+    </quote>
+    <quote id="10007">
+      <name>CHF ЦБ РФ</name>
+      <shortname>CHF</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/10007.html</url>
+    </quote>
+    <quote id="24">
+      <name>GBP ЦБ РФ</name>
+      <shortname>GBP</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/24.html</url>
+    </quote>
+    <quote id="25">
+      <name>JPY ЦБ РФ</name>
+      <shortname>JPY</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/25.html</url>
+    </quote>
+    <quote id="10006">
+      <name>Гривна ЦБ РФ</name>
+      <shortname>Гривна</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/10006.html</url>
+    </quote>
+    <quote id="10009">
+      <name>KZT ЦБ РФ</name>
+      <shortname>KZT</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/10009.html</url>
+    </quote>
+    <quote id="10010">
+      <name>BYR ЦБ РФ</name>
+      <shortname>BYR</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/10010.html</url>
+    </quote>
+    <quote id="5">
+      <name>Бивалютная корзина</name>
+      <shortname>Бивалютная корзина</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/5.html</url>
+    </quote>
+  </group>
+  <group icon="currency" title="Курсы валют НБ Украины">
+    <quote id="3005">
+      <name>USD НБУ</name>
+      <shortname>USD НБУ</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/3005.html</url>
+    </quote>
+    <quote id="3027">
+      <name>EUR НБУ</name>
+      <shortname>EUR НБУ</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/3027.html</url>
+    </quote>
+    <quote id="3015">
+      <name>RUB НБУ</name>
+      <shortname>RUB НБУ</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/3015.html</url>
+    </quote>
+    <quote id="3024">
+      <name>CHF НБУ</name>
+      <shortname>CHF НБУ</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/3024.html</url>
+    </quote>
+    <quote id="3001">
+      <name>GBP НБУ</name>
+      <shortname>GBP НБУ</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/3001.html</url>
+    </quote>
+    <quote id="3026">
+      <name>JPY НБУ</name>
+      <shortname>JPY НБУ</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/3026.html</url>
+    </quote>
+    <quote id="3003">
+      <name>BYR НБУ</name>
+      <shortname>BYR НБУ</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/3003.html</url>
+    </quote>
+    <quote id="3009">
+      <name>KZT НБУ</name>
+      <shortname>KZT НБУ</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/3009.html</url>
+    </quote>
+  </group>
+  <group icon="currency" title="Наличные курсы валют Украины">
+    <quote id="40043">
+      <name>USD Наличный Украина</name>
+      <shortname>USD</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/40043.html</url>
+    </quote>
+    <quote id="40042">
+      <name>EUR Наличный Украина</name>
+      <shortname>EUR</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/40042.html</url>
+    </quote>
+    <quote id="40010">
+      <name>RUB Наличный Украина</name>
+      <shortname>RUB</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/40010.html</url>
+    </quote>
+    <quote id="40032">
+      <name>BYR Наличный Украина</name>
+      <shortname>BYR</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/40032.html</url>
+    </quote>
+    <quote id="40023">
+      <name>KZT Наличный Украина</name>
+      <shortname>KZT</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/40023.html</url>
+    </quote>
+    <quote id="40035">
+      <name>CHF Наличный Украина</name>
+      <shortname>CHF</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/40035.html</url>
+    </quote>
+    <quote id="40001">
+      <name>GBP Наличный Украина</name>
+      <shortname>GBP</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/40001.html</url>
+    </quote>
+    <quote id="40011">
+      <name>JPY Наличный Украина</name>
+      <shortname>JPY</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/40011.html</url>
+    </quote>
+  </group>
+  <group icon="currency" region="149" title="Курсы валют ЦБ Республики Беларусь">
+    <quote id="18">
+      <name>USD НБРБ</name>
+      <shortname>USD НБРБ</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/18.html</url>
+    </quote>
+    <quote id="4000">
+      <name>EUR НБРБ</name>
+      <shortname>EUR НБРБ</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/4000.html</url>
+    </quote>
+    <quote id="19">
+      <name>RUB НБРБ</name>
+      <shortname>RUB НБРБ</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/19.html</url>
+    </quote>
+    <quote id="4001">
+      <name>CHF НБРБ</name>
+      <shortname>CHF НБРБ</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/4001.html</url>
+    </quote>
+    <quote id="4002">
+      <name>GBP НБРБ</name>
+      <shortname>GBP НБРБ</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/4002.html</url>
+    </quote>
+    <quote id="4003">
+      <name>JPY НБРБ</name>
+      <shortname>JPY НБРБ</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/4003.html</url>
+    </quote>
+    <quote id="4004">
+      <name>UAH НБРБ</name>
+      <shortname>UAH НБРБ</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/4004.html</url>
+    </quote>
+    <quote id="4005">
+      <name>KZT НБРБ</name>
+      <shortname>KZT НБРБ</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/4005.html</url>
+    </quote>
+  </group>
+  <group icon="currency" region="159" title="Курсы валют НБ Республики Казахстан">
+    <quote id="5000">
+      <name>USD НБРК</name>
+      <shortname>USD НБРК</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/5000.html</url>
+    </quote>
+    <quote id="5001">
+      <name>EUR НБРК</name>
+      <shortname>EUR НБРК</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/5001.html</url>
+    </quote>
+    <quote id="5002">
+      <name>RUB НБРК</name>
+      <shortname>RUB НБРК</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/5002.html</url>
+    </quote>
+    <quote id="5003">
+      <name>CHF НБРК</name>
+      <shortname>CHF НБРК</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/5003.html</url>
+    </quote>
+    <quote id="5004">
+      <name>GBP НБРК</name>
+      <shortname>GBP НБРК</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/5004.html</url>
+    </quote>
+    <quote id="5005">
+      <name>JPY НБРК</name>
+      <shortname>JPY НБРК</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/5005.html</url>
+    </quote>
+    <quote id="5006">
+      <name>UAH НБРК</name>
+      <shortname>UAH НБРК</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/5006.html</url>
+    </quote>
+    <quote id="5007">
+      <name>BYR НБРК</name>
+      <shortname>BYR НБРК</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/5007.html</url>
+    </quote>
+  </group>
+  <group icon="currency" title="Кросс-курсы">
+    <quote id="6">
+      <name>EUR/USD</name>
+      <shortname>EUR/USD</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/6.html</url>
+    </quote>
+    <quote id="7">
+      <name>USD/JPY</name>
+      <shortname>USD/JPY</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/7.html</url>
+    </quote>
+    <quote id="30">
+      <name>USD/EUR</name>
+      <shortname>USD/EUR</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/30.html</url>
+    </quote>
+    <quote id="31">
+      <name>USD/CHF</name>
+      <shortname>USD/CHF</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/31.html</url>
+    </quote>
+    <quote id="32">
+      <name>GBP/USD</name>
+      <shortname>GBP/USD</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/32.html</url>
+    </quote>
+  </group>
+  <group title="Биржевые индексы">
+    <quote id="1013">
+      <name>ММВБ</name>
+      <shortname>ММВБ</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1013.html</url>
+    </quote>
+    <quote id="50">
+      <name>РТС</name>
+      <shortname>РТС</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/50.html</url>
+    </quote>
+    <quote id="2400">
+      <name>ММВБ-10</name>
+      <shortname>ММВБ-10</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/2400.html</url>
+    </quote>
+    <quote id="2503">
+      <name>РТС-2</name>
+      <shortname>РТС-2</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/2503.html</url>
+    </quote>
+    <quote id="12">
+      <name>Dow (DJIA)</name>
+      <shortname>Dow (DJIA)</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/12.html</url>
+    </quote>
+    <quote id="17">
+      <name>NASDAQ</name>
+      <shortname>NASDAQ</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/17.html</url>
+    </quote>
+    <quote id="2506">
+      <name>S&amp;P 500</name>
+      <shortname>S&amp;P 500</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/2506.html</url>
+    </quote>
+    <quote id="2505">
+      <name>NIKKEI</name>
+      <shortname>NIKKEI</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/2505.html</url>
+    </quote>
+    <quote id="13">
+      <name>FTSE</name>
+      <shortname>FTSE</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/13.html</url>
+    </quote>
+    <quote id="1007">
+      <name>Hang Seng</name>
+      <shortname>Hang Seng</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1007.html</url>
+    </quote>
+    <quote id="1032">
+      <name>Bovespa</name>
+      <shortname>Bovespa</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1032.html</url>
+    </quote>
+  </group>
+  <group icon="stock" title="Сырье">
+    <quote id="1006">
+      <name>Нефть Brent</name>
+      <shortname>Нефть Brent</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1006.html</url>
+    </quote>
+    <quote icon="gold" id="10">
+      <name>Золото</name>
+      <shortname>Золото</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/10.html</url>
+    </quote>
+    <quote id="1500">
+      <name>Алюминий</name>
+      <shortname>Алюминий</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1500.html</url>
+    </quote>
+    <quote id="1501">
+      <name>Медь</name>
+      <shortname>Медь</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1501.html</url>
+    </quote>
+    <quote id="1502">
+      <name>Никель</name>
+      <shortname>Никель</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1502.html</url>
+    </quote>
+    <quote id="1503">
+      <name>Олово</name>
+      <shortname>Олово</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1503.html</url>
+    </quote>
+    <quote id="1504">
+      <name>Палладий</name>
+      <shortname>Палладий</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1504.html</url>
+    </quote>
+    <quote id="1505">
+      <name>Платина</name>
+      <shortname>Платина</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1505.html</url>
+    </quote>
+    <quote id="1506">
+      <name>Серебро</name>
+      <shortname>Серебро</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1506.html</url>
+    </quote>
+    <quote id="1507">
+      <name>Цинк</name>
+      <shortname>Цинк</shortname>
+      <precision>2</precision>
+      <url>http://news.yandex.ru/Russia/quotes/1507.html</url>
+    </quote>
+  </group>
+  <group title="Акции">
+    <quote id="42">
+      <name>YNDX</name>
+      <shortname>YNDX</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/42.html</url>
+    </quote>
+    <quote id="29">
+      <name>ГАЗПРОМ ао</name>
+      <shortname>ГАЗПРОМ ао</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/29.html</url>
+    </quote>
+    <quote id="64">
+      <name>АВТОВАЗ ао</name>
+      <shortname>АВТОВАЗ ао</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/64.html</url>
+    </quote>
+    <quote id="89">
+      <name>Аэрофлот</name>
+      <shortname>Аэрофлот</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/89.html</url>
+    </quote>
+    <quote id="183">
+      <name>ВТБ ао</name>
+      <shortname>ВТБ ао</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/183.html</url>
+    </quote>
+    <quote id="69">
+      <name>ГМКНорНик</name>
+      <shortname>ГМКНорНик</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/69.html</url>
+    </quote>
+    <quote id="54">
+      <name>ЛУКОЙЛ</name>
+      <shortname>ЛУКОЙЛ</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/54.html</url>
+    </quote>
+    <quote id="235">
+      <name>МТС-ао</name>
+      <shortname>МТС-ао</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/235.html</url>
+    </quote>
+    <quote id="193">
+      <name>ОГК-5 ао</name>
+      <shortname>ОГК-5 ао</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/193.html</url>
+    </quote>
+    <quote id="310">
+      <name>ПолюсЗолот</name>
+      <shortname>ПолюсЗолот</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/310.html</url>
+    </quote>
+    <quote id="282">
+      <name>Роснефть</name>
+      <shortname>Роснефть</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/282.html</url>
+    </quote>
+    <quote id="58">
+      <name>Ростел -ао</name>
+      <shortname>Ростел -ао</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/58.html</url>
+    </quote>
+    <quote id="60">
+      <name>Сбербанк</name>
+      <shortname>Сбербанк</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/60.html</url>
+    </quote>
+    <quote id="68">
+      <name>СевСт-ао</name>
+      <shortname>СевСт-ао</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/68.html</url>
+    </quote>
+    <quote id="61">
+      <name>Сургнфгз ао</name>
+      <shortname>Сургнфгз ао</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/61.html</url>
+    </quote>
+    <quote id="379">
+      <name>Уркалий-ао</name>
+      <shortname>Уркалий-ао</shortname>
+      <precision>4</precision>
+      <url>http://news.yandex.ru/Russia/quotes/379.html</url>
+    </quote>
+  </group>
+</quotes>

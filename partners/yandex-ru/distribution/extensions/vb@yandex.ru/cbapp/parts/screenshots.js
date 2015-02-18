@@ -28,12 +28,12 @@ function Screenshot(url) {
         this.uri = Services.io.newURI(this.sourceUrl, null, null);
     } catch (e) {
     }
-    ;
 }
 Screenshot.prototype = {
     get url() {
-        if (!screenshotsUniqIds[this.sourceUrl])
+        if (!screenshotsUniqIds[this.sourceUrl]) {
             screenshotsUniqIds[this.sourceUrl] = 1;
+        }
         return this._url + "?uniqid=" + screenshotsUniqIds[this.sourceUrl];
     },
     get fontColor() {
@@ -46,10 +46,12 @@ Screenshot.prototype = {
         return (screenshotsCache[this.sourceUrl] || {}).color || null;
     },
     set color(val) {
-        if (!val)
+        if (!val) {
             return;
-        if (!screenshotsCache[this.sourceUrl])
+        }
+        if (!screenshotsCache[this.sourceUrl]) {
             screenshotsCache[this.sourceUrl] = {};
+        }
         screenshotsCache[this.sourceUrl].color = val;
         screenshotsCache[this.sourceUrl].fontColor = screenshots._application.colors.getFontColorByBackgroundColor(val);
     },
@@ -100,19 +102,23 @@ const screenshots = {
     },
     handlePageShow: function Screenshots_handlePageShow(windowListenerData) {
         let document = windowListenerData.tab.contentDocument;
-        if (!document)
+        if (!document) {
             return;
+        }
         let {originalURL} = (windowListenerData.docShellProps || {}).currentDocumentChannel || {};
         let shownURL = windowListenerData.url;
-        if (!originalURL || originalURL === "about:blank" || originalURL === shownURL)
+        if (!originalURL || originalURL === "about:blank" || originalURL === shownURL) {
             originalURL = null;
+        }
         let existURLs = Object.create(null);
         this._application.cloudSource.getManifestFromDocument(document, originalURL || shownURL);
         this._application.internalStructure.iterate({ nonempty: true }, function (thumbData, index) {
-            if (thumbData.source === originalURL)
+            if (thumbData.source === originalURL) {
                 existURLs[originalURL] = true;
-            if (thumbData.source === shownURL)
+            }
+            if (thumbData.source === shownURL) {
                 existURLs[shownURL] = true;
+            }
         });
         Object.keys(existURLs).forEach(function (thumbURL) {
             let screenshot = this.createScreenshotInstance(thumbURL);
@@ -121,8 +127,8 @@ const screenshots = {
                 urlReal: shownURL,
                 faviconUrl: this.grabber.getDocumentFaviconURL(document)
             };
-            this.grabber.waitCompleteAndRequestFrameCanvasData(windowListenerData.tab, null, function (streamData, color) {
-                result.img = streamData;
+            this.grabber.waitCompleteAndRequestFrameCanvasData(windowListenerData.tab, null, function (imgDataURL, color) {
+                result.imgDataURL = imgDataURL;
                 result.color = color;
                 this.onScreenshotCreated(result);
             }.bind(this));
@@ -130,8 +136,9 @@ const screenshots = {
     },
     _grabber: null,
     get grabber() {
-        if (!this._grabber)
+        if (!this._grabber) {
             this._grabber = this._application.screenshotsGrabber.newInstance(this);
+        }
         return this._grabber;
     },
     createScreenshotInstance: function Screenshots_createScreenshotInstanceMaker() {
@@ -146,8 +153,9 @@ const screenshots = {
         screenshots._logger.trace("file saved " + file.leafName);
     },
     onScreenshotCreated: function Screenshots_onSShotCreated(aData) {
-        if (!aData.img)
+        if (!Boolean(aData.imgDataURL)) {
             return;
+        }
         let isYandexURL = this._application.isYandexURL(aData.url);
         let uri;
         try {
@@ -162,8 +170,9 @@ const screenshots = {
         let urlWithoutNugtParam = uri.spec;
         let dataStructure = {};
         let toBeSaved = [];
-        if (screenshotsUniqIds[aData.url])
+        if (screenshotsUniqIds[aData.url]) {
             screenshotsUniqIds[aData.url]++;
+        }
         this._application.internalStructure.iterate({ nonempty: true }, function (data, index) {
             if (urlWithoutNugtParam !== aData.url && isYandexURL && urlWithoutNugtParam === data.source) {
                 toBeSaved.push({
@@ -180,15 +189,19 @@ const screenshots = {
                 });
             }
         });
-        if (toBeSaved.length === 0)
+        if (toBeSaved.length === 0) {
             return;
+        }
         let screenshotData = toBeSaved.shift();
         let screenshot = this.createScreenshotInstance(screenshotData.url);
         screenshot.color = aData.color;
         screenshotData.thumbData.screenshot = screenshot.getDataForThumb();
         screenshotData.thumbData.thumb.title = screenshotData.thumbData.thumb.title || aData.title || null;
         dataStructure[screenshotData.index] = screenshotData.thumbData;
-        this.saveStream(aData.img, screenshot.file);
+        let channel = Services.io.newChannelFromURI(Services.io.newURI(aData.imgDataURL, null, null));
+        let imgBinaryStream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
+        imgBinaryStream.setInputStream(channel.open());
+        this.saveStream(imgBinaryStream, screenshot.file);
         toBeSaved.forEach(function (almostSaved) {
             let nugtScreenshot = this.createScreenshotInstance(almostSaved.url);
             let nugtThumbData = almostSaved.thumbData;
@@ -242,8 +255,9 @@ const screenshots = {
         case THUMB_STYLE.SHOTS:
             return true;
         case THUMB_STYLE.LOGOS_AND_SHOTS:
-            if (!thumbData.background || !thumbData.background.url)
+            if (!thumbData.background || !thumbData.background.url) {
                 return true;
+            }
         case THUMB_STYLE.LOGOS_AND_TITLES:
         default:
             return false;

@@ -1,0 +1,330 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % appDTD SYSTEM "chrome://yasearch/content/bar.dtd">
+%appDTD;
+]>
+
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding display="xul:toolbarbutton" id="button" inheritstyle="false">
+        <resources>
+            <stylesheet src="button.css"/>
+        </resources>
+
+        <content>
+            <xul:box class="top"/>
+            <xul:box class="middle">
+                <xul:image/>
+            </xul:box>
+            <xul:box class="bottom"/>
+        </content>
+
+        <handlers>
+            <handler action="this.onClick();" button="0" event="click"/>
+        </handlers>
+    </binding>
+
+    <binding extends="#button" id="toggle-barless-button">
+        <implementation implements="nsIDOMEventListener">
+            <property name="mAppToolbar" onget="return document.getElementById('&app.name;-bar')" readonly="true"/>
+
+            <property name="mNavToolbar" onget="return document.getElementById('nav-bar')" readonly="true"/>
+
+            <property name="toolbarsCollapsed" onget="return (this.getAttribute('cb-collapsed-state') == 'true');" onset="this.setAttribute('cb-collapsed-state', Boolean(val));"/>
+
+            <field name="BLINK_DURATION" readonly="true">2000</field>
+            <field name="_appName">this.mAppToolbar.getAttribute("cb-app")</field>
+            <field name="_barCore">Components.classes["@yandex.ru/custombarcore;" + this._appName].getService().wrappedJSObject</field>
+            <field name="_barApp">this._barCore.application</field>
+            <field name="_logger">this._barApp.getLogger("Chevron")</field>
+            <field name="_wndCtrl">window[this._appName + "OverlayController"]</field>
+            <field name="_mutationObservers">({})</field>
+
+            <property name="isHidden" readonly="true">
+                <getter><![CDATA[    return !this.mAppToolbar.hasChildNodes() && !this._wndCtrl.getAlienToolbars().length;]]></getter>
+            </property>
+
+            <constructor><![CDATA[    this.parentNode.setAttribute("removable", "false");
+    setTimeout(function () {
+        if ("updateCollapsedState" in this) {
+            this.updateCollapsedState();
+        }
+        if (!this.mAppToolbar) {
+            return;
+        }
+        this.onToolbarCollapsedChange();
+        this._checkChevronIntroduced();
+        this._wndCtrl.getAlienToolbars(true).forEach(function (toolbar) {
+            if (toolbar === this.mAppToolbar) {
+                toolbar.collapsed = toolbar.getAttribute("currentset") !== "__empty" ? this.toolbarsCollapsed : true;
+                return;
+            }
+            if (!toolbar.hasChildNodes() && toolbar.collapsed) {
+                return;
+            }
+            toolbar.collapsed = this.toolbarsCollapsed;
+        }, this);
+        window.addEventListener("DOMContentLoaded", this, false);
+        let toolbox = window.document.querySelector("toolbox");
+        this._mutationObservers.toolboxAttrMutationObserver = new MutationObserver(function (mutations) {
+            let knownBrowserToolbarIDs = this._wndCtrl.knownBrowserToolbarIDs;
+            let isToolbarAttrChanged = mutations.some(function ({target}) {
+                return target.nodeName === "toolbar" && knownBrowserToolbarIDs[target.id] === undefined;
+            });
+            if (!isToolbarAttrChanged) {
+                return;
+            }
+            this.onToolbarCollapsedChange();
+        }.bind(this));
+        this._mutationObservers.toolboxAttrMutationObserver.observe(toolbox, {
+            attributes: true,
+            attributeFilter: ["collapsed"],
+            subtree: true
+        });
+        this._mutationObservers.toolboxChildrenMutationObserver = new MutationObserver(function (mutations) {
+            let isSomeToolbarNodeChanged = mutations.some(function ({addedNodes, removedNodes}) {
+                let changedNodes = Array.slice(addedNodes).concat(Array.slice(removedNodes));
+                return changedNodes.some(node => node.nodeName === "toolbar");
+            }.bind(this));
+            if (!isSomeToolbarNodeChanged) {
+                return;
+            }
+            this.hidden = false;
+            this._checkChevronIntroduced();
+            this.onToolbarCollapsedChange();
+        }.bind(this));
+        this._mutationObservers.toolboxChildrenMutationObserver.observe(toolbox, {
+            childList: true,
+            subtree: true
+        });
+        this._mutationObservers.toolbarMutationObserver = new MutationObserver(function (mutations) {
+            this.updateHiddenState();
+        }.bind(this));
+        this._mutationObservers.toolbarMutationObserver.observe(this.mAppToolbar, {
+            childList: true,
+            subtree: false
+        });
+    }.bind(this), 150);]]></constructor>
+
+            <destructor><![CDATA[    Object.keys(this._mutationObservers).forEach(function (observerName) {
+        this[observerName].disconnect();
+        this[observerName] = null;
+    }, this._mutationObservers);
+    window.removeEventListener("DOMContentLoaded", this, false);]]></destructor>
+
+            <method name="onClick">
+                <body><![CDATA[    this.toggleToolbar();
+    this.sendStatistic("shevron." + (this.toolbarsCollapsed ? "buttonclose" : "buttonopen"));
+    const CHEVRON_STATE_PREF = "chevronState";
+    this._barApp.preferences.set(CHEVRON_STATE_PREF, 1);]]></body>
+            </method>
+
+
+            <method name="onToolbarCollapsedChange">
+                <body><![CDATA[    if (window.document.querySelector("toolbox").getAttribute("data-toggling") == "true") {
+        return;
+    }
+    let collapsedState = true;
+    if (this.mAppToolbar.collapsed === false) {
+        collapsedState = false;
+    } else {
+        let alienToolbars = this._wndCtrl.getAlienToolbars();
+        for (let i = 0; i < alienToolbars.length; i++) {
+            if (alienToolbars[i].collapsed === false) {
+                collapsedState = false;
+                break;
+            }
+        }
+    }
+    this.mAppToolbar.setAttribute("data-collapsed", collapsedState);
+    this.toolbarsCollapsed = collapsedState;]]></body>
+            </method>
+
+            <method name="blink">
+                <body><![CDATA[    if (this.hasAttribute("animated")) {
+        return;
+    }
+    this.setAttribute("animated", "true");
+    setTimeout(function (me) {
+        me.removeAttribute("animated");
+    }, this.BLINK_DURATION, this);]]></body>
+            </method>
+
+
+            <method name="checkToolbarsInteraction">
+                <body><![CDATA[    const PREV_INSTALLED_TOOLBARS_PREF = "existingToolbars";
+    const CHEVRON_STATE_PREF = "chevronState";
+    let that = this;
+    let alienToolbars = this._wndCtrl.getAlienToolbars();
+    let collapsedToolbarsFound = false;
+    let currentToolbarsIds = [];
+    let newToolbarsFound = [];
+    let prefValue = this._barApp.preferences.get(PREV_INSTALLED_TOOLBARS_PREF, false);
+    let prevInstalledToolbars = typeof prefValue === "string" && prefValue.length ? prefValue.split(",") : [];
+    let toolbarsExistedBeforeUs = prefValue === false && alienToolbars.length;
+    alienToolbars.forEach(function (toolbar) {
+        currentToolbarsIds.push(toolbar.id);
+        if (toolbar.collapsed) {
+            collapsedToolbarsFound = true;
+        }
+        if (prevInstalledToolbars.indexOf(toolbar.id) !== -1) {
+            return;
+        }
+        newToolbarsFound.push(toolbar);
+    });
+    this._barApp.preferences.set(PREV_INSTALLED_TOOLBARS_PREF, currentToolbarsIds.join(","));
+    if (newToolbarsFound.length === 0) {
+        return;
+    }
+    window.setTimeout(function () {
+        if (!toolbarsExistedBeforeUs) {
+            if (prevInstalledToolbars.length === 0) {
+                let chevronExistedBefore = that.mAppToolbar.hasChildNodes();
+                alienToolbars.forEach(function (toolbar) {
+                    toolbar.collapsed = chevronExistedBefore ? that.mAppToolbar.collapsed : false;
+                });
+            } else {
+                newToolbarsFound.forEach(function (toolbar) {
+                    toolbar.collapsed = collapsedToolbarsFound;
+                });
+            }
+        }
+        let chevronState = that._barApp.preferences.get(CHEVRON_STATE_PREF, 0);
+        that._logger.debug("Check toolbars interaction. Chevron state is now " + chevronState);
+        if (prevInstalledToolbars.length || chevronState === 1) {
+            that._barApp.slices.create({
+                url: "chrome://" + that._appName + "/content/dialogs/chevron-welcome/toolbar-installed.xul",
+                disposable: true,
+                noautohide: true
+            }).show(window.document.getElementById(that._appName + "-toggle-barless-toolbaritem"));
+        } else {
+            that.mAppToolbar.showWelcomeSlice();
+        }
+    }, 1000);]]></body>
+            </method>
+
+            <method name="toggleToolbar">
+                <body><![CDATA[    if (this.welcomeSlice !== undefined) {
+        this.welcomeSlice.destroy();
+        delete this.welcomeSlice;
+    }
+    let toolbar = this.mAppToolbar;
+    let toolbox = window.document.querySelector("toolbox");
+    toolbox.setAttribute("data-toggling", true);
+    toolbar.toggleCollapsed();
+    this.updateCollapsedState();
+    toolbox.setAttribute("data-toggling", false);]]></body>
+            </method>
+
+            <method name="collapseToolbars">
+                <parameter name="closeToolbars"/>
+                <body><![CDATA[    this.mAppToolbar.toggleCollapsed(closeToolbars);
+    this.updateCollapsedState();]]></body>
+            </method>
+
+            <method name="updateCollapsedState">
+                <body><![CDATA[    let toolbar = this.mAppToolbar;
+    let allToolbarsAreCollapsed = true;
+    if (toolbar.collapsed === false) {
+        allToolbarsAreCollapsed = false;
+    } else {
+        let alienToolbars = this._wndCtrl.getAlienToolbars();
+        for (let i = 0; i < alienToolbars.length; i++) {
+            if (alienToolbars[i].collapsed === false) {
+                allToolbarsAreCollapsed = false;
+                break;
+            }
+        }
+    }
+    this.toolbarsCollapsed = allToolbarsAreCollapsed;
+    this.updateHiddenState();]]></body>
+            </method>
+
+            <method name="updateHiddenState">
+                <body><![CDATA[    setTimeout(function (me) {
+        if (me && "_updateHiddenStateTimed" in me) {
+            me._updateHiddenStateTimed();
+        }
+    }, 50, this);]]></body>
+            </method>
+
+             <method name="_updateHiddenStateTimed">
+                <body><![CDATA[    this.hidden = !this.mAppToolbar.hasChildNodes() && this._wndCtrl.getAlienToolbars().length === 0;
+    if (this.hidden && this.welcomeSlice !== undefined) {
+        this.welcomeSlice.destroy();
+        delete this.welcomeSlice;
+    }
+    this._checkChevronIntroduced();]]></body>
+            </method>
+
+            <method name="_checkChevronIntroduced">
+                <body><![CDATA[    this._checkChevronIntroduced = function _checkChevronIntroduced() {
+    };
+    const CHEVRON_STATE_PREF = "chevronState";
+    const CHEVRON_INSTALL_PREF = "chevronInstallTime";
+    let chevronState = this._barApp.preferences.get(CHEVRON_STATE_PREF, 0);
+    let chevronInstallTime = this._barApp.preferences.get(CHEVRON_INSTALL_PREF, 0);
+    if (chevronState === 0) {
+        chevronInstallTime = Math.round(Date.now() / 1000);
+        this._barApp.preferences.set(CHEVRON_INSTALL_PREF, chevronInstallTime);
+        chevronState = this.hidden ? 3 : 2;
+        this._barApp.preferences.set(CHEVRON_STATE_PREF, chevronState);
+    }
+    if (chevronState === 2) {
+        let timeout = Math.max(86400 * 1000 - (Date.now() - chevronInstallTime * 1000), 1000);
+        window.setTimeout(function (that) {
+            let chevronState = that._barApp.preferences.get(CHEVRON_STATE_PREF, 0);
+            that._logger.debug("Try to show welcome slice after timeout. Chevron state is now " + chevronState);
+            if (chevronState === 1) {
+                return;
+            }
+            that.mAppToolbar.showWelcomeSlice();
+        }, timeout, this);
+    }]]></body>
+            </method>
+
+            <method name="sendStatistic">
+                <parameter name="param"/>
+                <body><![CDATA[    this._barApp.statistics.logClickStatistics({
+        cid: 72359,
+        path: "fx." + param
+    });]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    if (aEvent.type !== "DOMContentLoaded") {
+        return;
+    }
+    if (this.mNavToolbar.hasAttribute("customizing")) {
+        return;
+    }
+    this._mutationObservers.toolbarChildrenMutationObserver = new MutationObserver(function (mutations) {
+        if (!this.mAppToolbar.collapsed) {
+            return;
+        }
+        let isSomeNodeInserted = mutations.some(function ({addedNodes}) {
+            return Boolean(addedNodes.length);
+        });
+        if (!isSomeNodeInserted) {
+            return;
+        }
+        this.blink();
+    }.bind(this));
+    this._mutationObservers.toolbarChildrenMutationObserver.observe(this.mAppToolbar, {
+        childList: true,
+        subtree: false
+    });]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+
+    <binding extends="#button" id="toggle-multiline-button">
+        <implementation>
+            <method name="onClick">
+                <body><![CDATA[    document.getBindingParent(this).toggleMultiline();]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

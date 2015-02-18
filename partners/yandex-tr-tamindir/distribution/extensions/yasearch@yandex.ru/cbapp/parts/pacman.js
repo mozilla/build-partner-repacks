@@ -17,7 +17,7 @@ const packageManager = {
         this.rescanPackages();
     },
     get packageIDs() {
-        return [packageID for (packageID in this._packagesInfo)];
+        return Object.keys(this._packagesInfo);
     },
     rescanPackages: function PacMan_rescanPackages() {
         this._logger.debug("Looking for packages...");
@@ -154,7 +154,7 @@ const packageManager = {
     _getPackageInstallInfo: function PacMan__getPackageInstallInfo(packageID) {
         let packageInfo = this._packagesInfo[packageID];
         if (!packageInfo) {
-            let error = new Error(this._consts.ERR_NO_SUCH_PACKAGE + " \"" + packageID + "\"");
+            let error = new Error(this._consts.ERR_NO_SUCH_PACKAGE + " '" + packageID + "'");
             this._logger.warn("PacMan_getPackageInstallInfo: " + strutils.formatError(error));
             this._logger.trace(error.stack);
             throw error;

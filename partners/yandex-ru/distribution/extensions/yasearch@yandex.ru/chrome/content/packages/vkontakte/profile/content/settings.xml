@@ -1,0 +1,32 @@
+<?xml version='1.0'?>
+<!DOCTYPE component SYSTEM "{component}/entities.dtd"><gui:component xmlns:gui="http://bar.yandex.ru/dev/native/gui" xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <html:script type="application/javascript;version=1.8"><![CDATA[
+        let JSProtoObject = {
+            onShow: function() {
+                let canShowNotifications = JSNativeModule.core._app.canShowNotifications();
+                document.getElementById("{{UNIC_STR}}-messageCheckbox").hidden = !canShowNotifications;
+                document.getElementById("{{UNIC_STR}}-friendCheckbox").hidden = !canShowNotifications;
+                document.getElementById("{{UNIC_STR}}-commentCheckbox").hidden = !canShowNotifications;
+                document.getElementById("{{UNIC_STR}}-mentionCheckbox").hidden = !canShowNotifications;
+            }
+        };
+    ]]>
+    </html:script>
+
+    <gui:gui onshown="JSProtoObject.onShow()">
+        <gui:nodes name="show-notif-message">
+            <checkbox id="{{UNIC_STR}}-messageCheckbox" label="&settings.show_message_notifications;" preference="%pref%"/>
+        </gui:nodes>
+        <gui:nodes name="show-notif-friend">
+            <checkbox id="{{UNIC_STR}}-friendCheckbox" label="&settings.show_friend_notifications;" preference="%pref%"/>
+        </gui:nodes>
+        <gui:nodes name="show-notif-comment">
+            <checkbox id="{{UNIC_STR}}-commentCheckbox" label="&settings.show_comment_notifications;" preference="%pref%"/>
+        </gui:nodes>
+        <gui:nodes name="show-notif-mention">
+            <checkbox id="{{UNIC_STR}}-mentionCheckbox" label="&settings.show_mention_notifications;" preference="%pref%"/>
+        </gui:nodes>
+    </gui:gui>
+
+</gui:component>

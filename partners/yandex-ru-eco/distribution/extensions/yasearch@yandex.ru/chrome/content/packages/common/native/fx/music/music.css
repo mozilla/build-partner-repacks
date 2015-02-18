@@ -1,0 +1,6 @@
+@import url(../styles/buttons.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarbutton{list-style-image:url(i/music.svg)!important}
+toolbarbutton[anonid=music-control-button]{list-style-image:url(i/pause.svg)!important}
+toolbarbutton[anonid=music-control-button][data-ya-is-playing=false]{list-style-image:url(i/play.svg)!important}
+toolbaritem[cb-theme-color=dark] toolbarbutton{list-style-image:url(i/music-inverted.svg)!important}
+toolbaritem[cb-theme-color=dark] toolbarbutton[anonid=music-control-button]{list-style-image:url(i/pause-inverted.svg)!important}
+toolbaritem[cb-theme-color=dark] toolbarbutton[anonid=music-control-button][data-ya-is-playing=false]{list-style-image:url(i/play-inverted.svg)!important}

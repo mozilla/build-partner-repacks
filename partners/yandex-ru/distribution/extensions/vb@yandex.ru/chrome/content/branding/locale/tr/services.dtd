@@ -1,0 +1,162 @@
+<!ENTITY suggestions.url "http://suggest.yandex.ru/suggest-ff.cgi?part={searchTerms}">
+
+<!ENTITY yandex.label "Yandex">
+<!ENTITY yandex.context.label "Yandex&#39;te bul: &#34;{searchTermsCropped}&#34;">
+<!ENTITY yandex.url "http://www.yandex.ru">
+<!ENTITY yandex.search.tooltip "Yandex&#39;te bul">
+<!ENTITY yandex.search.url "http://yandex.ru/yandsearch?text={searchTerms}">
+<!ENTITY yandex.search.site-url "&yandex.search.url;&amp;surl_manually=true&amp;surl={searchSite}">
+<!ENTITY yandex.qs.url "http://yandex.ru/yandsearch?clid={clid6}&amp;text={searchTerms}">
+<!ENTITY yandex.qs.suggestions "&suggestions.url;">
+
+<!ENTITY catalog.label "Katalog">
+<!ENTITY catalog.url "http://yaca.yandex.ru">
+<!ENTITY catalog.search.tooltip "Katalog&#39;da bul">
+<!ENTITY catalog.search.url "http://yaca.yandex.ru/yca?text={searchTerms}&amp;yaca=1">
+
+<!ENTITY market.label "Market">
+<!ENTITY market.url "http://market.yandex.ru">
+<!ENTITY market.search.tooltip "Market&#39;te bul">
+<!ENTITY market.search.url "http://market.yandex.ru/search.xml?text={searchTerms}">
+
+<!ENTITY auto.label "Oto">
+<!ENTITY auto.url "http://auto.yandex.ru">
+<!ENTITY auto.search.tooltip "Oto&#39;da bul">
+<!ENTITY auto.search.url "http://auto.yandex.ru/search.xml?text={searchTerms}">
+
+<!ENTITY images.label "Görsel">
+<!ENTITY images.url "http://images.yandex.ru">
+<!ENTITY images.search.tooltip "Görsel&#39;de bul">
+<!ENTITY images.search.url "http://images.yandex.ru/yandsearch?stype=image&amp;text={searchTerms}">
+<!ENTITY images.search.site-url "&images.search.url;&amp;site={searchSite}">
+
+<!ENTITY blogs.label "Bloglar">
+<!ENTITY blogs.url "http://blogs.yandex.ru">
+<!ENTITY blogs.search.tooltip "Bloglar&#39;da bul">
+<!ENTITY blogs.search.url "http://blogs.yandex.ru/search.xml?how=tm&amp;rd=2&amp;text={searchTerms}">
+<!ENTITY blogs.search.site-url "&blogs.search.url;&amp;server={searchSite}">
+
+<!ENTITY dicts.label "Sözlükler">
+<!ENTITY dicts.url "http://slovari.yandex.ru">
+<!ENTITY dicts.search.tooltip "Sözlükler&#39;de bul">
+<!ENTITY dicts.search.url "http://slovari.yandex.ru/search.xml?text={searchTerms}">
+
+<!ENTITY lingvo.label "Lingvo">
+<!ENTITY lingvo.context.find.label "Çeviriyi bul &#34;{searchTermsCropped}&#34;">
+<!ENTITY lingvo.search.find.url "http://slovari.yandex.ru/{searchTerms}/перевод">
+
+<!ENTITY maps.label "Haritalar ">
+<!ENTITY maps.url "http://maps.yandex.ru">
+<!ENTITY maps.search.tooltip "Haritalar&#39;da bul">
+<!ENTITY maps.search.url "http://maps.yandex.ru/?text={searchTerms}">
+
+<!ENTITY addresses.label "Rehber">
+<!ENTITY addresses.url "http://adresa.yandex.ru">
+
+<!ENTITY job.label "Kariyer">
+<!ENTITY job.url "http://rabota.yandex.ru">
+<!ENTITY job.search.tooltip "Kariyer&#39;de bul">
+<!ENTITY job.search.url "http://rabota.yandex.ru/search.xml?text={searchTerms}">
+
+<!ENTITY mail.label "Mail ">
+<!ENTITY mail.url "http://mail.yandex.ru">
+
+<!ENTITY subscriptions.label "Abonelikler">
+<!ENTITY subscriptions.url "http://mail.yandex.ru/lenta">
+
+<!ENTITY photos.label "Foto">
+<!ENTITY photos.url "http://fotki.yandex.ru">
+<!ENTITY photos.search.tooltip "Foto&#39;da bul">
+<!ENTITY photos.search.url "http://fotki.yandex.ru/search.xml?text={searchTerms}">
+
+<!ENTITY yaru.label "Ya.ru">
+<!ENTITY yaru.url "http://my.ya.ru">
+<!ENTITY yaru.search.tooltip "Ya.ru&#39;da ara">
+<!ENTITY yaru.search.url "http://wow.ya.ru/search_posts.xml?text={searchTerms}">
+
+<!ENTITY calendar.label "Takvim">
+<!ENTITY calendar.url "http://calendar.yandex.ru">
+
+<!ENTITY spam.label "Spam filtresi">
+<!ENTITY spam.url "http://so.yandex.ru">
+
+<!ENTITY narod.label "Narod">
+<!ENTITY narod.url "http://narod.yandex.ru">
+
+<!ENTITY money.label "Money">
+<!ENTITY money.url "http://money.yandex.ru">
+
+<!ENTITY mycircle.label "Moy Krug">
+<!ENTITY mycircle.url "http://moikrug.ru">
+<!ENTITY mycircle.search.tooltip "Moy Krug&#39;da ara">
+<!ENTITY mycircle.search.url "http://moikrug.ru/search/?ok=1&amp;charset=utf-8&amp;keywords={searchTerms}">
+
+<!ENTITY direct.label "Direct">
+<!ENTITY direct.url "http://direct.yandex.ru">
+
+<!ENTITY advertising.label "Reklam Ağı">
+<!ENTITY advertising.url "http://partner.yandex.ru">
+
+<!ENTITY bookmarks.label "Favoriler ">
+<!ENTITY bookmarks.url "http://zakladki.yandex.ru">
+
+<!ENTITY find.label "Bulunanlar">
+<!ENTITY find.url "http://nahodki.yandex.ru">
+<!ENTITY find.search.tooltip "Bulunanlar&#39;da ara">
+<!ENTITY find.search.url "http://nahodki.yandex.ru/results.xml?search={searchTerms}">
+
+<!ENTITY metrics.label "Metrica">
+<!ENTITY metrics.url "http://metrika.yandex.ru">
+
+<!ENTITY news.label "Haberler">
+<!ENTITY news.url "http://news.yandex.ru">
+<!ENTITY news.search.tooltip "Haberler&#39;de bul">
+<!ENTITY news.search.url "http://news.yandex.ru/yandsearch?rpt=nnews2&amp;grhow=clutop&amp;text={searchTerms}">
+
+<!ENTITY weather.label "Hava durumu">
+<!ENTITY weather.url "http://pogoda.yandex.ru">
+
+<!ENTITY tv.label "TV Rehberi">
+<!ENTITY tv.url "http://tv.yandex.ru">
+<!ENTITY tv.search.tooltip "TV Rehberi&#39;nde bul">
+<!ENTITY tv.search.url "http://tv.yandex.ru/search/?text={searchTerms}">
+
+<!ENTITY schedule.label "Seferler">
+<!ENTITY schedule.url "http://rasp.yandex.ru">
+
+<!ENTITY video.label "Video ">
+<!ENTITY video.url "http://video.yandex.ru">
+<!ENTITY video.search.tooltip "Yandex.Video&#39;da bul">
+<!ENTITY video.search.url "http://video.yandex.ru/search.xml?text={searchTerms}">
+
+<!ENTITY games.label "Oyun">
+<!ENTITY games.url "http://play.yandex.ru">
+
+<!ENTITY cards.label "Kartpostallar">
+<!ENTITY cards.url "http://cards.yandex.ru">
+
+<!ENTITY afisha.label "Afiş">
+<!ENTITY afisha.url "http://afisha.yandex.ru">
+<!ENTITY afisha.search.tooltip "Afiş&#39;te bul">
+<!ENTITY afisha.search.url "http://afisha.yandex.ru/search/?text={searchTerms}">
+
+<!ENTITY google.label "Google">
+<!ENTITY google.url "http://www.google.com">
+<!ENTITY google.search.tooltip "Google&#39;da ara">
+<!ENTITY google.search.url "http://www.google.com/search?hl=en;amp;as_q={searchTerms}">
+<!ENTITY google.search.site-url "&google.search.url;&amp;as_sitesearch={searchSite}">
+<!ENTITY google.search.suggestions-url "http://suggestqueries.google.com/complete/search?output=firefox&amp;client=firefox&amp;hl=en&amp;q={searchTerms}">
+
+<!ENTITY rambler.label "Rambler">
+<!ENTITY rambler.url "http://www.rambler.ru">
+<!ENTITY rambler.search.tooltip "Rambler&#39;da ara">
+<!ENTITY rambler.search.url "http://nova.rambler.ru/srch?query={searchTerms}">
+<!ENTITY rambler.search.site-url "&rambler.search.url;&amp;filter={searchSite}">
+<!ENTITY rambler.search.suggestions-url "http://nova.rambler.ru/suggest?v=3&amp;query={searchTerms}">
+
+<!ENTITY wiki.label "Wikipedia">
+<!ENTITY wiki.url "http://en.wikipedia.org">
+<!ENTITY wiki.search.tooltip "Wikipedia&#39;da ara">
+<!ENTITY wiki.search.url "http://en.wikipedia.org/wiki/{searchTerms}">
+<!ENTITY wiki.search.site-url "">
+<!ENTITY wiki.search.suggestions-url "http://en.wikipedia.org/w/api.php?action=opensearch&amp;search={searchTerms}&amp;namespace=0&amp;suggest=">

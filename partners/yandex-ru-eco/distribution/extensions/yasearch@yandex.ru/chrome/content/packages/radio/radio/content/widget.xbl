@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="main.css"/>
+        </resources>
+        <content>
+            <xul:toolbarbutton class="toolbarbutton-1 widget-button" item-command="gfp" item-href="gfp" type="button"/>
+            <xul:toolbarbutton anonid="radio-button-main" class="toolbarbutton-1 widget-button" item-command="toggle" tooltiptext="&widget.tooltiptext.paused;" type="menu-button">
+                <xul:menupopup anonid="menupopup">
+                    <xul:menuitem anonid="item_play" item-command="toggle" label="&widget.play;"/>
+                    <xul:menuitem item-command="add" label="&widget.add;"/>
+                    <xul:menuitem item-command="list" label="&widget.settings;"/>
+                    <xul:menuseparator anonid="item_ms0"/><xul:menuseparator anonid="item_ms1"/>
+                </xul:menupopup>
+            </xul:toolbarbutton>
+        </content>
+        <implementation implements="nsISupports, nsIDOMEventListener">
+            <field name="noflashButton">document.getAnonymousElementByAttribute(this, "item-href", "gfp")</field>
+            <field name="button">document.getAnonymousElementByAttribute(this, "anonid", "radio-button-main")</field>
+            <field name="menupopup">document.getAnonymousElementByAttribute(this, "anonid", "menupopup")</field>
+            <field name="item_play">document.getAnonymousElementByAttribute(this, "anonid", "item_play")</field>
+            <field name="startSepa">document.getAnonymousElementByAttribute(this, "anonid", "item_ms0")</field>
+            <field name="endSepa">document.getAnonymousElementByAttribute(this, "anonid", "item_ms1")</field>
+
+            <field name="observers"><![CDATA[    ({
+        "flash": function () {
+            this.setAttribute("flashenable", this.common.utils.flashDetect());
+        },
+        "list": function (topic) {
+            this.updateMenu();
+            this.updatePlayState();
+        },
+        "current": function (topic, data) {
+            data = JSON.parse(data);
+            if (data[0]) {
+                this.editStation(data[0], null, false);
+            }
+            if (data[1]) {
+                this.editStation(data[1], null, true);
+            }
+        },
+        "add": function (topic, data) {
+            data = JSON.parse(data);
+            this.addStation(data.id, data.name);
+        },
+        "edit": function (topic, data) {
+            data = JSON.parse(data);
+            this.editStation(data.id, data.name, null);
+        },
+        "remove": function (topic, id) {
+            var st = this.getStationMI(id);
+            if (st) {
+                this.menupopup.removeChild(st);
+            }
+        },
+        "state": function () {
+            this.updatePlayState();
+        }
+    });]]></field>
+
+            <constructor><![CDATA[    var ent = this.application.entities;
+    this.noflashButton.setAttribute("tooltiptext", ent.text("widget.noflash1") + "\n" + ent.text("widget.noflash2"));
+    if (!this.testHtml5) {
+        var au = new Audio();
+        this.testHtml5 = { enable: !!au.canPlayType("audio/mp3") };
+    }
+    this.setAttribute("flashenable", this.testHtml5.enable || this.common.utils.flashDetect());
+    this.updateMenu();
+    this.updatePlayState();]]></constructor>
+
+
+            <method name="getStationMI">
+                <parameter name="id"/>
+                <body><![CDATA[    return id ? document.getAnonymousElementByAttribute(this, "item-param", id) : null;]]></body>
+            </method>
+
+            <field name="playStateTips">
+            ({
+                error: "&widget.tooltiptext.error;",
+                throbber: "&widget.tooltiptext.throbber;",
+                play: "&widget.tooltiptext.normal1;\n&widget.tooltiptext.normal2;",
+                pause: "&widget.tooltiptext.paused;"
+            })
+            </field>
+            <method name="updatePlayState">
+                <body><![CDATA[    this.log("updatePlayState");
+    var state = this.application.player.getPlayState();
+    this.button.setAttribute("play-state", state);
+    this.item_play.setAttribute("label", this.application.entities.text(this.application.player.isPlay ? "widget.pause" : "widget.play"));
+    var ttip = (this.playStateTips[state] || "").replace("{radioname}", this.application.stations.getCurrentName());
+    this.button.setAttribute("tooltiptext", ttip);]]></body>
+            </method>
+            <method name="editStation">
+                <parameter name="id"/>
+                <parameter name="label"/>
+                <parameter name="current"/>
+                <body><![CDATA[    var mi = this.getStationMI(id);
+    if (!mi) {
+        return;
+    }
+    var oldCurrent = mi.getAttribute("curr-station") === "true";
+    if (label != null) {
+        mi.setAttribute("label", label);
+    }
+    if (current != null) {
+        current = current === "true" || current === true;
+        if (current != oldCurrent) {
+            mi.setAttribute("curr-station", current);
+        }
+    }
+    current = mi.getAttribute("curr-station") === "true";
+    if (current || oldCurrent) {
+        this.button.setAttribute("label", current ? mi.getAttribute("label") : "");
+        this.updatePlayState();
+    }]]></body>
+            </method>
+            <method name="addStation">
+                <parameter name="id"/>
+                <parameter name="label"/>
+                <body><![CDATA[    this.menupopup.insertBefore(this.createMenuItem(label, {
+        "class": "menuitem-iconic",
+        "item-param": id,
+        "item-command": "stationClick"
+    }), this.endSepa);]]></body>
+            </method>
+            <method name="updateMenu">
+                <body><![CDATA[    while (this.endSepa.previousSibling != this.startSepa) {
+        this.menupopup.removeChild(this.endSepa.previousSibling);
+    }
+    this.application.stations.forEach(function (st, current) {
+        this.addStation(st.id, st.name);
+        if (current) {
+            this.editStation(st.id, null, true);
+        }
+    }, this);]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

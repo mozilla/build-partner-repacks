@@ -1,0 +1,2 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);notification[value$="-alien-addon-notification"]{-moz-binding:url(../bindings/notification/notification.xbl#alien-addon-notification)}
+notification[value$="-pref-addon-notification"]{-moz-binding:url(../bindings/notification/notification.xbl#pref-addon-notification)}

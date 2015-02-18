@@ -67,7 +67,7 @@ YandexBrowser.prototype = {
         if (browserExcecutable) {
             switch (this._platform) {
             case "windows": {
-                    let wshScriptText = "var browserPath = WScript.Arguments.Item(0);" + "var fso  = WScript.CreateObject(\"Scripting.FileSystemObject\");" + "var ver = fso.GetFileVersion(browserPath);" + "echo(ver);";
+                    let wshScriptText = "var browserPath = WScript.Arguments.Item(0);" + "var fso  = WScript.CreateObject('Scripting.FileSystemObject');" + "var ver = fso.GetFileVersion(browserPath);" + "echo(ver);";
                     version = this._runWSHScriptWin("bversion", wshScriptText, [browserExcecutable.path]);
                     break;
                 }
@@ -142,10 +142,9 @@ YandexBrowser.prototype = {
     _getBrowserExecutableWin: function YandexBrowser__getBrowserExecutableWin() {
         const DISTRIB_EXECUTABLE = "browser.exe";
         let path = "\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YandexBrowser";
-        let distribLocation = this._winReg.read("HKCU", "Software\\Yandex\\YandexBrowser", "InstallerSuccessLaunchCmdLine") || this._winReg.read("HKCU", "Software" + path, "InstallLocation") || this._winReg.read("HKCU", "Software\\Wow6432Node" + path, "InstallLocation");
-        this._winReg.read("HKLM", "Software" + path, "InstallLocation") || this._winReg.read("HKLM", "Software\\Wow6432Node" + path, "InstallLocation");
+        let distribLocation = this._winReg.read("HKCU", "Software\\Yandex\\YandexBrowser", "InstallerSuccessLaunchCmdLine") || this._winReg.read("HKCU", "Software" + path, "InstallLocation") || this._winReg.read("HKCU", "Software\\Wow6432Node" + path, "InstallLocation") || this._winReg.read("HKLM", "Software" + path, "InstallLocation") || this._winReg.read("HKLM", "Software\\Wow6432Node" + path, "InstallLocation");
         if (distribLocation) {
-            distribLocation = distribLocation.replace(/^"|"$/g, "");
+            distribLocation = distribLocation.replace(/^'|'$/g, "");
             let dIndex = distribLocation.indexOf("\\" + DISTRIB_EXECUTABLE, distribLocation.length - (DISTRIB_EXECUTABLE.length + 1));
             try {
                 let distribFile = new FileUtils.File(distribLocation);
@@ -198,7 +197,7 @@ YandexBrowser.prototype = {
             return;
         }
         let browserExecutableName = browserExecutable.leafName.replace(/\.app$/, "");
-        let result = this._runBashScriptMac("http", "export VERSIONER_PERL_PREFER_32_BIT=yes; " + "perl -MMac::InternetConfig -le 'print +(GetICHelper \"http\")[1]'");
+        let result = this._runBashScriptMac("http", "export VERSIONER_PERL_PREFER_32_BIT=yes; " + "perl -MMac::InternetConfig -le 'print +(GetICHelper 'http')[1]'");
         return result === browserExecutableName;
     },
     _isDefaultBrowserWin: function YandexBrowser__isDefaultBrowserWin() {
@@ -210,7 +209,7 @@ YandexBrowser.prototype = {
         if (!defaultBrowser) {
             return;
         }
-        defaultBrowser = defaultBrowser.replace(/^"|"$/g, "");
+        defaultBrowser = defaultBrowser.replace(/^'|'$/g, "");
         if (defaultBrowser.indexOf("YandexHTML") === 0) {
             return true;
         }
@@ -226,7 +225,7 @@ YandexBrowser.prototype = {
         if (!tmpFileOut) {
             return result;
         }
-        aWSHScriptText = "function echo(msg) {" + "    var outFilePath = " + JSON.stringify(tmpFileOut.path) + "; " + "    var fso  = WScript.CreateObject(\"Scripting.FileSystemObject\"); " + "    var outFile = fso.OpenTextFile(outFilePath, 2, true, -1); " + "    outFile.Write(msg);" + "}" + aWSHScriptText;
+        aWSHScriptText = "function echo(msg) {" + "    var outFilePath = " + JSON.stringify(tmpFileOut.path) + "; " + "    var fso  = WScript.CreateObject('Scripting.FileSystemObject'); " + "    var outFile = fso.OpenTextFile(outFilePath, 2, true, -1); " + "    outFile.Write(msg);" + "}" + aWSHScriptText;
         let args = [tmpFileIn.path].concat(aWSHScriptArguments || []).concat([
             "//nologo",
             "//B"
@@ -306,7 +305,7 @@ YandexDisk.prototype = {
                 tmpFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, parseInt("0666", 8));
                 let args = [
                     "-c",
-                    "IFS=$'\n'; for f in $(mdfind \"kMDItemCFBundleIdentifier=ru.yandex.desktop.disk\");" + " do defaults read \"$f/Contents/Info.plist\" CFBundleShortVersionString 2> /dev/null;" + " done | sort -n -r > " + tmpFile.path.replace(/\W/g, "\\$&")
+                    "IFS=$'\n'; for f in $(mdfind 'kMDItemCFBundleIdentifier=ru.yandex.desktop.disk');" + " do defaults read '$f/Contents/Info.plist' CFBundleShortVersionString 2> /dev/null;" + " done | sort -n -r > " + tmpFile.path.replace(/\W/g, "\\$&")
                 ];
                 let bashFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
                 bashFile.initWithPath("/bin/bash");

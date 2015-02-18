@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "/native/fx/logo.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/native/fx/logo/home.svg" name="&widget.name;" unique="true">
+    <modules>
+        <module browser="firefox" file="/native/fx/logo/module.jsm"/>
+    </modules>
+</widget>

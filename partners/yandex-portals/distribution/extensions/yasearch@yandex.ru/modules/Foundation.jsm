@@ -8,9 +8,8 @@ const {
 } = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-const FOUNDATION_DIR = __LOCATION__.parent;
-FOUNDATION_DIR.append("foundation");
-const FOUNDATION_PATH = Services.io.newFileURI(FOUNDATION_DIR).spec;
+let foundationDir = Services.io.newURI(__URI__, null, null);
+foundationDir = foundationDir.resolve("./foundation/");
 const SCRIPT_LOADER = Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader);
 [
     "legacy.js",
@@ -29,7 +28,7 @@ const SCRIPT_LOADER = Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.
     "task.js"
 ].forEach(function load(moduleFileName) {
     try {
-        SCRIPT_LOADER.loadSubScript(FOUNDATION_PATH + moduleFileName);
+        SCRIPT_LOADER.loadSubScript(foundationDir + moduleFileName);
     } catch (e) {
         Cu.reportError(e);
         throw e;

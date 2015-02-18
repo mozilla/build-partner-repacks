@@ -1,0 +1,6 @@
+<!ENTITY esync.open.barsync.page "Open settings page">
+
+<!ENTITY esync.panel.sync.outdated.header "Synchronization">
+<!ENTITY esync.panel.sync.outdated.message "authorization information is outdated">
+<!ENTITY esync.panel.sync.outdated.button.label "Fix">
+<!ENTITY esync.panel.close.tooltip "Close tooltip">

@@ -1,0 +1,187 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % dialog SYSTEM "/native/fx/dialog.dtd">
+%dialog;
+]>
+<bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="dialog" inheritstyle="false">
+        <resources>
+            <stylesheet src="dialog.css"/>
+        </resources>
+
+        <content hidechrome="true" onclose="close();">
+            <xul:vbox class="body">
+                <xul:stack class="title">
+                    <xul:label class="title-text" xbl:inherits="value=title"/>
+                    <xul:hbox>
+                        <xul:space anonid="spacer" flex="1"/>
+                        <xul:hbox anonid="buttons-box" xbl:inherits="mode=mode">
+                            <xul:toolbarbutton class="title-button-top" xbl:inherits="label,oncommand=onmode" tooltiptext="&dialog.window.top;"/>
+                            <xul:toolbarbutton class="title-button-bottom" xbl:inherits="label,oncommand=onmode" tooltiptext="&dialog.window.bottom;"/>
+                            <xul:toolbarbutton xbl:inherits="label,oncommand=onclose,disabled=dontclose" tooltiptext="&dialog.window.close;"/>
+                        </xul:hbox>
+                    </xul:hbox>
+                </xul:stack>
+                <xul:vbox class="content">
+                    <children/>
+                </xul:vbox>
+            </xul:vbox>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="nodeBody">document.getAnonymousElementByAttribute(this, "class", "body")</field>
+            <field name="nodesDraggable">
+                [document.getAnonymousElementByAttribute(this, "class", "title")]
+            </field>
+            <field name="nodesUndraggable">
+                [document.getAnonymousElementByAttribute(this, "anonid", "buttons-box")]
+            </field>
+            <field name="dragStartPoint">null</field>
+            <field name="parameters">window.yaWinArguments</field>
+            <field name="_api">this.parameters.api</field>
+            <field name="_platformInfo">this._api.Environment</field>
+
+            <constructor><![CDATA[    let shadow = false;
+    let transparent = true;
+    if (this._platformInfo.os.name == "windows") {
+        shadow = true;
+    } else if (this._platformInfo.os.name == "linux") {
+        transparent = false;
+    }
+    this.setAttribute("style", "background: none !important");
+    this.setAttribute("ex-shadow", shadow);
+    this.setAttribute("ex-transparent", transparent);
+    if (!this.nodesDraggable) {
+        document.getAnonymousElementByAttribute(this, "class", "title").setAttribute("mousethrough", "always");
+    }
+    window.addEventListener("load", this, false);
+    window.addEventListener("unload", this, false);
+    this.parameters = window.yaWinArguments;
+    if (this.parameters) {
+        this.init(this.parameters);
+    }]]></constructor>
+
+            <method name="init">
+                <body><![CDATA[]]></body>
+            </method>
+
+            <method name="sizeToContent">
+                <body><![CDATA[    this._sizeToContent();]]></body>
+            </method>
+
+            <method name="_sizeToContent">
+                <body><![CDATA[    if (this._platformInfo.os.name == "mac") {
+        window.sizeToContent();
+    } else {
+        let rect = this.nodeBody.getBoundingClientRect();
+        window.resizeTo(rect.left + rect.right, rect.top + rect.bottom);
+    }]]></body>
+            </method>
+
+            <method name="centerWindowOnScreen">
+                <body><![CDATA[    var xOffset = screen.availWidth / 2 - window.outerWidth / 2;
+    var yOffset = screen.availHeight / 2 - window.outerHeight / 2;
+    xOffset = xOffset > 0 ? xOffset : 0;
+    yOffset = yOffset > 0 ? yOffset : 0;
+    window.moveTo(xOffset, yOffset);]]></body>
+            </method>
+
+            <method name="contains">
+                <parameter name="child"/>
+                <parameter name="parent"/>
+                <body><![CDATA[    try {
+        for (let i = 0, len = parent.length; i < len; i++) {
+            if (!parent[i]) {
+                continue;
+            }
+            if (parent[i] === child || parent[i].compareDocumentPosition(child) & Node.DOCUMENT_POSITION_CONTAINED_BY) {
+                return true;
+            }
+        }
+    } catch (ex) {
+    }
+    return false;]]></body>
+            </method>
+
+            <method name="move">
+                <body><![CDATA[    this.centerWindowOnScreen();]]></body>
+            </method>
+
+            <method name="close">
+                <body><![CDATA[    window.close();]]></body>
+            </method>
+
+            <method name="load">
+                <parameter name="event"/>
+                <body><![CDATA[    this.sizeToContent();
+    this.move();]]></body>
+            </method>
+
+            <method name="unload">
+                <parameter name="event"/>
+                <body><![CDATA[]]></body>
+            </method>
+
+            <method name="dragMouseDown">
+                <parameter name="event"/>
+                <body><![CDATA[    if (this.contains(event.originalTarget, this.nodesDraggable) && !this.contains(event.originalTarget, this.nodesUndraggable)) {
+        this.dragStartPoint = {
+            x: event.screenX - window.screenX,
+            y: event.screenY - window.screenY
+        };
+        window.addEventListener("mousemove", this, false);
+    }]]></body>
+            </method>
+
+            <method name="dragMouseMove">
+                <parameter name="event"/>
+                <body><![CDATA[    if (!this.dragStartPoint) {
+        return;
+    }
+    let offsetX = event.screenX - this.dragStartPoint.x;
+    let offsetY = event.screenY - this.dragStartPoint.y;
+    let offsetXFromRight = screen.availWidth - offsetX;
+    let offsetXFromLeft = window.outerWidth + offsetX;
+    let offsetYFromBottom = screen.availHeight - offsetY;
+    if (offsetXFromRight > 50 && offsetXFromLeft > 50 && offsetYFromBottom > 50) {
+        window.moveTo(offsetX, event.screenY - this.dragStartPoint.y);
+    }]]></body>
+            </method>
+
+            <method name="dragMouseUp">
+                <parameter name="event"/>
+                <body><![CDATA[    window.removeEventListener("mousemove", this, false);
+    this.dragStartPoint = null;]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="event"/>
+                <body><![CDATA[    switch (event.type) {
+    case "mousemove":
+        this.dragMouseMove(event);
+        break;
+    case "load":
+        window.removeEventListener("load", this, false);
+        this.load(event);
+        break;
+    case "unload":
+        window.removeEventListener("unload", this, false);
+        this.unload(event);
+        break;
+    }]]></body>
+            </method>
+
+        </implementation>
+
+        <handlers>
+            <handler event="mousedown"><![CDATA[    this.dragMouseDown(event);]]></handler>
+
+            <handler event="mouseup"><![CDATA[    this.dragMouseUp(event);]]></handler>
+
+            <handler event="keypress" group="system" keycode="VK_ESCAPE"><![CDATA[    if (!event.defaultPrevented) {
+        this.close();
+    }]]></handler>
+        </handlers>
+    </binding>
+</bindings>

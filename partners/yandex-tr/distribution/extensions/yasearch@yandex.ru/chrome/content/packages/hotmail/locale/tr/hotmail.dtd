@@ -1,0 +1,25 @@
+<!ENTITY hotmail.name "Hotmail">
+
+<!ENTITY hotmail.settings.update-interval.label "Güncelleme sıklığı">
+<!ENTITY hotmail.settings.update-interval.label-after "dk.">
+<!ENTITY hotmail.settings.show-button-name.label "Tuşun adını göster">
+
+<!ENTITY hotmail.tooltip.AUTH_NONE "E-posta kutunuzda yeni ileti Windows Live Hotmail\nLütfen oturum açın">
+<!ENTITY hotmail.tooltip.AUTH_UNKNOWN "Windows Live Hotmail\n$mailbox\nMaalesef e-postalarınızla ilgili bilgi alınamıyor">
+<!ENTITY hotmail.tooltip.AUTH_OK "Windows Live Hotmail\n$mailbox\nE-posta kutusundaki iletileriniz\nYeni: $unreadCount">
+
+<!ENTITY hotmail.button.text "Hotmail">
+
+<!ENTITY hotmail.menu.refresh "E-posta kutunu kontrol et">
+<!ENTITY hotmail.menu.write_letter "E-posta yaz">
+<!ENTITY hotmail.menu.read_letter "E-posta oku">
+<!ENTITY hotmail.menu.addressbook "Adres defterini aç">
+<!ENTITY hotmail.menu.logout "Çıkış">
+
+<!ENTITY hotmail.loginform.title "Hotmail'e erişim">
+<!ENTITY hotmail.loginform.save-password "Kaydet">
+<!ENTITY hotmail.loginform.sign-in "Giriş yap">
+<!ENTITY hotmail.loginform.cancel "İptal">
+<!ENTITY hotmail.loginform.password "Parola:">
+<!ENTITY hotmail.loginform.error.server "Sunucuya bağlanamadı">
+<!ENTITY hotmail.loginform.error.auth "Kullanıcı adı veya parola hatalıKullanıcı adı veya parola hatalı">

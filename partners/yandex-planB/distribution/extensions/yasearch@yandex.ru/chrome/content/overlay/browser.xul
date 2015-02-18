@@ -1,0 +1,47 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="browser.css"?>
+<?xul-overlay href="yasearch:browser-overlay"?>
+
+<!DOCTYPE overlay [
+<!ENTITY % appDTD SYSTEM "../bar.dtd">
+%appDTD;
+<!ENTITY % aboutDTD SYSTEM "../../../../locale/about/about.dtd">
+%aboutDTD;
+<!ENTITY % settingsDTD SYSTEM "../../../../locale/settings.dtd">
+%settingsDTD;
+]>
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <script type="text/javascript">
+        // This constant is used throughout other scripts included here
+        const CB_APP_NAME = "&app.name;";
+    </script>
+
+    
+    <script src="tools-menu.js" type="text/javascript"/>
+    <menupopup id="menu_ToolsPopup">
+        <menuitem id="&app.name;-settings" label="&product1.nom;"/>
+    </menupopup>
+
+    
+    <script src="toolbar-context-menu.js" type="text/javascript"/>
+    <menupopup id="toolbar-context-menu">
+        <menuitem hidden="true" id="&app.name;-context-menu-settings" label="&settings.titleProduct;"/>
+    </menupopup>
+
+    
+    <script src="slice-panel.js" type="text/javascript"/>
+    <popupset id="mainPopupSet">
+        
+        <panel id="&app.name;-slice-panel" onpopuphidden="if (event.target === this) &app.name;SlicePanelCtrl.onHide();">
+            <tooltip id="&app.name;-slice-tooltip" onpopupshowing="return &app.name;SlicePanelCtrl.fillInTooltip(document.tooltipNode)"/>
+            <browser disablehistory="true" flex="1" id="&app.name;-slice-browser" src="about:blank" tooltip="&app.name;-slice-tooltip" type="content"/>
+        </panel>
+    </popupset>
+
+    
+    <script src="context-menu/menu.js" type="text/javascript"/>
+
+    
+    <script src="safe-browsing.js" type="text/javascript"/>
+</overlay>

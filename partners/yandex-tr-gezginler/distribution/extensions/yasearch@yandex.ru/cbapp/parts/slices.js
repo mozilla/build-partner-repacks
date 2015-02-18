@@ -37,8 +37,12 @@ function Slice({url, disposable, windowProperties, injectedProperties, system, n
     }
 }
 Slice.prototype = {
-    get id() this._id,
-    get url() this._url,
+    get id() {
+        return this._id;
+    },
+    get url() {
+        return this._url;
+    },
     set url(newURL) {
         if (this._url === newURL) {
             return;
@@ -48,13 +52,27 @@ Slice.prototype = {
             this._browser.setAttribute("src", newURL);
         }
     },
-    get _logger() slices._logger,
-    get browser() this._browser,
-    get openPanelCtrl() this._panelCtrl,
-    get isOpen() Boolean(this._panelCtrl),
-    get noautohide() this._noautohide,
-    get width() this._w,
-    get height() this._h,
+    get _logger() {
+        return slices._logger;
+    },
+    get browser() {
+        return this._browser;
+    },
+    get openPanelCtrl() {
+        return this._panelCtrl;
+    },
+    get isOpen() {
+        return Boolean(this._panelCtrl);
+    },
+    get noautohide() {
+        return this._noautohide;
+    },
+    get width() {
+        return this._w;
+    },
+    get height() {
+        return this._h;
+    },
     show: function Slice_show(anchorElement, onHide) {
         if (!(anchorElement instanceof Ci.nsIDOMElement)) {
             throw new TypeError("Anchor nsIDOMElement required");
@@ -187,11 +205,32 @@ const slices = {
             win = new XPCNativeWrapper(win);
         }
         win = win.wrappedJSObject;
+        let exposeProps = obj => obj;
+        if ("skipCOWCallableChecks" in Cu) {
+            Cu.skipCOWCallableChecks();
+            exposeProps = function (obj) {
+                if (!(obj && typeof obj === "object")) {
+                    return obj;
+                }
+                if (!("__exposedProps__" in obj)) {
+                    let exposedProps = {};
+                    Object.keys(obj).forEach(key => exposedProps[key] = "r");
+                    obj.__exposedProps__ = exposedProps;
+                }
+                let exportedObj = Object.create(obj);
+                Object.keys(obj.__exposedProps__).forEach(function (key) {
+                    exportedObj.__defineGetter__(key, function () {
+                        return exposeProps(obj[key]);
+                    });
+                });
+                return exportedObj;
+            };
+        }
         for (let [
                     propName,
                     propVal
                 ] in Iterator(slice.injectedProperties)) {
-            win[propName] = propVal;
+            win[propName] = exposeProps(propVal);
         }
         win.close = function win_close() {
             let panel = slice.openPanelCtrl;

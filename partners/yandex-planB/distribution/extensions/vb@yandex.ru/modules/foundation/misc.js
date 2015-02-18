@@ -57,7 +57,7 @@ const misc = {
                     });
                 }
                 if (contentWindow.location != url) {
-                    Cu.reportError("Can't get hidden window for '" + aFrameURL + "'");
+                    Cu.reportError("Can't get hidden window for \"" + aFrameURL + "\"");
                     return null;
                 }
                 sysutils.sleep(1000, function _checkReadyState() {
@@ -101,6 +101,7 @@ const misc = {
         let parent;
         let features = parameters.features || "";
         if (features.indexOf("__popup__") != -1) {
+            let featuresHash = Object.create(null);
             let addFeature = function (aFeatureString) {
                 let [
                     name,
@@ -110,7 +111,6 @@ const misc = {
                     featuresHash[name] = value;
                 }
             };
-            let featuresHash = Object.create(null);
             features.replace(/(^|,)__popup__($|,)/, "").split(",").forEach(addFeature);
             addFeature("chrome");
             addFeature("dependent=yes");
@@ -259,7 +259,11 @@ const misc = {
                 return hash;
             },
             _binaryToHex: function CryptoHash__binaryToHex(aInput) {
-                return [("0" + aInput.charCodeAt(i).toString(16)).slice(-2) for (i in aInput)].join("");
+                let hex = [];
+                for (let i in aInput) {
+                    hex.push(("0" + aInput.charCodeAt(i).toString(16)).slice(-2));
+                }
+                return hex.join("");
             },
             _updateHashFromStream: function CryptoHash__updateHashFromStream(aHash, aStream) {
                 let streamSize = aStream.available();

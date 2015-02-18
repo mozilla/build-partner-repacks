@@ -1,0 +1,89 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+
+<!ENTITY button.update "Абнавіць">
+<!ENTITY button.postpone "Адкласці">
+<!ENTITY button.cancel "Адмена">
+<!ENTITY button.accept "Працягваць">
+<!ENTITY button.install "Усталяваць">
+<!ENTITY button.save "Захаваць">
+<!ENTITY button.repeat "Паспрабаваць яшчэ раз">
+<!ENTITY button.finish "Закрыць">
+
+
+<!ENTITY placement.placement.label "Дабавіць кнопкі:">
+
+
+<!ENTITY more.opened "схаваць">
+<!ENTITY more.closed "настроіць">
+
+
+<!ENTITY error.more.opened "&more.opened;">
+<!ENTITY error.more.closed "падрабязна">
+<!ENTITY error.head.title "Ой...">
+<!ENTITY error.head.description "Невядомая памылка">
+
+
+
+<!ENTITY component.save "захаваць">
+<!ENTITY component.update "абнавіць">
+
+
+<!ENTITY install.dialog.title "Усталяванне кампанентаў">
+<!ENTITY install.head.title "&install.dialog.title;">
+<!ENTITY disclaimer "Вы ўстанаўліваеце кампаненты не з даверанай крыніцы, гэта можа быць патэнцыяльна небяспечным.">
+<!ENTITY install.download.label "Загрузка...">
+<!ENTITY install.conflict.head.title "Ой...">
+<!ENTITY install.conflict.head.description "Пры ўстаноўцы перастануць працаваць некаторыя кампаненты. Абярыце кампаненты, якія трэба захаваць.">
+<!ENTITY install.placement.head.title "Усталяванне паспяхова завершана">
+<!ENTITY install.placement.head.description "Маюцца новыя кампаненты">
+
+
+<!ENTITY update.dialog.title "Абнаўленне кампанентаў">
+<!ENTITY update.select.head.title "Маюцца абнаўленні кампанентаў">
+<!ENTITY update.select.head.description "Для працягу націсніце на кнопку &#171;Абнавіць&#187;">
+<!ENTITY update.select.list.description "Маецца абнаўленне для наступных кампанентаў:">
+<!ENTITY update.download.head.title "Ідзе абнаўленне кампанентаў">
+<!ENTITY update.download.head.description "Загрузка...">
+<!ENTITY update.conflict.head.title "Ой...">
+<!ENTITY update.conflict.head.description "Пры абнаўленні перастануць працаваць некаторыя кампаненты. Абярыце кампаненты, якія трэба захаваць.">
+<!ENTITY update.placement.head.title "Абнаўленне паспяхова завершана">
+<!ENTITY update.placement.head.description "Пры абнаўленні зборак з&#39;явіліся новыя кампаненты">
+<!ENTITY update.finish.head.title "Абнаўленне паспяхова завершана">
+<!ENTITY update.finish.head.description "Зараз вы можаце выкарыстоўваць новыя версіі кампанентаў">
+
+
+<!ENTITY notification.update.title "Маюцца абнаўленні">
+<!ENTITY notification.update.message "Знайшліся новыя версіі кампанентаў.">
+<!ENTITY notification.update.install "Усталяваць">
+<!ENTITY notification.update.custom "Настроіць">
+
+
+<!ENTITY ban.notification.title "Змены ў &product1.loc;">
+<!ENTITY ban.notification.message "Змяніўся склад некаторых кампанентаў">
+<!ENTITY ban.notification.show "Больш падрабязна">
+<!ENTITY ban.notification.close "Закрыць">
+<!ENTITY ban.dialog.title "Змены ў &product1.loc;">
+<!ENTITY ban.dialog.head.title "Змяніўся склад кампанентаў:">
+<!ENTITY ban.dialog.praise "Мы клапоцімся пра вашу бяспеку, і стала сочым за прытрымліваннем стандартаў і карэктнай работай кампанентаў.">
+<!ENTITY ban.dialog.ok "OK">
+<!ENTITY ban.package.unban "Разблакавана">
+
+
+<!ENTITY permissions.title "Патрэбны дазвол на: "> 
+<!ENTITY permissions.title.preset "Кампаненты запытваюць дазволу на: "> 
+<!ENTITY permissions.title.package "Кампаненты запытваюць дазволу на: "> 
+<!ENTITY permission.private.one_domain "доступ да асабістых дадзеных на сайце "> 
+<!ENTITY permission.private.many_domains "доступ да асабістых дадзеных на сайтах: "> 
+<!ENTITY permission.private.all_domains "доступ да асабістых дадзеных на любых сайтах">
+<!ENTITY permission.public.one_domain "атрыманне дадзеных з сайта "> 
+<!ENTITY permission.public.many_domains "атрыманне дадзеных з сайтаў: "> 
+<!ENTITY permission.public.all_domains "атрыманне дадзеных з любых сайтаў">
+<!ENTITY permission.navigate.one_domain "адкрыццё старонак па адрасе "> 
+<!ENTITY permission.navigate.many_domains "адкрыццё старонак па адрасах: "> 
+<!ENTITY permission.navigate.all_domains "адкрыццё старонак па любых адрасах ">
+<!ENTITY permission.pageInfo.one_domain "доспуп да інфармацыі пра адкрытую старонку па адрасе "> 
+<!ENTITY permission.pageInfo.many_domains "доспуп да інфармацыі пра адкрытую старонку па адрасах: "> 
+<!ENTITY permission.pageInfo.all_domains "доспуп да інфармацыі пра адкрытую старонку з любым адрасам">
+<!ENTITY permission.clipboard "доступ да змесціва кішэні">

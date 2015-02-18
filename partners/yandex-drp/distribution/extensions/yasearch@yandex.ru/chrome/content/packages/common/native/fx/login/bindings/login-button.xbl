@@ -1,0 +1,105 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % locale SYSTEM "/native/fx/login.dtd">
+%locale;
+]>
+
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="yb-name-container">
+        <content>
+            <xul:hbox anonid="yb-avatar-container">
+                <xul:hbox anonid="yb-avatar-icon"/>
+            </xul:hbox>
+            <xul:hbox anonid="yb-login">
+                <xul:label anonid="login-start"/>
+                <xul:label anonid="login-middle"/>
+                <xul:label anonid="login-middle-3"/>
+                <xul:label anonid="login-middle-2"/>
+                <xul:label anonid="login-middle-1"/>
+            </xul:hbox>
+        </content>
+
+        <implementation>
+            <field name="_kMaxLength">12</field>
+
+            <field name="_avatarIcon" readonly="true">
+                document.getAnonymousElementByAttribute(this, "anonid", "yb-avatar-icon")
+            </field>
+
+            <method name="setText">
+                <parameter name="strText"/>
+                <parameter name="aAvatarURL"/>
+                <body><![CDATA[    let setLabelValue = function _setLabelValue(type, value) {
+        document.getAnonymousElementByAttribute(this, "anonid", "login-" + type).setAttribute("value", value);
+    }.bind(this);
+    if (strText.length > this._kMaxLength) {
+        let i = 0;
+        setLabelValue("start", strText[i++]);
+        setLabelValue("middle", strText.substr(i, i += this._kMaxLength - 5));
+        setLabelValue("middle-3", strText.substr(++i, 1));
+        setLabelValue("middle-2", strText.substr(++i, 1));
+        setLabelValue("middle-1", strText.substr(++i, 1));
+    } else {
+        setLabelValue("start", strText[0] || "");
+        setLabelValue("middle", strText.substr(1));
+        setLabelValue("middle-3", "");
+        setLabelValue("middle-2", "");
+        setLabelValue("middle-1", "");
+    }
+    let avatarProperty = "";
+    if (aAvatarURL) {
+        avatarProperty = "url('" + aAvatarURL + "')";
+    }
+    this._avatarIcon.style.backgroundImage = avatarProperty;]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding extends="../../bindings/buttons.xbl#yauth-menu-toolbarbutton" id="yauth-toolbarbutton">
+        <implementation implements="nsIObserver">
+            <constructor><![CDATA[    this._changeState();]]></constructor>
+
+            <destructor><![CDATA[    this.ignoreAuth();]]></destructor>
+
+            <method name="_changeState">
+                <body><![CDATA[    let authorized = this._authModule.authorized;
+    if (authorized) {
+        this.style.setProperty("list-style-image", "none", "important");
+    } else {
+        this.style.removeProperty("list-style-image");
+    }
+    this._setButtonLabel();
+    this._authorized = authorized;]]></body>
+            </method>
+
+            <method name="_setButtonLabel">
+                <body><![CDATA[    let userDisplayName = "";
+    let userAvatarURL;
+    if (this._authModule.authorized) {
+        let defaultUser = this._authModule.getTopUser();
+        userDisplayName = defaultUser.displayName;
+        userAvatarURL = this._ownerWidget.module.createAccountAvatarURL(defaultUser.uid);
+    }
+    this.ybSecondLabelNode.setText(userDisplayName, userAvatarURL);]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="subject"/>
+                <parameter name="topic"/>
+                <parameter name="data"/>
+                <body><![CDATA[    if (!this._authModule) {
+        return;
+    }
+    switch (topic) {
+    case this._authModule.EVENTS.AUTH_STATE_CHANGED:
+        this._changeState();
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+</bindings>

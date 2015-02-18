@@ -10,11 +10,12 @@ const GLOBAL = this;
 const DB_FILENAME = "fastdial.sqlite";
 const API_DATA_RECEIVED_EVENT = "ftabs-api-data-received";
 const SELF_DATA_RECEIVED_EVENT = "ftabs-self-data-received";
-const CLOUD_API_URL = "http://api.browser.yandex.ru/dashboard/v2/get/?nodes=";
+const CLOUD_API_URL = "http://api.browser.yandex.ru/dashboard3/get/?nodes=";
 const MAX_LOGO_WIDTH = 150;
 const MAX_LOGO_HEIGHT = 60;
 const REFRESH_INTERVAL = 86400 * 7 * 1000;
 const LOGOS_BASEPATH = "resource://vb-profile-data/logos/";
+const SCALE_RATIO = 0.43;
 let cachedCloudData = Object.create(null);
 const cloudSource = {
     init: function CloudSource_init(application) {
@@ -51,10 +52,13 @@ const cloudSource = {
         switch (aTopic) {
         case API_DATA_RECEIVED_EVENT: {
                 if (!aData.color) {
-                    this._database.execQueryAsync("INSERT OR REPLACE INTO cloud_data (domain, backgroundColor, user_supplied, last_api_request) VALUES (:domain, :color, 0, :now)", {
-                        domain: aData.domain,
-                        color: null,
-                        now: Date.now().toString()
+                    this._database.executeQueryAsync({
+                        query: "INSERT OR REPLACE INTO cloud_data (domain, backgroundColor, user_supplied, last_api_request) " + "VALUES (:domain, :color, 0, :now)",
+                        parameters: {
+                            domain: aData.domain,
+                            color: null,
+                            now: Date.now().toString()
+                        }
                     });
                     return;
                 }
@@ -67,10 +71,13 @@ const cloudSource = {
                     color: aData.color,
                     url: aData.url
                 };
-                this._database.execQueryAsync("INSERT OR REPLACE INTO cloud_data (domain, backgroundColor, user_supplied, last_api_request) VALUES (:domain, :color, 0, :now)", {
-                    domain: aData.domain,
-                    color: aData.color,
-                    now: Date.now().toString()
+                this._database.executeQueryAsync({
+                    query: "INSERT OR REPLACE INTO cloud_data (domain, backgroundColor, user_supplied, last_api_request) " + "VALUES (:domain, :color, 0, :now)",
+                    parameters: {
+                        domain: aData.domain,
+                        color: aData.color,
+                        now: Date.now().toString()
+                    }
                 });
                 Services.obs.notifyObservers(this, this._application.core.eventTopics.CLOUD_DATA_RECEIVED_EVENT, JSON.stringify(newData));
                 break;
@@ -81,9 +88,12 @@ const cloudSource = {
                     domain: aData.domain,
                     url: aData.url
                 };
-                this._database.execQueryAsync("INSERT OR REPLACE INTO cloud_data (domain, backgroundColor, user_supplied) VALUES (:domain, :color, 1)", {
-                    domain: aData.domain,
-                    color: aData.color
+                this._database.executeQueryAsync({
+                    query: "INSERT OR REPLACE INTO cloud_data (domain, backgroundColor, user_supplied) " + "VALUES (:domain, :color, 1)",
+                    parameters: {
+                        domain: aData.domain,
+                        color: aData.color
+                    }
                 });
                 cachedCloudData[aData.domain] = {
                     color: aData.color,
@@ -96,8 +106,9 @@ const cloudSource = {
     },
     getLogoForHost: function CloudSource_getLogoForHost(host) {
         host = host.replace(/^www\./, "");
-        if (cachedCloudData[host])
+        if (cachedCloudData[host]) {
             return cachedCloudData[host];
+        }
         try {
             let logoSource = fileutils.jsonFromFile(this._logoFile)[host];
             if (logoSource) {
@@ -116,16 +127,17 @@ const cloudSource = {
         let updateThumbs = function Thumbs_getMissingData_onTileDataReady(err, cloudData) {
             let dataStructure = {};
             this._application.internalStructure.iterate({ nonempty: true }, function (data, index) {
-                if (uri.spec !== data.location.spec)
+                if (uri.spec !== data.location.spec) {
                     return;
+                }
                 data.background = cloudData;
                 dataStructure[index] = data;
             });
             this._application.internalStructure.setItem(dataStructure);
             this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
-            if (this._application.fastdial.cachedHistoryThumbs[uri.spec]) {
-                this._application.fastdial.cachedHistoryThumbs[uri.spec].background = cloudData;
-                let cachedHistoryData = this._application.fastdial.cachedHistoryThumbs[uri.spec];
+            let cachedHistoryData = this._application.fastdial.cachedHistoryThumbs[uri.spec];
+            if (cachedHistoryData) {
+                cachedHistoryData.background = cloudData;
                 this._application.fastdial.sendRequest("historyThumbChanged", this._application.frontendHelper.getDataForThumb(cachedHistoryData));
             }
         }.bind(this);
@@ -136,32 +148,40 @@ const cloudSource = {
             }
             return;
         }
-        this._database.execQueryAsync("SELECT domain, backgroundColor FROM cloud_data WHERE domain = :domain", { domain: host }, function CloudSource_requestTileFromDatabase_onDataReady(rowsData, storageError) {
-            if (storageError) {
-                throw storageError;
-            }
-            if (!rowsData.length) {
-                this._application.cloudSource._fetchTileFromWeb(uri);
-                updateThumbs(null, null);
-                return;
-            }
-            if (options.force) {
-                this._application.cloudSource._fetchTileFromWeb(uri);
-            }
-            let url;
-            if (this._isFileExistsForHost(host)) {
-                url = LOGOS_BASEPATH + this._getFilenameByHostname(host);
-            } else {
-                url = this.getLogoForHost(host).url;
-            }
-            if (url) {
-                cachedCloudData[host] = {
-                    url: url,
-                    color: rowsData[0].backgroundColor
-                };
-            }
-            updateThumbs(null, cachedCloudData[host]);
-        }.bind(this));
+        this._database.executeQueryAsync({
+            query: "SELECT domain, backgroundColor FROM cloud_data WHERE domain = :domain",
+            columns: [
+                "domain",
+                "backgroundColor"
+            ],
+            parameters: { domain: host },
+            callback: function CloudSource_requestTileFromDatabase_onDataReady(rowsData, storageError) {
+                if (storageError) {
+                    throw storageError;
+                }
+                if (!rowsData.length) {
+                    this._application.cloudSource._fetchTileFromWeb(uri);
+                    updateThumbs(null, null);
+                    return;
+                }
+                if (options.force) {
+                    this._application.cloudSource._fetchTileFromWeb(uri);
+                }
+                let url;
+                if (this._isFileExistsForHost(host)) {
+                    url = LOGOS_BASEPATH + this._getFilenameByHostname(host);
+                } else {
+                    url = this.getLogoForHost(host).url;
+                }
+                if (url) {
+                    cachedCloudData[host] = {
+                        url: url,
+                        color: rowsData[0].backgroundColor
+                    };
+                }
+                updateThumbs(null, cachedCloudData[host]);
+            }.bind(this)
+        });
     },
     _isFileExistsForHost: function CloudSource__isFileExistsForHost(host) {
         let file = this._logoDir;
@@ -189,8 +209,9 @@ const cloudSource = {
             host = uri.asciiHost.replace(/^www\./, "");
         } catch (ex) {
         }
-        if (!host)
+        if (!host) {
             return;
+        }
         host = host.replace(/^www\./, "");
         uri.host = host;
         let lastRequest = this._getLastRequestForURI(uri);
@@ -198,21 +219,29 @@ const cloudSource = {
         if (!weekPassed) {
             return;
         }
-        this._database.execQueryAsync("SELECT last_api_request, user_supplied FROM cloud_data WHERE domain = :domain", { domain: host }, function (rowsData, storageError) {
-            if (storageError) {
-                let msg = strutils.formatString("DB error while selecting local cloud data: %1 (code %2)", [
-                    storageError.message,
-                    storageError.result
-                ]);
-                throw new Error(msg);
-            }
-            let hasUserImage = rowsData.some(function (row) {
-                return Boolean(row.user_supplied);
-            });
-            if (!hasUserImage) {
-                this._requestAPI(uri);
-            }
-        }.bind(this));
+        this._database.executeQueryAsync({
+            query: "SELECT last_api_request, user_supplied FROM cloud_data WHERE domain = :domain",
+            columns: [
+                "last_api_request",
+                "user_supplied"
+            ],
+            parameters: { domain: host },
+            callback: function (rowsData, storageError) {
+                if (storageError) {
+                    let msg = strutils.formatString("DB error while selecting local cloud data: %1 (code %2)", [
+                        storageError.message,
+                        storageError.result
+                    ]);
+                    throw new Error(msg);
+                }
+                let hasUserImage = rowsData.some(function (row) {
+                    return Boolean(row.user_supplied);
+                });
+                if (!hasUserImage) {
+                    this._requestAPI(uri);
+                }
+            }.bind(this)
+        });
     },
     _getLastRequests: function Cloudsource__getLastRequests() {
         let lastApiRequestsFile = this._lastApiRequestFile;
@@ -243,8 +272,9 @@ const cloudSource = {
         return lastApiRequestsFile;
     },
     _requestPageManifest: function CloudSource__requestPageManifest(uri) {
-        if (!uri.spec || this._pagesLoadQueue[uri.spec])
+        if (!uri.spec || this._pagesLoadQueue[uri.spec]) {
             return;
+        }
         this._pagesLoadQueue[uri.spec] = 1;
         let self = this;
         let xhr = this._createXHR();
@@ -269,11 +299,13 @@ const cloudSource = {
                 xmlDocument = domParser.parseFromString(responseText, "text/html");
             } catch (e) {
             }
-            if (!xmlDocument)
+            if (!xmlDocument) {
                 return;
+            }
             self.getManifestFromDocument(xmlDocument, uri);
         });
         let errorHandler = function errorHandler(e) {
+            timer.cancel();
             delete self._pagesLoadQueue[uri.spec];
         };
         xhr.addEventListener("error", errorHandler, false);
@@ -287,17 +319,20 @@ const cloudSource = {
             } catch (e) {
             }
         }
-        if (!uri.asciiHost)
+        if (!uri.asciiHost) {
             return;
+        }
         let link = document.querySelector("link[rel='yandex-tableau-widget']");
-        if (!link)
+        if (!link) {
             return;
+        }
         let manifestUrl = netutils.resolveRelativeURL(link.getAttribute("href"), uri);
         this._validatePageManifest(manifestUrl, uri.asciiHost);
     },
     _validatePageManifest: function CloudSource__validatePageManifest(url, domain) {
-        if (this._manifestLoadQueue[url])
+        if (this._manifestLoadQueue[url]) {
             return;
+        }
         this._manifestLoadQueue[url] = 1;
         let self = this;
         let xhr = this._createXHR();
@@ -309,26 +344,31 @@ const cloudSource = {
         xhr.addEventListener("load", function () {
             timer.cancel();
             delete self._manifestLoadQueue[url];
-            if (!xhr.response) {
+            let response = xhr.response;
+            if (!response) {
                 self._logger.warn("Server response is not a valid JSON");
                 return;
             }
-            if (!xhr.response.api_version || !xhr.response.layout || !xhr.response.layout.logo || !xhr.response.layout.color)
+            if (!response.api_version || !response.layout || !response.layout.logo || !response.layout.color) {
                 return;
-            let color = typeof xhr.response.layout.color === "object" ? xhr.response.layout.color[self._application.locale.language] || xhr.response.layout.color.default : xhr.response.layout.color;
-            let logo = typeof xhr.response.layout.logo === "object" ? xhr.response.layout.logo[self._application.locale.language] || xhr.response.layout.logo.default : xhr.response.layout.logo;
+            }
+            let color = typeof response.layout.color === "object" ? response.layout.color[self._application.locale.language] || response.layout.color.default : response.layout.color;
+            let logo = typeof response.layout.logo === "object" ? response.layout.logo[self._application.locale.language] || response.layout.logo.default : response.layout.logo;
             if (!logo || !color || !/^#/.test(color) || [
                     4,
                     7
-                ].indexOf(color.length) === -1)
+                ].indexOf(color.length) === -1) {
                 return;
+            }
             color = color.substr(1);
-            if (color.length === 3)
+            if (color.length === 3) {
                 color = color.split("").map(symbol => symbol + symbol).join("");
+            }
             let logoSource = netutils.resolveRelativeURL(logo, netutils.newURI(url));
             self._validateImageAgainstSize(logoSource, function (valid) {
-                if (!valid)
+                if (!valid) {
                     return;
+                }
                 self._notifyListeners(SELF_DATA_RECEIVED_EVENT, {
                     domain: domain,
                     color: color,
@@ -366,13 +406,14 @@ const cloudSource = {
             host = uri.asciiHost.replace(/^www\./, "");
         } catch (ex) {
         }
-        if (!host)
+        if (!host) {
             return;
-        if (this._cloudDataDomainsQueue[host])
+        }
+        if (this._cloudDataDomainsQueue[host]) {
             return;
+        }
         this._cloudDataDomainsQueue[host] = 1;
-        let self = this;
-        let cloudURL = CLOUD_API_URL + encodeURIComponent(host) + "&brandID=" + this._application.branding.productInfo.BrandID + "&lang=" + this._application.locale.language;
+        let cloudURL = CLOUD_API_URL + encodeURIComponent(host) + "&brandID=" + this._application.branding.productInfo.BrandID + "&lang=" + this._application.locale.language + "&scale=" + SCALE_RATIO;
         let xhr = this._createXHR();
         xhr.open("GET", cloudURL, true);
         xhr.responseType = "json";
@@ -381,28 +422,30 @@ const cloudSource = {
         }, 25000);
         xhr.addEventListener("load", function () {
             timer.cancel();
-            delete self._cloudDataDomainsQueue[host];
-            if (!xhr.response)
-                return self._logger.error("Server response is not a valid JSON: " + xhr.responseText);
-            if (xhr.response.error || !xhr.response[0].color || !xhr.response[0].resources.logo) {
-                self._notifyListeners(API_DATA_RECEIVED_EVENT, {
+            delete this._cloudDataDomainsQueue[host];
+            if (!xhr.response) {
+                this._logger.error("Server response is not a valid JSON: " + xhr.responseText.slice(0, 100));
+                return;
+            }
+            if (xhr.response.error || !xhr.response || !xhr.response[0] || !xhr.response[0].bgcolor || !xhr.response[0].resources || !xhr.response[0].resources.logo_main) {
+                this._notifyListeners(API_DATA_RECEIVED_EVENT, {
                     domain: host,
                     color: null,
                     url: null
                 });
                 return;
             }
-            let url = xhr.response[0].resources.logo.url;
-            self._notifyListeners(API_DATA_RECEIVED_EVENT, {
+            let url = xhr.response[0].resources.logo_main;
+            this._notifyListeners(API_DATA_RECEIVED_EVENT, {
                 domain: host,
-                color: xhr.response[0].color.replace(/^#/, ""),
+                color: xhr.response[0].bgcolor.replace(/^#/, ""),
                 url: url
             });
-            self._saveImage(host, url);
-        });
+            this._saveImage(host, url);
+        }.bind(this));
         let errorHandler = function errorHandler(e) {
-            delete self._cloudDataDomainsQueue[host];
-        };
+            delete this._cloudDataDomainsQueue[host];
+        }.bind(this);
         xhr.addEventListener("error", errorHandler, false);
         xhr.addEventListener("abort", errorHandler, false);
         xhr.send();

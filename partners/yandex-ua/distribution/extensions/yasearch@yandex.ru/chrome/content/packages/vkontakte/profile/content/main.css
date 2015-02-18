@@ -1,0 +1,18 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarbutton[item-command=auth],toolbarbutton[anonid=button-main]{list-style-image:url(img/profile/normal.svg)!important}
+[item-href=messages]{list-style-image:url(img/messages/normal.png)!important}
+[item-href=friends]{list-style-image:url(img/friends/normal.png)!important}
+[item-href=groups]{list-style-image:url(img/groups/normal.png)!important}
+[item-href=photos]{list-style-image:url(img/photos/normal.png)!important}
+[item-href=video]{list-style-image:url(img/video/normal.png)!important}
+[item-href=notes]{list-style-image:url(img/notes/normal.png)!important}
+[item-href=events]{list-style-image:url(img/events/normal.png)!important}
+[item-href=audio]{list-style-image:url(img/misc/audio.png)!important}
+[item-href=news]{list-style-image:url(img/misc/news.png)!important}
+[item-href=bookmarks]{list-style-image:url(img/misc/bookmarks.png)!important}
+[item-href=ads]{list-style-image:url(img/misc/ads.png)!important}
+[item-href=opinions]{list-style-image:url(img/misc/opinions.png)!important}
+[item-href=applications]{list-style-image:url(img/misc/applications.png)!important}
+[item-href=questions]{list-style-image:url(img/misc/questions.png)!important}
+.start-optionals+.end-optionals+menuitem[item-href=friends_new],menuseparator.end-optionals,toolbarbutton.widget-button menuitem[hidden=true],toolbarbutton.widget-button[hidden=true],toolbaritem[auth=false] toolbarbutton.widget-button:not([item-command=auth]),toolbaritem[auth=true] toolbarbutton.widget-button[item-command=auth]{display:none!important}
+menuseparator.start-optionals~menuitem:not([hidden=true])~menuseparator.end-optionals{display:-moz-box!important}
+toolbarbutton.widget-button[throbber=true]{list-style-image:url(/-common/img/throbber.gif)!important}

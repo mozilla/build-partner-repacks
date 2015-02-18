@@ -1,0 +1,11 @@
+<?xml version='1.0'?>
+
+<bindings xmlns="http://www.mozilla.org/xbl">
+
+    <binding extends="chrome://global/content/bindings/radio.xml#radio" id="radio" inheritstyle="false">
+        <resources>
+            <stylesheet src="radio.css"/>
+            <image src="radio.png"/>
+        </resources>
+    </binding>
+</bindings>

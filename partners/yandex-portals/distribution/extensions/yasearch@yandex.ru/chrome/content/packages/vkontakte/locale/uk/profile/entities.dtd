@@ -1,0 +1,105 @@
+<!ENTITY vk.name "Моя сторінка ВК">
+<!ENTITY settings.show_name "Показувати ім&#39;я користувача">
+<!ENTITY settings.hide_notifications "Вимкнути сповіщення">
+<!ENTITY settings.msg_button "Мої повідомлення">
+<!ENTITY settings.friends_button "Мої друзі">
+<!ENTITY settings.events_button "Мої зустрічі">
+<!ENTITY settings.groups_button "Мої групи">
+<!ENTITY settings.photo_button "Мої фотографії">
+<!ENTITY settings.video_button "Мої відеозаписи">
+<!ENTITY settings.notes_button "Мої нотатки">
+<!ENTITY settings.update.label "Інтервал оновлення">
+<!ENTITY settings.update.after "хв">
+<!ENTITY vk.menu.update "Оновити інформацію">
+<!ENTITY vk.menu.no_name "Без назви">
+<!ENTITY vk.tooltip.need_auth "Будь ласка, авторизуйтеся">
+<!ENTITY vk.main.tooltip "Перейти на мою сторінку ВКонтакті">
+<!ENTITY vk.main.tooltip_auth "Дозволяє перейти на вашу сторінку ВКонтакті">
+<!ENTITY vk.main.menu.mypage "Моя сторінка">
+<!ENTITY vk.main.menu.msg "Мої повідомлення">
+<!ENTITY vk.main.menu.friends "Мої друзі">
+<!ENTITY vk.main.menu.events "Мої зустрічі">
+<!ENTITY vk.main.menu.groups "Мої групи">
+<!ENTITY vk.main.menu.photo "Мої фотографії">
+<!ENTITY vk.main.menu.video "Мої відеозаписи">
+<!ENTITY vk.main.menu.notes "Мої нотатки">
+<!ENTITY vk.main.menu.audio "Мої аудіозаписи">
+<!ENTITY vk.main.menu.feed "Мої новини">
+<!ENTITY vk.main.menu.fave "Мої закладки">
+<!ENTITY vk.main.menu.matches "Пропозиції">
+<!ENTITY vk.main.menu.opinions "Думки">
+<!ENTITY vk.main.menu.apps "Програми">
+<!ENTITY vk.main.menu.questions "Питання">
+<!ENTITY vk.main.menu.settings "Налаштування">
+<!ENTITY vk.main.menu.logout "Вихід">
+<!ENTITY vk.msg.tooltip_empty "Мої повідомлення ВКонтакті">
+<!ENTITY vk.msg.tooltip_auth "Показує ваші нові повідомлення ВКонтакті">
+
+<!ENTITY vk.msg.tooltip "\d нове повідомлення;\d нові повідомлення;\d нових повідомлень">
+<!ENTITY vk.msg.menu.mymsg "Мої повідомлення">
+<!ENTITY vk.photo.tooltip_empty "Мої фотографії ВКонтакті">
+<!ENTITY vk.photo.tooltip_auth "Показує ваші фотографії ВКонтакті">
+<!ENTITY vk.video.tooltip_empty "Мої відеозаписи ВКонтакті">
+<!ENTITY vk.video.tooltip_auth "Показує ваші відеозаписи ВКонтакті">
+
+<!ENTITY vk.friend.tooltip "\d запит на додавання у друзі;\d запити на додавання у друзі;\d запитів на додавання у друзі">
+<!ENTITY vk.friend.tooltip_empty "Мої друзі ВКонтакті">
+<!ENTITY vk.friend.tooltip_auth "Показує ваших друзів ВКонтакті">
+<!ENTITY vk.friend.menu.myfriends "Мої друзі">
+<!ENTITY vk.friend.menu.my_new_friends "Мої нові друзі">
+<!ENTITY vk.event.tooltip "Мої зустрічі ВКонтакті">
+<!ENTITY vk.event.tooltip_auth "Показує ваші нові зустрічі ВКонтакті">
+<!ENTITY vk.group.tooltip "Мої групи ВКонтакті">
+<!ENTITY vk.group.tooltip_auth "Показує ваші групи ВКонтакті">
+<!ENTITY vk.note.tooltip "Мої нотатки ВКонтакті">
+<!ENTITY vk.note.tooltip_auth "Показує ваші нотатки ВКонтакті">
+<!ENTITY vk.notify.settings "Налаштування">
+<!ENTITY vk.notify.close "Закрити">
+<!ENTITY error.connect "Будь ласка, перевірте мережеве з&#39;єднання">
+<!ENTITY error.auth "Не вдалось авторизуватися">
+<!ENTITY error.auth.net "Не вдалось підключитися до сервера ВКонтакті для авторизації">
+
+<!ENTITY plural.rule "7">
+
+<!ENTITY vk.notify.follow "Просить додати його у друзі">
+<!ENTITY vk.notify.wall "Додав запис на вашу стіну">
+<!ENTITY vk.notify.comment_post "Прокоментував вашу публікацію">
+<!ENTITY vk.notify.comment_photo "Прокоментував ваше фото">
+<!ENTITY vk.notify.comment_video "Прокоментував ваше відео">
+<!ENTITY vk.notify.reply_comment "Відповів на ваш коментар">
+<!ENTITY vk.notify.reply_topic "Відповів на ваш коментар">
+
+<!ENTITY vk.notify.follow_f "Просить додати її у друзі">
+<!ENTITY vk.notify.wall_f "Додала запис на вашу стіну">
+<!ENTITY vk.notify.comment_post_f "Прокоментувала вашу публікацію">
+<!ENTITY vk.notify.comment_photo_f "Прокоментувала ваше фото">
+<!ENTITY vk.notify.comment_video_f "Прокоментувала ваше відео">
+<!ENTITY vk.notify.reply_comment_f "Відповіла на ваш коментар">
+<!ENTITY vk.notify.reply_topic_f "Відповіла на ваш коментар">
+
+<!ENTITY vk.notify.g.message "{N} нове повідомлення;{N} нові повідомлення;{N} нових повідомлень">
+<!ENTITY vk.notify.g.wall "{N} новий запис на стіні;{N} нові записи на стіні;{N} нових записів на стіні">
+<!ENTITY vk.notify.g.comment "{N} новий коментар;{N} нові коментарі;{N} нових коментарів">
+<!ENTITY vk.notify.g.reply_topic "{N} нова відповідь в обговоренні;{N} нові відповіді в обговоренні;{N} нових відповідей в обговоренні">
+<!ENTITY settings.show_notifications "Показувати сповіщення">
+<!ENTITY vk.notify.friend_request "просить додати його у друзі">
+<!ENTITY vk.notify.friend_request_f "просить додати її у друзі">
+<!ENTITY settings.show_comment_notifications "Показувати спливаючі сповіщення про коментарі, обговорення">
+<!ENTITY settings.show_friend_notifications "Показувати спливаючі сповіщення про запити у друзі, передплатників">
+<!ENTITY settings.show_mention_notifications "Показувати спливаючі сповіщення про згадування вас у публікаціях і коментарях">
+<!ENTITY settings.show_message_notifications "Показувати спливаючі сповіщення про повідомлення">
+<!ENTITY vk.friend.tooltip_not_empty0 "\d запит на додавання у друзі">
+<!ENTITY vk.friend.tooltip_not_empty1 "\d запити на додавання у друзі">
+<!ENTITY vk.friend.tooltip_not_empty2 "\d запитів на додавання у друзі">
+<!ENTITY vk.msg.tooltip_not_empty0 "\d нове повідомлення">
+<!ENTITY vk.msg.tooltip_not_empty1 "\d нові повідомлення">
+<!ENTITY vk.msg.tooltip_not_empty2 "\d нових повідомлень">
+<!ENTITY vk.notify.g.mention "Вас відмітили у {N} публікації;Вас відмітили в {N} публікаціях;Вас відмітили в {N} публікаціях">
+<!ENTITY vk.notify.mention "Зазначив вас у публікації">
+<!ENTITY vk.notify.mention_comment "Згадав вас у коментарі">
+<!ENTITY vk.notify.mention_comment_f "Згадала вас у коментарі">
+<!ENTITY vk.notify.mention_f "Зазначила вас у публікації">
+<!ENTITY vk.notify.messages_file "Надіслав вам повідомлення">
+<!ENTITY vk.notify.messages_file_f "Надіслала вам повідомлення">
+<!ENTITY vk.notify.g.follow "{N} запит на додавання у друзі;{N} запити на додавання у друзі;{N} запитів на додавання у друзі">
+<!ENTITY error.update "Інформацію отримати не вдалося">

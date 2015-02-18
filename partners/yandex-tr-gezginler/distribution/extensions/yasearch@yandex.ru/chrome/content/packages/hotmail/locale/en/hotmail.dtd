@@ -1,0 +1,25 @@
+<!ENTITY hotmail.name "Hotmail">
+
+<!ENTITY hotmail.settings.update-interval.label "Update interval">
+<!ENTITY hotmail.settings.update-interval.label-after "min.">
+<!ENTITY hotmail.settings.show-button-name.label "Show button name">
+
+<!ENTITY hotmail.tooltip.AUTH_NONE "New messages in Windows Live Hotmail\nPlease, login">
+<!ENTITY hotmail.tooltip.AUTH_UNKNOWN "Windows Live Hotmail\n$mailbox\nCould not retrieve details of your messages">
+<!ENTITY hotmail.tooltip.AUTH_OK "Windows Live Hotmail\n$mailbox\nYour messages in the mailbox\nNew: $unreadCount">
+
+<!ENTITY hotmail.button.text "Hotmail">
+
+<!ENTITY hotmail.menu.refresh "Check email">
+<!ENTITY hotmail.menu.write_letter "New message">
+<!ENTITY hotmail.menu.read_letter "Go to Inbox">
+<!ENTITY hotmail.menu.addressbook "Go to Contacts">
+<!ENTITY hotmail.menu.logout "Sign out">
+
+<!ENTITY hotmail.loginform.title "Sign in to Hotmail">
+<!ENTITY hotmail.loginform.save-password "Save">
+<!ENTITY hotmail.loginform.sign-in "Sign in">
+<!ENTITY hotmail.loginform.cancel "Cancel">
+<!ENTITY hotmail.loginform.password "Password:">
+<!ENTITY hotmail.loginform.error.server "Unable to establish server connection">
+<!ENTITY hotmail.loginform.error.auth "The email address or password is incorrect">

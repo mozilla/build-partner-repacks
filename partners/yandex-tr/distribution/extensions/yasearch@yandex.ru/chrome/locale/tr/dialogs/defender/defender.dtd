@@ -1,0 +1,23 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY homepage.defence.changed.title "Homepage changed">
+<!ENTITY homepage.defence.changedAgain.title "Homepage changed again">
+
+<!ENTITY homepage.defence.changed.from.prefix "from">
+<!ENTITY homepage.defence.changed.from.postfix "">
+<!ENTITY homepage.defence.changed.to.prefix "to">
+<!ENTITY homepage.defence.changed.to.postfix "">
+<!ENTITY homepage.defence.changed.empty "no address">
+
+<!ENTITY homepage.defence.again.help "Değişiklik, başka bir programdan kaynaklanmış olabilir. &product2.nom; artık ana sayfanızı korumuyor">
+<!ENTITY homepage.defence.again.help.more "Learn more">
+
+<!ENTITY homepage.defence.change.question "Allow this change">
+<!ENTITY homepage.defence.change.checkbox "Warn me when homepage changes">
+
+<!ENTITY homepage.defence.ok.button "Tamam">
+<!ENTITY homepage.defence.deny.button "Deny">
+<!ENTITY homepage.defence.allow.button "Allow">
+
+<!ENTITY homepage.defence.changed.help "&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;Sayfa korumasını tekrar açmak için harici uygulamayı kapatın, gerekli anasayfayı kurun ve &#60;strong&#62;Ayarlarda&#60;/strong&#62; &#60;strong&#62;Ayarlar&#60;/strong&#62; ekinde bu seçeneği aktif hale getirin:&#60;br/&#62;&#60;strong&#62;&#171;Ana sayfa korumasını aç&#187;&#60;/strong&#62;.&#60;/p&#62;&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;Tüm sorularınızı &#60;a anonid=&#39;mailtoSupportLink&#39; href=&#39;mailto:support@element.yandex.ru&#39;&#62;Destek Ekibi&#39;ne&#60;/a&#62; yöneltebilirsiniz.&#60;/p&#62;">

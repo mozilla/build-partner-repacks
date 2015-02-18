@@ -1,0 +1,9 @@
+<!ENTITY fotki.name "Фотки">
+<!ENTITY fotki.tooltiptext "Нові фотографії ваших улюблених авторів на Яндекс.Фотках">
+<!ENTITY fotki.noauthtooltiptext "Показує нові фотографії ваших улюблених авторів на Яндекс.Фотках">
+<!ENTITY fotki.tooltiptext.notauth "Будь ласка, авторизуйтеся">
+<!ENTITY fotki.reloadCounter.label "Оновити дані">
+<!ENTITY fotki.link.favAuth.label "Мої улюблені автори">
+<!ENTITY fotki.link.myPhotos.label "Мої фотки">
+<!ENTITY fotki.link.Comments.label "Коментарі для мене">
+<!ENTITY fotki.link.UploadPhotos.label "Завантажити фотки">

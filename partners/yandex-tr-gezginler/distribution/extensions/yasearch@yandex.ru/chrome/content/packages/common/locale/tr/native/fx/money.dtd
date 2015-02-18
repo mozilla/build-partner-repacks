@@ -1,0 +1,7 @@
+<!ENTITY money.name "Yandex.Money">
+<!ENTITY money.tooltiptext "Balance in Yandex.Money">
+<!ENTITY money.noauthtooltiptext "Shows balance in Yandex.Money">
+<!ENTITY money.tooltiptext.notauth "Lütfen oturum açın">
+<!ENTITY money.reloadCounter.label "Refresh balance data">
+<!ENTITY money.link.shop.label "Pay for services">
+<!ENTITY money.link.prepay.label "Refill balance">

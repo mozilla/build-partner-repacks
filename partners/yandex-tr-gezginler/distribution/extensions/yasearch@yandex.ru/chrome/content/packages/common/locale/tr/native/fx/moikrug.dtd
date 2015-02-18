@@ -1,0 +1,10 @@
+<!ENTITY moikrug.name "MoiKrug">
+<!ENTITY moikrug.tooltiptext "New messages at MoiKrug">
+<!ENTITY moikrug.noauthtooltiptext "Shows new messages at MoiKrug">
+<!ENTITY moikrug.reloadCounter.label "Refresh messages data">
+<!ENTITY moikrug.home.label "Open MoiKrug">
+<!ENTITY moikrug.firstcircle.label "My 1st circle">
+<!ENTITY moikrug.profile.label "My profile">
+<!ENTITY moikrug.search.label "Profil Arama">
+<!ENTITY moikrug.vacancies.label "Find a job">
+<!ENTITY moikrug.services.label "Find services">

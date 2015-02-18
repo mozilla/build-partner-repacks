@@ -38,6 +38,9 @@ NativeComponents.NativePlugin.prototype = {
             this.disable(false);
         }
     },
+    get enabledManually() {
+        throw new Error("Only setter available");
+    },
     set enabledManually(value) {
         if (Boolean(value)) {
             this.enable(true);
@@ -50,6 +53,7 @@ NativeComponents.NativePlugin.prototype = {
             return;
         }
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_BEFORE_ENABLED, null);
+        let startTime = Date.now();
         let pluginCore = this._module.core;
         if (pluginCore && typeof pluginCore.init === "function") {
             this._nativeAPIInst = new NativeBarAPI({
@@ -63,7 +67,7 @@ NativeComponents.NativePlugin.prototype = {
         Services.obs.addObserver(this, appCore.eventTopics.EVT_BEFORE_GLOBAL_RESET, false);
         Services.obs.addObserver(this, appCore.eventTopics.EVT_AFTER_GLOBAL_RESET, false);
         this._enabled = true;
-        this._logger.debug("Plugin enabled: " + this._id);
+        this._logger.debug("Plugin enabled (" + (Date.now() - startTime) + " ms): " + this._id);
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_ENABLED, null);
     },
     disable: function NativePlugin_disable(manually) {
@@ -221,7 +225,9 @@ NativeComponents.NativePlugin.prototype = {
         this._foundURLBarItems = null;
         this._logger = null;
     },
-    get nativeModule() this._module,
+    get nativeModule() {
+        return this._module;
+    },
     QueryInterface: XPCOMUtils.generateQI([
         Ci.nsISupports,
         Ci.nsIObserver
@@ -253,7 +259,7 @@ NativeComponents.NativePlugin.prototype = {
             this._logger.error("nsIObserver.observe failed. " + strutils.formatError(e));
         }
     },
-    _consts: { MSG_SETTING_NOT_REGISTERED: "Setting \"%1\" is not registered" },
+    _consts: { MSG_SETTING_NOT_REGISTERED: "Setting '%1' is not registered" },
     _logger: null,
     _shortName: undefined,
     _id: undefined,

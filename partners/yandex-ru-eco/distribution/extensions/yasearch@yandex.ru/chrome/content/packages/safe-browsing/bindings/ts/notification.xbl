@@ -1,0 +1,185 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "/ts.dtd"><bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/notifications/notification.xbl#notification-base" id="notification">
+        <resources>
+            <stylesheet src="/styles/ts/notification.css"/>
+        </resources>
+
+        <content>
+            <hbox align="center" anonid="content-area" flex="1" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <hbox anonid="notification-icon">
+                    <hbox anonid="notification-icon-image-outer"><image anonid="notification-icon-image" class="clickable"/></hbox>
+                </hbox>
+                <deck anonid="user-message">
+                    <hbox align="baseline">
+                        <description>&typosquatting.notification.warning.start;
+                            <label anonid="suggestion-label" class="text-link"/>&typosquatting.notification.warning.end;<button anonid="suggestion-button" label="&typosquatting.notification.actionbutton.transfer.label;"/>
+                        </description>
+                    </hbox>
+                    <hbox align="baseline">
+                        <description>&typosquatting.notification.warningnouri;<button anonid="leave-button" label="&typosquatting.notification.actionbutton.leave.label;"/></description>
+                    </hbox>
+                </deck>
+            </hbox>
+
+            <xul:hbox anonid="close-button" class="hoverable"/>
+
+            <xul:hbox hidden="true">
+                <children/>
+            </xul:hbox>
+        </content>
+
+        <implementation>
+            <field name="NOTIFICATION_NAME" readonly="true">this._moduleElement.NOTIFICATION_NAME</field>
+
+            <field name="api" readonly="true">this._moduleElement.api</field>
+            <field name="wListener" readonly="true">this._moduleElement.mWindowListener</field>
+
+            <field name="_moduleElement" readonly="true">this._notification.typo</field>
+            <field name="_referrer"><![CDATA[    this._browser.webNavigation.referringURI && this._browser.webNavigation.referringURI.spec || "";]]></field>
+            <field name="_notificationProperties" readonly="true">this._notification.notificationProperties</field>
+            <field name="_targetURL">this._notificationProperties.targetURL</field>
+            <field name="_maliciousURL">this._notificationProperties.maliciousHost</field>
+
+            <property name="_notificationTabData" readonly="true">
+                <getter><![CDATA[    return this.wListener.getTabData(this._browser, this.NOTIFICATION_NAME);]]></getter>
+            </property>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed || !this._moduleElement._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this._getElementByAttr("anonid", "suggestion-label").setAttribute("value", this._targetURL || "");
+    let deck = this._getElementByAttr("anonid", "user-message");
+    if (deck && !this._targetURL) {
+        deck.selectedIndex = 1;
+    }
+    this._sendStatistic(this._targetURL ? 1 : 6);
+    let browser = this._browser;
+    let api = this.api;
+    this._notificationTabData.codeID = this._targetURL ? 9 : 10;
+    this._notificationTabData.show = true;
+    if (!this._notificationTabData.handled) {
+        let handler = {
+            handleEvent: function handler_handleEvent(aEvent) {
+                switch (aEvent.type) {
+                case "pagehide":
+                    this._notificationTabData.handled = false;
+                    browser.removeEventListener("pagehide", this);
+                    if (!this._moduleElement._wdgtxConstructed) {
+                        return;
+                    }
+                    api.Async.nextTick(function (codeID) {
+                        let url = "";
+                        try {
+                            url = browser.currentURI.spec;
+                        } catch (e) {
+                        }
+                        this._sendStatistic(codeID, url);
+                    }.bind(this, this._notificationTabData.codeID));
+                    this._resetTabData();
+                }
+            },
+            _moduleElement: this._moduleElement,
+            _notificationTabData: this._notificationTabData,
+            _maliciousURL: this._maliciousURL,
+            _referrer: this._referrer,
+            _sendStatistic: this._sendStatistic,
+            _resetTabData: function handler__resetTabData() {
+                [
+                    "show",
+                    "action",
+                    "codeID"
+                ].forEach(function (key) {
+                    delete this._notificationTabData[key];
+                }.bind(this));
+            }
+        };
+        browser.addEventListener("pagehide", handler, false);
+        this._notificationTabData.handled = true;
+    }]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;]]></body>
+            </method>
+
+            <method name="_sendStatistic">
+                <parameter name="aCodeID"/>
+                <parameter name="aTo"/>
+                <body><![CDATA[    let me = this._moduleElement;
+    if (me && typeof me.sendStatistic == "function") {
+        me.sendStatistic(aCodeID, this._maliciousURL, this._referrer, aTo);
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="click"><![CDATA[    let target = event.originalTarget;
+    let mButton = event.button;
+    if (!(mButton === 0 || mButton === 1)) {
+        return;
+    }
+    let anonid = target.getAttribute("anonid");
+    while (!anonid && target.parentNode) {
+        target = target.parentNode;
+        anonid = target.getAttribute("anonid");
+    }
+    if (mButton == 1 && anonid != "suggestion-label") {
+        return;
+    }
+    let codeID = 0;
+    let url = "";
+    let tab = gBrowser.mCurrentBrowser;
+    switch (anonid) {
+    case "notification-icon":
+    case "notification-icon-image":
+        codeID = this._targetURL ? 11 : 12;
+        url = this._moduleElement.module.yaUrl;
+        break;
+    case "leave-button":
+        codeID = 7;
+        try {
+            let link = this.api.Settings.PrefsModule.get("browser.startup.homepage") || "about:blank";
+            url = link.split("|")[0];
+        } catch (e) {
+        }
+        break;
+    case "suggestion-label":
+        codeID = 2;
+        url = this._targetURL;
+        break;
+    case "suggestion-button":
+        codeID = 3;
+        url = this._targetURL;
+        break;
+    case "close-button":
+        codeID = this._targetURL ? 4 : 8;
+        break;
+    default:
+        return;
+    }
+    this._notificationTabData.action = true;
+    this._notificationTabData.codeID = codeID;
+    if (url) {
+        this._moduleElement.module.goodRedirect({ tab: tab });
+        this.api.Controls.navigateBrowser({
+            unsafeURL: url,
+            eventInfo: event,
+            target: "current tab"
+        });
+    }
+    this._notification.close();]]></handler>
+        </handlers>
+    </binding>
+
+</bindings>

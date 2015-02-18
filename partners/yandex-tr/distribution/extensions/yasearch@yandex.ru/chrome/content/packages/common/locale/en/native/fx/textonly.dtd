@@ -1,0 +1,8 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY textonly.label "Text only">
+<!ENTITY textonly.tooltip.open "&product1.nom;: View text-only version of webpage">
+<!ENTITY textonly.tooltip.close "&product1.nom;: View original webpage layout">
+<!ENTITY textonly.tooltip.not-available "&product1.nom;: The text-only feature cannot be used on this page">
+<!ENTITY textonly.tooltip.introduce "&product1.nom;: The &#171;Text only&#187; button&#10;displays the page in text-only format">

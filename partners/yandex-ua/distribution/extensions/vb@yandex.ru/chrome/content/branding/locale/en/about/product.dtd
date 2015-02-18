@@ -1,0 +1,33 @@
+<!ENTITY product.name.nom "Visual Bookmarks">
+<!ENTITY product.name.gen "Visual Bookmarks">
+<!ENTITY product.name.dat "Visual Bookmarks">
+<!ENTITY product.name.acc "Visual Bookmarks">
+<!ENTITY product.name.ins "Visual Bookmarks">
+<!ENTITY product.name.pre "About Visual Bookmarks">
+<!ENTITY product.name.loc "Visual Bookmarks">
+
+<!ENTITY product.shortname.nom "VBs">
+<!ENTITY product.shortname.gen "VBs">
+<!ENTITY product.shortname.dat "VBs">
+<!ENTITY product.shortname.acc "VBs">
+<!ENTITY product.shortname.ins "VBs">
+<!ENTITY product.shortname.pre "About VBs">
+<!ENTITY product.shortname.loc "Visual Bookmarks">
+
+<!ENTITY vendor.name.nom "Yandex">
+<!ENTITY vendor.name.gen "Yandex">
+<!ENTITY vendor.name.dat "Yandex">
+<!ENTITY vendor.name.acc "Yandex">
+<!ENTITY vendor.name.ins "Yandex">
+<!ENTITY vendor.name.pre "Yandex">
+<!ENTITY vendor.name.loc "Yandex">
+
+<!ENTITY product.description "Keep all your favorite sites in one place with Visual Bookmarks. Simply click on the one of the mini webpages to visit a site. You can customize the number and order in which the bookmarks are displayed, change the background image and search the web with Yandex.">
+<!ENTITY product.note.fx "for Firefox">
+<!ENTITY product.note.ie "for Internet Explorer">
+<!ENTITY product.homepage "http://visual.yandex.ua">
+<!ENTITY product.copyright "© 2012—2014 &quot;[Yandex](http://www.yandex.ua)&quot;">
+<!ENTITY product.copyright.ie "&product.copyright;">
+<!ENTITY product.copyright.fx "© 2012—2014 &quot;[Yandex](http://www.yandex.ua)&quot;">
+<!ENTITY product.license.url.ie "http://legal.yandex.ru/desktop_software_agreement/?lang=en">
+<!ENTITY product.license.url.fx "http://legal.yandex.ru/desktop_software_agreement/?lang=en">

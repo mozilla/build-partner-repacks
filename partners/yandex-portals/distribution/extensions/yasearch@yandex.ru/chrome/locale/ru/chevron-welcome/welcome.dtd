@@ -1,0 +1,9 @@
+<!ENTITY welcome.newfeature "Теперь, чтобы скрыть или показать все панели, достаточно одного клика.">
+<!ENTITY welcome.howitworks "Нажмите кнопку {button} и посмотрите, как это работает.">
+<!ENTITY welcome.closeallpanels "Скрыть все панели">
+<!ENTITY welcome.openpanels "Открыть панели">
+
+<!ENTITY notification.toolbar.installed "Новый тулбар здесь, вместе с остальными.">
+<!ENTITY notification.thanks "я знаю, спасибо">
+
+<!ENTITY welcome.close "закрыть">

@@ -1,0 +1,41 @@
+<!ENTITY pagetranslator.name "Перекласти сторінку">
+<!ENTITY pagetranslator.translate "Перекласти">
+
+<!ENTITY pagetranslator.notification.revert "Оригінал сторінки">
+<!ENTITY pagetranslator.notification.label "Перекладено з">
+<!ENTITY pagetranslator.notification.process "Виконується переклад сторінки">
+
+<!ENTITY pagetranslator.notification.english.gen "англійської">
+<!ENTITY pagetranslator.notification.russian.gen "російської">
+<!ENTITY pagetranslator.notification.german.gen "німецької">
+<!ENTITY pagetranslator.notification.spanish.gen "іспанської">
+<!ENTITY pagetranslator.notification.italian.gen "італійської">
+<!ENTITY pagetranslator.notification.french.gen "французької">
+<!ENTITY pagetranslator.notification.ukrainian.gen "української">
+<!ENTITY pagetranslator.notification.turkish.gen "турецької">
+
+<!ENTITY pagetranslator.notification.prompt.preambula "Переклад виконано">
+<!ENTITY pagetranslator.notification.prompt.name "програмою PROMT">
+
+<!ENTITY pagetranslator.notification.polish.gen "польської">
+<!ENTITY pagetranslator.notification.promt.name "програмою PROMT">
+<!ENTITY pagetranslator.notification.promt.preambula "Переклад виконано">
+<!ENTITY pagetranslator.notification.english.nom "англійська">
+<!ENTITY pagetranslator.notification.french.nom "французька">
+<!ENTITY pagetranslator.notification.german.nom "німецька">
+<!ENTITY pagetranslator.notification.italian.nom "італійська">
+<!ENTITY pagetranslator.notification.polish.nom "польська">
+<!ENTITY pagetranslator.notification.russian.nom "російська">
+<!ENTITY pagetranslator.notification.spanish.nom "іспанська">
+<!ENTITY pagetranslator.notification.turkish.nom "турецька">
+<!ENTITY pagetranslator.notification.ukrainian.nom "українська">
+<!ENTITY pagetranslator.settings.tlang.label "Виберіть мову, якою необхідно перекладати текст">
+<!ENTITY pagetranslator.notification.error "Сторінка повністю не перекладена. Під час виконання перекладу виникла помилка">
+<!ENTITY pagetranslator.notification.error.repeat "Спробуйте знову">
+<!ENTITY pagetranslator.notification.timeout "Переклад сторінки не вдалося виконати. Немає зв&#39;язку з інтернетом">
+<!ENTITY pagetranslator.notification.close "Закрити">
+<!ENTITY pagetranslator.notification.tooltip "Для перекладу сторінки натисніть на кнопку {button} в адресному рядку">
+<!ENTITY pagetranslator.notification.suggest.button.noYaBrowser "Докладніше">
+<!ENTITY pagetranslator.notification.suggest.button.yaBrowser "Відкрити">
+<!ENTITY pagetranslator.notification.suggest "Спробуйте всі можливості перекладу в Яндекс.Браузері">
+<!ENTITY pagetranslator.notification.translation.promo "Усі можливості перекладу в Яндекс.Браузері">

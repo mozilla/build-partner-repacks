@@ -1,0 +1,12 @@
+@namespace url(http://www.w3.org/1999/xhtml);@namespace xul url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);xul|notification{background:-moz-linear-gradient(top,#fff,#e6e6e6);font-size:13px;font-family:Arial,sans-serif;color:#1a1a1a;border:0;height:40px;line-height:40px;text-align:center;padding:0;-moz-box-align:center}
+a.link{margin-left:10px;text-decoration:underline;color:#0361af}
+a.button{background:url(images/normal-start.png) left top no-repeat;display:inline-block;height:22px;line-height:22px;padding:0 0 0 3px;margin:0 5px}
+a.button span{background:url(images/normal-end.png) right top;display:inline-block;padding:0 10px 0 7px}
+a.button:hover{background-image:url(images/hover-start.png)}
+a.button:hover span{background-image:url(images/hover-end.png)}
+a.button:active{background-image:url(images/active-start.png);height:26px;line-height:26px;padding:0 0 0 7px;margin:0 3px}
+a.button:active span{background-image:url(images/active-end.png);padding:0 12px 0 5px}
+span[anonid=link-container]{margin-left:30px}
+xul|image[anonid=close]{list-style-image:url(images/close.png);-moz-image-region:rect(0,18px,17px,0);-moz-margin-end:10px}
+xul|image[anonid=close]:hover{-moz-image-region:rect(19px,18px,36px,0)}
+xul|image[anonid=close]:active{-moz-image-region:rect(37px,18px,54px,0)}

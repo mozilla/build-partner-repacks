@@ -1,0 +1,34 @@
+<!ENTITY lenta.name "Жазылымдар">
+<!ENTITY lenta.tooltiptext "Яндекс.Жазылымдарда жаңа хабарламалар">
+<!ENTITY lenta.noauthtooltiptext "Яндекс.Жазылымдарда жаңа хабарламалар көрсетеді">
+<!ENTITY lenta.addFeed.label "Беттегі ағынды Жазылымдарға қосу">
+<!ENTITY lenta.add "Жазылымдарға ағын қосу">
+<!ENTITY lenta.reloadCounter.label "Хабарларды тексеру">
+<!ENTITY lenta.link.readMessages.label "Хабарларды оқу">
+
+
+<!ENTITY feeds.dialog.title "Жазылымдарға ағын қосу">
+<!ENTITY feeds.page.label "Бет">
+<!ENTITY feeds.name.label "Ағын">
+<!ENTITY feeds.name.accesskey "А">
+<!ENTITY feeds.groups.label "Қалтаға">
+<!ENTITY feeds.groups.accesskey "ғ">
+<!ENTITY feeds.groups.loader.label "Қалталар тізімін жүктеу...">
+
+<!ENTITY feeds.addgroup.label "Жаңа қалтаға">
+<!ENTITY feeds.addgroup.accesskey "Ж">
+
+<!ENTITY feeds.groups.manual.refresh.label "жаңарту">
+
+<!ENTITY feeds.showwebform.label "Ағынды қосудың бетін ашу">
+<!ENTITY feeds.showwebform.accesskey "қ">
+
+<!ENTITY feeds.dialog.MenuAllFeedsLabel "Вне папок">
+<!ENTITY feeds.dialog.MenuNewGroupLabel "Жаңа қалтаға...">
+<!ENTITY feeds.dialog.ErrorFeedGroupsRefreshTitle "Таспалардың тізімін жаңартуға байланысты қате">
+
+
+<!ENTITY lenta.alert.text.label "Жаңа хабарлар туралы мәтіндік құлақтандыруларды көрсету">
+<!ENTITY lenta.alert.sound.label "Жаңа хабарлар туралы дыбыстық құлақтандыруларды ойнату">
+<!ENTITY lenta.alert.sound.select.label "Таңдау">
+<!ENTITY lenta.alert.sound.preview.label "Тыңдау">

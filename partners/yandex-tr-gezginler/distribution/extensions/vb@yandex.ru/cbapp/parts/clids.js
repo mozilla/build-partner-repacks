@@ -12,8 +12,9 @@ const clids = {
         this._logger = aApplication.getLogger("Clids");
         if (aApplication.addonManager.info.addonVersionChanged) {
             if (aApplication.addonManager.info.isFreshAddonInstall) {
-                if (aApplication.core.CONFIG.APP.TYPE == "vbff")
+                if (aApplication.core.CONFIG.APP.TYPE == "vbff") {
                     this._migrateBarsClidsOnInstall();
+                }
             } else {
                 this._mergeWithInternalData();
             }
@@ -28,8 +29,9 @@ const clids = {
         this._application = null;
     },
     get vendorData() {
-        if (this.__vendorData)
+        if (this.__vendorData) {
             return this.__vendorData;
+        }
         let data = Object.create(null);
         let vendorXML = this._vendorXML;
         if (!vendorXML) {
@@ -46,8 +48,9 @@ const clids = {
             for (let i = nodes.length; i--;) {
                 let node = nodes[i];
                 let nodeName = node.nodeName;
-                if (!/^clid/.test(nodeName))
+                if (!/^clid/.test(nodeName)) {
                     continue;
+                }
                 let clidData = data[nodeName] = Object.create(null);
                 let attributes = node.attributes;
                 for (let i = attributes.length; i--;) {
@@ -57,8 +60,9 @@ const clids = {
                 clidData.clid = node.textContent || null;
                 if (clidData.clid) {
                     clidData.clidAndVid = clidData.clid;
-                    if (clidData.vid)
+                    if (clidData.vid) {
                         clidData.clidAndVid += "-" + clidData.vid;
+                    }
                 }
             }
         }
@@ -75,8 +79,9 @@ const clids = {
     },
     get _vendorXML() {
         let vendorFile = this._vendorFile;
-        if (!vendorFile.exists())
+        if (!vendorFile.exists()) {
             return;
+        }
         let vendorXML;
         try {
             vendorXML = this._application.core.Lib.fileutils.xmlDocFromFile(vendorFile);
@@ -89,8 +94,9 @@ const clids = {
     _mergeWithInternalData: function clids__mergeWithInternalData() {
         this.__vendorData = null;
         let installedFile = this._vendorFile;
-        if (!installedFile.exists())
+        if (!installedFile.exists()) {
             return;
+        }
         try {
             installedFile.permissions = parseInt("0644", 8);
         } catch (e) {
@@ -108,16 +114,18 @@ const clids = {
             this._logger.error("Can not read internal vendor file.");
             this._logger.debug(e);
         }
-        if (!distribXML)
+        if (!distribXML) {
             return;
+        }
         let writeNewData = false;
         let nodes = distribXML.querySelectorAll("vendor > *");
         for (let i = nodes.length; i--;) {
             let node = nodes[i];
             let nodeName = node.nodeName;
             let nodeValue = node.textContent;
-            if (!nodeValue)
+            if (!nodeValue) {
                 continue;
+            }
             let existsNode;
             try {
                 existsNode = installedXML.querySelector("vendor > " + nodeName);
@@ -136,20 +144,23 @@ const clids = {
                 let attributes = node.attributes;
                 for (let i = attributes.length; i--;) {
                     let attribute = attributes[i];
-                    if (existsNode.hasAttribute(attribute.name))
+                    if (existsNode.hasAttribute(attribute.name)) {
                         continue;
+                    }
                     existsNode.setAttribute(attribute.name, attribute.value);
                     writeNewData = true;
                 }
             }
         }
-        if (writeNewData)
+        if (writeNewData) {
             fileutils.xmlDocToFile(installedXML, installedFile);
+        }
     },
     _migrateBarsClidsOnInstall: function clids__migrateBarsClidsOnInstall() {
         let vendorFile = this._vendorFile;
-        if (vendorFile.exists())
+        if (vendorFile.exists()) {
             return;
+        }
         let fileutils = this._application.core.Lib.fileutils;
         let barClidsFile = this._application.directories.userDir;
         barClidsFile.append("clids-barff.xml");
@@ -172,8 +183,9 @@ const clids = {
                                 "clid1",
                                 "clid7",
                                 "clid8"
-                            ].indexOf(nodeName) == -1)
+                            ].indexOf(nodeName) == -1) {
                             barClidsXML.documentElement.removeChild(node);
+                        }
                     }
                     fileutils.xmlDocToFile(barClidsXML, vendorFile);
                 }

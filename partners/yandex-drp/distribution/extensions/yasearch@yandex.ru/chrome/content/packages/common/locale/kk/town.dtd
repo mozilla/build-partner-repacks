@@ -1,0 +1,39 @@
+<!ENTITY wgt.town.widget.name "Қала">
+
+<!ENTITY wgt.town.setting.town "Қала">
+<!ENTITY wgt.town.setting.town.popular "Танымал қалалар">
+<!ENTITY wgt.town.setting.title "Қала атауы панельде">
+<!ENTITY wgt.town.setting.show.name "Қала атауын көрсету">
+<!ENTITY wgt.town.setting.show.weather "Ауа-райын көрсету">
+<!ENTITY wgt.town.setting.show.traffic "Кептелістерді көрсету">
+<!ENTITY wgt.town.setting.interval "Жаңарту интервалы">
+<!ENTITY wgt.town.settings.autodetect "Автоматты түрде анықтау">
+<!ENTITY wgt.town.settings.min.label "мин.">
+
+<!ENTITY wgt.town.setup "Информерді баптау">
+<!ENTITY wgt.town.refresh "Деректерді жаңарту">
+<!ENTITY wgt.town.delete "Қаланы жою">
+<!ENTITY wgt.town.add "Қаланы қосу">
+
+<!ENTITY wgt.town.weather.nodata "Ауа-райы туралы деректер жоқ">
+<!ENTITY wgt.town.weather.label "Ауа-райы">
+<!ENTITY wgt.town.temperature.label "Температура">
+<!ENTITY wgt.town.wind.label "Жел">
+<!ENTITY wgt.town.wind.ms "м/с">
+<!ENTITY wgt.town.pressure.label "Қысым">
+<!ENTITY wgt.town.pressure.mm.label "мм.сын.бағ.">
+<!ENTITY wgt.town.dampness.label "Ылғалдылық">
+<!ENTITY wgt.town.night "Түнде">
+<!ENTITY wgt.town.tomorrow "Ертең">
+
+<!ENTITY wgt.town.traffic.points "Баллдар">
+<!ENTITY wgt.town.traffic.description "Сипаттама">
+<!ENTITY wgt.town.traffic.length "Ұзындық">
+<!ENTITY wgt.town.traffic.length.km "км">
+
+<!ENTITY wgt.town.request.lang "kk">
+
+<!ENTITY wgt.town.traffic.tooltip "Кептелістер қалада">
+<!ENTITY wgt.town.weather.tooltip "Ауа-райы болжамы">
+<!ENTITY wgt.town.setting.openPageOnClick.traffic "Кептелістер батырмасын басу кезінде сервис бетін ашу">
+<!ENTITY wgt.town.setting.openPageOnClick.weather "Ауа-райы батырмасын басу кезінде сервис бетін ашу">

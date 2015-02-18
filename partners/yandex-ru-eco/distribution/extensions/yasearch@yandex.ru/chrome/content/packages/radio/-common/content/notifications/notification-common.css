@@ -1,0 +1,27 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);notification{border:0;margin:0;padding:0}
+.ya-notification{color:-moz-DialogText;background:-moz-Dialog;border:0;border-bottom:1px solid rgba(0,0,0,.2);font:15px/1em Arial,sans-serif;margin:0;padding:.5333em 1.333em;overflow:hidden}
+.ya-notification.bottom{border:0;border-top:1px solid rgba(0,0,0,.2)}
+[anonid=notification-icon]{-moz-box-align:center}
+[anonid=close-button]{-moz-binding:url(notification.xbl#close-button)!important;cursor:pointer;-moz-box-align:center}
+.close-button-image{list-style-image:url(icons/notification-close.png);width:14px;height:14px}
+.hoverable .hoverable-item{opacity:.7}
+.hoverable:hover .hoverable-item{opacity:1}
+.text-link{color:#0054a6!important;text-decoration:none!important}
+.text-link:hover{color:red!important}
+description{margin:0!important;padding:0!important}
+label.text-link{margin:0!important;padding:0!important}
+label.text-link:-moz-focusring{outline:1px dotted -moz-DialogText}
+button,menulist{-moz-appearance:none;color:#000;background:0 0;border:1px solid rgba(0,0,0,.25);border-radius:.2307em;font:.8667em/1em Arial,sans-serif;min-width:2em;margin:0;-moz-margin-start:.7692em;-moz-margin-end:.7692em;cursor:pointer}
+button>.button-box{margin:.076923em .38461em;padding:.076923em .30769em .1538em}
+button:hover,menulist:hover{border-color:rgba(0,0,0,.4)}
+button:active{background-color:rgba(0,0,0,.08);border-color:rgba(0,0,0,.25)}
+button::-moz-focus-inner{padding:0}
+menulist{min-width:10em;padding-top:.076923em;padding-bottom:.1538em;-moz-padding-start:.7692em;-moz-padding-end:0}
+menulist>dropmarker{-moz-appearance:none;display:-moz-box;list-style-image:url(icons/arrow-left.png);background:0 0;border:0;width:auto;margin:0;-moz-margin-end:1.076923em;padding:0;-moz-box-align:center;-moz-box-pack:center}
+menulist[open]>dropmarker{list-style-image:url(icons/arrow-down.png);-moz-margin-end:.76923em}
+menulist:hover:active>.menulist-dropmarker{padding:0}
+menulist menuitem{-moz-appearance:none;border:1px solid transparent;color:#000;font-size:1em;height:2.153em;padding-top:0;padding-bottom:0;-moz-padding-start:.7692em}
+menulist:not([editable=true])>menupopup>menuitem[selected=true]::before,menulist:not([editable=true])>menupopup>menuitem[checked=true]::before{content:"";display:none}
+menuitem[_moz-menuactive=true]{color:#000;background-color:#fff5ae}
+menulist menupopup{-moz-appearance:none;background:#fff;border:1px solid rgba(0,0,0,.25)}
+.menulist-label-box{-moz-appearance:none;color:inherit;background:0 0;border:1px solid transparent;margin:1px}

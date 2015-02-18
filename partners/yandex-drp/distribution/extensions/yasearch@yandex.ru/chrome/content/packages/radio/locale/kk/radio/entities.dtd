@@ -1,0 +1,59 @@
+<!ENTITY widget.name "Радио">
+<!ENTITY widget.show-name "Радиостанция аталымын көрсету">
+
+<!ENTITY widget.tooltiptext.source "Дереккөз - ">
+<!ENTITY widget.tooltiptext.paused "{radioname} радиосын тыңдау үшін басыңыз">
+<!ENTITY widget.tooltiptext.normal1 "{radioname} радиосын тыңдап отырсыз">
+<!ENTITY widget.tooltiptext.normal2 "Тыңдауды тоқтату үшін батырманы басыңыз">
+<!ENTITY widget.tooltiptext.no-stations1 "Радиостанциялар тізімі бос.">
+<!ENTITY widget.tooltiptext.no-stations2 "Радиостанция қосуығызды сұраймыз">
+<!ENTITY widget.tooltiptext.error "Жаңғырту қатесі">
+<!ENTITY widget.no-station "Радиостанция жоқ">
+<!ENTITY widget.noflash1 "Радио ойнату үшін Flash player қажет">
+<!ENTITY widget.noflash2 "Орнату үшін батырманы басыңыз">
+<!ENTITY widget.tooltiptext.throbber "Радио ағыны буферизациялануда. Күте түруыңызды сұраймыз.">
+
+<!ENTITY widget.play "Ойнату">
+<!ENTITY widget.pause "Тоқтату">
+<!ENTITY widget.add "Радиостанция қосу">
+<!ENTITY widget.settings "Радиостанциялар тізімі">
+<!ENTITY widget.settings2 "Баптаулар">
+<!ENTITY widget.search "Радиостанция табу">
+<!ENTITY widget.noflash "Flash player орнату">
+
+<!ENTITY dialog.addstation.title "Радиостанция қосу">
+<!ENTITY dialog.addstation.name "Аталымы: ">
+<!ENTITY dialog.addstation.url "Мекен-жайы: ">
+<!ENTITY dialog.addstation.autoplay "Радиостанцияны қосқаннан кейін ойнату">
+<!ENTITY dialog.addstation.prefix "Радиостанция">
+<!ENTITY dialog.addstation.error2 " тізімде бар.">
+<!ENTITY dialog.addstation.error3 "Басқа аталымды енгізуіңізді сұраймыз.">
+<!ENTITY dialog.addstation.notice "«Радио» батырмасы тек mp3 ағындармен және mp3 ағындары бар плейлисттермен дұрыс жұмыс істейді">
+
+<!ENTITY dialog.delstattion.title "Радиостанцияны жою">
+<!ENTITY dialog.delstation.question "Таңдалған радиостанцияны жоюға сенімдісіз бе?">
+
+<!ENTITY dialog.changestation.title "Радиостанцияны өзгерту">
+<!ENTITY dialog.changestation.alert "Радиостанцияны өзгерткеннен кейін ойнату">
+
+<!ENTITY dialog.settings.title "Радиостанциялар тізімі">
+<!ENTITY dialog.settings.row.play "*">
+<!ENTITY dialog.settings.row.name "Аталымы">
+<!ENTITY dialog.settings.row-url "Мекен-жайы">
+<!ENTITY dialog.settings.button-add "Қосу">
+<!ENTITY dialog.settings.button-change "Өзгерту">
+<!ENTITY dialog.settings.button-delete "Жою">
+<!ENTITY dialog.settings.button-play "Ойнату">
+<!ENTITY dialog.settings.button-stop "Тоқтату">
+<!ENTITY dialog.settings.button-close "Жабу">
+<!ENTITY dialog.settings.row.name "Аталымы">
+<!ENTITY dialog.settings.row.address "Мекен-жайы">
+
+<!ENTITY dialog.yes "Иә">
+<!ENTITY dialog.no "Жоқ">
+<!ENTITY dialog.ok "Ok">
+<!ENTITY dialog.cancel "Болдырмау">
+<!ENTITY MSG_DELETEMANY "Таңдалған радиостанцияларды жоюға сенімдісіз бе?">
+<!ENTITY TOOLTIP_ERROR "Радио ағымын жүктеу қатесі">
+<!ENTITY dialog.settings.row-name "Аталымы">
+<!ENTITY dialog.addstation.error-url "Дұрыс мекен-жайды көрсетіңіз.">

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <title>Webmaster site</title>
+    <description>Created with Sketch (http://www.bohemiancoding.com/sketch)</description>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Light" sketch:type="MSLayerGroup" transform="translate(-234.000000, -27.000000)">
+            <g id="Webmaster" transform="translate(234.000000, 3.000000)" sketch:type="MSShapeGroup">
+                <g id="Group" transform="translate(0.000000, 24.000000)">
+                    <path d="M15,0 L1,0 C0.448,0 0,0.448 0,1 L0,15 C0,15.552 0.448,16 1,16 L15,16 C15.552,16 16,15.552 16,15 L16,1 C16,0.448 15.552,0 15,0" id="Fill-126" fill="#BDB7A6"></path>
+                    <path d="M9.54400935,8.582 L8.86700935,8.582 C7.80300935,8.582 6.77200935,7.808 6.77200935,5.872 C6.77200935,3.855 7.73900935,3.033 8.72200935,3.033 L9.54400935,3.033 L9.54400935,8.582 Z M10.6070094,2 L8.77000935,2 C6.96600935,2 5.43500935,3.371 5.43500935,6.033 C5.43500935,7.63 6.17600935,8.808 7.49700935,9.388 L5.03200935,13.841 C4.95200935,13.986 5.03200935,14.099 5.16100935,14.099 L6.30500935,14.099 C6.40100935,14.099 6.46600935,14.067 6.49800935,13.986 L8.73800935,9.614 L9.54400935,9.614 L9.54400935,13.986 C9.54400935,14.034 9.59200935,14.099 9.65600935,14.099 L10.6560094,14.099 C10.7530094,14.099 10.7850094,14.051 10.7850094,13.97 L10.7850094,2.162 C10.7850094,2.048 10.7200094,2 10.6070094,2 L10.6070094,2 Z" id="Fill-127" fill="#FFFFFF"></path>
+                    <path d="M14.828,8.121 L14.121,7.414 L12.707,6 L12,6.707 L13.414,8.121 L12,9.535 L12.707,10.242 L14.121,8.828 L14.828,8.121 Z" id="Fill-128" fill="#FFFFFF"></path>
+                    <path d="M3.828,6.707 L3.121,6 L1,8.121 L3.121,10.243 L3.828,9.535 L2.414,8.121 L3.828,6.707 Z" id="Fill-129" fill="#FFFFFF"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,59 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY pref.window.title "&product2.nom; ayarları">
+
+
+<!ENTITY prefpane.widgets.delete.button "Butonlardan sil">
+<!ENTITY prefpane.widgets.extra2.button "Varsayılan ayarlara geri dön">
+
+<!ENTITY prefpane.widgets.label "Butonlar">
+
+<!ENTITY registered.widgets.list.title "Kullanılabilir butonlar">
+<!ENTITY active.widgets.list.title "Geçerli butonlar">
+
+<!ENTITY add.widgets.label "Ekle">
+<!ENTITY remove.widgets.label "Kaldır">
+
+<!ENTITY move.widgets.up.label "Yukarı">
+<!ENTITY move.widgets.down.label "Aşağı">
+
+<!ENTITY global.setting.tooltip.prefix "Bu ayar &#37;S butonunu etkilemektedir">
+
+<!ENTITY controls.combobox.creating.label "liste yükleme">
+
+
+<!ENTITY prefpane.plugins.delete.button "Eklentiyi sil">
+
+<!ENTITY prefpane.plugins.label "Eklentiler">
+
+<!ENTITY registered.plugins.list.title "Kullanılabilir eklentiler">
+
+<!ENTITY registered.plugins.enable.label "Aç">
+
+
+<!ENTITY prefpane.about.label "Hakkında">
+
+
+<!ENTITY updates.check.text "Güncellemeleri kontrol et">
+<!ENTITY updates.check.install "Kur">
+<!ENTITY updates.check.setup "Seçenekler">
+
+
+<!ENTITY prefpane.misc.label "Ayarlar">
+
+<!ENTITY yasearch.pref.urlbar.caption "Adres satırı">
+
+<!ENTITY yasearch.pref.misc.caption "Diğer">
+<!ENTITY yasearch.pref.links.target.label "&product2.gen; bağlantılarını yeni sekmede aç">
+<!ENTITY yasearch.pref.sounds.enable.label "Seslerin çalınmasına izin ver">
+<!ENTITY yasearch.pref.silent.trusted.updates.label "&#171;Buton arşivi&#187; kütüphanesini otomatik olarak güncelle">
+
+<!ENTITY yasearch.pref.defence.homepage.caption "Ana sayfa">
+<!ENTITY yasearch.pref.defence.homepage.label "Ana sayfa korumasını aç">
+<!ENTITY yasearch.pref.defence.homepage.description "&product1.nom; yeni kurulan programlar ana sayfanızı değiştirmeyi denerse size haber verecektir">
+
+<!ENTITY yasearch.pref.confidentiality.caption "Gizlilik">
+<!ENTITY yasearch.pref.stat.usage.send.label "Yandex servislerinin iyileştirilmesi için tarayıcı kullanım &#60;html:a href=&#34;http://legal.yandex.com.tr/confidential/&#34;&#62;istatistiklerini otomatik ve anonim&#60;/html:a&#62; olarak paylaş">
+
+<!ENTITY prefpane.software.label "Diğer programlar">

@@ -8,7 +8,7 @@ const {
 } = Components;
 Cu.import("resource://gre/modules/Services.jsm");
 function isErrorRequest(aReq) {
-    return !!(!aReq || aReq.type == "error" || !aReq.target || aReq.target.status != 200);
+    return !aReq || aReq.type === "error" || !aReq.target || aReq.target.status !== 200;
 }
 const addonStatus = {
     init: function addonStatus_init(aApplication) {
@@ -47,13 +47,15 @@ const addonStatus = {
         return false;
     },
     onApplicationInitialized: function addonStatus_onApplicationInitialized() {
-        if (this._application.addonManager.info.isFreshAddonInstall)
+        if (this._application.addonManager.info.isFreshAddonInstall) {
             this._logData({ stat: "install" });
+        }
         this._startTimers();
     },
     get guidString() {
-        if (this._guidString !== null)
+        if (this._guidString !== null) {
             return this._guidString;
+        }
         const preferences = this._application.preferences;
         const guidPrefName = "guid.value";
         let guidStr = "";
@@ -70,8 +72,9 @@ const addonStatus = {
             let currentWinUser;
             if (this._appType !== "barffport") {
                 currentWinUser = WinReg.read("HKCU", "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer", "Logon User Name");
-                if (currentWinUser)
-                    uiWasCreated = !!WinReg.read("HKCU", "Software\\Yandex", "UICreated_" + currentWinUser);
+                if (currentWinUser) {
+                    uiWasCreated = Boolean(WinReg.read("HKCU", "Software\\Yandex", "UICreated_" + currentWinUser));
+                }
             }
             if (!uiWasCreated) {
                 if (preferences.has(guidPrefName)) {
@@ -82,17 +85,19 @@ const addonStatus = {
                 if (guidStr) {
                     try {
                         this._application.core.Lib.fileutils.writeTextFile(uiFile, guidStr);
-                        if (currentWinUser)
+                        if (currentWinUser) {
                             WinReg.write("HKCU", "Software\\Yandex", "UICreated_" + currentWinUser, 1, "int");
+                        }
                     } catch (e) {
                         this._logger.error("Can not write ui to file. Error: " + e);
                     }
                 }
             }
         }
-        if (guidStr)
+        if (guidStr) {
             preferences.set(guidPrefName, guidStr);
-        return this._guidString = "" + (guidStr || "");
+        }
+        return this._guidString = guidStr || "";
     },
     _startTimers: function addonStatus__startTimers() {
         this._collectTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
@@ -102,8 +107,9 @@ const addonStatus = {
         this._setRequestTimer(2 * 60 * 1000);
     },
     notify: function addonStatus_notify(aTimer) {
-        if (!aTimer)
+        if (!aTimer) {
             return;
+        }
         switch (aTimer) {
         case this._requestTimer:
             let [
@@ -111,8 +117,9 @@ const addonStatus = {
                 query
             ] = this._getDataForSend();
             this._sendingLogId = id;
-            if (query)
+            if (query) {
                 this._sendRequest(this._appendTimeParamsToURLString(query));
+            }
             break;
         case this._collectTimer:
             this._logData({ stat: "dayuse" });
@@ -129,8 +136,8 @@ const addonStatus = {
                     value
                 ] in Iterator(aEvents)) {
             this._database.execQuery("INSERT OR REPLACE INTO addonevents (key, value) VALUES (:key, :value)", {
-                key: "" + key,
-                value: "" + value
+                key: String(key),
+                value: String(value)
             });
         }
         this._database.execQuery("COMMIT TRANSACTION");
@@ -141,7 +148,7 @@ const addonStatus = {
         return rows;
     },
     clearAddonEvents: function addonStatus_clearAddonEvents() {
-        this._database.execQuery("DELETE FROM addonevents");
+        this._database.executeQueryAsync({ query: "DELETE FROM addonevents" });
     },
     testSendStat: function addonStatus_testSendStat() {
         this.notify(this._requestTimer);
@@ -160,8 +167,8 @@ const addonStatus = {
         CLIDS_DATE_PREF_NAME: "clids.creationDate",
         CHECK_INTERVAL: 24 * 60 * 60 * 1000,
         STAT_URL: "http://soft.export.yandex.ru/status.xml",
-        INIT_QUERIES_TABLE_QUERY: "            CREATE TABLE IF NOT EXISTS queries (                id INTEGER PRIMARY KEY,                         query BLOB,                                     timeCreated INTEGER,                            sendAttempts INTEGER                        )",
-        INIT_ADDONEVENTS_TABLE_QUERY: "            CREATE TABLE IF NOT EXISTS addonevents (                key TEXT,                                           value BLOB                                  )"
+        INIT_QUERIES_TABLE_QUERY: "CREATE TABLE IF NOT EXISTS queries (" + " id INTEGER PRIMARY KEY," + " query BLOB," + " timeCreated INTEGER," + " sendAttempts INTEGER" + ")",
+        INIT_ADDONEVENTS_TABLE_QUERY: "CREATE TABLE IF NOT EXISTS addonevents (" + " key TEXT," + " value BLOB" + ")"
     },
     _appendTimeParamsToURLString: function addonsStatus__appendTimeParamsToURLString(aQuery) {
         let query = aQuery + "&tl=" + encodeURIComponent(this._lastSendTime);
@@ -185,24 +192,32 @@ const addonStatus = {
             this._cleanupLoggedData();
             this._setRequestTimer();
         }.bind(this);
-        this._database.execQueryAsync("INSERT INTO queries (query, timeCreated, sendAttempts)                                        VALUES (:query, :timeCreated, :sendAttempts)", {
-            query: this._collectData(aData),
-            timeCreated: Date.now(),
-            sendAttempts: 0
-        }, onDataInserted);
+        this._database.executeQueryAsync({
+            query: "INSERT INTO queries (query, timeCreated, sendAttempts) " + "VALUES (:query, :timeCreated, :sendAttempts)",
+            parameters: {
+                query: this._collectData(aData),
+                timeCreated: Date.now(),
+                sendAttempts: 0
+            },
+            callback: onDataInserted
+        });
     },
     _cleanupLoggedData: function addonsStatus__cleanupLoggedData() {
-        this._database.execQueryAsync("DELETE FROM queries                                        WHERE (timeCreated < :timeCreated OR sendAttempts > :sendAttempts)", {
-            timeCreated: Date.now() - 2 * 24 * 60 * 60 * 1000,
-            sendAttempts: 5
+        this._database.executeQueryAsync({
+            query: "DELETE FROM queries " + "WHERE (timeCreated < :timeCreated OR sendAttempts > :sendAttempts)",
+            parameters: {
+                timeCreated: Date.now() - 2 * 24 * 60 * 60 * 1000,
+                sendAttempts: 5
+            }
         });
     },
     _collectData: function addonStatus__collectData(aData) {
         let data = this._versionData;
         let rows = this.fetchAddonEvents();
         if (rows && rows.length) {
-            for (let i = 0, len = rows.length; i < len; i++)
+            for (let i = 0, len = rows.length; i < len; i++) {
                 data[rows[i].key] = rows[i].value;
+            }
         }
         let defender = this._application.defender;
         if (defender) {
@@ -211,8 +226,9 @@ const addonStatus = {
                 for (let [
                             propName,
                             propValue
-                        ] in Iterator(defenceTimesData))
+                        ] in Iterator(defenceTimesData)) {
                     data[propName] = propValue;
+                }
                 defender.changesTime = null;
             }
         }
@@ -236,7 +252,7 @@ const addonStatus = {
                 if (syncPlugin.enabled) {
                     try {
                         syncService = Cc["@yandex.ru/esync;1"].getService().wrappedJSObject;
-                        authorized = !!syncService.authorized;
+                        authorized = Boolean(syncService.authorized);
                     } catch (ex) {
                         Cu.reportError(ex);
                     }
@@ -252,8 +268,9 @@ const addonStatus = {
                     ].forEach(function (engineName) {
                         let enabled = 0;
                         try {
-                            if (syncService.getEngine(engineName).enabled)
+                            if (syncService.getEngine(engineName).enabled) {
                                 enabled = 1;
+                            }
                         } catch (e) {
                         }
                         syncStatData.push(enabled);
@@ -266,15 +283,17 @@ const addonStatus = {
             for (let [
                         propName,
                         propValue
-                    ] in Iterator(aData))
+                    ] in Iterator(aData)) {
                 data[propName] = propValue;
+            }
         }
         let dataArray = [];
         for (let [
                     propName,
                     propValue
-                ] in Iterator(data))
+                ] in Iterator(data)) {
             dataArray.push(propName + "=" + encodeURIComponent(propValue));
+        }
         return dataArray.join("&");
     },
     _getDataForSend: function addonStatus__getDataForSend() {
@@ -291,10 +310,11 @@ const addonStatus = {
         ];
     },
     _setRequestTimer: function addonStatus__setRequestTimer(aTimeout) {
-        if (this._requestTimer)
+        if (this._requestTimer) {
             this._requestTimer.cancel();
-        else
+        } else {
             this._requestTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+        }
         this._requestTimer.initWithCallback(this, aTimeout || 1000, this._requestTimer.TYPE_ONE_SHOT);
     },
     _sendRequestOnUninstall: function addonStatus__sendRequestOnUninstall() {
@@ -312,8 +332,9 @@ const addonStatus = {
             "bn",
             "bv"
         ].forEach(function (prop) {
-            if (versionData[prop])
+            if (versionData[prop]) {
                 data2Server.push(prop + "=" + encodeURIComponent(versionData[prop]));
+            }
         });
         data2Server.push("stat=uninstall");
         url += data2Server.join("&");
@@ -334,12 +355,19 @@ const addonStatus = {
         request.send(null);
     },
     _onResponse: function addonStatus__onResponse(aRequest) {
-        if (!this._sendingLogId)
+        if (!this._sendingLogId) {
             throw new Error("Unexpected ID of sended log data.");
+        }
         if (isErrorRequest(aRequest)) {
-            this._database.execQueryAsync("UPDATE queries SET sendAttempts = sendAttempts + 1 WHERE id = :id", { id: this._sendingLogId });
+            this._database.executeQueryAsync({
+                query: "UPDATE queries SET sendAttempts = sendAttempts + 1 WHERE id = :id",
+                parameters: { id: this._sendingLogId }
+            });
         } else {
-            this._database.execQueryAsync("DELETE FROM queries WHERE id = :id", { id: this._sendingLogId });
+            this._database.executeQueryAsync({
+                query: "DELETE FROM queries WHERE id = :id",
+                parameters: { id: this._sendingLogId }
+            });
             this._lastSendTime = Date.now();
             this._clidsCreationDate = new Date();
         }
@@ -361,8 +389,9 @@ const addonStatus = {
             brandID: this._appBrandID
         };
         let clidData = this._application.clids.vendorData.clid1;
-        if (clidData && clidData.clidAndVid)
+        if (clidData && clidData.clidAndVid) {
             versionData.clid = clidData.clidAndVid;
+        }
         return versionData;
     },
     get _appType() {
@@ -399,16 +428,19 @@ const addonStatus = {
     },
     get _clidsCreationDate() {
         let dateString = this._application.preferences.get(this._consts.CLIDS_DATE_PREF_NAME, "");
-        if (!dateString && this._appType === "barff")
+        if (!dateString && this._appType === "barff") {
             dateString = this._application.core.Lib.Preferences.get("yasearch.guid.clids.creationDate", "");
-        if (!dateString)
+        }
+        if (!dateString) {
             return "";
+        }
         dateString = dateString.split(this._clidsCreationDatePrefPrefix)[1];
         return (dateString && /^\d{4}\.\d{2}\.\d{2}$/.test(dateString) ? dateString : null) || null;
     },
     set _clidsCreationDate(aDate) {
-        if (this._clidsCreationDate)
+        if (this._clidsCreationDate) {
             return;
+        }
         if (!(aDate instanceof Date) || isNaN(aDate.getTime())) {
             this._logger.error("Bad Date for clidsCreationDate setter.");
             return;

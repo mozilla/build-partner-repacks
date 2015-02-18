@@ -36,18 +36,24 @@ const aboutSupport = {
         delete this._appName;
         switch (this._application.core.CONFIG.APP.TYPE) {
         case "barff":
-            return this._appName = "yasearch";
+            this._appName = "yasearch";
+            break;
         case "vbff":
-            return this._appName = "yandex-vb";
+            this._appName = "yandex-vb";
+            break;
+        default:
+            throw new Error("Unknown application type");
         }
+        return this._appName;
     },
     get _appProtocol() {
         delete this._appProtocol;
         return this._appProtocol = this._application.core.CONFIG.APP.PROTOCOL || "yasearch";
     },
     createInstance: function AboutSupport_createInstance(outer, iid) {
-        if (outer != null)
+        if (outer !== null) {
             throw Cr.NS_ERROR_NO_AGGREGATION;
+        }
         return this.QueryInterface(iid);
     },
     QueryInterface: XPCOMUtils.generateQI([

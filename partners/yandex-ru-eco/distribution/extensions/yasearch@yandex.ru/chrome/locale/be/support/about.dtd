@@ -1,0 +1,35 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY aboutSupport.pageTitle "&product1.nom;">
+
+<!ENTITY aboutSupport.supportInfo.title "Дадзеныя для службы падтрымкі">
+<!ENTITY aboutSupport.collectingInfo.label "адбываецца падрыхтоўка дадзеных">
+<!ENTITY aboutSupport.rebuildPack.label "Абнавіць">
+<!ENTITY aboutSupport.browserScreenshot.label "здымак акна браўзера з новай укладкай">
+<!ENTITY aboutSupport.snapshotData.label "дадзеныя пра пашырэнні і наладкі">
+<!ENTITY aboutSupport.debugLog.label "адладачны лог">
+<!ENTITY aboutSupport.fastdialData.label "дадзеныя пра візуальныя закладкі">
+<!ENTITY aboutSupport.openInNewTab.label "Адчыніць у новай укладцы">
+<!ENTITY aboutSupport.savePack.label "Захаваць як...">
+
+<!ENTITY aboutSupport.columnName "Назва">
+<!ENTITY aboutSupport.columnVersion "Версія">
+<!ENTITY aboutSupport.columnEnabled "Уключана">
+<!ENTITY aboutSupport.columnId "ID">
+<!ENTITY aboutSupport.columnURL "URL">
+<!ENTITY aboutSupport.columnValue "Значэнне">
+<!ENTITY aboutSupport.columnType "Тып">
+
+<!ENTITY aboutSupport.basicsVersion "Версія">
+<!ENTITY aboutSupport.basicsDate "Дата выпуску">
+<!ENTITY aboutSupport.basicsOS "Сістэма">
+<!ENTITY aboutSupport.basicsBrowser "Браўзер">
+<!ENTITY aboutSupport.basicsUserAgent "User-Agent">
+<!ENTITY aboutSupport.basicsTheme "Тэма афармлення">
+<!ENTITY aboutSupport.basicsLightTheme "Тэма афармлення (лёгкая)">
+
+<!ENTITY aboutSupport.extensionsTitle "Пашырэнні браўзера">
+<!ENTITY aboutSupport.componentsTitle "Кампаненты">
+<!ENTITY aboutSupport.extensionPreferencesTitle "Наладкі пашырэння">
+<!ENTITY aboutSupport.browserPreferencesTitle "Наладкі браўзера">

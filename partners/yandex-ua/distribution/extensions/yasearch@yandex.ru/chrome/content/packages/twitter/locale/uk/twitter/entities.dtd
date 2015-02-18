@@ -1,0 +1,71 @@
+<!ENTITY action.hide-message-foto "приховати фото">
+<!ENTITY action.show-message-foto "показати фото">
+<!ENTITY html.network-error.net "Не вдалось підключитися до сервера">
+<!ENTITY html.network-error.aut "Не вдалося авторизуватися">
+<!ENTITY html.network-error.aut-2 "Будь ласка, перевірте з&#39;єднання">
+<!ENTITY overlay.action.direct-msg "Написати особисте повідомлення">
+<!ENTITY sad-bird.no-msg-limit "Допустиму кількість запитів перевищено. Будь ласка, почекайте 15 хвилин і спробуйте знову.">
+<!ENTITY slice.composer.desc.dm "Повідомлення для {username}">
+<!ENTITY slice.msg.error.nofriend "Повідомлення можна надсилати тільки своїм читачам">
+
+<!ENTITY twitter.tooltip.ie.lock "Дозволяє читати та надсилати повідомлення у Твіттер&#13;Будь ласка, авторизуйтеся">
+<!ENTITY twitter.tooltip.ie.good "Твіттер користувача ">
+<!ENTITY twitter.auth.ie "Твіттер / Авторизувати програму">
+
+<!ENTITY twitter.toolbarbutton.tooltip-unregistered "Дозволяє читати та надсилати повідомлення у Твіттер\nБудь ласка, авторизуйтеся">
+<!ENTITY twitter.toolbarbutton.tooltip-registered "Твіттер користувача {username}">
+
+<!ENTITY twitter.slice.title "Твіттер">
+<!ENTITY twitter.slice.logout "Вийти">
+<!ENTITY twitter.slice.throbber-tooltip "Оновити">
+<!ENTITY twitter.slice.overlay-close "Закрити">
+<!ENTITY twitter.slice.composer.cancel "Скасувати">
+<!ENTITY twitter.slice.composer.send-button.text "Надіслати">
+<!ENTITY twitter.slice.composer.shorten-button.title "Вставити скорочену адресу поточної сторінки">
+<!ENTITY twitter.slice.tab-home.title "Головна">
+<!ENTITY twitter.slice.tab-mentions.title "Згадки">
+<!ENTITY twitter.slice.tab-dms.title "Повідомлення">
+<!ENTITY twitter.slice.tab.load-more "Показати ще">
+<!ENTITY twitter.slice.tab-search.title "Пошук">
+<!ENTITY twitter.widget.name "Твіттер">
+<!ENTITY twitter.widget.setting.show-username "Показувати ім&#39;я користувача">
+<!ENTITY twitter.widget.setting.update-interval "Інтервал оновлення">
+<!ENTITY twitter.widget.setting.update-interval-units "хв">
+<!ENTITY twitter.dialog.auth.default-title "Завантаження...">
+<!ENTITY twitter.dialog.post.title "Поділитися">
+<!ENTITY twitter.dialog.share.title "Поділитися у твіттері">
+<!ENTITY slice.msg.sending "Повідомлення надсилається...">
+<!ENTITY slice.msg.sent "Повідомлення надіслано">
+<!ENTITY slice.msg.error "Помилка надсилання">
+<!ENTITY slice.msg.error.duplicate "Дублікат повідомлення">
+<!ENTITY slice.msg.error.shorten-failed "Не вдалося скоротити адресу поточної сторінки">
+<!ENTITY msg.user-info "Інформація про користувача">
+<!ENTITY msg.user-follow "Зафоловити">
+<!ENTITY msg.user-unfollow "Розфоловити">
+<!ENTITY action.share "ретвітнути">
+<!ENTITY action.reply "відповісти">
+<!ENTITY action.direct-reply "відповісти">
+<!ENTITY action.delete "видалити">
+<!ENTITY action.favorite "вибране">
+<!ENTITY sad-bird.default-text "Немає твітів">
+<!ENTITY sad-bird.no-home-1 "Зараз стрічка здається трохи пустою. Однак коли ви додасте інших користувачів, тут почнуть з&#39;являтися їхні повідомлення. Тож поспішайте ">
+<!ENTITY sad-bird.no-home-2 "знайти цікавих людей">
+<!ENTITY sad-bird.no-home-3 "! Розкажіть світу про&#160;те, що відбувається.">
+<!ENTITY sad-bird.no-mentions "Відповіді та твіти, в яких ви згадані, з&#39;являються тут.">
+<!ENTITY sad-bird.no-dms "Особистих повідомлень немає.">
+<!ENTITY sad-bird.no-search-1 "Немає твітів на запит «">
+<!ENTITY sad-bird.no-search-2 "»">
+<!ENTITY sad-bird.no-home-net "Не вдалося отримати повідомлення зі стрічки. Будь ласка, перевірте з&#39;єднання.">
+<!ENTITY sad-bird.no-mentions-net "Не вдалося отримати відповіді та твіти, в яких ви згадані. Будь ласка, перевірте мережеве з&#39;єднання.">
+<!ENTITY sad-bird.no-dms-net "Не вдалося отримати особисті повідомлення. Будь ласка, перевірте мережеве з&#39;єднання.">
+<!ENTITY sad-bird.no-search-net-1 "Не вдалося отримати твіти на запит «">
+<!ENTITY sad-bird.no-search-net-2 "». Будь ласка, перевірте мережеве з&#39;єднання.">
+<!ENTITY overlay.view-fool-profile-link "переглянути профіль повністю">
+<!ENTITY overlay.action.follow "підписатися">
+<!ENTITY overlay.action.following "підписані">
+<!ENTITY overlay.action.unfollow "відписатися">
+<!ENTITY overlay.tweet-count "записи">
+<!ENTITY overlay.friends-count "підписки">
+<!ENTITY overlay.followers-count "підписники">
+<!ENTITY overlay.lists-count "списки">
+<!ENTITY settings.show_notifications "Показувати сповіщення">

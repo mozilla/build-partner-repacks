@@ -1,0 +1,19 @@
+<!ENTITY widget.name "Arama kutusu">
+
+<!ENTITY cmd_engineManager.label "Arama eklentileri yönetimi...">
+
+<!ENTITY searchbox.checkbox.site.label "Bu sitede bul">
+<!ENTITY searchbox.button.label "Bul">
+<!ENTITY searchbox.button.context.label "&#34;Bul&#34; butonunu gizle">
+<!ENTITY searchbox.resizer.tooltiptext "Arama kutusu metin yazı tipini değiştir">
+
+<!ENTITY searchbox.highlighter.tooltiptext "Bulunanların belirginleştirilmesi">
+<!ENTITY searchbox.highlighter.highlight.label "Bulunanları belirginleştirmeyi aç">
+<!ENTITY searchbox.highlighter.teleport.label "İlk belirginleştirilen sözcüğe doğru aşağı kaydır">
+<!ENTITY searchbox.highlighter.serp.label "Bulunan sayfada sorgulanan sözcüğü belirginleştir">
+
+<!ENTITY searchbox.preferences.history.label "Arama geçmişi">
+<!ENTITY searchbox.preferences.history.enable.label "Arama geçmişini sakla">
+<!ENTITY searchbox.preferences.history.clear.label "Temizle">
+<!ENTITY searchbox.preferences.highlighter.enabled.label "Bulunanları belirginleştirme &#171;butonunu&#187; göster">
+<!ENTITY searchbox.preferences.show.site.search.label "Bu sitede &#171;arama seçeneğini&#187; göster">

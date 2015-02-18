@@ -1,0 +1,5 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace html url(http://www.w3.org/1999/xhtml);#feeds-add-group{-moz-binding:url(feeds.xml#textbox-withclose)}
+dialog{-moz-appearance:window;background-color:-moz-dialog;color:-moz-dialogtext;width:36em;font:message-box}
+label{cursor:default;margin-top:1px;margin-bottom:2px;-moz-margin-start:6px;-moz-margin-end:5px}
+html|input.input-with-close-input{margin:4px 6px 4px -2px;padding-right:24px}
+.close-input{list-style-image:url(../../icons/close.png);cursor:pointer;height:16px;width:16px;margin-left:-24px}

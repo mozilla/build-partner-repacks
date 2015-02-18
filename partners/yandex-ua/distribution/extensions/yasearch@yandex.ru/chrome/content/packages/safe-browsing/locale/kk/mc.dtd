@@ -1,0 +1,10 @@
+﻿<!ENTITY mc.widget.name "Дәл мекен-жай бойынша">
+
+<!ENTITY mc.widget.cancel.label "Сыбырсөзді жабу">
+<!ENTITY mc.widget.changedFrom.label "">
+<!ENTITY mc.widget.changedTo.label "">
+<!ENTITY mc.widget.changedTo2.label "болып түзетілді">
+<!ENTITY mc.widget.close.label "Жабу">
+<!ENTITY mc.widget.go.label "Өту">
+<!ENTITY mc.widget.removeRule.label "Ережені жою">
+<!ENTITY mc.widget.suggestion.label "Мүмкін сіздің ашқыңыз келгені">

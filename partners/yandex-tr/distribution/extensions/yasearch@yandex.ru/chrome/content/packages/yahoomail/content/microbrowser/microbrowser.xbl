@@ -1,0 +1,47 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings SYSTEM "/yahoomail.dtd"><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <binding id="microbrowser">
+        <content>
+            <xul:vbox flex="1">
+                <xul:browser anonid="browser" disablehistory="true" disablesecurity="true" flex="1" type="content-primary"/>
+            </xul:vbox>
+        </content>
+        <implementation>
+            <field name="app">window.application</field>
+            <field name="browser">document.getAnonymousElementByAttribute(this, "anonid", "browser")</field>
+            <constructor>
+                <![CDATA[    var args = window.arguments[0];
+    var browser = this.browser;
+    browser.docShell.allowPlugins = false;
+    setTimeout(function () {
+        browser.loadURI(args.url);
+    }, 100);
+    if (args.progressListener) {
+        browser.addProgressListener(args.progressListener, args.notifyMask);
+    }
+    var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+    var finalizeObserver = {
+        QueryInterface: function () {
+            return this;
+        },
+        observe: function (subject, topic, data) {
+            if (topic == "finalize") {
+                window.application.notify("auth-window-closed");
+                window.authwindowclosed = true;
+                window.close();
+            }
+        }
+    };
+    observerService.addObserver(finalizeObserver, "finalize", false);
+    window.addEventListener("close", function () {
+        if (!window.authwindowclosed) {
+            window.application.notify("auth-window-closed");
+            window.authwindowclosed = true;
+        }
+    }, false);]]></constructor>
+
+
+            <destructor><![CDATA[]]></destructor>
+        </implementation>
+    </binding>
+</bindings>

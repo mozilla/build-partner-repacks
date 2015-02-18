@@ -1,0 +1,14 @@
+<!ENTITY powerfm.widget.name "Power Radios">
+
+<!ENTITY powerfm.update.browser.unsupported "Your browser version doesn&#39;t support Power Radios.">
+<!ENTITY powerfm.update.browser.needupdate "Update to latest version of browser.">
+<!ENTITY powerfm.update.browser.link "Update browser">
+
+<!ENTITY powerfm.api.unavailable "Power Radios is temporarily unavailable due to technical reasons.">
+<!ENTITY powerfm.try.later "Try again later.">
+
+<!ENTITY powerfm.internet.unavailable "No internet connection.">
+
+<!ENTITY extension.title "Radio in Yandex.Elements">
+<!ENTITY powerfm.name "Power Radios">
+<!ENTITY extension.description "Listen to Power radio-stations right in your browser panel using Yandex.Elements">

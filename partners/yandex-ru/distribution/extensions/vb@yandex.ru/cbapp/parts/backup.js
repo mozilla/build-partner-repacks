@@ -68,8 +68,9 @@ const backup = {
     restore: function Backup_restore(fileName) {
         let backupFile = this._backupsDir;
         backupFile.append(fileName);
-        if (!backupFile.exists() || !backupFile.isFile() || !backupFile.isReadable())
+        if (!backupFile.exists() || !backupFile.isFile() || !backupFile.isReadable()) {
             throw new Error("No such backup file: " + fileName);
+        }
         let json = fileutils.jsonFromFile(backupFile);
         let thumbs = {};
         let newThumbs = {};
@@ -107,8 +108,10 @@ const backup = {
         }, this);
     },
     syncThumbs: function Backup_syncThumbs() {
-        if (this._throttleTimer)
+        this._logger.trace("Backup_syncThumbs called");
+        if (this._throttleTimer) {
             this._throttleTimer.cancel();
+        }
         this._throttleTimer = new sysutils.Timer(this._dumpThumbs.bind(this), SYNC_THROTTLE_TIMEOUT_MS);
     },
     observe: function Backup_observe(aSubject, aTopic, aData) {
@@ -182,7 +185,7 @@ const backup = {
                                 });
                             } else {
                                 self._database.executeQueryAsync({
-                                    query: "INSERT INTO thumbs (url, title, backgroundImage, backgroundColor, favicon, insertTimestamp, screenshotColor, statParam) " + "VALUES (:url, :title, '', :backgroundColor, :favicon, :ts, :screenshotColor, :statParam)",
+                                    query: "INSERT INTO thumbs (url, title, backgroundImage, backgroundColor, " + "favicon, insertTimestamp, screenshotColor, statParam) " + "VALUES (:url, :title, '', :backgroundColor, " + ":favicon, :ts, :screenshotColor, :statParam)",
                                     parameters: {
                                         url: thumbData.source,
                                         title: thumbData.thumb.title || null,
@@ -203,7 +206,7 @@ const backup = {
                                             parameters: { url: thumbData.source },
                                             callback: function (rowsData, storageError) {
                                                 if (!storageError) {
-                                                    self._logger.debug("Thumb (URL: " + thumbData.source + ") was inserted into DB with rowid: " + rowsData[0].rowid);
+                                                    self._logger.debug("Thumb (URL: " + thumbData.source + ") was inserted into DB " + "with rowid: " + rowsData[0].rowid);
                                                 }
                                                 callback(storageError, rowsData[0].rowid);
                                             }
@@ -234,11 +237,10 @@ const backup = {
         }, this);
         async.parallel(thumbsTasks, function (storageError, thumbs) {
             if (storageError) {
-                let errorMsg = strutils.formatString("Get thumbs rowid error: %1 (code %2)", [
+                self._logger.error(strutils.formatString("Get thumbs rowid error: %1 (code %2)", [
                     storageError.message,
                     storageError.result
-                ]);
-                self._logger.error(errorMsg);
+                ]));
                 return;
             }
             thumbsRowIds = thumbs;
@@ -265,11 +267,10 @@ const backup = {
                     }
                     async.parallel(replaceShownTasks, function (storageError) {
                         if (storageError) {
-                            let errorMsg = strutils.formatString("Replace shown error: %1 (code %2)", [
+                            self._logger.error(strutils.formatString("Replace shown error: %1 (code %2)", [
                                 storageError.message,
                                 storageError.result
-                            ]);
-                            self._logger.error(errorMsg);
+                            ]));
                             return;
                         }
                         self._logger.trace("Thumbs structure synced");
@@ -292,11 +293,12 @@ const backup = {
             };
         });
         async.parallel(tasks, function Backup__initDatabase_onParallelReady(storageError, results) {
-            if (storageError)
+            if (storageError) {
                 throw new Error(strutils.formatString("Dump error: %1 (code %2)", [
                     storageError.message,
                     storageError.result
                 ]));
+            }
             let file = self._backupsDir;
             file.append(Date.now() + ".json");
             fileutils.jsonToFile(results, file);

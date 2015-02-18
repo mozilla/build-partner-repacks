@@ -1,0 +1,4 @@
+<!ENTITY package.counters.upd-interval.label "Güncelleme sıklığı">
+<!ENTITY package.counters.upd-interval.units "dk.">
+
+<!ENTITY package.logout.noprompt.label "Do not confirm log out">

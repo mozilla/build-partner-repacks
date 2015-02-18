@@ -8,15 +8,41 @@ const {
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const GLOBAL = this;
-Cu.import("resource://gre/modules/PlacesUtils.jsm");
-Cu.import("resource:///modules/PlacesUIUtils.jsm");
-const TYPE_BOOKMARK = PlacesUtils.bookmarks.TYPE_BOOKMARK;
-const TYPE_FOLDER = PlacesUtils.bookmarks.TYPE_FOLDER;
+XPCOMUtils.defineLazyGetter(this, "PlacesUtils", function () {
+    return Cu.import("resource://gre/modules/PlacesUtils.jsm", {}).PlacesUtils;
+});
+XPCOMUtils.defineLazyGetter(this, "PlacesUIUtils", function () {
+    return Cu.import("resource:///modules/PlacesUIUtils.jsm", {}).PlacesUIUtils;
+});
 const bookmarksStat = {
     init: function bookmarksStat_init(application) {
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         this._application = application;
         this._logger = application.getLogger("BookmarksStat");
+        this._initDelayedTimer = new sysutils.Timer(this._initDelayed.bind(this), 5 * 1000);
+    },
+    finalize: function bookmarksStat_finalize() {
+        if (this._initDelayedTimer) {
+            this._initDelayedTimer.cancel();
+            this._initDelayedTimer = null;
+        } else {
+            try {
+                PlacesUtils.bookmarks.removeObserver(this);
+            } catch (e) {
+            }
+        }
+        for (let [
+                    timerName,
+                    timer
+                ] in Iterator(this._timers)) {
+            timer.cancel();
+            delete this._timers[timerName];
+        }
+        this._application = null;
+        this._logger = null;
+    },
+    _initDelayed: function bookmarksStat__initDelayed() {
+        this._initDelayedTimer = null;
         PlacesUtils.bookmarks.addObserver(this, true);
         let handleBookmarkCommand = function handleBookmarkCommand() {
             try {
@@ -39,21 +65,6 @@ const bookmarksStat = {
                 return originalMethod.apply(PlacesUIUtils, arguments);
             };
         });
-    },
-    finalize: function bookmarksStat_finalize() {
-        try {
-            PlacesUtils.bookmarks.removeObserver(this);
-        } catch (e) {
-        }
-        for (let [
-                    timerName,
-                    timer
-                ] in Iterator(this._timers)) {
-            timer.cancel();
-            delete this._timers[timerName];
-        }
-        this._application = null;
-        this._logger = null;
     },
     SEND_WAIT_TIMEOUT: 5000,
     onItemAdded: function bookmarksStat_onItemAdded(itemId, parentId, index, itemType, uri, title, dateAdded, guid, parentGuid) {
@@ -102,10 +113,10 @@ const bookmarksStat = {
     _onBookmarksModified: function bookmarksStat__onBookmarksModified(action, itemType) {
         let type;
         switch (itemType) {
-        case TYPE_BOOKMARK:
+        case this.TYPE_BOOKMARK:
             type = "bm";
             break;
-        case TYPE_FOLDER:
+        case this.TYPE_FOLDER:
             type = "bmfolder";
             break;
         default:
@@ -125,6 +136,14 @@ const bookmarksStat = {
         };
         let place = COMMAND_PLACES[view.id || view.viewElt && view.viewElt.id] || "click";
         this._sendRequest("bmclick." + place);
+    },
+    get TYPE_BOOKMARK() {
+        delete this.TYPE_BOOKMARK;
+        return this.TYPE_BOOKMARK = PlacesUtils.bookmarks.TYPE_BOOKMARK;
+    },
+    get TYPE_FOLDER() {
+        delete this.TYPE_FOLDER;
+        return this.TYPE_FOLDER = PlacesUtils.bookmarks.TYPE_FOLDER;
     },
     _logAction: function bookmarksStat__logAction(param) {
         let group = false;
@@ -150,5 +169,6 @@ const bookmarksStat = {
     },
     _timers: Object.create(null),
     _application: null,
-    _logger: null
+    _logger: null,
+    _initDelayedTimer: null
 };

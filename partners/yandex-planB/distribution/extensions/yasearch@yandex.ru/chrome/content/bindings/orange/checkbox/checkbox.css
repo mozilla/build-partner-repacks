@@ -1,0 +1,12 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);*{-moz-appearance:none!important;border:0}
+checkbox{-moz-box-align:center;margin:2px 4px;padding-top:1px;padding-bottom:1px;-moz-padding-start:4px;-moz-padding-end:2px}
+.checkbox-label-box{-moz-margin-start:2px;border:1px solid transparent;padding:0 1px 2px;-moz-box-align:center}
+.checkbox-icon{-moz-margin-end:2px;border:0}
+.checkbox-label{margin:0!important;white-space:nowrap}
+.checkbox-label:empty{display:none}
+checkbox>.checkbox-check{background:0 0;list-style-image:url(checkbox.png);-moz-image-region:rect(19px,19px,38px,0);min-height:19px;min-width:19px;max-height:19px;max-width:19px}
+checkbox[disabled=true]>.checkbox-check{-moz-image-region:rect(0,19px,19px,0)!important}
+checkbox:hover>.checkbox-check,checkbox:active>.checkbox-check{-moz-image-region:rect(38px,19px,57px,0)}
+checkbox[checked=true]>.checkbox-check{-moz-image-region:rect(19px,38px,38px,19px)}
+checkbox[checked=true][disabled=true]>.checkbox-check{-moz-image-region:rect(0,38px,19px,19px)!important;background-image:none!important}
+checkbox[checked=true]:hover>.checkbox-check,checkbox[checked=true]:active>.checkbox-check{-moz-image-region:rect(38px,38px,57px,19px)}

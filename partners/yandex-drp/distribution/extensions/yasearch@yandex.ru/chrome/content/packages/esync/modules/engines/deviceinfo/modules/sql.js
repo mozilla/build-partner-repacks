@@ -1,0 +1,48 @@
+let EXPORTED_SYMBOLS = ["STORAGE_QUERIES"];
+let STORAGE_QUERIES = {
+    INIT_ENGINE_TABLE: [
+        "CREATE TABLE IF NOT EXISTS Deviceinfo ( ",
+        "id_string VARCHAR PRIMARY KEY, ",
+        "parent_id_string VARCHAR, ",
+        "originator_cache_guid VARCHAR, ",
+        "version INTEGER, ",
+        "ctime DATETIME, ",
+        "mtime DATETIME, ",
+        "folder BOOLEAN, ",
+        "cache_guid VARCHAR, ",
+        "client_name VARCHAR, ",
+        "device_type INTEGER, ",
+        "sync_user_agent VARCHAR, ",
+        "chrome_version VARCHAR ",
+        ");"
+    ].join(""),
+    INSERT_DATA: [
+        "INSERT OR REPLACE INTO Deviceinfo (",
+        "id_string, ",
+        "parent_id_string, ",
+        "originator_cache_guid, ",
+        "version, ",
+        "ctime, ",
+        "mtime, ",
+        "folder, ",
+        "cache_guid, ",
+        "client_name, ",
+        "device_type, ",
+        "sync_user_agent, ",
+        "chrome_version ",
+        ") VALUES (",
+        ":id_string, ",
+        ":parent_id_string, ",
+        ":originator_cache_guid, ",
+        ":version, ",
+        ":ctime, ",
+        ":mtime, ",
+        ":folder, ",
+        ":cache_guid, ",
+        ":client_name, ",
+        ":device_type, ",
+        ":sync_user_agent, ",
+        ":chrome_version ",
+        ");"
+    ].join("")
+};

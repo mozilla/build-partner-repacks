@@ -1,0 +1,5 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarpaletteitem toolbaritem[cb-app=yasearch]{-moz-binding:url(../bindings/ui/widget.xbl#widget-customize-old)!important}
+toolbarpaletteitem>toolbaritem[cb-app=yasearch] image[src=""]{list-style-image:url(../dialogs/package-management/components/images/widget.png)}
+toolbarpaletteitem>toolbaritem[cb-app=yasearch] image{height:16px}
+toolbarpaletteitem>toolbaritem[cb-app=yasearch] label{max-width:12em}
+toolbaritem[cb-app=yasearch] toolbarbutton{-moz-binding:url("")!important}

@@ -1,14 +1,14 @@
 resource    yandex-vb-mod		modules/
 resource    yandex-vb-app		cbapp/
 
-content     yandex-vb       jar:chrome/yandex-vb.jar!/content/
-skin        yandex-vb       classic/1.0    jar:chrome/yandex-vb.jar!/skin/classic/
+content     yandex-vb       chrome/content/
+skin        yandex-vb       classic/1.0    chrome/skin/classic/
 
 overlay     chrome://browser/content/browser.xul            chrome://yandex-vb/content/overlay/browser.xul
 
-locale      yandex-vb       en-US   jar:chrome/yandex-vb.jar!/locale/en-US/
-locale      yandex-vb       ru      jar:chrome/yandex-vb.jar!/locale/ru/
-locale      yandex-vb       tr      jar:chrome/yandex-vb.jar!/locale/tr/
+locale      yandex-vb       en-US   chrome/locale/en-US/
+locale      yandex-vb       ru      chrome/locale/ru/
+locale      yandex-vb       tr      chrome/locale/tr/
 
 ####################################################################
 # Components registration
@@ -17,10 +17,3 @@ locale      yandex-vb       tr      jar:chrome/yandex-vb.jar!/locale/tr/
 component {1ad918b4-4729-11e1-ab8a-dff4577f00a5} components/core.js
 contract @yandex.ru/vb-core;1 {1ad918b4-4729-11e1-ab8a-dff4577f00a5}
 category profile-after-change YandexVBCore @yandex.ru/vb-core;1
-
-####################################################################
-
-####################################################################
-# Profiler:
-# export YAVB_DEBUG_PROFILER_RUN=1
-# chrome://yandex-vb/content/logs/logs.xul

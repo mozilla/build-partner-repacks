@@ -1,0 +1,19 @@
+<!ENTITY wgt.quotes.name "Каціроўкі">
+<!ENTITY wgt.quotes.default-quote-id "1">
+
+<!ENTITY wgt.quotes.refresh "Абнавіць дадзеныя каціроўкі">
+<!ENTITY wgt.quotes.copy "Скапіраваць курс">
+<!ENTITY wgt.quotes.change "Змяніць каціроўку">
+<!ENTITY wgt.quotes.delete "Выдаліць каціроўку">
+<!ENTITY wgt.quotes.add "Дабавіць новую каціроўку">
+<!ENTITY wgt.quotes.nodata "Няма дадзеных">
+
+<!ENTITY wgt.quotes.tooltip.today "Сёння">
+<!ENTITY wgt.quotes.tooltip.tomorrow "Заўтра">
+<!ENTITY wgt.quotes.tooltip.yesterday "Учора">
+
+<!ENTITY wgt.quotes.settings.id.label "Каціроўка">
+<!ENTITY wgt.quotes.settings.autodetect "Вызначаць аўтаматычна">
+
+<!ENTITY wgt.quotes.settings.interval.label "Інтэрвал абнаўлення">
+<!ENTITY wgt.quotes.settings.min.label "хв.">

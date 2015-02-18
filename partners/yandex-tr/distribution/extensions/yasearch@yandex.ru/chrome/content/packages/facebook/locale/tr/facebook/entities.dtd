@@ -1,0 +1,58 @@
+<!ENTITY notify.friend_request "arkadaşlık isteği gönderdi">
+<!ENTITY notify.friend_request_f "arkadaşlık isteği gönderdi">
+
+<!ENTITY notify.friends "{N} arkadaşlık isteği">
+<!ENTITY plural.rule "0">
+<!ENTITY facebook.widget.name "Facebook">
+<!ENTITY facebook.settings.label "Güncelleme aralığı">
+<!ENTITY facebook.settings.label_after "dk.">
+<!ENTITY facebook.settings.friend "Panelde &#34;Arkadaşlar&#34; butonunu göster">
+<!ENTITY facebook.settings.messages "Panelde &#34;Yeni mesaj&#34; butonunu göster">
+<!ENTITY facebook.settings.notifications "Panelde &#34;Bildirimler&#34; butonunu göster">
+<!ENTITY facebook.settings.share "Panelde &#34;Paylaş&#34; butonunu göster">
+<!ENTITY facebook.settings.msgsys "Yeni mesaj sistemini kullan (Facebook Messages)">
+<!ENTITY facebook.settings.hideallbtn "Oturum açık değilken ilave butonları gizle">
+<!ENTITY menu.refresh "Bilgileri güncelle">
+<!ENTITY menu.lenta "Haber kaynağı">
+<!ENTITY menu.wall "Duvar">
+<!ENTITY menu.friends "Arkadaş listesi">
+<!ENTITY menu.messages "Mesajlar">
+<!ENTITY menu.notif "Bildirimler">
+<!ENTITY menu.share "Bağlantıyı paylaş">
+<!ENTITY menu.setstatus "Durumunu güncelle">
+<!ENTITY menu.fotovideo "Fotoğraflar/Videolar">
+<!ENTITY menu.notes "Notlar">
+<!ENTITY menu.groups "Gruplar">
+<!ENTITY menu.events "Etkinlikler">
+<!ENTITY menu.logout "Çıkış">
+<!ENTITY please.auth "Lütfen oturum açın">
+<!ENTITY main.tooltip "Facebook profilim">
+<!ENTITY inet.error.main "Maalesef güncelleme bilgisine ulaşılamadı">
+<!ENTITY friend.tooltip "Facebook arkadaşlık istekleri">
+<!ENTITY inet.error.friend "Maalesef istek bilgisine ulaşılamadı">
+<!ENTITY menu.friend.req "Gelen istekler {username}">
+<!ENTITY messages.tooltip "Yeni Facebook mesajı">
+<!ENTITY inet.error.msg "Maalesef yeni mesaj bilgisine ulaşılamadı">
+<!ENTITY menu.message.from "Gelen mesajlar {username}">
+<!ENTITY notif.tooltip "Facebook bildirimleri">
+<!ENTITY inet.error.notif "Maalesef bildirim bilgisine ulaşılamadı">
+<!ENTITY share.tooltip "Linki Facebook profilinde paylaş">
+<!ENTITY user1 "kullanıcı">
+<!ENTITY user2 "Kullanıcı">
+<!ENTITY error.connect "Lütfen ağ bağlantısını kontrol edin">
+<!ENTITY error.auth "Oturum açılamadı">
+<!ENTITY error.net "Facebook sunucusuna bağlanılamadı">
+<!ENTITY error.unk "Bilinmeyen hata">
+
+<!ENTITY notify.messages "{N} yeni posta">
+
+<!ENTITY notify.notifications "{N} yeni bildirim">
+<!ENTITY settings.show_notifications "Bildirimleri göster">
+<!ENTITY notify.fiends "{N} arkadaşlık isteği;{N} arkadaşlık isteği;{N} arkadaşlık isteği">
+<!ENTITY notify.messages.foto "Size fotoğraf gönderdi">
+<!ENTITY notify.messages.foto_f "Size fotoğraf gönderdi">
+<!ENTITY notify.messages_file "Size mesaj gönderdi">
+<!ENTITY notify.messages_file_f "Size mesaj gönderdi">
+<!ENTITY settings.show_friend_notifications "Arkadaşlık istekleri ile ilgili bildirimleri göster">
+<!ENTITY settings.show_message_notifications "Mesajlarla ilgili bildirimleri göster">
+<!ENTITY settings.show_notification_notifications "Diğer etkinlikler ile ilgili bildirimleri göster">

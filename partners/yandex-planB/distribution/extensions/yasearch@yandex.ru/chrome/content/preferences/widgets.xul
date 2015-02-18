@@ -1,0 +1,52 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="preferences.css"?>
+<?xml-stylesheet href="controls.css"?>
+
+<!DOCTYPE overlay [
+<!ENTITY % preferencesDTD SYSTEM "../../../locale/preferences/preferences.dtd">
+%preferencesDTD;
+]>
+
+<overlay id="prefpane-widgets-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <prefpane flex="1" id="prefpane-widgets">
+        <vbox class="prefWindow-dlgbuttons-hack"/>
+
+        <preferences/>
+
+        <commandset commandupdater="true" events="richlistbox-select" id="widgets-lists-commands" oncommandupdate="Preferences.checkWidgetsControls();" targets="registered-widgets-list,active-widgets-list"/>
+
+        <vbox class="container" flex="1">
+            <grid flex="1">
+                <columns flex="1">
+                    <column style="width:15em"/>
+                    <column/>
+                    <column flex="1"/>
+                    <column/>
+                </columns>
+                <rows flex="1">
+                    <row flex="1">
+                        <vbox>
+                            <label class="list-title" value="&registered.widgets.list.title;"/>
+                            <richlistbox flex="1" id="registered-widgets-list" seltype="multiple"/>
+                        </vbox>
+                        <vbox class="buttons-container">
+                            <button class="minimal arrow-right" command="cmd_addWidgets" observes="canAddWidgetsBroadcaster" tooltiptext="&add.widgets.label;"/>
+                            <button class="minimal arrow-left" command="cmd_remove" observes="canRemoveWidgetsBroadcaster" tooltiptext="&remove.widgets.label;"/>
+                        </vbox>
+                        <vbox>
+                            <label class="list-title" value="&active.widgets.list.title;"/>
+                            <richlistbox flex="1" id="active-widgets-list" seltype="multiple"/>
+                        </vbox>
+                        <vbox class="buttons-container">
+                            <button class="minimal arrow-up" command="cmd_moveWidgetsUp" observes="canMoveWidgetsUpBroadcaster" tooltiptext="&move.widgets.up.label;"/>
+                            <button class="minimal arrow-down" command="cmd_moveWidgetsDown" observes="canMoveWidgetsDownBroadcaster" tooltiptext="&move.widgets.down.label;"/>
+                        </vbox>
+                    </row>
+                </rows>
+            </grid>
+        </vbox>
+
+    </prefpane>
+
+</overlay>

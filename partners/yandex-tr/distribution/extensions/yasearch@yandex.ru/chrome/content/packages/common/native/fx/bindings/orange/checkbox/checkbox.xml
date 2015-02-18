@@ -1,0 +1,9 @@
+<?xml version='1.0'?>
+<bindings xmlns="http://www.mozilla.org/xbl">
+    <binding extends="chrome://global/content/bindings/checkbox.xml#checkbox" id="checkbox" inheritstyle="false">
+        <resources>
+            <stylesheet src="checkbox.css"/>
+            <image src="checkbox.png"/>
+        </resources>
+    </binding>
+</bindings>

@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+        <title></title>
+        <style type="text/css">
+        html,body{height:100%;margin:0;padding:0;border:0;background-color:#f9f9f9;}
+        div{
+            position: absolute;
+            margin:0;padding:0;
+            width: 100%; left: 0;
+            top: 50%;
+            margin-top: -20px;
+            text-align: center;
+        }
+        </style>
+        <script type="text/javascript">
+        function bodyload() {
+            document.getElementById('id_errormsg').innerHTML = (mbAdapter.error && (mbAdapter.error.status < 200))
+                        ? widgetAdapter.text('error.auth.net') + '<br />' + widgetAdapter.text('error.connect')
+                        : widgetAdapter.text('error.auth');
+        }
+        </script>
+    </head>
+    <body onload="bodyload();"><div id="id_errormsg"></div></body>
+</html>

@@ -1,0 +1,19 @@
+<!ENTITY widget.name "Search field">
+
+<!ENTITY cmd_engineManager.label "Manage search plug-ins...">
+
+<!ENTITY searchbox.checkbox.site.label "Search in this website">
+<!ENTITY searchbox.button.label "Search">
+<!ENTITY searchbox.button.context.label "Hide &#34;Search&#34; button">
+<!ENTITY searchbox.resizer.tooltiptext "Adjust text search field width">
+
+<!ENTITY searchbox.highlighter.tooltiptext "Highlight">
+<!ENTITY searchbox.highlighter.highlight.label "Highlight on">
+<!ENTITY searchbox.highlighter.teleport.label "Scroll up to the first highlighted word">
+<!ENTITY searchbox.highlighter.serp.label "Highlight query words on found page">
+
+<!ENTITY searchbox.preferences.history.label "Search history">
+<!ENTITY searchbox.preferences.history.enable.label "Store search history">
+<!ENTITY searchbox.preferences.history.clear.label "Clear">
+<!ENTITY searchbox.preferences.highlighter.enabled.label "&#171;Highlight&#187; button">
+<!ENTITY searchbox.preferences.show.site.search.label "&#171;Search this website&#187; option">

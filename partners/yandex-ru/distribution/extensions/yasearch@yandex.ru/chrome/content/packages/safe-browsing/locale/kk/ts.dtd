@@ -1,0 +1,10 @@
+﻿<!ENTITY typosquatting.component.name "Фишингтен қорғану">
+
+<!ENTITY typosquatting.notification.actionbutton.leave.label "Сайттан шығу">
+<!ENTITY typosquatting.notification.actionbutton.transfer.label "Өту">
+<!ENTITY typosquatting.notification.closebutton.label "Жабу">
+<!ENTITY typosquatting.notification.closebutton.tooltip "Хабарландыруды жасыру">
+<!ENTITY typosquatting.notification.warning "Абайлаңыз! Сайт алаяқтықпен байланысты болуы мүмкін. Шынайы сайтқа өтуді қалайсыз ба?">
+<!ENTITY typosquatting.notification.warningnouri "Абайлаңыз! Сайт алаяқтықпен байланысты болуы мүмкін.">
+<!ENTITY typosquatting.notification.warning.end " сайтына өтуді қалайсыз ба?">
+<!ENTITY typosquatting.notification.warning.start "Абайлаңыз! Сайт алаяқтықпен байланысты болуы мүмкін. Шынайы">

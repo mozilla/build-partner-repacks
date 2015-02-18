@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preset format-version="2.2" version="8.8">
+    <url>https://download.yandex.ru/bar/wwt/presets/tb.xml</url>
+    <author>Yandex</author>
+    <name>Yandex.Elements</name>
+    <packages>
+        <package browser="firefox" file="yahoomail.zip" id="http://bar-widgets.yandex.ru/packages/approved/126/manifest.xml" platform-min="7" version="3.1.1"/>
+        <package browser="firefox" file="news.zip" id="http://bar-widgets.yandex.ru/packages/approved/127/manifest.xml" platform-min="7" version="3.0"/>
+        <package browser="firefox" file="games.zip" id="http://bar-widgets.yandex.ru/packages/approved/130/manifest.xml" platform-min="7" version="3.0"/>
+        <package browser="firefox" file="facebook.zip" id="http://bar-widgets.yandex.ru/packages/approved/131/manifest.xml" platform-min="7" version="4.3.1"/>
+        <package browser="firefox" file="hotmail.zip" id="http://bar-widgets.yandex.ru/packages/approved/134/manifest.xml" platform-min="7" version="3.1.1"/>
+        <package browser="firefox" file="gmail.zip" id="http://bar-widgets.yandex.ru/packages/approved/135/manifest.xml" platform-min="7" version="5.2.1"/>
+        <package browser="firefox" file="twitter.zip" id="http://bar-widgets.yandex.ru/packages/approved/136/manifest.xml" platform-min="10" version="4.1.1"/>
+        <package browser="firefox" file="safe-browsing.zip" id="http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml" platform-min="22" version="3.1.0"/>
+        <package browser="firefox" file="browseroffer.zip" id="http://bar-widgets.yandex.ru/packages/approved/286/manifest.xml" platform-min="22" version="1.5.3"/>
+        <package browser="firefox" file="powerfm.zip" id="http://bar-widgets.yandex.ru/packages/approved/287/manifest.xml" platform-min="21" version="1.1.0"/>
+        <package browser="firefox" file="yadisk.zip" id="http://bar-widgets.yandex.ru/packages/approved/288/manifest.xml" platform-min="25" version="1.0.0"/>
+    </packages>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#logo" important="true" visible="true"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#mail" important="true"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#town" important="true">
+        <setting force="true" name="show-name">false</setting>
+    </widget>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/288/manifest.xml#yadisk" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/287/manifest.xml#powerfm" important="true"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/131/manifest.xml#facebook" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/134/manifest.xml#hotmail" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/126/manifest.xml#yahoomail" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/135/manifest.xml#gmail" important="true" visible="auto"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#quote" important="true" visible="auto">
+        <setting name="region-id">983</setting>
+    </widget>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/136/manifest.xml#twitter" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/127/manifest.xml#news" important="true" visible="auto"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#spring" visible="false"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/130/manifest.xml#games" important="true" visible="auto"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/284/manifest.xml#esync"/>
+    <plugin id="http://bar.yandex.ru/packages/yandexbar#translator"/>
+    <plugin id="http://bar.yandex.ru/packages/yandexbar#pagetranslator">
+        <setting name="tlang">tr</setting>
+    </plugin>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/283/manifest.xml#altsearch"/>
+    <plugin id="http://bar.yandex.ru/packages/yandexbar#textonly"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml#mc"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml#typosquatting"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/286/manifest.xml#browseroffer"/>
+    <plugin id="http://bar.yandex.ru/packages/yandexbar#geolocation"/>
+</preset>

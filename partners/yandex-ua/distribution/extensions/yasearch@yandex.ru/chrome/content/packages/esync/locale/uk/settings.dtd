@@ -1,0 +1,6 @@
+<!ENTITY esync.open.barsync.page "Відкрити сторінку налаштувань">
+
+<!ENTITY esync.panel.sync.outdated.header "Синхронізація">
+<!ENTITY esync.panel.sync.outdated.message "дані авторизації застаріли">
+<!ENTITY esync.panel.sync.outdated.button.label "Виправити">
+<!ENTITY esync.panel.close.tooltip "Закрити сповіщення">

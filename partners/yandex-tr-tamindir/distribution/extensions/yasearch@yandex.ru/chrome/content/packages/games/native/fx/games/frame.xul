@@ -1,0 +1,166 @@
+<?xml version='1.0'?> 
+<window flex="1" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <box flex="1" style="padding: 0; margin: 0;">
+      <script type="application/x-javascript"><![CDATA[
+	  
+		function setIntr(func, ms) {
+			var tmr = Components.classes["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer);
+			tmr.initWithCallback(func, ms, Components.interfaces.nsITimer.TYPE_REPEATING_PRECISE);
+			return tmr;
+		};
+	  
+		function resizeEmbed(doc) {
+			if(!doc){return false;}
+			var emb = doc.getElementsByTagName('embed')[0];
+			if(!emb){return false;}
+			var body = doc.getElementsByTagName('body')[0];
+			body.style.backgroundColor = '#ffffff';
+
+			body.style.margin = '0';
+			body.style.padding = '0';
+
+			emb.style.backgroundColor = '#ffffff';
+			emb.setAttribute('allowscriptaccess', 'always');
+			emb.setAttribute('wmode', 'window');
+			emb.setAttribute('width', '100%');
+			emb.setAttribute('height', '100%');
+			//*
+				var epn = emb.parentNode;
+				var bef = emb.nextSibling;
+				epn.removeChild(emb);
+				epn.insertBefore(emb, bef);
+				
+			return true;
+		}
+	  
+              const {
+                  classes: Cc,
+                  interfaces: Ci,
+                  results: Cr,
+                  utils: Cu
+              } = Components;
+
+              var mainWindow = window.QueryInterface(Ci.nsIInterfaceRequestor)
+                  .getInterface(Ci.nsIWebNavigation)
+                  .QueryInterface(Ci.nsIDocShellTreeItem)
+                  .rootTreeItem
+                  .QueryInterface(Ci.nsIInterfaceRequestor)
+                  .getInterface(Ci.nsIDOMWindow);
+
+              let url      = mainWindow._selectedGameUrl;
+              let errorURL = mainWindow.barApi.errorURL;
+
+              let browserElement = document.createElement("browser");
+              browserElement.setAttribute("type", "content");
+              browserElement.setAttribute("flex", "1");
+			  browserElement.setAttribute("style", "overflow:hidden;");
+              browserElement.setAttribute("disablehistory", "true");
+              document.getElementsByTagName("box")[0].appendChild(browserElement);
+
+              let browser = browserElement; //document.getElementsByTagName("browser")[0];
+
+              let errorCodes = [
+                  Cr.NS_ERROR_UNKNOWN_PROTOCOL,
+                  Cr.NS_ERROR_NO_CONTENT,
+                  Cr.NS_ERROR_NOT_CONNECTED,
+                  Cr.NS_ERROR_CONNECTION_REFUSED,
+                  Cr.NS_ERROR_PROXY_CONNECTION_REFUSED,
+                  Cr.NS_ERROR_NET_TIMEOUT,
+                  Cr.NS_ERROR_OFFLINE,
+                  Cr.NS_ERROR_PORT_ACCESS_NOT_ALLOWED,
+                  Cr.NS_ERROR_NET_RESET,
+                  Cr.NS_ERROR_REDIRECT_LOOP,
+                  Cr.NS_ERROR_UNKNOWN_PROXY_HOST,
+                  Cr.NS_ERROR_UNKNOWN_SOCKET_TYPE,
+                  Cr.NS_ERROR_UNKNOWN_HOST
+              ];
+
+			  var loaded1, timer1, timerCount;
+              let progressListener = {
+                  QueryInterface: function(interfaceId) {
+                      if (
+                          interfaceId.equals(Ci.nsIWebProgressListener) ||
+                          interfaceId.equals(Ci.nsISupportsWeakReference) ||
+                          interfaceId.equals(Ci.nsISupports)
+                      )
+                          return this;
+                      throw Cr.NS_NOINTERFACE;
+                  },
+                  onLocationChange: function() {},
+                  onSecurityChange: function() {},
+                  onStatusChange: function() {},                  
+                  onStateChange: function(webProgress, request, state, status) {
+                      try {
+                          if (state & Ci.nsIWebProgressListener.STATE_STOP) {
+							
+							  if (errorCodes.indexOf(status) != -1) {
+								  request.cancel(status);
+								  browser.removeProgressListener(this);
+
+								  loadError();
+								  return;
+							  }
+
+							  let httpChannel = request.QueryInterface(Ci.nsIHttpChannel);
+							  let httpStatus  = httpChannel.responseStatus;
+							  if ((httpStatus >= 400) || (httpStatus < 200)) {    // error
+								  loadError(2);
+								  return;
+							  }
+						
+							  //*
+							  if(!loaded1) {
+									timer1 = setIntr(function() {
+										if ((typeof browser !== 'undefined') && browser) {
+											var ret = resizeEmbed(browser.contentDocument);
+										}
+										timerCount++;
+										if(timer1 && (ret || (timerCount > 45))) { 
+											timer1.cancel(); timer1 = null; 
+											browser.style.visibility = 'visible';
+										}
+									}, 100);
+									loaded1 = true;
+							 }
+							 //*/
+                          }
+                      }
+                      catch (e) {
+                      }
+                  },
+                  onProgressChange: function(webProgress, request, currentSelfProgress, maxSelfProgress, currentTotalProgress, maxTotalProgress) {}
+              };              
+				
+              setTimeout(function() {
+				browser.addProgressListener(progressListener);
+				loaded1 = false;
+				timer1 && timer1.cancel();
+				timer1 = null;
+				timerCount = 0;
+				
+				browser.style.visibility = 'hidden';
+                browser.loadURI(url);
+/*
+                  setTimeout(function() {
+                      if (browser && browser.webProgress.isLoadingDocument) {
+                          loadError(3);
+                      }
+                  }, 15000);
+*/
+              }, 1);
+
+              let loadError = function(er) {
+					if(timer1) { timer1.cancel(); timer1 = null; }
+					browser.style.visibility = 'visible';
+					loaded1 = true;
+                   browser.setAttribute("src", errorURL + '?_error=' + encodeURIComponent(mainWindow.barApi.getString("errorMessage")));
+                   mainWindow.resizeWindow(635,498);
+                   mainWindow.document.getElementById("itemFrame").setAttribute("width",635);
+                   mainWindow.document.getElementById("itemFrame").setAttribute("height",498);
+                   //browser.contentDocument.addEventListener("DOMContentLoaded", function() {
+                   //   browser.contentDocument.getElementById("error_message").innerHTML = mainWindow.barApi.getString("errorMessage").replace('\n', '<br />');
+                  // }, false);                  
+              }
+      ]]></script>
+    </box>
+</window>

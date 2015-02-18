@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "yahoomail.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="xb-skin/default/gfx/icons/yahoomail.png" icon-vector="xb-skin/default/gfx/icons/yahoomail.svg" name="&widget.name;" unique="true">
+
+    <f:setting default="5" name="update-interval" scope="instance">
+        <control label="&widget.settings.label;" label-after="&widget.settings.label_after;" max="1000" min="1" type="textedit" value-type="int"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="modules/main.jsm"/>
+    </modules>
+</widget>

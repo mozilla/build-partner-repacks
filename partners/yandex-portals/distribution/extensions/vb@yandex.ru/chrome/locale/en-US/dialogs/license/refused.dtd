@@ -1,0 +1,8 @@
+<!ENTITY % brandNames SYSTEM "yafd://plus.branding/names.dtd">
+%brandNames;
+
+<!ENTITY refused.title "&product1.nom; disabled">
+
+<!ENTITY refused.desc.1 "You must first accept the terms of the License Agreement to use &product1.ins;">
+<!ENTITY refused.desc.2 "You can always reenable this add-on in the browser menu: &#34;Tools -&#62; Add-ons -&#62; Extensions&#34;">
+<!ENTITY refused.desc.3 "In this case, you will automatically accept the terms of the Agreement">

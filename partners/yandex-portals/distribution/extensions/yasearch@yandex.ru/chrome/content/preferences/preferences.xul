@@ -1,0 +1,58 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="chrome://global/skin/"?>
+<?xml-stylesheet href="preferences.css"?>
+
+<!DOCTYPE prefwindow [
+<!ENTITY % preferencesDTD SYSTEM "../../../locale/preferences/preferences.dtd">
+%preferencesDTD;
+<!ENTITY % appDTD SYSTEM "../bar.dtd">
+%appDTD;
+]>
+
+<prefwindow buttondisabledextra2="true" buttonlabeldeleteplugins="&prefpane.plugins.delete.button;" buttonlabeldeletewidgets="&prefpane.widgets.delete.button;" buttonlabelextra2="&prefpane.widgets.extra2.button;" buttons="accept,cancel,extra2" height="620" id="&app.name;-prefwindow" minheight="605" minwidth="670" ondialogextra2="Preferences.doCommand('cmd_restoreDefault');" onunload="Preferences.onUnload();" persist="width height screenX screenY" title="&pref.window.title;" type="prefwindow" width="740" windowtype="&app.name;:Preferences" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <keyset id="commands-keys">
+        <key command="cmd_remove" id="remove-key" keycode="VK_DELETE"/>
+        <key command="cmd_selectAll" id="selectall-key" key="a" modifiers="accel"/>
+    </keyset>
+
+    <commandset id="controls-commands" oncommand="Preferences.doCommand(event.target.id);">
+        
+        <command id="cmd_remove" oncommand="void(0)"/>
+        <command id="cmd_addWidgets" oncommand="void(0)"/>
+        <command id="cmd_deleteWidgets" oncommand="void(0)"/>
+        <command id="cmd_deletePlugins" oncommand="void(0)"/>
+        <command id="cmd_moveWidgetsUp" oncommand="void(0)"/>
+        <command id="cmd_moveWidgetsDown" oncommand="void(0)"/>
+        <command id="cmd_restoreDefault" oncommand="void(0)"/>
+        <command id="cmd_selectAll" oncommand="void(0)"/>
+    </commandset>
+
+    <broadcasterset id="controls-broadcasterset">
+        <broadcaster disabled="true" id="canAddWidgetsBroadcaster"/>
+        <broadcaster disabled="true" id="canRemoveWidgetsBroadcaster"/>
+        <broadcaster disabled="true" id="canDeleteWidgetsBroadcaster"/>
+        <broadcaster disabled="true" id="canMoveWidgetsUpBroadcaster"/>
+        <broadcaster disabled="true" id="canMoveWidgetsDownBroadcaster"/>
+        <broadcaster disabled="true" id="canDeletePluginsBroadcaster"/>
+    </broadcasterset>
+
+    <prefpane flex="1" id="prefpane-widgets" label="&prefpane.widgets.label;" src="chrome://&app.name;/content/preferences/widgets.xul"/>
+
+    <prefpane flex="1" id="prefpane-plugins" label="&prefpane.plugins.label;" src="chrome://&app.name;/content/preferences/plugins.xul"/>
+
+    <prefpane flex="1" id="prefpane-misc" label="&prefpane.misc.label;" src="chrome://&app.name;/content/preferences/misc.xul"/>
+
+    <prefpane flex="1" id="prefpane-about" label="&prefpane.about.label;" src="chrome://&app.name;/content/preferences/about.xul"/>
+
+    <prefpane flex="1" id="prefpane-software" label="&prefpane.software.label;" src="chrome://&app.name;/content/preferences/software.xul"/>
+
+    <script type="application/x-javascript">
+        const XB_APP_NAME = "&app.name;";
+    </script>
+    <script src="chrome://global/content/customizeToolbar.js" type="application/x-javascript"/>
+    <script src="preferences.js" type="application/x-javascript"/>
+    <script src="about.js" type="application/x-javascript"/>
+    <script src="keyhelper.js" type="application/x-javascript"/>
+    <script src="static-widgets/helpers.js" type="application/x-javascript"/>
+</prefwindow>

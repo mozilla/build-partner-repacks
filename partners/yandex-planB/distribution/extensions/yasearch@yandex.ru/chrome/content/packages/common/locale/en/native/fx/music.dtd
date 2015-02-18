@@ -1,0 +1,10 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY music.name "Yandex.Music player">
+
+<!ENTITY music.action.pause "Pause">
+<!ENTITY music.action.play "Play">
+<!ENTITY music.noflash "This widget requires the latest version of Adobe Flash.">
+<!ENTITY music.noflash.link "You can [a]download it here[/a].">
+<!ENTITY music.nointernet "No internet connection">

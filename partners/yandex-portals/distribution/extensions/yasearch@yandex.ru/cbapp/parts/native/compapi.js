@@ -40,7 +40,6 @@ function NativeBarAPI(componentInfo, logger) {
         });
     }, this);
 }
-;
 NativeBarAPI.CONSTS = { NOT_A_WIDGET: "This component is not a widget." };
 function NoCompInfo(package_) {
     this._package = package_;
@@ -64,8 +63,12 @@ NativeBarAPI.prototype = {
     get componentID() {
         return this._componentInfo.id;
     },
-    get componentType() this._componentInfo.type,
-    get componentCore() this._componentInfo.component.nativeModule.core,
+    get componentType() {
+        return this._componentInfo.type;
+    },
+    get componentCore() {
+        return this._componentInfo.component.nativeModule.core;
+    },
     get logger() {
         return this._logger;
     },
@@ -140,14 +143,14 @@ NativeBarAPI.Environment.browser = {
 };
 NativeBarAPI.Environment.addon = {
     get id() {
-        let id = AddonManager.getAddonId(appCore.extensionPathFile);
+        let id = AddonManager.getAddonId(appCore.extensionURI);
         this.__defineGetter__("id", function NativeAPI_Env_addon_id() {
             return id;
         });
         return this.id;
     },
     get version() {
-        let version = AddonManager.getAddonVersion(appCore.extensionPathFile);
+        let version = AddonManager.getAddonVersion(appCore.extensionURI);
         this.__defineGetter__("version", function NativeAPI_Env_addon_version() {
             return version;
         });
@@ -198,7 +201,7 @@ NativeBarAPI.Environment.branding = {
         if (typeof templateString !== "string") {
             throw new TypeError("'templateString' must be a string");
         }
-        if (typeof params !== "undefined" && typeof params !== "string") {
+        if (typeof params !== "undefined" && !(params && typeof params === "object")) {
             throw new TypeError("'params' must be an object");
         }
         if (typeof encodeParams !== "undefined" && typeof encodeParams !== "boolean") {
@@ -320,14 +323,11 @@ NativeBarAPI.Overlay.prototype = {
 NativeBarAPI.Statistics = function Statistics(componentInfo, logger) {
     this._componentInfo = componentInfo;
     this._logger = logger;
-    this._componentsUsage = application.componentsUsage;
 };
 NativeBarAPI.Statistics.prototype = {
-    logShortAction: function NativeAPI_logShortAction(eventID) {
-        this._componentsUsage.logShortAction(eventID);
+    logShortAction: function NativeAPI_logShortAction() {
     },
-    logCustomAction: function NativeAPI_logCustomAction(eventID) {
-        this._componentsUsage.logCustomAction(this._componentInfo.id, eventID);
+    logCustomAction: function NativeAPI_logCustomAction() {
     },
     logButtonClick: function NativeAPI_logButtonClick() {
     },
@@ -340,7 +340,7 @@ NativeBarAPI.Statistics.prototype = {
         application.addonStatus.logAddonEvents(eventsMap);
     },
     fetchBarNavigStat: function NativeAPI_fetchBarNavigStat() {
-        return this._componentsUsage.readActions();
+        return "";
     },
     get barnavigR1String() {
         return application.barnavig.barnavigR1String || "";

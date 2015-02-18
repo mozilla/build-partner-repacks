@@ -1,0 +1,41 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="preferences.css"?>
+<?xml-stylesheet href="controls.css"?>
+
+<!DOCTYPE overlay [
+<!ENTITY % preferencesDTD SYSTEM "../../../locale/preferences/preferences.dtd">
+%preferencesDTD;
+]>
+
+<overlay id="prefpane-plugins-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <prefpane flex="1" id="prefpane-plugins">
+        <vbox class="prefWindow-dlgbuttons-hack"/>
+
+        <preferences/>
+
+        <commandset commandupdater="true" events="richlistbox-select" id="plugins-lists-commands" oncommandupdate="Preferences.checkPluginsControls();" targets="registered-plugins-list"/>
+
+        <vbox class="container" flex="1">
+            <grid flex="1">
+                <columns flex="1">
+                    <column flex="1"/>
+                </columns>
+                <rows flex="1">
+                    <row flex="1">
+                        <vbox>
+                            <hbox>
+                                <label class="list-title" value="&registered.plugins.list.title;"/>
+                                <hbox flex="1"/>
+                                <label class="list-title" value="&registered.plugins.enable.label;"/>
+                            </hbox>
+                            <richlistbox flex="1" id="registered-plugins-list" seltype="multiple"/>
+                        </vbox>
+                    </row>
+                </rows>
+            </grid>
+        </vbox>
+
+    </prefpane>
+
+</overlay>

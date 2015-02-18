@@ -214,7 +214,9 @@ const utils = {
         let col = {};
         let obj = {};
         let parent = event.originalTarget.parentNode;
-        parent && parent.treeBoxObject && parent.treeBoxObject.getCellAt(x, y, row, col, obj);
+        if (parent && parent.treeBoxObject) {
+            parent.treeBoxObject.getCellAt(x, y, row, col, obj);
+        }
         if (row.value < 0) {
             return null;
         }

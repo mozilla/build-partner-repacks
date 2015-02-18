@@ -1,0 +1,56 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % settings SYSTEM "/native/fx/money.dtd">
+%settings;
+<!ENTITY % auth SYSTEM "/native/fx/login.dtd">
+%auth;
+]>
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="../../bindings/buttons.xbl#ycounter-widget" id="widget">
+        <resources>
+            <stylesheet src="../styles/money.css"/>
+        </resources>
+
+        <content>
+            <toolbarbutton anonid="money-button" class="chromeclass-toolbar-additional toolbarbutton-1 label2 ycounter-button" label="&money.name;" noauth-tooltip-text="&money.noauthtooltiptext;" tooltip="money-tooltip" tooltip-text="&money.tooltiptext;" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" yb-icon-overlay="true" yb-second-tooltip-text="&noauth.label;">
+                <menupopup anonid="money-menupopup" onpopupshowing="_sendMenuStat()">
+                    <menuitem label="&money.reloadCounter.label;" oncommand="refreshData(event)"/>
+                    <menuseparator/>
+                    <menuitem label="&money.link.shop.label;" yb-widget-command="gotoShop"/>
+                    <menuitem label="&money.link.prepay.label;" yb-widget-command="gotoPrepay"/>
+                </menupopup>
+            </toolbarbutton>
+        </content>
+
+        <implementation>
+            <field name="title">"&money.name;"</field>
+
+            <field name="_menu" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "money-menupopup")</field>
+            <field name="_button" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "money-button")</field>
+
+            <method name="onAuthCommand">
+                <body><![CDATA[    this.module.onButtonClick();]]></body>
+            </method>
+
+            <method name="_sendMenuStat">
+                <body><![CDATA[    this.module.utils.statistics.logWidget("fx.yamoney.menu");]]></body>
+            </method>
+
+            <method name="_sendClickStat">
+                <parameter name="event"/>
+                <parameter name="middle"/>
+                <body><![CDATA[    var menuItem = event.originalTarget.localName == "menuitem";
+    if (!middle || !menuItem) {
+        this.module.utils.statistics.logWidget("fx.yamoney." + (menuItem ? "menuclick" : "button"));
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="1" event="click"><![CDATA[    this._sendClickStat(event, true);]]></handler>
+
+            <handler event="command"><![CDATA[    this._sendClickStat(event, false);]]></handler>
+        </handlers>
+    </binding>
+</bindings>

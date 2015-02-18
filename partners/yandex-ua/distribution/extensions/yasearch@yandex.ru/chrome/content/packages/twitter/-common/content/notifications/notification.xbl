@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings><bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="notification-base">
+        <resources>
+            <stylesheet src="notification-common.css"/>
+        </resources>
+
+        <implementation>
+            <field name="_browser">this._notification.control.getElementsByTagNameNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "browser")[0]</field>
+
+            <field name="_notification" readonly="true"><![CDATA[    {
+        let node = this.parentNode;
+        while (node && node.localName !== "notification") {
+            node = node.parentNode;
+        }
+        node;
+    }]]></field>
+
+            <constructor><![CDATA[    this.className = "ya-notification";]]></constructor>
+
+            <method name="_getElementByAttr">
+                <parameter name="aAttr"/>
+                <parameter name="aValue"/>
+                <body><![CDATA[    return document.getAnonymousElementByAttribute(this, aAttr, aValue);]]></body>
+            </method>
+
+            <method name="getSelfOrAncestorAnonid">
+                <parameter name="aNode"/>
+                <body><![CDATA[    if (!aNode) {
+        return;
+    }
+    let target = aNode;
+    let anonid = target.getAttribute("anonid");
+    while (!anonid && target.parentNode) {
+        target = target.parentNode;
+        anonid = target.getAttribute("anonid");
+    }
+    return anonid;]]></body>
+            </method>
+        </implementation>
+
+    </binding>
+
+    <binding id="close-button">
+        <content>
+            <xul:image class="close-button-image hoverable-item"/>
+        </content>
+    </binding>
+
+</bindings>

@@ -1,0 +1,28 @@
+<!ENTITY gmail.name "Gmail">
+
+<!ENTITY gmail.settings.label "Güncelleme sıklığı">
+<!ENTITY gmail.settings.label_after "dk.">
+<!ENTITY gmail.settings.write.show "&#34;E-posta yaz&#34; butonunu göster">
+<!ENTITY gmail.settings.checktext "&#34;Gmail&#34; butonunun adını göster">
+<!ENTITY gmail.settings.write.checktext "&#34;E-posta yaz&#34; butonunun adını göster">
+
+<!ENTITY gmail.tooltip.please_auth "Lütfen oturum açın">
+<!ENTITY gmail.tooltip.off "Gmail&#39;e gelen yeni postaları göster">
+<!ENTITY gmail.tooltip.on "Gelen kutunuzda yeni posta var">
+<!ENTITY gmail.tooltip.empty "Yeni e-posta yok">
+<!ENTITY gmail.tooltip.write.off "Gmail&#39;de yeni posta yazmanızı sağlar">
+<!ENTITY gmail.tooltip.write.on "Gmail&#39;de posta yazın">
+<!ENTITY gmail.tooltip.error "Maalesef postalarınızdan bilgi alınamıyor">
+
+<!ENTITY gmail.button.text "Gmail">
+<!ENTITY gmail.button.text.write "Yaz">
+
+<!ENTITY gmail.menu.update "Posta kutunu kontrol et">
+<!ENTITY gmail.menu.write "Posta yaz">
+<!ENTITY gmail.menu.read "Posta oku">
+<!ENTITY gmail.menu.addressbook "Kişileri aç">
+<!ENTITY gmail.menu.yandex "E-postalarımı Yandex.Mail&#39;e aktar">
+
+<!ENTITY notify.letters "{N} yeni e-posta">
+<!ENTITY plural.rule "0">
+<!ENTITY settings.show_notifications "Bildirimleri göster">

@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="main.css"/>
+        </resources>
+        <content>
+            <xul:toolbarbutton anonid="twitter-button" class="toolbarbutton-1 widget-button" item-href="home" label="&twitter.widget.name;" yb-native-not-authorized="true"/>
+        </content>
+        <implementation implements="nsISupports, nsIDOMEventListener">
+            <field name="button">document.getAnonymousElementByAttribute(this, "anonid", "twitter-button")</field>
+
+            <field name="DTD">({
+                widgetName: "&twitter.widget.name;",
+                authTip: "&twitter.toolbarbutton.tooltip-unregistered;",
+                mainTip: "&twitter.toolbarbutton.tooltip-registered;"
+            })</field>
+
+            <field name="observers"><![CDATA[    ({
+        "display": function (topic) {
+            this.log(topic);
+            this.updateView();
+        }
+    });]]></field>
+
+            <field name="commands"><![CDATA[    ({});]]></field>
+
+            <constructor><![CDATA[    this.log("constructor");
+    this.updateView();]]></constructor>
+
+            <method name="updateView">
+                <body><![CDATA[    var app = this.application, auth = this.application.isAuth(), s = this.application.api.Settings;
+    var user = auth && app.getUserName() && s.getValue("show-username") ? app.getUserName() : "";
+    this.button.setAttribute("item-command", auth ? "slice" : "auth");
+    this.button.setAttribute("yb-native-not-authorized", !auth);
+    this.button.setAttribute("tooltiptext", auth ? this.DTD.mainTip.replace("{username}", app.getUserName()) : this.DTD.authTip);
+    if (auth) {
+        this.button.setAttribute("twitter-fresh", app.hasNewDataItems);
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

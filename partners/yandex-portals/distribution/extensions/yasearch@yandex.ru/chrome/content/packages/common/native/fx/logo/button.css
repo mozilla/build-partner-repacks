@@ -1,0 +1,2 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbar[mode=full] toolbarbutton>label,toolbar[mode=icons] toolbarbutton>label{display:none}
+.toolbarbutton-icon{-moz-binding:url(../bindings/buttons.xbl#toolbarbutton-icon)!important}

@@ -1,0 +1,8 @@
+@import url(../../styles/buttons.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);tooltip{-moz-binding:url(../bindings/cy-widget.xbl#cy-tooltip)}
+toolbarbutton[disabled=true]{list-style-image:url(../icons/cy-0.svg)}
+toolbarbutton[data-cy-rang]{list-style-image:url(../icons/cy-1.svg)!important}
+toolbarbutton[data-cy-rang="2"]{list-style-image:url(../icons/cy-2.svg)!important}
+toolbarbutton[data-cy-rang="3"]{list-style-image:url(../icons/cy-3.svg)!important}
+toolbarbutton[data-cy-rang="4"]{list-style-image:url(../icons/cy-4.svg)!important}
+toolbarbutton[data-cy-rang="5"]{list-style-image:url(../icons/cy-5.svg)!important}
+toolbarbutton[data-cy-rang="6"]{list-style-image:url(../icons/cy-6.svg)!important}

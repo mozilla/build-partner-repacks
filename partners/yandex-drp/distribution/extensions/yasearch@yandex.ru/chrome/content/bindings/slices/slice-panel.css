@@ -1,0 +1,6 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);panel{-moz-appearance:none!important;background-color:transparent!important;background-image:none!important;border:0!important;width:auto!important;min-width:auto!important;max-width:auto!important;height:auto!important;min-height:auto!important;max-height:auto!important}
+vbox[anonid=slice-content]{margin:8px 0 30px}
+vbox.info{background-color:#fff;min-width:180px;min-height:180px;margin:8px 1px}
+vbox[anonid=slice-loader] image{list-style-image:url(../../../skin/slices/throbber.gif);width:45px;height:45px;opacity:.7}
+vbox[anonid=network-error] image{list-style-image:url(../../../skin/slices/error.png);width:85px;height:78px}
+description{color:#999!important;font-size:1.1em;margin:1.4em 1.2em!important;text-align:center}

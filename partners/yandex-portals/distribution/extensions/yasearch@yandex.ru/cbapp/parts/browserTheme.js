@@ -14,7 +14,9 @@ const browserTheme = {
         this._application = null;
         this._logger = null;
     },
-    get application() this._application,
+    get application() {
+        return this._application;
+    },
     createConsumer: function browserTheme_createConsumer(window) {
         return new browserThemeConsumer(window);
     }

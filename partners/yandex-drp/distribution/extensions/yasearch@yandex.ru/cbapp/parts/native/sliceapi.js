@@ -10,7 +10,9 @@ function createSliceWrapper(sliceProps, apiInstance, WIID) {
         return new XMLHttpRequestWrapper(platformEnv.sliceID);
     };
     return {
-        get url() slice.url,
+        get url() {
+            return slice.url;
+        },
         set url(newUrl) {
             slice.url = newUrl;
         },
@@ -20,7 +22,9 @@ function createSliceWrapper(sliceProps, apiInstance, WIID) {
         hide: function SliceWrapper_hide() {
             slice.hide();
         },
-        get isOpen() slice.isOpen,
+        get isOpen() {
+            return slice.isOpen;
+        },
         notify: function SliceWrapper_notify() {
             let args = Array.prototype.slice.call(arguments);
             let exposeProps = function exposeProps(obj) {
@@ -41,6 +45,9 @@ function createSliceWrapper(sliceProps, apiInstance, WIID) {
                 exposeProps(arg);
             });
             platformEnv.onMessage._listeners.forEach(function (listener) {
+                if ("skipCOWCallableChecks" in Cu) {
+                    Cu.skipCOWCallableChecks();
+                }
                 try {
                     listener.apply(listener, args);
                 } catch (e) {
@@ -68,7 +75,9 @@ function PlatformEnvironment(nativeAPI, WIID, messageHandler) {
 }
 PlatformEnvironment.prototype = {
     constructor: PlatformEnvironment,
-    get sliceID() this._sliceID,
+    get sliceID() {
+        return this._sliceID;
+    },
     set sliceID(sliceID) {
         if (this._sliceID !== undefined) {
             throw new Error("Slice ID is already set.");
@@ -94,7 +103,9 @@ PlatformEnvironment.prototype = {
     resizeWindowTo: function PlatformEnvironment_resizeWindowTo(width, height) {
         application.slices.findSliceByID(this.sliceID).sizeTo(width, height);
     },
-    get isWindowVisible() application.slices.findSliceByID(this.sliceID).isOpen,
+    get isWindowVisible() {
+        return application.slices.findSliceByID(this.sliceID).isOpen;
+    },
     getOption: function PlatformEnvironment_getOption(aKey) {
         let value = this._api.Settings.getValue(aKey, this._WIID);
         if (typeof value === "undefined") {
@@ -146,7 +157,9 @@ PlatformEnvironment.prototype = {
         };
         this._messageHandler(aMessageObject, proxyCallback);
     },
-    get onMessage() this._messanger,
+    get onMessage() {
+        return this._messanger;
+    },
     getCookie: function PlatformEnvironment_getCookie(aURL, aCookieName, aHTTPOnly) {
         let cookie = netutils.findCookies(aURL, aCookieName, aHTTPOnly)[0];
         return cookie ? cookie.value : null;
@@ -164,7 +177,6 @@ PlatformEnvironment.prototype = {
         });
     },
     logCustomAction: function PlatformEnvironment_logCustomAction(aAction) {
-        return this._api.Statistics.logCustomAction(aAction);
     },
     XMLHttpRequest: function PlatformEnvironment_XMLHttpRequest() {
     },
@@ -176,7 +188,9 @@ PlatformEnvironment.prototype = {
         });
         return this.logger;
     },
-    get Notifications() this._api.Notifications,
+    get Notifications() {
+        return this._api.Notifications;
+    },
     __exposedProps__: {
         logger: "r",
         sliceID: "r",
@@ -275,7 +289,6 @@ function XMLHttpRequestWrapper(sliceID) {
     };
     return that;
 }
-;
 XMLHttpRequestWrapper.prototype = {
     __exposedProps__: {
         onreadystatechange: "rw",

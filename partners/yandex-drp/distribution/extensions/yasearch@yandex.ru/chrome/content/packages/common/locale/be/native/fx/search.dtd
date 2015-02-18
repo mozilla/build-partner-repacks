@@ -1,0 +1,19 @@
+<!ENTITY widget.name "Поле пошуку">
+
+<!ENTITY cmd_engineManager.label "Кіраванне пошукавымі плагінамі...">
+
+<!ENTITY searchbox.checkbox.site.label "шукаць на гэтым сайце">
+<!ENTITY searchbox.button.label "Знайсці">
+<!ENTITY searchbox.button.context.label "Схаваць кнопку &#34;Знайсці&#34;">
+<!ENTITY searchbox.resizer.tooltiptext "Змяніць шырыню тэкставага поля пошуку">
+
+<!ENTITY searchbox.highlighter.tooltiptext "Падсветка знойдзенага">
+<!ENTITY searchbox.highlighter.highlight.label "Уключыць падсветку знойдзенага">
+<!ENTITY searchbox.highlighter.teleport.label "Пракручваць да першага падсвечанага слова">
+<!ENTITY searchbox.highlighter.serp.label "Падсвечваць словы запыту на знойдзенай старонцы">
+
+<!ENTITY searchbox.preferences.history.label "Гісторыя пошукавых запытаў">
+<!ENTITY searchbox.preferences.history.enable.label "Захоўваць гісторыю запытаў">
+<!ENTITY searchbox.preferences.history.clear.label "Ачысціць">
+<!ENTITY searchbox.preferences.highlighter.enabled.label "Паказваць кнопку &#171;Падсветка знойдзенага&#187;">
+<!ENTITY searchbox.preferences.show.site.search.label "Паказваць опцыю &#171;Шукаць на гэтым сайце&#187;">

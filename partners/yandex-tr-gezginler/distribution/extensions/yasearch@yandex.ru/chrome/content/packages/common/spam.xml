@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget [
+<!ENTITY % widget SYSTEM "/native/fx/spam.dtd">
+%widget;
+]>
+<widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/native/fx/spam/fu.png" name="&spam.name;" unique="true">
+    <modules>
+        <module browser="firefox" file="/native/fx/spam/module.jsm"/>
+    </modules>
+</widget>

@@ -1,0 +1,8 @@
+@namespace url(http://www.w3.org/1999/xhtml);html,body{padding:0;margin:0}
+body{overflow:hidden;position:relative;margin:7px}
+#preview{position:absolute;top:0;left:0;width:267px;height:200px}
+@-moz-keyframes loading{from{-moz-transform:rotate(0deg)}
+to{-moz-transform:rotate(360deg)}
+}
+#throbber{position:absolute;top:91px;left:124px;width:32px;height:32px;background:transparent 50% 50% url(spin.svg) no-repeat;opacity:.4;display:block;animation-duration:3s;animation-iteration-count:infinite;animation-name:loading;animation-timing-function:linear}
+#throbber[hidden=true]{display:none}

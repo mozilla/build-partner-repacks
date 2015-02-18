@@ -1,0 +1,722 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % preferencesDTD SYSTEM "chrome://yasearch/locale/preferences/preferences.dtd">
+%preferencesDTD;
+]>
+
+
+
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="global-setting-icon">
+        <content xb-tooltip-prefix="&global.setting.tooltip.prefix;">
+            <xul:hbox flex="1">
+                <xul:spacer flex="1"/>
+                <xul:image xbl:inherits="tooltiptext=xb-global-setting-warning"/>
+            </xul:hbox>
+        </content>
+
+        <implementation>
+            <constructor><![CDATA[    let tooltiptext = this.getAttribute("xb-global-setting-warning");
+    if (tooltiptext == "auto") {
+        let widgetNames = this.getAttribute("xb-global-setting-names").split(",").map(str => "«" + str + "»").join(", ");
+        this.setAttribute("xb-global-setting-warning", this.getAttribute("xb-tooltip-prefix").replace("%S", widgetNames));
+    }]]></constructor>
+        </implementation>
+    </binding>
+
+    <binding id="base">
+        <implementation>
+            <field name="mListItem">
+                this.parentNode
+            </field>
+
+            <field name="mPreferencesController">
+                this.mListItem.parentNode.PreferencesController
+            </field>
+
+            <field name="mSource"/>
+            <field name="mSourceTemplate"/>
+            <field name="mShortcuts"/>
+            <field name="mShortcutsTemplate"/>
+
+            <property name="hasSourceURL" onget="return this.hasAttribute('source');" readonly="true"/>
+            <property name="hasSourceTemplateURL" onget="return this.hasAttribute('template');" readonly="true"/>
+
+            <property name="hasShortcutsURL" onget="return this.hasAttribute('shortcuts-source');" readonly="true"/>
+            <property name="hasShortcutsTemplateURL" onget="return this.hasAttribute('shortcuts-template');" readonly="true"/>
+
+            <method name="_getXMLData">
+                <parameter name="aType"/>
+                <body><![CDATA[    let url = this.getAttribute(aType);
+    if (!url) {
+        return this._onXMLDataResponse(aType, null);
+    }
+    let me = this;
+    function callback(aRequest) {
+        let xmlString = "";
+        try {
+            xmlString = aRequest.target.responseText || "";
+        } catch (ex) {
+        }
+        if (me && "_onXMLDataResponse" in me) {
+            me._onXMLDataResponse(aType, xmlString ? {
+                url: url,
+                data: xmlString
+            } : null);
+        }
+    }
+    let req = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Components.interfaces.nsIXMLHttpRequest);
+    try {
+        req.overrideMimeType("text/plain");
+        req.open("GET", url, true);
+    } catch (ex) {
+        return this._onXMLDataResponse(aType, null);
+    }
+    let target = req.QueryInterface(Components.interfaces.nsIDOMEventTarget);
+    target.addEventListener("load", callback, false);
+    target.addEventListener("error", callback, false);
+    req.send(null);
+    return null;]]></body>
+            </method>
+
+            <method name="_onXMLDataResponse">
+                <parameter name="aType"/>
+                <parameter name="aData"/>
+                <body><![CDATA[    if (aType == "template") {
+        if (!aData) {
+            this._getXMLData("alt-template");
+        } else {
+            this.mSourceTemplate = aData;
+            this._getXMLData("source");
+        }
+        return;
+    }
+    if (aType == "alt-template") {
+        if (!aData) {
+            this._onXMLDataResponse("alt-source", null);
+        }
+        this.mSourceTemplate = aData;
+        this._getXMLData("alt-source");
+        return;
+    }
+    if (aType == "shortcuts-template") {
+        if (!aData) {
+            this._getXMLData("shortcuts-alt-template");
+        } else {
+            this.mShortcutsTemplate = aData;
+            this._getXMLData("shortcuts-source");
+        }
+        return;
+    }
+    if (aType == "shortcuts-alt-template") {
+        if (!aData) {
+            this._onXMLDataResponse("shortcuts-alt-source", null);
+        }
+        this.mShortcutsTemplate = aData;
+        this._getXMLData("shortcuts-alt-source");
+        return;
+    }
+    if (aType == "source" || aType == "alt-source") {
+        this.mSource = this.mPreferencesController.transformSourceXMLData(this.mListItem.id, aType, aData, this.mSourceTemplate);
+        if (!this.mSource) {
+            if (aType != "alt-source") {
+                if (this.hasAttribute("alt-template")) {
+                    this.mSourceTemplate = null;
+                    this._getXMLData("alt-template");
+                } else {
+                    this._getXMLData("alt-source");
+                }
+                return;
+            }
+        }
+        this._constructSource();
+    } else if (aType == "shortcuts-source" || aType == "shortcuts-alt-source") {
+        this.mShortcuts = this.mPreferencesController.transformSourceXMLData(this.mListItem.id, aType, aData, this.mShortcutsTemplate);
+        if (!this.mShortcuts) {
+            if (aType != "shortcuts-alt-source") {
+                if (this.hasAttribute("shortcuts-alt-template")) {
+                    this.mShortcutsTemplate = null;
+                    this._getXMLData("shortcuts-alt-template");
+                } else {
+                    this._getXMLData("shortcuts-alt-source");
+                }
+                return;
+            }
+        }
+        this._constructShortcuts();
+    }]]></body>
+            </method>
+
+            <method name="_getSource">
+                <body><![CDATA[    if (this.hasSourceURL) {
+        this._getXMLData(this.hasSourceTemplateURL ? "template" : "source");
+    } else {
+        this._constructSource();
+    }]]></body>
+            </method>
+
+            <method name="_getShortcuts">
+                <body><![CDATA[    if (this.hasShortcutsURL) {
+        this._getXMLData(this.hasShortcutsTemplateURL ? "shortcuts-template" : "shortcuts-source");
+    } else {
+        this._constructShortcuts();
+    }]]></body>
+            </method>
+
+            <constructor><![CDATA[    setTimeout(function (me) {
+        if (me && "_init" in me) {
+            me._init();
+        }
+    }, 0, this);]]></constructor>
+
+            <method name="_init">
+                <body><![CDATA[    switch (this.getAttribute("xb-preftype")) {
+    case "combobox":
+    case "radiogroup":
+        this._getSource();
+        this._getShortcuts();
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+
+            <method name="_handleChange">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    if (aEvent.target === this && this.getAttribute("disabled") !== "true") {
+        let val = this.value;
+        this.mPreferencesController.onPrefChange(this.mListItem, this.getAttribute("prefName"), val);
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="CheckboxStateChange">    this._handleChange(event);</handler>
+
+            <handler event="change">    this._handleChange(event);</handler>
+
+            <handler event="select">    if ([
+            "menulist",
+            "radiogroup"
+        ].indexOf(event.originalTarget.localName) != -1) {
+        this._handleChange(event);
+    }</handler>
+        </handlers>
+    </binding>
+
+    <binding extends="#base" id="checkbox">
+        <content flex="1">
+            <xul:box xbl:inherits="orient">
+                <xul:checkbox anonid="checkbox" flex="1" xbl:inherits="label,checked=value,disabled"/>
+                <xul:hbox class="global-setting-icon" xbl:inherits="xb-global-setting-warning,xb-global-setting-names"/>
+            </xul:box>
+        </content>
+
+        <implementation>
+            <field name="checkbox">
+                document.getAnonymousElementByAttribute(this, "anonid", "checkbox")
+            </field>
+
+            <property name="value">
+                <getter><![CDATA[    return this.checkbox.checked;]]></getter>
+            </property>
+        </implementation>
+    </binding>
+
+    <binding extends="#base" id="textedit">
+        <content>
+            <xul:box align="center" xbl:inherits="orient">
+                <xul:hbox align="center" flex="1">
+                    <xul:label xbl:inherits="value=label"/>
+                    <xul:textbox anonid="textbox" flex="1" xbl:inherits="value,disabled,align,dir,pack,orient" onchange="_onTextboxChange();"/>
+                    <xul:label xbl:inherits="value=label-after"/>
+                </xul:hbox>
+                <xul:hbox class="global-setting-icon" xbl:inherits="xb-global-setting-warning,xb-global-setting-names"/>
+            </xul:box>
+        </content>
+
+        <implementation>
+            <field name="textbox">
+                document.getAnonymousElementByAttribute(this, "anonid", "textbox")
+            </field>
+
+            <property name="value">
+                <getter><![CDATA[    return this.textbox.value || this.getAttribute("empty-default");]]></getter>
+            </property>
+
+            <method name="_onTextboxChange">
+                <body><![CDATA[    if (this.textbox.inputField.value === "" && this.getAttribute("empty-default")) {
+        this.textbox.value = this.getAttribute("empty-default");
+    }]]></body>
+            </method>
+
+            <constructor><![CDATA[    let type = this.getAttribute("value-type");
+    switch (type) {
+    case "string":
+    case "number":
+    case "int":
+        break;
+    default:
+        type = "string";
+        break;
+    }
+    let textbox = this.textbox;
+    let maxLength = type == "string" && this.hasAttribute("max-length") ? parseInt(this.getAttribute("max-length"), 10) || 0 : 0;
+    if (maxLength > 0) {
+        textbox.setAttribute("maxlength", maxLength);
+    }
+    if (type == "int" || type == "number") {
+        textbox.setAttribute("type", "number");
+        if (type == "number") {
+            textbox.setAttribute("decimalplaces", "Infinity");
+        }
+        let size = 4;
+        [
+            "min",
+            "max"
+        ].forEach(function (aAttrName) {
+            if (this.hasAttribute(aAttrName)) {
+                let val = this.getAttribute(aAttrName);
+                size = Math.max(size, val.length);
+                val = type == "number" ? parseFloat(val) : parseInt(val, 10);
+                val = val || 0;
+                textbox.setAttribute(aAttrName, val);
+            }
+        }, this);
+        if (this.hasAttribute("max")) {
+            textbox.removeAttribute("flex");
+            textbox.setAttribute("size", Math.min(12, size));
+        }
+        if (type == "int") {
+            let increment = this.hasAttribute("spin") ? parseInt(this.getAttribute("spin"), 10) || 0 : 1;
+            if (!increment || increment < 1) {
+                textbox.setAttribute("hidespinbuttons", "true");
+            } else {
+                textbox.setAttribute("increment", increment);
+            }
+        } else if (type == "number") {
+            textbox.setAttribute("hidespinbuttons", "true");
+        }
+        if (this.getAttribute("value") === "" && this.hasAttribute("empty-default")) {
+            this.setAttribute("value", this.getAttribute("empty-default"));
+        }
+    }]]></constructor>
+        </implementation>
+
+        <handlers>
+
+            <handler event="select" phase="capturing" preventdefault="true"><![CDATA[    if (event.target == this.textbox.inputField) {
+        event.stopPropagation();
+    }]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="#base" id="combobox">
+        <content busy="true" disabled="true">
+            <xul:box align="center" xbl:inherits="orient">
+                <xul:label xbl:inherits="value=label"/>
+                <xul:menulist anonid="menulist" flex="1" xbl:inherits="value,editable,disabled,align,dir,pack,orient">
+                    <xul:menupopup anonid="menupopup">
+                        <xul:menuitem label=" ...&controls.combobox.creating.label;... "/>
+                    </xul:menupopup>
+                </xul:menulist>
+                <xul:label xbl:inherits="value=label-after"/>
+                <xul:hbox class="global-setting-icon" xbl:inherits="xb-global-setting-warning,xb-global-setting-names"/>
+                <html:div style="display:none">
+                    <children/>
+                </html:div>
+            </xul:box>
+        </content>
+
+        <implementation>
+            <field name="menulist">
+                document.getAnonymousElementByAttribute(this, "anonid", "menulist")
+            </field>
+
+            <field name="menupopup">
+                document.getAnonymousElementByAttribute(this, "anonid", "menupopup")
+            </field>
+
+            <property name="value">
+                <getter><![CDATA[    return this.menulist.value;]]></getter>
+            </property>
+
+            <constructor><![CDATA[    let menuitemNodes = Array.slice(this.childNodes).filter(aNode => aNode.localName === "menuitem");
+    menuitemNodes.forEach(function (aNode) {
+        if (!aNode.hasAttribute("value")) {
+            aNode.setAttribute("value", aNode.getAttribute("label"));
+        } else if (!aNode.hasAttribute("label")) {
+            aNode.setAttribute("label", aNode.getAttribute("value"));
+        }
+        this.appendChild(aNode);
+    }, this.menupopup);]]></constructor>
+
+            <method name="_nodesAppender">
+                <parameter name="aDestination"/>
+                <parameter name="aSource"/>
+                <body><![CDATA[    let i = 0;
+    let node = aSource.firstChild;
+    let nodes = document.createDocumentFragment();
+    let t = Date.now();
+    while (node) {
+        nodes.appendChild(node);
+        node = i++ < 500 || Date.now() - t < 5 ? aSource.firstChild : null;
+    }
+    if (!nodes.childNodes.length) {
+        this._constructSourceDone();
+    } else {
+        aDestination.appendChild(nodes);
+        window.setTimeout(function (me, dst, src) {
+            if (me && "_nodesAppender" in me) {
+                me._nodesAppender(dst, src);
+            }
+        }, 10, this, aDestination, aSource);
+    }]]></body>
+            </method>
+
+            <method name="_constructSource">
+                <body><![CDATA[    let menupopup = this.menupopup;
+    if (this.mSource && this.mSource.childNodes.length) {
+        while (menupopup.firstChild) {
+            menupopup.removeChild(menupopup.firstChild);
+        }
+        Array.slice(this.mSource.childNodes).forEach(function (aNode) {
+            if (!aNode.hasAttribute("value")) {
+                aNode.setAttribute("value", aNode.getAttribute("label"));
+            } else if (!aNode.hasAttribute("label")) {
+                aNode.setAttribute("label", aNode.getAttribute("value"));
+            }
+        });
+        this._nodesAppender(menupopup, this.mSource);
+    } else {
+        if (menupopup.firstChild) {
+            menupopup.removeChild(menupopup.firstChild);
+        }
+        this._constructSourceDone();
+    }]]></body>
+            </method>
+
+            <method name="_constructSourceDone">
+                <body><![CDATA[    if (this.menupopup.childNodes.length) {
+        this.menulist.value = this.getAttribute("value");
+        this.setAttribute("disabled", "false");
+    }
+    this.removeAttribute("busy");]]></body>
+            </method>
+
+            <method name="_constructShortcuts">
+                <body><![CDATA[]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding extends="#base" id="combobox-editable">
+        <content busy="true" disabled="true">
+            <xul:box align="center" xbl:inherits="orient">
+            <xul:label xbl:inherits="value=label"/>
+            <xul:textbox anonid="textbox" autocompletesearch="yasearch-autocomplete" clickSelectsAll="true" completedefaultindex="false" completeselectedindex="false" enablehistory="true" flex="100" forcecomplete="false" xbl:inherits="value,disabled,align,dir,pack,orient" newlines="replacewithspaces" showcommentcolumn="false" tabscrolling="true" timeout="100" type="autocomplete"/>
+            <xul:label xbl:inherits="value=label-after"/>
+            <xul:hbox class="global-setting-icon" xbl:inherits="xb-global-setting-warning,xb-global-setting-names"/>
+            <html:div style="display:none">
+                <children/>
+            </html:div>
+            </xul:box>
+            <xul:vbox onclick="onShortcutsClick(event)">
+                <html:div anonid="shortcuts" style="-moz-column-count:2;"/>
+            </xul:vbox>
+        </content>
+
+        <implementation implements="nsIObserver">
+            <field name="textbox">
+                document.getAnonymousElementByAttribute(this, "anonid", "textbox")
+            </field>
+
+            <field name="shortcuts">
+                document.getAnonymousElementByAttribute(this, "anonid", "shortcuts")
+            </field>
+
+            <field name="mFreeInput">
+                this.getAttribute("free-input") == "true"
+            </field>
+
+            <field name="mAutocompleteData">[]</field>
+
+            <field name="mACompleteCustomController">null</field>
+
+            <field name="mSearchProviderId" readonly="true">
+                "prefs-combobox-autocomplete-" + Date.now() + Math.floor(Math.random() * 10000)
+            </field>
+
+            <field name="mAutoCompleteSearch" readonly="true">
+                Cc["@mozilla.org/autocomplete/search;1?name=" + this.textbox.getAttribute("autocompletesearch")]
+                    .getService(Ci.nsIAutoCompleteSearch)
+                    .wrappedJSObject;
+            </field>
+
+            <property name="value">
+                <getter><![CDATA[    let val = this.textbox.value;
+    if (this.mFreeInput) {
+        return val;
+    }
+    let result = this._getAutocompleteResult(val);
+    return result ? result.value : "";]]></getter>
+            </property>
+
+            <method name="_getAutocompleteResult">
+                <parameter name="aString"/>
+                <body><![CDATA[    if (this.mFreeInput) {
+        return {
+            label: aString,
+            value: aString
+        };
+    }
+    let normalizedSearchString = this.removeDiacritics(aString.toLowerCase());
+    let result = this.mAutoCompleteSearch.results.last;
+    if (!result || this.removeDiacritics(result.value.toLowerCase()) != normalizedSearchString) {
+        result = null;
+    }
+    if (!result) {
+        this.mAutocompleteData.some(function (aDataObj) {
+            return aDataObj.normalizedLabel.indexOf(normalizedSearchString) === 0 ? (result = aDataObj, true) : false;
+        });
+        if (!result) {
+            result = this.mAutocompleteData[0];
+        }
+    }
+    return result;]]></body>
+            </method>
+
+            <method name="_getLabelForValue">
+                <parameter name="aValue"/>
+                <body><![CDATA[    let data = null;
+    this.mAutocompleteData.some(function (aDataObj) {
+        return aDataObj.value == aValue ? (data = aDataObj, true) : false;
+    });
+    return data ? data.label : null;]]></body>
+            </method>
+
+            <constructor><![CDATA[    this.textbox.setAttribute("autocompletesearchparam", this.textbox.getAttribute("autocompletesearch") + "$" + this.mSearchProviderId + "$");
+    this.mAutoCompleteSearch.addSearchProvider(this.mSearchProviderId, this);
+    let os = Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);
+    os.addObserver(this, "autocomplete-did-enter-text", false);
+    let textbox = this.textbox;
+    let forceComplete = !this.mFreeInput;
+    [
+        "completeselectedindex",
+        "completedefaultindex",
+        "forcecomplete"
+    ].forEach(aAttr => textbox.setAttribute(aAttr, forceComplete));]]></constructor>
+
+            <destructor><![CDATA[    this.mAutoCompleteSearch.removeSearchProvider(this.mSearchProviderId, this);
+    let os = Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);
+    os.removeObserver(this, "autocomplete-did-enter-text");
+    this.mAutocompleteData = null;
+    this.mAutoCompleteSearch.results.clear();]]></destructor>
+
+            <method name="getSearchProviderData">
+                <parameter name="aData"/>
+                <body><![CDATA[    let me = this;
+    return {
+        hasOwnResults: true,
+        makeSearchResults: function PrefsCombobox_makeSearchResults(aData) {
+            let results = [];
+            let comments = [];
+            let normalizedSearchString = me.removeDiacritics(aData.searchString.toLowerCase());
+            me.mAutocompleteData.forEach(function (item) {
+                if (item.normalizedLabel.indexOf(normalizedSearchString) === 0) {
+                    results.push({
+                        label: item.label,
+                        value: item.value
+                    });
+                    comments.push(item.comment || null);
+                }
+            });
+            return {
+                historyResults: results,
+                historyComments: comments
+            };
+        }
+    };]]></body>
+            </method>
+
+            <field name="removeDiacritics">this.mAutoCompleteSearch.removeDiacritics</field>
+
+            <method name="_constructSource">
+                <body><![CDATA[    let children;
+    if (this.mSource && this.mSource.childNodes.length) {
+        children = this.mSource.childNodes;
+    } else {
+        children = this.getElementsByTagNameNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
+    }
+    children = Array.slice(children);
+    if (children.length) {
+        let autocompleteData = [];
+        let removeDiacritics = this.removeDiacritics;
+        children.forEach(function (aNode) {
+            let dataObj = {
+                label: aNode.getAttribute("label"),
+                normalizedLabel: removeDiacritics(aNode.getAttribute("label")).toLowerCase(),
+                value: aNode.hasAttribute("value") ? aNode.getAttribute("value") : aNode.getAttribute("label")
+            };
+            autocompleteData.push(dataObj);
+        });
+        this.mAutocompleteData = autocompleteData;
+    }
+    let val = this.getAttribute("value");
+    this.textbox.value = this.mFreeInput ? val : this._getLabelForValue(val) || "";
+    this.setAttribute("disabled", "false");
+    this.textbox.disabled = false;
+    this.removeAttribute("busy");]]></body>
+            </method>
+
+            <method name="_constructShortcuts">
+                <body><![CDATA[    if (this.mShortcuts) {
+        const kXULNS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+        let shortcuts = this.shortcuts;
+        Array.slice(this.mShortcuts.childNodes).forEach(function (aNode) {
+            let label = document.createElementNS(kXULNS, "label");
+            label.setAttribute("style", "display: block;");
+            label.setAttribute("crop", "end");
+            label.setAttribute("value", aNode.getAttribute("label"));
+            label.setAttribute("xb-value", aNode.hasAttribute("value") ? aNode.getAttribute("value") : aNode.getAttribute("label"));
+            shortcuts.appendChild(label);
+        });
+    }]]></body>
+            </method>
+
+            <method name="onShortcutsClick">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    let originalTarget = aEvent.originalTarget;
+    if (originalTarget.localName == "label") {
+        this.textbox.value = originalTarget.getAttribute("value");
+    }]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="aSubject"/>
+                <parameter name="aTopic"/>
+                <parameter name="aData"/>
+                <body><![CDATA[    switch (aTopic) {
+    case "autocomplete-did-enter-text":
+        if (aSubject === this.textbox) {
+            let result = this.mAutoCompleteSearch.results.last;
+            this.mAutoCompleteSearch.results.clear();
+            if (result) {
+                this.textbox.value = result.label;
+            }
+        }
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="focus"><![CDATA[    if (this.getAttribute("autocomplete") == "true" && event.originalTarget.localName == "input") {
+        this.mAutoCompleteSearch.results.clear();
+    }]]></handler>
+
+            <handler event="blur"><![CDATA[    if (this.getAttribute("autocomplete") == "true" && event.originalTarget.localName == "input") {
+        let result = this._getAutocompleteResult(this.textbox.value);
+        this.textbox.value = result ? result.label : "";
+        this._handleChange(event);
+    }]]></handler>
+
+            <handler event="click"><![CDATA[    if (event.originalTarget.localName == "dropmarker") {
+        this.textbox.focus();
+        this.textbox.toggleHistoryPopup();
+    }]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="#base" id="radiogroup">
+        <content busy="true" disabled="true">
+            <xul:box xbl:inherits="orient">
+                <xul:groupbox flex="1">
+                    <xul:caption crop="end" xbl:inherits="label"/>
+                    <html:div>
+                        <xul:radiogroup anonid="radiogroup" xbl:inherits="value,disabled,align,dir,pack,orient"/>
+                        <xul:hbox class="global-setting-icon" xbl:inherits="xb-global-setting-warning,xb-global-setting-names"/>
+                    </html:div>
+                </xul:groupbox>
+                <html:div style="display:none">
+                    <children/>
+                </html:div>
+            </xul:box>
+        </content>
+
+        <implementation>
+            <field name="radiogroup">
+                document.getAnonymousElementByAttribute(this, "anonid", "radiogroup")
+            </field>
+
+            <property name="value">
+                <getter><![CDATA[    return this.radiogroup.value;]]></getter>
+            </property>
+
+            <constructor><![CDATA[    let radioNodes = Array.slice(this.childNodes).filter(aNode => aNode.localName === "radio");
+    radioNodes.forEach(function (aNode) {
+        if (!aNode.hasAttribute("value")) {
+            aNode.setAttribute("value", aNode.getAttribute("label"));
+        } else if (!aNode.hasAttribute("label")) {
+            aNode.setAttribute("label", aNode.getAttribute("value"));
+        }
+        this.appendChild(aNode);
+    }, this.radiogroup);]]></constructor>
+
+            <method name="_constructSource">
+                <body><![CDATA[    let radiogroup = this.radiogroup;
+    if (this.mSource && this.mSource.childNodes.length) {
+        while (radiogroup.firstChild) {
+            radiogroup.removeChild(radiogroup.firstChild);
+        }
+        Array.slice(this.mSource.childNodes).forEach(function (aNode) {
+            if (!aNode.hasAttribute("value")) {
+                aNode.setAttribute("value", aNode.getAttribute("label"));
+            } else if (!aNode.hasAttribute("label")) {
+                aNode.setAttribute("label", aNode.getAttribute("value"));
+            }
+        });
+        radiogroup.appendChild(this.mSource);
+    }
+    if (radiogroup.childNodes.length) {
+        let value = radiogroup.value;
+        if (value && value == this.getAttribute("value")) {
+            radiogroup.value = value;
+        } else {
+            radiogroup.selectedIndex = -1;
+        }
+        this.setAttribute("disabled", "false");
+        radiogroup.disabled = false;
+    }
+    this.removeAttribute("busy");]]></body>
+            </method>
+
+            <method name="_constructShortcuts">
+                <body><![CDATA[]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/textbox.xml#textbox" id="shortcut-textbox">
+        <implementation>
+            <field name="mTextboxKeyWrapper">null</field>
+
+            <constructor><![CDATA[    this.mTextboxKeyWrapper = KeyHelper.initTextbox(this);]]></constructor>
+
+            <destructor><![CDATA[    this.mTextboxKeyWrapper.shutdown();
+    this.mTextboxKeyWrapper = null;]]></destructor>
+
+            <method name="recognizeEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    this.mTextboxKeyWrapper.recognizeEvent(aEvent);]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler action="this.recognizeEvent(event);" event="keypress" phase="capturing"/>
+        </handlers>
+    </binding>
+</bindings>

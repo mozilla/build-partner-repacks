@@ -1,0 +1,80 @@
+[overlay]
+<div class="overlay-page">
+    <a href="javascript:twitlink.close_overlay()" class="overlay-page-close -ui-TranslateTitle" title-message="twitter.slice.overlay-close"></a>
+    <div class="overlay-bg overlay-bg-tl"></div>
+    <div class="overlay-bg overlay-bg-tr"></div>
+    <div class="overlay-bg overlay-bg-bl"></div>
+    <div class="overlay-bg overlay-bg-br"></div>
+    <div class="overlay-page-content">
+        <div id="id_overlayUserInfo" class="user-info{$following?? user-following}">
+            <div class="user-pic">
+                <div class="avatar">
+                    <img alt="" src="{$profile_image_url}" />
+                </div>
+                <div class="user-data">
+                    <div class="user-name">{$name}</div>
+                    <div class="user-link">
+                        <a href="javascript:twitlink.open('http://twitter.com/{$screen_name}')">{$screen_name}<br/>
+                            <span class="-ui-Translate" message="overlay.view-fool-profile-link"></span>
+                        </a>
+                    </div>
+                    <div class="user-location">{$location}</div>
+                </div>
+            </div>
+            <div class="user-text">
+                <p>
+                    {$description}&#32;
+                    <a href="javascript:twitlink.open('{$url}')">{$url}</a>
+                </p>
+            </div>
+            <div class="user-stats">
+                <div class="user-stats-wrapper">
+                    <div class="user-stat">
+                        <div class="user-stat-counter-value">
+                            <a href="javascript:twitlink.open('http://twitter.com/{$screen_name}')">{$statuses_count}</a>
+                        </div>
+                        <div class="user-stat-counter-type -ui-Translate" message="overlay.tweet-count"></div>
+                    </div>
+                    <div class="user-stat">
+                        <div class="user-stat-counter-value">
+                            <a href="javascript:twitlink.open('http://twitter.com/{$screen_name}/following')">{$friends_count}</a>
+                        </div>
+                        <div class="user-stat-counter-type -ui-Translate" message="overlay.friends-count"></div>
+                    </div>
+                    <div class="user-stat">
+                        <div class="user-stat-counter-value">
+                            <a id="id_overlayFollowersCounter" href="javascript:twitlink.open('http://twitter.com/{$screen_name}/followers')">{$followers_count}</a>
+                        </div>
+                        <div class="user-stat-counter-type -ui-Translate" message="overlay.followers-count"></div>
+                    </div>
+                    <div class="user-stat">
+                        <div class="user-stat-counter-value">
+                            <a href="javascript:twitlink.open('http://twitter.com/{$screen_name}/lists/memberships')">{$listed_count}</a>
+                        </div>
+                        <div class="user-stat-counter-type -ui-Translate" message="overlay.lists-count"></div>
+                    </div>
+                </div>
+            </div>
+            {@NOT_EQ($my_id,$id_str)??#overlay_user_actions}
+        </div>
+    </div>
+</div>
+*---------------------*
+[overlay_user_actions]
+<div class="user-actions">
+    <div class="user-action user-action-follow">
+        <a href="javascript:twitlink.overlay_follow('{$id_str}')">
+            <span class="-ui-Translate" message="overlay.action.follow"></span>
+        </a>
+    </div>
+    <div class="user-action user-action-unfollow">
+        <a href="javascript:twitlink.overlay_unfollow('{$id_str}')">
+            <span class="noover -ui-Translate" message="overlay.action.following"></span>
+            <span class="over -ui-Translate" message="overlay.action.unfollow"></span>
+        </a>
+    </div>
+    <div class="user-action-dmsg" id="id_overlay_dmsg_btn" style="display:{$__canDM??block::none};">
+        <a href="javascript:twitlink.directReply('{$screen_name}','{$id_str}',true)" class="-ui-TranslateTitle" title-message="overlay.action.direct-msg"></a>
+    </div>
+    <p></p>
+</div>

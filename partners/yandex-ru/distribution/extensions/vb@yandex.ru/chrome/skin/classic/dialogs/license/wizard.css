@@ -1,0 +1,15 @@
+@import url(chrome://global/skin/);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace html url(http://www.w3.org/1999/xhtml);@namespace islands url(http://bar.yandex.ru/ui/islands);dialog,islands|*{font:13px/18px Arial,sans-serif}
+islands|*{color:#666}
+dialog{-moz-appearance:none!important;background-color:#fff;color:#333;margin:0}
+dialog[ex-transparent=true]{background-color:transparent;padding:12px}
+dialog[ex-shadow=true]{border:1px solid rgba(0,0,0,.5)}
+dialog>deck>hbox{max-width:20em;min-height:18em;background-color:#fff}
+#options-box{padding:30px 70px 30px 40px}
+dialog:not([ex-shadow=true])>deck>#license-box{padding:10px 10px 20px}
+hbox.dialog-button-box{display:none}
+#logo-image{-moz-transform:scale(0.6875);transform:scale(0.6875);-moz-transform-origin:0 0;transform-origin:0 0}
+#vendor-image{margin-left:2em;-moz-transform:scale(0.5);transform:scale(0.5);-moz-transform-origin:100% 0;transform-origin:100% 0}
+html|h3{margin:-4px 0 0 0;padding:0;font-size:25px;line-height:30px}
+html|a{text-decoration:underline;cursor:pointer}
+html|iframe{border:0;border-bottom:1px solid #a7a7a7;margin:0 0 1em}
+#options-groupbox{margin-bottom:1em}

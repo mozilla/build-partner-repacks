@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "/native/fx/cy.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/native/fx/cy/icons/cy-4.svg" name="&cy.fullname;">
+
+    <f:setting default="false" name="showValue" scope="widget">
+        <control label="&cy.showValue.label;" type="checkbox"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="/native/fx/cy/module.jsm"/>
+    </modules>
+</widget>

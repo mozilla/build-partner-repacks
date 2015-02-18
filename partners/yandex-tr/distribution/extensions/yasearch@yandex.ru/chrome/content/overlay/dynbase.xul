@@ -1,0 +1,20 @@
+<?xml version='1.0'?>
+<!DOCTYPE overlay [
+<!ENTITY % appDTD SYSTEM "../bar.dtd">
+%appDTD;
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+]>
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <script src="chrome://&app.name;/content/overlay/browser.js" type="application/x-javascript"/>
+    <toolbarpalette id="BrowserToolbarPalette"/>
+    <toolbox id="navigator-toolbox" persist="cb-barless">
+        <toolbar cb-app="&app.name;" cb-australis="" cb-theme-color="bright" class="chromeclass-toolbar" context="toolbar-context-menu" crop="end" customizable="true" defaulticonsize="small" defaultset="" hidden="false" iconsize="small" id="&app.name;-bar" insertafter="nav-bar" lockiconsize="true" mode="icons" toolbarname="&product1.nom;"/>
+        <toolbar id="nav-bar">
+            <toolbaritem id="&app.name;-toggle-barless-toolbaritem" insertbefore="PanelUI-button" removable="false">
+                <button cb-collapsed-state="true" id="&app.name;-toggle-barless-button"/>
+            </toolbaritem>
+        </toolbar>
+    </toolbox>
+</overlay>

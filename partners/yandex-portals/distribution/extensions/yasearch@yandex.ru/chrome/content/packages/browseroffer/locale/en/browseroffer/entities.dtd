@@ -1,0 +1,24 @@
+<!ENTITY browseroffer.name "Show contextual offers from Yandex.Browser">
+
+<!ENTITY browseroffer.menu.openLink "Open link in Yandex.Browser">
+
+<!ENTITY browseroffer.settings.openLink "Show &#171;Open link in Yandex.Browser&#187; menu item">
+
+<!ENTITY browseroffer.notification.button.noYaBrowser "More">
+<!ENTITY browseroffer.notification.button.yaBrowser "Open">
+<!ENTITY browseroffer.notification.text.noYaBrowser "Flash&browseroffer.notification.text.rmark; Player is needed to view some elements on this page. Download Yandex.Browser with the player included">
+<!ENTITY browseroffer.notification.text.yaBrowser "Flash&browseroffer.notification.text.rmark; Player is needed to view some elements on this page. Open it in Yandex.Browser with the built-in player">
+<!ENTITY browseroffer.notification.tooltip.close "Close notification">
+<!ENTITY browseroffer.notification.text.rmark "&#60;html:sup&#62;&#174;&#60;/html:sup&#62;">
+<!ENTITY browseroffer.notification.button.add "Yes">
+<!ENTITY browseroffer.notification.wdgt-suggest.fb "Facebook">
+<!ENTITY browseroffer.notification.wdgt-suggest.ok "Odnoklassniki">
+<!ENTITY browseroffer.notification.wdgt-suggest.text "Do you want to get notifications when you have new messages from your {button} friends?">
+<!ENTITY browseroffer.notification.wdgt-suggest.vk "VK">
+<!ENTITY browseroffer.settings.showSuggest "Show Yandex.Elements contextual ads">
+<!ENTITY browseroffer.notification.button.deny "No">
+<!ENTITY browseroffer.notification.button.no "Нет">
+<!ENTITY pagetranslator.tutorial.button.noYaBrowser "Подробнее">
+<!ENTITY pagetranslator.tutorial.button.yaBrowser "Открыть">
+<!ENTITY pagetranslator.tutorial.text.noYaBrowser "Попробуйте все возможности перевода в Яндекс.Браузере.">
+<!ENTITY pagetranslator.tutorial.text.yaBrowser "Попробуйте все возможности перевода в Яндекс.Браузере.">

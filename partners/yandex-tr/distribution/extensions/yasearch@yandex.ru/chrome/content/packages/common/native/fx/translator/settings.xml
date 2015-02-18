@@ -1,0 +1,70 @@
+<?xml version='1.0'?>
+<!DOCTYPE component [
+<!ENTITY % translate SYSTEM "/native/fx/translator.dtd">
+%translate;
+]>
+
+<gui:component xmlns:gui="http://bar.yandex.ru/dev/native/gui" xmlns:html="http://www.w3.org/1999/xhtml" icon="/icons/translate.png" name="&translate.name;" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:ya="http://bar.yandex.ru/firefox">
+
+    <html:script type="application/x-javascript;version=1.8"><![CDATA[
+        let JSProtoObject = {
+            init: function () {
+                let ns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+
+                let translateOptionList = document.getElementById("{{UNIC_STR}}-translate-option"),
+                    menupopup = translateOptionList.menupopup;
+
+                let optPrefValue = this._pluginCore.translateOnHoverOption;
+
+                let isMac = this._pluginCore.API.Environment.os.name === "mac";
+                [{"key": this._pluginCore.TRANSLATE_ON_CTRLKEY, "uiname": isMac ? "Cmd" : "Ctrl"}, {"key": this._pluginCore.TRANSLATE_ON_SHIFTKEY, "uiname": "Shift"}].forEach(function (el) {
+                    let selectNode = document.createElementNS(ns, "menuitem");
+                    selectNode.setAttribute("label", el.uiname);
+                    selectNode.setAttribute("value", el.key);
+                    menupopup.appendChild(selectNode);
+                });
+
+                translateOptionList.selectedItem = menupopup.querySelector("menuitem[value='"+ optPrefValue +"']");
+            },
+
+            onApply: function () {
+                let menulist = document.getElementById("{{UNIC_STR}}-translate-option");
+                if (menulist) {
+                    this._pluginCore.Prefs.setValue(this._pluginCore.TRANSLATE_ON_HOVER_OPTION_PREF, menulist.value);
+                }
+            },
+
+            _pluginCore: JSNativeModule.core
+        };
+    ]]></html:script>
+
+    <html:style type="text/css"><![CDATA[
+        #{{UNIC_STR}}-languages menuitem:not([disabled]) {
+            margin-left: 16px;
+        }
+    ]]></html:style>
+
+    <preferences>
+        <preference id="{{PROTO_PREF_BRANCH}}translate_on_hover" name="{{PROTO_PREF_BRANCH}}translate_on_hover" gui:resetOnRestore="true" type="bool"/>
+        <preference id="from" name="from" gui:resetOnRestore="true" type="string"/>
+        <preference id="to" name="to" gui:resetOnRestore="true" type="string"/>
+    </preferences>
+
+    <gui:gui onapply="JSProtoObject.onApply()" onshown="JSProtoObject.init()">
+        <gui:nodes>
+            <hbox>
+                <groupbox flex="1">
+                    <radiogroup flex="1" orient="vertical" preference="{{PROTO_PREF_BRANCH}}translate_on_hover">
+                        <radio label="&translate.settings.radio_hover;" value="true"/>
+                        <hbox>
+                            <radio label="&translate.settings.radio_hover; +" value="false"/>
+                            <menulist id="{{UNIC_STR}}-translate-option">
+                                <menupopup/>
+                            </menulist>
+                        </hbox>
+                    </radiogroup>
+                </groupbox>
+            </hbox>
+        </gui:nodes>
+    </gui:gui>
+</gui:component>

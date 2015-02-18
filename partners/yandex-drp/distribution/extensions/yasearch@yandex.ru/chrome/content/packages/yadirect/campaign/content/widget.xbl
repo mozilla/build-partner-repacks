@@ -1,0 +1,341 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="styles/main.css"/>
+        </resources>
+
+        <content>
+            <xul:toolbarbutton anonid="button-auth" class="toolbarbutton-1 widget-button" item-command="auth" tooltip="campaign-no-auth-tooltip" type="button" yb-native-not-authorized="true"/>
+
+            <toolbarbutton anonid="campaign-button" class="toolbarbutton-1 widget-button" item-command="camp" tooltip="campaign-tooltip" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+                <menupopup anonid="campaign-menupopup">
+                    <menuitem anonid="menuitem-update" item-command="update" label="&camp.updateinfo;"/>
+                    <menuseparator/>
+                    <menuitem anonid="menuitem-pay" item-command="pay" label="&camp.pay;"/>
+                </menupopup>
+            </toolbarbutton>
+
+            <tooltip anonid="campaign-no-auth-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <grid flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&camp.tooltip.notlogged.row1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&camp.tooltip.notlogged.row2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+            </tooltip>
+
+            <tooltip anonid="campaign-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <grid anonid="tooltip-error-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&camp.tooltip.error.row1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&camp.tooltip.error.row2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <grid anonid="tooltip-nocampaigns-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&camp.tooltip.nocamapigns.row1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&camp.tooltip.nocamapigns.row2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <hbox anonid="tooltip-header" flex="1">&camp.name;&#160;<label/></hbox>
+
+                <grid anonid="tooltip-nostatus-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&camp.tooltip.invalid_num.row1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&camp.tooltip.invalid_num.row2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <grid anonid="tooltip-content" flex="1">
+                    <columns><column/><column flex="1"/></columns>
+                    <rows>
+                        <row align="center" anonid="campnumber-tooltip">
+                            <hbox pack="end"><label value="&camp.tooltip.number;"/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="status-tooltip">
+                            <hbox pack="end"><label value="&camp.tooltip.state;"/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="sumrest-tooltip">
+                            <hbox pack="end"><label value="&camp.tooltip.balance;"/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="todayclicks-tooltip">
+                            <hbox pack="end"><label value="&camp.tooltip.todayclicks;"/></hbox>
+                            <label/>
+                        </row>
+                    </rows>
+                </grid>
+            </tooltip>
+        </content>
+
+        <implementation>
+            <field name="STATUS_SHOWING" readonly="true">"&camp.status.shows;"</field>
+            <field name="STATUS_NOMONYEHONEY" readonly="true">"&camp.status.outofmoney;"</field>
+            <field name="STATUS_DISABLED" readonly="true">"&camp.status.disabled;"</field>
+            <field name="STATUS_SWITCHEDOFF" readonly="true">"&camp.status.stopped;"</field>
+
+            <field name="_authButton" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "button-auth")</field>
+            <field name="_button" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "campaign-button")</field>
+            <field name="_authTooltip" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "campaign-no-auth-tooltip")</field>
+            <field name="_tooltip" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "campaign-tooltip")</field>
+            <field name="_menuPopup" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "campaign-menupopup")</field>
+
+            <field name="_menuUpdatePoint">document.getAnonymousElementByAttribute(this, "anonid", "menuitem-update")</field>
+
+            <field name="_throbberTimer">null</field>
+
+            <field name="observers"><![CDATA[    ({
+        throbber: function campaign_observers_throbber(topic, data) {
+            let show = false;
+            let dataObj;
+            try {
+                dataObj = JSON.parse(data);
+            } catch (e) {
+            }
+            if (!dataObj || dataObj.wiid !== this.WIID) {
+                return;
+            }
+            show = !!dataObj.value;
+            if (show) {
+                if (this._throbberTimer) {
+                    this._throbberTimer.cancel();
+                }
+                this._button.setAttribute("throbber", true);
+                this._menuUpdatePoint.setAttribute("disabled", true);
+                this._lastThrobberTime = Date.now();
+            } else {
+                if (this._throbberTimer) {
+                    return;
+                }
+                let delay = 700 - (Date.now() - this._lastThrobberTime);
+                if (delay < 0) {
+                    delay = 0;
+                }
+                this._throbberTimer = new this.application.api.SysUtils.Timer(function () {
+                    this._throbberTimer = null;
+                    this._lastThrobberTime = null;
+                    this._button.setAttribute("throbber", false);
+                    this._menuUpdatePoint.removeAttribute("disabled");
+                }.bind(this), delay);
+            }
+        },
+        display: function campaign_observers_display(topic, data) {
+            if (data) {
+                let dataObj;
+                try {
+                    dataObj = JSON.parse(data);
+                } catch (e) {
+                }
+                if (!dataObj || dataObj.wiid != this.WIID) {
+                    return;
+                }
+            }
+            this.updateView();
+        }
+    });]]></field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.ybwFinalize();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    var tltpLinker = function (aObj) {
+        let tltp = aObj.tltp;
+        let btn = aObj.btn;
+        let tooltipID = this.WIID + tltp.getAttribute("anonid");
+        tltp.setAttribute("id", tooltipID);
+        btn.setAttribute("tooltip", tooltipID);
+    }.bind(this);
+    [
+        {
+            tltp: this._tooltip,
+            btn: this._button
+        },
+        {
+            tltp: this._authTooltip,
+            btn: this._authButton
+        }
+    ].forEach(tltpLinker);
+    this.updateView();]]></body>
+            </method>
+
+            <method name="ybwFinalize">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    if (this._throbberTimer) {
+        this._throbberTimer.cancel();
+        this._throbberTimer = null;
+    }]]></body>
+            </method>
+
+            <method name="_isAgency">
+                <parameter name="aIsAgency"/>
+                <body><![CDATA[    if (aIsAgency) {
+        this._button.hidden = true;
+    } else {
+        this._button.hidden = false;
+    }]]></body>
+            </method>
+
+            <method name="updateView">
+                <body><![CDATA[    if (!this.application.isAuth()) {
+        this.setAttribute("auth", false);
+        return;
+    }
+    this.setAttribute("auth", true);
+    this.setAttribute("yb-no-data", true);
+    this._button.removeAttribute("counter");
+    this._button.removeAttribute("yb-camp-status");
+    this._populateMenuItems();
+    this._populateTooltip();
+    let data = this.application.getUserData(this.WIID, "main");
+    if (data) {
+        this._isAgency(data.isAgency);
+        if (data.isAgency || data._error) {
+            return;
+        }
+        this.removeAttribute("yb-no-data");
+        if (data.spec) {
+            if (data.spec.shortname) {
+                this._button.setAttribute("counter", data.spec.shortname + (data.spec.sumrest ? " " + data.spec.sumrest + " " + data.spec.currency : ""));
+            }
+        }
+    }]]></body>
+            </method>
+
+            <method name="_populateMenuItems">
+                <body><![CDATA[    this._cleanMenuItems();
+    let data = this.application.getUserData(this.WIID, "main");
+    if (!(data && data.spec)) {
+        return;
+    }
+    let payItem = this._menuPopup.querySelector("menuitem[anonid=\"menuitem-pay\"]");
+    let sep = payItem.previousElementSibling && payItem.previousElementSibling.tagName == "menuseparator" ? payItem.previousElementSibling : null;
+    if (data.spec.noCampaigns) {
+        payItem.hidden = true;
+        if (sep) {
+            sep.hidden = true;
+        }
+    } else {
+        payItem.hidden = false;
+        if (sep) {
+            sep.hidden = false;
+        }
+    }]]></body>
+            </method>
+
+            <method name="_cleanMenuItems">
+                <body><![CDATA[    let payItem = this._menuPopup.querySelector("menuitem[anonid=\"menuitem-pay\"]");
+    if (payItem) {
+        payItem.hidden = true;
+        if (payItem.previousElementSibling && payItem.previousElementSibling.tagName == "menuseparator") {
+            payItem.previousElementSibling.hidden = true;
+        }
+    }]]></body>
+            </method>
+
+            <method name="_populateTooltip">
+                <body><![CDATA[    let tooltip = this._tooltip;
+    Array.slice(tooltip.children).forEach(function (child) {
+        if (child.getAttribute("anonid") != "tooltip-error-grid") {
+            child.hidden = true;
+        }
+    });
+    let data = this.application.getUserData(this.WIID, "main");
+    if (!(data && data.spec) || data._error) {
+        return;
+    }
+    let specData = data.spec;
+    let nocampsGrid = tooltip.querySelector("grid[anonid=\"tooltip-nocampaigns-grid\"]");
+    let noStatusGrid = tooltip.querySelector("grid[anonid=\"tooltip-nostatus-grid\"]");
+    let campsGrid = tooltip.querySelector("grid[anonid=\"tooltip-content\"]");
+    let tooltipHeader = tooltip.querySelector("hbox[anonid=\"tooltip-header\"]");
+    if (specData.noCampaigns) {
+        nocampsGrid.hidden = false;
+    } else {
+        if (!specData.status) {
+            noStatusGrid.hidden = false;
+        } else {
+            campsGrid.hidden = false;
+            tooltipHeader.hidden = false;
+            let campName40 = specData.name;
+            if (campName40 && campName40.length > 40) {
+                campName40 = campName40.substr(0, 40) + "…";
+            }
+            tooltipHeader.lastChild.setAttribute("value", campName40);
+            let statusText = this.STATUS_SWITCHEDOFF;
+            switch (specData.status) {
+            case "Идут показы":
+                statusText = this.STATUS_SHOWING;
+                this._button.setAttribute("yb-camp-status", "showing");
+                break;
+            case "Нет средств":
+                statusText = this.STATUS_NOMONYEHONEY;
+                this._button.setAttribute("yb-camp-status", "outofmoney");
+                break;
+            case "Отключена":
+                statusText = this.STATUS_DISABLED;
+                break;
+            }
+            let statusTooltip = campsGrid.querySelector("[anonid=\"status-tooltip\"]");
+            if (statusTooltip) {
+                statusTooltip.lastChild.setAttribute("value", statusText);
+            }
+            let rowsKeys = [
+                "sumrest",
+                "campnumber",
+                "todayclicks"
+            ];
+            rowsKeys.forEach(function (key) {
+                let element = campsGrid.querySelector("[anonid=\"" + key + "-tooltip\"]");
+                if (element) {
+                    if (specData[key]) {
+                        element.hidden = false;
+                        let text = specData[key];
+                        if (key == "sumrest") {
+                            text += " " + (specData.currency || "");
+                        }
+                        element.lastChild.setAttribute("value", text);
+                    } else {
+                        element.hidden = true;
+                        element.lastChild.setAttribute("value", "");
+                    }
+                }
+            });
+        }
+    }]]></body>
+            </method>
+
+        </implementation>
+    </binding>
+
+</bindings>

@@ -1,0 +1,73 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % music SYSTEM "/native/fx/music.dtd">
+%music;
+]>
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="//toolkit/native/bindings/widget.xml#widget" id="widget">
+        <resources>
+            <stylesheet src="music.css"/>
+        </resources>
+
+        <content>
+            <toolbarbutton anonid="music-slice-button" class="chromeclass-toolbar-additional toolbarbutton-1" label="&music.name;" oncommand="_showSlice(event);" tooltiptext="&music.name;" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"/>
+            <toolbarbutton anonid="music-control-button" class="chromeclass-toolbar-additional toolbarbutton-1" data-ya-is-playing="false" data-ya-pause-label="&music.action.pause;" data-ya-play-label="&music.action.play;" hidden="true" label="&music.action.play;" oncommand="_switchPlayingState();" tooltiptext="&music.action.play;" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"/>
+        </content>
+
+        <implementation>
+            <field name="_sliceButton" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "music-slice-button");]]></field>
+
+            <field name="_controlButton" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "music-control-button");]]></field>
+
+            <property name="_isPlaying">
+                <getter><![CDATA[    return this._controlButton.getAttribute("data-ya-is-playing") === "true";]]></getter>
+                <setter><![CDATA[    let isPlaying = val;
+    let actionLabelName = "data-ya-" + (isPlaying ? "pause" : "play") + "-label";
+    let label = this._controlButton.getAttribute(actionLabelName);
+    this._controlButton.setAttribute("label", label);
+    this._controlButton.setAttribute("tooltiptext", label);
+    this._controlButton.setAttribute("data-ya-is-playing", isPlaying);
+    if (isPlaying && this._controlButton.hidden) {
+        this._controlButton.hidden = false;
+    }]]></setter>
+            </property>
+
+            <constructor><![CDATA[    this.refreshPlayingState(true);]]></constructor>
+
+            <method name="refreshPlayingState">
+                <parameter name="setWhenButtonHidden"/>
+                <body><![CDATA[    if (!setWhenButtonHidden && this._controlButton.hidden) {
+        return;
+    }
+    this._isPlaying = this.module.isPlaying;]]></body>
+            </method>
+
+            <method name="stop">
+                <body><![CDATA[    this.refreshPlayingState(false);
+    this._controlButton.hidden = true;]]></body>
+            </method>
+
+            <method name="_switchPlayingState">
+                <parameter name="event"/>
+                <body><![CDATA[    this.module.utils.statistics.logWidget("fx.yamusic.playbutton");
+    this._isPlaying = !this._isPlaying;
+    if (this._isPlaying) {
+        this.module.play();
+    } else {
+        this.module.pause();
+    }]]></body>
+            </method>
+
+            <method name="_showSlice">
+                <parameter name="event"/>
+                <body><![CDATA[    this.module.utils.statistics.logWidget("fx.yamusic.button");
+    if (event) {
+        event.stopPropagation();
+    }
+    this.module.showSlice(this._sliceButton);]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+</bindings>

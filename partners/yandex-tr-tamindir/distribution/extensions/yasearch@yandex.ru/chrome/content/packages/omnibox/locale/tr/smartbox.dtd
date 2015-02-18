@@ -1,0 +1,31 @@
+<!ENTITY wgt.smartbox.name "Akıllı satır">
+<!ENTITY wgt.smartbox.changeSearchEngine "Arama motorları">
+<!ENTITY wgt.smartbox.searchEngineSettings "Arama ayarları">
+<!ENTITY wgt.smartbox.nowUsedSearch "kullanılan">
+
+<!ENTITY wgt.smartbox.action.switchToTab.label "sekmeye git">
+<!ENTITY wgt.smartbox.action.searchBy.label "{providerName} ile ara">
+<!ENTITY wgt.smartbox.action.navigate.label "Git">
+
+<!ENTITY wgt.smartbox.popup.desc "Adres satırına sorgunuzu girdiğinizde, ipuçlarında popüler sorguları, daha önce ziyaret edilen sitelerin bağlantılarını ve favorileri göreceksiniz.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.desc "Uygulama tarayıcınızda çalışmıyor. Lütfen tarayıcınızı güncelleyin.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.url "http://browser.yandex.com.tr">
+
+<!ENTITY wgt.smartbox.dropDownOptions.toggleExpandedState "Arama ayarları">
+<!ENTITY wgt.smartbox.dropDownOptions.disableSuggest "İpuçlarını kapat ({providerName} tuşlarını algılamasın)">
+<!ENTITY wgt.smartbox.dropDownOptions.enabledSuggest "İpuçlarını aç ({providerName} tuşlarını algılasın)">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.label "Arama motoru ekle">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.url "http://go.microsoft.com/fwlink/?LinkId=122812">
+<!ENTITY wgt.smartbox.qs.window.title "Varsayılan arama">
+<!ENTITY wgt.smartbox.qs.tree.col "Bul ">
+<!ENTITY wgt.smartbox.qs.add "Ekle ">
+<!ENTITY wgt.smartbox.qs.button.ok "Hazır ">
+<!ENTITY wgt.smartbox.qs.addsearch "Arama kutusu ekle">
+<!ENTITY wgt.smartbox.qs.searchsettings "Arama ayarları">
+<!ENTITY wgt.smartbox.qs.search "Bul ">
+<!ENTITY wgt.smartbox.qs.searchYandex "Yandex&#39;te bul">
+<!ENTITY wgt.smartbox.addressbarLabel "Web&#39;de aramak için buraya yazabilirsin">
+<!ENTITY wgt.smartbox.searchSettings "Arama ayarları">
+<!ENTITY wgt.smartbox.restoreDefaultEngine "{providerName} varsayılan olarak ayarlansın">
+<!ENTITY wgt.smartbox.searchSettings.menu.defaultEngine.label "Varsayılan arama">
+<!ENTITY wgt.smartbox.searchSettings.menu.settings.label "Ayarlar">

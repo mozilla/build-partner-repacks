@@ -5,11 +5,12 @@ const {
     results: Cr,
     utils: Cu
 } = Components;
-const EXTENSION_DIR = __LOCATION__.parent.parent;
-const EXTENSION_PATH = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService).newFileURI(EXTENSION_DIR).spec;
-Cu.import(EXTENSION_PATH + "config.js");
-const APP_NAME = VB_CONFIG.APP.NAME;
+Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+let extDir = Services.io.newURI(__URI__, null, null);
+const EXTENSION_URI = Services.io.newURI(extDir.resolve(".."), null, null);
+Cu.import(EXTENSION_URI.resolve("config.js"));
+const APP_NAME = VB_CONFIG.APP.NAME;
 function Log(libs, rootDir) {
     this._libs = libs;
     this._rootDir = rootDir;
@@ -73,7 +74,7 @@ Log.prototype = {
 Log.getLogLevelHandler = function Log_getLogLevelHandler(appender) {
     return function LogLevelHandler(level) {
         level = parseInt(level, 10);
-        level >= 0 ? level : 100;
+        level = level >= 0 ? level : 100;
         appender.level = level;
     };
 };
@@ -98,8 +99,7 @@ Log.APPENDERS = [
         this.prefs[Log.getPrefName("console.level")] = Log.getLogLevelHandler(appender);
     },
     function Log_APPENDERS_stdout(libs) {
-        let basicFormatter = new libs.Log4Moz.BasicFormatter();
-        let appender = new libs.Log4Moz.DumpAppender(basicFormatter);
+        let appender = new libs.Log4Moz.DumpAppender();
         let rootLogger = libs.Log4Moz.repository.rootLogger;
         rootLogger.addAppender(appender);
         this.stop = function Log_APPENDERS_stdout_stop() {
@@ -168,7 +168,6 @@ function VBCore() {
     this._observerService.addObserver(this, "profile-after-change", false);
     this._observerService.addObserver(this, "quit-application", false);
 }
-;
 VBCore.prototype = {
     get Lib() {
         return this._libs;
@@ -204,8 +203,8 @@ VBCore.prototype = {
         }
         return this._appRoot.clone();
     },
-    get extensionPathFile() {
-        return EXTENSION_DIR.clone();
+    get extensionURI() {
+        return EXTENSION_URI.clone();
     },
     get wrappedJSObject() {
         return this;
@@ -213,7 +212,7 @@ VBCore.prototype = {
     get eventTopics() {
         return this._globalEvents;
     },
-    cleanup: function () {
+    cleanup: function VBCore_cleanup() {
         this._log.stop();
     },
     observe: function VBCore_observe(subject, topic, data) {
@@ -224,8 +223,9 @@ VBCore.prototype = {
             this._initApp();
             break;
         case "quit-application":
-            if (this._appObj)
+            if (this._appObj) {
                 this._destroyApp();
+            }
             break;
         }
     },
@@ -296,6 +296,3 @@ VBCore.prototype = {
         }]
 };
 const NSGetFactory = XPCOMUtils.generateNSGetFactory([VBCore]);
-if (Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment).exists("YAVB_DEBUG_PROFILER_RUN")) {
-    Cu.import(VBCore.prototype._modulesPath + "Profiler.jsm", {}).Profiler.run();
-}

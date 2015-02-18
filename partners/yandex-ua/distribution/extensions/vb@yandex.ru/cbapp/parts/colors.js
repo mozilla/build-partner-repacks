@@ -35,7 +35,8 @@ const colors = {
             parseInt(bgColor.substr(4, 2), 16)
         ];
         let tone = (red + green + blue) / 3;
-        return tone < FONT_COLOR_THRESHOLD && (red < FONT_COLOR_THRESHOLD || green < FONT_COLOR_THRESHOLD) ? 1 : 0;
+        let isWhite = tone < FONT_COLOR_THRESHOLD && (red < FONT_COLOR_THRESHOLD || green < FONT_COLOR_THRESHOLD);
+        return isWhite ? 1 : 0;
     },
     requestImageDominantColor: function Colors_requestImageDominantColor(url, options, callback) {
         if (typeof options === "function") {
@@ -47,11 +48,13 @@ const colors = {
         let hiddenWindowDoc = hiddenWindow.document;
         let image = hiddenWindowDoc.createElementNS("http://www.w3.org/1999/xhtml", "img");
         const MOZ_ANNO_PREFIX = "moz-anno:favicon:";
-        if (url.indexOf(MOZ_ANNO_PREFIX) === 0)
+        if (url.indexOf(MOZ_ANNO_PREFIX) === 0) {
             url = url.replace(MOZ_ANNO_PREFIX, "");
+        }
         image.onload = function imgOnLoad() {
-            if (image.width === 1 && image.height === 1)
+            if (image.width === 1 && image.height === 1) {
                 return callback(new Error("1x1 favicon"));
+            }
             let canvas = hiddenWindowDoc.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
             let ctx = canvas.getContext("2d");
             ctx.mozImageSmoothingEnabled = false;
@@ -93,16 +96,18 @@ const colors = {
                 pixelColorData[1] = imgPixels.data[index + 1];
                 pixelColorData[2] = imgPixels.data[index + 2];
                 pixelColorData[3] = imgPixels.data[index + 3];
-                if (isAlmostTransparent(pixelColorData[3]))
+                if (isAlmostTransparent(pixelColorData[3])) {
                     continue;
+                }
                 if (pixelColorData[3] !== 255) {
                     for (let z = 0; z < 3; z++) {
                         let colorStep = (255 - pixelColorData[z]) / 255;
                         pixelColorData[z] = Math.round(255 - colorStep * pixelColorData[3]);
                     }
                 }
-                if (!options.preventSkipColors && (isAlmostWhite(pixelColorData) || isAlmostBlack(pixelColorData) || isLightGrey(pixelColorData)))
+                if (!options.preventSkipColors && (isAlmostWhite(pixelColorData) || isAlmostBlack(pixelColorData) || isLightGrey(pixelColorData))) {
                     continue;
+                }
                 let color = toRGB(pixelColorData[0]) + toRGB(pixelColorData[1]) + toRGB(pixelColorData[2]);
                 colorsContainer[color] = colorsContainer[color] || 0;
                 colorsContainer[color] += 1;
@@ -128,8 +133,9 @@ const colors = {
                 maxValueKey = toRGB(red) + toRGB(green) + toRGB(blue);
             }
         }
-        if (options.url)
+        if (options.url) {
             this._logger.trace("Most frequent color for " + options.url + " is " + (maxValueKey || "undefined"));
+        }
         return maxValueKey;
     },
     _application: null,
@@ -137,10 +143,12 @@ const colors = {
 };
 function isAcidColor(red, green, blue) {
     let sum = red + green + blue;
-    if (sum >= MAX_THRESHOLD * 2 && (red <= MIN_THRESHOLD || green <= MIN_THRESHOLD || blue <= MIN_THRESHOLD))
+    if (sum >= MAX_THRESHOLD * 2 && (red <= MIN_THRESHOLD || green <= MIN_THRESHOLD || blue <= MIN_THRESHOLD)) {
         return true;
-    if (sum <= MAX_THRESHOLD + MIN_THRESHOLD * 2 && (red >= MAX_THRESHOLD || green >= MAX_THRESHOLD || blue >= MAX_THRESHOLD))
+    }
+    if (sum <= MAX_THRESHOLD + MIN_THRESHOLD * 2 && (red >= MAX_THRESHOLD || green >= MAX_THRESHOLD || blue >= MAX_THRESHOLD)) {
         return true;
+    }
     return false;
 }
 function toRGB(num) {

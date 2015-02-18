@@ -1,0 +1,270 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="main.css"/>
+        </resources>
+        <content>
+            <xul:tooltip id="okls-tooltip-off">
+                <xul:label value="&widget.tooltip.no-auth1;"/>
+                <xul:label value="&widget.tooltip.no-auth2;"/>
+            </xul:tooltip>
+
+            <xul:tooltip id="okls-tooltip-empty">
+                <xul:label value="&widget.menuitem.home;"/>
+            </xul:tooltip>
+
+            <xul:tooltip id="okls-tooltip">
+                <xul:label class="text-bold" value="&widget.name;:"/>
+                <xul:grid>
+                    <xul:columns>
+                        <xul:column flex="1"/>
+                        <xul:column flex="2"/>
+                    </xul:columns>
+                    <xul:rows class="tt-rows-counters">
+                        <xul:row anonid="tooltip-messages" label="&widget.menuitem.messages;"/>
+                        <xul:row anonid="tooltip-notifications" label="&widget.menuitem.notifications;"/>
+                        <xul:row anonid="tooltip-guests" label="&widget.menuitem.guests;"/>
+                        <xul:row anonid="tooltip-marks" label="&widget.menuitem.marks;"/>
+                        <xul:row anonid="tooltip-bd" label="&widget.menuitem.bd2;"/>
+                    </xul:rows>
+                </xul:grid>
+            </xul:tooltip>
+
+            <xul:toolbarbutton class="toolbarbutton-1 widget-button" item-command="auth" item-href="home" label="&widget.name;" tooltip="okls-tooltip-off" type="button" yb-native-not-authorized="true"/>
+
+            <xul:toolbarbutton anonid="button-main" class="toolbarbutton-1 widget-button" item-href="home" label="&widget.name;" tooltip="okls-tooltip" type="menu-button">
+                <xul:menupopup>
+                    <xul:menuitem item-command="update" item-param="main" label="&widget.menuitem.update;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem class="menuitem-iconic" item-href="home" label="&widget.menuitem.home;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem anonid="menu-messages" class="menuitem-iconic" item-href="messages" label="&widget.menuitem.messages;"/>
+                    <xul:menuitem anonid="menu-notifications" class="menuitem-iconic" item-href="notifications" label="&widget.menuitem.notifications;"/>
+                    <xul:menuitem anonid="menu-guests" class="menuitem-iconic" item-href="guests" label="&widget.menuitem.guests;"/>
+                    <xul:menuitem anonid="menu-marks" class="menuitem-iconic" item-href="marks" label="&widget.menuitem.marks;"/>
+                    <xul:menuitem anonid="menu-friends" class="menuitem-iconic" item-href="friends" label="&widget.menuitem.bd;"/>
+                    <xul:menuitem anonid="menu-bd" class="menuitem-iconic" item-href="bd" label="&widget.menuitem.bd2;"/>
+                    <xul:menuseparator anonid="endsep"/>
+                    <xul:menuitem class="menuitem-iconic" item-command="settings" label="&widget.menuitem.settings;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem item-command="quit" label="&widget.menuitem.quit;"/>
+                </xul:menupopup>
+            </xul:toolbarbutton>
+
+            <xul:toolbarbutton anonid="button-messages" label="&widget.tooltip.messages;" tooltiptext="&widget.tooltip.messages;"/>
+            <xul:toolbarbutton anonid="button-notifications" label="&widget.tooltip.notifications;" tooltiptext="&widget.tooltip.notifications;"/>
+            <xul:toolbarbutton anonid="button-guests" label="&widget.tooltip.guests;" tooltiptext="&widget.tooltip.guests;"/>
+            <xul:toolbarbutton anonid="button-marks" label="&widget.tooltip.marks;" tooltiptext="&widget.tooltip.marks;"/>
+            <xul:toolbarbutton anonid="button-bd" label="&widget.tooltip.bd;" tooltiptext="&widget.tooltip.bd;"/>
+        </content>
+        <implementation implements="nsISupports, nsIDOMEventListener">
+            <field name="buttons">({ main: document.getAnonymousElementByAttribute(this, "anonid", "button-main") })</field>
+            <field name="menus">({ })</field>
+            <field name="dynamic_nodes">({ })</field>
+            <field name="btn_ids">([ "main", "messages", "notifications", "guests", "marks", "bd" ])</field>
+            <field name="menu_friends">document.getAnonymousElementByAttribute(this, "anonid", "menu-friends")</field>
+            <field name="menu_bd">document.getAnonymousElementByAttribute(this, "anonid", "menu-bd")</field>
+            <field name="endsep">document.getAnonymousElementByAttribute(this, "anonid", "endsep")</field>
+            <field name="observers"><![CDATA[    ({
+        "WindowLocationChange": function (topic, data) {
+            this.log(topic + " " + data.url);
+            this.application.onLocationChange(data.url);
+        },
+        "showitems": function () {
+            this.showItems();
+            this.updateFresh();
+        },
+        "throbber": function (topic, data) {
+            var ids = data ? [data] : this.btn_ids;
+            for (var i = 0; i < ids.length; ++i) {
+                this.buttons[ids[i]].setAttribute("throbber", !!data);
+            }
+        },
+        "display": function (topic) {
+            this.updateView();
+            this.updateFresh();
+        }
+    });]]></field>
+            <field name="DTD">
+            ({
+                "update": "&widget.menuitem.update;",
+                bdlabel: {
+                    "holidays": "&widget.menuitem.bd-hd;",
+                    "bd": "&widget.menuitem.bd2;"
+                },
+                goLabel: {
+                    messages: "&widget.menuitem.messages-follow;",
+                    notifications: "&widget.menuitem.notifications-follow;",
+                    guests: "&widget.menuitem.guests-follow;",
+                    marks: "&widget.menuitem.marks-follow;",
+                    friends: "&widget.menuitem.bd-follow;",
+                    bd: "&widget.menuitem.bd-hd-follow;",
+                },
+                bdtooltip: {
+                    friends: "&widget.tooltip.bd;",
+                    bd: "&widget.tooltip.bd-hd;"
+                }
+            })
+            </field>
+            <constructor><![CDATA[    this.log("constructor");
+    for (var i = 1; i < this.btn_ids.length; ++i) {
+        var id = this.btn_ids[i];
+        var isBD = id == "bd";
+        var btn = document.getAnonymousElementByAttribute(this, "anonid", "button-" + id);
+        btn.setAttribute("type", "menu-button");
+        btn.setAttribute("item-href", isBD ? "friends" : id);
+        var mpup = this.menus[id] = this.createNode(null, "menupopup");
+        mpup.appendChild(this.createMenuItem(this.DTD.update, {
+            "item-command": "update",
+            "item-param": id
+        }));
+        mpup.appendChild(this.createNode(null, "menuseparator"));
+        if (isBD) {
+            mpup.appendChild(this.createMenuItem(this.DTD.goLabel.friends, {
+                "class": "menuitem-iconic",
+                "item-href": "friends"
+            }));
+        }
+        mpup.appendChild(this.createMenuItem(this.DTD.goLabel[id], {
+            "class": "menuitem-iconic",
+            "item-href": id
+        }));
+        mpup.appendChild(this.createNode(null, "menuseparator"));
+        btn.appendChild(mpup);
+        btn.className = "toolbarbutton-1 widget-button";
+        this.buttons[id] = btn;
+    }
+    this.showItems();
+    this.updateView();
+    this.updateFresh();]]></constructor>
+            <method name="getHumanDate">
+                <parameter name="date"/>
+                <body><![CDATA[
+                    var decls = ("]]>&widget.info.age;<![CDATA[");
+                    var months = ("]]>&widget.info.months;<![CDATA[").split(',');
+                    var x = Math.abs(date.age);
+                    var intX = parseInt(x);
+                    if (intX != x) {
+                        x = 2;
+                    }
+                    var age = this.common.strUtils.plural(x, decls).replace("{N}", x);
+                    return date.day + ' ' + months[date.month - 1] + ' (' + age + ')';
+                ]]></body>
+            </method>
+            <method name="updateView">
+                <body><![CDATA[    var data = this.application.getUserData();
+    this.setAttribute("auth", !!data);
+    var allNewEvents = false;
+    if (data) {
+        for (var i = 1; i < this.btn_ids.length; ++i) {
+            var key = this.btn_ids[i];
+            allNewEvents = allNewEvents || !!data.counters[key];
+            this.buttons[key].setAttribute("counter", data.counters[key] || "");
+            var tt = document.getAnonymousElementByAttribute(this, "anonid", "tooltip-" + key);
+            if (tt) {
+                tt.setAttribute("counter", data.counters[key] || "");
+            }
+            this.setMenuitemCounter("menu-" + key, data.counters[key] || "");
+        }
+        var hasBD = !!data.counters.bd;
+        this.buttons.bd.setAttribute("item-href", hasBD ? "bd" : "friends");
+        this.buttons.bd.setAttribute("tooltiptext", this.DTD.bdtooltip[hasBD ? "bd" : "friends"]);
+        this.menu_bd.setAttribute("label", this.DTD.bdlabel[hasBD ? "bd" : "holidays"]);
+        this.updatePopupMenu("messages", data.conversations, function (conv) {
+            var newTitle, title = "";
+            var maxLength = 45;
+            if (conv.type == "CHAT") {
+                if (conv.topic) {
+                    title = conv.topic;
+                    if (title.length > maxLength) {
+                        title = title.substr(0, maxLength - 3) + "...";
+                    }
+                } else {
+                    for (var spl = "", j = 0; j < conv.participant.length && j < 14; ++j) {
+                        var part = conv.participant[j];
+                        if (part._profile) {
+                            var newTitle = title + spl + part._profile.first_name;
+                            if (newTitle.length > maxLength) {
+                                title = title + "...";
+                                break;
+                            }
+                            title = newTitle;
+                            spl = ", ";
+                        }
+                    }
+                }
+                title = "<" + title + ">";
+            } else {
+                title = conv._profile ? conv._profile.name : "";
+            }
+            if (title) {
+                return {
+                    "label": title,
+                    "item-href": "messages",
+                    "acceltext": conv.new_msgs_count
+                };
+            }
+        });
+        this.updatePopupMenu("bd", data.bd, function (a) {
+            if (a._profile) {
+                return {
+                    "label": a._profile.name,
+                    "item-href": a._profile.url_profile,
+                    "acceltext": "  " + this.getHumanDate(a.date),
+                    "hd": a.hd,
+                    "class": "menuitem-iconic"
+                };
+            }
+        });
+    }
+    this.buttons.main.setAttribute("tooltip", "okls-tooltip" + (data ? allNewEvents ? "" : "-empty" : "-off"));]]></body>
+            </method>
+            <method name="updatePopupMenu">
+                <parameter name="id"/>
+                <parameter name="items"/>
+                <parameter name="func"/>
+                <body><![CDATA[    var i, mpup = this.menus[id], dn = this.dynamic_nodes[id] || [];
+    for (i = 0; i < dn.length; ++i) {
+        mpup.removeChild(dn[i]);
+    }
+    dn = this.dynamic_nodes[id] = [];
+    if (items) {
+        for (i = 0; i < items.length; ++i) {
+            var fret = func.call(this, items[i]);
+            if (fret) {
+                dn.push(mpup.appendChild(this.createNode(null, "menuitem", fret)));
+            }
+        }
+    }]]></body>
+            </method>
+            <method name="updateFresh">
+                <body><![CDATA[    var newEvents = 0;
+    var data = this.application.getUserData();
+    if (data) {
+        for (var i = 1; i < this.btn_ids.length; ++i) {
+            var key = this.btn_ids[i];
+            var stt = this.application.api.Settings.getValue("show-" + key);
+            newEvents = newEvents + (!stt ? data.counters[key] || 0 : 0);
+        }
+    }
+    this.buttons.main.setAttribute("counter", newEvents || "");]]></body>
+            </method>
+            <method name="showItems">
+                <body><![CDATA[    var allShow = true;
+    for (var i = 1; i < this.btn_ids.length; ++i) {
+        var id = this.btn_ids[i];
+        var val = !!this.application.api.Settings.getValue("show-" + id);
+        allShow = allShow && val;
+        this.buttons[id].setAttribute("hidden", !val);
+        document.getAnonymousElementByAttribute(this, "anonid", "menu-" + id).setAttribute("hidden", val);
+        if (id == "bd") {
+            this.menu_friends.setAttribute("hidden", val);
+        }
+    }
+    this.endsep.setAttribute("hidden", allShow);]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

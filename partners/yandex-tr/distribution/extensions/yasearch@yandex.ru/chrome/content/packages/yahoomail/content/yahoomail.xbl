@@ -1,0 +1,258 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "/yahoomail.dtd"><?xml-stylesheet type="text/css" href="/xb-skin/default/style.css"?>
+
+<bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <binding extends="basewidget.xbl#toolbarbuttonbase" id="yahoomail">
+        <content>
+            <xul:toolbarbutton anonid="button" authorized="false" class="toolbarbutton-1 widget-button" id="yasearch-yahoomail-button" label="" link="main" online="true" type="button" yaLabel="" yb-native-not-authorized="true">
+                <xul:menupopup anonid="menu" class="yahoomail-menu" onpopupshowing="popupShowing()">
+                    <xul:menuitem class="menuitem-iconic menuitem-with-favicon yahoomail_check-mailbox" label="&widget.menu.check_mailbox;" oncommand="checkMailBox()"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem anonid="mail-address-menuitem" disabled="true" label=""/>
+                    <xul:menuitem class="menuitem-iconic menuitem-with-favicon yahoomail_compose" label="&widget.menu.compose;" link="compose"/>
+                    <xul:menuitem class="menuitem-iconic menuitem-with-favicon yahoomail_read" label="&widget.menu.read;" link="read"/>
+                    <xul:menuitem class="menuitem-iconic menuitem-with-favicon yahoomail_contacts" label="&widget.menu.contacts;" link="contacts"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem label="&widget.menu.logout;" oncommand="logout()"/>
+                </xul:menupopup>
+            </xul:toolbarbutton>
+
+            <xul:tooltip id="yahoomail-tooltip-auth">
+                <xul:label value="&widget.tooltip.new_messages;"/>
+                <xul:label value="&widget.tooltip.ask_to_login;"/>
+            </xul:tooltip>
+
+            <xul:tooltip id="yahoomail-tooltip-online">
+                <xul:label value="&widget.tooltip.title;"/>
+                <xul:label value="&widget.tooltip.your_messages;"/>
+                <xul:label anonid="mail-address-tooltip-online" value=""/>
+                <xul:label anonid="tooltip-new-letters-counter" value="" value_prefix="&widget.tooltip.new_messages_prefix;"/>
+                <xul:label anonid="tooltip-total-letters-counter" value="" value_prefix="&widget.tooltip.total_messages_prefix;"/>
+            </xul:tooltip>
+
+            <xul:tooltip id="yahoomail-tooltip-offline">
+                <xul:label value="&widget.tooltip.title;"/>
+                <xul:label anonid="mail-address-tooltip-offline" value=""/>
+                <xul:label value="&widget.tooltip.offline_message;"/>
+            </xul:tooltip>
+        </content>
+
+        <implementation implements="nsISupports, nsIDOMEventListener">
+            <field name="app">this.application</field>
+            <field name="widget">this.application.widget</field>
+            <field name="settingsAPI">this.application.api.Settings</field>
+
+            <field name="observerService">Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);</field>
+
+            <field name="button">document.getAnonymousElementByAttribute(this, "anonid", "button")</field>
+            <field name="menu">document.getAnonymousElementByAttribute(this, "anonid", "menu")</field>
+            <property name="counter" onget="this.button.getAttribute('yaLabel')" onset="this.button.setAttribute('yaLabel', val)"/>
+
+            <field name="MOUSE_BUTTON_LEFT" readonly="true">0</field>
+            <field name="MOUSE_BUTTON_MIDDLE" readonly="true">1</field>
+            <field name="MOUSE_BUTTON_RIGHT" readonly="true">2</field>
+
+            
+            <field name="stateUpdateObserver">null</field>
+            <field name="stateChangeObserver">null</field>
+
+            <field name="__constructed">false</field>
+            <field name="__destructed">false</field>
+
+            <constructor><![CDATA[    this.init();]]></constructor>
+
+            <destructor><![CDATA[    var $ = this;
+    if ($.__destructed) {
+        return;
+    }
+    $.__destructed = true;
+    $.observerService.removeObserver($.stateUpdateObserver, "state-updated");
+    $.observerService.removeObserver($.stateChangeObserver, "state-changed");]]></destructor>
+
+
+            <method name="init">
+                <body><![CDATA[    var $ = this;
+    if ($.__constructed) {
+        return;
+    }
+    $.__constructed = true;
+    $.updateView();
+    $.button.addEventListener("command", function (e) {
+        $.handleMenuButtonClick(e);
+    }, false);
+    $.stateUpdateObserver = {
+        observe: function (subj, topic, data) {
+            $.button.setAttribute("waiting", "false");
+        }
+    };
+    $.observerService.addObserver($.stateUpdateObserver, "state-updated", false);
+    $.stateChangeObserver = {
+        observe: function (subj, topic, data) {
+            $.updateView();
+        }
+    };
+    $.observerService.addObserver($.stateChangeObserver, "state-changed", false);]]></body>
+            </method>
+
+            <method name="popupShowing">
+                <body><![CDATA[    this.app.utils.statLog("menu");]]></body>
+            </method>
+
+            <method name="updateView">
+                <body><![CDATA[    var $ = this;
+    var state = $.widget.state;
+    let isAuthorized = state.authorized;
+    $.updateAuthorization(isAuthorized);
+    if (isAuthorized) {
+        $.updateConnectionStatus(state.online);
+        $.setMailAddressLabel(state.mailAddress);
+        $.setNewLettersCounter(state.newLetters, state.online);
+        $.setLettersCountersInTooltip("new", state.newLetters);
+        $.setLettersCountersInTooltip("total", state.totalLetters);
+    }]]></body>
+            </method>
+
+            <method name="updateAuthorization">
+                <parameter name="isAuthorized"/>
+                <body><![CDATA[    var $ = this;
+    $.button.setAttribute("authorized", isAuthorized);
+    $.button.setAttribute("yb-native-not-authorized", !isAuthorized);
+    if (!isAuthorized) {
+        $.button.setAttribute("type", "button");
+        $.button.setAttribute("tooltip", "yahoomail-tooltip-auth");
+    }]]></body>
+            </method>
+
+            <method name="updateConnectionStatus">
+                <parameter name="isOnline"/>
+                <body><![CDATA[    var $ = this;
+    $.button.setAttribute("online", isOnline);
+    let tooltipId = "yahoomail-tooltip-offline";
+    if (isOnline) {
+        tooltipId = "yahoomail-tooltip-online";
+    }
+    $.button.setAttribute("tooltip", tooltipId);
+    $.button.setAttribute("type", "menu-button");]]></body>
+            </method>
+
+            <method name="setNewLettersCounter">
+                <parameter name="letterNumber"/>
+                <parameter name="isOnline"/>
+                <body><![CDATA[    var $ = this;
+    var newValue = "";
+    if (letterNumber && letterNumber > 0 && isOnline) {
+        newValue += letterNumber;
+    }
+    $.counter = newValue;]]></body>
+            </method>
+
+            <method name="setMailAddressLabel">
+                <parameter name="address"/>
+                <body><![CDATA[    var $ = this;
+    var menuitem = document.getAnonymousElementByAttribute(this, "anonid", "mail-address-menuitem");
+    var tooltipOnline = document.getAnonymousElementByAttribute(this, "anonid", "mail-address-tooltip-online");
+    var tooltipOffline = document.getAnonymousElementByAttribute(this, "anonid", "mail-address-tooltip-offline");
+    if (address) {
+        menuitem.label = address;
+        tooltipOnline.value = address;
+        tooltipOffline.value = address;
+        menuitem.style.display = "";
+        tooltipOnline.style.display = "";
+        tooltipOffline.style.display = "";
+    } else {
+        menuitem.style.display = "none";
+        tooltipOnline.style.display = "none";
+        tooltipOffline.style.display = "none";
+    }]]></body>
+            </method>
+
+            <method name="setLettersCountersInTooltip">
+                <parameter name="type"/>
+                <parameter name="value"/>
+                <body><![CDATA[    var $ = this;
+    var anonid = "";
+    var map = {
+        "new": "tooltip-new-letters-counter",
+        "total": "tooltip-total-letters-counter"
+    };
+    anonid = map[type];
+    if ("undefined" != typeof anonid) {
+        $.setLabelWithPrefix(anonid, value);
+    }]]></body>
+            </method>
+
+            <method name="setLabelWithPrefix">
+                <parameter name="anonid"/>
+                <parameter name="value"/>
+                <body><![CDATA[    var $ = this;
+    var label = document.getAnonymousElementByAttribute(this, "anonid", anonid);
+    var prefix = label.getAttribute("value_prefix");
+    label.value = prefix + value;]]></body>
+            </method>
+
+            <method name="handleUIClick">
+                <parameter name="event"/>
+                <parameter name="target"/>
+                <body><![CDATA[    var $ = this;
+    event.stopPropagation();
+    event.preventDefault();
+    var targetName = target.localName;
+    if ($.button === target) {
+        this.app.utils.statLog("button");
+    } else {
+        this.app.utils.statLog("menuclick");
+    }
+    if (target.hasAttribute("oncommand")) {
+        return;
+    }
+    $.app.log(targetName + " clicked");
+    let isAuthorized = $.button.getAttribute("authorized");
+    if ("true" !== isAuthorized) {
+        $.widget.login();
+        return;
+    }
+    if (target.hasAttribute("link")) {
+        $.openElementLink(target, event.button);
+    }]]></body>
+            </method>
+
+            <method name="handleMenuButtonClick">
+                <parameter name="event"/>
+                <body><![CDATA[    this.handleUIClick(event, event.target);]]></body>
+            </method>
+
+            <method name="openElementLink">
+                <parameter name="element"/>
+                <parameter name="button"/>
+                <body><![CDATA[    var $ = this;
+    var link = element.getAttribute("link");
+    var url = $.widget.url[link];
+    var params = { url: url };
+    if ($.MOUSE_BUTTON_MIDDLE === button) {
+        params.target = "new tab";
+    }
+    $.app.api.Controls.navigateBrowser(params);]]></body>
+            </method>
+
+            <method name="checkMailBox">
+                <body><![CDATA[    var $ = this;
+    $.button.setAttribute("waiting", "true");
+    $.widget.updateMailboxStatistics();]]></body>
+            </method>
+
+            <method name="logout">
+                <body><![CDATA[    var $ = this;
+    $.widget.logout();]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="1" event="click"><![CDATA[    var target = event.originalTarget;
+    var name = String(target.localName).toLowerCase();
+    if (name != "menuitem") {
+        this.handleUIClick(event, this.button);
+    }]]></handler>
+        </handlers>
+    </binding>
+
+</bindings>

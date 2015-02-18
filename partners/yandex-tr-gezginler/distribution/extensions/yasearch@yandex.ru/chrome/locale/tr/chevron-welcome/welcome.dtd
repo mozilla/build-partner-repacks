@@ -1,0 +1,7 @@
+<!ENTITY welcome.closeallpanels "Tüm panelleri gizle">
+<!ENTITY welcome.howitworks "Nasıl çalıştığını görmek için {button} butonuna tıklayın. ">
+<!ENTITY welcome.newfeature "Artık tek tıkla tüm panelleri aynı anda gizleyebilir ve görüntüleyebilirsiniz.">
+<!ENTITY notification.thanks "Teşekkürler">
+<!ENTITY notification.toolbar.installed "Yeni özelliklere sahip araç çubuğunu deneyin!">
+<!ENTITY welcome.close "kapat">
+<!ENTITY welcome.openpanels "Panelleri aç">

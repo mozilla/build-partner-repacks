@@ -1,0 +1,491 @@
+<?xml version='1.0'?>
+
+<!DOCTYPE bindings [
+<!ENTITY % slicesDTD SYSTEM "chrome://yasearch/locale/slices/slices.dtd">
+%slicesDTD;
+]>
+
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="chrome://global/content/bindings/popup.xml#panel" id="slice-panel">
+        <resources>
+            <stylesheet src="slice-panel.css"/>
+        </resources>
+
+        <content>
+            <xul:stack flex="1">
+                <xul:vbox anonid="slice-content">
+                    <children/>
+                </xul:vbox>
+                <xul:vbox anonid="slice-arrow-container">
+                    <xul:hbox>
+                        <canvas anonid="slice-arrow" height="9" width="9" xmlns="http://www.w3.org/1999/xhtml"/>
+                    </xul:hbox>
+                </xul:vbox>
+                <xul:vbox anonid="slice-loader" class="info" flex="1" hidden="true">
+                    <xul:vbox align="center" flex="1" pack="center">
+                        <xul:image/>
+                    </xul:vbox>
+                </xul:vbox>
+                <xul:vbox ___onclick="_reloadContent();" anonid="network-error" class="info" flex="1" hidden="true">
+                    <xul:vbox align="center" flex="1" pack="center">
+                        <xul:image/>
+                        <xul:description>&slices.network.error;</xul:description>
+                    </xul:vbox>
+                </xul:vbox>
+            </xul:stack>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="_sliceArrowContainer">document.getAnonymousElementByAttribute(this, "anonid", "slice-arrow-container")</field>
+            <field name="_sliceContainer">document.getAnonymousElementByAttribute(this, "anonid", "slice-content")</field>
+            <field name="_sliceArrow">document.getAnonymousElementByAttribute(this, "anonid", "slice-arrow")</field>
+            <field name="_sliceLoader">document.getAnonymousElementByAttribute(this, "anonid", "slice-loader")</field>
+            <field name="_networkError">document.getAnonymousElementByAttribute(this, "anonid", "network-error")</field>
+            <field name="_contentBrowser">this.getElementsByTagName("browser")[0]</field>
+
+            <field name="_ARROW_WIDTH">9</field>
+            <field name="_ARROW_HEIGHT">9</field>
+            <field name="_showingPanelInsideSlice">null</field>
+            <field name="_drawInterval">null</field>
+            <field name="_networkCheckerInterval">null</field>
+            <field name="_networkContentLoaded">null</field>
+            <field name="_positionFixed">false</field>
+            <field name="_shadowWidth">0</field>
+
+            <field name="_sliceContainerHorizontalShift">6</field>
+
+            <property name="_contentWindow" onget="return this._contentBrowser.contentWindow;" readonly="true"/>
+
+            <constructor><![CDATA[    let bordersWidth = 2;
+    let heightAdd = 40;
+    if (window[CB_APP_NAME + "SlicePanelCtrl"]._barCore.Lib.sysutils.platformInfo.os.name == "windows") {
+        this._shadowWidth = 40;
+    }
+    this._sliceContainerHorizontalShift += this._shadowWidth / 2;
+    let shadowWidth = this._shadowWidth;
+    let originalSizeTo = this.sizeTo;
+    this.sizeTo = function sizeTo(width, height) {
+        return originalSizeTo.apply(this, [
+            width + bordersWidth + shadowWidth,
+            height + heightAdd
+        ]);
+    };
+    let originalOpenPopup = this.openPopup;
+    this.openPopup = function openPopup(anchor, position, x, y, isContextMenu, attributesOverride, triggerEvent) {
+        let shift = !position ? 0 : position.indexOf("_end") > -1 ? this._sliceContainerHorizontalShift : this._sliceContainerHorizontalShift * -1;
+        return originalOpenPopup.apply(this, [
+            anchor,
+            position,
+            (x || 0) + bordersWidth / 2 + shift,
+            y || 0,
+            isContextMenu,
+            attributesOverride,
+            triggerEvent
+        ]);
+    };
+    this._contentBrowser.addEventListener("resize", this);]]></constructor>
+
+            <destructor><![CDATA[    this._contentBrowser.removeEventListener("resize", this);]]></destructor>
+
+            <method name="onOpenPopup">
+                <parameter name="aURL"/>
+                <body><![CDATA[    this._setState("content");
+    if (this._contentWindow.netErrorURL) {
+        delete this._contentWindow.netErrorURL;
+        this._contentBrowser.loadURI("about:blank");
+        setTimeout(function () {
+            let loadflags = Components.interfaces.nsIWebNavigation.LOAD_FLAGS_BYPASS_CACHE;
+            this._contentBrowser.loadURIWithFlags(aURL, loadflags, null, null, null);
+            this.onOpenPopup(aURL);
+        }.bind(this), 100);
+        return;
+    }
+    let browser = this._contentBrowser;
+    let currentURI = browser.currentURI;
+    if (!browser.webProgress.isLoadingDocument) {
+        let expectedScheme = currentURI.scheme;
+        let currentScheme = this._contentWindow.document.documentURI.split(":")[0];
+        if (expectedScheme !== currentScheme) {
+            this._setState("network-error");
+            this._contentWindow.netErrorURL = aURL;
+            return;
+        }
+    }
+    if (currentURI.spec !== "about:blank" || [
+            "interactive",
+            "complete"
+        ].indexOf(this._contentWindow.document.readyState) > -1) {
+        return;
+    }
+    this._setState("loader");
+    this._networkContentLoaded = null;
+    let startTime = Date.now();
+    this._networkCheckerInterval = window.setInterval(function () {
+        if (this._networkContentLoaded === true) {
+            setTimeout(function () {
+                if (typeof this._stopNetworkChecker == "function") {
+                    this._stopNetworkChecker();
+                }
+                if (typeof this._setState == "function") {
+                    this._setState("content");
+                }
+            }.bind(this), 0);
+            return;
+        }
+        if (this._networkContentLoaded === false || browser.currentURI.spec === "about:blank" && Math.abs(Date.now() - startTime) > 3000) {
+            this._stopNetworkChecker();
+            this._setState("network-error");
+            this._contentWindow.netErrorURL = aURL;
+        }
+    }.bind(this), 80);
+    browser.addEventListener("DOMContentLoaded", this, false);]]></body>
+            </method>
+
+            <method name="_setState">
+                <parameter name="aState"/>
+                <body><![CDATA[    this._sliceLoader.hidden = true;
+    this._networkError.hidden = true;
+    let block;
+    switch (aState) {
+    case "loader":
+        block = this._sliceLoader;
+        break;
+    case "network-error":
+        block = this._networkError;
+        break;
+    case "content":
+    default:
+        break;
+    }
+    if (!block) {
+        return;
+    }
+    block.hidden = false;
+    let bo = block.boxObject;
+    this.sizeTo(bo.width, bo.height);
+    this._fixPosition();]]></body>
+            </method>
+
+            <method name="_stopNetworkChecker">
+                <body><![CDATA[    window.clearInterval(this._networkCheckerInterval);
+    this._networkCheckerInterval = null;
+    this._contentBrowser.removeEventListener("DOMContentLoaded", this, false);]]></body>
+            </method>
+
+            <method name="_reloadContent">
+                <body><![CDATA[    if (this._contentWindow.netErrorURL) {
+        this.onOpenPopup(this._contentWindow.netErrorURL);
+    }]]></body>
+            </method>
+
+            <method name="_startDrawArrow">
+                <body><![CDATA[    this._drawArrow();
+    this._drawInterval = window.setInterval(function () {
+        this._drawArrow();
+    }.bind(this), 100);]]></body>
+            </method>
+
+            <method name="_stopDrawArrow">
+                <body><![CDATA[    let container = this._sliceArrowContainer;
+    container.setAttribute("bottom", "-10000");
+    container.setAttribute("left", "-10000");
+    if (!this._drawInterval) {
+        return;
+    }
+    window.clearInterval(this._drawInterval);
+    this._drawInterval = null;]]></body>
+            </method>
+
+            <method name="_startMonitorPosition">
+                <body><![CDATA[    this._monitorPosition();
+    this._monitorPositionInterval = window.setInterval(function () {
+        this._monitorPosition();
+    }.bind(this), 100);]]></body>
+            </method>
+
+            <method name="_stopMonitorPosition">
+                <body><![CDATA[    if (!this._monitorPositionInterval) {
+        return;
+    }
+    window.clearInterval(this._monitorPositionInterval);
+    this._monitorPositionInterval = null;]]></body>
+            </method>
+
+            <method name="_monitorPosition">
+                <body><![CDATA[    let anchor = this.anchorNode;
+    if (!anchor) {
+        return;
+    }
+    let anchorBO = anchor.boxObject;
+    if (!this._anchorPreviousPosition) {
+        this._anchorPreviousPosition = {
+            screenX: anchorBO.screenX,
+            screenY: anchorBO.screenY
+        };
+        return;
+    }
+    if (this._anchorPreviousPosition.screenX !== anchorBO.screenX || this._anchorPreviousPosition.screenY !== anchorBO.screenY) {
+        this._anchorPreviousPosition = {
+            screenX: anchorBO.screenX,
+            screenY: anchorBO.screenY
+        };
+        this._fixPosition();
+    }]]></body>
+            </method>
+
+            <method name="_fixPosition">
+                <body><![CDATA[    let anchor = this.anchorNode;
+    if (!anchor) {
+        this._positionFixed = true;
+        return;
+    }
+    const shiftFromWindowEdge = 30;
+    const panelShift = Math.ceil(this._shadowWidth / 2);
+    let bo = this.boxObject;
+    let anchorBO = anchor.boxObject;
+    let anchorWindow = anchor.ownerDocument.defaultView;
+    let position = this.getAttribute("yaPos");
+    let windowEdge = anchorWindow.mozInnerScreenX;
+    let popupEdge = bo.screenX;
+    let anchorEdge = anchorBO.screenX + anchorBO.width;
+    let direction = -1;
+    let sign = 1;
+    if (position.indexOf("_end") > -1) {
+        windowEdge += anchorWindow.innerWidth;
+        popupEdge += bo.width;
+        anchorEdge = anchorBO.screenX;
+        sign *= -1;
+    }
+    let arrowSpace = this._sliceContainerHorizontalShift - panelShift + Math.ceil(this._ARROW_WIDTH / 2);
+    let anchorWindowEdgesDiff = Math.abs(windowEdge - anchorEdge) - shiftFromWindowEdge - arrowSpace;
+    if (anchorWindowEdgesDiff < 0) {
+        this._positionFixed = true;
+        return;
+    }
+    let popupWindowEdgesDiff = popupEdge - windowEdge + sign * (panelShift - shiftFromWindowEdge);
+    let realPopupWidth = bo.width - this._shadowWidth;
+    let newX = bo.screenX;
+    if (anchorWindowEdgesDiff <= realPopupWidth) {
+        newX += direction * popupWindowEdgesDiff;
+    } else {
+        let anchorCenter = anchorBO.screenX + Math.ceil(anchorBO.width / 2);
+        let panelAnchorCentersDiff = anchorCenter - (bo.screenX + Math.ceil(bo.width / 2));
+        if (panelAnchorCentersDiff === 0) {
+            this._positionFixed = true;
+            return;
+        }
+        newX += panelAnchorCentersDiff;
+    }
+    let newY = bo.screenY;
+    let anchorBottom = anchorBO.screenY + anchorBO.height;
+    let anchorWindowBottomEdgeDiff = window.screen.availHeight - anchorBottom;
+    if (anchorWindowBottomEdgeDiff >= bo.height) {
+        newY = anchorBottom;
+    } else {
+        newY = anchorBO.screenY - bo.height;
+    }
+    if (newY < 0) {
+        newY = 0;
+    }
+    this.moveTo(newX, newY);
+    this._positionFixed = true;]]></body>
+            </method>
+
+            <method name="_drawArrow">
+                <body><![CDATA[    if (!this._positionFixed) {
+        return;
+    }
+    let anchor = this.anchorNode;
+    if (!anchor) {
+        return;
+    }
+    if (!anchor.boxObject.x && !anchor.boxObject.width) {
+        this.hidePopup();
+        return;
+    }
+    let ARROW_WIDTH = this._ARROW_WIDTH;
+    let ARROW_HEIGHT = this._ARROW_HEIGHT;
+    let arrowWidthHalf = ARROW_WIDTH / 2;
+    let ARROW_LEFT_MARGIN = this._sliceContainerHorizontalShift;
+    let ARROW_RIGHT_MARGIN = this._sliceContainerHorizontalShift;
+    let ANCHOR_PADDING = 4;
+    let VERTICAL_SHIFT = 0;
+    let BOTTOM_SHIFT = 30 - (ARROW_HEIGHT - 1);
+    let container = this._sliceArrowContainer;
+    let anchorWindow = anchor.ownerDocument.defaultView;
+    let popupRect = this.boxObject;
+    let popupTop = popupRect.screenY;
+    let popupBottom = popupTop + popupRect.height;
+    let sliceContainer = this._sliceContainer.boxObject;
+    let sliceContainerLeft = sliceContainer.screenX;
+    let sliceContainerRight = sliceContainerLeft + sliceContainer.width;
+    let anchorRect = anchor.getBoundingClientRect();
+    let anchorLeft = anchorWindow.mozInnerScreenX + anchorRect.left;
+    let anchorTop = anchorWindow.mozInnerScreenY + anchorRect.top;
+    let anchorRight = anchorLeft + anchorRect.width;
+    let anchorBottom = anchorTop + anchorRect.height;
+    let positioning = "left";
+    if (this.getAttribute("yaPos").indexOf("_end") > -1) {
+        positioning = "right";
+    }
+    container.removeAttribute("left");
+    container.removeAttribute("right");
+    let rotateAngle = 0;
+    if (anchorBottom - popupBottom > ARROW_HEIGHT) {
+        container.removeAttribute("top");
+        container.setAttribute("bottom", BOTTOM_SHIFT);
+        rotateAngle = Math.PI;
+    } else {
+        container.removeAttribute("bottom");
+        container.setAttribute("top", VERTICAL_SHIFT);
+    }
+    let delta = 0;
+    let shift = 0;
+    let margin = 0;
+    let distance = 0;
+    let left1 = anchorLeft + ANCHOR_PADDING;
+    let right1 = anchorRight - ANCHOR_PADDING;
+    let left2 = sliceContainerLeft + ARROW_LEFT_MARGIN;
+    let right2 = sliceContainerRight - ARROW_RIGHT_MARGIN;
+    let intersectLeft = Math.max(left1, left2);
+    let intersectRight = Math.min(right1, right2);
+    let intersect = intersectRight - intersectLeft;
+    if (positioning == "right") {
+        delta = right2 - right1;
+        margin = ARROW_RIGHT_MARGIN;
+        distance = right2 - left1;
+    } else {
+        delta = left1 - left2;
+        margin = ARROW_LEFT_MARGIN;
+        distance = right1 - left2;
+    }
+    let verticalHideCheck = anchorTop > popupTop && anchorTop < popupBottom - BOTTOM_SHIFT;
+    if (intersect <= 0 || distance < arrowWidthHalf || verticalHideCheck) {
+        container.setAttribute("left", -100);
+        return;
+    }
+    let p = (right1 - left1 - ARROW_WIDTH) / 2;
+    let offset = delta + p;
+    if (offset >= 0) {
+        shift += margin + offset;
+    } else {
+        shift = margin;
+    }
+    container.setAttribute(positioning, shift);
+    if (shift < 0) {
+        return;
+    }
+    let context = this._sliceArrow.getContext("2d");
+    context.save();
+    let w1 = container.boxObject.screenX - this._contentWindow.mozInnerScreenX;
+    let h1 = container.boxObject.screenY + ARROW_HEIGHT - this._contentWindow.mozInnerScreenY;
+    if (rotateAngle) {
+        h1 -= 2 * ARROW_HEIGHT;
+        context.translate(ARROW_WIDTH, ARROW_HEIGHT);
+        context.rotate(rotateAngle);
+    }
+    let data = [
+        0,
+        0,
+        0,
+        0
+    ];
+    try {
+        context.drawWindow(this._contentWindow, w1, h1, ARROW_WIDTH, ARROW_HEIGHT, "rgba(0, 0, 0, 0)");
+        data = context.getImageData(rotateAngle ? ARROW_WIDTH - 1 : 0, rotateAngle ? 0 : ARROW_HEIGHT - 1, 1, 1).data;
+    } catch (e) {
+    }
+    context.strokeStyle = this.ownerDocument.defaultView.getComputedStyle(this._contentBrowser).getPropertyValue("border-" + (rotateAngle ? "bottom" : "top") + "-color");
+    context.lineWidth = 2;
+    context.lineCap = "round";
+    context.clearRect(0, 0, ARROW_WIDTH, ARROW_HEIGHT);
+    context.beginPath();
+    context.moveTo(0, ARROW_HEIGHT);
+    context.lineTo(arrowWidthHalf, 1);
+    context.lineTo(ARROW_WIDTH, ARROW_HEIGHT);
+    context.closePath();
+    context.stroke();
+    context.fillStyle = "rgba(" + Array.join(data, ", ") + ")";
+    context.fill();
+    context.restore();]]></body>
+            </method>
+
+            <method name="_concealPopup">
+                <body><![CDATA[    this.style.visibility = "hidden";]]></body>
+            </method>
+
+            <method name="_revealPopup">
+                <body><![CDATA[    this.style.visibility = "";]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    let target = aEvent.target;
+    switch (aEvent.type) {
+    case "DOMContentLoaded":
+        if (target === this._contentWindow.document) {
+            this._contentBrowser.removeEventListener("DOMContentLoaded", this, false);
+            let expectedScheme = target.location.protocol.replace(":", "");
+            let currentScheme = target.documentURI.split(":")[0];
+            this._networkContentLoaded = expectedScheme === currentScheme;
+        }
+        break;
+    case "resize":
+        if (target === this._contentWindow) {
+            this._fixPosition();
+        }
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="popupshowing"><![CDATA[    let originalTarget = event.originalTarget;
+    if (!originalTarget) {
+        return;
+    }
+    if (originalTarget === this) {
+        this._startMonitorPosition();
+        this._startDrawArrow();
+        this._concealPopup();
+        if (this._revealTimer) {
+            clearTimeout(this._revealTimer);
+            this._revealTimer = null;
+        }
+        this._revealTimer = setTimeout(function () {
+            this._revealPopup();
+        }.bind(this), 150);
+    } else if (originalTarget.localName == "panel") {
+        this._showingPanelInsideSlice = originalTarget;
+    }]]></handler>
+
+            <handler event="popuphiding"><![CDATA[    this._showingPanelInsideSlice = null;
+    this._anchorPreviousPosition = null;
+    if (event.originalTarget === this) {
+        this._stopDrawArrow();
+        this._stopMonitorPosition();
+        this._stopNetworkChecker();
+    }
+    if (this._revealTimer) {
+        clearTimeout(this._revealTimer);
+        this._revealTimer = null;
+    }
+    this._positionFixed = false;]]></handler>
+
+            <handler button="0" event="mousedown"><![CDATA[    if (!this._showingPanelInsideSlice) {
+        return;
+    }
+    try {
+        if (this._showingPanelInsideSlice.compareDocumentPosition(event.originalTarget) & Node.DOCUMENT_POSITION_CONTAINED_BY) {
+            return;
+        }
+    } catch (e) {
+    }
+    this._showingPanelInsideSlice.hidePopup();
+    this._showingPanelInsideSlice = null;]]></handler>
+        </handlers>
+    </binding>
+</bindings>

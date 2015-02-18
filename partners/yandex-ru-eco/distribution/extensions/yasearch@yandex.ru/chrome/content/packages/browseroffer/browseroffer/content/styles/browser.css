@@ -1,0 +1,2 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);tabbrowser notification[anonid=browseroffer-notification]>.notification-inner{-moz-binding:url(../notification.xbl#notification)}
+tabbrowser notification[anonid=browseroffer-notification-wdgt-suggest]>.notification-inner{-moz-binding:url(../notification.xbl#notification-wdgt-suggest)}

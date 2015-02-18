@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta charset="utf-8" />
+        <title></title>
+        <link rel="stylesheet" href="slice/style-authpages.css"></link>
+        <script type="text/javascript">
+        function bodyload() {
+            var ents = widgetAdapter.ents, status = mbAdapter.error.status;
+            var steps = ["token", "auth"];
+            document.getElementById("id_errormsg").innerHTML = ((status < 200)
+                        ? ents.text("html.network-error.net") + "<br />" + ents.text("html.network-error.aut-2")
+                        : ents.text("html.network-error.aut"));
+                //+ "<br />(" + steps[widgetAdapter.step] + ", status=" + status + ", error=" + mbAdapter.error.text + ")";
+        }
+        </script>
+    </head>
+    <body id="body" class="network-error" onload="bodyload();">
+        <div class="sad-bird" id="id_errormsg"></div>
+    </body>
+</html>

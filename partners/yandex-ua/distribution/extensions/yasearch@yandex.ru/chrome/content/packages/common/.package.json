@@ -1,0 +1,7 @@
+{
+    "id":"http://bar.yandex.ru/packages/yandexbar",
+    "uri":"http://bar.yandex.ru/packages/yandexbar",
+    "version":"15.0.0",
+    "fileURL":".",
+    "platformMin": 24
+}

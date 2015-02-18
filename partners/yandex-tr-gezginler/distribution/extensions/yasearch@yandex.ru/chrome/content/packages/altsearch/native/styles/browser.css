@@ -1,0 +1,2 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#altsearch"]{-moz-binding:url(../bindings.xbl#button)!important;display:none}
+[id="http://bar.yandex.ru/packages/yandexbar#altsearch-panel"]{-moz-binding:url(../bindings.xbl#panel)!important}

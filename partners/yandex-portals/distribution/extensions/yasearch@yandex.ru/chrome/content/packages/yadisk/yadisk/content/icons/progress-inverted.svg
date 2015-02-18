@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+    width="20px"
+    height="16px"
+    viewBox="0 0 20 16">
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="16" sketch:type="MSLayerGroup" transform="translate(-31.000000, -23.000000)">
+            <g id="Imported-Layers" transform="translate(31.000000, 24.000000)" sketch:type="MSShapeGroup">
+                <path d="M13.2131884,1.60609888 C14.5097101,2.8402809 16.2941449,3.03589438 16.2941449,3.03589438 C16.2941449,3.03589438 14.8523188,11.2627326 11.171971,12.3185663 C7.4917971,13.3743708 2.64463768,10.5892449 2.40142029,7.0217236 C2.40142029,7.0217236 3.8773913,5.88908764 4.40252174,4.13192584 C4.97553623,2.17839101 6.398,0.668492135 8.13202899,0.171074157 C9.86675362,-0.326548315 11.8044348,0.220006742 13.2131884,1.60609888" id="Fill-1" fill="#222222"></path>
+                <path d="M8.91988406,3.35028989 C14.1421739,1.85181348 19.0254493,2.35910562 19.8668116,4.5883573 C20.7554783,6.94278876 16.8382319,10.2922607 11.0711304,11.9468831 C5.30402899,13.6015056 0.347565217,12.7977843 0.0174202899,10.2829708 C-0.294811594,7.9020427 3.69742029,4.84838652 8.91988406,3.35028989" id="Fill-2" fill="#4277CA"></path>
+                <path d="M10.2455072,8.7786809 C12.8483478,8.03186742 15.1676522,8.26326742 15.4258841,9.29546742 C15.684087,10.3274629 13.7836522,11.7696449 11.1808116,12.5164876 C8.57817391,13.2630966 6.25869565,13.0316966 6.00046377,11.9994966 C5.74205797,10.9675011 7.64286957,9.5255236 10.2455072,8.7786809" id="Fill-3" fill="#DDD9CE"></path>
+            </g>
+            <circle id="Oval-2" fill="#FEDB46" sketch:type="MSShapeGroup" cx="46" cy="35" r="4"></circle>
+            <circle id="Oval-10" opacity="0.5" fill="#000000" sketch:type="MSShapeGroup" cx="44" cy="35" r="1">
+                <animate attributeName="cx" attributeType="XML" from="44" to="48" dur="600ms" repeatCount="indefinite"/>
+            </circle>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,4 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);deck[selectedIndex="0"]{display:none}
+deck>image{list-style-image:url(/icons/textonly/available.png)}
+deck>image:last-child{list-style-image:url(/icons/textonly/active.png)}
+deck:hover>image{list-style-image:url(/icons/textonly/hover.png)!important}

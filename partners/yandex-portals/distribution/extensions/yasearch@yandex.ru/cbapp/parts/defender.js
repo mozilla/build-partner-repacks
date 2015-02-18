@@ -58,7 +58,7 @@ const defender = {
         let res = Object.create(null);
         this._changesTimeWasCalculated = 0;
         let currentTimeValues = this._changesTimeValues;
-        if (currentTimeValues.start == 0 && currentTimeValues.total > 0) {
+        if (currentTimeValues.start === 0 && currentTimeValues.total > 0) {
             if (!this._isYandexHomepage("current") && (!this.homepageDefenceEnabled || !this._isYandexHomepage("protected"))) {
                 let time = Math.max(0, Math.ceil(currentTimeValues.total / DAY_SECS));
                 if (time) {
@@ -158,7 +158,7 @@ const defender = {
         return /(^|www\.)(yandex\.(ru|ua|kz|by|net|com(\.tr)?)|ya\.ru|yafd:tabs)$/i.test(aHost);
     },
     _isYandexHost: function Defender__isYandexHost(aHost) {
-        return /(^|\.)(yandex\.(ru|ua|by|kz|net|com(\.tr)?)|(ya|narod|moikrug)\.ru)$/i.test(aHost) || this.__isYandexHomepage(aHost);
+        return /(^|\.)(yandex\.(ru|ua|by|kz|net|com(\.tr)?)|(ya|kinopoisk|moikrug)\.ru)$/i.test(aHost) || this.__isYandexHomepage(aHost);
     },
     _getHostOrURLFromString: function Defender__getHostOrURLFromString(aString) {
         let url = (aString || "").toString().split("|")[0].trim();
@@ -197,7 +197,7 @@ const defender = {
         if (protectedHost === currentHost) {
             return false;
         }
-        this._logger.debug("Diff: protected = '" + protectedHost + "', current='" + currentHost + "'");
+        this._logger.debug("Diff: protected = '" + protectedHost + "', current = '" + currentHost + "'");
         return {
             protectedHost: protectedHost,
             currentHost: currentHost
@@ -305,7 +305,7 @@ const defender = {
     TIME_CALCULATED_FLAG_PRTWRK: 2,
     _checkTimesChanged: function Defender__checkTimesChanged() {
         let currentTimeValues = this._changesTimeValues;
-        if (currentTimeValues.start == 0) {
+        if (currentTimeValues.start === 0) {
             if (this._isYandexHomepage("current")) {
                 currentTimeValues.start = Date.now();
             }

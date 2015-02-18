@@ -1,0 +1,5 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);.ya-notification{background:#fff5ae}
+[anonid=content-area]{-moz-box-pack:center}
+[anonid=notification-icon-image]{list-style-image:url(../icons/ya.png)}
+[anonid=notification-icon]{-moz-margin-end:.667em}
+[anonid=text-container] label{margin:0!important}

@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="main.css"/>
+        </resources>
+        <content>
+            <xul:toolbarbutton anonid="button-auth" class="toolbarbutton-1 widget-button" item-href="inbox" label="&gmail.button.text;" yb-native-not-authorized="true"/>
+            <xul:toolbarbutton anonid="button-main" class="toolbarbutton-1 widget-button" item-href="inbox" label="&gmail.button.text;" type="menu-button">
+                <xul:menupopup>
+                    <xul:menuitem class="menuitem-iconic" item-command="update" label="&gmail.menu.update;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem anonid="mailbox" class="menuitem-iconic" disabled="true" label=""/>
+                    <xul:menuitem class="menuitem-iconic" item-href="compose" label="&gmail.menu.write;"/>
+                    <xul:menuitem class="menuitem-iconic" item-href="inbox" label="&gmail.menu.read;"/>
+                    <xul:menuitem class="menuitem-iconic" item-href="addressbook" label="&gmail.menu.addressbook;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem class="menuitem-iconic" item-href="ymail" label="&gmail.menu.yandex;"/>
+                </xul:menupopup>
+            </xul:toolbarbutton>
+            
+        </content>
+        <implementation implements="nsISupports, nsIDOMEventListener">
+            <field name="authButton">document.getAnonymousElementByAttribute(this, "anonid", "button-auth")</field>
+            <field name="mainButton">document.getAnonymousElementByAttribute(this, "anonid", "button-main")</field>
+            
+            <field name="mailboxMI">document.getAnonymousElementByAttribute(this, "anonid", "mailbox")</field>
+            <field name="ymailMI">document.getAnonymousElementByAttribute(this, "item-href", "ymail")</field>
+            <field name="observers"><![CDATA[    ({
+        "WindowLocationChange": function (topic, data) {
+            this.log(topic + " " + data.url);
+            this.application.onLocationChange(data.url);
+        },
+        "showitems": function () {
+        },
+        "throbber": function (topic, data) {
+            this.mainButton.setAttribute("throbber", !!data);
+        },
+        "display": function (topic) {
+            this.updateView();
+        }
+    });]]></field>
+            <constructor><![CDATA[    this.log("constructor");
+    var ent = this.application.entities;
+    this.authButton.setAttribute("tooltiptext", ent.text("gmail.tooltip.off") + "\n" + ent.text("gmail.tooltip.please_auth"));
+    this.updateView();]]></constructor>
+            <method name="updateView">
+                <body><![CDATA[    var data = this.application.getUserData();
+    this.setAttribute("auth", !!data);
+    if (data) {
+        this.mailboxMI.setAttribute("label", data.mail || "");
+        this.ymailMI.setAttribute("item-param", data.mail || "");
+        this.mainButton.setAttribute("counter", data.count || "");
+        var tipText, ent = this.application.entities;
+        if (data.error) {
+            tipText = ent.text("gmail.name") + "\n" + ent.text("gmail.tooltip.error");
+        } else {
+            tipText = ent.text("gmail.tooltip." + (data.count ? "on" : "empty")) + (data.mail ? "\n" + data.mail : "");
+        }
+        this.mainButton.setAttribute("tooltiptext", tipText);
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

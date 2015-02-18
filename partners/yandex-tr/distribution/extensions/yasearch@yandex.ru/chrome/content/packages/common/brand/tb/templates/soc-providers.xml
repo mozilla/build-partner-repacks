@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<providers>
+  <provider code="fb" display_name="Facebook" enabled="1" icon="http://yastatic.net/social/current/icons/16/fb.png" id="2" primary="1" url="https://social.yandex.com.tr/broker/start?provider=fb&amp;action_if_anonymous=authorize&amp;display=popup&amp;popupName=social_bar&amp;consumer=bar&amp;result_location=fragment&amp;retpath=https%3A%2F%2Fsocial.yandex.ru%2Fhtml%2Fcloser%2Fpromo_closer.html%23ddom%3D"/>
+  <provider code="tw" display_name="Twitter" enabled="1" icon="http://yastatic.net/social/current/icons/16/tw.png" id="3" primary="1" url="https://social.yandex.com.tr/broker/start?provider=tw&amp;action_if_anonymous=authorize&amp;display=popup&amp;popupName=social_bar&amp;consumer=bar&amp;result_location=fragment&amp;retpath=https%3A%2F%2Fsocial.yandex.ru%2Fhtml%2Fcloser%2Fpromo_closer.html%23ddom%3D"/>
+  <provider code="gg" display_name="Google" enabled="1" icon="http://yastatic.net/social/current/icons/16/gg.png" id="5" primary="1" url="https://social.yandex.com.tr/broker/start?provider=gg&amp;action_if_anonymous=authorize&amp;display=popup&amp;popupName=social_bar&amp;consumer=bar&amp;result_location=fragment&amp;retpath=https%3A%2F%2Fsocial.yandex.ru%2Fhtml%2Fcloser%2Fpromo_closer.html%23ddom%3D"/>
+</providers>

@@ -1,0 +1,214 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="styles/main.css"/>
+        </resources>
+
+        <content>
+            <xul:toolbarbutton anonid="button-auth" class="toolbarbutton-1 widget-button" item-href="auth" tooltip="webmaster-no-auth-tooltip" yb-native-not-authorized="true"/>
+
+            <toolbarbutton anonid="webmaster-button" class="toolbarbutton-1 widget-button" item-href="home" tooltip="webmaster-tooltip" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+                <menupopup anonid="webmaster-menupopup">
+                    <menuitem anonid="menuitem-update" item-command="update" label="&webmaster.update;"/>
+                    <menuseparator anonid="menuitem-before-sites"/>
+                    <menuseparator anonid="menuitem-after-sites"/>
+                    <menuitem item-href="spellcheck" label="&webmaster.spellcheck;"/>
+                    <menuitem item-href="analys" label="&webmaster.analys;"/>
+                    <menuitem item-href="addurl" label="&webmaster.add-url;"/>
+                    <menuitem item-href="regsearch" label="&webmaster.region-search;"/>
+                    <menuitem item-href="contentinfo" label="&webmaster.content-info;"/>
+                </menupopup>
+            </toolbarbutton>
+
+            <tooltip anonid="webmaster-tooltip" id="webmaster-no-auth-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <grid flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&webmaster.logged-out-tooltip-1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&webmaster.logged-out-tooltip-2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+            </tooltip>
+
+            <tooltip anonid="webmaster-tooltip" id="webmaster-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <grid anonid="tooltip-error-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&webmaster.tooltip;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&webmaster.request-failed;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <grid anonid="tooltip-nosites-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&webmaster.nosites1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&webmaster.nosites2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <hbox anonid="tooltip-header">&webmaster.tooltip;</hbox>
+            </tooltip>
+        </content>
+
+        <implementation>
+            <field name="WIID" readonly="true">this.application.WIID</field>
+
+            <field name="_authButton">document.getAnonymousElementByAttribute(this, "anonid", "button-auth")</field>
+            <field name="_button">document.getAnonymousElementByAttribute(this, "anonid", "webmaster-button")</field>
+            <field name="_authTooltip">document.getAnonymousElementByAttribute(this, "id", "webmaster-no-auth-tooltip")</field>
+            <field name="_tooltip">document.getAnonymousElementByAttribute(this, "id", "webmaster-tooltip")</field>
+            <field name="_menuPopup">document.getAnonymousElementByAttribute(this, "anonid", "webmaster-menupopup")</field>
+
+            <field name="_menuSeparatorPopulatePoint">document.getAnonymousElementByAttribute(this, "anonid", "menuitem-after-sites")</field>
+            <field name="_menuUpdatePoint">document.getAnonymousElementByAttribute(this, "anonid", "menuitem-update")</field>
+
+            <field name="_throbberTimer">null</field>
+
+            <field name="observers"><![CDATA[    ({
+        throbber: function webmaster_observers_throbber(topic, data) {
+            let show = false;
+            let dataObj;
+            try {
+                dataObj = JSON.parse(data);
+            } catch (e) {
+            }
+            if (!dataObj || dataObj.wiid !== this.WIID) {
+                return;
+            }
+            show = !!dataObj.value;
+            if (show) {
+                if (this._throbberTimer) {
+                    this._throbberTimer.cancel();
+                }
+                this._button.setAttribute("throbber", true);
+                this._menuUpdatePoint.setAttribute("disabled", true);
+                this._lastThrobberTime = Date.now();
+            } else {
+                if (this._throbberTimer) {
+                    return;
+                }
+                let delay = 700 - (Date.now() - this._lastThrobberTime);
+                if (delay < 0) {
+                    delay = 0;
+                }
+                this._throbberTimer = new this.application.api.SysUtils.Timer(function () {
+                    this._throbberTimer = null;
+                    this._lastThrobberTime = null;
+                    this._button.setAttribute("throbber", false);
+                    this._menuUpdatePoint.removeAttribute("disabled");
+                }.bind(this), delay);
+            }
+        },
+        display: function webmaster_observers_display(topic, data) {
+            if (data) {
+                let dataObj;
+                try {
+                    dataObj = JSON.parse(data);
+                } catch (e) {
+                }
+                if (!dataObj || dataObj.wiid !== this.WIID) {
+                    return;
+                }
+            }
+            this.updateView();
+        }
+    });]]></field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.ybwFinalize();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this.updateView();]]></body>
+            </method>
+
+            <method name="ybwFinalize">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    if (this._throbberTimer) {
+        this._throbberTimer.cancel();
+        this._throbberTimer = null;
+    }]]></body>
+            </method>
+
+            <method name="updateView">
+                <body><![CDATA[    if (!this.application.isAuth()) {
+        this.setAttribute("auth", false);
+        return;
+    }
+    this.setAttribute("auth", true);
+    this.setAttribute("yb-no-data", true);
+    this._button.removeAttribute("yb-virused");
+    this._populateMenuItems();
+    let data = this.application.getUserData(this.WIID, "main");
+    if (data) {
+        if (data._error) {
+            return;
+        }
+        this.removeAttribute("yb-no-data");
+        let tooltip = this._tooltip;
+        let noSitesGrid = tooltip.querySelector("grid[anonid=\"tooltip-nosites-grid\"]");
+        let tooltipHeader = tooltip.querySelector("hbox[anonid=\"tooltip-header\"]");
+        if (!(data.hosts && data.hosts.length)) {
+            tooltipHeader && (tooltipHeader.hidden = true);
+            noSitesGrid && (noSitesGrid.hidden = false);
+        } else {
+            tooltipHeader && (tooltipHeader.hidden = false);
+            noSitesGrid && (noSitesGrid.hidden = true);
+        }
+        let virusedItem = this._menuPopup.querySelector("menuitem[yb-virused=\"true\"]");
+        if (virusedItem) {
+            this._button.setAttribute("yb-virused", true);
+        }
+    }]]></body>
+            </method>
+
+            <method name="_populateMenuItems">
+                <body><![CDATA[    this._cleanMenuItems();
+    let data = this.application.getUserData(this.WIID, "main");
+    if (!(data && data.hosts && data.hosts.length)) {
+        return;
+    }
+    var creator = function (item) {
+        let menuitem = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
+        menuitem.setAttribute("item-href", "go");
+        menuitem.setAttribute("item-param", item.id);
+        menuitem.setAttribute("label", item.name || "");
+        if (item.virused) {
+            menuitem.setAttribute("yb-virused", true);
+            menuitem.classList.add("menuitem-iconic");
+        }
+        this._menuPopup.insertBefore(menuitem, this._menuSeparatorPopulatePoint);
+    }.bind(this);
+    data.hosts.forEach(creator);]]></body>
+            </method>
+
+            <method name="_cleanMenuItems">
+                <body><![CDATA[    let elem = this._menuSeparatorPopulatePoint;
+    while (elem.previousElementSibling && elem.previousElementSibling.getAttribute("anonid") !== "menuitem-before-sites") {
+        this._menuPopup.removeChild(elem.previousElementSibling);
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+</bindings>

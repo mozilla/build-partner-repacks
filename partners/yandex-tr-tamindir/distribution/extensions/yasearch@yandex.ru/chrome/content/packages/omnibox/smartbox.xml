@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE plugin SYSTEM "smartbox.dtd"><plugin bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="icons/icon-16.png" name="&wgt.smartbox.name;" xmlns="http://bar.yandex.ru/dev/gui">
+    <f:setting default="false" name="nativeqs.removed" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="/native/core.js"/>
+    </modules>
+</plugin>

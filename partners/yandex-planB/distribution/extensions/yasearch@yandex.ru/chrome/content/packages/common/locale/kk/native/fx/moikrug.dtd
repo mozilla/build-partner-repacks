@@ -1,0 +1,10 @@
+<!ENTITY moikrug.name "Мой Круг">
+<!ENTITY moikrug.tooltiptext "Мой Круг жаңа хабарлар">
+<!ENTITY moikrug.noauthtooltiptext "Мой Круг жаңа хабарлар көрсетеді">
+<!ENTITY moikrug.reloadCounter.label "Хабарлар туралы мәліметті жаңарту">
+<!ENTITY moikrug.home.label "Ашу Мой Круг">
+<!ENTITY moikrug.firstcircle.label "Менің 1-інші ортам">
+<!ENTITY moikrug.profile.label "Менің профилім">
+<!ENTITY moikrug.search.label "Адамдарды іздеу">
+<!ENTITY moikrug.vacancies.label "Жұмыс іздеу">
+<!ENTITY moikrug.services.label "Қызметтерді іздеу">

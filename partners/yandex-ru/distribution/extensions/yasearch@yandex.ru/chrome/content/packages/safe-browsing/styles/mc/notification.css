@@ -1,0 +1,6 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);[anonid=notification-icon-image-outer]{width:16px;height:16px}
+[anonid=notification-icon-image-outer] image{min-width:100%;min-height:100%}
+[anonid=content-area] label{margin:0!important;padding:0!important}
+[anonid=notification-icon]{-moz-margin-end:.667em}
+[anonid=go-button],[anonid=remove-rule-button]{-moz-margin-start:1.5384em}
+.clickable{cursor:pointer}

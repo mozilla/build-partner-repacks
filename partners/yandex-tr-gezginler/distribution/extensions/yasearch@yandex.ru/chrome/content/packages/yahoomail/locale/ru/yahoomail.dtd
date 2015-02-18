@@ -1,0 +1,17 @@
+<!ENTITY widget.name "Yahoo! Mail">
+<!ENTITY widget.button.text "Yahoo! Mail">
+<!ENTITY widget.menu.check_mailbox "Проверить почту">
+<!ENTITY widget.menu.compose "Написать письмо">
+<!ENTITY widget.menu.read "Читать письма">
+<!ENTITY widget.menu.contacts "Открыть контакты">
+<!ENTITY widget.menu.logout "Выйти">
+<!ENTITY widget.tooltip.title "Yahoo! Mail">
+<!ENTITY widget.tooltip.your_messages "Ваши сообщения в почтовом ящике">
+<!ENTITY widget.tooltip.offline_message "К сожалению, информацию о ваших письмах получить не удалось">
+<!ENTITY widget.tooltip.new_messages "Новые сообщения в почте Yahoo! Mail">
+<!ENTITY widget.tooltip.ask_to_login "Пожалуйста, авторизуйтесь">
+<!ENTITY widget.tooltip.new_messages_prefix "Новых: ">
+<!ENTITY widget.tooltip.total_messages_prefix "Всего: ">
+<!ENTITY widget.settings.label "Интервал обновления:">
+<!ENTITY widget.settings.label_after "минут">
+<!ENTITY widget.settings.checktext "Показывать название кнопки">

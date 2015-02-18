@@ -1,0 +1,23 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY homepage.defence.changed.title "Домашняя страница изменилась">
+<!ENTITY homepage.defence.changedAgain.title "Домашняя страница снова изменилась">
+
+<!ENTITY homepage.defence.changed.from.prefix "с">
+<!ENTITY homepage.defence.changed.from.postfix "">
+<!ENTITY homepage.defence.changed.to.prefix "на">
+<!ENTITY homepage.defence.changed.to.postfix "">
+<!ENTITY homepage.defence.changed.empty "нет адреса">
+
+<!ENTITY homepage.defence.again.help "Возможно, замена связана с работой сторонней программы. &product2.nom; более не&#160;защищает вашу домашнюю страницу">
+<!ENTITY homepage.defence.again.help.more "Подробнее">
+
+<!ENTITY homepage.defence.change.question "Разрешить это изменение">
+<!ENTITY homepage.defence.change.checkbox "Предупреждать о смене домашней страницы">
+
+<!ENTITY homepage.defence.ok.button "OK">
+<!ENTITY homepage.defence.deny.button "Запретить">
+<!ENTITY homepage.defence.allow.button "Разрешить">
+
+<!ENTITY homepage.defence.changed.help "&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;Чтобы вновь включить защиту страницы, отключите стороннюю программу, установите нужную домашнюю страницу&#160;и включите опцию:&#60;br/&#62;&#60;strong&#62;&#171;Включить защиту домашней страницы&#187;&#60;/strong&#62; на&#160;вкладке &#60;strong&#62;Настройки&#60;/strong&#62; в&#160;&#60;strong&#62;Настройках&#60;/strong&#62;.&#60;/p&#62;&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;По всем вопросам обращайтесь в&#160;нашу &#60;a anonid=&#39;mailtoSupportLink&#39; href=&#39;mailto:support@element.yandex.ru&#39;&#62;службу поддержки&#60;/a&#62;.&#60;/p&#62;">

@@ -20,35 +20,36 @@ const migrator = {
             try {
                 item.action();
             } catch (ex) {
-                this._migrationModule.logger.error("Failed to perform migration action '" + item.id + "':" + strutils.formatError(ex));
+                this._migrationModule.logger.error("Failed to perform migration action '" + item.id + "': " + strutils.formatError(ex));
                 this._migrationModule.logger.debug(ex.stack);
             }
         }, this);
     },
     _removeClckUrls: function migrator__removeClckUrls() {
-        function changeURL(rowid, newURL) {
-            database.execQuery("UPDATE thumbs SET url = :url WHERE rowid = :rowid", {
-                rowid: rowid,
-                url: newURL
-            });
-        }
         let app = this._migrationModule.app;
         let dbFile = app.core.rootDir;
         dbFile.append("fastdial.sqlite");
         let database = new Database(dbFile);
-        let sql = "SELECT thumbs.url, thumbs.rowid, shown.fixed             FROM thumbs_shown AS shown LEFT JOIN thumbs ON thumbs.rowid = shown.thumb_id";
+        let sql = "SELECT thumbs.url, thumbs.rowid, shown.fixed " + "FROM thumbs_shown AS shown LEFT JOIN thumbs ON thumbs.rowid = shown.thumb_id";
         let rowsData = database.execQuery(sql);
         let xmlDoc;
         try {
             xmlDoc = app.branding.brandPackage.getXMLDocument("fastdial/clckr.xml");
         } catch (err) {
         }
-        if (!xmlDoc)
+        if (!xmlDoc) {
             return;
+        }
         let clckToNormalURL = {};
         Array.forEach(xmlDoc.querySelectorAll("item"), function (item) {
             clckToNormalURL[item.getAttribute("url")] = item.getAttribute("domain");
         });
+        function changeURL(rowid, newURL) {
+            database.execQuery("UPDATE thumbs SET url = :url WHERE rowid = :rowid", {
+                rowid: rowid,
+                url: newURL
+            });
+        }
         rowsData.forEach(function (row) {
             let isDefaultThumb = false;
             if (clckToNormalURL[row.url]) {

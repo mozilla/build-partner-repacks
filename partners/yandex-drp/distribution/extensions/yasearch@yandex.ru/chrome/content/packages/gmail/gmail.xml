@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "gmail/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="gmail/content/img/gmail.png" icon-vector="gmail/content/img/gmail.svg" name="&gmail.name;" xmlns:ui="http://bar.yandex.ru/dev/gui" unique="true">
+
+    <f:setting default="true" name="show-notifications" scope="widget">
+        <ui:control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="gmail/core/widget.jsm"/>
+    </modules>
+</widget>

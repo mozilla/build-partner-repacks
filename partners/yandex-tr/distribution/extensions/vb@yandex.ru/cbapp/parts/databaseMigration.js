@@ -49,8 +49,9 @@ const databaseMigration = {
             let currentSchemaVersion = database.schemaVersion;
             let maxSchemaVersion = Object.keys(schema[name]).sort((a, b) => parseInt(a, 10) - parseInt(b, 10)).pop();
             let migrateSchemaVersion;
-            if (installInfo.addonLastVersion === "2.4" && name === "fastdial")
+            if (installInfo.addonLastVersion === "2.4" && name === "fastdial") {
                 currentSchemaVersion = 4;
+            }
             this._logger.config("Database migration started (" + name + "). " + "Current schema version: " + currentSchemaVersion + "; " + "Max schema version: " + maxSchemaVersion + ".");
             try {
                 for (migrateSchemaVersion = currentSchemaVersion + 1; migrateSchemaVersion <= maxSchemaVersion; migrateSchemaVersion++) {
@@ -77,8 +78,9 @@ const databaseMigration = {
         }
         let dbFile = this._application.core.rootDir;
         path.split("/").forEach(function (p) {
-            if (p)
+            if (p) {
                 dbFile.append(p);
+            }
         });
         return dbFile;
     },
@@ -89,8 +91,8 @@ const schema = {
     fastdial: {
         1: function schema_fastdial_1(database) {
             database.execQuery("CREATE TABLE IF NOT EXISTS blacklist (domain TEXT UNIQUE)");
-            database.execQuery("CREATE TABLE IF NOT EXISTS thumbs (url TEXT UNIQUE, title TEXT, backgroundImage TEXT, backgroundColor TEXT, favicon TEXT, insertTimestamp INTEGER)");
-            database.execQuery("CREATE TABLE IF NOT EXISTS thumbs_shown (thumb_id INTEGER, position INTEGER UNIQUE, fixed INTEGER)");
+            database.execQuery("CREATE TABLE IF NOT EXISTS thumbs (url TEXT UNIQUE, title TEXT, " + "backgroundImage TEXT, backgroundColor TEXT, favicon TEXT, insertTimestamp INTEGER)");
+            database.execQuery("CREATE TABLE IF NOT EXISTS thumbs_shown " + "(thumb_id INTEGER, position INTEGER UNIQUE, fixed INTEGER)");
         },
         2: function schema_fastdial_2(database) {
             database.execQuery("UPDATE thumbs SET backgroundColor = NULL, favicon = NULL, backgroundImage = NULL");
@@ -112,7 +114,7 @@ const schema = {
             database.execQuery("ALTER TABLE thumbs_shown ADD COLUMN syncId TEXT");
             database.execQuery("ALTER TABLE thumbs_shown ADD COLUMN syncTimestamp INTEGER");
             database.execQuery("UPDATE thumbs SET backgroundColor = NULL WHERE backgroundColor = ''");
-            database.execQuery("UPDATE thumbs SET backgroundColor = NULL, favicon = NULL WHERE favicon LIKE 'http://favicon.yandex.net/favicon/%'");
+            database.execQuery("UPDATE thumbs SET backgroundColor = NULL, favicon = NULL " + "WHERE favicon LIKE 'http://favicon.yandex.net/favicon/%'");
         },
         7: function schema_fastdial_7(database) {
             database.execQuery("ALTER TABLE thumbs ADD COLUMN screenshotColor TEXT");

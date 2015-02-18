@@ -1,0 +1,25 @@
+<!ENTITY weather.extension.description "Актуальная погода в вашем городе и прогноз на завтра.">
+<!ENTITY weather.extension.sd-title "Яндекс.Погода для Экспресс-панели">
+<!ENTITY weather.extension.title "Яндекс.Погода">
+<!ENTITY weather.options.city.autodetect "Определять автоматически">
+<!ENTITY weather.options.city.label "Город">
+<!ENTITY weather.options.header "Настройки: Погода">
+<!ENTITY weather.options.interval.label "Интервал обновления">
+<!ENTITY weather.options.interval.min "мин.">
+<!ENTITY slice.weather.dampness "Влажность">
+<!ENTITY slice.weather.dp.day "Днем">
+<!ENTITY slice.weather.dp.evening "Вечером">
+<!ENTITY slice.weather.dp.morning "Утром">
+<!ENTITY slice.weather.dp.night "Ночью">
+<!ENTITY slice.weather.error.net "Интернет##не подключен">
+<!ENTITY slice.weather.error.server "Отсутствует связь с сервером.##Попробуйте позднее">
+<!ENTITY slice.weather.pressure.title "Давление">
+<!ENTITY slice.weather.pressure.hpa "гПа">
+<!ENTITY slice.weather.pressure.mm "мм рт. ст.">
+<!ENTITY slice.weather.settings "Настройки">
+<!ENTITY slice.weather.title "Виджет погоды">
+<!ENTITY slice.weather.today "Сегодня">
+<!ENTITY slice.weather.tomorrow "Завтра">
+<!ENTITY slice.weather.url.title "Прогноз на 10 дней">
+<!ENTITY slice.weather.wind.title "Ветер">
+<!ENTITY slice.weather.wind.ms "м/с">

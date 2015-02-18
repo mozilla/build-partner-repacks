@@ -1,0 +1,291 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/notifications/notification.xbl#notification-base" id="notification-base">
+        <resources>
+            <stylesheet src="styles/notification.css"/>
+        </resources>
+
+        <implementation>
+            <field name="api" readonly="true">this._moduleElement.api</field>
+            <field name="_moduleElement" readonly="true">this._notification.module</field>
+        </implementation>
+    </binding>
+
+    <binding extends="#notification-base" id="notification">
+        <content>
+            <hbox align="baseline" anonid="content-area" flex="1" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <hbox anonid="notification-icon">
+                    <image anonid="notification-icon-image"/>
+                </hbox>
+                <deck anonid="message-container">
+                    <hbox align="baseline">
+                        <description>&browseroffer.notification.text.yaBrowser;<button anonid="openYa" label="&browseroffer.notification.button.yaBrowser;"/></description>
+                    </hbox>
+                    <hbox align="baseline">
+                        <description>&browseroffer.notification.text.noYaBrowser;<button anonid="openNoYa" label="&browseroffer.notification.button.noYaBrowser;"/></description>
+                    </hbox>
+                </deck>
+            </hbox>
+
+            <xul:hbox anonid="close-button" class="hoverable"/>
+
+            <xul:hbox hidden="true">
+                <children/>
+            </xul:hbox>
+        </content>
+
+        <implementation>
+            <field name="_wasShowed">false</field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed || !this._moduleElement._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this.classList.add("no-flash");
+    let browserInstalled = this.api.Integration.yandexBrowser.isInstalled;
+    let deck = this._getElementByAttr("anonid", "message-container");
+    if (deck && !browserInstalled) {
+        deck.selectedIndex = 1;
+    }
+    this._checkShowed();]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    if (this._checkShowedTimeout) {
+        clearTimeout(this._checkShowedTimeout);
+        this._checkShowedTimeout = null;
+    }
+    this._wdgtxConstructed = false;]]></body>
+            </method>
+
+            <method name="_checkShowed">
+                <body><![CDATA[    if (this._notification.control.currentNotification === this._notification) {
+        this._wasShowed = true;
+        this._sendStatistic(this.api.Integration.yandexBrowser.isInstalled ? "addbbrun" : "addbbinstall");
+    } else {
+        this._checkShowedTimeout = setTimeout(this._checkShowed.bind(this), 1000);
+    }]]></body>
+            </method>
+
+            <method name="_sendStatistic">
+                <parameter name="aAction"/>
+                <body><![CDATA[    let me = this._moduleElement;
+    if (me && typeof me.sendStatistic == "function") {
+        me.sendStatistic("noFlash", aAction);
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="click"><![CDATA[    let target = event.originalTarget;
+    let mButton = event.button;
+    if (!(mButton === 0 || mButton === 1)) {
+        return;
+    }
+    let anonid = this.getSelfOrAncestorAnonid(target);
+    let statAction = "";
+    let userAction = "";
+    switch (anonid) {
+    case "close-button":
+        let browserInstalled = this.api.Integration.yandexBrowser.isInstalled;
+        statAction = browserInstalled ? "runclose" : "installclose";
+        userAction = "close";
+        break;
+    case "openYa":
+        statAction = "run";
+        this.api.Statistics.BarNavig.sendRequest({ addbb: "noflbb" });
+        this.api.Integration.yandexBrowser.openBrowser(gBrowser.mCurrentBrowser.documentURI.spec);
+        break;
+    case "openNoYa":
+        statAction = "install";
+        userAction = "button";
+        this.api.Controls.navigateBrowser({
+            unsafeURL: this._moduleElement.application.config.browserLinks.noflash,
+            eventInfo: event
+        });
+        break;
+    default:
+        return;
+    }
+    this._moduleElement.onNotificationAction("noflash", userAction);
+    this._sendStatistic(statAction);
+    this._notification.close();]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="#notification-base" id="notification-wdgt-suggest">
+        <content>
+            <hbox anonid="content-area" flex="1" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <hbox align="baseline" anonid="message-container">
+                    <stack anonid="widget-container">
+                        <hbox data-ybtype="vk">
+                            <description><image/>&#160;<label value="&browseroffer.notification.wdgt-suggest.vk;"/></description>
+                        </hbox>
+                        <hbox data-ybtype="ok">
+                            <description><image/>&#160;<label value="&browseroffer.notification.wdgt-suggest.ok;"/></description>
+                        </hbox>
+                        <hbox data-ybtype="fb">
+                            <description><image/>&#160;<label value="&browseroffer.notification.wdgt-suggest.fb;"/></description>
+                        </hbox>
+                    </stack>
+                    <button anonid="add-widget-button" label="&browseroffer.notification.button.add;"/>
+                    <button anonid="deny-widget-button" label="&browseroffer.notification.button.deny;"/>
+                </hbox>
+            </hbox>
+
+            <xul:hbox anonid="close-button" class="hoverable"/>
+
+            <xul:hbox hidden="true">
+                <children/>
+            </xul:hbox>
+        </content>
+
+        <implementation>
+            <field name="_closedByUser">false</field>
+            <field name="_userMessageText" readonly="true">"&browseroffer.notification.wdgt-suggest.text;"</field>
+            <field name="_type" readonly="true">this._notification.ybtype</field>
+            <field name="_widgetID" readonly="true">this._notification.ybwidgetID</field>
+            <field name="_widgetTextContainer" readonly="true">this._getElementByAttr("anonid", "widget-container");</field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    let labelsText = this._userMessageText.split("{button}");
+    for (let i = 0; i < labelsText.length; i += 2) {
+        let preText = labelsText[i];
+        let postText = labelsText[i + 1];
+        if (preText) {
+            let preLabel = this._createElement("label");
+            preLabel.setAttribute("value", preText);
+            this._widgetTextContainer.parentNode.insertBefore(preLabel, this._widgetTextContainer);
+        }
+        if (postText) {
+            let postLabel = this._createElement("label");
+            postLabel.setAttribute("value", postText);
+            this._widgetTextContainer.parentNode.insertBefore(postLabel, this._widgetTextContainer.nextSibling);
+        }
+    }
+    let requiredPanel = this._widgetTextContainer.querySelector("[data-ybtype=\"" + this._type + "\"]");
+    for (let i = 0; i < this._widgetTextContainer.childNodes.length; i++) {
+        let child = this._widgetTextContainer.childNodes[i];
+        child.hidden = !(child === requiredPanel);
+    }
+    this._notification.getWidgetID = function browseroffer_notification_getWidgetID() {
+        return this._widgetID;
+    }.bind(this);
+    this._notification.setUserAction = function browseroffer_notification_setUserAction() {
+        this.setUserAction();
+    }.bind(this);
+    this._sendStatistic("show");]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    if (!this._closedByUser) {
+        this._sendStatistic("ignore");
+    }]]></body>
+            </method>
+
+            <method name="setUserAction">
+                <body><![CDATA[    this._closedByUser = true;]]></body>
+            </method>
+
+            <method name="_onAddWidget">
+                <body><![CDATA[    let appName = this.api.Environment.barPlatform.name;
+    function testWidget(aButton) {
+        return aButton && aButton.getAttribute("cb-app") === appName;
+    }
+    let relativeTo = null;
+    let placeAfter = true;
+    let urlbarContainer = document.querySelector("#nav-bar #urlbar-container");
+    if (urlbarContainer) {
+        relativeTo = urlbarContainer;
+        let target = urlbarContainer.nextElementSibling;
+        while (target) {
+            if (testWidget(target)) {
+                relativeTo = target;
+            }
+            target = target.nextElementSibling;
+        }
+        let overflowButton = document.querySelector("#nav-bar-overflow-button");
+        if (overflowButton) {
+            if (relativeTo !== urlbarContainer) {
+                placeAfter = false;
+            }
+        }
+    }
+    this.api.Controls.addWidget(this._widgetID, window, relativeTo, placeAfter);]]></body>
+            </method>
+
+            <method name="_createElement">
+                <parameter name="aElementName"/>
+                <body><![CDATA[    const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+    return document.createElementNS(XUL_NS, aElementName);]]></body>
+            </method>
+
+            <method name="_sendStatistic">
+                <parameter name="aAction"/>
+                <body><![CDATA[    let social = this._type;
+    switch (social) {
+    case "ok":
+        social = "odnoklassniki";
+        break;
+    case "fb":
+        social = "facebook";
+        break;
+        deafult:
+            break;
+    }
+    let me = this._moduleElement;
+    if (me && typeof me.sendStatistic == "function") {
+        me.sendStatistic("wdgtSuggest", social + "." + aAction);
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="click"><![CDATA[    let target = event.originalTarget;
+    let mButton = event.button;
+    if (!(mButton === 0 || mButton === 1)) {
+        return;
+    }
+    let anonid = this.getSelfOrAncestorAnonid(target);
+    let userAction = "";
+    switch (anonid) {
+    case "add-widget-button":
+        userAction = "agree";
+        this._onAddWidget();
+        break;
+    case "close-button":
+    case "deny-widget-button":
+        userAction = "close";
+        break;
+    default:
+        return;
+    }
+    this._moduleElement.onNotificationAction("wdgt-suggest", userAction, this._widgetID);
+    this._sendStatistic(userAction);
+    this.setUserAction();
+    this._notification.close();]]></handler>
+        </handlers>
+    </binding>
+
+</bindings>

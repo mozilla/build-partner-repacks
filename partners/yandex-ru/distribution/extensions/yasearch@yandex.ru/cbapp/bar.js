@@ -264,7 +264,7 @@ const barApplication = {
         if (uri.scheme != "http" && uri.scheme != "https") {
             return false;
         }
-        return uri.host == this._consts.WIDGET_LIBRARY_HOST && /^\/packages\/(approved|249|250|251)\//.test(uri.path) || uri.host in this._consts.BAR_HOSTS && uri.path.indexOf("/packages/") == 0 || uri.host == this._consts.DOWNLOAD_HOST_NAME || this.isBarQADebuggingURI(uri) || false;
+        return uri.host == this._consts.WIDGET_LIBRARY_HOST && /^\/packages\/(approved|249|250|251)\//.test(uri.path) || uri.host in this._consts.BAR_HOSTS && uri.path.indexOf("/packages/") === 0 || uri.host == this._consts.DOWNLOAD_HOST_NAME || this.isBarQADebuggingURI(uri) || false;
     },
     isTrustedPackageURL: function BarApp_isTrustedPackageURL(url) {
         return this.isTrustedPackageURI(netutils.newURI(url));
@@ -294,12 +294,6 @@ const barApplication = {
             this.incomingCompMgr.activateIncoming(controller);
         } catch (e) {
             this._logger.error("Could not place preinstalled widgets on toolbar. " + strutils.formatError(e));
-        }
-        try {
-            this.componentsUsage.onFisrtNavigatorReady();
-        } catch (e) {
-            this._logger.error("componentsUsage.onFisrtNavigatorReady failed. " + strutils.formatError(e));
-            this._logger.debug(e.stack);
         }
     },
     _consts: {
@@ -466,10 +460,6 @@ const barApplication = {
             file: "overlay_prov.js"
         },
         {
-            name: "componentsUsage",
-            file: "compsusage.js"
-        },
-        {
             name: "packageManager",
             file: "pacman.js"
         },
@@ -619,10 +609,10 @@ const barApplication = {
                         this._replaceDefaultPresetWith(internalPreset);
                         this._usingInternalPreset = true;
                     } else {
-                        let defaultPresetFile = this._barCore.extensionPathFile;
-                        ("defaults/presets/" + encodeURIComponent(this._defaultPreset.url)).split("/").forEach(s => defaultPresetFile.append(s));
-                        if (defaultPresetFile.exists() && defaultPresetFile.isFile()) {
-                            let preset = new this.BarPlatform.Preset(fileutils.xmlDocFromFile(defaultPresetFile));
+                        let defaultPresetPath = "defaults/presets/" + encodeURIComponent(this._defaultPreset.url);
+                        let defaultPresetEntry = this.addonFS.getEntry(defaultPresetPath);
+                        if (defaultPresetEntry.exists() && defaultPresetEntry.isFile()) {
+                            let preset = new this.BarPlatform.Preset(fileutils.xmlDocFromStream(defaultPresetEntry.getStream()));
                             this._logger.config("Replacing existing default preset with new version" + " from defaults/presets/" + this._defaultPreset.url);
                             this._replaceDefaultPresetWith(preset);
                         }
@@ -633,7 +623,7 @@ const barApplication = {
                 this._logger.debug(e.stack);
             }
         }
-        let normalWidgetIDs = [wID for (wID in this._defaultPreset.widgetIDs)].filter(function (id) {
+        let normalWidgetIDs = Object.keys(this._defaultPreset.widgetIDs).filter(function (id) {
             return [
                 "http://bar.yandex.ru/packages/yandexbar#spring",
                 "http://bar.yandex.ru/packages/yandexbar#settings",
@@ -642,7 +632,7 @@ const barApplication = {
         });
         this._introducedWEntries.forEach(widgetEntry => normalWidgetIDs.push(widgetEntry.componentID));
         this.widgetLibrary.registerWidgets(normalWidgetIDs, true);
-        let pluginIDs = [pID for (pID in this._defaultPreset.pluginIDs)];
+        let pluginIDs = Object.keys(this._defaultPreset.pluginIDs);
         this.widgetLibrary.registerPlugins(pluginIDs, true);
         this._introducedPEntries.forEach(function (pluginEntry) {
             let pluginID = pluginEntry.componentID;
@@ -716,8 +706,9 @@ const barApplication = {
             let partDescr = this._partNames[i];
             let partName = partDescr.name;
             let partPath = partsDirPath + partDescr.file;
-            this._logger.debug("Loading " + partName + " part from " + partPath);
+            let loadPartStart = Date.now();
             Cu.import(partPath, this._parts);
+            this._logger.debug("Loading " + partName + " part from " + partPath + " (" + (Date.now() - loadPartStart) + " ms)");
             let part = this._parts[partName];
             if (!part) {
                 throw new Error("Part " + partName + " not loaded!");
@@ -794,13 +785,13 @@ const barApplication = {
                 try {
                     extPresetFile.moveTo(null, encodeURIComponent(preset.url));
                     Preferences.set(defaultPresetUrlPrefPath, preset.url);
-                } catch (e) {
-                    this._logger.error("Could not set external default preset as active. " + strutils.formatError(e));
+                } catch (ex1) {
+                    this._logger.error("Could not set external default preset as active. " + strutils.formatError(ex1));
                 }
                 return this._defaultPreset = preset;
-            } catch (e) {
+            } catch (ex2) {
                 if (extPresetFile.exists()) {
-                    this._logger.debug("Failed parsing external default preset.\n" + strutils.formatError(e));
+                    this._logger.debug("Failed parsing external default preset.\n" + strutils.formatError(ex2));
                     fileutils.removeFileSafe(extPresetFile);
                 }
                 try {
@@ -811,14 +802,14 @@ const barApplication = {
                         let fMask = parseInt("0755", 8);
                         this.addonFS.copySource(internalPresetPath, this.directories.presetsDir, destFileName, fMask);
                         Preferences.set(defaultPresetUrlPrefPath, preset.url);
-                    } catch (e) {
-                        this._logger.error("Could not extract internal preset.\n" + strutils.formatError(e));
+                    } catch (ex3) {
+                        this._logger.error("Could not extract internal preset.\n" + strutils.formatError(ex3));
                     }
                     this._usingInternalPreset = true;
                     return this._defaultPreset = preset;
-                } catch (e) {
-                    this._logger.fatal("Failed parsing internal default preset.\n" + strutils.formatError(e));
-                    this._logger.debug(e.stack);
+                } catch (ex4) {
+                    this._logger.fatal("Failed parsing internal default preset.\n" + strutils.formatError(ex4));
+                    this._logger.debug(ex4.stack);
                 }
             }
         }

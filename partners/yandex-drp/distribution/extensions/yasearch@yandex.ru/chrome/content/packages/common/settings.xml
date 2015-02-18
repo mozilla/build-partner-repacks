@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget [
+<!ENTITY % widget SYSTEM "/native/fx/settings.dtd">
+%widget;
+]>
+<widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/native/fx/settings/settings.png" name="&widget.settings.label;" unique="true">
+    <modules>
+        <module browser="firefox" file="/native/fx/settings/settings.jsm"/>
+    </modules>
+</widget>

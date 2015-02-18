@@ -1,0 +1,61 @@
+<?xml version='1.0'?>
+<!DOCTYPE component [
+<!ENTITY % esync SYSTEM "/esync.dtd">
+%esync;
+<!ENTITY % settings SYSTEM "/settings.dtd">
+%settings;
+]>
+
+<gui:component xmlns:gui="http://bar.yandex.ru/dev/native/gui" xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <html:script type="application/javascript;version=1.8"><![CDATA[
+        let JSProtoObject = {
+            onLinkClick: function(event) {
+                event.stopPropagation();
+                event.preventDefault();
+
+                let url = event.target.getAttribute("href");
+                let targetBrowser = null;
+
+                Components.utils.import("resource://gre/modules/Services.jsm");
+                let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+
+                if (browserWindow) {
+                    let tabbrowser = browserWindow.gBrowser;
+
+                    for (let i = tabbrowser.browsers.length - 1; i >= 0 && !targetBrowser; i--) {
+                        let browser = tabbrowser.getBrowserAtIndex(i);
+                        if (browser.currentURI.spec === url) {
+                            targetBrowser = browser;
+                            tabbrowser.selectedTab = tabbrowser.tabContainer.childNodes[i];
+                        }
+                    }
+
+                    if (!targetBrowser && tabbrowser.selectedBrowser.currentURI.spec === "yafd:tabs") {
+                        targetBrowser = tabbrowser.selectedBrowser;
+                    }
+                }
+
+                if (targetBrowser) {
+                    if (targetBrowser.currentURI.spec !== url) {
+                        targetBrowser.loadURI(url, null, null, false);
+                    }
+                } else {
+                    JSNativeModule.core.API.Controls.navigateBrowser({
+                        url: url,
+                        target: "new tab"
+                    });
+                }
+
+                document.documentElement.acceptDialog();
+                window.close();
+            }
+        };
+    ]]></html:script>
+
+    <gui:gui>
+        <gui:nodes>
+            <label class="text-link" href="bar:sync" onclick="JSProtoObject.onLinkClick(event);" value="&esync.open.barsync.page;"/>
+        </gui:nodes>
+    </gui:gui>
+</gui:component>

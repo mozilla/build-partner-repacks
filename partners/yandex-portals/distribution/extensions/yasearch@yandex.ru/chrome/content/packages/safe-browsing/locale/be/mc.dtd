@@ -1,0 +1,10 @@
+﻿<!ENTITY mc.widget.name "Дакладна па адрасу">
+
+<!ENTITY mc.widget.cancel.label "Закрыць падказку">
+<!ENTITY mc.widget.changedFrom.label "Выпраўлена з">
+<!ENTITY mc.widget.changedTo.label "на">
+<!ENTITY mc.widget.changedTo2.label "">
+<!ENTITY mc.widget.close.label "Закрыць">
+<!ENTITY mc.widget.go.label "Перайсці">
+<!ENTITY mc.widget.removeRule.label "Выдаліць правіла">
+<!ENTITY mc.widget.suggestion.label "Магчыма, вы хацелі адкрыць">

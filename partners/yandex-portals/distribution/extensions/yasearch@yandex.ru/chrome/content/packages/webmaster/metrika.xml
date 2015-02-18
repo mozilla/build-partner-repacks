@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "metrika/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="metrika/content/icons/ico.png" icon-vector="metrika/content/icons/ico.svg" name="&ya.metrika.name;" xmlns:ui="http://bar.yandex.ru/dev/gui" unique="true">
+
+    <f:setting default="12" name="update-interval" scope="widget">
+        <control label="&ya.metrika.update-interval-label;" source="/metrika/content/intervals.xml" type="combobox"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="metrika/core/widget.jsm"/>
+    </modules>
+</widget>

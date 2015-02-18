@@ -1,0 +1,2 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarbutton[yb-second-label-off=true] label[anonid=yb-second-label]{display:none!important}
+.toolbarbutton-icon{-moz-binding:url(buttons.xbl#toolbarbutton-icon)!important}

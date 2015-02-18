@@ -1,0 +1,8 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY widget.name "&vendor.nom;">
+<!ENTITY widget.action.openSettingsDialod.label "Settings">
+<!ENTITY widget.action.openSettingsDialod.tooltip "Open options window">
+<!ENTITY widget.action.openAboutDialog.label "About">
+<!ENTITY widget.action.openAboutDialog.tooltip "About">

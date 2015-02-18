@@ -1,0 +1,328 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "/native/fx/pagetranslator.dtd"><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="button">
+        <resources>
+            <stylesheet src="../styles/main.css"/>
+        </resources>
+
+        <content>
+            <xul:label>&pagetranslator.translate;</xul:label>
+        </content>
+
+        <implementation implements="nsIObserver, nsIDOMEventListener">
+            <field name="MAX_SHOW_TOOLTIP" readonly="true">5</field>
+            <field name="NOTIFICATION_NAME" readonly="true">"pagetranslator-notification"</field>
+            <field name="NOTIFICATION_TOOLTIP_NAME" readonly="true">"pagetranslator-tooltip"</field>
+            <field name="NOTIFICATION_SUGGEST_NAME" readonly="true">"pagetranslator-suggest"</field>
+
+            <field name="api" readonly="true">this.module.api</field>
+            <field name="wListener" readonly="true">this.api.Browser.getWindowListener(window)</field>
+            <field name="locale" readonly="true">this.api.Environment.addon.locale</field>
+            <field name="translator" readonly="true">this.module.translator</field>
+            <field name="isShowing">false</field>
+
+            <field name="_contentMessageName">'yasearch@yandex.ru:pagetranslator:event'</field>
+
+            <property name="_currentContentDocument" readonly="true">
+                <getter><![CDATA[    let browser = gBrowser.mCurrentBrowser;
+    return browser.contentDocumentAsCPOW || browser.contentDocument;]]></getter>
+            </property>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this.wListener.addListener("PageShow", this);
+    this.wListener.addListener("PageStateStart", this);
+    gBrowser.tabContainer.addEventListener("TabSelect", this, false);
+    this._checkState();]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    this.wListener.removeListener("PageShow", this);
+    this.wListener.removeListener("PageStateStart", this);
+    gBrowser.tabContainer.removeEventListener("TabSelect", this, false);
+    for (let i = 0, length = gBrowser.browsers.length; i < length; i++) {
+        let browser = gBrowser.browsers[i];
+        this._removeNotification();
+        this._removeNotification(this.NOTIFICATION_TOOLTIP_NAME, browser);
+        this._removeNotification(this.NOTIFICATION_SUGGEST_NAME, browser);
+    }]]></body>
+            </method>
+
+            <field name="_contentMessageListener"><![CDATA[    {
+        let messageListener = function messageListener({data}) {
+            if (data.type === "reset") {
+                this._checkState();
+            }
+        }.bind(this);
+        messageListener;
+    }]]></field>
+
+            <method name="translate">
+                <parameter name="lang"/>
+                <body><![CDATA[    this._setTranslatedView();
+    this.setPageTranslatorData({ isActive: true });
+    lang = lang || this.getPageTranslatorData().lang;
+    this._createNotification("panel", gBrowser.mCurrentBrowser, lang);
+    let messageManager = gBrowser.mCurrentBrowser.messageManager;
+    let contentMessageListenerInfo = this.wListener.getTabData(gBrowser.mCurrentBrowser, "pageTranslatorMessageListenerData");
+    if (!contentMessageListenerInfo.frameScriptLoaded) {
+        contentMessageListenerInfo.frameScriptLoaded = true;
+        let frameScriptPath = "/native/fx/pagetranslator/pagetranslatorContent.js";
+        let frameScriptURL = "data:application/javascript;charset=utf-8," + encodeURIComponent(this.api.Package.readTextFile(frameScriptPath));
+        messageManager.loadFrameScript(frameScriptURL, false);
+        messageManager.addMessageListener(this._contentMessageName, this._contentMessageListener);
+    }
+    messageManager.sendAsyncMessage(this._contentMessageName, {
+        type: "translate",
+        language: lang
+    });]]></body>
+            </method>
+
+            <method name="_checkState">
+                <body><![CDATA[    let doc = this._currentContentDocument;
+    if (!doc) {
+        return;
+    }
+    let href = doc.location.href;
+    if (href.indexOf("yafd:tabs") === 0) {
+        this.hide();
+        this._removeNotification();
+        return;
+    }
+    let pageTranslatorData = this.getPageTranslatorData();
+    let lang = pageTranslatorData.lang;
+    if (!pageTranslatorData.isDetermined) {
+        lang = this.translator.detectLang(doc);
+        this.setPageTranslatorData({
+            lang: lang,
+            isActive: pageTranslatorData.isActive,
+            isDetermined: true
+        });
+    }
+    if (pageTranslatorData.isActive) {
+        this._setTranslatedView();
+        this.show();
+    } else {
+        this._unsetTranslatedView();
+        this._removeNotification();
+        if (!lang || this.translator.matchLang(lang) || !this.translator.getLangPair(lang, this.translator.language)) {
+            this.hide();
+        } else {
+            this.show();
+            if (!pageTranslatorData.shownInTab) {
+                pageTranslatorData.shownInTab = true;
+                this.sendStatistic("pagetranslator", "showbutton");
+            }
+            if (this.module.checkIsYandexService(doc.location.host)) {
+                return;
+            }
+            if (this.module.checkSuggestConditions()) {
+                this._createNotification("suggest");
+            } else if (this.module.checkTutorConditions()) {
+                this._createNotification("tooltip");
+                this.module.Prefs.setValue("show-tooltip", 1);
+            }
+        }
+    }]]></body>
+            </method>
+
+            <method name="setPageTranslatorData">
+                <parameter name="data"/>
+                <body><![CDATA[    let pageTranslatorData = this.wListener.getTabData(gBrowser.mCurrentBrowser, "pageTranslatorData");
+    Object.keys(data).forEach(function (key) {
+        pageTranslatorData[key] = data[key];
+    });]]></body>
+            </method>
+
+            <method name="getPageTranslatorData">
+                <body><![CDATA[    return this.wListener.getTabData(gBrowser.mCurrentBrowser, "pageTranslatorData");]]></body>
+            </method>
+
+            <method name="removePageTranslatorData">
+                <parameter name="tab"/>
+                <body><![CDATA[    tab = tab || gBrowser.mCurrentBrowser;
+    this.wListener.removeTabData(tab, "pageTranslatorData");]]></body>
+            </method>
+
+            <method name="show">
+                <body><![CDATA[    this.style.setProperty("display", "-moz-box", "");
+    this.isShowing = true;]]></body>
+            </method>
+
+            <method name="hide">
+                <body><![CDATA[    this.style.setProperty("display", "none", "");
+    this.isShowing = false;
+    this._removeNotification(this.NOTIFICATION_TOOLTIP_NAME);
+    this._removeNotification(this.NOTIFICATION_SUGGEST_NAME);]]></body>
+            </method>
+
+            <method name="revert">
+                <body><![CDATA[    this.setPageTranslatorData({ isActive: false });
+    gBrowser.mCurrentBrowser.messageManager.sendAsyncMessage(this._contentMessageName, { type: "revert" });
+    this._checkState();]]></body>
+            </method>
+
+            <method name="onNotificationAction">
+                <parameter name="aTarget"/>
+                <parameter name="aAction"/>
+                <parameter name="aData"/>
+                <body><![CDATA[    switch (aTarget) {
+    case "suggest":
+        this.module.pauseSuggest();
+        this._removeAllTooltips();
+        break;
+    default:
+        return;
+    }]]></body>
+            </method>
+
+            <method name="_setTranslatedView">
+                <body><![CDATA[    this.setAttribute("translated", true);]]></body>
+            </method>
+
+            <method name="_unsetTranslatedView">
+                <body><![CDATA[    this.removeAttribute("translated");]]></body>
+            </method>
+
+            <method name="_getNotification">
+                <parameter name="aNotificationName"/>
+                <parameter name="aBrowser"/>
+                <body><![CDATA[    aBrowser = aBrowser || gBrowser.mCurrentBrowser;
+    aNotificationName = aNotificationName || this.NOTIFICATION_NAME;
+    let tabbrowser = aBrowser.ownerDocument.defaultView.gBrowser;
+    let notificationBox = tabbrowser.getNotificationBox(aBrowser);
+    return notificationBox.getNotificationWithValue(aNotificationName);]]></body>
+            </method>
+
+            <method name="_createNotification">
+                <parameter name="aType"/>
+                <parameter name="aBrowser"/>
+                <parameter name="lang"/>
+                <body><![CDATA[    let notificationBox = gBrowser.getNotificationBox(aBrowser);
+    let notificationName;
+    let notificationPriority;
+    switch (aType) {
+    case "panel":
+        notificationName = this.NOTIFICATION_NAME;
+        notificationPriority = notificationBox.PRIORITY_CRITICAL_HIGH;
+        break;
+    case "tooltip":
+        notificationName = this.NOTIFICATION_TOOLTIP_NAME;
+        notificationPriority = notificationBox.PRIORITY_INFO_HIGH;
+        break;
+    case "suggest":
+        notificationName = this.NOTIFICATION_SUGGEST_NAME;
+        notificationPriority = notificationBox.PRIORITY_INFO_HIGH;
+        break;
+    default:
+        return;
+    }
+    let notification = this._getNotification(notificationName, aBrowser);
+    if (notification) {
+        notificationBox._showNotification(notification, true);
+        return;
+    }
+    notification = notificationBox.appendNotification("", notificationName, "", notificationPriority, []);
+    notification.pageTranslator = this;
+    if (aType === "panel") {
+        notification.setAttribute("lang", lang);
+    }
+    notification.setAttribute("anonid", notificationName);
+    return notification;]]></body>
+            </method>
+
+            <method name="_removeNotification">
+                <parameter name="aNotificationName"/>
+                <parameter name="aBrowser"/>
+                <body><![CDATA[    let notification = this._getNotification(aNotificationName, aBrowser);
+    if (notification) {
+        notification.remove(true);
+    }]]></body>
+            </method>
+
+            <method name="_removeAllTooltips">
+                <body><![CDATA[    let windowsEnum = this.module.windowMediator.getEnumerator("navigator:browser");
+    while (windowsEnum.hasMoreElements()) {
+        let tabbrowser = windowsEnum.getNext().gBrowser;
+        tabbrowser.browsers.forEach(function (browser) {
+            this._removeNotification(this.NOTIFICATION_SUGGEST_NAME, browser);
+        }, this);
+    }]]></body>
+            </method>
+
+            <method name="sendStatistic">
+                <parameter name="aPart"/>
+                <parameter name="aAction"/>
+                <body><![CDATA[    this.module.sendStatistic(aPart, aAction);]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "TabSelect":
+        setTimeout(function (me) {
+            me._checkState();
+        }, 0, this);
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="aSubject"/>
+                <parameter name="aTopic"/>
+                <parameter name="aData"/>
+                <body><![CDATA[    if (!aData) {
+        return;
+    }
+    if ([
+            "PageShow",
+            "PageStateStart"
+        ].indexOf(aTopic) > -1) {
+        this.removePageTranslatorData(aData.tab);
+    }
+    if (aData.tab !== gBrowser.mCurrentBrowser) {
+        return;
+    }
+    switch (aTopic) {
+    case "PageShow":
+        this._checkState();
+        break;
+    case "PageStateStart":
+        this.hide();
+        this._removeNotification();
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="0" event="click"><![CDATA[    let pageTranslatorData = this.getPageTranslatorData();
+    if (pageTranslatorData.isActive) {
+        this.revert();
+        this.sendStatistic("pagetranslator", "clickoff");
+    } else {
+        this.translate();
+        this.api.Statistics.logCustomAction(1);
+        this.sendStatistic("pagetranslator", "clickon");
+        this._removeAllTooltips();
+    }]]></handler>
+        </handlers>
+    </binding>
+
+</bindings>

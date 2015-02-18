@@ -1,0 +1,39 @@
+<!ENTITY % brandNames SYSTEM "yafd://plus.branding/names.dtd">
+%brandNames;
+
+<!ENTITY aboutSupport.pageTitle "&product1.nom;">
+
+<!ENTITY aboutSupport.supportInfo.title "Дані для служби підтримки">
+<!ENTITY aboutSupport.collectingInfo.label "триває підготовка даних">
+<!ENTITY aboutSupport.rebuildPack.label "Оновити">
+<!ENTITY aboutSupport.browserScreenshot.label "знімок вікна браузера з новою вкладкою">
+<!ENTITY aboutSupport.snapshotData.label "дані про розширення та налаштування">
+<!ENTITY aboutSupport.debugLog.label "налагоджувальний лог">
+<!ENTITY aboutSupport.fastdialData.label "дані про візуальні закладки">
+<!ENTITY aboutSupport.openInNewTab.label "Відкрити в новій вкладці">
+<!ENTITY aboutSupport.savePack.label "Зберегти як...">
+
+<!ENTITY aboutSupport.columnName "Назва">
+<!ENTITY aboutSupport.columnVersion "Версія">
+<!ENTITY aboutSupport.columnEnabled "Увімкнено">
+<!ENTITY aboutSupport.columnId "ID">
+<!ENTITY aboutSupport.columnURL "URL">
+<!ENTITY aboutSupport.columnValue "Значення">
+<!ENTITY aboutSupport.columnType "Тип">
+
+<!ENTITY aboutSupport.basicsVersion "Версія">
+<!ENTITY aboutSupport.basicsDate "Дата випуску">
+<!ENTITY aboutSupport.basicsOS "Система">
+<!ENTITY aboutSupport.basicsBrowser "Браузер">
+<!ENTITY aboutSupport.basicsUserAgent "User-Agent">
+<!ENTITY aboutSupport.basicsTheme "Тема оформлення">
+<!ENTITY aboutSupport.basicsLightTheme "Тема оформлення (легка)">
+
+<!ENTITY aboutSupport.extensionsTitle "Розширення браузера">
+<!ENTITY aboutSupport.componentsTitle "Компоненти">
+<!ENTITY aboutSupport.extensionPreferencesTitle "Налаштування розширення">
+<!ENTITY aboutSupport.browserPreferencesTitle "Налаштування браузера">
+
+<!ENTITY aboutSupport.restore.button "Відновити">
+<!ENTITY aboutSupport.restore.title "Відновити з архіву">
+<!ENTITY aboutSupport.restore.nothing "Збережених даних ще немає">

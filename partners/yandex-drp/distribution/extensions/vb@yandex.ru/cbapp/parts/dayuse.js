@@ -8,7 +8,7 @@ const {
 } = Components;
 Cu.import("resource://gre/modules/Services.jsm");
 function isErrorRequest(aReq) {
-    return !!(!aReq || aReq.type == "error" || !aReq.target || aReq.target.status != 200);
+    return !aReq || aReq.type === "error" || !aReq.target || aReq.target.status !== 200;
 }
 const dayuse = {
     init: function dayuse_init(aApplication) {
@@ -41,10 +41,12 @@ const dayuse = {
         return false;
     },
     updateScrollInfo: function dayuse_updateScrollInfo(pageHasVerticalScroll) {
-        if (typeof pageHasVerticalScroll !== "boolean")
+        if (typeof pageHasVerticalScroll !== "boolean") {
             throw new TypeError("updateScrollInfo: argument must be boolean.");
-        if (this._application.preferences.get(this._consts.VB_SCROLL_INFO_PREF_NAME, null) === false)
+        }
+        if (this._application.preferences.get(this._consts.VB_SCROLL_INFO_PREF_NAME, null) === false) {
             return;
+        }
         this._application.preferences.set(this._consts.VB_SCROLL_INFO_PREF_NAME, pageHasVerticalScroll);
     },
     _startTimers: function dayuse__startTimers() {
@@ -55,8 +57,9 @@ const dayuse = {
         this._setRequestTimer(2 * 60 * 1000);
     },
     notify: function dayuse_notify(aTimer) {
-        if (!aTimer)
+        if (!aTimer) {
             return;
+        }
         switch (aTimer) {
         case this._requestTimer:
             if (this._application.statistics.alwaysSendUsageStat) {
@@ -65,13 +68,15 @@ const dayuse = {
                     query
                 ] = this._getDataForSend();
                 this._sendingLogId = id;
-                if (query)
+                if (query) {
                     this._sendRequest(query);
+                }
             }
             break;
         case this._collectTimer:
-            if (this._application.statistics.alwaysSendUsageStat)
+            if (this._application.statistics.alwaysSendUsageStat) {
                 this._logData();
+            }
             this._collectTimer.initWithCallback(this, this._consts.CHECK_INTERVAL * 1000, this._collectTimer.TYPE_ONE_SHOT);
             break;
         default:
@@ -96,7 +101,7 @@ const dayuse = {
         get STAT_URL() {
             return "http://clck.yandex.ru/click/dtype=elduse/product=" + (dayuse._application.core.CONFIG.APP.TYPE === "vbff" ? "vb" : "elmnt") + "/path=batch/*";
         },
-        INIT_QUERIES_TABLE_QUERY: "            CREATE TABLE IF NOT EXISTS queries (                id INTEGER PRIMARY KEY,                         query BLOB,                                     timeCreated INTEGER,                            sendAttempts INTEGER                        )"
+        INIT_QUERIES_TABLE_QUERY: "CREATE TABLE IF NOT EXISTS queries (" + " id INTEGER PRIMARY KEY," + " query BLOB," + " timeCreated INTEGER," + " sendAttempts INTEGER" + " )"
     },
     get _logsFile() {
         let logsFile = this._application.directories.appRootDir;
@@ -106,23 +111,31 @@ const dayuse = {
     _logData: function dayuse__logData() {
         this._lastCollectTime = Date.now();
         this._collectData(function (collectedData) {
-            if (!collectedData)
+            if (!collectedData) {
                 return;
+            }
             let onDataInserted = function onDataInserted() {
                 this._cleanupLoggedData();
                 this._setRequestTimer();
             }.bind(this);
-            this._database.execQueryAsync("INSERT INTO queries (query, timeCreated, sendAttempts)                                            VALUES (:query, :timeCreated, :sendAttempts)", {
-                query: collectedData,
-                timeCreated: Date.now(),
-                sendAttempts: 0
-            }, onDataInserted);
+            this._database.executeQueryAsync({
+                query: "INSERT INTO queries (query, timeCreated, sendAttempts) " + "VALUES (:query, :timeCreated, :sendAttempts)",
+                parameters: {
+                    query: collectedData,
+                    timeCreated: Date.now(),
+                    sendAttempts: 0
+                },
+                callback: onDataInserted
+            });
         }.bind(this));
     },
     _cleanupLoggedData: function addonsStatus__cleanupLoggedData() {
-        this._database.execQueryAsync("DELETE FROM queries                                        WHERE (timeCreated < :timeCreated OR sendAttempts > :sendAttempts)", {
-            timeCreated: Date.now() - 2 * 24 * 60 * 60 * 1000,
-            sendAttempts: 5
+        this._database.executeQueryAsync({
+            query: "DELETE FROM queries " + "WHERE (timeCreated < :timeCreated OR sendAttempts > :sendAttempts)",
+            parameters: {
+                timeCreated: Date.now() - 2 * 24 * 60 * 60 * 1000,
+                sendAttempts: 5
+            }
         });
     },
     _collectData: function dayuse__collectData(callback) {
@@ -144,10 +157,11 @@ const dayuse = {
         ];
     },
     _setRequestTimer: function dayuse__setRequestTimer(aTimeout) {
-        if (this._requestTimer)
+        if (this._requestTimer) {
             this._requestTimer.cancel();
-        else
+        } else {
             this._requestTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+        }
         this._requestTimer.initWithCallback(this, aTimeout || 1000, this._requestTimer.TYPE_ONE_SHOT);
     },
     _sendRequest: function dayuse__sendRequest(aJSONString) {
@@ -165,12 +179,19 @@ const dayuse = {
         this._logger.debug("Send data: " + aJSONString);
     },
     _onResponse: function dayuse__onResponse(aRequest) {
-        if (!this._sendingLogId)
+        if (!this._sendingLogId) {
             throw new Error("Unexpected ID of sended log data.");
+        }
         if (isErrorRequest(aRequest)) {
-            this._database.execQueryAsync("UPDATE queries SET sendAttempts = sendAttempts + 1 WHERE id = :id", { id: this._sendingLogId });
+            this._database.executeQueryAsync({
+                query: "UPDATE queries SET sendAttempts = sendAttempts + 1 WHERE id = :id",
+                parameters: { id: this._sendingLogId }
+            });
         } else {
-            this._database.execQueryAsync("DELETE FROM queries WHERE id = :id", { id: this._sendingLogId });
+            this._database.executeQueryAsync({
+                query: "DELETE FROM queries WHERE id = :id",
+                parameters: { id: this._sendingLogId }
+            });
             this._lastSendTime = Date.now();
         }
         this._sendingLogId = null;
@@ -235,9 +256,14 @@ CTag.prototype = {
 };
 const dayuseDataCollector = {
     _productTagName: null,
-    get _logger() dayuse._logger,
-    get _application() dayuse._application,
+    get _logger() {
+        return dayuse._logger;
+    },
+    get _application() {
+        return dayuse._application;
+    },
     _calcCommonData: function dayuseDataCollector__calcCommonData(productCTag, topBrowserWindow) {
+        this._calcLocal(productCTag);
         this._calcDayuse(productCTag);
         this._calcHomepage(productCTag);
         this._calcQS(productCTag);
@@ -247,10 +273,19 @@ const dayuseDataCollector = {
         this._calcBookmarksCount(productCTag);
         this._calcYaDisk(productCTag);
     },
+    _calcLocal: function dayuseDataCollector__calcLocal(productCTag) {
+        let localTag = new CTag("local");
+        localTag.addVars({
+            brand: this._application.branding.brandID,
+            lang: this._application.locale.language
+        });
+        productCTag.addChildren(localTag);
+    },
     _calcDayuse: function dayuseDataCollector__calcDayuse(productCTag) {
         let installTimeInSec = this._application.preferences.get("general.install.time");
-        if (!installTimeInSec)
+        if (!installTimeInSec) {
             return;
+        }
         let ageInDays = parseInt((Date.now() / 1000 - installTimeInSec) / 86400, 10) || 0;
         ageInDays = Math.max(ageInDays, 0);
         let dayuseTag = new CTag("dayuse" + this._productTagName);
@@ -301,14 +336,15 @@ const dayuseDataCollector = {
         let ceil = function ceil(number, step) {
             return Math.ceil(number / step) * step;
         };
-        if (bmcountVar > 500)
+        if (bmcountVar > 500) {
             bmcountVar = 501;
-        else if (bmcountVar > 200)
+        } else if (bmcountVar > 200) {
             bmcountVar = ceil(bmcountVar, 50);
-        else if (bmcountVar > 100)
+        } else if (bmcountVar > 100) {
             bmcountVar = ceil(bmcountVar, 20);
-        else
+        } else {
             bmcountVar = ceil(bmcountVar, 5);
+        }
         bmcountTag.addVars({ count: bmcountVar });
         productCTag.addChildren(bmcountTag);
     },
@@ -453,8 +489,9 @@ const elmntDayuseDataCollector = Object.create(dayuseDataCollector, {
             };
             let getDayuseStatProviderData = function getDayuseStatProviderData(module, parentCTag) {
                 let dayuseStatProvider = module && module.core && module.core.dayuseStatProvider;
-                if (!dayuseStatProvider)
+                if (!dayuseStatProvider) {
                     return;
+                }
                 if ("isAuthorized" in dayuseStatProvider) {
                     let authorizedState = dayuseStatProvider.isAuthorized() ? "wauthon" : "wauthoff";
                     let widgetAuthorizedTag = new CTag(authorizedState);
@@ -479,8 +516,9 @@ const elmntDayuseDataCollector = Object.create(dayuseDataCollector, {
                 let widgetProtoId = widgetInfo.prototypeID;
                 activeWidgetsProtoIds[widgetProtoId] = true;
                 let widgetName = this.WIDGETS_MAP[widgetProtoId] || widgetProtoId.split("#")[1];
-                if (!widgetName)
+                if (!widgetName) {
                     return;
+                }
                 let widgetTag = new CTag(widgetName);
                 let widgetPositionTag = new CTag(getWidgetPosition(aToolbarItem));
                 widgetTag.addChildren(widgetPositionTag);
@@ -508,8 +546,9 @@ const elmntDayuseDataCollector = Object.create(dayuseDataCollector, {
             application.widgetLibrary.getPlugins(null, true).forEach(function (plugin) {
                 let pluginId = plugin._unit.componentInfo.id;
                 let pluginName = this.PLUGINS_MAP[pluginId] || pluginId.split("#")[1];
-                if (!pluginName)
+                if (!pluginName) {
                     return;
+                }
                 let pluginTag = new CTag(pluginName);
                 extentionsTag.addChildren(pluginTag);
                 let pluginModule = plugin._module || null;
@@ -520,8 +559,9 @@ const elmntDayuseDataCollector = Object.create(dayuseDataCollector, {
                     this._logger.debug(e);
                 }
             }, this);
-            if (extentionsTag.childrenLength)
+            if (extentionsTag.childrenLength) {
                 productCTag.addChildren(extentionsTag);
+            }
             let themeTag = new CTag("theme");
             let themeSelected = Preferences.get("lightweightThemes.isThemeSelected") === true || Preferences.get("general.skins.selectedSkin") !== "classic/1.0";
             themeTag.addVars({ name: themeSelected ? "user" : "def" });
@@ -545,10 +585,10 @@ const elmntDayuseDataCollector = Object.create(dayuseDataCollector, {
             let diffbarTag = new CTag("diffbar");
             let builtinToolbars = {
                 "toolbar-menubar": true,
-                "TabsToolbar": true,
+                TabsToolbar: true,
                 "nav-bar": true,
                 "yasearch-bar": true,
-                "PersonalToolbar": true,
+                PersonalToolbar: true,
                 "addon-bar": true
             };
             let diffToolbars = Array.slice(topBrowserWindow.document.querySelectorAll("#navigator-toolbox > toolbar")).filter(function (toolbar) {

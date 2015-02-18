@@ -1,0 +1,31 @@
+<!ENTITY wgt.smartbox.name "SmartBox">
+<!ENTITY wgt.smartbox.changeSearchEngine "Search engines">
+<!ENTITY wgt.smartbox.searchEngineSettings "Search settings">
+<!ENTITY wgt.smartbox.nowUsedSearch "current">
+
+<!ENTITY wgt.smartbox.action.switchToTab.label "go to tab">
+<!ENTITY wgt.smartbox.action.searchBy.label "Search on {providerName}">
+<!ENTITY wgt.smartbox.action.navigate.label "Go">
+
+<!ENTITY wgt.smartbox.popup.desc "Enter your search query into the address bar to see the most popular queries, links to previously visited sites and bookmarks.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.desc "This add-on is not compatible with your browser. Please update your browser.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.url "http://browser.yandex.ru">
+
+<!ENTITY wgt.smartbox.dropDownOptions.toggleExpandedState "Search settings">
+<!ENTITY wgt.smartbox.dropDownOptions.disableSuggest "Disable search suggestions (do not send keystroke info to {providerName})">
+<!ENTITY wgt.smartbox.dropDownOptions.enabledSuggest "Enable search suggestions (send keystroke info to {providerName})">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.label "Add search engine">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.url "http://go.microsoft.com/fwlink/?LinkId=122812">
+<!ENTITY wgt.smartbox.qs.window.title "Default search engine">
+<!ENTITY wgt.smartbox.qs.tree.col "Search">
+<!ENTITY wgt.smartbox.qs.add "Add">
+<!ENTITY wgt.smartbox.qs.button.ok "Done">
+<!ENTITY wgt.smartbox.qs.addsearch "Add search">
+<!ENTITY wgt.smartbox.qs.searchsettings "Search settings">
+<!ENTITY wgt.smartbox.qs.search "Search">
+<!ENTITY wgt.smartbox.qs.searchYandex "Search on Yandex">
+<!ENTITY wgt.smartbox.addressbarLabel "Search the web right here">
+<!ENTITY wgt.smartbox.searchSettings "Search settings">
+<!ENTITY wgt.smartbox.restoreDefaultEngine "Make {providerName} your default search engine">
+<!ENTITY wgt.smartbox.searchSettings.menu.defaultEngine.label "Default search engine">
+<!ENTITY wgt.smartbox.searchSettings.menu.settings.label "Settings">

@@ -1,0 +1,5 @@
+.b-suggest{ width:788px; padding:64px 0 50px 77px; margin:0 auto; background:url(_ff/b-suggest__bg.png) top left no-repeat;}
+ .b-suggest__img{ display:block;}
+ .b-suggest__img_type1{ background:url(_ff/b-suggest__img_type1.png); width:660px; height:248px;}
+ .b-suggest__img_type2{ background:url(_ff/b-suggest__img_type2.png); width:660px; height:198px;}
+ .b-suggest__img_type3{ background:url(_ff/b-suggest__img_type3.png); width:660px; height:198px;}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <script type="text/javascript" src="common-libs/require.min.js"></script>
+    <script type="text/javascript" src="require-config.js"></script>
+    <script type="text/javascript" src="main-adapter.js"></script>
+    <script type="text/javascript" src="main-logic.js"></script>
+    <script type="text/javascript" src="main-ui.js"></script>
+    <div data-stopped="true" class="container">
+      <div class="error-view"></div>
+      <div class="player-container">
+        <div class="player">
+          <div class="player__button player__button__prev"></div>
+          <div data-stopped="true" class="player__button player__button__play"></div>
+          <div class="player__button player__button__next"></div>
+          <div class="player-volume">
+            <div data-muted="false" class="player-volume__mute"></div>
+            <div class="player-volume__slider">
+              <div class="player-volume__slider__background"></div>
+              <div class="player-volume__slider__value">
+                <div class="player-volume__slider__slide"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="playing">
+          <div class="playing-covers">
+            <div class="channel-cover">
+              <div class="imgloader b-spinner-small-dark"></div>
+            </div>
+            <div class="album-cover">
+              <div class="imgloader b-spinner-small-dark"></div>
+            </div>
+          </div>
+          <div class="track-info">
+            <div class="track-info__song">&#160;
+            </div>
+            <div class="track-info__artist">&#160;
+            </div>
+          </div>
+          <div class="track-timeline">
+            <div class="track-timeline__times">
+              <div class="track-timeline__duration"></div>
+              <div class="track-timeline__remaining"></div>
+            </div>
+            <div class="track-timeline__slider">
+              <div class="track-timeline__progressbar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="channels-container">
+          <ul class="channels"></ul>
+        </div>
+      </div>
+      <div class="footer"><a href="http://www.powerfm.com.tr/" class="footer__link"></a></div>
+    </div>
+  </body>
+</html>

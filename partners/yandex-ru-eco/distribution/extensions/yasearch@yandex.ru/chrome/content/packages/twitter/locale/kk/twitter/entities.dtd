@@ -1,0 +1,71 @@
+<!ENTITY action.hide-message-foto "фотоны жасыру">
+<!ENTITY action.show-message-foto "фотоны көрсету">
+<!ENTITY html.network-error.net "Серверіне қосылу мүмкін болмады">
+<!ENTITY html.network-error.aut "Авторизациядан өту іске аспады">
+<!ENTITY html.network-error.aut-2 "Желілік байланысты тексеруіңізді сұраймыз">
+<!ENTITY overlay.action.direct-msg "Жеке хабарлама жазу">
+<!ENTITY sad-bird.no-msg-limit "Рұқсат етілетін сұранымдар саны шектен асты. 15 минут күте тұрып, қайта байқап көріңізші.">
+<!ENTITY slice.composer.desc.dm "{username} үшін хабарлама">
+<!ENTITY slice.msg.error.nofriend "Хабарламаларды тек өз оқырмандарыңызға жібере аласыз">
+
+<!ENTITY twitter.tooltip.ie.lock "Твиттер жүйесінде хабарламаларды оқуға және жіберуге мүмкіндік береді&#13;Авторизациядан өтуіңізді сұраймыз">
+<!ENTITY twitter.tooltip.ie.good "Пайдаланушының твиттері ">
+<!ENTITY twitter.auth.ie "Твиттер / Қосымшаны авторизациялау">
+
+<!ENTITY twitter.toolbarbutton.tooltip-unregistered "Твиттер жүйесінде хабарламаларды оқуға және жіберуге мүмкіндік береді\nАвторизациядан өтуіңізді сұраймыз">
+<!ENTITY twitter.toolbarbutton.tooltip-registered "{username} пайдаланушысының твиттері">
+
+<!ENTITY twitter.slice.title "Твиттер">
+<!ENTITY twitter.slice.logout "Шығу">
+<!ENTITY twitter.slice.throbber-tooltip "Жаңарту">
+<!ENTITY twitter.slice.overlay-close "Жабу">
+<!ENTITY twitter.slice.composer.cancel "Болдырмау">
+<!ENTITY twitter.slice.composer.send-button.text "Жөнелту">
+<!ENTITY twitter.slice.composer.shorten-button.title "Ағымдағы беттің қысқаша аталымын енгізіңіз">
+<!ENTITY twitter.slice.tab-home.title "Бастапқы бет">
+<!ENTITY twitter.slice.tab-mentions.title "Ескерулер">
+<!ENTITY twitter.slice.tab-dms.title "Хабарламалар">
+<!ENTITY twitter.slice.tab.load-more "Тағы көрсету">
+<!ENTITY twitter.slice.tab-search.title "Іздестіру">
+<!ENTITY twitter.widget.name "Твиттер">
+<!ENTITY twitter.widget.setting.show-username "Пайдаланушының атын көрсету">
+<!ENTITY twitter.widget.setting.update-interval "Жаңарту интервалы">
+<!ENTITY twitter.widget.setting.update-interval-units "мин.">
+<!ENTITY twitter.dialog.auth.default-title "Жүктеу...">
+<!ENTITY twitter.dialog.post.title "Бөлісу">
+<!ENTITY twitter.dialog.share.title "Твиттерде бөлісу">
+<!ENTITY slice.msg.sending "Хабарлама жөнелтілуде...">
+<!ENTITY slice.msg.sent "Хабарлама жөнелтілді">
+<!ENTITY slice.msg.error "Жөнелту қатесі">
+<!ENTITY slice.msg.error.duplicate "Хабарлама дубликаты">
+<!ENTITY slice.msg.error.shorten-failed "Ағымдағы беттің аталымын қысқарту іске аспады">
+<!ENTITY msg.user-info "Пайдаланушы туралы ақпарат">
+<!ENTITY msg.user-follow "Фоллоулау">
+<!ENTITY msg.user-unfollow "Фоллоудан бас тарту">
+<!ENTITY action.share "ретвиттеу">
+<!ENTITY action.reply "жауап беру">
+<!ENTITY action.direct-reply "жауап беру">
+<!ENTITY action.delete "жою">
+<!ENTITY action.favorite "таңдамалы">
+<!ENTITY sad-bird.default-text "Твит жоқ">
+<!ENTITY sad-bird.no-home-1 "Таспа қазір бос болып көрінеді. Бұл жерде сіз басқа пайдаланушыларды қосқан сәттен бастап, олардың хабарламалары көрінетін болады. Сондықтан асығыңыз">
+<!ENTITY sad-bird.no-home-2 "сізге қызықты адамдарды табу">
+<!ENTITY sad-bird.no-home-3 "! Болып&#160;жатқан оқиғалар&#160;туралы әлемге хабарлаңыз">
+<!ENTITY sad-bird.no-mentions "Сіз ескерілген жауаптар мен твиттер осы жерде көрсетіледі.">
+<!ENTITY sad-bird.no-dms "Жеке хабарламалар жоқ.">
+<!ENTITY sad-bird.no-search-1 "«">
+<!ENTITY sad-bird.no-search-2 "» сұранымы бойынша твиттер жоқ.">
+<!ENTITY sad-bird.no-home-net "Таспадағы хабарламаларға қол жеткізу мүмкін емес. Желілік байланысты тексеруіңізді сұраймыз.">
+<!ENTITY sad-bird.no-mentions-net "Сіз ескерілген жауаптар мен твиттерге қол жеткізу мүмкін емес. Желілік байланысты тексеруіңізді сұраймыз.">
+<!ENTITY sad-bird.no-dms-net "Жеке хабарламаларды ашу мүмкін емес. Желілік байланысты тексеруіңізді сұраймыз.">
+<!ENTITY sad-bird.no-search-net-1 "«">
+<!ENTITY sad-bird.no-search-net-2 "» сұранымыңыз бойынша твиттер табу іске аспады. Желілік байланысты тексеруіңізді сұраймыз.">
+<!ENTITY overlay.view-fool-profile-link "профильді толығымен көру">
+<!ENTITY overlay.action.follow "жазылу">
+<!ENTITY overlay.action.following "жазылған">
+<!ENTITY overlay.action.unfollow "жазылудан бас тарту">
+<!ENTITY overlay.tweet-count "жазбалар">
+<!ENTITY overlay.friends-count "жазылымдар">
+<!ENTITY overlay.followers-count "жазылушылар">
+<!ENTITY overlay.lists-count "тізімдер">
+<!ENTITY settings.show_notifications "Хабарландыруларды көрсету">

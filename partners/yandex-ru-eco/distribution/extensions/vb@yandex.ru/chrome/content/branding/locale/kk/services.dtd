@@ -1,0 +1,162 @@
+<!ENTITY suggestions.url "http://suggest.yandex.kz/suggest-ff.cgi?part={searchTerms}">
+
+<!ENTITY yandex.label "Яндекс">
+<!ENTITY yandex.context.label "Яндексте табу: &#34;{searchTermsCropped}&#34;">
+<!ENTITY yandex.url "http://www.yandex.kz">
+<!ENTITY yandex.search.tooltip "Яндексте іздестіру">
+<!ENTITY yandex.search.url "http://yandex.kz/yandsearch?text={searchTerms}">
+<!ENTITY yandex.search.site-url "&yandex.search.url;&amp;surl_manually=true&amp;surl={searchSite}">
+<!ENTITY yandex.qs.url "http://yandex.kz/yandsearch?clid={clid6}&amp;text={searchTerms}">
+<!ENTITY yandex.qs.suggestions "&suggestions.url;">
+
+<!ENTITY catalog.label "Каталог">
+<!ENTITY catalog.url "http://yaca.yandex.kz">
+<!ENTITY catalog.search.tooltip "Каталогтарда іздестіру">
+<!ENTITY catalog.search.url "http://yaca.yandex.kz/yca?text={searchTerms}&amp;yaca=1">
+
+<!ENTITY market.label "Маркет">
+<!ENTITY market.url "http://market.yandex.kz">
+<!ENTITY market.search.tooltip "Маркетте іздестіру">
+<!ENTITY market.search.url "http://market.yandex.kz/search.xml?text={searchTerms}">
+
+<!ENTITY auto.label "Авто">
+<!ENTITY auto.url "http://auto.yandex.kz">
+<!ENTITY auto.search.tooltip "Автода іздестіру">
+<!ENTITY auto.search.url "http://auto.yandex.kz/search.xml?text={searchTerms}">
+
+<!ENTITY images.label "Суреттер">
+<!ENTITY images.url "http://images.yandex.kz">
+<!ENTITY images.search.tooltip "Суреттерде іздестіру">
+<!ENTITY images.search.url "http://images.yandex.kz/yandsearch?stype=image&amp;text={searchTerms}">
+<!ENTITY images.search.site-url "&images.search.url;&amp;site={searchSite}">
+
+<!ENTITY blogs.label "Блогтар">
+<!ENTITY blogs.url "http://blogs.yandex.ru">
+<!ENTITY blogs.search.tooltip "Блогтар іздестіру">
+<!ENTITY blogs.search.url "http://blogs.yandex.ru/search.xml?how=tm&amp;rd=2&amp;text={searchTerms}">
+<!ENTITY blogs.search.site-url "&blogs.search.url;&amp;server={searchSite}">
+
+<!ENTITY dicts.label "Сөздіктер">
+<!ENTITY dicts.url "http://slovari.yandex.kz">
+<!ENTITY dicts.search.tooltip "Сөздіктерде іздестіру">
+<!ENTITY dicts.search.url "http://slovari.yandex.kz/search.xml?text={searchTerms}">
+
+<!ENTITY lingvo.label "Lingvo">
+<!ENTITY lingvo.context.find.label "Аударма табу &#34;{searchTermsCropped}&#34;">
+<!ENTITY lingvo.search.find.url "http://slovari.yandex.ru/{searchTerms}/перевод">
+
+<!ENTITY maps.label "Карталар">
+<!ENTITY maps.url "http://maps.yandex.kz">
+<!ENTITY maps.search.tooltip "Карталарда іздестіру">
+<!ENTITY maps.search.url "http://maps.yandex.kz/?text={searchTerms}">
+
+<!ENTITY addresses.label "Ұйымдар анықтағышы">
+<!ENTITY addresses.url "http://adresa.yandex.kz">
+
+<!ENTITY job.label "Жұмыс">
+<!ENTITY job.url "http://rabota.yandex.ru">
+<!ENTITY job.search.tooltip "Жұмыста іздестіру">
+<!ENTITY job.search.url "http://rabota.yandex.ru/search.xml?text={searchTerms}">
+
+<!ENTITY mail.label "Пошта">
+<!ENTITY mail.url "http://mail.yandex.kz">
+
+<!ENTITY subscriptions.label "Жазылымдар">
+<!ENTITY subscriptions.url "http://mail.yandex.kz/lenta">
+
+<!ENTITY photos.label "Фотолар">
+<!ENTITY photos.url "http://fotki.yandex.kz">
+<!ENTITY photos.search.tooltip "Фотоларда іздестіру">
+<!ENTITY photos.search.url "http://fotki.yandex.kz/search.xml?text={searchTerms}">
+
+<!ENTITY yaru.label "Я.ру">
+<!ENTITY yaru.url "http://my.ya.ru">
+<!ENTITY yaru.search.tooltip "Я.ру-да іздестіру">
+<!ENTITY yaru.search.url "http://wow.ya.ru/search_posts.xml?text={searchTerms}">
+
+<!ENTITY calendar.label "Күнтізбе">
+<!ENTITY calendar.url "http://calendar.yandex.kz">
+
+<!ENTITY spam.label "Спамнан қорғаныс">
+<!ENTITY spam.url "http://so.yandex.ru">
+
+<!ENTITY narod.label "Народ">
+<!ENTITY narod.url "http://narod.yandex.kz">
+
+<!ENTITY money.label "Деньги">
+<!ENTITY money.url "http://money.yandex.ru">
+
+<!ENTITY mycircle.label "Мой Круг">
+<!ENTITY mycircle.url "http://moikrug.ru">
+<!ENTITY mycircle.search.tooltip "«Мой Круг» жүйесінде іздестіру">
+<!ENTITY mycircle.search.url "http://moikrug.ru/search/?ok=1&amp;charset=utf-8&amp;keywords={searchTerms}">
+
+<!ENTITY direct.label "Директ">
+<!ENTITY direct.url "http://direct.yandex.kz">
+
+<!ENTITY advertising.label "Жарнама желісі">
+<!ENTITY advertising.url "http://partner.yandex.kz">
+
+<!ENTITY bookmarks.label "Бетбелгілер">
+<!ENTITY bookmarks.url "http://zakladki.yandex.ru">
+
+<!ENTITY find.label "Менің Іздестіргендерім">
+<!ENTITY find.url "http://nahodki.yandex.kz">
+<!ENTITY find.search.tooltip "Іздестіргендерімде іздестіру">
+<!ENTITY find.search.url "http://nahodki.yandex.kz/results.xml?search={searchTerms}">
+
+<!ENTITY metrics.label "Метрика">
+<!ENTITY metrics.url "http://metrika.yandex.kz">
+
+<!ENTITY news.label "Жаңалықтар">
+<!ENTITY news.url "http://news.yandex.kz">
+<!ENTITY news.search.tooltip "Жаңалықтарда іздестіру">
+<!ENTITY news.search.url "http://news.yandex.kz/yandsearch?rpt=nnews2&amp;grhow=clutop&amp;text={searchTerms}">
+
+<!ENTITY weather.label "Ауа райы">
+<!ENTITY weather.url "http://pogoda.yandex.ru">
+
+<!ENTITY tv.label "Телебағдарлама">
+<!ENTITY tv.url "http://tv.yandex.kz">
+<!ENTITY tv.search.tooltip "Телебағдарламада іздестіру">
+<!ENTITY tv.search.url "http://tv.yandex.kz/search/?text={searchTerms}">
+
+<!ENTITY schedule.label "Кестелер">
+<!ENTITY schedule.url "http://rasp.yandex.kz">
+
+<!ENTITY video.label "Видео">
+<!ENTITY video.url "http://video.yandex.kz">
+<!ENTITY video.search.tooltip "Яндекс.Видеода іздестіру">
+<!ENTITY video.search.url "http://video.yandex.kz/search.xml?text={searchTerms}">
+
+<!ENTITY games.label "Ойыншықтар">
+<!ENTITY games.url "http://play.yandex.ru">
+
+<!ENTITY cards.label "Ашық хаттар">
+<!ENTITY cards.url "http://cards.yandex.kz">
+
+<!ENTITY afisha.label "Афиша">
+<!ENTITY afisha.url "http://afisha.yandex.kz">
+<!ENTITY afisha.search.tooltip "Афишада іздестіру">
+<!ENTITY afisha.search.url "http://afisha.yandex.kz/search/?text={searchTerms}">
+
+<!ENTITY google.label "Google">
+<!ENTITY google.url "http://www.google.kz">
+<!ENTITY google.search.tooltip "Google-де іздестіру">
+<!ENTITY google.search.url "http://www.google.kz/search?hl=kk;amp;as_q={searchTerms}">
+<!ENTITY google.search.site-url "&google.search.url;&amp;as_sitesearch={searchSite}">
+<!ENTITY google.search.suggestions-url "http://suggestqueries.google.com/complete/search?output=firefox&amp;client=firefox&amp;hl=kk&amp;q={searchTerms}">
+
+<!ENTITY rambler.label "Rambler">
+<!ENTITY rambler.url "http://www.rambler.ru">
+<!ENTITY rambler.search.tooltip "Rambler-де іздестіру">
+<!ENTITY rambler.search.url "http://nova.rambler.ru/srch?query={searchTerms}">
+<!ENTITY rambler.search.site-url "&rambler.search.url;&amp;filter={searchSite}">
+<!ENTITY rambler.search.suggestions-url "http://nova.rambler.ru/suggest?v=3&amp;query={searchTerms}">
+
+<!ENTITY wiki.label "Wikipedia">
+<!ENTITY wiki.url "http://kk.wikipedia.org">
+<!ENTITY wiki.search.tooltip "Wikipedia-да іздестіру">
+<!ENTITY wiki.search.url "http://kk.wikipedia.org/wiki/{searchTerms}">
+<!ENTITY wiki.search.site-url "">
+<!ENTITY wiki.search.suggestions-url "http://kk.wikipedia.org/w/api.php?action=opensearch&amp;search={searchTerms}&amp;namespace=0&amp;suggest=">

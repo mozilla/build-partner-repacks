@@ -1,0 +1,142 @@
+<!--Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY app.name "{product1.nom}">
+<!--Надпись на кнопке поиска-->
+<!ENTITY app.searchButtonTitle "Знайти">
+<!ENTITY bookmarks.otherBookmarks "Інші закладки">
+<!ENTITY footer.apps "Програми">
+<!ENTITY footer.bookmarks "Закладки">
+<!ENTITY footer.closedTabs "Закриті вкладки">
+<!ENTITY footer.downloads "Завантаження">
+<!ENTITY footer.history "Історія">
+<!ENTITY settings "Налаштування">
+<!--Фоновое изображение-->
+<!ENTITY settings.backgroundImage "Тло">
+<!ENTITY settings.cancel "Скасувати">
+<!--Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY settings.copyright "{branding}">
+<!ENTITY settings.layoutX "по горизонталі">
+<!ENTITY settings.layoutY "по вертикалі">
+<!--URL-страница лицензионного соглашения. Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY settings.licenseAgreement.link "{branding}">
+<!ENTITY settings.licenseAgreement.title "Ліцензійна угода">
+<!ENTITY settings.releaseDate "дата випуску">
+<!ENTITY settings.save "Зберегти">
+<!ENTITY settings.sendstat "Взяти участь у покращенні сервісів Яндекса: автоматично надсилати анонімну статистику використання браузера">
+<!ENTITY settings.showBookmarksPanel "Відображати панель закладок">
+<!ENTITY settings.thumbsNum "Кількість закладок">
+<!--Надпись, отображающася в пустом поле ввода названия страницы-->
+<!ENTITY settings.titleInput.placeholder "Введіть назву сторінки">
+<!--Надпись, отображающася в пустом поле ввода URL-адреса страницы-->
+<!ENTITY settings.urlInput.placeholder "Введіть адресу сторінки">
+
+<!ENTITY app.searchExampleTitle "Наприклад">
+<!ENTITY settings.upload "Завантажити">
+<!ENTITY app.editThumb "налаштувати">
+<!ENTITY app.empty "Пусто">
+<!ENTITY app.pinThumb "закріпити">
+<!ENTITY app.removeThumb "видалити">
+<!ENTITY app.unpinThumb "відкріпити">
+<!ENTITY settings.isHomePage "{product1.nom} є вашою домашньою сторінкою">
+<!ENTITY settings.setAsHomePage "Зробити домашньою сторінкою">
+<!ENTITY app.searchTutorial.description "Тут ви можете вводити не лише адреси, але й шукати в Яндексі.">
+<!ENTITY app.searchTutorial.example "столиця Конго">
+<!ENTITY app.searchTutorial.thanks "Я знаю, дякую">
+<!ENTITY settings.showSearchForm "Показувати пошуковий рядок">
+<!ENTITY app.confirmRemoveThumb "Видалити закладку?">
+<!ENTITY sync.advertText "Спробуйте: ваші візуальні закладки, вибрані&#160;сайти&#160;та паролі будуть доступні на&#160;різних комп&#39;ютерах&#160;— наприклад вдома&#160;і на&#160;роботі.">
+<!ENTITY sync.closeAdvert "Закрити">
+<!ENTITY sync.enable "Увімкнути синхронізацію">
+<!ENTITY sync.enabled "Синхронізацію увімкнено">
+<!ENTITY sync.outdated "авторизація застаріла">
+<!ENTITY sync.repair "Виправити">
+<!ENTITY settings.collapsed "Інші параметри">
+
+<!ENTITY sync.offerText "Ви вже використовуєте синхронізацію, але не синхронізуєте Візуальні закладки. Хочете синхронізувати їх? [Так, хочу](url)">
+<!ENTITY footer.apps.missing "Програм немає">
+<!ENTITY modalStat.accept "Дозволити">
+<!ENTITY modalStat.cancel "Скасувати">
+<!ENTITY modalStat.header "Дозвольте {vendor.dat} отримувати статистику про використання браузера">
+<!ENTITY modalStat.moreInfoText "Докладніше">
+<!ENTITY modalStat.moreInfoLink "http://legal.yandex.ua/confidential/">
+<!ENTITY modalStat.text "Це не зачіпає ваші персональні дані та ніяк не впливає на роботу браузера. {vendor.nom} використовує цю інформацію для поліпшення роботи власних сервісів.">
+<!ENTITY sync.settings "Налаштування синхронізації">
+<!ENTITY sync.turnOn "Увімкнути">
+<!ENTITY sync.vbDisabled "Синхронізацію візуальних закладок увімкнено">
+<!ENTITY sync.vbEnabled "Синхронізацію візуальних закладок увімкнено">
+<!ENTITY dialog.cancel "Скасувати">
+<!ENTITY dialog.ok "ОК">
+<!ENTITY modal.cancel "Скасувати">
+<!ENTITY modal.ok "ОК">
+<!ENTITY dialog.no "Ні">
+<!ENTITY dialog.yes "Так">
+<!ENTITY app.closedWindow "Закрите вікно">
+<!ENTITY app.noInternet "Немає зв&#39;язку із сервером. Спробуйте повторити пізніше.">
+<!ENTITY settings.showSites "Вид закладок">
+<!ENTITY settings.thumbStyle.logosAndScreenshots "Логотипи і скриншоти">
+<!ENTITY settings.thumbStyle.logosAndTitles "Логотипи і заголовки">
+<!ENTITY settings.thumbStyle.screenshots "Скриншоти сайтів">
+<!ENTITY contextmenu.addThumb "Додати закладку">
+<!ENTITY contextmenu.editThumb "Налаштування закладки">
+<!ENTITY contextmenu.openSettings "Змінити тло у Візуальних закладках">
+<!ENTITY contextmenu.pinThumb "Закріпити закладку">
+<!ENTITY contextmenu.removeThumb "Видалити закладку">
+<!ENTITY contextmenu.unpinThumb "Відкріпити закладку">
+<!ENTITY app.newBackgroundsAdvert "Спробуй нове тло">
+<!ENTITY settings.otherSoft "Інші програми Яндекса">
+<!ENTITY settings.showAdvertisement "Показувати контекстні пропозиції у Візуальних закладках">
+<!ENTITY app.sync "Синхронізація">
+<!ENTITY advertisement.yandexBrowser.docs "Відкривайте документи просто у Яндекс.Браузері">
+<!ENTITY advertisement.yandexBrowser.downloads "Завантажити">
+<!ENTITY advertisement.yandexBrowser.open "Відкрити Яндекс.Браузер">
+<!ENTITY advertisement.yandexBrowser.updated "Спробуйте оновлений Яндекс.Браузер">
+<!ENTITY app.setBackgroundsAdvert "Змінити тло можна в налаштуваннях">
+<!ENTITY auth.addUser "Увійти під іншим ім&#39;ям">
+<!ENTITY auth.passport "Паспорт">
+<!ENTITY auth.signin "Увійти">
+<!ENTITY auth.signout "Вийти">
+<!ENTITY auth.tune "Налаштування {vendor.gen}">
+<!ENTITY settings.editTitle "Редагувати опис">
+<!ENTITY settings.lastVisited "Нещодавно відвідані">
+<!ENTITY settings.popularSites "Популярні">
+<!ENTITY newyear.18.12.2014.button "Вибрати ялинку">
+<!ENTITY newyear.18.12.2014.text "Іди, каже, і без ялинки не повертайся. А зате з ялинкою, каже, — повертайся!">
+<!ENTITY newyear.19.12.2014.button "Не відставайте!">
+<!ENTITY newyear.19.12.2014.text "У Діда Мороза вже повний мішок подарунків.">
+<!ENTITY newyear.20.12.2014.button "Є ідеї">
+<!ENTITY newyear.20.12.2014.text "Як новий рік зустрінеш, так його і проведеш.">
+<!ENTITY newyear.21.12.2014.button "Вибрати костюм">
+<!ENTITY newyear.21.12.2014.text "Дід Мороз уже забрав із хімчистки свою синю шубу. А ви?">
+<!ENTITY newyear.22.12.2014.button "Зробити своїми руками">
+<!ENTITY newyear.22.12.2014.text "У вас під ялинкою вже є овечка?">
+<!ENTITY newyear.23.12.2014.button "Хочу щось новеньке">
+<!ENTITY newyear.23.12.2014.text "Знову олів&#39;є?">
+<!ENTITY newyear.24.12.2014.button "Зробити добро">
+<!ENTITY newyear.24.12.2014.text "У Новий рік мають траплятися дива!">
+<!ENTITY newyear.25.12.2014.button "Фільми із вогником">
+<!ENTITY newyear.25.12.2014.text "Теплі фільми для морозної зими.">
+<!ENTITY newyear.26.12.2014.button "1001 спосіб">
+<!ENTITY newyear.26.12.2014.text "Як очистити двір від снігу.">
+<!ENTITY newyear.27.12.2014.button "Дорогий Дідусю Морозе">
+<!ENTITY newyear.27.12.2014.text "Не забудьте написати лист Діду Морозу!">
+<!ENTITY newyear.28.12.2014.button "Підготуйтеся заздалегідь">
+<!ENTITY newyear.28.12.2014.text "Щоб не вітати друзів однаково,">
+<!ENTITY newyear.29.12.2014.button "складіть новорічний плейлист">
+<!ENTITY newyear.29.12.2014.text "Щоб у Новий рік потоваришувати з усіма сусідами,">
+<!ENTITY newyear.30.12.2014.button "Вибрати">
+<!ENTITY newyear.30.12.2014.text "Що робити у ніч із 31 грудня на 4 січня?">
+<!ENTITY newyear.31.12.2014.button "Як ще загадати бажання">
+<!ENTITY newyear.31.12.2014.text "Написати бажання на серветці, спалити, висипати попіл у келих із шампанським і випити опівночі.">
+<!ENTITY newyear.18.12.2014.header "До Нового року залишилося 14 днів">
+<!ENTITY newyear.19.12.2014.header "До Нового року залишилося 13 днів">
+<!ENTITY newyear.20.12.2014.header "До Нового года осталось 12 дней">
+<!ENTITY newyear.21.12.2014.header "До Нового року залишилось 11 днів">
+<!ENTITY newyear.22.12.2014.header "До Нового года осталось 10 дней">
+<!ENTITY newyear.23.12.2014.header "До Нового року залишилося 9 днів">
+<!ENTITY newyear.24.12.2014.header "До Нового года осталось 8 дней">
+<!ENTITY newyear.25.12.2014.header " До Нового року залишилося 7 днів">
+<!ENTITY newyear.26.12.2014.header "До Нового року залишилося 6 днів">
+<!ENTITY newyear.27.12.2014.header "До Нового року залишилося 4 дні">
+<!ENTITY newyear.28.12.2014.header "До Нового года осталось 4 дня">
+<!ENTITY newyear.29.12.2014.header "До Нового року залишилося 3 дні">
+<!ENTITY newyear.30.12.2014.header "До Нового года осталось 2 дня">
+<!ENTITY newyear.31.12.2014.header "Новий рік уже сьогодні!">

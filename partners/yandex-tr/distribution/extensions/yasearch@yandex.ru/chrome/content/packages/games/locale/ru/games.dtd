@@ -1,0 +1,7 @@
+<!ENTITY games.title "Игры">
+<!ENTITY games.menutitle "Все игры">
+<!ENTITY games.tooltip "Играйте онлайн">
+<!ENTITY games.error_connect "Не удалось загрузить игру.">
+<!ENTITY games.error_connect2 "Проверьте соединение с Интернет">
+<!ENTITY games.error_flash "Для запуска игр вам нужно загрузить и установить флэш плеер.&#13;Нажмите для перехода на страницу загрузки.">
+<!ENTITY games.source "Источник">

@@ -7,12 +7,10 @@ const {
     utils: Cu,
     manager: Cm
 } = Components;
-const IOS = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
-const InputStreamFabric = Cc["@mozilla.org/io/string-input-stream;1"];
-const nsIStringInputStream = Ci.nsIStringInputStream;
-const ccSimpleURI = Cc["@mozilla.org/network/simple-uri;1"];
-const ccStandardURL = Cc["@mozilla.org/network/standard-url;1"];
+Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+XPCOMUtils.defineLazyGetter(this, "stringInputStreamConstructor", () => Components.Constructor("@mozilla.org/io/string-input-stream;1", "nsIStringInputStream", "setData"));
+XPCOMUtils.defineLazyGetter(this, "simpleURIConstructor", () => Components.Constructor("@mozilla.org/network/simple-uri;1", "nsIURI"));
 function SimpleProtocol(scheme, classID) {
     this._scheme = String(scheme);
     this._hostEnabledPrefix = this._scheme + "://";
@@ -72,13 +70,13 @@ SimpleProtocol.prototype = {
         if (result) {
             return result;
         }
-        return IOS.newURI("data:,", null, null);
+        return Services.io.newURI("data:,", null, null);
     },
     newChannel: function SimpleProtocol_newChannel(uri) {
         try {
             let channel = this._findChannel(uri, !this._specHasHost(uri.spec));
             if (!channel) {
-                channel = IOS.newChannel("data:,", null, null);
+                channel = Services.io.newChannel("data:,", null, null);
                 channel.originalURI = uri;
             }
             return channel;
@@ -120,7 +118,7 @@ SimpleProtocol.prototype = {
     },
     _makeSimpleURI: function SimpleProtocol__makeSimpleURI(spec, charset, baseURI) {
         try {
-            let simpleURI = ccSimpleURI.createInstance(Ci.nsIURI);
+            let simpleURI = new simpleURIConstructor();
             simpleURI.spec = spec;
             return simpleURI;
         } catch (e) {
@@ -139,8 +137,7 @@ SimpleProtocol.prototype = {
                     channel = dataProvider.newChannel(uri, isSimpleURI);
                 } else if (typeof dataProvider.getContent == "function") {
                     let strData = String(dataProvider.getContent(uri, isSimpleURI));
-                    let inputStream = InputStreamFabric.createInstance(nsIStringInputStream);
-                    inputStream.setData(strData, strData.length);
+                    let inputStream = new stringInputStreamConstructor(strData, strData.length);
                     channel = Cc["@mozilla.org/network/input-stream-channel;1"].createInstance(Ci.nsIInputStreamChannel).QueryInterface(Ci.nsIChannel);
                     channel.setURI(uri);
                     channel.originalURI = uri;
@@ -156,14 +153,12 @@ SimpleProtocol.prototype = {
         throw new Error("None of " + this._dataProviders.length + " providers could serve the resource: " + uri.spec);
     }
 };
-function SimpleURI(aSpec, aOriginalCharset, aBaseURI) {
+function SimpleURI(spec, originalCharset, baseURI) {
     let standardURL = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIStandardURL);
-    standardURL.init(standardURL.URLTYPE_STANDARD, -1, aSpec, aOriginalCharset, aBaseURI);
+    standardURL.init(standardURL.URLTYPE_STANDARD, -1, spec, originalCharset, baseURI);
     standardURL.QueryInterface(Ci.nsIURL);
-    this.spec = standardURL.spec;
-    this._constructSpec();
+    this._standardURL = standardURL;
 }
-;
 SimpleURI.prototype = {
     get wrappedJSObject() {
         return this;
@@ -173,232 +168,75 @@ SimpleURI.prototype = {
         Ci.nsIURL,
         Ci.nsIFileURL
     ]),
-    get spec() {
-        return this._spec;
-    },
-    set spec(aSpec) {
-        this._spec = aSpec;
-        this._parse();
-    },
-    get prePath() {
-        return this._prePath;
-    },
-    get scheme() {
-        return this._scheme;
-    },
-    set scheme(aScheme) {
-        throw Cr.NS_ERROR_NOT_IMPLEMENTED;
-    },
-    get userPass() {
-        return this._userPass || "";
-    },
-    set userPass(aUserPass) {
-        throw Cr.NS_ERROR_NOT_IMPLEMENTED;
-    },
-    get username() {
-        return this._username || "";
-    },
-    set username(aUsername) {
-        throw Cr.NS_ERROR_NOT_IMPLEMENTED;
-    },
-    get password() {
-        return this._password || "";
-    },
-    set password(aPassword) {
-        throw Cr.NS_ERROR_NOT_IMPLEMENTED;
-    },
     get hostPort() {
         return CB_CONFIG.APP.NAME;
     },
     set hostPort(aHostPort) {
         throw Cr.NS_ERROR_NOT_IMPLEMENTED;
     },
-    get host() {
-        return this._host;
-    },
-    set host(aHost) {
-        this._host = aHost;
-        this._constructSpec();
-    },
-    get port() {
-        return this._port;
-    },
-    set port(aPort) {
-        throw Cr.NS_ERROR_NOT_IMPLEMENTED;
-    },
-    get path() {
-        return this._path || "";
-    },
-    set path(aPath) {
-        this._path = aPath;
-        this._constructSpec();
-    },
-    get asciiSpec() {
-        return this.spec;
-    },
-    get asciiHost() {
-        return this.host;
-    },
-    get originCharset() {
-        return "UTF-8";
-    },
     clone: function SimpleURI_clone() {
         return new SimpleURI(this.spec);
     },
     cloneIgnoringRef: function SimpleURI_cloneIgnoringRef() {
-        return new SimpleURI(this.spec.split("#")[0]);
+        return new SimpleURI(this._standardURL.cloneIgnoringRef().spec);
     },
-    equals: function SimpleURI_equals(aURI) {
-        return aURI.spec === this.spec;
+    equals: function SimpleURI_equals(uri) {
+        return this.spec === uri.spec;
     },
-    equalsExceptRef: function SimpleURI_equalsExceptRef(aURI) {
-        return aURI.spec.split("#")[0] === this.spec.split("#")[0];
+    equalsExceptRef: function SimpleURI_equalsExceptRef(uri) {
+        return this.spec.split("#")[0] === uri.spec.split("#")[0];
     },
-    resolve: function SimpleURI_resolve(aRelativePath) {
-        if (typeof aRelativePath != "string") {
-            throw Cr.NS_ERROR_MALFORMED_URI;
-        }
-        if (aRelativePath) {
-            if (aRelativePath.indexOf(this.scheme + "://") == 0) {
-                return aRelativePath;
-            }
-            if (aRelativePath.indexOf("//") == 0) {
-                return this.scheme + ":" + aRelativePath;
-            }
-            if (aRelativePath[0] == "/") {
-                return this.scheme + "://" + this.host + aRelativePath;
-            }
-            if (aRelativePath[0] == "#") {
-                return this.scheme + "://" + this.host + this.path + aRelativePath;
-            }
-        }
-        return this.scheme + "://" + this.host + this.path.replace(/[^\/]*$/, "") + aRelativePath;
-    },
-    schemeIs: function SimpleURI_schemeIs(aScheme) {
-        aScheme = aScheme.toLowerCase();
-        return aScheme == this.scheme || aScheme == "chrome" && /\.dtd$/.test(this.spec);
-    },
-    get directory() {
-        return this._directory || "";
-    },
-    set directory(aDirectory) {
-        this._directory = aDirectory;
-        this._constructFilePath();
-    },
-    get fileBaseName() {
-        return this._fileBaseName || "";
-    },
-    set fileBaseName(aFileBaseName) {
-        this._fileBaseName = aFileBaseName;
-        this._constructFileName();
-    },
-    get fileExtension() {
-        return this._fileExtension || "";
-    },
-    set fileExtension(aFileExtension) {
-        this._fileExtension = aFileExtension;
-        this._constructFileName();
-    },
-    get fileName() {
-        return this._fileName || "";
-    },
-    set fileName(aFileName) {
-        this._fileName = aFileName;
-        this._constructFilePath();
-    },
-    get filePath() {
-        return this._filePath || "";
-    },
-    set filePath(aFilePath) {
-        this._filePath = aFilePath;
-        this._constructPath();
-    },
-    get query() {
-        return this._query || "";
-    },
-    set query(aQuery) {
-        this._query = aQuery;
-        this._constructPath();
-    },
-    get ref() {
-        return this._ref || "";
-    },
-    set ref(aRef) {
-        this._ref = aRef;
-        this._constructPath();
-    },
-    getCommonBaseSpec: function SimpleURI_getCommonBaseSpec(aURIToCompare) {
-        return "";
-    },
-    getRelativeSpec: function SimpleURI_getRelativeSpec(aURIToCompare) {
-        return "";
+    schemeIs: function SimpleURI_schemeIs(scheme) {
+        scheme = scheme.toLowerCase();
+        return scheme == this.scheme || scheme == "chrome" && /\.dtd$/.test(this.spec);
     },
     get file() {
-        throw Cr.NS_ERROR_NOT_IMPLEMENTED;
+        return this.dataProvider.findFile(this.filePath);
     },
     set file(val) {
         throw Cr.NS_ERROR_NOT_IMPLEMENTED;
     },
-    _ERR_MALFORMED_URI: "Malformed protocol URI: ",
-    _spec: "",
-    _prePath: "",
-    _scheme: "",
-    _userPass: "",
-    _username: "",
-    _password: "",
-    _hostPort: "",
-    _host: "",
-    _port: -1,
-    _path: "",
-    _filePath: "",
-    _directory: "",
-    _fileName: "",
-    _fileBaseName: "",
-    _fileExtension: "",
-    _query: "",
-    _ref: "",
-    _parse: function SimpleURI__parse() {
-        if (!this._spec) {
-            Cu.reportError(this._ERR_MALFORMED_URI);
-            throw Cr.NS_ERROR_MALFORMED_URI;
-        }
-        let standardURL = Cc["@mozilla.org/network/standard-url;1"].createInstance(Ci.nsIStandardURL);
-        standardURL.init(standardURL.URLTYPE_STANDARD, -1, this._spec, null, null);
-        standardURL = standardURL.QueryInterface(Ci.nsIURL);
-        [
-            "prePath",
-            "scheme",
-            "userPass",
-            "username",
-            "password",
-            "hostPort",
-            "host",
-            "port",
-            "path",
-            "filePath",
-            "directory",
-            "fileName",
-            "fileBaseName",
-            "fileExtension",
-            "query",
-            "ref"
-        ].forEach(function (p) {
-            this["_" + p] = standardURL[p];
-        }, this);
-    },
-    _constructFileName: function SimpleURI__constructFileName() {
-        this._fileName = this._fileBaseName + (this._fileExtension ? "." + this._fileExtension : "");
-        this._constructFilePath();
-    },
-    _constructFilePath: function SimpleURI__constructFilePath() {
-        this._filePath = this._directory + this._fileName;
-        this._constructPath();
-    },
-    _constructPath: function SimpleURI__constructPath() {
-        this._path = this._filePath + (this._query ? "?" + this._query : "") + (this._ref ? "#" + this._ref : "");
-        this._constructSpec();
-    },
-    _constructSpec: function SimpleURI__constructSpec() {
-        this._spec = this._scheme + "://" + this._host + this._path;
-    }
+    _dataProvider: null,
+    _standardURL: null
 };
+[
+    "spec",
+    "prePath",
+    "scheme",
+    "userPass",
+    "username",
+    "password",
+    "host",
+    "port",
+    "path",
+    "asciiSpec",
+    "asciiHost",
+    "originCharset",
+    "directory",
+    "fileBaseName",
+    "fileExtension",
+    "fileName",
+    "filePath",
+    "query",
+    "ref"
+].forEach(function (propName) {
+    Object.defineProperty(this, propName, {
+        get: function () {
+            return this._standardURL[propName];
+        },
+        set: function (val) {
+            this._standardURL[propName] = val;
+        }
+    });
+}, SimpleURI.prototype);
+[
+    "resolve",
+    "getCommonBaseSpec",
+    "getRelativeSpec"
+].forEach(function (methodName) {
+    Object.defineProperty(this, methodName, {
+        value: function () {
+            return this._standardURL[methodName].apply(this._standardURL, arguments);
+        }
+    });
+}, SimpleURI.prototype);

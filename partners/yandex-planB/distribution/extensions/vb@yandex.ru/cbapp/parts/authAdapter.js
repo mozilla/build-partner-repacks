@@ -214,7 +214,7 @@ User.prototype = {
     }
 };
 function _openAuthDialog(dialogParams = {}) {
-    let url = authManager.authdefs.LINKS.AUTH_PASSPORT_URL + "/auth?domik=1";
+    let url = authManager.authdefs.LINKS.AUTH_PASSPORT_URL + "/auth";
     let data = { retpath: TRIGGER_URL + "?stay=true" };
     if (dialogParams.login) {
         data.login = dialogParams.login;
@@ -230,7 +230,7 @@ function _openAuthDialog(dialogParams = {}) {
         params.push(key + "=" + encodeURIComponent(val));
     }
     misc.navigateBrowser({
-        url: url + "&" + params.join("&"),
+        url: url + "?" + params.join("&"),
         target: "current tab"
     });
 }

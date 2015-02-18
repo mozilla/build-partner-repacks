@@ -1,0 +1,24 @@
+<!ENTITY browseroffer.name "Яндекс.Браузердің мазмұндық ұсыныстарын көрсету">
+
+<!ENTITY browseroffer.menu.openLink "Сілтемені Яндекс.Браузерден ашу">
+
+<!ENTITY browseroffer.settings.openLink "&#171;Сілтемені Яндекс.Браузерден ашу&#187; бөлімін таңдау">
+
+<!ENTITY browseroffer.notification.button.noYaBrowser "Толығырақ">
+<!ENTITY browseroffer.notification.button.yaBrowser "Ашу">
+<!ENTITY browseroffer.notification.text.noYaBrowser "Осы беттегі кейбір элементтерді қарауға Flash&browseroffer.notification.text.rmark; Player қажет. Кірістірілген плееры бар Яндекс.Браузерді жүктеңіз">
+<!ENTITY browseroffer.notification.text.yaBrowser "Осы беттегі кейбір элементтерді қарауға Flash&browseroffer.notification.text.rmark; Player қажет. Оны кірістірілген плееры бар Яндекс.Браузерден ашыңыз">
+<!ENTITY browseroffer.notification.tooltip.close "Хабарландыруды жабу">
+<!ENTITY browseroffer.notification.text.rmark "&#60;html:sup&#62;&#174;&#60;/html:sup&#62;">
+<!ENTITY browseroffer.notification.button.add "Иә">
+<!ENTITY browseroffer.notification.wdgt-suggest.fb "Facebook">
+<!ENTITY browseroffer.notification.wdgt-suggest.ok "«Одноклассники»">
+<!ENTITY browseroffer.notification.wdgt-suggest.text "{button} желісіндегі достардан келетін хабарламалар туралы хабарланыдыруларды алғыңыз келе ме?">
+<!ENTITY browseroffer.notification.wdgt-suggest.vk "«Вконтакте»">
+<!ENTITY browseroffer.settings.showSuggest "Яндекс Элементтері батырмасының мазмұндық ұсыныстарын көрсету">
+<!ENTITY browseroffer.notification.button.deny "Жоқ">
+<!ENTITY browseroffer.notification.button.no "Жоқ">
+<!ENTITY pagetranslator.tutorial.button.noYaBrowser "Толығырақ">
+<!ENTITY pagetranslator.tutorial.button.yaBrowser "Ашу">
+<!ENTITY pagetranslator.tutorial.text.noYaBrowser "Яндекс.Браузердегі аударманың барлық мүмкіндіктерін байқап көріңіз.">
+<!ENTITY pagetranslator.tutorial.text.yaBrowser "Яндекс.Браузердегі аударманың барлық мүмкіндіктерін байқап көріңіз.">

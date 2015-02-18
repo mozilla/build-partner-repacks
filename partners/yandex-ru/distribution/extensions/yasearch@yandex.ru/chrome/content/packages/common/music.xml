@@ -1,0 +1,17 @@
+<?xml version='1.0'?>
+<!DOCTYPE widget [
+<!ENTITY % widget SYSTEM "/native/fx/music.dtd">
+%widget;
+]>
+<widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/native/fx/music/i/music.svg#chart1" name="&music.name;" unique="true">
+    <f:setting default="0.7" name="volume" scope="widget">
+        <control fx-value-type="float" type="custom"/>
+    </f:setting>
+    <f:setting default="true" name="firstLaunch" scope="widget">
+        <control type="custom"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="/native/fx/music/module.jsm"/>
+    </modules>
+</widget>

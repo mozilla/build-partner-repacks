@@ -1,11 +1,20 @@
 "use strict";
-const Cc = Components.classes, Ci = Components.interfaces, Cu = Components.utils, Cr = Components.results, EXPORTED_SYMBOLS = ["FilePackage"], GLOBAL = this;
+const {
+    classes: Cc,
+    interfaces: Ci,
+    results: Cr,
+    utils: Cu
+} = Components;
+const EXPORTED_SYMBOLS = ["FilePackage"];
+const GLOBAL = this;
 let app = null;
 function FilePackage(rootDir, domain) {
-    if (!(rootDir instanceof Ci.nsIFile))
+    if (!(rootDir instanceof Ci.nsIFile)) {
         throw new CustomErrors.EArgType("rootDir", "nsIFile", rootDir);
-    if (!rootDir.isDirectory())
+    }
+    if (!rootDir.isDirectory()) {
         throw new CustomErrors.EArgRange("rootDir", "nsIFile(Directory)", rootDir);
+    }
     this._rootDir = rootDir.clone();
     this._rootDir.normalize();
     if (domain) {
@@ -20,7 +29,6 @@ function FilePackage(rootDir, domain) {
     protocolHandler.addDataProvider(this);
     this._uri = protocolHandler.newURI(protocolHandler.scheme + "://" + this._domain + "/", null, null);
 }
-;
 FilePackage.init = function FilePackage_init(application) {
     app = application;
     app.core.Lib.sysutils.copyProperties(app.core.Lib, GLOBAL);
@@ -39,10 +47,12 @@ FilePackage.prototype = {
         return fileutils.xmlDocFromStream(channel.open(), channel.originalURI, channel.originalURI, usePrivilegedParser);
     },
     resolvePath: function FilePkg_resolvePath(path, base) {
-        if (typeof path != "string")
+        if (typeof path !== "string") {
             throw new CustomErrors.EArgType("path", "String", path);
-        if (base)
+        }
+        if (base) {
             path = path.replace(/^(?!\/|\w+:)/, base.replace(/[^\/]+$/, ""));
+        }
         return this._uri.resolve(path);
     },
     newChannelFromPath: function FilePkg_newChannelFromPath(path) {
@@ -50,16 +60,18 @@ FilePackage.prototype = {
     },
     getFile: function FilePkg_getFile(path) {
         let file = this.findFile(path);
-        if (!file)
-            throw new Error(this._consts.ERR_FILE_NOT_FOUND + " \"" + path + "\"");
+        if (!file) {
+            throw new Error(this._consts.ERR_FILE_NOT_FOUND + " '" + path + "'");
+        }
         return file;
     },
     get UUID() {
         return this._domain;
     },
     newChannel: function FilePkg_newChannel(aURI, isSimpleURI) {
-        if (isSimpleURI || aURI.host != this._domain)
+        if (isSimpleURI || aURI.host != this._domain) {
             return null;
+        }
         let file = this.getFile(aURI.path);
         let filesStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
         filesStream.init(file, fileutils.MODE_RDONLY, 0, filesStream.CLOSE_ON_EOF);
@@ -71,29 +83,34 @@ FilePackage.prototype = {
         return channel;
     },
     findFile: function FilePkg_findFile(path) {
-        if (typeof path != "string")
+        if (typeof path !== "string") {
             throw new CustomErrors.EArgType("path", "String", path);
+        }
         path = this._suppressRelativePathReference(path);
         path = path.replace(/#.+/, "");
-        if (path in this._files)
+        if (path in this._files) {
             return this._files[path];
+        }
         let components = path.split("/");
-        if (components[components.length - 1][0] == ".")
+        if (components[components.length - 1][0] === ".") {
             return this._files[path] = null;
+        }
         let root = this._rootDir.clone();
         let locales = this._locales();
         let file = null;
         for (let i = locales.length; i--;) {
             let localeName = locales[i].name;
             let candidate = root.clone();
-            if (localeName != "") {
+            if (localeName !== "") {
                 candidate.append("locale");
                 candidate.append(localeName);
             }
-            for (let j = 0, len = components.length; j < len; j++)
+            for (let j = 0, len = components.length; j < len; j++) {
                 candidate.append(components[j]);
-            if (!candidate.exists())
+            }
+            if (!candidate.exists()) {
                 continue;
+            }
             try {
                 candidate.normalize();
                 if (candidate.isReadable() && this._rootDir.contains(candidate, true)) {
@@ -124,8 +141,9 @@ FilePackage.prototype = {
         return this._chromeChannelPrincipal;
     },
     _locales: function FilePkg__locales() {
-        if (this._localesCache)
+        if (this._localesCache) {
             return this._localesCache;
+        }
         const weights = {
             language: 32,
             root: 16,
@@ -142,8 +160,9 @@ FilePackage.prototype = {
         });
         let localeDir = this._rootDir.clone();
         localeDir.append("locale");
-        if (!localeDir.exists())
+        if (!localeDir.exists()) {
             return this._localesCache = locales;
+        }
         let appLocale = misc.parseLocale(app.localeString);
         let entries = localeDir.directoryEntries;
         while (entries.hasMoreElements()) {
@@ -151,18 +170,23 @@ FilePackage.prototype = {
             if (file.isDirectory()) {
                 let name = file.leafName;
                 let components = misc.parseLocale(name);
-                if (!components)
+                if (!components) {
                     continue;
+                }
                 let weight = 0;
                 for (let space in weights) {
                     let component = components[space];
-                    if (component === undefined)
+                    if (component === undefined) {
                         continue;
-                    if (space == "language")
-                        if (component in weights)
+                    }
+                    if (space == "language") {
+                        if (component in weights) {
                             weight += weights[component];
-                    if (component === appLocale[space])
+                        }
+                    }
+                    if (component === appLocale[space]) {
                         weight += weights[space];
+                    }
                 }
                 locales.push({
                     name: name,
@@ -181,9 +205,11 @@ FilePackage.prototype = {
             /\/[^\/]+\/\.\.\//g,
             /\/\.\.\//g
         ];
-        for (let i = 0, len = re.length; i < len; i++)
-            while (re[i].test(path))
+        for (let i = 0, len = re.length; i < len; i++) {
+            while (re[i].test(path)) {
                 path = path.replace(re[i], "/");
+            }
+        }
         return path;
     }
 };

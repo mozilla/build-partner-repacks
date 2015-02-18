@@ -1,0 +1,9 @@
+<!ENTITY % brandNames SYSTEM "yafd://plus.branding/names.dtd">
+%brandNames;
+
+<!ENTITY refused.title "&product1.nom; вимкнені">
+
+<!ENTITY refused.desc.1 "Для роботи з &product1.ins; ви повинні прийняти умови Ліцензійної угоди">
+<!ENTITY refused.desc.2 "Відновити роботу розширення можна через меню браузера: &#34;Інструменти -&#62; Додатки -&#62; Розширення&#34;">
+<!ENTITY refused.desc.3 "В останньому випадку ви автоматично приймаєте умови угоди">
+

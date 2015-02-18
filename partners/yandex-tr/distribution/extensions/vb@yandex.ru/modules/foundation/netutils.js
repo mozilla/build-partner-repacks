@@ -15,14 +15,14 @@ const netutils = {
         return cookie ? decodeURIComponent(cookie.value) : undefined;
     },
     findCookies: function netutils_findCookies(URLorURI, cookieName, includeHttpOnly, checkExpired, strictMatch) {
+        let cookieURI = URLorURI instanceof Ci.nsIURI ? URLorURI : this.newURI(URLorURI, null, null);
         function cookieFilter(cookie) {
             if (cookie.name !== cookieName || cookie.isHttpOnly && !includeHttpOnly || !netutils.cookieMatchesURI(cookie, cookieURI, strictMatch)) {
                 return false;
             }
             let timeNow = parseInt(Date.now() / 1000, 10);
-            return !checkExpired || (cookie.expires == 0 || timeNow < cookie.expires);
+            return !checkExpired || (cookie.expires === 0 || timeNow < cookie.expires);
         }
-        let cookieURI = URLorURI instanceof Ci.nsIURI ? URLorURI : this.newURI(URLorURI, null, null);
         return this.getCookiesFromHost(cookieURI.host).filter(cookieFilter).sort(this.cmpCookiesByPriority);
     },
     getCookiesFromHost: function netutils_getCookiesFromHost(aHost) {
@@ -59,7 +59,7 @@ const netutils = {
     },
     cmpCookiesByPriority: function netutils_cmpCookiesByPriority(cookie1, cookie2) {
         let hostDiff = cookie2.rawHost.length - cookie1.rawHost.length;
-        if (hostDiff != 0) {
+        if (hostDiff !== 0) {
             return hostDiff;
         }
         return cookie2.path.length - cookie1.path.length;
@@ -127,11 +127,13 @@ netutils.DownloadTask = function DownloadTask(urlString, output, channelProperti
         } else if (output instanceof Ci.nsIOutputStream) {
             this._outputStream = output;
         } else {
-            throw this._error = new CustomErrors.EArgType("output", "nsIFile | nsIOutputStream", output);
+            this._error = new CustomErrors.EArgType("output", "nsIFile | nsIOutputStream", output);
+            throw this._error;
         }
     }
     if (httpHeaders !== undefined && !sysutils.isObject(httpHeaders)) {
-        throw this._error = new CustomErrors.EArgType("httpHeaders", "Object", httpHeaders);
+        this._error = new CustomErrors.EArgType("httpHeaders", "Object", httpHeaders);
+        throw this._error;
     }
     this._channelProps = channelProperties;
     this._bypassCache = Boolean(bypassCache);
@@ -373,7 +375,7 @@ netutils.Cookie.prototype = {
     EVENTS: { COOKIE_VALUE_CHANGED: "cookie-value-changed" },
     constructor: netutils.Cookie,
     toString: function Cookie_toString() {
-        return strutils.formatString("[%1 \"%2\" @ %3 (%4, %5)]", [
+        return strutils.formatString("[%1 '%2' @ %3 (%4, %5)]", [
             this.constructor.name,
             this._cookieName,
             this._uri.spec,

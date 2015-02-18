@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Messages SYSTEM "news/entities.dtd"><Messages>
+    <Message key="news.title" value="&news.title;"/>
+    <Message key="news.tooltip" value="&news.tooltip;"/>
+    <Message key="news.error_message" value="&news.error_message;"/>
+    <Message key="news.absent_message" value="&news.absent_message;"/>
+</Messages>

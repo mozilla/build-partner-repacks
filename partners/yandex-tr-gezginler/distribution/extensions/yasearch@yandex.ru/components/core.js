@@ -7,9 +7,9 @@ const {
 } = Components;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-const EXTENSION_DIR = __LOCATION__.parent.parent;
-const EXTENSION_PATH = Services.io.newFileURI(EXTENSION_DIR).spec;
-Cu.import(EXTENSION_PATH + "config.js");
+let extDir = Services.io.newURI(__URI__, null, null);
+const EXTENSION_URI = Services.io.newURI(extDir.resolve(".."), null, null);
+Cu.import(EXTENSION_URI.resolve("config.js"));
 function Log(libs, rootDir) {
     this._libs = libs;
     this._rootDir = rootDir;
@@ -73,7 +73,7 @@ Log.prototype = {
 Log.getLogLevelHandler = function Log_getLogLevelHandler(appender) {
     return function LogLevelHandler(level) {
         level = parseInt(level, 10);
-        level >= 0 ? level : 100;
+        level = level >= 0 ? level : 100;
         appender.level = level;
     };
 };
@@ -98,8 +98,7 @@ Log.APPENDERS = [
         this.prefs[Log.getPrefname("console.level")] = Log.getLogLevelHandler(appender);
     },
     function Log_APPENDERS_stdout(libs) {
-        let basicFormatter = new libs.Log4Moz.BasicFormatter();
-        let appender = new libs.Log4Moz.DumpAppender(basicFormatter);
+        let appender = new libs.Log4Moz.DumpAppender();
         let rootLogger = libs.Log4Moz.repository.rootLogger;
         rootLogger.addAppender(appender);
         this.stop = function Log_APPENDERS_stdout_stop() {
@@ -168,15 +167,33 @@ function CustomBarCore() {
     Services.obs.addObserver(this, "quit-application", false);
 }
 CustomBarCore.prototype = {
-    get Lib() this._libs,
-    get CONFIG() CB_CONFIG,
-    get appName() CB_CONFIG.APP.NAME,
-    get buildDate() new Date(this._buildTimeStamp),
-    get buidRevision() CB_CONFIG.BUILD.REVISION,
-    get xbWidgetsPrefsPath() CB_CONFIG.PREFS_PATH.XB_WIDGETS,
-    get nativesPrefsPath() CB_CONFIG.PREFS_PATH.NATIVES,
-    get staticPrefsPath() CB_CONFIG.PREFS_PATH.STATIC,
-    get application() this._appObj,
+    get Lib() {
+        return this._libs;
+    },
+    get CONFIG() {
+        return CB_CONFIG;
+    },
+    get appName() {
+        return CB_CONFIG.APP.NAME;
+    },
+    get buildDate() {
+        return new Date(this._buildTimeStamp);
+    },
+    get buidRevision() {
+        return CB_CONFIG.BUILD.REVISION;
+    },
+    get xbWidgetsPrefsPath() {
+        return CB_CONFIG.PREFS_PATH.XB_WIDGETS;
+    },
+    get nativesPrefsPath() {
+        return CB_CONFIG.PREFS_PATH.NATIVES;
+    },
+    get staticPrefsPath() {
+        return CB_CONFIG.PREFS_PATH.STATIC;
+    },
+    get application() {
+        return this._appObj;
+    },
     get rootDir() {
         if (!this._appRoot) {
             this._appRoot = Services.dirsvc.get("ProfD", Ci.nsIFile);
@@ -193,10 +210,18 @@ CustomBarCore.prototype = {
         }
         return this._xbProtocol;
     },
-    get protocols() this._protocols,
-    get extensionPathFile() EXTENSION_DIR.clone(),
-    get wrappedJSObject() this,
-    get eventTopics() this._globalEvents,
+    get protocols() {
+        return this._protocols;
+    },
+    get extensionURI() {
+        return EXTENSION_URI.clone();
+    },
+    get wrappedJSObject() {
+        return this;
+    },
+    get eventTopics() {
+        return this._globalEvents;
+    },
     stop: function CustomBarCore_stop() {
         this._log.stop();
     },
@@ -303,6 +328,3 @@ CustomBarCore.prototype = {
         }]
 };
 const NSGetFactory = XPCOMUtils.generateNSGetFactory([CustomBarCore]);
-if (Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment).exists("YABAR_DEBUG_PROFILER_RUN")) {
-    Cu.import(CustomBarCore.prototype._modulesPath + "Profiler.jsm", {}).Profiler.run();
-}

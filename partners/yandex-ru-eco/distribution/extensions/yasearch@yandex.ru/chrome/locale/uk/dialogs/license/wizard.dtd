@@ -1,0 +1,11 @@
+<!ENTITY setup.done.label "Встановлення завершене">
+<!ENTITY license.read.desc "Перед початком роботи ознайомтеся з умовами використання програми">
+<!ENTITY license.agree.label "Я приймаю умови Ліцензійної угоди">
+
+<!ENTITY button.accept "Продовжити">
+<!ENTITY button.cancel "Скасувати">
+<!ENTITY license.confirm.text.1 "Запускаючи браузер, ви приймаєте умови">
+<!ENTITY license.confirm.text.2 "ліцензійної угоди">
+<!ENTITY setup.ok.label "встановлення успішно завершено">
+<!ENTITY license.header "Ліцензійна угода">
+<!ENTITY button.close "Закрити">

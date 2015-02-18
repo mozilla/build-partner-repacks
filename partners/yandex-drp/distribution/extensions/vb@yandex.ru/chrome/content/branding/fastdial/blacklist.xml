@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<list>
+    <item domain="login.yahoo.com"/>
+    <item domain="signin.ebay.com"/>
+    <item domain="accounts.google.com"/>
+    <item domain="accounts.google.ru"/>
+    <item domain="passport.yandex.ru"/>
+    <item domain="pass.yandex.ru"/>
+    <item domain="passport.yandex.ua"/>
+    <item domain="pass.yandex.ua"/>
+    <item domain="passport.yandex.com.tr"/>
+    <item domain="pass.yandex.com.tr"/>
+    <item domain="social.yandex.ru"/>
+    <item domain="mc.yandex.ru"/>
+    <item domain="social.yandex.com.tr"/>
+    <item domain="uyelik.milliyet.com.tr"/>
+    <item domain="yandex.st"/>
+    <item domain="yastatic.net"/>
+    <item domain="auth.mail.ru"/>
+</list>

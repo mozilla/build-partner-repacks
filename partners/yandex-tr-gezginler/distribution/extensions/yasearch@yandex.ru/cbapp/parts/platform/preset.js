@@ -259,29 +259,51 @@ BarPlatform.Preset.ComponentEntry = function PresetComponentEntry(entrySource, p
 };
 BarPlatform.Preset.ComponentEntry.prototype = {
     constructor: BarPlatform.Preset.ComponentEntry,
-    get componentType() this._type,
-    get TYPE_WIDGET() "widget",
-    get TYPE_PLUGIN() "plugin",
-    get componentID() this._componentID,
-    get packageID() this._packageID,
-    get name() this._name,
-    get enabled() this._enabled,
-    get ENABLED_NO() "false",
-    get ENABLED_YES() "true",
-    get ENABLED_AUTO() "auto",
+    get componentType() {
+        return this._type;
+    },
+    get TYPE_WIDGET() {
+        return "widget";
+    },
+    get TYPE_PLUGIN() {
+        return "plugin";
+    },
+    get componentID() {
+        return this._componentID;
+    },
+    get packageID() {
+        return this._packageID;
+    },
+    get name() {
+        return this._name;
+    },
+    get enabled() {
+        return this._enabled;
+    },
+    get ENABLED_NO() {
+        return "false";
+    },
+    get ENABLED_YES() {
+        return "true";
+    },
+    get ENABLED_AUTO() {
+        return "auto";
+    },
     set enabled(newVal) {
         if (this._enabled == newVal) {
             return;
         }
         if (newVal != this.ENABLED_AUTO && newVal != this.ENABLED_YES && newVal != this.ENABLED_NO) {
-            throw new CustomErrors.EArgRange("enabled", "ENABLED_NO or ENABLED_YES or ENABLED_AUTO", enabled);
+            throw new CustomErrors.EArgRange("enabled", "ENABLED_NO or ENABLED_YES or ENABLED_AUTO", newVal);
         }
         if (this._srcElement) {
             this._srcElement.setAttribute(this._type == this.TYPE_WIDGET ? "visible" : "enabled", newVal);
         }
         this._enabled = newVal;
     },
-    get isImportant() this._isImportant,
+    get isImportant() {
+        return this._isImportant;
+    },
     get settings() {
         return sysutils.copyObj(this._settings);
     },
@@ -404,10 +426,12 @@ BarPlatform.Preset.EPresetSyntax.prototype = {
     __proto__: CustomErrors.ECustom.prototype,
     constructor: BarPlatform.Preset.EPresetSyntax,
     _message: "Preset parse error",
-    get _details() [
-        this._elementName,
-        this._explanation
-    ],
+    get _details() {
+        return [
+            this._elementName,
+            this._explanation
+        ];
+    },
     _elementName: undefined,
     _explanation: undefined
 };

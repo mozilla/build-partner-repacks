@@ -16,14 +16,11 @@ const vendorCookie = {
         this._application = null;
     },
     _setCookies: function VendorCookie__setCookies() {
-        if (!this._vendorCookiesFile) {
+        if (this._application.preferences.get(this.SET_COOKIE_PREF_NAME, false)) {
             return;
         }
+        this._application.preferences.set(this.SET_COOKIE_PREF_NAME, true);
         let cookiesXML = this._getVendorCookiesXML();
-        this._application.core.Lib.fileutils.removeFileSafe(this._vendorCookiesFile);
-        if (this._vendorCookiesFile) {
-            return;
-        }
         if (!cookiesXML) {
             return;
         }
@@ -60,16 +57,13 @@ const vendorCookie = {
             Services.cookies.add(domain, cookie.getAttribute("path") || "/", cookieName, cookie.textContent, false, cookie.getAttribute("http-only") === "yes", false, expiry);
         }, this);
     },
-    get _vendorCookiesFile() {
-        let file = this._application.core.extensionPathFile;
-        "defaults/vendor/cookies.xml".split("/").forEach(p => file.append(p));
-        return file && file.exists() ? file : null;
-    },
     _getVendorCookiesXML: function VendorCookie__getVendorCookiesXML() {
         try {
-            return this._application.core.Lib.fileutils.xmlDocFromFile(this._vendorCookiesFile);
+            let cookiesXMLStream = this._application.addonFS.getStream("defaults/vendor/cookies.xml");
+            return this._application.core.Lib.fileutils.xmlDocFromStream(cookiesXMLStream);
         } catch (e) {
         }
         return null;
-    }
+    },
+    SET_COOKIE_PREF_NAME: "vendor.default.cookie"
 };

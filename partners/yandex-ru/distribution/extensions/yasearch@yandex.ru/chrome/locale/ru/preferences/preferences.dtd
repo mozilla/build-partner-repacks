@@ -1,0 +1,61 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY pref.window.title "Настроить &product2.nom;">
+
+
+<!ENTITY prefpane.widgets.delete.button "Удалить из доступных">
+<!ENTITY prefpane.widgets.extra2.button "Восстановить исходные настройки">
+
+<!ENTITY prefpane.widgets.label "Кнопки">
+
+<!ENTITY registered.widgets.list.title "Доступные кнопки">
+<!ENTITY active.widgets.list.title "Текущие кнопки">
+
+<!ENTITY add.widgets.label "Добавить">
+<!ENTITY remove.widgets.label "Убрать">
+
+<!ENTITY move.widgets.up.label "Выше">
+<!ENTITY move.widgets.down.label "Ниже">
+
+<!ENTITY global.setting.tooltip.prefix "Данная настройка распространяется на кнопки &#37;S">
+
+<!ENTITY controls.combobox.creating.label "загрузка списка">
+
+
+<!ENTITY prefpane.plugins.delete.button "Удалить расширение">
+
+<!ENTITY prefpane.plugins.label "Расширения">
+
+<!ENTITY registered.plugins.list.title "Доступные расширения">
+
+<!ENTITY registered.plugins.enable.label "Включить">
+
+
+<!ENTITY prefpane.about.label "О программе">
+
+
+<!ENTITY prefpane.software.label "Другие программы">
+
+
+<!ENTITY updates.check.text "Проверить обновления">
+<!ENTITY updates.check.install "Установить">
+<!ENTITY updates.check.setup "Настроить">
+
+
+<!ENTITY prefpane.misc.label "Настройки">
+
+<!ENTITY yasearch.pref.urlbar.caption "Адресная строка">
+
+<!ENTITY yasearch.pref.misc.caption "Разное">
+<!ENTITY yasearch.pref.links.target.label "Открывать все ссылки из &product2.gen; в новой вкладке">
+<!ENTITY yasearch.pref.silent.trusted.updates.label "Автоматически обновлять компоненты из &#171;Библиотеки кнопок&#187;">
+
+<!ENTITY yasearch.pref.defence.homepage.caption "Домашняя страница">
+<!ENTITY yasearch.pref.defence.homepage.label "Включить защиту домашней страницы">
+<!ENTITY yasearch.pref.defence.homepage.description "&product1.nom; будет сообщать вам о попытках сторонних программ изменить домашнюю страницу">
+
+<!ENTITY yasearch.pref.confidentiality.caption "Конфиденциальность">
+<!ENTITY yasearch.pref.stat.usage.send.label "Принять участие в улучшении сервисов Яндекса: автоматически отправлять &#60;html:a href=&#34;http://legal.yandex.ru/confidential/&#34;&#62;анонимную статистику&#60;/html:a&#62; использования браузера">
+
+<!ENTITY yasearch.pref.sounds.enable.label "Разрешить проигрывание звуков для уведомлений/сообщений">

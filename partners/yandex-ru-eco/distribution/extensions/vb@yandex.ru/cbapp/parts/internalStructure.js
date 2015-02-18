@@ -27,8 +27,9 @@ const internalStructure = {
             aData = JSON.parse(aData);
             this.iterate({ nonempty: true }, function (thumbData, index) {
                 try {
-                    if (thumbData.location.asciiHost !== aData.domain)
+                    if (thumbData.location.asciiHost !== aData.domain) {
                         return;
+                    }
                     let cloudData = sysutils.copyObj(aData);
                     delete cloudData.domain;
                     this.setItem(index, { background: cloudData });
@@ -44,14 +45,15 @@ const internalStructure = {
     setItem: function InternalStructure_setItem(index, value) {
         if (arguments.length === 1) {
             for (let [
-                        index,
-                        value
+                        _index,
+                        _value
                     ] in Iterator(arguments[0])) {
-                this.overwriteItem(index, value);
+                this.overwriteItem(_index, _value);
             }
         } else {
-            if (!value)
+            if (!value) {
                 return;
+            }
             thumbs[index] = thumbs[index] || {};
             sysutils.copyProperties(value, thumbs[index]);
             this._application.backup.syncThumbs();
@@ -60,10 +62,10 @@ const internalStructure = {
     overwriteItem: function InternalStructure_overwriteItem(index, value) {
         if (arguments.length === 1) {
             for (let [
-                        index,
-                        value
+                        _index,
+                        _value
                     ] in Iterator(arguments[0])) {
-                this.overwriteItem(index, value);
+                this.overwriteItem(_index, _value);
             }
         } else {
             thumbs[index] = value;
@@ -88,12 +90,15 @@ const internalStructure = {
                     index,
                     thumbData
                 ] in Iterator(thumbs)) {
-            if (options.visible && index >= currentThumbsNum)
+            if (options.visible && index >= currentThumbsNum) {
                 continue;
-            if (options.nonempty && (!thumbData || !thumbData.source))
+            }
+            if (options.nonempty && (!thumbData || !thumbData.source)) {
                 continue;
-            if (options.pinned && (!thumbData || !thumbData.pinned))
+            }
+            if (options.pinned && (!thumbData || !thumbData.pinned)) {
                 continue;
+            }
             callback.call(ctx, thumbData, index);
         }
     },

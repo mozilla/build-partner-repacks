@@ -148,7 +148,7 @@ const addonStatus = {
         return rows;
     },
     clearAddonEvents: function addonStatus_clearAddonEvents() {
-        this._database.execQuery("DELETE FROM addonevents");
+        this._database.executeQueryAsync({ query: "DELETE FROM addonevents" });
     },
     testSendStat: function addonStatus_testSendStat() {
         this.notify(this._requestTimer);
@@ -192,16 +192,23 @@ const addonStatus = {
             this._cleanupLoggedData();
             this._setRequestTimer();
         }.bind(this);
-        this._database.execQueryAsync("INSERT INTO queries (query, timeCreated, sendAttempts) " + "VALUES (:query, :timeCreated, :sendAttempts)", {
-            query: this._collectData(aData),
-            timeCreated: Date.now(),
-            sendAttempts: 0
-        }, onDataInserted);
+        this._database.executeQueryAsync({
+            query: "INSERT INTO queries (query, timeCreated, sendAttempts) " + "VALUES (:query, :timeCreated, :sendAttempts)",
+            parameters: {
+                query: this._collectData(aData),
+                timeCreated: Date.now(),
+                sendAttempts: 0
+            },
+            callback: onDataInserted
+        });
     },
     _cleanupLoggedData: function addonsStatus__cleanupLoggedData() {
-        this._database.execQueryAsync("DELETE FROM queries " + "WHERE (timeCreated < :timeCreated OR sendAttempts > :sendAttempts)", {
-            timeCreated: Date.now() - 2 * 24 * 60 * 60 * 1000,
-            sendAttempts: 5
+        this._database.executeQueryAsync({
+            query: "DELETE FROM queries " + "WHERE (timeCreated < :timeCreated OR sendAttempts > :sendAttempts)",
+            parameters: {
+                timeCreated: Date.now() - 2 * 24 * 60 * 60 * 1000,
+                sendAttempts: 5
+            }
         });
     },
     _collectData: function addonStatus__collectData(aData) {
@@ -352,9 +359,15 @@ const addonStatus = {
             throw new Error("Unexpected ID of sended log data.");
         }
         if (isErrorRequest(aRequest)) {
-            this._database.execQueryAsync("UPDATE queries SET sendAttempts = sendAttempts + 1 WHERE id = :id", { id: this._sendingLogId });
+            this._database.executeQueryAsync({
+                query: "UPDATE queries SET sendAttempts = sendAttempts + 1 WHERE id = :id",
+                parameters: { id: this._sendingLogId }
+            });
         } else {
-            this._database.execQueryAsync("DELETE FROM queries WHERE id = :id", { id: this._sendingLogId });
+            this._database.executeQueryAsync({
+                query: "DELETE FROM queries WHERE id = :id",
+                parameters: { id: this._sendingLogId }
+            });
             this._lastSendTime = Date.now();
             this._clidsCreationDate = new Date();
         }

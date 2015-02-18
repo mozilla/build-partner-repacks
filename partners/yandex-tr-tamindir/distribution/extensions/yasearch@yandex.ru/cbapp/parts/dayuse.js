@@ -118,17 +118,24 @@ const dayuse = {
                 this._cleanupLoggedData();
                 this._setRequestTimer();
             }.bind(this);
-            this._database.execQueryAsync("INSERT INTO queries (query, timeCreated, sendAttempts) " + "VALUES (:query, :timeCreated, :sendAttempts)", {
-                query: collectedData,
-                timeCreated: Date.now(),
-                sendAttempts: 0
-            }, onDataInserted);
+            this._database.executeQueryAsync({
+                query: "INSERT INTO queries (query, timeCreated, sendAttempts) " + "VALUES (:query, :timeCreated, :sendAttempts)",
+                parameters: {
+                    query: collectedData,
+                    timeCreated: Date.now(),
+                    sendAttempts: 0
+                },
+                callback: onDataInserted
+            });
         }.bind(this));
     },
     _cleanupLoggedData: function addonsStatus__cleanupLoggedData() {
-        this._database.execQueryAsync("DELETE FROM queries " + "WHERE (timeCreated < :timeCreated OR sendAttempts > :sendAttempts)", {
-            timeCreated: Date.now() - 2 * 24 * 60 * 60 * 1000,
-            sendAttempts: 5
+        this._database.executeQueryAsync({
+            query: "DELETE FROM queries " + "WHERE (timeCreated < :timeCreated OR sendAttempts > :sendAttempts)",
+            parameters: {
+                timeCreated: Date.now() - 2 * 24 * 60 * 60 * 1000,
+                sendAttempts: 5
+            }
         });
     },
     _collectData: function dayuse__collectData(callback) {
@@ -176,9 +183,15 @@ const dayuse = {
             throw new Error("Unexpected ID of sended log data.");
         }
         if (isErrorRequest(aRequest)) {
-            this._database.execQueryAsync("UPDATE queries SET sendAttempts = sendAttempts + 1 WHERE id = :id", { id: this._sendingLogId });
+            this._database.executeQueryAsync({
+                query: "UPDATE queries SET sendAttempts = sendAttempts + 1 WHERE id = :id",
+                parameters: { id: this._sendingLogId }
+            });
         } else {
-            this._database.execQueryAsync("DELETE FROM queries WHERE id = :id", { id: this._sendingLogId });
+            this._database.executeQueryAsync({
+                query: "DELETE FROM queries WHERE id = :id",
+                parameters: { id: this._sendingLogId }
+            });
             this._lastSendTime = Date.now();
         }
         this._sendingLogId = null;
@@ -243,9 +256,14 @@ CTag.prototype = {
 };
 const dayuseDataCollector = {
     _productTagName: null,
-    get _logger() dayuse._logger,
-    get _application() dayuse._application,
+    get _logger() {
+        return dayuse._logger;
+    },
+    get _application() {
+        return dayuse._application;
+    },
     _calcCommonData: function dayuseDataCollector__calcCommonData(productCTag, topBrowserWindow) {
+        this._calcLocal(productCTag);
         this._calcDayuse(productCTag);
         this._calcHomepage(productCTag);
         this._calcQS(productCTag);
@@ -254,6 +272,14 @@ const dayuseDataCollector = {
         this._calcBookmarksSidebar(productCTag, topBrowserWindow);
         this._calcBookmarksCount(productCTag);
         this._calcYaDisk(productCTag);
+    },
+    _calcLocal: function dayuseDataCollector__calcLocal(productCTag) {
+        let localTag = new CTag("local");
+        localTag.addVars({
+            brand: this._application.branding.brandID,
+            lang: this._application.locale.language
+        });
+        productCTag.addChildren(localTag);
     },
     _calcDayuse: function dayuseDataCollector__calcDayuse(productCTag) {
         let installTimeInSec = this._application.preferences.get("general.install.time");

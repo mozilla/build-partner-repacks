@@ -1,0 +1,6 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY postinstall.offer.title "Взяти участь у поліпшенні сервісів &vendor.gen;:">
+<!ENTITY postinstall.offer.statsend.label "дозволити автоматично надсилати анонімну статистику використання браузера згідно з &#60;html:a&#62;ліцензійною угодою&#60;/html:a&#62;">
+<!ENTITY postinstall.offer.continue.label "Продовжити">

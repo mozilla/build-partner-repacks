@@ -1,0 +1,23 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY homepage.defence.changed.title "Homepage changed">
+<!ENTITY homepage.defence.changedAgain.title "Homepage changed again">
+
+<!ENTITY homepage.defence.changed.from.prefix "from">
+<!ENTITY homepage.defence.changed.from.postfix "">
+<!ENTITY homepage.defence.changed.to.prefix "to">
+<!ENTITY homepage.defence.changed.to.postfix "">
+<!ENTITY homepage.defence.changed.empty "no address">
+
+<!ENTITY homepage.defence.again.help "The change might be caused by third party software. &product2.nom; no longer&#160;protects your homepage settings">
+<!ENTITY homepage.defence.again.help.more "Learn more">
+
+<!ENTITY homepage.defence.change.question "Allow this change">
+<!ENTITY homepage.defence.change.checkbox "Warn me about any changes to my home page">
+
+<!ENTITY homepage.defence.ok.button "OK">
+<!ENTITY homepage.defence.deny.button "Deny">
+<!ENTITY homepage.defence.allow.button "Allow">
+
+<!ENTITY homepage.defence.changed.help "&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;To turn on home page protection again, please disable the third-party application, set the required home page&#160;and follow these instructions:&#60;br/&#62;&#60;strong&#62;&#171;Enable homepage protection&#187;&#60;/strong&#62; under&#160;the &#60;strong&#62;Behavior&#60;/strong&#62; tab in&#160;&#60;strong&#62;Settings&#60;/strong&#62;.&#60;/p&#62;&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;Please don&#39;t hesitate to contact our&#160;&#60;a anonid=&#39;mailtoSupportLink&#39; href=&#39;mailto:support@element.yandex.ru&#39;&#62;Support service&#60;/a&#62; if you have any questions.&#60;/p&#62;">

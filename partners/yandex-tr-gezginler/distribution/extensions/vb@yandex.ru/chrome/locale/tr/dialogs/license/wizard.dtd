@@ -1,0 +1,11 @@
+<!ENTITY setup.done.label "Kurulum tamamlandı">
+<!ENTITY license.read.desc "Kullanmaya başlamadan önce Lisans Sözleşmesi&#39;ni inceleyin">
+<!ENTITY license.agree.label "Lisans Sözleşmesi&#39;nin koşullarını okudum ve kabul ediyorum ">
+
+<!ENTITY button.accept "Devam et">
+<!ENTITY button.cancel "İptal">
+<!ENTITY license.confirm.text.1 "Tarayıcıyı başlatarak">
+<!ENTITY license.confirm.text.2 "Lisans Sözleşmesi&#39;nin şartlarını kabul etmiş sayılırsınız">
+<!ENTITY license.header "Lisans Sözleşmesi">
+<!ENTITY setup.ok.label "kurulum başarıyla tamamlandı">
+<!ENTITY button.close "Kapat">

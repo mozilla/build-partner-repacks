@@ -1,0 +1,23 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY homepage.defence.changed.title "Пачатковая старонка змянілася">
+<!ENTITY homepage.defence.changedAgain.title "Пачатковая старонка зноў змянілася">
+
+<!ENTITY homepage.defence.changed.from.prefix "з">
+<!ENTITY homepage.defence.changed.from.postfix "">
+<!ENTITY homepage.defence.changed.to.prefix "на">
+<!ENTITY homepage.defence.changed.to.postfix "">
+<!ENTITY homepage.defence.changed.empty "няма адрасу">
+
+<!ENTITY homepage.defence.again.help "Магчыма, замена звязаная з работай пабочнай праграмы. &product2.nom; больш не&#160;ахоўвае вашую пачатковую старонку">
+<!ENTITY homepage.defence.again.help.more "Больш падрабязна">
+
+<!ENTITY homepage.defence.change.question "Дазволіць гэтае змяненне">
+<!ENTITY homepage.defence.change.checkbox "Папярэджваць пра змену пачатковай старонкі">
+
+<!ENTITY homepage.defence.ok.button "OK">
+<!ENTITY homepage.defence.deny.button "Забараніць">
+<!ENTITY homepage.defence.allow.button "Дазволіць">
+
+<!ENTITY homepage.defence.changed.help "&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;Каб зноў уключыць ахову старонкі, адключыце пабочную праграму, усталюйце патрэбную пачатковую старонку &#160;і ўключыце опцыю:&#60;br/&#62;&#60;strong&#62;&#171;Уключыць ахову пачатковай старонкі&#187;&#60;/strong&#62; на&#160;ўкладцы &#60;strong&#62;Наладкі&#60;/strong&#62; ў&#160;&#60;strong&#62;Наладках&#60;/strong&#62;.&#60;/p&#62;&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;Па ўуіх пытаннях звяртайцеся у&#160;нашую &#60;a anonid=&#39;mailtoSupportLink&#39; href=&#39;mailto:support@element.yandex.ru&#39;&#62;службу падтрымкі&#60;/a&#62;.&#60;/p&#62;">

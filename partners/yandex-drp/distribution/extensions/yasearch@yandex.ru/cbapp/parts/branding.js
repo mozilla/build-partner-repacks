@@ -7,13 +7,11 @@ const {
     results: Cr
 } = Components;
 const GLOBAL = this;
-const PKG_UPD_TOPIC = "package updated";
 const branding = {
     init: function PartnerPack_init(application) {
         this._logger = application.getLogger("Branding");
         this._application = application;
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
-        this.__proto__ = new patterns.NotificationSource();
         this._loadPackage();
         try {
             if (this._application.addonManager.info.addonVersionChanged) {
@@ -56,7 +54,9 @@ const branding = {
         }
         return String(this.productInfo.BrandID);
     },
-    get brandingDate() this._brandingDate,
+    get brandingDate() {
+        return this._brandingDate;
+    },
     get barless() {
         if (this._barless === null) {
             try {
@@ -70,13 +70,14 @@ const branding = {
     get brandTemplateMap() {
         return this._brandTemplateMap;
     },
-    getYandexFeatureState: new function () {
+    getYandexFeatureState: function () {
         let cache = Object.create(null);
         return function PartnerPack_getYandexFeatureState(aFeatureName) {
             if (aFeatureName in cache) {
                 return cache[aFeatureName];
             }
-            return cache[aFeatureName] = strutils.xmlAttrToBool(this.productInfo.YandexFeatures[aFeatureName]);
+            cache[aFeatureName] = strutils.xmlAttrToBool(this.productInfo.YandexFeatures[aFeatureName]);
+            return cache[aFeatureName];
         };
     }(),
     expandBrandTemplatesEscape: function PartnerPack_expandBrandTemplatesEscape(aTemplateStr, aParams) {
@@ -309,7 +310,7 @@ const branding = {
     },
     _validateProductInfo: function Branding__validateProductInfo(productInfo) {
         this._logger.debug("Validating product info...");
-        if (!productInfo.BrandID || productInfo.BrandID == "") {
+        if (!productInfo.BrandID || productInfo.BrandID === "") {
             throw new Error("No brand ID");
         }
         if (!productInfo.ProductName1.nom) {
@@ -330,8 +331,7 @@ const branding = {
         this._productInfo = newProductInfo;
         this._brandingDate = responseDate;
         this._application.preferences.set(this._consts.BRAND_TS_PREF_NAME, Math.round(responseDate.getTime() / 1000));
-        this._logger.config("Branding replaced. Notifying listeners...");
-        this._notifyListeners(PKG_UPD_TOPIC, this._package);
+        this._logger.config("Branding replaced.");
     },
     get _vendorData() {
         delete this._vendorData;

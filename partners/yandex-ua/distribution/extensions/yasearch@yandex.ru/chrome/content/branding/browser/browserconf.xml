@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Browser [
+	<!ENTITY % servicesDTD SYSTEM "../services.dtd">
+	%servicesDTD;
+	<!ENTITY % browserconfDTD SYSTEM "browserconf.dtd">
+	%browserconfDTD;
+]>
+
+<Browser xmlns:yb="http://bar.yandex.ru/">
+	<HomePage title="&yandex.label;">&yandex.url;/?clid={clid5}</HomePage>
+	<QuickSearch>
+		<OpenSearchDescription yb:uniqName="yandex" xmlns="http://a9.com/-/spec/opensearch/1.1/">
+			<ShortName>&yandex.label;</ShortName>
+			<Description>&yandex.search.tooltip;</Description>
+			<Url type="text/html" template="&yandex.qs.url;"/>
+			<Url rel="suggestions" type="application/json" template="&yandex.qs.suggestions;"/>
+			<Url rel="search-form" type="text/html" template="&yandex.url;"/>
+			<Url rel="moz-keywordsearch" type="application/x-moz-keywordsearch" template="&yandex.qs.keywordsearch;"/>
+			<Image width="16" height="16">icons/fav-yandex.ico</Image>
+            <Image width="65" height="26">icons/yandex-65x26.png</Image>
+            <Image width="130" height="52">icons/yandex-130x52.png</Image>
+			<InputEncoding>UTF-8</InputEncoding>
+		</OpenSearchDescription>
+	</QuickSearch>
+
+	<LocationBarSearch>
+		<Url>&locationbar.search.url;</Url>
+	</LocationBarSearch>
+
+	<PageContextMenu type="text">
+		<Link label="&yandex.context.label;" url="&yandex.search.url;&amp;clid={clid10}" encoding="utf-8" image="icons/yandex.png" action="11" ie-has-accelerator="true" />
+		<Link label="&lingvo.context.find.label;" url="&lingvo.search.find.url;&amp;clid={clid10}" encoding="utf-8" image="icons/dicts.png" action="620" ie-has-accelerator="true" />
+	</PageContextMenu>
+
+    <PageContextMenu type="image">
+        <Link method-selector="default" label="&yandex.imagesearch.label;" url="http://yandex.ua/images/search?rpt=imageview&amp;cbird=1" encoding="utf-8" image="icons/image-search.png" action="0" ie-has-accelerator="false">
+            <Method type="post">
+                <Field name="upfile64" value="{image.data}"/>
+                <Field name="prg" value="1"/>
+            </Method>
+            <Method type="get">
+                <Field name="img_url" value="{image.url}"/>
+            </Method>
+        </Link>
+    </PageContextMenu>
+</Browser>

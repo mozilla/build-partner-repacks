@@ -1,0 +1,124 @@
+<?xml version='1.0'?>
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl">
+    <binding id="base">
+        <resources>
+            <stylesheet src="controls.css"/>
+        </resources>
+
+        <implementation>
+            <field name="mContainer" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "class", "b-button");]]></field>
+
+            <field name="mButtonLabel" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "class", "b-button__label");]]></field>
+
+            <field name="mClassList" readonly="true"><![CDATA[    let container = this.mContainer;
+    let classPrefix = "b-button_";
+    ({
+        add: function add(name) {
+            return container.classList.add(classPrefix + name);
+        },
+        remove: function remove(name) {
+            return container.classList.remove(classPrefix + name);
+        },
+        contains: function contains(name) {
+            return container.classList.contains(classPrefix + name);
+        }
+    });]]></field>
+
+            <constructor><![CDATA[    switch (this._getIslandsAttribute("type")) {
+    case "pseudo":
+        this.mClassList.add("type_pseudo");
+        break;
+    case "action":
+        this.mClassList.add("type_action");
+    default:
+        this.mClassList.add("type_normal");
+        break;
+    }
+    let size = this._getIslandsAttribute("size");
+    if (size) {
+        this.mClassList.add(size);
+    }
+    this.disabled = this.getAttribute("disabled") === "true";]]></constructor>
+
+            <property name="disabled">
+                <getter><![CDATA[    return this.mClassList.contains("state_disabled");]]></getter>
+
+                <setter><![CDATA[    let disabled = this._disabled;
+    if (val) {
+        this.mClassList.add("state_disabled");
+    } else {
+        this.mClassList.remove("state_disabled");
+    }]]></setter>
+            </property>
+
+            <method name="focus">
+                <body><![CDATA[    this.mButtonLabel.focus();]]></body>
+            </method>
+
+            <method name="blur">
+                <body><![CDATA[    this.mButtonLabel.blur();]]></body>
+            </method>
+
+            <method name="_getIslandsAttribute">
+                <parameter name="aAttributeName"/>
+                <body><![CDATA[    return this.getAttributeNS("http://bar.yandex.ru/ui/islands", aAttributeName);]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="0" event="mousedown"><![CDATA[    this.focus();
+    this.mClassList.add("state_pressed");]]></handler>
+
+            <handler button="0" event="mouseup"><![CDATA[    this.mClassList.remove("state_pressed");]]></handler>
+
+            <handler event="mouseleave"><![CDATA[    this.mClassList.remove("state_pressed");]]></handler>
+
+            <handler event="focus"><![CDATA[    this.mClassList.add("state_focused");]]></handler>
+
+            <handler event="blur"><![CDATA[    this.mClassList.remove("state_focused");]]></handler>
+
+            <handler button="0" event="click"><![CDATA[    if (this.disabled) {
+        return;
+    }
+    this.checked = !this.checked;
+    this.focus();]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="#base" id="button">
+        <content>
+            <html:div class="b-button">
+                <html:button class="b-button__label" xbl:inherits="xbl:text=label,onclick=oncommand"/>
+            </html:div>
+        </content>
+    </binding>
+
+    <binding extends="#base" id="checkbox">
+        <content>
+            <html:div class="b-checkbox">
+                <html:div class="b-button">
+                    <html:button class="b-button__label">&#160;</html:button>
+                </html:div>
+                <html:div class="b-checkbox__label" xbl:inherits="xbl:text=label"/>
+            </html:div>
+        </content>
+
+        <implementation>
+            <constructor><![CDATA[    this.mClassList.add("mode_check");
+    delete this.checked;
+    this.checked = this.getAttribute("checked") === "true";]]></constructor>
+
+            <property name="checked">
+                <getter><![CDATA[    return this.mClassList.contains("state_checked");]]></getter>
+
+                <setter><![CDATA[    if (val) {
+        this.setAttribute("checked", "true");
+        this.mClassList.add("state_checked");
+    } else {
+        this.removeAttribute("checked");
+        this.mClassList.remove("state_checked");
+    }]]></setter>
+            </property>
+        </implementation>
+    </binding>
+</bindings>

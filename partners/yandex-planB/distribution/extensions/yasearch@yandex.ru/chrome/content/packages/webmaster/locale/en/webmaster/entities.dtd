@@ -1,0 +1,21 @@
+﻿<!ENTITY webmaster.name "Yandex.Webmaster">
+<!ENTITY webmaster.tooltip "Yandex.Webmaster – information about your sites">
+<!ENTITY webmaster.update-interval "Update interval">
+<!ENTITY webmaster.hours "hours">
+<!ENTITY webmaster.request-failed "Unfortunately, information about your sites in Yandex.Webmaster could not be obtained">
+<!ENTITY webmaster.in-progress "Performing request...">
+<!ENTITY webmaster.logged-out-tooltip-1 "This allows you to work with your sites in the Yandex.Webmaster service">
+<!ENTITY webmaster.logged-out-tooltip-2 "Please log in">
+<!ENTITY webmaster.nosites1 "You do not currently have a site registered with Yandex.Webmaster">
+<!ENTITY webmaster.nosites2 "Please add your site">
+<!ENTITY webmaster.update "Update information">
+<!ENTITY webmaster.spellcheck "Spellcheck">
+<!ENTITY webmaster.analys "Robots.txt analysis">
+<!ENTITY webmaster.add-url "Add URL">
+<!ENTITY webmaster.region-search "Search in different regions">
+<!ENTITY webmaster.tyc10 "Less than 10">
+<!ENTITY webmaster.content-info "Site content information">
+
+<!ENTITY webmaster.setts.never "Do not update">
+<!ENTITY webmaster.setts.12 "12 hours">
+<!ENTITY webmaster.setts.24 "24 hours">

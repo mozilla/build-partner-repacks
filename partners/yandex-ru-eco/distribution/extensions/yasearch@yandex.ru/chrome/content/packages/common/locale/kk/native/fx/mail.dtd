@@ -1,0 +1,30 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY mail.name "Пошта">
+<!ENTITY mail.tooltiptext "Яндекс.Поштада жаңа хабарлар">
+<!ENTITY mail.noauthtooltiptext "Яндекс.Поштада жаңа хабарлар көрсетеді">
+<!ENTITY mail.tooltip.from "Кімнен:">
+<!ENTITY mail.tooltip.subject "Тақырып:">
+<!ENTITY mail.login.yandex.label "Яндекс.Поштаға кіру">
+<!ENTITY mail.login.mfd.label "Пошта жәшігіне менің доменімде кіру">
+<!ENTITY mail.logout.label "Пошта жәшігімен жұмысты аяқтау">
+<!ENTITY mail.reloadCounter.label "Поштаны тексеру">
+<!ENTITY mail.open.label "Хаттарды оқу">
+<!ENTITY mail.openAdBook.label "Мекенжай кітабын оқу">
+<!ENTITY mail.writeMail.label "Хат жазу">
+<!ENTITY mail.sendPage.label "Бет туралы айту">
+<!ENTITY mail.send.page.label "Ағымдағы бетке сілтемені пошта арқылы жіберу">
+<!ENTITY mail.send.selected.label "Белгіленген мәтінді пошта арқылы жіберу">
+<!ENTITY mail.send.image.label "Бейнеге сілтемені пошта арқылы жіберу">
+<!ENTITY mail.send.accesskey "Ш">
+
+
+
+<!ENTITY mail.uri.open.new.label "Тек қана жаңа хаттары бар бетті ашу">
+<!ENTITY mail.integration.label "Сілтемелерді &#171;mailto:&#187; Яндекс.Поштада ашу">
+<!ENTITY mail.alert.text.label "Жаңа хаттар туралы мәтіндік құлақтандыруларды көрсету">
+<!ENTITY mail.alert.sound.label "Жаңа хаттар туралы дыбыстық құлақтандыруларды ойнату">
+<!ENTITY mail.alert.sound.select.label "Таңдау">
+<!ENTITY mail.alert.sound.preview.label "Тыңдау">
+<!ENTITY mail.openServiceOnClick.label "Батырманы басу кезінде сервис бетін ашу">

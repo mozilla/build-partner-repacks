@@ -1,0 +1,22 @@
+<!ENTITY translate.name "Пераклад слоў">
+
+<!ENTITY translate.button.tooltip_before "Пераклад слоў">
+<!ENTITY translate.button.tooltip_no_dir "Калi ласка, выберыце накірунак пераклада">
+<!ENTITY translate.menu.enable "Уключыць перакладчык слоў">
+<!ENTITY translate.menu.onmouse "Перакладаць па навядзенні курсора">
+<!ENTITY translate.menu.onkey "Перакладаць па спалучэнні клавішаў">
+<!ENTITY translate.menu.source_lang "Мова арыгінала">
+<!ENTITY translate.menu.target_lang "Мова пераклада">
+<!ENTITY translate.linklabel "Знайсці ўсе варыянты">
+
+<!ENTITY translate.settings.translate_on "Перакладаць словы:">
+<!ENTITY translate.settings.radio_hover "па навядзенні курсора">
+<!ENTITY translate.settings.radio_hotkey "па спалучэнні клавішаў">
+<!ENTITY translate.settings.hotkey_value "Спалучэнне клавішаў для перакладу:">
+
+<!ENTITY translate.alt_key "Alt">
+<!ENTITY translate.shift_key "Shift">
+<!ENTITY translate.ctrl_key "Ctrl">
+
+
+<!ENTITY translate.showYandex "http://www.yandex.by">

@@ -41,10 +41,15 @@ const safebrowsing = {
         }
     },
     listUnsafeDomains: function Safebrowsing_listUnsafeDomains(callback) {
-        this._database.execQueryAsync("SELECT domain FROM unsafe_domains", {}, function (rowsData, storageError) {
-            if (storageError)
-                return callback(storageError);
-            callback(null, rowsData.map(row => row.domain));
+        this._database.executeQueryAsync({
+            query: "SELECT domain FROM unsafe_domains",
+            columns: ["domain"],
+            callback: function (rowsData, storageError) {
+                if (storageError) {
+                    return callback(storageError);
+                }
+                callback(null, rowsData.map(row => row.domain));
+            }
         });
     },
     checkUnpinnedDomains: function Safebrowsing_checkUnpinnedDomains(pickupNum, topHistory) {
@@ -52,8 +57,9 @@ const safebrowsing = {
         let domains = {};
         let totalThumbsNum = this._application.layout.getThumbsNum();
         this._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
-            if (thumbData.pinned)
+            if (thumbData.pinned) {
                 return;
+            }
             let host = this._application.fastdial.getDecodedUrlHost(thumbData.source);
             if (host) {
                 domains[host] = 1;
@@ -85,8 +91,9 @@ const safebrowsing = {
         }, 3000);
         xhr.addEventListener("load", function () {
             timer.cancel();
-            if (!xhr.response)
+            if (!xhr.response) {
                 return onFinished();
+            }
             let domains = [];
             let unionParts = [];
             let i = 0;
@@ -106,10 +113,15 @@ const safebrowsing = {
                 return onFinished();
             }
             self._logger.trace("Unsafe domains found: " + JSON.stringify(xhr.response));
-            self._database.execQueryAsync("INSERT OR REPLACE INTO unsafe_domains (domain, insertTimestamp) " + unionParts.join(" UNION "), placeholders, function Safebrowsing_checkDomains_updateDatabase(rowsData, storageError) {
-                if (storageError)
-                    throw new Error(storageError);
-                callback(domains);
+            self._database.executeQueryAsync({
+                query: "INSERT OR REPLACE INTO unsafe_domains (domain, insertTimestamp) " + unionParts.join(" UNION "),
+                parameters: placeholders,
+                callback: function Safebrowsing_checkDomains_updateDatabase(rowsData, storageError) {
+                    if (storageError) {
+                        throw new Error(storageError);
+                    }
+                    callback(domains);
+                }
             });
         });
         xhr.addEventListener("error", onFinished, false);
@@ -117,7 +129,10 @@ const safebrowsing = {
         xhr.send();
     },
     _maintenanceDatabaseOnIdle: function Safebrowsing__maintenanceDatabaseOnIdle() {
-        this._database.execQueryAsync("DELETE FROM unsafe_domains WHERE insertTimestamp < :oldestTime", { oldestTime: Math.round(Date.now() / 1000) - OLDEST_SBA_TIME_SECONDS });
+        this._database.executeQueryAsync({
+            query: "DELETE FROM unsafe_domains WHERE insertTimestamp < :oldestTime",
+            parameters: { oldestTime: Math.round(Date.now() / 1000) - OLDEST_SBA_TIME_SECONDS }
+        });
     },
     _initDatabase: function Fastdial__initDatabase() {
         let dbFile = this._application.core.rootDir;

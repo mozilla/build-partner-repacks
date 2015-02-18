@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="main.css"/>
+        </resources>
+        <content>
+            <xul:tooltip id="id_vk_ttip_auth">
+                <xul:label value="&vk.main.tooltip_auth;"/>
+                <xul:label value="&vk.tooltip.need_auth;"/>
+            </xul:tooltip>
+            <xul:toolbarbutton class="toolbarbutton-1 widget-button" item-command="auth" item-href="home" label="&vk.name;" tooltip="id_vk_ttip_auth" type="button" yb-native-not-authorized="true"/>
+            <xul:toolbarbutton anonid="button-main" class="toolbarbutton-1 widget-button" item-href="home" label="&vk.name;" tooltiptext="&vk.main.tooltip;" type="menu-button">
+                <xul:menupopup>
+                    <xul:menuitem item-command="update" item-param="main" label="&vk.menu.update;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem class="menuitem-iconic" item-href="home" label="&vk.main.menu.mypage;"/>
+                    <xul:menuseparator class="start-optionals"/>
+                    <xul:menuitem anonid="messages" class="menuitem-iconic" item-href="messages" label="&vk.main.menu.msg;"/>
+                    <xul:menuitem anonid="friends" class="menuitem-iconic" item-href="friends" label="&vk.main.menu.friends;"/>
+                    <xul:menuitem anonid="groups" class="menuitem-iconic" item-href="groups" label="&vk.main.menu.groups;"/>
+                    <xul:menuitem anonid="photos" class="menuitem-iconic" item-href="photos" label="&vk.main.menu.photo;"/>
+                    <xul:menuitem anonid="video" class="menuitem-iconic" item-href="video" label="&vk.main.menu.video;"/>
+                    <xul:menuitem anonid="notes" class="menuitem-iconic" item-href="notes" label="&vk.main.menu.notes;"/>
+                    <xul:menuseparator class="end-optionals"/>
+                    <xul:menuitem class="menuitem-iconic" item-href="audio" label="&vk.main.menu.audio;"/>
+                    <xul:menuitem class="menuitem-iconic" item-href="news" label="&vk.main.menu.feed;"/>
+                    <xul:menuitem class="menuitem-iconic" item-href="bookmarks" label="&vk.main.menu.fave;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem class="menuitem-iconic" item-href="applications" label="&vk.main.menu.apps;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem item-command="settings" label="&vk.main.menu.settings;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem item-command="logout" label="&vk.main.menu.logout;"/>
+                </xul:menupopup>
+            </xul:toolbarbutton>
+            <xul:toolbarbutton anonid="button-messages" class="toolbarbutton-1 widget-button" item-href="messages" label="&settings.msg_button;" type="menu-button">
+                <xul:menupopup anonid="mp-messages">
+                    <xul:menuitem item-command="update" item-param="messages" label="&vk.menu.update;"/>
+                    <xul:menuseparator class="start-optionals"/>
+                    <xul:menuseparator anonid="sep-end-messages" class="end-optionals"/>
+                    <xul:menuitem item-href="messages" label="&vk.msg.menu.mymsg;"/>
+                </xul:menupopup>
+            </xul:toolbarbutton>
+            <xul:toolbarbutton anonid="button-friends" class="toolbarbutton-1 widget-button" item-href="friends" label="&settings.friends_button;" type="menu-button">
+                <xul:menupopup anonid="mp-friends">
+                    <xul:menuitem item-command="update" item-param="friends" label="&vk.menu.update;"/>
+                    <xul:menuseparator class="start-optionals"/>
+                    <xul:menuseparator anonid="sep-end-friends" class="end-optionals"/>
+                    <xul:menuitem item-href="friends_new" label="&vk.friend.menu.my_new_friends;"/>
+                    <xul:menuitem item-href="friends" label="&vk.friend.menu.myfriends;"/>
+                </xul:menupopup>
+            </xul:toolbarbutton>
+            <xul:toolbarbutton anonid="button-photos" class="toolbarbutton-1 widget-button" item-href="photos" label="&settings.photo_button;" tooltiptext="&vk.photo.tooltip_empty;" type="button"/>
+            <xul:toolbarbutton anonid="button-video" class="toolbarbutton-1 widget-button" item-href="video" label="&settings.video_button;" tooltiptext="&vk.video.tooltip_empty;" type="button"/>
+            <xul:toolbarbutton anonid="button-groups" class="toolbarbutton-1 widget-button" item-href="groups" label="&settings.groups_button;" tooltiptext="&vk.group.tooltip;" type="button"/>
+            <xul:toolbarbutton anonid="button-notes" class="toolbarbutton-1 widget-button" item-href="notes" label="&settings.notes_button;" tooltiptext="&vk.note.tooltip;" type="button"/>
+        </content>
+
+        <implementation implements="nsISupports, nsIDOMEventListener">
+            <field name="buttons">({ })</field>
+            <field name="menus">({ })</field>
+            <field name="btn_ids">([ "main", "messages", "friends", "photos", "video", "groups", "notes" ])</field>
+
+            <field name="observers"><![CDATA[    ({
+        "showitems": function () {
+            this.showItems();
+            this.updateMainCounter();
+        },
+        "throbber": function (topic, data) {
+            var ids = data ? [data] : this.btn_ids;
+            for (var i = 0; i < ids.length; ++i) {
+                if (this.buttons[ids[i]]) {
+                    this.buttons[ids[i]].setAttribute("throbber", !!data);
+                }
+            }
+        },
+        "display": function () {
+            this.updateView();
+            this.updateMainCounter();
+        },
+        "messages": function () {
+            var data = this.application.getUserData();
+            if (data) {
+                this.updatePopupMenuMsg(data.data);
+                this._updateToolTip(data.data, "messages");
+                this.updateMainCounter();
+            }
+        }
+    });]]></field>
+
+            <constructor><![CDATA[    this.log("constructor");
+    for (var i = 0; i < this.btn_ids.length; ++i) {
+        this.buttons[this.btn_ids[i]] = document.getAnonymousElementByAttribute(this, "anonid", "button-" + this.btn_ids[i]);
+        this.menus[this.btn_ids[i]] = document.getAnonymousElementByAttribute(this, "anonid", this.btn_ids[i]);
+    }
+    this.showItems();
+    this.updateView();
+    this.updateMainCounter();]]></constructor>
+
+            <method name="updateMainCounter">
+                <body><![CDATA[    var ids = this.btn_ids;
+    var fresh = 0, data = this.application.getUserData();
+    if (data) {
+        for (var i = 1; i < ids.length; ++i) {
+            var show = this.application.api.Settings.getValue("display-button-" + ids[i]);
+            fresh = fresh + (show ? 0 : data.data.getCounter(ids[i]) || 0);
+        }
+        var tip = this.application.entities.text("vk.main.tooltip");
+        if (data.data.error) {
+            tip += "\n" + this.application.entities.text("error.update");
+        }
+        this.buttons.main.setAttribute("tooltiptext", tip);
+    }
+    this.buttons.main.setAttribute("counter", fresh || "");]]></body>
+            </method>
+            <method name="_updateToolTip">
+                <parameter name="data"/>
+                <parameter name="id"/>
+                <body><![CDATA[    var isCounters = data.counterIds.indexOf(id) >= 0;
+    if (!isCounters) {
+        return;
+    }
+    var map = {
+        messages: "msg",
+        friends: "friend"
+    };
+    var ents = this.application.entities;
+    var tid = map[id] || id;
+    if (data.error) {
+        var empty = ents.text("vk." + tid + ".tooltip_empty");
+        if (empty) {
+            this.buttons[id].setAttribute("tooltiptext", empty + "\n" + ents.text("error.update"));
+        }
+        return;
+    }
+    var counter = data.getCounter(id);
+    if (counter) {
+        var tpl = this.common.strUtils.plural(counter, ents.text("vk." + tid + ".tooltip"));
+        this.buttons[id].setAttribute("tooltiptext", tpl.replace("\\d", data.counters[id]));
+    } else {
+        var empty = ents.text("vk." + tid + ".tooltip_empty");
+        if (empty) {
+            this.buttons[id].setAttribute("tooltiptext", empty);
+        }
+    }]]></body>
+            </method>
+
+            <method name="updateView">
+                <body><![CDATA[    var data = this.application.getUserData();
+    this.setAttribute("auth", !!data);
+    if (data) {
+        var user = data.user;
+        data = data.data;
+        var ids = this.btn_ids;
+        for (var i = 1; i < ids.length; ++i) {
+            var counter = data.getCounter(ids[i]) || "";
+            this.buttons[ids[i]].setAttribute("counter", counter);
+            this.setMenuitemCounter(ids[i], counter);
+            this._updateToolTip(data, ids[i]);
+        }
+        this.updatePopupMenuMsg(data);
+        this.updatePopupMenu("friends", !data.expired && data.friends, function (user) {
+            return {
+                "label": user._profile.name,
+                "item-href": "user",
+                "item-param": user.user_id
+            };
+        });
+    }]]></body>
+            </method>
+
+            <method name="updatePopupMenuMsg">
+                <parameter name="data"/>
+                <body><![CDATA[    var counter = data.getCounter("messages") || "";
+    this.buttons.messages.setAttribute("counter", counter);
+    this.setMenuitemCounter("messages", counter);
+    this.updatePopupMenu("messages", data.getValue("messages"), function (dlg) {
+        var label = dlg.message._profile.name + (dlg.message.title ? " (" + dlg.message.title + ")" : "") + ": " + this.application.getMsgText(dlg.message);
+        return {
+            "label": label,
+            "item-href": "thread",
+            "item-param": dlg._tid
+        };
+    });]]></body>
+            </method>
+
+            <method name="updatePopupMenu">
+                <parameter name="id"/>
+                <parameter name="items"/>
+                <parameter name="func"/>
+                <body><![CDATA[    var menu = document.getAnonymousElementByAttribute(this, "anonid", "mp-" + id), sep = document.getAnonymousElementByAttribute(this, "anonid", "sep-end-" + id);
+    while (!/start-optionals/.test(sep.previousSibling.className)) {
+        menu.removeChild(sep.previousSibling);
+    }
+    if (items) {
+        for (i = 0; i < items.length; ++i) {
+            var conf = func.call(this, items[i]);
+            if (conf) {
+                menu.insertBefore(this.createNode(null, "menuitem", conf), sep);
+            }
+        }
+    }]]></body>
+            </method>
+
+            <method name="showItems">
+                <body><![CDATA[    var ids = this.btn_ids;
+    for (var i = 1; i < ids.length; ++i) {
+        var show = this.application.api.Settings.getValue("display-button-" + ids[i]);
+        this.buttons[ids[i]].setAttribute("hidden", !show);
+        this.menus[ids[i]].setAttribute("hidden", show);
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

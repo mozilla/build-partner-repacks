@@ -1,0 +1,142 @@
+<!--Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY app.name "{product1.nom}">
+<!--Надпись на кнопке поиска-->
+<!ENTITY app.searchButtonTitle "Search">
+<!ENTITY bookmarks.otherBookmarks "Other bookmarks">
+<!ENTITY footer.apps "Apps">
+<!ENTITY footer.bookmarks "Bookmarks">
+<!ENTITY footer.closedTabs "Closed tabs">
+<!ENTITY footer.downloads "Downloads">
+<!ENTITY footer.history "History">
+<!ENTITY settings "Settings">
+<!--Фоновое изображение-->
+<!ENTITY settings.backgroundImage "Background">
+<!ENTITY settings.cancel "Cancel">
+<!--Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY settings.copyright "{branding}">
+<!ENTITY settings.layoutX "horizontally">
+<!ENTITY settings.layoutY "vertically">
+<!--URL-страница лицензионного соглашения. Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY settings.licenseAgreement.link "{branding}">
+<!ENTITY settings.licenseAgreement.title "License Agreement">
+<!ENTITY settings.releaseDate "release date">
+<!ENTITY settings.save "Save">
+<!ENTITY settings.sendstat "Help us improve Yandex services by sharing anonymous browser usage data">
+<!ENTITY settings.showBookmarksPanel "Show bookmarks panel">
+<!ENTITY settings.thumbsNum "Number of bookmarks">
+<!--Надпись, отображающася в пустом поле ввода названия страницы-->
+<!ENTITY settings.titleInput.placeholder "Enter the page name">
+<!--Надпись, отображающася в пустом поле ввода URL-адреса страницы-->
+<!ENTITY settings.urlInput.placeholder "Enter the page address">
+
+<!ENTITY app.searchExampleTitle "For example">
+<!ENTITY settings.upload "Upload">
+<!ENTITY app.editThumb "options">
+<!ENTITY app.empty "Empty">
+<!ENTITY app.pinThumb "pin">
+<!ENTITY app.removeThumb "remove">
+<!ENTITY app.unpinThumb "unpin">
+<!ENTITY settings.isHomePage "{product1.nom} is your current home page">
+<!ENTITY settings.setAsHomePage "Set as homepage ">
+<!ENTITY app.searchTutorial.description "You can search Yandex and enter website URLs here.">
+<!ENTITY app.searchTutorial.example "the capital of Congo">
+<!ENTITY app.searchTutorial.thanks "OK">
+<!ENTITY settings.showSearchForm "Show search bar">
+<!ENTITY app.confirmRemoveThumb "Would you like to delete this bookmark?">
+<!ENTITY sync.advertText "Your Visual Bookmarks, favorite sites&#160;and passwords will all be available on different computers&#160;— for example, at&#160;home&#160;and at&#160;work.">
+<!ENTITY sync.closeAdvert "Close">
+<!ENTITY sync.enable "Enable syncing">
+<!ENTITY sync.enabled "Syncing turned on">
+<!ENTITY sync.outdated "Authorization outdated">
+<!ENTITY sync.repair "Fix">
+<!ENTITY settings.collapsed "More settings">
+
+<!ENTITY sync.offerText "You are already using synchronization, but are not synchronizing Visual Bookmarks. Do you want to synchronize them? [Yes, I want to](url)">
+<!ENTITY footer.apps.missing "There are no apps">
+<!ENTITY modalStat.accept "Allow">
+<!ENTITY modalStat.cancel "Cancel">
+<!ENTITY modalStat.header "Allow {vendor.dat} to receive statistics on browser usage">
+<!ENTITY modalStat.moreInfoText "More information">
+<!ENTITY modalStat.moreInfoLink "http://legal.yandex.com/confidential/">
+<!ENTITY modalStat.text "It does not touch your personal data or affect your browser&#39;s operation. {vendor.nom} uses this information to improve its services.">
+<!ENTITY sync.settings "Sync settings">
+<!ENTITY sync.turnOn "Enable">
+<!ENTITY sync.vbDisabled "Syncing Visual Bookmarks has been disabled">
+<!ENTITY sync.vbEnabled "Syncing Visual Bookmarks has been enabled">
+<!ENTITY dialog.cancel "Cancel">
+<!ENTITY dialog.ok "OK">
+<!ENTITY modal.cancel "Cancel">
+<!ENTITY modal.ok "OK">
+<!ENTITY dialog.no "No">
+<!ENTITY dialog.yes "Yes">
+<!ENTITY app.closedWindow "Closed window">
+<!ENTITY app.noInternet "No connection with the server. Please try again later.">
+<!ENTITY settings.showSites "Bookmarks view">
+<!ENTITY settings.thumbStyle.logosAndScreenshots "Logos and screenshots">
+<!ENTITY settings.thumbStyle.logosAndTitles "Logos and titles">
+<!ENTITY settings.thumbStyle.screenshots "Screenshots">
+<!ENTITY contextmenu.addThumb "Add bookmark">
+<!ENTITY contextmenu.editThumb "Bookmark settings">
+<!ENTITY contextmenu.openSettings "Change background of Visual Bookmarks">
+<!ENTITY contextmenu.pinThumb "Pin bookmark">
+<!ENTITY contextmenu.removeThumb "Delete bookmark">
+<!ENTITY contextmenu.unpinThumb "Unpin bookmark">
+<!ENTITY app.newBackgroundsAdvert "Try new backgrounds">
+<!ENTITY settings.otherSoft "Other Yandex programs">
+<!ENTITY settings.showAdvertisement "Show contextual ads in Visual Bookmarks">
+<!ENTITY app.sync "Syncing">
+<!ENTITY advertisement.yandexBrowser.docs "Open documents right in Yandex.Browser">
+<!ENTITY advertisement.yandexBrowser.downloads "Download">
+<!ENTITY advertisement.yandexBrowser.open "Open Yandex.Browser">
+<!ENTITY advertisement.yandexBrowser.updated "Try the updated Yandex.Browser">
+<!ENTITY app.setBackgroundsAdvert "You can change the background in settings">
+<!ENTITY auth.addUser "Switch user">
+<!ENTITY auth.passport "Passport">
+<!ENTITY auth.signin "Sign in">
+<!ENTITY auth.signout "Sign out">
+<!ENTITY auth.tune "{vendor.gen} settings">
+<!ENTITY settings.editTitle "Edit description">
+<!ENTITY settings.lastVisited "Recently visited">
+<!ENTITY settings.popularSites "Popular">
+<!ENTITY newyear.18.12.2014.button "Посмотреть">
+<!ENTITY newyear.18.12.2014.text "Текст про новый год">
+<!ENTITY newyear.19.12.2014.button "Показать">
+<!ENTITY newyear.19.12.2014.text "Текст про новый год. Второй день.">
+<!ENTITY newyear.20.12.2014.button "Скачать">
+<!ENTITY newyear.20.12.2014.text "Текст про новый год. Третий день.">
+<!ENTITY newyear.21.12.2014.button "Купить">
+<!ENTITY newyear.21.12.2014.text "Текст про новый год. Четвертый день.">
+<!ENTITY newyear.22.12.2014.button "Установить">
+<!ENTITY newyear.22.12.2014.text "Текст про новый год. Пятый день.">
+<!ENTITY newyear.23.12.2014.button "Попробовать">
+<!ENTITY newyear.23.12.2014.text "Текст про новый год. Шестой день.">
+<!ENTITY newyear.24.12.2014.button "Посмотреть">
+<!ENTITY newyear.24.12.2014.text "Текст про новый год. Седьмой день.">
+<!ENTITY newyear.25.12.2014.button "Посмотреть">
+<!ENTITY newyear.25.12.2014.text "Текст про новый год. Восьмой день.">
+<!ENTITY newyear.26.12.2014.button "Посмотреть">
+<!ENTITY newyear.26.12.2014.text "Текст про новый год. Девятый день.">
+<!ENTITY newyear.27.12.2014.button "Посмотреть">
+<!ENTITY newyear.27.12.2014.text "Текст про новый год. Десятый день.">
+<!ENTITY newyear.28.12.2014.button "Посмотреть">
+<!ENTITY newyear.28.12.2014.text "Текст про новый год. Одиннадцатый день.">
+<!ENTITY newyear.29.12.2014.button "Посмотреть">
+<!ENTITY newyear.29.12.2014.text "Текст про новый год. Двенадцатый день.">
+<!ENTITY newyear.30.12.2014.button "Посмотреть">
+<!ENTITY newyear.30.12.2014.text "Текст про новый год. Тринадцатый день.">
+<!ENTITY newyear.31.12.2014.button "Посмотреть">
+<!ENTITY newyear.31.12.2014.text "Текст про новый год. Четырнадцатый день.">
+<!ENTITY newyear.18.12.2014.header "До Нового года осталось 14 дней">
+<!ENTITY newyear.19.12.2014.header "До Нового года осталось 13 дней">
+<!ENTITY newyear.20.12.2014.header "До Нового года осталось 12 дней">
+<!ENTITY newyear.21.12.2014.header "До Нового года осталось 11 дней">
+<!ENTITY newyear.22.12.2014.header "До Нового года осталось 10 дней">
+<!ENTITY newyear.23.12.2014.header "До Нового года осталось 9 дней">
+<!ENTITY newyear.24.12.2014.header "До Нового года осталось 8 дней">
+<!ENTITY newyear.25.12.2014.header "До Нового года осталось 7 дней">
+<!ENTITY newyear.26.12.2014.header "До Нового года осталось 6 дней">
+<!ENTITY newyear.27.12.2014.header "До Нового года осталось 5 дней">
+<!ENTITY newyear.28.12.2014.header "До Нового года осталось 4 дня">
+<!ENTITY newyear.29.12.2014.header "До Нового года осталось 3 дня">
+<!ENTITY newyear.30.12.2014.header "До Нового года осталось 2 дня">
+<!ENTITY newyear.31.12.2014.header "До Нового года остался 1 день">

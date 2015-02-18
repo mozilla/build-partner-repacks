@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget [
+<!ENTITY % widget SYSTEM "/native/fx/mail.dtd">
+%widget;
+<!ENTITY % package SYSTEM "/native/fx/package.dtd">
+%package;
+]>
+
+<widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/native/fx/mail/icons/mail.svg" name="&mail.name;" unique="true">
+
+    <f:setting default="false" name="openMailPageOnClick" scope="widget">
+        <control label="&mail.openServiceOnClick.label;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="true" name="mailToIntegration" scope="widget">
+        <control label="&mail.integration.label;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="true" name="integrationHelperAlert" scope="widget">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting default="true" name="showTextAlert" scope="widget">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting name="lastDate" scope="widget">
+        <control type="custom"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="/native/fx/mail/module.jsm"/>
+    </modules>
+</widget>

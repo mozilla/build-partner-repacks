@@ -40,7 +40,7 @@ function defer(prototype) {
                             deferred.resolve(rejected(reason));
                         }
                     } catch (e) {
-                        deferred.resolve(rejected(error));
+                        deferred.resolve(rejected(e));
                     }
                 }
                 if (observers) {
@@ -105,9 +105,45 @@ let promised = function promise_promised() {
         };
     };
 }();
+function all(promises) {
+    let res = defer();
+    if (!promises) {
+        res.reject(new TypeError("Not enough arguments"));
+        return res;
+    }
+    if (promises.length === 0) {
+        res.resolve(promises);
+        return res;
+    }
+    let countDown = promises.length;
+    promises.forEach(function (promise, index) {
+        promise.then(function (value) {
+            promises[index] = value;
+            countDown--;
+            if (countDown === 0) {
+                res.resolve(promises);
+            }
+        }, function (reason) {
+            res.reject(reason);
+        });
+    });
+    return res;
+}
+function race(promises) {
+    let res = defer();
+    if (!promises || !promises.length) {
+        return res;
+    }
+    promises.forEach(function (promise) {
+        promise.then(res.resolve, res.reject);
+    });
+    return res;
+}
 const promise = {
     defer: defer,
     resolve: resolve,
     reject: reject,
-    promised: promised
+    promised: promised,
+    all: all,
+    race: race
 };

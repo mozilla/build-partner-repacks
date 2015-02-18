@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <title locale-content="hotmail.loginform.title"></title>
+        <link rel="stylesheet" href="style/login.css" />
+        <script type="text/javascript" src="js/commons.js"></script>
+        <script type="text/javascript" src="js/LoginPage.js"></script>
+        <script type="text/javascript" src="js/Locale.js"></script>
+        <script type="text/javascript">
+            (function () {
+                var loader = function () {
+                    window._locale = new Locale("/hotmail.dtd");
+                    window._locale.localizeTree();
+                    window.loginPage = new LoginPage();
+                };
+
+                document.addEventListener && document.addEventListener("DOMContentLoaded", loader, false);
+                window.attachEvent && window.attachEvent("onload", loader);
+            }());
+        </script>
+    </head>
+    <body>
+        <div id="content-wrapper">
+            <div id="content">
+                <div id="login-form">
+                    <div class="field">
+                        <div class="field-title">Windows Live ID:</div>
+                        <div class="field-input">
+                            <input id="login-input" type="text" class="text" placeholder="example555@hotmail.com">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="field-title" locale-content="hotmail.loginform.password"></div>
+                        <div class="field-input">
+                            <input id="password-input" type="password" class="text">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="field-input">
+                            <input type="checkbox" id="store-passwd" checked="checked">
+                            <label for="store-passwd" locale-content="hotmail.loginform.save-password"></label>
+                        </div>
+                    </div>
+                    <div id="error-message"></div>
+                    <div class="buttons">
+                        <input type="button" id="submit-button" locale-content="hotmail.loginform.sign-in">
+                        <input type="button" id="cancel-button" locale-content="hotmail.loginform.cancel" do-not-lock="do-not-lock">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,44 @@
+@namespace xul url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace url(http://www.w3.org/1999/xhtml);xul|tooltip{-moz-appearance:none!important;background:transparent!important;border:0;margin:0!important;padding:0!important;-moz-box-sizing:content-box}
+xul|tooltip[yaIsLinux=true]{border-width:1px;border-style:solid;border-color:transparent}
+xul|tooltip xul|vbox[anonid=outer-container]{display:block;position:relative;max-height:100%;padding-top:10px;padding-bottom:7px;-moz-box-sizing:content-box}
+xul|tooltip div.border{background-color:#fff!important;position:relative;padding:0 0 1em!important}
+xul|tooltip div.user-action-panel{position:relative;margin-top:-1px}
+div.user-action-panel .helper{background:0 0;background-image:linear-gradient(to top,#fff,rgba(255,255,255,0));position:absolute;bottom:100%;width:100%;height:1em;z-index:10}
+xul|tooltip div.user-action-panel>div{background-color:#fff;padding-top:.5em}
+xul|tooltip div.border,xul|tooltip div.user-action-panel{border:solid #dbdbdb!important;border-width:0 1px!important}
+xul|tooltip div.border>table{border:0!important;margin:0;padding:0;min-width:200px;max-width:400px}
+xul|tooltip div.border>table td{padding:0;vertical-align:top!important}
+xul|tooltip div.border>table td.translations{margin:0;padding:0;width:100%}
+xul|tooltip div.border>table td.translations>ul{margin:0 30px 0 0!important;padding-left:.6em!important;list-style-type:none!important}
+xul|tooltip div.border>table td.translations>ul ul{margin:0;padding:0;list-style-type:none!important}
+xul|tooltip div.border>table td.translations>ul>li:not(:last-of-type){margin-bottom:.8em!important}
+xul|tooltip div.border>table td.translations>ul ul li{font:13px/18px Arial,sans-serif!important;color:#666}
+xul|tooltip div.border>table td.translations>ul ul li span{font:italic 11px/18px Verdana,sans-serif!important;margin-left:.8em!important;color:#ee6d59}
+xul|tooltip div.border>table td.translations>ul ul li:first-child{font-size:15px!important;font-weight:700!important;color:#000}
+xul|tooltip div.border>table td.translations>ul ul li:first-child span{color:#b2b2b2}
+xul|tooltip div.border div.slovari-icon{background:rgba(255,255,255,.95);position:absolute;top:0;right:10px;white-space:nowrap}
+xul|tooltip div.scrollable div.slovari-icon{margin-right:20px}
+xul|tooltip div.border div.slovari-icon.hidden{visibility:hidden}
+xul|tooltip div.border div.slovari-icon a{color:#7CA8D5;font:1em/1.3333em Verdana,sans-serif;display:none;margin-right:.6em;padding-left:.6em;cursor:pointer;text-decoration:none;vertical-align:middle}
+xul|tooltip div.border div.slovari-icon:hover a{display:inline-block}
+xul|tooltip div.border div.slovari-icon div{background:url(/native/fx/translator/icons/slovari-logo.png) 50% 50% no-repeat;display:inline-block;width:16px;height:16px;cursor:pointer;vertical-align:middle}
+xul|tooltip .user-action-panel div.langs{background:#fff!important;margin-left:.6em;float:left;z-index:2}
+xul|tooltip .user-action-panel div.langs span{color:#7ca8d5;font:italic 11px/1.2em Verdana,sans-serif;margin-left:.4545em;padding-left:.4545em;padding-right:.1818em;cursor:pointer}
+xul|tooltip .user-action-panel div.langs span:first-child{margin-left:0;padding-left:0}
+xul|tooltip .user-action-panel div.langs span.active{color:#000;cursor:default}
+xul|tooltip .user-action-panel div.settings{background:url(/native/fx/translator/icons/settings.png) 50% 50% no-repeat;float:right;min-height:15px;width:30px;height:1.2em;margin-top:.1em;opacity:.2;cursor:pointer;z-index:3}
+xul|tooltip .user-action-panel div.settings:hover{opacity:1}
+.scroll-box{position:relative;overflow:hidden!important;-moz-box-sizing:border-box}
+.scroll-box_box{background:0 0;position:relative!important;height:100%!important;overflow:hidden!important;overflow-y:auto!important;z-index:2;-moz-box-sizing:border-box}
+.scroll-box_content{position:relative;overflow:hidden;-moz-box-sizing:border-box}
+.scroll-box_bar{background:#e6eaec;border-style:solid;border-width:1px 0 1px 2px;border-left-color:#e0e2e5;border-top-color:#c5e0ca;border-bottom-color:#caced8;display:none;position:absolute;top:6px;right:6px;width:9px;margin-right:1px;padding:0 2px 0 0;opacity:.65;cursor:pointer;border-radius:5px;-moz-box-sizing:border-box}
+.scroll-box_bar:hover{opacity:1}
+.scroll-box_bardrag{background:#b8bbbc;position:relative;border-radius:2px}
+.scroll-box_bardragtop,.scroll-box_bardragbottom{position:absolute;left:0;width:5px;height:1px}
+.scroll-box_bardragtop{top:0}
+.scroll-box_bardragbottom{bottom:0}
+xul|tooltip xul|hbox.helper{background:#fff;border:1px solid #dbdbdb;display:block;position:absolute;width:100%;height:10px}
+xul|tooltip xul|hbox.helper.top{border-bottom-width:0;top:0;border-radius:4px 4px 0 0}
+xul|tooltip xul|hbox.helper.bottom{border-top-width:0;bottom:0!important;height:7px;border-radius:0 0 4px 4px}
+.clearfix:before,.clearfix:after{content:".";display:block;height:0;overflow:hidden}
+.clearfix:after{clear:both}

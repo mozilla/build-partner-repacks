@@ -1,0 +1,152 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="../../../../skin/dialogs/license/wizard.css"?>
+<?xml-stylesheet href="../../bindings/islands/islands.css"?>
+
+<!DOCTYPE dialog [
+<!ENTITY % licenseDialogDTD SYSTEM "../../../../locale/dialogs/license/wizard.dtd">
+%licenseDialogDTD;
+<!ENTITY % appDTD SYSTEM "../../bar.dtd">
+%appDTD;
+<!ENTITY % brandNames SYSTEM "yafd://plus.branding/names.dtd">
+%brandNames;
+]>
+
+<dialog hidechrome="true" xmlns:html="http://www.w3.org/1999/xhtml" id="&app.name;-license-wizard" xmlns:islands="http://bar.yandex.ru/ui/islands" ondialogaccept="return LicenseWizard.onAccept();" ondialogcancel="return LicenseWizard.onCancel();" title="&product1.nom; &#8212; &setup.ok.label;" windowtype="&app.name;:LicenseDialog" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <deck id="dialog-deck" selectedIndex="0">
+        <hbox id="options-box">
+            <vbox>
+                <image id="logo-image" src="yafd://branding/about/logo-fx-large.png"/>
+            </vbox>
+            <vbox flex="1">
+                <hbox>
+                    <html:h3>&product1.nom; &#8212;<html:br/>&setup.ok.label;</html:h3>
+                    <hbox align="start" flex="1" pack="end">
+                        <image id="vendor-image" src="yafd://branding/fastdial/logo.png"/>
+                    </hbox>
+                </hbox>
+
+                <html:p>&license.confirm.text.1;
+                    <html:a hef="#" onclick="LicenseWizard.showLicense(); return false;">&license.confirm.text.2;</html:a>
+                </html:p>
+
+                <vbox id="options-groupbox">
+                    <islands:checkbox checked="false" id="default-search"/>
+                    <islands:checkbox checked="false" id="default-homepage"/>
+                    <islands:checkbox checked="false" id="usage-stat"/>
+                </vbox>
+
+                <hbox>
+                    <islands:button id="apply-button" label="&button.accept;" oncommand="document.documentElement.acceptDialog();" islands:size="L" islands:type="action"/>
+                    <islands:button id="cancel-button" label="&button.cancel;" oncommand="document.documentElement.cancelDialog();" islands:size="L" islands:type="pseudo"/>
+                </hbox>
+            </vbox>
+        </hbox>
+        <hbox id="license-box">
+            <vbox flex="1">
+                <html:iframe id="license-frame-object" style="display: block; -moz-box-flex: 1;"/>
+                <hbox pack="end">
+                    <islands:button label="&button.close;" oncommand="document.getElementById('dialog-deck').selectedIndex = 0;" islands:size="S" islands:type="action"/>
+                </hbox>
+            </vbox>
+        </hbox>
+    </deck>
+
+    <script type="application/x-javascript"><![CDATA[
+        let [osName, setupData] = window.arguments[0].wrappedJSObject;
+
+        const LicenseWizard = {
+            onLoad: function LicenseWizard_onLoad() {
+                let homePageCheckbox = document.getElementById('default-homepage');
+                homePageCheckbox.checked = setupData.HomePage.checked;
+                homePageCheckbox.setAttribute('label', setupData.HomePage.text);
+                homePageCheckbox.hidden = !setupData.HomePage.display;
+
+                let defaultSearchCheckbox = document.getElementById('default-search');
+                defaultSearchCheckbox.hidden = !setupData.DefaultSearch.display;
+                defaultSearchCheckbox.checked = setupData.DefaultSearch.checked;
+                defaultSearchCheckbox.setAttribute('label', setupData.DefaultSearch.text);
+
+                let usageStatCheckbox = document.getElementById('usage-stat');
+                usageStatCheckbox.hidden = !setupData.UsageStat.display;
+                usageStatCheckbox.checked = setupData.UsageStat.checked;
+                usageStatCheckbox.setAttribute('label', setupData.UsageStat.text);
+
+                document.getElementById('options-groupbox').hidden =
+                    homePageCheckbox.hidden
+                    && defaultSearchCheckbox.hidden
+                    && usageStatCheckbox.hidden;
+
+                document.getElementById('apply-button').focus();
+            },
+
+            onAccept: function LicenseWizard_onAccept() {
+                try {
+                    setupData.License.checked = true;
+
+                    setupData.HomePage.checked = document.getElementById('default-homepage').checked;
+                    setupData.DefaultSearch.checked = document.getElementById('default-search').checked;
+                    setupData.UsageStat.checked = document.getElementById('usage-stat').checked;
+                } catch (e) {}
+
+                return true;
+            },
+
+            onCancel: function LicenseWizard_onCancel() {
+                try {
+                    let dialogDeck = document.getElementById('dialog-deck');
+                    if (dialogDeck.selectedIndex === 1) {
+                        dialogDeck.selectedIndex = 0;
+
+                        if (dialogDeck.selectedIndex === 0) {
+                            return false;
+                        }
+                    }
+
+                    setupData.License.checked = false;
+
+                    [
+                        'HomePage',
+                        'DefaultSearch',
+                        'UsageStat'
+                    ].forEach(function (dataType) {
+                        if (setupData[dataType].display) {
+                            setupData[dataType].checked = false;
+                        }
+                    });
+                } catch (e) {}
+
+                return true;
+            },
+
+            showLicense: function LicenseWizard_showLicense() {
+                document.getElementById('license-frame-object').setAttribute('src', setupData.License.url);
+                document.getElementById('dialog-deck').selectedIndex = 1;
+            }
+        };
+
+        window.addEventListener('load', function loadEventListener(aLoadEvent) {
+            aLoadEvent.currentTarget.removeEventListener('load', loadEventListener, false);
+            LicenseWizard.onLoad();
+        }, false);
+
+        // win:
+        //   *     { shadow: true,     transparent: true  }
+        // lin
+        //   *     { shadow: false,    transparent: false }
+        // mac
+        //   *     { shadow: false,    transparent: true  }
+
+        let shadow = false;
+        let transparent = true;
+
+        if (osName == 'windows') {
+            shadow = true;
+        } else if (osName == 'linux') {
+            transparent = false;
+        }
+
+        document.documentElement.setAttribute('style', 'background: none !important'); // BAR-7526
+        document.documentElement.setAttribute('ex-shadow', shadow);
+        document.documentElement.setAttribute('ex-transparent', transparent);
+    ]]></script>
+</dialog>

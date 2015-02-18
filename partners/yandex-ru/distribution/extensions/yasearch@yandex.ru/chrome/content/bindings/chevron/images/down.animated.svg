@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 14 14" height="14" width="14">
+
+    <!-- from pattern.svg, inlined for Fx20 -->
+    <symbol id="arrow">
+        <path d="M 3 5 L 4 5 L 4 6 L 5 6 L 5 7 L 6 7 L 6 8 L 7 6 L 8 6 L 8 5 L 9 5"
+              stroke="#7d8a94" stroke-width="1"
+              fill="none"/>
+    </symbol>
+
+    <defs>
+        <filter height="200%" width="200%" id="dropshadow">
+            <feOffset result="offsetOut" in="SourceGraphic" dx="0" dy="1"/>
+            <feColorMatrix result="matrixOut" in="offsetOut" type="matrix" values="0.3 0 0 0 0, 0 0.3 0 0 0, 0 0 0.3 0 0, 0 0 0 1 0"/>
+            <feGaussianBlur result="blurOut" in="matrixOut" stdDeviation="1"/>
+            <feBlend in="SourceGraphic" in2="blurOut"/>
+        </filter>
+    </defs>
+
+    <g transform="translate(1, 0)">
+        <circle cx="6" cy="6" r="6" fill="white" id="circle" filter="#dropshadow"/>
+        <use xlink:href="#arrow"/>
+    </g>
+
+    <animate xlink:href="#circle" attributeName="fill" type="XML" begin="0s" dur="1s" to="#fea100" fill="freeze" restart="whenNotActive"/>
+    <animate xlink:href="#circle" attributeName="fill" type="XML" begin="1s" dur="1s" to="white" fill="freeze" restart="whenNotActive"/>
+</svg>

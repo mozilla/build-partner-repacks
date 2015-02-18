@@ -1,0 +1,54 @@
+<!ENTITY widget.name "Аднакласнікі">
+<!ENTITY widget.window.title "Аднакласнікі">
+<!ENTITY widget.tooltip.messages "Новыя паведамленні на Аднакласніках">
+<!ENTITY widget.tooltip.notifications "Апавяшчэнні на Аднакласніках">
+<!ENTITY widget.tooltip.guests "Госці на Аднакласніках">
+<!ENTITY widget.tooltip.marks "Ацэнкі фотаздымкаў на Аднакласніках">
+<!ENTITY widget.tooltip.bd "Сябры на Аднакласніках">
+<!ENTITY widget.tooltip.bd-hd "Дні нараджэння сяброў на Аднакласніках">
+<!ENTITY widget.tooltip.no-auth1 "Паказвае новыя падзеі на Аднакласніках">
+<!ENTITY widget.tooltip.no-auth2 "Калі ласка, аўтарызуйцеся">
+<!ENTITY widget.menuitem.update "Абнавіць інфармацыю">
+<!ENTITY widget.menuitem.home "Перайсці на Аднакласнікі">
+<!ENTITY widget.menuitem.messages-follow "Перайсці да паведамленняў">
+<!ENTITY widget.menuitem.notifications-follow "Перайсці да апавяшчэнняў">
+<!ENTITY widget.menuitem.guests-follow "Перайсці да гасцей">
+<!ENTITY widget.menuitem.marks-follow "Перайсці да ацэнкі фотаздымкаў">
+<!ENTITY widget.menuitem.messages "Паведамленні">
+<!ENTITY widget.menuitem.notifications "Апавяшчэнні">
+<!ENTITY widget.menuitem.guests "Госці">
+<!ENTITY widget.menuitem.marks "Ацэнкі фотаздымкаў">
+<!ENTITY widget.menuitem.bd "Сябры">
+<!ENTITY widget.menuitem.bd2 "Дні нараджэння сяброў">
+<!ENTITY widget.menuitem.bd-hd "Святы сяброў">
+<!ENTITY widget.menuitem.bd-follow "Перайсці да сяброў">
+<!ENTITY widget.menuitem.bd-hd-follow "Перайсці да святаў сяброў">
+<!ENTITY widget.menuitem.settings "Наладкі">
+<!ENTITY widget.menuitem.quit "Выйсці з Аднакласнікаў">
+<!ENTITY settings.update-interval-label "Інтэрвал абнаўлення">
+<!ENTITY settings.update-interval-min "хв.">
+<!ENTITY settings.show-messages "Паказваць кнопку «Паведамленні»">
+<!ENTITY settings.show-notifications "Паказваць кнопку «Апавяшчэнні»">
+<!ENTITY settings.show-guests "Паказваць кнопку «Госці»">
+<!ENTITY settings.show-marks "Паказваць кнопку «Адзнакі»">
+<!ENTITY settings.show-bd "Паказваць кнопку «Дні нараджэння»">
+
+<!ENTITY widget.info.age "{N} год;{N} гады;{N} гадоў">
+<!ENTITY widget.info.months "студзеня,лютага,сакавіка,красавіка,траўня,чэрвеня,ліпеня,жніўня,верасня,кастрычніка,лістапада,снежня">
+<!ENTITY error.connect "Калі ласка, праверце сеціўнае злучэнне">
+<!ENTITY error.data "Дадзеныя з Аднакласнікаў не атрыманыя">
+<!ENTITY error.update "Памылка абнаўлення даных">
+<!ENTITY error.auth "Не атрымалася аўтарызавацца">
+<!ENTITY error.auth.net "Не атрымалася падключыцца да сервера Аднакласникаў для аўтарызацыі">
+<!ENTITY settings.show-friends "Паказваць кнопку «Сябры»">
+<!ENTITY settings.show_notifications "Паказваць апавяшчэнні">
+<!ENTITY widget.info.marks "1 бал,2 балы,3 балы,4 балы,5 балаў">
+<!ENTITY widget.main_tooltip.marks "Адзнакі">
+<!ENTITY widget.main_tooltip.new-messages "Новыя паведамленні">
+<!ENTITY widget.tooltip.noauth "Паказвае новыя падзеі на Аднакласніках&#13;Калі ласка, аўтарызуйцеся">
+<!ENTITY widget.tooltip.nodata "Звесткі з Аднакласнікаў не атрыманыя&#13;Калі ласка, праверце сеціўнае злучэнне">
+<!ENTITY widget.tooltip.update.fail "&#13;Памылка абнаўленння звестак">
+<!ENTITY notify.comments "{N} новы каментарый;{N} новыя каментарыі;{N} новых каментарыяў">
+<!ENTITY notify.messages "{N} новае паведамленне;{N} новыя паведамленні;{N} новых паведамленняў">
+<!ENTITY notify.messages_file "Адаслаў вам паведамленне">
+<!ENTITY notify.messages_file_f "Адаслала вам паведамленне">

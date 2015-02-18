@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Omnibox [
+<!ENTITY % configDTD SYSTEM "config.dtd">
+%configDTD;
+<!ENTITY % urlsDTD SYSTEM "urls.dtd">
+%urlsDTD;
+]>
+<Omnibox>
+    <Suggestions>
+        <Url>&suggestions.url;</Url>
+    </Suggestions>
+    
+    <Search>
+        <Label>&search.label;</Label>
+        <Url>&search.url;</Url>
+        <Name>&search.name;</Name>
+        <Navigate>&search.navigate;</Navigate>
+        <Site>&search.site;</Site>
+    </Search>
+    <Welcome>
+        <Title>&welcome.title;</Title>
+    </Welcome>
+</Omnibox>

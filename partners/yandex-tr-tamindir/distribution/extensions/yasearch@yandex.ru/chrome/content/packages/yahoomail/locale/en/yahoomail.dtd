@@ -1,0 +1,24 @@
+<!ENTITY widget.name "Yahoo! Mail">
+
+<!ENTITY widget.button.text "Yahoo! Mail">
+
+<!ENTITY widget.menu.check_mailbox "Check mailbox">
+<!ENTITY widget.menu.compose "Compose email">
+<!ENTITY widget.menu.read "Read emails">
+<!ENTITY widget.menu.contacts "Contacts">
+<!ENTITY widget.menu.logout "Logout">
+
+<!ENTITY widget.tooltip.title "Yahoo! Mail">
+<!ENTITY widget.tooltip.your_messages "Your messages in mailbox">
+
+<!ENTITY widget.tooltip.offline_message "Mailbox status can't be updated now">
+
+<!ENTITY widget.tooltip.new_messages "New messages in your Yahoo! mailbox">
+<!ENTITY widget.tooltip.ask_to_login "Please login">
+
+<!ENTITY widget.tooltip.new_messages_prefix "New: ">
+<!ENTITY widget.tooltip.total_messages_prefix "Total: ">
+
+<!ENTITY widget.settings.label "Update interval:">
+<!ENTITY widget.settings.label_after "minutes">
+<!ENTITY widget.settings.checktext "Show button label">

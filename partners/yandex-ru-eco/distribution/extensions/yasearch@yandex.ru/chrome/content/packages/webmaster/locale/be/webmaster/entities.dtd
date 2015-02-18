@@ -1,0 +1,21 @@
+﻿<!ENTITY webmaster.name "Яндекс.Вебмайстар">
+<!ENTITY webmaster.tooltip "Яндекс.Вебмайстар – інфармацыя пра вашыя сайты">
+<!ENTITY webmaster.update-interval "Інтэрвал абнаўлення">
+<!ENTITY webmaster.hours "гадзін">
+<!ENTITY webmaster.request-failed "На жаль, інфармацыя пра вашыя сайты ў Яндекс.Вебмайстары не атрымана">
+<!ENTITY webmaster.in-progress "Выконваецца запыт...">
+<!ENTITY webmaster.logged-out-tooltip-1 "Дазваляе працаваць з вашымі сайтамі ў сэрвісе Яндекс.Вебмайстар">
+<!ENTITY webmaster.logged-out-tooltip-2 "Калі ласка, аўтарызуйцеся">
+<!ENTITY webmaster.nosites1 "У Яндекс.Вебмайстары ў вас няма ніводнага сайта">
+<!ENTITY webmaster.nosites2 "Калі ласка, дабаўце ваш сайт у пералік">
+<!ENTITY webmaster.update "Абнавіць інфармацыю">
+<!ENTITY webmaster.spellcheck "Праверка арфаграфіі">
+<!ENTITY webmaster.analys "Аналіз robots.txt">
+<!ENTITY webmaster.add-url "Дабавіць URL">
+<!ENTITY webmaster.region-search "Пошук у розных рэгіёнах">
+<!ENTITY webmaster.tyc10 "менш за 10">
+<!ENTITY webmaster.content-info "Дадзеныя пра змесціва сайта">
+
+<!ENTITY webmaster.setts.never "Не абнаўляць">
+<!ENTITY webmaster.setts.12 "12 гадзін">
+<!ENTITY webmaster.setts.24 "24 гадзіны">

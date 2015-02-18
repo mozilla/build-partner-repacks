@@ -19,7 +19,7 @@ const migrator = {
             try {
                 item.action();
             } catch (ex) {
-                this._migrationModule.logger.error("Failed to perform migration action '" + item.id + "':" + strutils.formatError(ex));
+                this._migrationModule.logger.error("Failed to perform migration action '" + item.id + "': " + strutils.formatError(ex));
                 this._migrationModule.logger.debug(ex.stack);
             }
         }, this);

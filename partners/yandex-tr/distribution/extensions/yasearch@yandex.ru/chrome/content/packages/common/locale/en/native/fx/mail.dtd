@@ -1,0 +1,31 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY mail.name "Mail">
+<!ENTITY mail.tooltiptext "New letters in Yandex.Mail">
+<!ENTITY mail.noauthtooltiptext "Shows new letters in Yandex.Mail">
+<!ENTITY mail.tooltip.from "From:">
+<!ENTITY mail.tooltip.subject "Subject:">
+<!ENTITY mail.login.yandex.label "Log in to Yandex.Mail">
+<!ENTITY mail.login.mfd.label "Log in to the mail box at my domain">
+<!ENTITY mail.logout.label "Log out of the mail box">
+<!ENTITY mail.reloadCounter.label "Get mail">
+<!ENTITY mail.open.label "Read mail">
+<!ENTITY mail.openAdBook.label "Open address book">
+<!ENTITY mail.writeMail.label "Compose new letter">
+<!ENTITY mail.sendPage.label "Share page">
+<!ENTITY mail.send.page.label "E-mail current page link">
+<!ENTITY mail.send.selected.label "E-mail selected text">
+<!ENTITY mail.send.image.label "E-mail image link">
+<!ENTITY mail.send.accesskey "e">
+
+
+
+<!ENTITY mail.uri.open.new.label "Open Inbox page with unread messages only">
+<!ENTITY mail.integration.label "Open links &#171;mailto:&#187; in Yandex.Mail">
+<!ENTITY mail.alert.text.label "Show text notifications for new letters">
+<!ENTITY mail.alert.sound.label "Play sound notifications for new letters">
+<!ENTITY mail.alert.sound.select.label "Select">
+<!ENTITY mail.alert.sound.preview.label "Listen">
+
+<!ENTITY mail.openServiceOnClick.label "Click on button to go to service webpage">

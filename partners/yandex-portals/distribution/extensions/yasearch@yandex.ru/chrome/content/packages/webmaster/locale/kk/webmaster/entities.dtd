@@ -1,0 +1,21 @@
+﻿<!ENTITY webmaster.name "Яндекс.Вебмастер">
+<!ENTITY webmaster.tooltip "Яндекс.Вебмастер – сіздің сайттарыңыз туралы ақпарат">
+<!ENTITY webmaster.update-interval "Интервал обновления">
+<!ENTITY webmaster.hours "часов">
+<!ENTITY webmaster.request-failed "Өкінішке орай, сіздің сайттарыңыз туралы Яндекс.Вебмастерде ақпарат алу мүмкін емес">
+<!ENTITY webmaster.in-progress "Сұраным орындалуда...">
+<!ENTITY webmaster.logged-out-tooltip-1 "Сіздің сайттарыңызбен Яндекс.Вебмастерде жұмыс істеуге мүмкіндік береді">
+<!ENTITY webmaster.logged-out-tooltip-2 "Авторизациядан өтуіңізді сұраймыз">
+<!ENTITY webmaster.nosites1 "Яндекс.Вебмастерде сіздің сайттарыңыздың бірде-біреуі қосылмаған">
+<!ENTITY webmaster.nosites2 "Сайтыңызды тізімге қосуды сұраймыз">
+<!ENTITY webmaster.update "Ақпараттарды жаңарту">
+<!ENTITY webmaster.spellcheck "Орфографияны тексеру">
+<!ENTITY webmaster.analys "robots.txt анализі">
+<!ENTITY webmaster.add-url "URL қосу">
+<!ENTITY webmaster.region-search "Әркелкі аймақта іздестіру">
+<!ENTITY webmaster.tyc10 "10-нан кем">
+<!ENTITY webmaster.content-info "Сайт мазмұны туралы мәліметтер">
+
+<!ENTITY webmaster.setts.never "Жаңартпау">
+<!ENTITY webmaster.setts.12 "12 сағат">
+<!ENTITY webmaster.setts.24 "24 сағат">

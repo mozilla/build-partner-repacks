@@ -1,0 +1,4 @@
+<!ENTITY category.services "Найти в сервисах: &#34;{searchTermsCropped}&#34;">
+<!ENTITY locationbar.search.url "http://yandex.ru/yandsearch?clid={clid9}&amp;text=">
+<!ENTITY yandex.qs.keywordsearch "http://yandex.ru/yandsearch?clid={clid9}&amp;text={searchTerms}">
+<!ENTITY yandex.imagesearch.label "Искать по этой картинке в Яндексе">

@@ -1,0 +1,27 @@
+<!ENTITY gmail.name "Пошта Gmail">
+
+<!ENTITY gmail.settings.label "Інтервал оновлення">
+<!ENTITY gmail.settings.label_after "хв">
+<!ENTITY gmail.settings.write.show "Відображати кнопку «Написати лист»">
+<!ENTITY gmail.settings.checktext "Показувати назву кнопки «Gmail»">
+<!ENTITY gmail.settings.write.checktext "Показувати назву кнопки «Написати лист»">
+
+<!ENTITY gmail.tooltip.please_auth "Будь ласка, авторизуйтесь">
+<!ENTITY gmail.tooltip.off "Показувати нові повідомлення в пошті Gmail">
+<!ENTITY gmail.tooltip.on "Нові повідомлення в поштовій скриньці">
+<!ENTITY gmail.tooltip.empty "Нових листів немає">
+<!ENTITY gmail.tooltip.write.off "Дозволяє написати нові листи в пошті Gmail">
+<!ENTITY gmail.tooltip.write.on "Написати лист у пошті Gmail">
+<!ENTITY gmail.tooltip.error "На жаль, інформацію про ваші листи отримати не вдалося">
+
+<!ENTITY gmail.button.text "Gmail">
+<!ENTITY gmail.button.text.write "Написати">
+
+<!ENTITY gmail.menu.update "Перевірити пошту">
+<!ENTITY gmail.menu.write "Написати лист">
+<!ENTITY gmail.menu.read "Читати лист">
+<!ENTITY gmail.menu.addressbook "Відкрити контакти">
+<!ENTITY gmail.menu.yandex "Отримувати листи з цієї скриньки в Яндекс.Пошті">
+<!ENTITY notify.letters "{N} новий лист;{N} нові листи;{N} нових листів">
+<!ENTITY plural.rule "7">
+<!ENTITY settings.show_notifications "Показувати сповіщення">

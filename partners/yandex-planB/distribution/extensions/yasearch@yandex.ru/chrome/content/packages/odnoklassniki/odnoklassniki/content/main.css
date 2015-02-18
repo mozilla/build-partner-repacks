@@ -1,0 +1,10 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarbutton[item-command=auth],[item-href=home]{list-style-image:url(img/main-icon.svg)!important}
+[item-href=messages]{list-style-image:url(img/msg.png)!important}
+[item-href=notifications]{list-style-image:url(img/notification.png)!important}
+[item-href=guests]{list-style-image:url(img/guests.png)!important}
+[item-href=marks]{list-style-image:url(img/marks.png)!important}
+[item-href=friends]{list-style-image:url(img/friends.png)!important}
+[item-href=bd]{list-style-image:url(img/bd.png)!important}
+toolbaritem[auth=false] toolbarbutton.widget-button:not([item-command=auth]),toolbaritem[auth=true] toolbarbutton.widget-button[item-command=auth]{display:none!important}
+menuitem[item-command=settings]{list-style-image:url(/-common/img/settings.png)!important}
+toolbarbutton.widget-button[throbber=true]{list-style-image:url(/-common/img/throbber.gif)!important}

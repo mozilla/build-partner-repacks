@@ -1,0 +1,2 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);[yb-native-widget-name="ru.yandex.bar.mistype-corrector"]{-moz-binding:url(/bindings/mc/urlbarbutton.xbl#button)!important;margin:1px}
+tabbrowser notification[anonid=mistype-corrector-notification]>.notification-inner{-moz-binding:url(/bindings/mc/notification.xbl#notification)}

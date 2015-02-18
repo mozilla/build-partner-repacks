@@ -1,0 +1,23 @@
+﻿<!ENTITY camp.name "Campaign" >
+<!ENTITY camp.number "Campaign number:" >
+<!ENTITY camp.currency "units" >
+<!ENTITY camp.setting.update_interval "Refresh every:" >
+<!ENTITY camp.setting.minutes "min." >
+<!ENTITY camp.tooltip.notlogged.row1 "This shows the current status of your Yandex.Direct campaign" >
+<!ENTITY camp.tooltip.notlogged.row2 "Please log in" >
+<!ENTITY camp.tooltip.nocamapigns.row1 "Unfortunately, information about your Yandex.Direct campaign could not be obtained" >
+<!ENTITY camp.tooltip.nocamapigns.row2 "Please place an ad to begin using this service" >
+<!ENTITY camp.tooltip.invalid_num.row1 "Unfortunately, information about your Yandex.Direct campaign could not be obtained" >
+<!ENTITY camp.tooltip.invalid_num.row2 "Please check your settings" >
+<!ENTITY camp.tooltip.error.row1 "Unfortunately, information about your Yandex.Direct campaign could not be obtained" >
+<!ENTITY camp.tooltip.error.row2 "Please check your internet connection" >
+<!ENTITY camp.tooltip.number "Number:" >
+<!ENTITY camp.tooltip.state "Status:" >
+<!ENTITY camp.tooltip.balance "Remaining balance:" >
+<!ENTITY camp.tooltip.todayclicks "Number of clicks today:" >
+<!ENTITY camp.updateinfo "Update information" >
+<!ENTITY camp.pay "Top up" >
+<!ENTITY camp.status.shows "Active" >
+<!ENTITY camp.status.outofmoney "Insufficient funds" >
+<!ENTITY camp.status.disabled "Disabled" >
+<!ENTITY camp.status.stopped "Stopped" >

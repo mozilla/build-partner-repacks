@@ -1,0 +1,23 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY homepage.defence.changed.title "Домашня сторінка змінилася">
+<!ENTITY homepage.defence.changedAgain.title "Домашня сторінка знову змінилася">
+
+<!ENTITY homepage.defence.changed.from.prefix "з">
+<!ENTITY homepage.defence.changed.from.postfix "">
+<!ENTITY homepage.defence.changed.to.prefix "на">
+<!ENTITY homepage.defence.changed.to.postfix "">
+<!ENTITY homepage.defence.changed.empty "немає адреси">
+
+<!ENTITY homepage.defence.again.help "Можливо, заміна пов&#39;язана з роботою сторонньої програми. &product2.nom; більше не&#160;захищає вашу домашню сторінку">
+<!ENTITY homepage.defence.again.help.more "Докладніше">
+
+<!ENTITY homepage.defence.change.question "Дозволити цю зміну">
+<!ENTITY homepage.defence.change.checkbox "Попереджати про зміну домашньої сторінки">
+
+<!ENTITY homepage.defence.ok.button "OK">
+<!ENTITY homepage.defence.deny.button "Заборонити">
+<!ENTITY homepage.defence.allow.button "Дозволити">
+
+<!ENTITY homepage.defence.changed.help "&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;Щоб знову увімкнути захист сторінки, вимкніть сторонню програму, встановіть потрібну домашню сторінку&#160;та увімкніть опцію:&#60;br/&#62;&#60;strong&#62;&#171;Увімкнути захист домашньої сторінки&#187;&#60;/strong&#62; на&#160;вкладці &#60;strong&#62;Налаштування&#60;/strong&#62; у&#160;&#60;strong&#62;Налаштуваннях&#60;/strong&#62;.&#60;/p&#62;&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;З усіх питань звертайтеся в&#160;нашу &#60;a anonid=&#39;mailtoSupportLink&#39; href=&#39;mailto:support@element.yandex.ru&#39;&#62;службу підтримки&#60;/a&#62;.&#60;/p&#62;">

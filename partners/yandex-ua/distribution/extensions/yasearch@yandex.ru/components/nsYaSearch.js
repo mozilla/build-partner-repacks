@@ -94,8 +94,9 @@ nsIYaSearch.prototype = {
     get yaOverlay() {
         return this.globalScope.gYaOverlay || null;
     },
-    getInstallDir: function YS_getInstallDir() {
-        return __LOCATION__.parent.parent;
+    getExtensionURI: function YS_getExtensionURI() {
+        let extDir = Services.io.newURI(__URI__, null, null);
+        return Services.io.newURI(extDir.resolve(".."), null, null);
     },
     get barPref() {
         if (!this._barPref) {
@@ -233,7 +234,6 @@ nsIYaSearch.prototype = {
                     break;
                 default:
                     throw new Error("'" + chromeURI.scheme + "' not yet impl");
-                    break;
                 }
             }
         }
@@ -339,7 +339,9 @@ nsIYaSearch.prototype = {
     },
     get barExtensionMajorVersion() {
         if (!this._barExtensionMajorVersion) {
-            this._barExtensionMajorVersion = AddonManager.getAddonVersion(__LOCATION__.parent.parent);
+            let extDir = Services.io.newURI(__URI__, null, null);
+            let extURI = Services.io.newURI(extDir.resolve(".."), null, null);
+            this._barExtensionMajorVersion = AddonManager.getAddonVersion(extURI);
         }
         return this._barExtensionMajorVersion;
     },

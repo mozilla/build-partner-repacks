@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Product SYSTEM "product.dtd"><Product>
+    <GoodbyeUrl>&product.goodbye.url.fx;</GoodbyeUrl>
+</Product>

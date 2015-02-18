@@ -1,0 +1,27 @@
+<!ENTITY mailru.widget.name "Mail.Ru поштасы">
+<!ENTITY mailru.settings.update-time.label "Жаңарту интервалы:">
+<!ENTITY mailru.settings.update-time.label_after "мин.">
+<!ENTITY mailru.settings.show-button-main-text "«Mail.Ru» батырмасы аталымын көрсету">
+<!ENTITY mailru.settings.show-button-newmsg-text "«Хат жазу» батырмасы аталымын көрсету">
+<!ENTITY mailru.settings.new-message.show "Жазу батырмасы">
+<!ENTITY mailru.main-button.text "Mail.Ru">
+<!ENTITY mailru.main-button.tooltiptext.auth_none "Mail.Ru поштасында жаңа хабарламаларыңызды көрсетеді&#13;Авторизациядан өтуіңізді сұраймыз">
+<!ENTITY mailru.main-button.tooltiptext.update_failed "Mail.Ru Поштасы&#13;Өкінішке орай, сіздің хаттарыңыз туралы ақпарат алу мүмкін емес">
+
+<!ENTITY mailru.main-button.tooltiptext.ok_template "Сіздің пошта жәшігіңізде&#13;{$address}&#13;{$new_msg_wordform}">
+<!ENTITY mailru.main-button.tooltiptext.ok_template.no_messages "жаңа хабарлама жоқ">
+
+<!ENTITY mailru.main-button.tooltiptext.ok_template.plural_forms "{N} жаңа хабарлама">
+<!ENTITY mailru.main-button.menu.check_mail "Поштаны тексеру">
+<!ENTITY mailru.main-button.menu.new_message "Хат жазу">
+<!ENTITY mailru.main-button.menu.read_mail "Хат оқу">
+<!ENTITY mailru.main-button.menu.open_address_book "Мекен-жай кітабын ашу">
+<!ENTITY mailru.main-button.menu.show_settings "Баптаулар">
+<!ENTITY mailru.main-button.menu.logout "Шығу">
+<!ENTITY mailru.new-message.text "Жазу">
+<!ENTITY mailru.new-message.tooltiptext.auth_none "Хат жазуға жылдам өтуге мүмкіндік береді.&#13;Авторизациядан өтуіңізді сұраймыз.">
+<!ENTITY mailru.new-message.tooltiptext.auth_ok "Хат жазу">
+<!ENTITY error.connect "Жүйелік қосылуды тексеруіңізді сұраймыз">
+<!ENTITY error.auth "Авторизациялау мүмкін болмады">
+<!ENTITY error.auth.net "Авторизациялау үшін Mail.Ru серверіне қосылу мүмкін болмады">
+<!ENTITY settings.show_notifications "Хабарландыруларды көрсету">

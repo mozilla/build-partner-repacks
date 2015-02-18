@@ -40,8 +40,9 @@ const migration = {
     movePrefBranch: function migration_movePrefBranch(oldPrefBranchPath, newPrefBranchPath) {
         Services.prefs.getBranch(oldPrefBranchPath).getChildList("", {}).forEach(function (key) {
             let prefValue = Preferences.get(oldPrefBranchPath + key, null);
-            if (prefValue !== null)
+            if (prefValue !== null) {
                 Preferences.set(newPrefBranchPath + key, prefValue);
+            }
         });
         Preferences.resetBranch(oldPrefBranchPath);
     },
@@ -54,11 +55,13 @@ const migration = {
             }
             browserCustomizableUI.areas.map(area => browserCustomizableUI.getWidgetIdsInArea(area)).reduce((a, b) => a.concat(b)).forEach(function (id) {
                 let newId = replacer(id);
-                if (id === newId || typeof newId === "undefined")
+                if (id === newId || typeof newId === "undefined") {
                     return;
+                }
                 let placement = browserCustomizableUI.getPlacementOfWidget(id);
-                if (!placement)
+                if (!placement) {
                     return;
+                }
                 migration.logger.debug("Replace '" + id + "' with '" + newId + "'");
                 browserCustomizableUI.addWidgetToArea(newId, placement.area, placement.position);
                 browserCustomizableUI.removeWidgetFromArea(id);
@@ -66,8 +69,9 @@ const migration = {
         },
         addIds: function migration_currentset_addIds(ids) {
             let browserCustomizableUI = this._browserCustomizableUI;
-            if (!browserCustomizableUI)
+            if (!browserCustomizableUI) {
                 return;
+            }
             browserCustomizableUI.beginBatchUpdate();
             ids.forEach(function (id) {
                 browserCustomizableUI.addWidgetToArea(id, browserCustomizableUI.AREA_NAVBAR);
@@ -76,25 +80,29 @@ const migration = {
         },
         get _browserCustomizableUI() {
             delete this.browserCustomizableUI;
-            return this.browserCustomizableUI = Cu.import("resource:///modules/CustomizableUI.jsm", {}).CustomizableUI;
+            this.browserCustomizableUI = Cu.import("resource:///modules/CustomizableUI.jsm", {}).CustomizableUI;
+            return this.browserCustomizableUI;
         },
         _replaceIdsInLocalStore: function migration_currentset__replaceIdsInLocalStore(replacer) {
             let allResources = this._localStoreRDF.GetAllResources();
             let currentsetResource = this._rdfService.GetResource("currentset");
             while (allResources.hasMoreElements()) {
                 let res = allResources.getNext().QueryInterface(Ci.nsIRDFResource);
-                if (!res.Value)
+                if (!res.Value) {
                     continue;
+                }
                 let toolbar = this._rdfService.GetResource(res.Value);
                 let currentSet = this._getRDFLiteralValue(toolbar, currentsetResource);
-                if (!(currentSet && currentSet != "__empty"))
+                if (!(currentSet && currentSet !== "__empty")) {
                     continue;
+                }
                 let currentSetIds = currentSet.split(",");
                 for (let i = 0, len = currentSetIds.length; i < len; i++) {
                     let currentSetId = currentSetIds[i];
                     let newId = replacer(currentSetId);
-                    if (currentSetId === newId || typeof newId === "undefined")
+                    if (currentSetId === newId || typeof newId === "undefined") {
                         continue;
+                    }
                     migration.logger.debug("Replace '" + currentSetIds[i] + "' with '" + newId + "'");
                     currentSetIds[i] = newId;
                 }
@@ -113,18 +121,20 @@ const migration = {
         },
         _getRDFLiteralValue: function migrator__getRDFLiteralValue(aSource, aProperty) {
             let target = this._localStoreRDF.GetTarget(aSource, aProperty, true);
-            if (target instanceof Ci.nsIRDFLiteral)
+            if (target instanceof Ci.nsIRDFLiteral) {
                 return target.Value;
+            }
             return null;
         },
         _setRDFLiteralValue: function migrator__setRDFLiteralValue(aSource, aProperty, aTarget) {
             try {
                 let oldTarget = this._localStoreRDF.GetTarget(aSource, aProperty, true);
                 if (oldTarget) {
-                    if (aTarget)
+                    if (aTarget) {
                         this._localStoreRDF.Change(aSource, aProperty, oldTarget, this._rdfService.GetLiteral(aTarget));
-                    else
+                    } else {
                         this._localStoreRDF.Unassert(aSource, aProperty, oldTarget);
+                    }
                 } else {
                     this._localStoreRDF.Assert(aSource, aProperty, this._rdfService.GetLiteral(aTarget), true);
                 }
@@ -134,8 +144,9 @@ const migration = {
     },
     _migrate: function migration__migrate() {
         let installInfo = this.app.addonManager.info;
-        if (!installInfo.addonVersionChanged || installInfo.addonDowngraded)
+        if (!installInfo.addonVersionChanged || installInfo.addonDowngraded) {
             return;
+        }
         this.logger.config("Migration started. " + "Fresh install: " + installInfo.isFreshAddonInstall + "; " + "addonVersion: " + this.app.addonManager.addonVersion + "; " + "addonLastVersion: " + installInfo.addonLastVersion + ".");
         let versionComparator = sysutils.versionComparator;
         try {
@@ -148,12 +159,14 @@ const migration = {
                             alias,
                             operation
                         ] in Iterator(this._migrationConfig)) {
-                    if (scriptName.indexOf(alias + "-") != 0)
+                    if (scriptName.indexOf(alias + "-") !== 0) {
                         continue;
+                    }
                     let version = scriptName.replace(alias + "-", "");
                     let compResult = versionComparator.compare(this.addonVersionForMigration, version);
-                    if (operation(compResult))
+                    if (operation(compResult)) {
                         this._migrateVersion(scriptDef);
+                    }
                     break;
                 }
             }, this);
@@ -219,7 +232,7 @@ const migration = {
             return a < 0;
         },
         e: function (a) {
-            return a == 0;
+            return a === 0;
         }
     },
     _addonVersionForMigration: null

@@ -20,8 +20,9 @@ const syncTopHistory = {
     },
     requestData: function SyncTopHistory_requestData() {
         let topHistoryEntries = [];
-        if (!this._application.sync.svc || !this.engine.enabled)
+        if (!this._application.sync.svc || !this.engine.enabled) {
             return topHistoryEntries;
+        }
         let records = this.engine.get(null);
         let regex = new RegExp("^" + PREFIX + "(.+)$");
         for (let key in records) {
@@ -40,8 +41,9 @@ const syncTopHistory = {
         return topHistoryEntries;
     },
     saveCurrentState: function SyncTopHistory_saveCurrentState(topHistory) {
-        if (!this._application.sync.svc || !this.engine.enabled || !this._engineInitFinished)
+        if (!this._application.sync.svc || !this.engine.enabled || !this._engineInitFinished) {
             return;
+        }
         let records = {};
         topHistory.forEach(function (historyElem) {
             let key = historyElem.id || this._application.sync.generateId();
@@ -57,24 +59,30 @@ const syncTopHistory = {
     },
     saveLocalClidState: function SyncTopHistory_saveLocalClidState(url, localHistory) {
         let uri = netutils.newURI(url);
-        if (!this._application.isYandexHost(uri.host))
+        if (!this._application.isYandexHost(uri.host)) {
             return url;
+        }
         try {
             uri.QueryInterface(Ci.nsIURL);
         } catch (ex) {
             return url;
         }
         let parsedQuery = netutils.querystring.parse(uri.query);
-        if (!parsedQuery.clid)
+        if (!parsedQuery.clid) {
             return url;
+        }
         delete parsedQuery.clid;
         uri.query = netutils.querystring.stringify(parsedQuery);
         return localHistory.indexOf(uri.spec) !== -1 ? uri.spec : url;
     },
     get engine() {
-        if (!this._application.sync.svc)
+        if (!this._application.sync.svc) {
             return null;
+        }
         return this._application.sync.svc.getEngine("TopHistory");
+    },
+    get initFinished() {
+        return this._engineInitFinished;
     },
     set initFinished(val) {
         this._engineInitFinished = val;

@@ -14,9 +14,6 @@ const STATES = {
     READY_TO_SHOW: 1,
     ACTIVE: 2
 };
-function isDocFile(fileName) {
-    return new RegExp(".(epub|fb2|pdf|doc|docx|ppt|pptx|rtf)$").test(fileName);
-}
 Cu.import("resource://gre/modules/Services.jsm");
 const advertisement = {
     init: function advertisement_init(application) {
@@ -39,10 +36,11 @@ const advertisement = {
                     return preferences.get("advertisement.conditions." + condition, 0);
                 },
                 set: function (val) {
-                    if (val !== null && val !== undefined)
+                    if (val !== null && val !== undefined) {
                         preferences.set("advertisement.conditions." + condition, val);
-                    else
+                    } else {
                         self._logger.debug("Undefined condition " + condition);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -54,7 +52,8 @@ const advertisement = {
             "setbackground",
             "vbadbbdoc",
             "vbadbbnewver",
-            "vbadbbnewverrun"
+            "vbadbbnewverrun",
+            "newyear2015"
         ].forEach(function (adId) {
             Object.defineProperty(ads, adId, {
                 get: function () {
@@ -85,8 +84,7 @@ const advertisement = {
             });
         });
         if (!conditions.downloadedDocFiles) {
-            Services.obs.addObserver(downloadsHelper, "final-ui-startup", false);
-            this._downloadsObserversAdded = true;
+            Services.obs.addObserver(downloadsHelper, "sessionstore-windows-restored", false);
         }
         Services.obs.addObserver(this, this._application.core.eventTopics.BACKGROUNDS_SYNCED, false);
         let alarms = this._application.alarms;
@@ -127,19 +125,8 @@ const advertisement = {
         }
         Services.obs.removeObserver(this, this._application.core.eventTopics.BACKGROUNDS_SYNCED, false);
         if (this._downloadsObserversAdded) {
-            try {
-                let {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
-                if (!("getList" in Downloads))
-                    throw new Error("Old 'Downloads' module");
-                Downloads.getList(Downloads.PUBLIC).then(list => list.removeView(downloadsHelper));
-            } catch (ex1) {
-                try {
-                    const DownloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
-                    DownloadManager.removeListener(downloadsHelper);
-                } catch (ex2) {
-                    this._logger.error(ex1 + "\n" + ex2);
-                }
-            }
+            let {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
+            Downloads.getList(Downloads.PUBLIC).then(list => list.removeView(downloadsHelper));
         }
         this._application = null;
         this._logger = null;
@@ -152,8 +139,9 @@ const advertisement = {
     set enabled(newVal) {
         let oldVal = this.enabled;
         this._application.preferences.set("advertisement.enabled", newVal);
-        if (oldVal !== newVal)
+        if (oldVal !== newVal) {
             this.sendCurrentState();
+        }
     },
     get yandexBrowserInfo() {
         return this._application.integration.yandexBrowser;
@@ -172,8 +160,9 @@ const advertisement = {
         let adId = Object.keys(this._ads).filter(function (adId) {
             return this._ads[adId].showState === STATES.ACTIVE;
         }, this)[0];
-        if (!adId)
+        if (!adId) {
             return null;
+        }
         return this._ads[adId];
     },
     set activeAd(adId) {
@@ -186,8 +175,9 @@ const advertisement = {
             this.activeAdRefused = false;
             return;
         }
-        if (this.activeAd)
+        if (this.activeAd) {
             throw new Error("already have active ad " + this.activeAd.id);
+        }
         if (adId === "vbadbbdoc") {
             this._logger.trace("Reseting condition downloadedDocFiles");
             this.conditions.downloadedDocFiles = false;
@@ -202,49 +192,58 @@ const advertisement = {
         this._startAd();
         this.activeAdRefused = false;
         this.sendCurrentState();
-        let yandexBrowserInstalled = this.conditions.yandexBrowserInstalled;
         let param;
-        if (adId === "vbadbbdoc") {
-            if (yandexBrowserInstalled) {
+        switch (adId) {
+        case "vbadbbdoc":
+            if (this.conditions.yandexBrowserInstalled) {
                 param = "adbbrun";
             } else {
                 param = "adbbinstall";
             }
-        } else if (adId === "vbadbbnewver") {
+            break;
+        case "vbadbbnewver":
             param = "adbbrun";
-        } else if (adId === "vbadbbnewverrun") {
+            break;
+        case "vbadbbnewverrun":
             param = "adbbinstall";
-        } else if (adId === "newbackground" || adId === "setbackground") {
+            break;
+        case "newbackground":
+        case "setbackground":
             param = "show";
+            break;
         }
-        if (param)
+        if (param) {
             this.sendClickerRequest(param);
+        }
     },
     get readyToShowAd() {
         let adId = Object.keys(this._ads).filter(function (adId) {
             return this._ads[adId].showState === STATES.READY_TO_SHOW;
         }, this)[0];
-        if (!adId)
+        if (!adId) {
             return null;
+        }
         let ad = this._ads[adId];
         return ad;
     },
     set readyToShowAd(adId) {
-        if (this.activeAd)
+        if (this.activeAd) {
             throw new Error("already have active ad");
-        if (this.readyToShowAd)
+        }
+        if (this.readyToShowAd) {
             throw new Error("already have ready to show ad");
+        }
         let ad = this._ads[adId];
         ad.showState = STATES.READY_TO_SHOW;
         this._ads[adId] = ad;
     },
     checkAdsConditions: function advertisement_checkAdsConditions(firstCheck = false, forceCheck = false) {
-        if (this._application.alarms.exists("delayCheckAdsCondition") && !forceCheck)
+        if (!forceCheck && this._application.alarms.exists("delayCheckAdsCondition")) {
             return;
+        }
         this._application.alarms.create("delayCheckAdsCondition", {
             timeout: firstCheck ? 1 : 0,
             handler: function checkConditions() {
-                this._logger.debug("Saving new ads conditions");
                 let yandexBrowserInfo = this.yandexBrowserInfo;
                 let conditions = this.conditions;
                 conditions.yandexBrowserInstalled = yandexBrowserInfo.isInstalled;
@@ -252,6 +251,8 @@ const advertisement = {
                 conditions.yandexBrowserVersion = yandexBrowserInfo.version;
                 conditions.yandexBrowserIsDefault = yandexBrowserInfo.isDefaultBrowser;
                 conditions.newBackgrounds = JSON.stringify(this._application.backgroundImages.newBackgrounds);
+                this._logger.trace("New ads conditions:");
+                this._logger.trace(JSON.stringify(conditions));
                 this._updateState();
             },
             ctx: this
@@ -286,17 +287,21 @@ const advertisement = {
                         param = "timeoutclose";
                         break;
                     }
-                    if (param)
+                    if (param) {
                         this.sendClickerRequest(param);
+                    }
                 }
                 this.activeAd = null;
-            }.bind(this)
+                this.checkAdsConditions(false, true);
+            },
+            ctx: this
         });
     },
     _updateState: function advertisement__updateState() {
         let config = this.config;
-        if (!config)
+        if (!config) {
             return;
+        }
         this._application.commonAdvertisement.setConfig({
             brandId: this._application.branding.brandID,
             locale: this._application.locale.language,
@@ -305,20 +310,21 @@ const advertisement = {
         if (!(this.activeAd || this.readyToShowAd || this._isSilentPeriod())) {
             let states = this._getStateForCommonApi();
             let newId = this._application.commonAdvertisement.calcShownBlockId(states);
-            if (newId)
+            if (newId) {
                 this.readyToShowAd = newId;
+            }
         }
     },
     refuse: function advertisement_refuse(timeout) {
-        if (!this.activeAd)
+        if (!this.activeAd) {
             throw new Error("There's no ad to refuse");
+        }
         let alarms = this._application.alarms;
         if (timeout) {
             if (!alarms.exists("refuseAd")) {
                 alarms.restoreOrCreate("refuseAd", {
                     timeout: timeout / 60000,
-                    handler: this._refuseActiveAd,
-                    ctx: this
+                    handler: () => this._refuseActiveAd()
                 });
             }
         } else {
@@ -326,11 +332,19 @@ const advertisement = {
             this._refuseActiveAd();
         }
     },
-    _refuseActiveAd: function advertisement__refuseActiveAd() {
+    hideActiveAd: function advertisement_hideActive() {
+        this._refuseActiveAd(false);
+    },
+    _refuseActiveAd: function advertisement__refuseActiveAd(increaseRefuseCount = true) {
         let currentActive = this.activeAd;
-        currentActive.refuseCount = (parseInt(currentActive.refuseCount, 10) || 0) + 1;
+        if (increaseRefuseCount) {
+            currentActive.refuseCount = (parseInt(currentActive.refuseCount, 10) || 0) + 1;
+        }
         this._ads[currentActive.id] = currentActive;
         this.activeAdRefused = true;
+        if (currentActive.id !== "setbackground" && currentActive.id !== "newbackground") {
+            return;
+        }
         let selected;
         let backgroundImages = this._application.backgroundImages;
         if (currentActive.id === "setbackground") {
@@ -351,12 +365,14 @@ const advertisement = {
         return this._application.commonAdvertisement.getLocalizedURL(this.activeAd.id, str);
     },
     sendBarnavigRequest: function advertisement_sendBarnavigRequest() {
-        if (this.activeAd)
+        if (this.activeAd) {
             this._application.barnavig.sendRequest({ addbb: this.activeAd.id });
+        }
     },
     _isSilentPeriod: function advertisement__isSilentPeriod() {
-        if (!this.config)
+        if (!this.config) {
             return true;
+        }
         let states = this._getStateForCommonApi();
         return this._application.commonAdvertisement.isSilentPeriod(states);
     },
@@ -366,6 +382,7 @@ const advertisement = {
             let satisfies = false;
             let conditions;
             let isWindows = sysutils.platformInfo.os.name === "windows";
+            let utils = this._application.commonUtils;
             this._logger.trace("Checking conditions of ad " + adId);
             switch (adId) {
             case "vbadbbdoc":
@@ -404,7 +421,7 @@ const advertisement = {
                     },
                     {
                         name: "yandexBrowserOutdated",
-                        val: this._application.commonUtils.compareVersions(this.config.ads.vbadbbnewver.additional["new-version"], this.conditions.yandexBrowserVersion) === 1
+                        val: utils.compareVersions(this.config.ads.vbadbbnewver.additional["new-version"], this.conditions.yandexBrowserVersion) === 1
                     }
                 ];
                 break;
@@ -440,6 +457,44 @@ const advertisement = {
                         name: "setbackgroundIsAlwaysSatisfies",
                         val: true
                     }];
+                break;
+            case "newyear2015":
+                let newyear2015Config = this.config.ads.newyear2015;
+                if (!newyear2015Config) {
+                    return;
+                }
+                let additional = newyear2015Config.additional;
+                let startDate = additional["start-date"];
+                let endDate = additional["end-date"];
+                let today = utils.getTodayDateString();
+                let brandID = this._application.branding.brandID;
+                let locale = this._application.localeString;
+                if (Array.isArray(additional.locales)) {
+                    if (additional.locales.indexOf(locale) === -1) {
+                        this._logger.trace("Locale " + locale + " doesn't match new year's rules");
+                        return;
+                    }
+                } else {
+                    return;
+                }
+                if (Array.isArray(additional.brandings)) {
+                    if (additional.brandings.indexOf(brandID) === -1) {
+                        this._logger.trace("Branding " + brandID + " doesn't match new year's rules");
+                        return;
+                    }
+                } else {
+                    return;
+                }
+                conditions = [
+                    {
+                        name: "startDate",
+                        val: utils.compareDate(today, startDate) >= 0
+                    },
+                    {
+                        name: "endDate",
+                        val: utils.compareDate(today, endDate) <= 0
+                    }
+                ];
                 break;
             default:
                 return;
@@ -478,8 +533,9 @@ const advertisement = {
         });
     },
     getConfigFromWeb: function advertisement_getConfig() {
-        if (this._requestingConfig)
+        if (this._requestingConfig) {
             return;
+        }
         this._requestingConfig = true;
         let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
         request.mozBackgroundRequest = true;
@@ -548,13 +604,14 @@ const advertisement = {
             data: data
         };
     },
-    handleVBPageShow: function advertisement_handleVBPageShow(windowListenerData) {
+    handleVBPageShow: function advertisement_handleVBPageShow() {
         if (this.activeAd) {
             return;
         }
         let ad = this.readyToShowAd;
-        if (ad)
+        if (ad) {
             this.activeAd = ad.id;
+        }
     },
     get configFile() {
         let file = this._application.core.rootDir;
@@ -562,8 +619,9 @@ const advertisement = {
         return file;
     },
     sendCurrentState: function advertisement_sendCurrentState() {
-        if (this._application.fastdial)
+        if (this._application.fastdial) {
             this._application.fastdial.sendRequest("advertisement", this.frontendState);
+        }
     },
     observe: function advertisement_observe(subject, topic, data) {
         switch (topic) {
@@ -579,27 +637,16 @@ const advertisement = {
 const downloadsHelper = {
     observe: function advertisement_downloadsHelper_observe(subject, topic, data) {
         switch (topic) {
-        case "final-ui-startup":
-            Services.obs.removeObserver(this, "final-ui-startup", false);
-            try {
-                let {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
-                if (!("getList" in Downloads))
-                    throw new Error("Old 'Downloads' module");
-                let that = this;
-                Downloads.getList(Downloads.PUBLIC).then(list => list.addView(that));
-            } catch (ex1) {
-                try {
-                    let downloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
-                    downloadManager.addListener(this);
-                } catch (ex2) {
-                    advertisement._logger.error(ex1 + "\n" + ex2);
-                }
-            }
+        case "sessionstore-windows-restored":
+            Services.obs.removeObserver(this, "sessionstore-windows-restored", false);
+            let {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
+            Downloads.getList(Downloads.PUBLIC).then(list => list.addView(this));
+            this._downloadsObserversAdded = true;
             break;
         }
     },
     onDownloadAdded: function advertisement_downloadsHelper_onDownloadAdded(download) {
-        if (isDocFile(download.source.url)) {
+        if (this._isDocumentFile(download.source.url)) {
             download.whenSucceeded().then(function () {
                 advertisement.conditions.downloadedDocFiles = true;
             });
@@ -614,7 +661,7 @@ const downloadsHelper = {
         case downloadManager.DOWNLOAD_BLOCKED_PARENTAL:
         case downloadManager.DOWNLOAD_DIRTY:
         case downloadManager.DOWNLOAD_FINISHED:
-            if (isDocFile(download.source.spec)) {
+            if (this._isDocumentFile(download.source.spec)) {
                 advertisement.conditions.downloadedDocFiles = true;
             }
             break;
@@ -629,5 +676,8 @@ const downloadsHelper = {
     onStateChange: function () {
     },
     onStatusChange: function () {
+    },
+    _isDocumentFile: function advertisement_downloadsHelper__isDocumentFile(fileName) {
+        return /\.(epub|fb2|pdf|doc|docx|ppt|pptx|rtf)$/.test(fileName);
     }
 };

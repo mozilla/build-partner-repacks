@@ -1,0 +1,6 @@
+<!ENTITY news.title "News">
+<!ENTITY news.tooltip "News online">
+<!ENTITY news.interval_prefix "Update interval">
+<!ENTITY news.interval_suffix "min.">
+<!ENTITY news.error_message "Could not load news. Check your Internet connection.">
+<!ENTITY news.absent_message "No news in this category.">

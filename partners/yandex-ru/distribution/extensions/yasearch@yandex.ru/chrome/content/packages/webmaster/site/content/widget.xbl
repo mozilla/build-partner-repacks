@@ -1,0 +1,620 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="styles/main.css"/>
+        </resources>
+
+        <content>
+            <xul:toolbarbutton anonid="button-auth" class="toolbarbutton-1 widget-button" item-command="auth" yb-native-not-authorized="true"/>
+
+            <toolbarbutton anonid="site-button" class="toolbarbutton-1 widget-button" item-command="go" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+                <menupopup anonid="site-menupopup">
+                    <menuitem anonid="menuitem-update" item-command="update" label="&site.update.label;"/>
+
+                    <menuseparator anonid="menuitem-before-sites"/>
+                    <menuitem anonid="menuitem-site" disabled="true"/>
+
+                    <menuseparator anonid="menuitem-before-master"/>
+                    <menuitem anonid="menuitem-tcy" item-href="tcy"/>
+                    <menuitem anonid="menuitem-pages" item-href="pages"/>
+
+                    <menuseparator anonid="menuitem-before-snippets"/>
+                    <menuitem anonid="menuitem-snippets" item-href="snippets" label="&site.upgrade-snippets;"/>
+
+                    <menuseparator/>
+                    <menuitem anonid="menuitem-remove" label="&site.settings.remove;" oncommand="_removeCurrent();"/>
+                    <menuitem anonid="menuitem-add" label="&site.settings.add;" oncommand="_addNew();"/>
+
+                    <menuseparator anonid="menuitem-before-metrika"/>
+                    <menuitem anonid="menuitem-visits" item-href="metrika"/>
+                    <menuitem anonid="menuitem-pageviews" item-href="metrika"/>
+                    <menuitem anonid="menuitem-visitors" item-href="metrika"/>
+
+                    <menuseparator/>
+                    <menuitem anonid="menuitem-settings" item-command="settings" label="&site.settings.label;"/>
+                </menupopup>
+            </toolbarbutton>
+
+            <tooltip anonid="site-noauth-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <grid flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&site.tooltip.noauth1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&site.tooltip.noauth2;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&site.tooltip.noauth3;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+            </tooltip>
+
+            <tooltip anonid="site-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <grid anonid="tooltip-error-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&site.request-failed-1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&site.request-failed-2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <grid anonid="tooltip-nosites-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&site.tooltip.nosites1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&site.tooltip.nosites2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <grid anonid="tooltip-notvalid-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&site.tooltip.invalidsite1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&site.tooltip.invalidsite2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <hbox anonid="tooltip-header" flex="1"/>
+
+                <grid anonid="tooltip-content" flex="1">
+                    <columns><column/><column flex="1"/></columns>
+                    <rows>
+                        <hbox anonid="masterfailed-tooltip-1" flex="1">&site.master-rigts-failed-1;</hbox>
+                        <hbox anonid="masterfailed-tooltip-2" flex="1">&site.master-rigts-failed-2;</hbox>
+                        <hbox anonid="noindex-tooltip">&site.noindex;</hbox>
+                        <hbox anonid="masteradd-tooltip">&site.master-add-site;</hbox>
+                        <row align="center" anonid="status-tooltip">
+                            <hbox pack="end"><label value="&site.state.label;"/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="tcy-tooltip">
+                            <hbox pack="end"><label value="&site.tyc.label;"/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="pages-tooltip">
+                            <hbox pack="end"><label value="&site.pages.label;"/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="urls-tooltip">
+                            <hbox pack="end"><label value="&site.urls.label;"/></hbox>
+                            <label/>
+                        </row>
+                        <hbox anonid="metrikaadd-tooltip">&site.metrika-add-site;</hbox>
+                        <hbox anonid="metrikafailed-tooltip-1" flex="1">&site.metrika-rigts-failed-1;</hbox>
+                        <hbox anonid="metrikafailed-tooltip-2" flex="1">&site.metrika-rigts-failed-2;</hbox>
+                        <row align="center" anonid="vizit-tooltip">
+                            <hbox pack="end"><label value="&site.metrika.vizit;"/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="pageviews-tooltip">
+                            <hbox pack="end"><label value="&site.metrika.pageviews;"/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="visitors-tooltip">
+                            <hbox pack="end"><label value="&site.metrika.visitors;"/></hbox>
+                            <label/>
+                        </row>
+                    </rows>
+                </grid>
+            </tooltip>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="TEXT_VIRUSED">"&site.state.virused;"</field>
+            <field name="TEXT_NOTVIRUSED">"&site.state.clean;"</field>
+            <field name="TEXT_SMALLTCY">"&site.tyc10;"</field>
+
+            <field name="LABEL_METRIKA_VISITS">"&site.metrika.vizit;"</field>
+            <field name="LABEL_METRIKA_PAGEVIEWS">"&site.metrika.pageviews;"</field>
+            <field name="LABEL_METRIKA_VISITORS">"&site.metrika.visitors;"</field>
+
+            <field name="LABEL_MASTER_TCY">"&site.tyc.label;"</field>
+            <field name="LABEL_MASTER_PAGES">"&site.pages.label;"</field>
+            <field name="LABEL_MASTER_SNIPPETS">"&site.upgrade-snippets;"</field>
+
+            <field name="faviconURL">"http://favicon.yandex.ru/favicon/"</field>
+
+            <field name="_authButton">document.getAnonymousElementByAttribute(this, "anonid", "button-auth")</field>
+            <field name="_button">document.getAnonymousElementByAttribute(this, "anonid", "site-button")</field>
+            <field name="_authTooltip">document.getAnonymousElementByAttribute(this, "anonid", "site-noauth-tooltip")</field>
+            <field name="_tooltip">document.getAnonymousElementByAttribute(this, "anonid", "site-tooltip")</field>
+            <field name="_menuPopup">document.getAnonymousElementByAttribute(this, "anonid", "site-menupopup")</field>
+
+            <field name="_menuUpdatePoint">document.getAnonymousElementByAttribute(this, "anonid", "menuitem-update")</field>
+
+            <field name="_throbberTimer">null</field>
+            <field name="_pendingImg">null</field>
+
+            <field name="observers"><![CDATA[    ({
+        throbber: function site_observers_throbber(topic, data) {
+            let show = false;
+            let dataObj;
+            try {
+                dataObj = JSON.parse(data);
+            } catch (e) {
+            }
+            if (!dataObj || dataObj.wiid !== this.WIID) {
+                return;
+            }
+            show = !!dataObj.value;
+            if (show) {
+                if (this._throbberTimer) {
+                    this._throbberTimer.cancel();
+                }
+                this._button.setAttribute("throbber", true);
+                this._menuUpdatePoint.setAttribute("disabled", true);
+                this._lastThrobberTime = Date.now();
+            } else {
+                if (this._throbberTimer) {
+                    return;
+                }
+                let delay = 700 - (Date.now() - this._lastThrobberTime);
+                if (delay < 0) {
+                    delay = 0;
+                }
+                this._throbberTimer = new this.application.api.SysUtils.Timer(function () {
+                    this._throbberTimer = null;
+                    this._lastThrobberTime = null;
+                    this._button.setAttribute("throbber", false);
+                    this._menuUpdatePoint.removeAttribute("disabled");
+                }.bind(this), delay);
+            }
+        },
+        display: function site_observers_display(topic, data) {
+            if (data) {
+                let dataObj;
+                try {
+                    dataObj = JSON.parse(data);
+                } catch (e) {
+                }
+                if (!dataObj || dataObj.wiid !== this.WIID) {
+                    return;
+                }
+            }
+            this.updateView();
+        },
+        cdready: function site_observers_cdready(topic) {
+            this.application.updateData(this.WIID);
+        },
+        label: function site_observers_label(topic, data) {
+            try {
+                var dataObj = JSON.parse(data);
+                if (!dataObj.wiid || dataObj.wiid != this.WIID) {
+                    return;
+                }
+            } catch (e) {
+                return;
+            }
+            this._setLabel(this._getShortSiteName());
+        },
+        tooltipwarns: function site_observers_tooltipwarns(topic, data) {
+            try {
+                var dataObj = JSON.parse(data);
+                if (!dataObj.wiid || dataObj.wiid != this.WIID) {
+                    return;
+                }
+            } catch (e) {
+                return;
+            }
+            this._fixTooltipWarnings();
+        }
+    });]]></field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.ybwFinalize();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    let tltpLinker = function (aObj) {
+        let tltp = aObj.tltp;
+        let btn = aObj.btn;
+        let tooltipID = "wiid" + this.WIID + "-" + tltp.getAttribute("anonid");
+        tltp.setAttribute("id", tooltipID);
+        btn.setAttribute("tooltip", tooltipID);
+    }.bind(this);
+    [
+        {
+            tltp: this._tooltip,
+            btn: this._button
+        },
+        {
+            tltp: this._authTooltip,
+            btn: this._authButton
+        }
+    ].forEach(tltpLinker);
+    this.updateView();]]></body>
+            </method>
+
+            <method name="ybwFinalize">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    if (this._throbberTimer) {
+        this._throbberTimer.cancel();
+        this._throbberTimer = null;
+    }]]></body>
+            </method>
+
+            <method name="_addNew">
+                <body><![CDATA[    let [
+        instanceID,
+        widgetElement
+    ] = this.application.api.Controls.addWidget(null, window, this, true);
+    this.application.api.Controls.openSettingsDialog(window, instanceID);]]></body>
+            </method>
+
+            <method name="_removeCurrent">
+                <body><![CDATA[    this.application.api.Controls.removeWidget(this.WIID, window);]]></body>
+            </method>
+
+            <method name="_getSelectedName">
+                <body><![CDATA[    let siteNameSetting = this.application.api.Settings.getValue("selectedSitenameSetting", this.WIID);
+    if (siteNameSetting) {
+        return siteNameSetting;
+    }
+    let userData = this.application.getUserData(this.WIID, "main");
+    let exportData = userData && userData.metrika && userData.metrika.exportData;
+    if (!exportData || userData._exportError) {
+        return "";
+    }
+    return exportData[0] && exportData[0].name || "";]]></body>
+            </method>
+
+            <method name="_getShortSiteName">
+                <body><![CDATA[    let customSiteName = this.application.api.Settings.getValue("customSitename", this.WIID);
+    let siteName = this._getSelectedName();
+    let shortSiteName = customSiteName ? customSiteName : siteName;
+    if (shortSiteName.length > 10) {
+        shortSiteName = shortSiteName.substr(0, 10) + "…";
+    }
+    return shortSiteName;]]></body>
+            </method>
+
+            <method name="_setLabel">
+                <parameter name="aText"/>
+                <body><![CDATA[    let showLabel = this.application.api.Settings.getValue("show-sitename", this.WIID);
+    if (!showLabel || !aText) {
+        this._button.removeAttribute("counter");
+        return;
+    }
+    this._button.setAttribute("counter", aText);]]></body>
+            </method>
+
+            <method name="_setIcon">
+                <parameter name="aData"/>
+                <body><![CDATA[    this._button.removeAttribute("image");
+    this._button.removeAttribute("yb-image");
+    if (this._pendingImg) {
+        this._pendingImg.removeEventListener("load", this);
+        this._pendingImg = null;
+    }
+    if (!aData) {
+        this._button.setAttribute("yb-image", "error");
+        return;
+    }
+    let master = aData.master || {};
+    let metrika = aData.metrikaSpec || {};
+    let siteName = this._getSelectedName();
+    if (typeof master.masterID != "undefined" && master.masterID !== null) {
+        if (master.verification == "VERIFIED") {
+            if (master.pages) {
+                if (master.virused) {
+                    this._button.setAttribute("yb-image", "virused");
+                } else {
+                    this._pendingImg = new Image();
+                    this._pendingImg.addEventListener("load", this);
+                    this._pendingImg.src = this.faviconURL + siteName;
+                }
+            }
+        } else {
+            this._button.setAttribute("yb-image", "error");
+        }
+    } else if (typeof metrika.metrikaID != "undefined" && metrika.metrikaID !== null) {
+        if (metrika.metrikaVerified == "CS_OK") {
+            this._pendingImg = new Image();
+            this._pendingImg.addEventListener("load", this);
+            this._pendingImg.src = this.faviconURL + siteName;
+        } else {
+            this._button.setAttribute("yb-image", "error");
+        }
+    } else {
+        this._button.setAttribute("yb-image", "error");
+    }]]></body>
+            </method>
+
+            <method name="updateView">
+                <body><![CDATA[    if (!this.application.isAuth()) {
+        this.setAttribute("auth", false);
+        return;
+    }
+    this.setAttribute("auth", true);
+    this.setAttribute("yb-no-data", true);
+    this._setLabel(this._getShortSiteName());
+    this._populateMenuItems();
+    let data = this.application.getUserData(this.WIID, "main");
+    this._setIcon(data);
+    if (data) {
+        if (data._error || !(data.master && data.metrikaSpec)) {
+            return;
+        }
+        this.removeAttribute("yb-no-data");
+        let siteName = this._getSelectedName();
+        let tooltip = this._tooltip;
+        let contentGrid = tooltip.querySelector("grid[anonid=\"tooltip-content\"]");
+        let master = data.master || {};
+        let metrika = data.metrikaSpec || {};
+        for (let i = 0; i < tooltip.children.length; i++) {
+            let item = tooltip.children[i];
+            if (item.getAttribute("anonid") !== "tooltip-error-grid") {
+                item.hidden = true;
+            }
+        }
+        if (!master.siteNum && !siteName) {
+            let element = tooltip.querySelector("grid[anonid=\"tooltip-nosites-grid\"]");
+            if (element) {
+                element.hidden = false;
+            }
+        }
+        if (!master.siteInList) {
+            let element = tooltip.querySelector("grid[anonid=\"tooltip-notvalid-grid\"]");
+            if (element) {
+                element.hidden = false;
+            }
+        } else {
+            let tooltipHeader = tooltip.querySelector("hbox[anonid=\"tooltip-header\"]");
+            if (tooltipHeader) {
+                tooltipHeader.textContent = siteName;
+                tooltipHeader.hidden = false;
+            }
+            contentGrid.hidden = false;
+            let row = contentGrid.querySelectorAll("rows>*");
+            for (let i = 0; i < row.length; i++) {
+                row[i].hidden = true;
+            }
+            let values = [];
+            let showWarning = this.application.api.Settings.getValue("show-warning", this.WIID);
+            if (typeof master.masterID != "undefined" && master.masterID !== null) {
+                if (master.verification == "VERIFIED") {
+                    if (master.pages) {
+                        values.push({
+                            elem: "row[anonid=\"status-tooltip\"]",
+                            value: master.virused ? this.TEXT_VIRUSED : this.TEXT_NOTVIRUSED
+                        });
+                        values.push({
+                            elem: "row[anonid=\"tcy-tooltip\"]",
+                            value: master.tcy ? master.tcy : this.TEXT_SMALLTCY
+                        });
+                        values.push({
+                            elem: "row[anonid=\"pages-tooltip\"]",
+                            value: master.pages
+                        });
+                        values.push({
+                            elem: "row[anonid=\"urls-tooltip\"]",
+                            value: master.urls
+                        });
+                    } else {
+                        values.push({ elem: "hbox[anonid=\"noindex-tooltip\"]" });
+                    }
+                } else {
+                    values.push({ elem: "hbox[anonid=\"masterfailed-tooltip-1\"]" });
+                    values.push({ elem: "hbox[anonid=\"masterfailed-tooltip-2\"]" });
+                }
+            } else {
+                if (showWarning) {
+                    values.push({ elem: "hbox[anonid=\"masteradd-tooltip\"]" });
+                }
+            }
+            if (typeof metrika.metrikaID != "undefined" && metrika.metrikaID !== null) {
+                if (metrika.metrikaVerified == "CS_OK") {
+                    values.push({
+                        elem: "row[anonid=\"vizit-tooltip\"]",
+                        value: metrika.metrikaVisits
+                    });
+                    values.push({
+                        elem: "row[anonid=\"pageviews-tooltip\"]",
+                        value: metrika.metrikaPageViews
+                    });
+                    values.push({
+                        elem: "row[anonid=\"visitors-tooltip\"]",
+                        value: metrika.metrikaVisitors
+                    });
+                } else {
+                    values.push({ elem: "hbox[anonid=\"metrikafailed-tooltip-1\"]" });
+                    values.push({ elem: "hbox[anonid=\"metrikafailed-tooltip-2\"]" });
+                }
+            } else {
+                if (showWarning) {
+                    values.push({ elem: "hbox[anonid=\"metrikaadd-tooltip\"]" });
+                }
+            }
+            values.forEach(function (obj) {
+                let elem = contentGrid.querySelector(obj.elem);
+                if (elem) {
+                    if (obj.value) {
+                        elem.lastChild.setAttribute("value", obj.value);
+                    }
+                    elem.hidden = false;
+                }
+            });
+        }
+    }]]></body>
+            </method>
+
+            <method name="_fixTooltipWarnings">
+                <body><![CDATA[    let showWarning = this.application.api.Settings.getValue("show-warning", this.WIID);
+    let contentGrid = this._tooltip.querySelector("grid[anonid=\"tooltip-content\"]");
+    if (!showWarning) {
+        [
+            "hbox[anonid=\"masteradd-tooltip\"]",
+            "hbox[anonid=\"metrikaadd-tooltip\"]"
+        ].forEach(function (sel) {
+            try {
+                contentGrid.querySelector(sel).hidden = true;
+            } catch (e) {
+            }
+        });
+    } else {
+        let data = this.application.getUserData(this.WIID, "main");
+        let master = data.master || {};
+        let metrika = data.metrikaSpec || {};
+        if (typeof master.masterID == "undefined" || master.masterID === null) {
+            try {
+                contentGrid.querySelector("hbox[anonid=\"masteradd-tooltip\"]").hidden = false;
+            } catch (e) {
+            }
+        }
+        if (typeof metrika.metrikaID == "undefined" || metrika.metrikaID === null) {
+            try {
+                contentGrid.querySelector("hbox[anonid=\"metrikaadd-tooltip\"]").hidden = false;
+            } catch (e) {
+            }
+        }
+    }]]></body>
+            </method>
+
+            <method name="_populateMenuItems">
+                <body><![CDATA[    this._cleanMenuItems();
+    let data = this.application.getUserData(this.WIID, "main");
+    let siteName = this._getSelectedName();
+    let siteMenuItem = this._menuPopup.querySelector("menuitem[anonid=\"menuitem-site\"]");
+    if (siteName) {
+        siteMenuItem.setAttribute("label", siteName);
+        siteMenuItem.hidden = false;
+        siteMenuItem.previousElementSibling && (siteMenuItem.previousElementSibling.hidden = false);
+    }
+    if (data) {
+        let values = [];
+        let master = data.master || {};
+        let metrika = data.metrikaSpec || {};
+        let menuItemsFiller = function (obj) {
+            let elem = this._menuPopup.querySelector(obj.elem);
+            if (elem) {
+                if (obj.value) {
+                    elem.setAttribute("label", obj.value);
+                }
+                if (obj.param) {
+                    elem.setAttribute("item-param", obj.param);
+                }
+                elem.hidden = false;
+            }
+        }.bind(this);
+        if (master.masterID !== null && master.verification == "VERIFIED" && master.pages) {
+            let tcy = master.tcy ? master.tcy : this.TEXT_SMALLTCY;
+            values.push({
+                elem: "[anonid=\"menuitem-tcy\"]",
+                value: this.LABEL_MASTER_TCY + " " + tcy,
+                param: master.masterID
+            });
+            values.push({
+                elem: "[anonid=\"menuitem-pages\"]",
+                value: this.LABEL_MASTER_PAGES + " " + master.pages,
+                param: master.masterID
+            });
+            values.push({ elem: "[anonid=\"menuitem-before-snippets\"]" });
+            values.push({
+                elem: "[anonid=\"menuitem-snippets\"]",
+                value: this.LABEL_MASTER_SNIPPETS,
+                param: master.masterID
+            });
+            values.push({ elem: "[anonid=\"menuitem-before-master\"]" });
+        }
+        if (metrika.metrikaID !== null && metrika.metrikaVerified == "CS_OK") {
+            values.push({
+                elem: "[anonid=\"menuitem-visits\"]",
+                value: this.LABEL_METRIKA_VISITS + " " + metrika.metrikaVisits,
+                param: "counter_id=" + metrika.metrikaID + "&chart_type=visits"
+            });
+            values.push({
+                elem: "[anonid=\"menuitem-pageviews\"]",
+                value: this.LABEL_METRIKA_PAGEVIEWS + " " + metrika.metrikaPageViews,
+                param: "counter_id=" + metrika.metrikaID + "&chart_type=page_views"
+            });
+            values.push({
+                elem: "[anonid=\"menuitem-visitors\"]",
+                value: this.LABEL_METRIKA_VISITORS + " " + metrika.metrikaVisitors,
+                param: "counter_id=" + metrika.metrikaID + "&chart_type=visitors"
+            });
+            values.push({ elem: "[anonid=\"menuitem-before-metrika\"]" });
+        }
+        values.forEach(menuItemsFiller);
+    }]]></body>
+            </method>
+
+            <method name="_cleanMenuItems">
+                <body><![CDATA[    let items = [
+        "menuitem-before-sites",
+        "menuitem-site",
+        "menuitem-before-master",
+        "menuitem-tcy",
+        "menuitem-pages",
+        "menuitem-before-snippets",
+        "menuitem-snippets",
+        "menuitem-before-metrika",
+        "menuitem-visits",
+        "menuitem-pageviews",
+        "menuitem-visitors"
+    ];
+    let menu = this._menuPopup;
+    items.forEach(function (item) {
+        let elem = menu.querySelector("[anonid=\"" + item + "\"]");
+        if (elem) {
+            elem.removeAttribute("label");
+            elem.hidden = true;
+        }
+    });]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="event"/>
+                <body><![CDATA[    switch (event.type) {
+    case "load":
+        let img = event.target;
+        if (img.width > 10 && img.height > 10) {
+            this._button.setAttribute("image", img.src);
+        }
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+</bindings>

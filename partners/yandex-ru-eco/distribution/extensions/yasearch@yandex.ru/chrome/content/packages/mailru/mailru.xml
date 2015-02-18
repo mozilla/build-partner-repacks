@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "mailru/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="mailru/content/img/mailru-main.png" icon-vector="mailru/content/img/mailru-main.svg" name="&mailru.widget.name;" unique="true">
+
+    <f:setting default="true" name="show-compose-button" scope="widget">
+        <control label="&mailru.settings.new-message.show;" type="checkbox"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="mailru/core/widget.jsm"/>
+    </modules>
+</widget>

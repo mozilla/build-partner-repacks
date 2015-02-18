@@ -6,7 +6,7 @@ const {
     results: Cr,
     utils: Cu
 } = Components;
-const OBSERVER_SERVICE = Cc["@mozilla.org/observer-service;1"].getService(Ci.nsIObserverService);
+Cu.import("resource://gre/modules/Services.jsm");
 const AddonManager = {
     SCOPE_PROFILE: 1,
     SCOPE_APPLICATION: 4,
@@ -25,27 +25,46 @@ const AddonManager = {
         delete this.gre_AddonManager;
         return this.gre_AddonManager = Cu.import("resource://gre/modules/AddonManager.jsm", {}).AddonManager;
     },
-    _getInstallRdfContent: function AM__getInstallRdfContent(aAddonDirectory) {
-        let installRDFFile = aAddonDirectory;
-        installRDFFile.append("install.rdf");
+    _getInstallRdfContent: function AM__getInstallRdfContent(aExtensionURI) {
+        if (aExtensionURI instanceof Ci.nsIFile) {
+            let installRDFFile = aExtensionURI;
+            installRDFFile.append("install.rdf");
+            let content = "";
+            try {
+                let inputStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
+                inputStream.init(installRDFFile, 1, 0, inputStream.CLOSE_ON_EOF);
+                let fileSize = inputStream.available();
+                let cvstream = Cc["@mozilla.org/intl/converter-input-stream;1"].createInstance(Ci.nsIConverterInputStream);
+                cvstream.init(inputStream, "UTF-8", fileSize, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
+                let data = {};
+                cvstream.readString(fileSize, data);
+                content = data.value;
+                cvstream.close();
+            } catch (e) {
+                Cu.reportError(e);
+            }
+            return content;
+        }
+        let installFileURI = Services.io.newURI(aExtensionURI.resolve("install.rdf"), null, null);
+        let installFileChannel = Services.io.newChannelFromURI(installFileURI);
+        let installFileStream = installFileChannel.open();
         let content = "";
+        let streamSize = installFileStream.available();
+        let converterStream = Cc["@mozilla.org/intl/converter-input-stream;1"].createInstance(Ci.nsIConverterInputStream);
         try {
-            let inputStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
-            inputStream.init(installRDFFile, 1, 0, inputStream.CLOSE_ON_EOF);
-            let fileSize = inputStream.available();
-            let cvstream = Cc["@mozilla.org/intl/converter-input-stream;1"].createInstance(Ci.nsIConverterInputStream);
-            cvstream.init(inputStream, "UTF-8", fileSize, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
             let data = {};
-            cvstream.readString(fileSize, data);
+            converterStream.init(installFileStream, "UTF-8", streamSize, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
+            converterStream.readString(streamSize, data);
             content = data.value;
-            cvstream.close();
         } catch (e) {
             Cu.reportError(e);
+        } finally {
+            converterStream.close();
         }
         return content;
     },
-    getAddonVersion: function AM_getAddonVersion(aAddonDirectory) {
-        let installRdfContent = this._getInstallRdfContent(aAddonDirectory);
+    getAddonVersion: function AM_getAddonVersion(aExtensionURI) {
+        let installRdfContent = this._getInstallRdfContent(aExtensionURI);
         if (installRdfContent) {
             let version = installRdfContent.match(/<em:version>([^<]*)<\/em:version>/);
             if (version && /^\d+\.\d+/.test(version[1])) {
@@ -54,8 +73,8 @@ const AddonManager = {
         }
         throw new Error("AddonManager: can't get addon version from install.rdf");
     },
-    getAddonId: function AM_getAddonId(aAddonDirectory) {
-        let installRdfContent = this._getInstallRdfContent(aAddonDirectory);
+    getAddonId: function AM_getAddonId(aExtensionURI) {
+        let installRdfContent = this._getInstallRdfContent(aExtensionURI);
         if (installRdfContent) {
             let addonId = installRdfContent.match(/<em:id>([^<]*)<\/em:id>/);
             if (addonId && addonId[1]) {
@@ -157,12 +176,12 @@ const AddonManager = {
     observe: function AM_observe(aSubject, aTopic, aData) {
         switch (aTopic) {
         case "browser-ui-startup-complete":
-            OBSERVER_SERVICE.removeObserver(this, "browser-ui-startup-complete");
-            OBSERVER_SERVICE.addObserver(this, "xpcom-shutdown", false);
+            Services.obs.removeObserver(this, "browser-ui-startup-complete");
+            Services.obs.addObserver(this, "xpcom-shutdown", false);
             this.startup();
             break;
         case "xpcom-shutdown":
-            OBSERVER_SERVICE.removeObserver(this, "xpcom-shutdown");
+            Services.obs.removeObserver(this, "xpcom-shutdown");
             this.shutdown();
             break;
         default:
@@ -175,7 +194,7 @@ const AddonManager = {
         if (!watchingAddon) {
             return;
         }
-        watchingAddon.installed = !(aEventType == "onUninstalling");
+        watchingAddon.installed = aEventType !== "onUninstalling";
     },
     _watchingAddons: Object.create(null),
     watchAddonUninstall: function AM_watchAddonUninstall(aAddonId) {
@@ -243,4 +262,4 @@ function sleep(aTimeout, aConditionFunction) {
         thread.processNextEvent(true);
     }
 }
-OBSERVER_SERVICE.addObserver(AddonManager, "browser-ui-startup-complete", false);
+Services.obs.addObserver(AddonManager, "browser-ui-startup-complete", false);

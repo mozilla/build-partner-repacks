@@ -1,0 +1,10 @@
+<!ENTITY mc.widget.name "Tam adrese">
+
+<!ENTITY mc.widget.cancel.label "İpuçlarını kapat">
+<!ENTITY mc.widget.changedFrom.label "Şundan düzeltildi:">
+<!ENTITY mc.widget.changedTo.label "">
+<!ENTITY mc.widget.changedTo2.label "olarak düzeltildi">
+<!ENTITY mc.widget.close.label "Kapat">
+<!ENTITY mc.widget.go.label "Git">
+<!ENTITY mc.widget.removeRule.label "Kuralı kaldır">
+<!ENTITY mc.widget.suggestion.label "Bunu mu demek istediniz">

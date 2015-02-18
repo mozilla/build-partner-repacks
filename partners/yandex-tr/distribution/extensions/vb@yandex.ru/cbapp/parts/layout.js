@@ -122,8 +122,9 @@ const layout = {
                     w,
                     h
                 ] = conf[i];
-                if (w > width || h > height)
+                if (w > width || h > height) {
                     continue;
+                }
                 let sum = w + h;
                 if (sum > maxSum[0]) {
                     maxSum[0] = sum;
@@ -192,8 +193,9 @@ const layout = {
             layout.text = layout.x + "x" + layout.y;
             return layout;
         }).filter(function (layout) {
-            if (displayed[layout.text])
+            if (displayed[layout.text]) {
                 return false;
+            }
             displayed[layout.text] = true;
             return true;
         }).sort((a, b) => a.x * a.y - b.x * b.y);
@@ -202,8 +204,16 @@ const layout = {
             layouts: layouts.map(layout => String(layout.text || layout.x * layout.y))
         };
     },
-    get layoutX() parseInt(this._application.preferences.get("ftabs.layoutX"), 10),
-    set layoutX(val) this._application.preferences.set("ftabs.layoutX", parseInt(val, 10)),
-    get layoutY() parseInt(this._application.preferences.get("ftabs.layoutY"), 10),
-    set layoutY(val) this._application.preferences.set("ftabs.layoutY", parseInt(val, 10))
+    get layoutX() {
+        return parseInt(this._application.preferences.get("ftabs.layoutX"), 10);
+    },
+    set layoutX(val) {
+        this._application.preferences.set("ftabs.layoutX", parseInt(val, 10));
+    },
+    get layoutY() {
+        return parseInt(this._application.preferences.get("ftabs.layoutY"), 10);
+    },
+    set layoutY(val) {
+        this._application.preferences.set("ftabs.layoutY", parseInt(val, 10));
+    }
 };

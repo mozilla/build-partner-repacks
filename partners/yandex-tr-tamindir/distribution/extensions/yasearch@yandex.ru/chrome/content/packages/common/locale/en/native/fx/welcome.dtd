@@ -1,0 +1,45 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY welcome.dialog.title "My &product2.nom;">
+
+<!ENTITY welcome.login.button.label "Log in">
+
+<!ENTITY welcome.enter.label "Log in">
+<!ENTITY welcome.mybar.label "&product1.nom;">
+
+<!ENTITY welcome.login.label "Login">
+<!ENTITY welcome.login.vaild.tooltiptext "Login must contain&#160;latin letters, numbers, single hyphen or full stop, and start from a&#160;letter&#160;and end with a letter or number">
+<!ENTITY welcome.password.label "Password">
+<!ENTITY welcome.store-password.label "remember me">
+<!ENTITY welcome.remember-password.1.label "forgot">
+<!ENTITY welcome.remember-password.2.label "your password">
+<!ENTITY welcome.registration.label "registration">
+
+<!ENTITY welcome.show.label "show">
+<!ENTITY welcome.hide.label "hide">
+
+<!ENTITY welcome.maxErrors1.label "Try to log in through&#160;">
+<!ENTITY welcome.maxErrors2.label "Yandex.Passport">
+
+<!ENTITY welcome.status.request.error.label "Uploading your mood failed!">
+<!ENTITY welcome.status.request.error.close.label "close">
+<!ENTITY welcome.status.empty.label "not in mood">
+
+<!ENTITY welcome.status.request.label "Logging in">
+<!ENTITY welcome.status.error.label "Make sure that your username and password are correct">
+<!ENTITY welcome.status.neterror.label "Check your network connection">
+
+<!ENTITY welcome.user.switch.label "Switch user">
+<!ENTITY welcome.user.exit.label "Log out">
+
+<!ENTITY services.iuse.label "I use">
+<!ENTITY services.iuse.all.label "All my services">
+<!ENTITY services.status.request.label "Retrieving data">
+<!ENTITY services.status.error.label "Error retrieving data">
+
+<!ENTITY welcome.go.registration.label "register">
+<!ENTITY welcome.go.remember.password.label "forgot your password?">
+<!ENTITY welcome.or.label "or">
+<!ENTITY welcome.social.enter.label "log in with">
+<!ENTITY welcome.strange.computer.label "don&#39;t remember me">

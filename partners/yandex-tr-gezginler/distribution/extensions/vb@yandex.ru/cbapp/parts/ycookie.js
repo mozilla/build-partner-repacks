@@ -30,8 +30,9 @@ const yCookie = {
     ],
     getAnyValue: function YCookie_getAnyValue(aFieldName) {
         let yCookieValue = this.getYandexCookie("ys", aFieldName);
-        if (yCookieValue === null)
+        if (yCookieValue === null) {
             yCookieValue = this.getYandexCookie("yp", aFieldName);
+        }
         return yCookieValue;
     },
     getValue: function YCookie_getValue(aCookieName, aFieldName, aDomain) {
@@ -47,8 +48,9 @@ const yCookie = {
                 break;
             }
             let match = yCookieValue.match(reg);
-            if (match)
+            if (match) {
                 return decodeURIComponent(match[1]);
+            }
         }
         return null;
     },
@@ -59,10 +61,12 @@ const yCookie = {
         let timeNowSec = Math.ceil(Date.now() / 1000);
         let domain = aDomain || ".yandex.ru";
         for (let existCookie of this._application.core.Lib.netutils.getCookiesFromHost(domain)) {
-            if (existCookie.name !== aCookieName)
+            if (existCookie.name !== aCookieName) {
                 continue;
-            if (!existCookie.isSession && timeNowSec < existCookie.expiry)
+            }
+            if (!existCookie.isSession && timeNowSec < existCookie.expiry) {
                 continue;
+            }
             return existCookie.value;
         }
         return null;
@@ -86,14 +90,15 @@ const yCookie = {
         let ySubCookies = (aCookieValue || "").split("#");
         let found = false;
         for (let i = ySubCookies.length; i--;) {
-            if (ySubCookies[i].indexOf(aFieldName + ".") == 0) {
+            if (ySubCookies[i].indexOf(aFieldName + ".") === 0) {
                 found = true;
                 ySubCookies[i] = aFieldValue === null ? null : aFieldName + "." + aFieldValue;
                 break;
             }
         }
-        if (!found && aFieldValue)
+        if (!found && aFieldValue) {
             ySubCookies.push(aFieldName + "." + aFieldValue);
-        return ySubCookies.filter(v => !!v).join("#");
+        }
+        return ySubCookies.filter(Boolean).join("#");
     }
 };

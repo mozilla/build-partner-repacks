@@ -23,7 +23,9 @@ BarPlatform.PackageManifest.EPacManifestSyntax.prototype = {
     constructor: BarPlatform.PackageManifest.EPacManifestSyntax,
     _message: "Package manifest parse error",
     _elementName: undefined,
-    get _details() [this._elementName]
+    get _details() {
+        return [this._elementName];
+    }
 };
 BarPlatform.PackageManifest.prototype = {
     constructor: BarPlatform.PackageManifest,
@@ -52,7 +54,7 @@ BarPlatform.PackageManifest.prototype = {
             switch (childElement.localName) {
             case "package":
                 let versionMin = parseInt(childElement.getAttribute("platform-min"), 10);
-                if (!(versionMin > 0)) {
+                if (versionMin < 1) {
                     throw new BarPlatform.PackageManifest.EPacManifestSyntax(childElement.nodeName);
                 }
                 let packageVersion = childElement.getAttribute("version") || "1.0";

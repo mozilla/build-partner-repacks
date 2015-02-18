@@ -1,0 +1,4 @@
+<!ENTITY spam.name "Це спам">
+<!ENTITY spam.tooltiptext "Вважаєте сторінку спамом - відправте скаргу">
+<!ENTITY spam.action.label "Я вважаю цю сторінку спамом">
+<!ENTITY spam.help.label "Що значить &#171;це спам&#187;?">

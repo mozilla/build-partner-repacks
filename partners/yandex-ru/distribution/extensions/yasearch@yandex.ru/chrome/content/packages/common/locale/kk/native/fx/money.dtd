@@ -1,0 +1,7 @@
+<!ENTITY money.name "Яндекс.Ақша">
+<!ENTITY money.tooltiptext "Яндекс.Ақша жүйесінде есепшоттың жағдайын">
+<!ENTITY money.noauthtooltiptext "Яндекс.Ақша жүйесінде есепшоттың жағдайын көрсетеді">
+<!ENTITY money.tooltiptext.notauth "Авторизациядан өтуіңізді сұраймыз">
+<!ENTITY money.reloadCounter.label "Ақша туралы мәліметті жаңарту">
+<!ENTITY money.link.shop.label "Қызметтер үшін төлеу">
+<!ENTITY money.link.prepay.label "Ақшаны қосу">

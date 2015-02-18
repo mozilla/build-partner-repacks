@@ -132,11 +132,13 @@ const backgroundImages = {
             return output;
         }
         this.list.forEach(function ({id, image, preview, color}) {
-            if (output.image)
+            if (output.image) {
                 return;
+            }
             let leafName = image.split("/").pop();
-            if (leafName !== prefValue)
+            if (leafName !== prefValue) {
                 return;
+            }
             output.id = id;
             output.preview = preview;
             output.image = image;
@@ -177,8 +179,9 @@ const backgroundImages = {
         }
         let skinSelectedData;
         this.list.forEach(function (skinData) {
-            if (skinSelectedData || skinData.id !== id)
+            if (skinSelectedData || skinData.id !== id) {
                 return;
+            }
             skinSelectedData = skinData;
         });
         if (!skinSelectedData) {
@@ -254,14 +257,15 @@ const backgroundImages = {
         let filepickerBundle = new this._application.appStrings.StringBundle("chrome://global/locale/filepicker.properties");
         let filterTitle = filepickerBundle.tryGet("imageTitle");
         if (filterTitle.length === 0) {
-            this._logger.warn("Can not find \"imageTitle\" key in the filepicker.properties");
+            this._logger.warn("Can not find 'imageTitle' key in the filepicker.properties");
         }
         let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
         filePicker.init(aWindow, null, filePicker.modeOpen);
         filePicker.appendFilter(filterTitle, "*.jpg; *.jpeg; *.gif; *.png");
         let modalDialog = filePicker.show();
-        if (modalDialog !== filePicker.returnOK)
+        if (modalDialog !== filePicker.returnOK) {
             return callback("");
+        }
         this._userUploadedRandom = null;
         let resultFile = this._imagesDir;
         resultFile.append(USER_FILE_LEAFNAME);
@@ -338,8 +342,9 @@ const backgroundImages = {
         }
         while (brandingBgImages.hasMoreElements()) {
             let imgFile = brandingBgImages.getNext().QueryInterface(Ci.nsIFile);
-            if (/^\./.test(imgFile.leafName))
+            if (/^\./.test(imgFile.leafName)) {
                 continue;
+            }
             output.push(imgFile);
         }
         output.sort((a, b) => nameToIndex[a.leafName] - nameToIndex[b.leafName]);
@@ -348,7 +353,8 @@ const backgroundImages = {
     },
     get brandingXMLDoc() {
         delete this.brandingXMLDoc;
-        return this.brandingXMLDoc = this._application.branding.brandPackage.getXMLDocument("fastdial/config.xml");
+        this.brandingXMLDoc = this._application.branding.brandPackage.getXMLDocument("fastdial/config.xml");
+        return this.brandingXMLDoc;
     },
     _initFileSystem: function BackgroundImages__initFileSystem() {
         let bgImagesDir = this._imagesDir;
@@ -462,10 +468,12 @@ const backgroundImages = {
                 let bgImagesDirEntries = self._imagesDir.directoryEntries;
                 while (bgImagesDirEntries.hasMoreElements()) {
                     let imgFile = bgImagesDirEntries.getNext().QueryInterface(Ci.nsIFile);
-                    if (/^\./.test(imgFile.leafName))
+                    if (/^\./.test(imgFile.leafName)) {
                         continue;
-                    if (imgFile.leafName === USER_FILE_LEAFNAME || imgFile.leafName === selectedBgImage || brandingSkins.indexOf(imgFile.leafName) !== -1)
+                    }
+                    if (imgFile.leafName === USER_FILE_LEAFNAME || imgFile.leafName === selectedBgImage || brandingSkins.indexOf(imgFile.leafName) !== -1) {
                         continue;
+                    }
                     self._logger.debug("Remove " + imgFile.leafName + " skin");
                     fileutils.removeFileSafe(imgFile);
                 }
@@ -526,8 +534,9 @@ const backgroundImages = {
     },
     get newBackgrounds() {
         let result = [];
-        if (this._application.preferences.get(PREF_BACKGROUNDS_ADVERT_REFUSED, false))
+        if (this._application.preferences.get(PREF_BACKGROUNDS_ADVERT_REFUSED, false)) {
             return result;
+        }
         let skinsFile = this._skinsFile;
         if (skinsFile.exists() && skinsFile.isFile() && skinsFile.isReadable()) {
             let skins = [];
@@ -538,9 +547,10 @@ const backgroundImages = {
             let lastUpdateTime = parseInt(this._application.preferences.get(PREF_LAST_BACKGROUNDS_UPDATE_TIME, "0"), 10);
             let now = Date.now();
             let newSkins = skins.filter(function (skin) {
-                if (!skin.downloadDate)
+                if (!skin.downloadDate) {
                     return false;
-                return !(Math.abs(now - skin.downloadDate) > BACKGROUND_ADVERT_TIME);
+                }
+                return Math.abs(now - skin.downloadDate) <= BACKGROUND_ADVERT_TIME;
             });
             if (newSkins.length >= ADVERT_BACKGROUNDS_MIN_COUNT) {
                 newSkins.length = Math.min(newSkins.length, ADVERT_BACKGROUNDS_MAX_COUNT);

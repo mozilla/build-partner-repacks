@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE plugin [
+<!ENTITY % translator SYSTEM "native/fx/translator.dtd">
+%translator;
+]>
+<plugin bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="native/fx/translator/icons/translate.png" name="&translate.name;" xmlns:ui="http://bar.yandex.ru/dev/gui">
+
+    <f:setting default="true" name="translate_on_hover" scope="plugin">
+        <ui:control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting default="500" name="interval_show" scope="plugin"/>
+    <f:setting default="none" name="from" scope="plugin"/>
+    <f:setting default="none" name="to" scope="plugin"/>
+
+    <f:setting default="false" name="deflang" scope="plugin"/>
+    <f:setting default="0" name="last_update" scope="plugin"/>
+    <f:setting default="7" name="update_interval" scope="plugin"/>
+
+    <f:setting default="1" name="translate_on_hover_option" scope="plugin"/>
+
+    <modules>
+        <module browser="firefox" file="native/fx/translator/scripts/translate.js"/>
+    </modules>
+</plugin>

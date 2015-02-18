@@ -46,7 +46,7 @@ BarPlatform.CachedResources = {
             throw new CustomErrors.EArgType("resDescr", "ResDescriptor", resDescr);
         }
         let resHash = resDescr.hash;
-        this._logger.debug("Looking for resource with hash \"" + resHash + "\"");
+        this._logger.debug("Looking for resource with hash '" + resHash + "'");
         let resource = this._resources[resHash];
         if (!resource) {
             this._logger.debug("Creating new resource");
@@ -148,13 +148,27 @@ const ResDescriptor = BarPlatform.CachedResources.ResDescriptor = function ResDe
 };
 ResDescriptor.prototype = {
     constructor: BarPlatform.CachedResources.ResDescriptor,
-    get uri() this._uri,
-    get url() this._url,
-    get method() this._method,
-    get isPrivate() this._isPrivate,
-    get updateInterval() this._updateInterval,
-    get expirationInterval() this._expirationInterval,
-    get xpathExpression() this._checkXpathExpr,
+    get uri() {
+        return this._uri;
+    },
+    get url() {
+        return this._url;
+    },
+    get method() {
+        return this._method;
+    },
+    get isPrivate() {
+        return this._isPrivate;
+    },
+    get updateInterval() {
+        return this._updateInterval;
+    },
+    get expirationInterval() {
+        return this._expirationInterval;
+    },
+    get xpathExpression() {
+        return this._checkXpathExpr;
+    },
     get statusRange() {
         return {
             start: this._statusMin,
@@ -220,7 +234,8 @@ function CachedResource(resDescr) {
     sysutils.ensureValueTypeIs(resDescr, ResDescriptor);
     patterns.NotificationSource.apply(this);
     let resFileName = decodeURIComponent(resDescr.uri.path.split("/").slice(-1)) || "[NOFILE]";
-    this._logger = BarPlatform._getLogger("NetRes." + resFileName + "." + ++CachedResource._instCounter);
+    CachedResource._instCounter++;
+    this._logger = BarPlatform._getLogger("NetRes." + resFileName + "." + CachedResource._instCounter);
     this._resDescr = resDescr;
     this._storageKey = this._makeStorageKey(resDescr);
     this._dataExpTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
@@ -231,13 +246,16 @@ function CachedResource(resDescr) {
         this._updateFromDownloader();
     }
 }
-;
 CachedResource._instCounter = 0;
 CachedResource.prototype = {
     __proto__: patterns.NotificationSource.prototype,
     constructor: CachedResource,
-    get descriptor() this._resDescr,
-    get dataIsReady() !this._noData,
+    get descriptor() {
+        return this._resDescr;
+    },
+    get dataIsReady() {
+        return !this._noData;
+    },
     get contentAsText() {
         return this._responseData.bodyText || undefined;
     },
@@ -247,8 +265,12 @@ CachedResource.prototype = {
     get contentAsJSON() {
         return this.contentAsText && JSON.parse(this.contentAsText) || undefined;
     },
-    get headers() this._responseData.headers || undefined,
-    get statusCode() this._responseData.status || undefined,
+    get headers() {
+        return this._responseData.headers || undefined;
+    },
+    get statusCode() {
+        return this._responseData.status || undefined;
+    },
     update: function CachedResource_update(bypassBrowserCache, invalidateCache) {
         let requestId = this._downloader.update(bypassBrowserCache);
         if (invalidateCache) {
@@ -278,7 +300,7 @@ CachedResource.prototype = {
         this.removeAllListeners();
     },
     observe: function CachedResource_observe(subject, topic, data) {
-        if (subject == null) {
+        if (!subject) {
             this._logger.debug("CachedResource.observe(): HTTP-status: " + this.statusCode);
         }
         if (subject != this._downloader || topic != "finished") {
@@ -289,7 +311,7 @@ CachedResource.prototype = {
             if (this._updateFromDownloader()) {
                 try {
                     this._resetExpiryTimer();
-                    if (this._resDescr.expirationInterval == 0) {
+                    if (this._resDescr.expirationInterval === 0) {
                         return;
                     }
                     this._logger.debug("Storing to cache: " + this._storageKey);
@@ -340,7 +362,9 @@ CachedResource.prototype = {
     _reqFlags: undefined,
     _pendingCacheQuery: null,
     _REQ_FLAG_INVALIDATE_CACHE: 1,
-    get _downloader() BarPlatform.CachedResources._getDownloader(this._resDescr),
+    get _downloader() {
+        return BarPlatform.CachedResources._getDownloader(this._resDescr);
+    },
     _queryCache: function CachedResource__queryCache() {
         this._pendingCacheQuery = BarPlatform.CachedResources._cache.startSearch(this._storageKey, this._resDescr.expirationInterval, this._onCacheResults.bind(this));
         this._logger.debug(strutils.formatString("Started search '%1' not older than %2s", [
@@ -496,10 +520,10 @@ function ResourceDownloader(resDescr) {
     };
     this._timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
     let resFileName = decodeURIComponent(resDescr.uri.path.split("/").slice(-1)) || "[NOFILE]";
-    this._logger = BarPlatform._getLogger("NetDlr." + resFileName + "." + ++ResourceDownloader._instCounter);
+    ResourceDownloader._instCounter++;
+    this._logger = BarPlatform._getLogger("NetDlr." + resFileName + "." + ResourceDownloader._instCounter);
     this._logger.debug("Downloader created for " + this._resDescr.url);
 }
-;
 ResourceDownloader._instCounter = 0;
 ResourceDownloader.prototype = {
     __proto__: patterns.NotificationSource.prototype,
@@ -633,7 +657,7 @@ ResourceDownloader.prototype = {
         } catch (e) {
             this._logger.error("Error in ResourceDownloader::_handleResponse. " + strutils.formatError(e));
         } finally {
-            let responseError = this._responseData.status < this._resDescr.statusRange.start || this._responseData.status > this._resDescr.statusRange.end || this._responseData.bodyText == null;
+            let responseError = this._responseData.status < this._resDescr.statusRange.start || this._responseData.status > this._resDescr.statusRange.end || !this._responseData.bodyText;
             if (responseError) {
                 this._logger.debug("_handleResponse: ERROR;  HTTP-status: " + this._responseData.status);
             }

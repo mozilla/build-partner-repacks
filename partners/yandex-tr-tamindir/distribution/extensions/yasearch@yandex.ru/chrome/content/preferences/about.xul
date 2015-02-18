@@ -1,0 +1,51 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="preferences.css"?>
+<?xml-stylesheet href="controls.css"?>
+
+<!DOCTYPE overlay [
+<!ENTITY % preferencesDTD SYSTEM "../../../locale/preferences/preferences.dtd">
+%preferencesDTD;
+<!ENTITY % aboutDialogDTD SYSTEM "../../../locale/about/about.dtd">
+%aboutDialogDTD;
+]>
+
+<overlay xmlns:html="http://www.w3.org/1999/xhtml" id="prefpane-about-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <prefpane flex="1" id="prefpane-about">
+        <vbox class="prefWindow-dlgbuttons-hack"/>
+
+        <preferences/>
+
+        <vbox class="container" flex="1">
+            <vbox flex="1" id="bar-about-holder">
+                <vbox flex="1" id="bar-about-box">
+                    <separator class="thin" flex="1"/>
+
+                    <html:h2 id="bar-about-title"/>
+                    <html:h3 id="bar-about-for"/>
+
+                    <separator class="thin" flex="1"/>
+
+                    <html:p id="bar-version">&about.version;: <label/></html:p>
+                    <html:p id="bar-date">&about.releasedate;: <html:span/></html:p>
+
+                    <html:p id="bar-site">
+                      <html:a href="" id="bar-about-bar-site-link" onclick="aboutDlg.openLinkURL(this); return false;">&about.homepage;</html:a>
+                    </html:p>
+                    <html:p>
+                      <html:a href="" id="bar-license-agreement-link" onclick="aboutDlg.openLinkURL(this); return false;">&about.license;</html:a>
+                    </html:p>
+
+                    <separator flex="5"/>
+
+                    <html:div id="bar-copyright">
+                      <html:img id="bar-about-logo"/>
+                      <html:span id="bar-about-copyright"/>
+                    </html:div>
+
+                    <separator flex="5"/>
+                </vbox>
+            </vbox>
+        </vbox>
+    </prefpane>
+</overlay>

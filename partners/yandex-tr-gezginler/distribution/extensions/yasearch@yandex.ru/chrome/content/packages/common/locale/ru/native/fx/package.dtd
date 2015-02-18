@@ -1,0 +1,6 @@
+<!ENTITY package.counters.upd-interval.label "Интервал обновления">
+<!ENTITY package.counters.upd-interval.units "мин.">
+
+<!ENTITY package.logout.noprompt.label "Не запрашивать подтверждение при выходе">
+
+

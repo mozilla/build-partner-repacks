@@ -1,0 +1,14 @@
+<!ENTITY powerfm.widget.name "Power Radios">
+
+<!ENTITY powerfm.update.browser.unsupported "Ваша версия браузера не поддерживает работу Power Radios.">
+<!ENTITY powerfm.update.browser.needupdate "Обновите браузер на более свежую версию.">
+<!ENTITY powerfm.update.browser.link "Обновить браузер">
+
+<!ENTITY powerfm.api.unavailable "По техническим причинам Power Radios временно недоступно.">
+<!ENTITY powerfm.try.later "Попробуйте позднее.">
+
+<!ENTITY powerfm.internet.unavailable "Отсутствует подключение к интернету.">
+
+<!ENTITY extension.title "Радио в Элементах Яндекса">
+<!ENTITY powerfm.name "Power Radios">
+<!ENTITY extension.description "Доступ к радиостанциям Power посредством Элементов Яндекса, прямо с панели браузера">

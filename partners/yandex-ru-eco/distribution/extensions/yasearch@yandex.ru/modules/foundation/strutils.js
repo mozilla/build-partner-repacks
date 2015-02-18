@@ -63,7 +63,7 @@ const strutils = {
             }
         }
         let result;
-        if (precision == undefined) {
+        if (precision === undefined) {
             result = sign + Math.abs(num).toLocaleString();
         } else {
             let order = Math.pow(10, precision);
@@ -143,7 +143,10 @@ const strutils = {
     _Ci: Components.interfaces,
     _Cc: Components.classes,
     _ESCAPE_RE: /([.*+?^=!:${}()|[\]\/\\])/g,
-    _STR_LOCALE_DECIMAL_SEPARATOR: 1.1.toLocaleString()[1],
+    get _STR_LOCALE_DECIMAL_SEPARATOR() {
+        delete this._STR_LOCALE_DECIMAL_SEPARATOR;
+        return this._STR_LOCALE_DECIMAL_SEPARATOR = 1.1.toLocaleString()[1];
+    },
     get _STR_LOCALE_GROUP_SEPARATOR_RE() {
         delete this._STR_LOCALE_GROUP_SEPARATOR_RE;
         let separator = " ";
@@ -151,6 +154,7 @@ const strutils = {
         if (nmbLocaleStr.length > 4 && nmbLocaleStr[1] != "0") {
             separator = nmbLocaleStr[1];
         }
-        return this._STR_LOCALE_GROUP_SEPARATOR_RE = new RegExp(this.escapeRE(separator), "g");
+        this._STR_LOCALE_GROUP_SEPARATOR_RE = new RegExp(this.escapeRE(separator), "g");
+        return this._STR_LOCALE_GROUP_SEPARATOR_RE;
     }
 };

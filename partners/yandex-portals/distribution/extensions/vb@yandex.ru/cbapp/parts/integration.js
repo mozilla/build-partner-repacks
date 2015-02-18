@@ -45,18 +45,20 @@ YandexBrowser.prototype = {
         return this._getBrowserExecutable();
     },
     get isInstalled() {
-        return !!this.browserExcecutable;
+        return Boolean(this.browserExcecutable);
     },
     get isDefaultBrowser() {
         return this._isDefaultBrowser();
     },
     get lastLaunch() {
-        if (this._platform !== "windows")
+        if (this._platform !== "windows") {
             return 0;
+        }
         let WinReg = this._winReg;
         let lastLaunch = Number(WinReg.read("HKCU", "Software\\Yandex\\YandexBrowser", "lastrun"));
-        if (!lastLaunch)
+        if (!lastLaunch) {
             return 0;
+        }
         return Math.floor((lastLaunch - 11644473600000000) / 1000);
     },
     get version() {
@@ -65,7 +67,7 @@ YandexBrowser.prototype = {
         if (browserExcecutable) {
             switch (this._platform) {
             case "windows": {
-                    let wshScriptText = "                                                                               var browserPath = WScript.Arguments.Item(0);                                                    var fso  = WScript.CreateObject(\"Scripting.FileSystemObject\");                                  var ver = fso.GetFileVersion(browserPath);                                                      echo(ver);                                                                                  ";
+                    let wshScriptText = "var browserPath = WScript.Arguments.Item(0);" + "var fso  = WScript.CreateObject('Scripting.FileSystemObject');" + "var ver = fso.GetFileVersion(browserPath);" + "echo(ver);";
                     version = this._runWSHScriptWin("bversion", wshScriptText, [browserExcecutable.path]);
                     break;
                 }
@@ -80,8 +82,9 @@ YandexBrowser.prototype = {
                 break;
             }
         }
-        if (!(version && /^\d+\.\d+/.test(version)))
+        if (!(version && /^\d+\.\d+/.test(version))) {
             version = undefined;
+        }
         return version;
     },
     openBrowser: function YandexBrowser_openBrowser(aURL) {
@@ -138,10 +141,10 @@ YandexBrowser.prototype = {
     },
     _getBrowserExecutableWin: function YandexBrowser__getBrowserExecutableWin() {
         const DISTRIB_EXECUTABLE = "browser.exe";
-        let distribLocation = this._winReg.read("HKCU", "Software\\Yandex\\YandexBrowser", "InstallerSuccessLaunchCmdLine") || this._winReg.read("HKCU", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YandexBrowser", "InstallLocation") || this._winReg.read("HKCU", "Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YandexBrowser", "InstallLocation");
-        this._winReg.read("HKLM", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YandexBrowser", "InstallLocation") || this._winReg.read("HKLM", "Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YandexBrowser", "InstallLocation");
+        let path = "\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YandexBrowser";
+        let distribLocation = this._winReg.read("HKCU", "Software\\Yandex\\YandexBrowser", "InstallerSuccessLaunchCmdLine") || this._winReg.read("HKCU", "Software" + path, "InstallLocation") || this._winReg.read("HKCU", "Software\\Wow6432Node" + path, "InstallLocation") || this._winReg.read("HKLM", "Software" + path, "InstallLocation") || this._winReg.read("HKLM", "Software\\Wow6432Node" + path, "InstallLocation");
         if (distribLocation) {
-            distribLocation = distribLocation.replace(/^"|"$/g, "");
+            distribLocation = distribLocation.replace(/^'|'$/g, "");
             let dIndex = distribLocation.indexOf("\\" + DISTRIB_EXECUTABLE, distribLocation.length - (DISTRIB_EXECUTABLE.length + 1));
             try {
                 let distribFile = new FileUtils.File(distribLocation);
@@ -194,7 +197,7 @@ YandexBrowser.prototype = {
             return;
         }
         let browserExecutableName = browserExecutable.leafName.replace(/\.app$/, "");
-        let result = this._runBashScriptMac("http", "export VERSIONER_PERL_PREFER_32_BIT=yes; " + "perl -MMac::InternetConfig -le 'print +(GetICHelper \"http\")[1]'");
+        let result = this._runBashScriptMac("http", "export VERSIONER_PERL_PREFER_32_BIT=yes; " + "perl -MMac::InternetConfig -le 'print +(GetICHelper 'http')[1]'");
         return result === browserExecutableName;
     },
     _isDefaultBrowserWin: function YandexBrowser__isDefaultBrowserWin() {
@@ -206,7 +209,7 @@ YandexBrowser.prototype = {
         if (!defaultBrowser) {
             return;
         }
-        defaultBrowser = defaultBrowser.replace(/^"|"$/g, "");
+        defaultBrowser = defaultBrowser.replace(/^'|'$/g, "");
         if (defaultBrowser.indexOf("YandexHTML") === 0) {
             return true;
         }
@@ -215,12 +218,14 @@ YandexBrowser.prototype = {
     _runWSHScriptWin: function YandexBrowser__runWSHScriptWin(aType, aWSHScriptText, aWSHScriptArguments) {
         let result = null;
         let tmpFileIn = this._tryCreateTmpFile("integration-yb-bash-in-" + aType + ".js");
-        if (!tmpFileIn)
+        if (!tmpFileIn) {
             return result;
+        }
         let tmpFileOut = this._tryCreateTmpFile("integration-yb-bash-out-" + aType + ".txt");
-        if (!tmpFileOut)
+        if (!tmpFileOut) {
             return result;
-        aWSHScriptText = "function echo(msg) {" + "    var outFilePath = " + JSON.stringify(tmpFileOut.path) + "; " + "    var fso  = WScript.CreateObject(\"Scripting.FileSystemObject\"); " + "    var outFile = fso.OpenTextFile(outFilePath, 2, true, -1); " + "    outFile.Write(msg);" + "}" + aWSHScriptText;
+        }
+        aWSHScriptText = "function echo(msg) {" + "    var outFilePath = " + JSON.stringify(tmpFileOut.path) + "; " + "    var fso  = WScript.CreateObject('Scripting.FileSystemObject'); " + "    var outFile = fso.OpenTextFile(outFilePath, 2, true, -1); " + "    outFile.Write(msg);" + "}" + aWSHScriptText;
         let args = [tmpFileIn.path].concat(aWSHScriptArguments || []).concat([
             "//nologo",
             "//B"
@@ -243,8 +248,9 @@ YandexBrowser.prototype = {
     _runBashScriptMac: function YandexBrowser__runBashScriptMac(aType, aArgsString) {
         let result = null;
         let tmpFile = this._tryCreateTmpFile("integration-yb-bash-out-" + aType + ".txt");
-        if (!tmpFile)
+        if (!tmpFile) {
             return result;
+        }
         let args = [
             "-c",
             aArgsString + " > " + tmpFile.path.replace(/\W/g, "\\$&") + " 2> /dev/null"
@@ -287,8 +293,9 @@ YandexDisk.prototype = {
                 let regPath = "Software\\Yandex\\Yandex.Disk.Installer3";
                 let regName = "FullVersion";
                 diskVersion = this._winReg.read("HKCU", regPath, regName) || this._winReg.read("HKLM", regPath, regName) || null;
-                if (!/^\d+/.test(diskVersion))
+                if (!/^\d+/.test(diskVersion)) {
                     diskVersion = null;
+                }
                 break;
             }
         case "mac": {
@@ -298,7 +305,7 @@ YandexDisk.prototype = {
                 tmpFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, parseInt("0666", 8));
                 let args = [
                     "-c",
-                    "IFS=$'\n'; for f in $(mdfind \"kMDItemCFBundleIdentifier=ru.yandex.desktop.disk\");                      do defaults read \"$f/Contents/Info.plist\" CFBundleShortVersionString 2> /dev/null;                      done | sort -n -r > " + tmpFile.path.replace(/\W/g, "\\$&")
+                    "IFS=$'\n'; for f in $(mdfind 'kMDItemCFBundleIdentifier=ru.yandex.desktop.disk');" + " do defaults read '$f/Contents/Info.plist' CFBundleShortVersionString 2> /dev/null;" + " done | sort -n -r > " + tmpFile.path.replace(/\W/g, "\\$&")
                 ];
                 let bashFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
                 bashFile.initWithPath("/bin/bash");
@@ -307,8 +314,9 @@ YandexDisk.prototype = {
                     process.init(bashFile);
                     process.runw(true, args, args.length);
                     diskVersion = this._app.core.Lib.fileutils.readTextFile(tmpFile).split("\n")[0] || null;
-                    if (!/^\d+/.test(diskVersion))
+                    if (!/^\d+/.test(diskVersion)) {
                         diskVersion = null;
+                    }
                 } catch (e) {
                     this._logger.error("Can not run process for get Yandex.Disk version.");
                     this._logger.debug(e);

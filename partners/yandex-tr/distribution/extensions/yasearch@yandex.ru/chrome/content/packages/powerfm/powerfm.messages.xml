@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Messages SYSTEM "powerfm/entities.dtd"><Messages>
+    <Message key="powerfm.update.browser.unsupported" value="&powerfm.update.browser.unsupported;"/>
+    <Message key="powerfm.update.browser.needupdate" value="&powerfm.update.browser.needupdate;"/>
+    <Message key="powerfm.update.browser.link" value="&powerfm.update.browser.link;"/>
+    <Message key="powerfm.api.unavailable" value="&powerfm.api.unavailable;"/>
+    <Message key="powerfm.try.later" value="&powerfm.try.later;"/>
+    <Message key="powerfm.internet.unavailable" value="&powerfm.internet.unavailable;"/>
+</Messages>

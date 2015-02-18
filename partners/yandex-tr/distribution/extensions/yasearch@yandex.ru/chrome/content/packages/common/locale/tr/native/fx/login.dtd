@@ -1,0 +1,15 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY login.name "Authorization">
+<!ENTITY login.enter.label "Kullanıcı Adı">
+<!ENTITY login.hidden-login.label "My &product2.nom;">
+<!ENTITY login.tooltiptext "&login.name; Yandex servislerinde">
+<!ENTITY login.switch.label "Diğer kullanıcı adı">
+<!ENTITY login.logout.label "Çıkış">
+
+<!ENTITY login.showLogin.label "Display login on bar">
+
+<!ENTITY noauth.label "Lütfen oturum açın">
+<!ENTITY login.passport.label "Pasaport">
+<!ENTITY login.settings.label "&vendor.gen; ayarları">

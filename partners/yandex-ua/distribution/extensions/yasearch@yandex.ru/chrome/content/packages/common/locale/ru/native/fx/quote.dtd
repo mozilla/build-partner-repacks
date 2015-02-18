@@ -1,0 +1,16 @@
+<!ENTITY wgt.quotes.name "Котировки">
+<!ENTITY wgt.quotes.default-quote-id "1">
+
+<!ENTITY wgt.quotes.refresh "Обновить данные котировки">
+<!ENTITY wgt.quotes.copy "Скопировать курс">
+<!ENTITY wgt.quotes.change "Сменить котировку">
+<!ENTITY wgt.quotes.delete "Удалить котировку">
+<!ENTITY wgt.quotes.add "Добавить новую котировку">
+<!ENTITY wgt.quotes.nodata "Нет данных">
+
+<!ENTITY wgt.quotes.tooltip.today "Сегодня">
+<!ENTITY wgt.quotes.tooltip.tomorrow "Завтра">
+<!ENTITY wgt.quotes.tooltip.yesterday "Вчера">
+
+<!ENTITY wgt.quotes.settings.id.label "Котировка">
+<!ENTITY wgt.quotes.settings.autodetect "Определять автоматически">

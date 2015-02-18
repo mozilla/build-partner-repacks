@@ -1,0 +1,41 @@
+<!ENTITY pagetranslator.name "Translate page">
+<!ENTITY pagetranslator.translate "Translate">
+
+<!ENTITY pagetranslator.notification.revert "Original">
+<!ENTITY pagetranslator.notification.label "Translated from">
+<!ENTITY pagetranslator.notification.process "Translating">
+
+<!ENTITY pagetranslator.notification.english.gen "English">
+<!ENTITY pagetranslator.notification.russian.gen "Russian">
+<!ENTITY pagetranslator.notification.german.gen "German">
+<!ENTITY pagetranslator.notification.spanish.gen "Spanish">
+<!ENTITY pagetranslator.notification.italian.gen "Italian">
+<!ENTITY pagetranslator.notification.french.gen "French">
+<!ENTITY pagetranslator.notification.ukrainian.gen "Ukrainian">
+<!ENTITY pagetranslator.notification.turkish.gen "Turkish">
+
+<!ENTITY pagetranslator.notification.prompt.preambula "Translation powered">
+<!ENTITY pagetranslator.notification.prompt.name "by PROMT">
+
+<!ENTITY pagetranslator.notification.polish.gen "Polish">
+<!ENTITY pagetranslator.notification.promt.name "by PROMT">
+<!ENTITY pagetranslator.notification.promt.preambula "Translation powered">
+<!ENTITY pagetranslator.notification.english.nom "English">
+<!ENTITY pagetranslator.notification.french.nom "French">
+<!ENTITY pagetranslator.notification.german.nom "German">
+<!ENTITY pagetranslator.notification.italian.nom "Italian">
+<!ENTITY pagetranslator.notification.polish.nom "Polish">
+<!ENTITY pagetranslator.notification.russian.nom "Russian">
+<!ENTITY pagetranslator.notification.spanish.nom "Spanish">
+<!ENTITY pagetranslator.notification.turkish.nom "Turkish">
+<!ENTITY pagetranslator.notification.ukrainian.nom "Ukrainian">
+<!ENTITY pagetranslator.settings.tlang.label "Please select into which language you would like the text translated">
+<!ENTITY pagetranslator.notification.error "An error occurred. The page was not fully translated">
+<!ENTITY pagetranslator.notification.error.repeat "Please try again">
+<!ENTITY pagetranslator.notification.timeout "Unable to translate page. Please check your internet connection">
+<!ENTITY pagetranslator.notification.close "Close">
+<!ENTITY pagetranslator.notification.tooltip "Click {button} in the address bar to translate a webpage">
+<!ENTITY pagetranslator.notification.suggest.button.noYaBrowser "More">
+<!ENTITY pagetranslator.notification.suggest.button.yaBrowser "Open">
+<!ENTITY pagetranslator.notification.suggest "Try all the translation options in Yandex.Browser">
+<!ENTITY pagetranslator.notification.translation.promo "All translation features in Yandex.Browser">

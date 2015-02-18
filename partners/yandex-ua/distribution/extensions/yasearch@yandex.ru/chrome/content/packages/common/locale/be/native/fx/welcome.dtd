@@ -1,0 +1,45 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY welcome.dialog.title "Мой &product2.nom;">
+
+<!ENTITY welcome.login.button.label "Увайсці">
+
+<!ENTITY welcome.enter.label "Уваход">
+<!ENTITY welcome.mybar.label "&product1.nom;">
+
+<!ENTITY welcome.login.label "Лагін">
+<!ENTITY welcome.login.vaild.tooltiptext "Лагін павінен складацца з&#160;лацінскіх сімвалаў, лічбаў, адзіночнага злучка або кропкі, пачынацца з#160;літары&#160;і заканчвацца літарай або лічбай">
+<!ENTITY welcome.password.label "Пароль">
+<!ENTITY welcome.store-password.label "запомніць мяне">
+<!ENTITY welcome.remember-password.1.label "забылі">
+<!ENTITY welcome.remember-password.2.label "пароль">
+<!ENTITY welcome.registration.label "рэгістрацыя">
+
+<!ENTITY welcome.show.label "паказаць">
+<!ENTITY welcome.hide.label "схаваць">
+
+<!ENTITY welcome.maxErrors1.label "Паспрабуйце ўвайсці праз&#160;">
+<!ENTITY welcome.maxErrors2.label "Яндекс.Пашпарт">
+
+<!ENTITY welcome.status.request.error.label "Адправіць настрой не атрымалася!">
+<!ENTITY welcome.status.request.error.close.label "закрыць">
+<!ENTITY welcome.status.empty.label "не ў настроі">
+
+<!ENTITY welcome.status.request.label "Адбываецца ўваход">
+<!ENTITY welcome.status.error.label "Праверце правільнасць лагіна і пароля">
+<!ENTITY welcome.status.neterror.label "Праверце сеткавае спалучэнне">
+
+<!ENTITY welcome.user.switch.label "Увайсці як іншы карыстальнік">
+<!ENTITY welcome.user.exit.label "Выйсці">
+
+<!ENTITY services.iuse.label "Я выкарыстоўваю">
+<!ENTITY services.iuse.all.label "Усе мае сэрвісы">
+<!ENTITY services.status.request.label "Адбываецца атрыманне дадзеных">
+<!ENTITY services.status.error.label "Памылка атрымання дадзеных">
+
+<!ENTITY welcome.go.registration.label "зарэгiстравацца">
+<!ENTITY welcome.go.remember.password.label "згадаць пароль">
+<!ENTITY welcome.or.label "альбо">
+<!ENTITY welcome.social.enter.label "увайсці праз">
+<!ENTITY welcome.strange.computer.label "чужы камп&#39;ютар">

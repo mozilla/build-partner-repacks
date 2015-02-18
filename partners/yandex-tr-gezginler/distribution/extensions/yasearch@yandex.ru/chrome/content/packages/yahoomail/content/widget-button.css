@@ -1,0 +1,6 @@
+toolbar:not([mode=text]) .toolbarbutton-label{display:none!important}
+.toolbarbutton-icon{-moz-binding:url(widget-button.xbl#toolbarbutton-icon)!important}
+toolbarbutton[counter] .toolbarbutton-counter{display:-moz-box!important}
+toolbar toolbarbutton[counter=""] label.toolbarbutton-counter,toolbar toolbarbutton:not([counter]) label.toolbarbutton-counter{display:none!important}
+toolbarbutton[yb-native-throbber=true] image[anonid=base-image-normal]{list-style-image:url(../img/throbber.gif)!important}
+toolbarbutton[yb-native-throbber=true] image[anonid=base-image-inverted]{list-style-image:url(../img/throbber.gif)!important}

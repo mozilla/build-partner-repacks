@@ -1,0 +1,11 @@
+<!ENTITY setup.done.label "Орнату аяқталды">
+<!ENTITY license.read.desc "Жұмыс бастаудан бұрын бағдарламаны қолданудың шарттарымен танысыңыз.">
+<!ENTITY license.agree.label "Мен Лицензиялық келісімнің шарттарын қабылдаймын">
+
+<!ENTITY button.accept "Жалғастыру">
+<!ENTITY button.cancel "Болдырмау">
+<!ENTITY license.confirm.text.1 "Браузерді орната отырып, сіз">
+<!ENTITY license.confirm.text.2 "лицензиялық келісімнің шарттарын орындайсыз">
+<!ENTITY license.header "Лицензиялық келісім">
+<!ENTITY setup.ok.label "жүктеу сәтті аяқталды">
+<!ENTITY button.close "Жабу">

@@ -1,0 +1,105 @@
+<!ENTITY vk.name "ВК жүйесінде менің бетім">
+<!ENTITY settings.show_name "Пайдаланушы атын көрсету">
+<!ENTITY settings.hide_notifications "Хабарландыруды сөндіру">
+<!ENTITY settings.msg_button "Менің хабарламаларым">
+<!ENTITY settings.friends_button "Менің достарым">
+<!ENTITY settings.events_button "Менің кездесулерім">
+<!ENTITY settings.groups_button "Менің топтарым">
+<!ENTITY settings.photo_button "Менің фотосуреттерім">
+<!ENTITY settings.video_button "Менің бейнежазбаларым">
+<!ENTITY settings.notes_button "Менің белгілерім">
+<!ENTITY settings.update.label "Жаңарту интервалы">
+<!ENTITY settings.update.after "мин.">
+<!ENTITY vk.menu.update "Деректерді жаңарту">
+<!ENTITY vk.menu.no_name "Аталымы жоқ">
+<!ENTITY vk.tooltip.need_auth "Авторизациядан өтуіңізді сұраймыз">
+<!ENTITY vk.main.tooltip "ВКонтакте жүйесінде менің бетіме өту">
+<!ENTITY vk.main.tooltip_auth "ВКонтакте жүйесіндегі бетіңізге өтуге мүмкіндік бередң">
+<!ENTITY vk.main.menu.mypage "Менің бетім">
+<!ENTITY vk.main.menu.msg "Менің хабарламаларым">
+<!ENTITY vk.main.menu.friends "Менің достарым">
+<!ENTITY vk.main.menu.events "Менің кездесулерім">
+<!ENTITY vk.main.menu.groups "Менің топтарым">
+<!ENTITY vk.main.menu.photo "Менің фотосуреттерім">
+<!ENTITY vk.main.menu.video "Менің бейнежазбаларым">
+<!ENTITY vk.main.menu.notes "Менің белгілерім">
+<!ENTITY vk.main.menu.audio "Менің дыбысжазбаларым">
+<!ENTITY vk.main.menu.feed "Менің жаңалықтарым">
+<!ENTITY vk.main.menu.fave "Менің бетбелгілерім">
+<!ENTITY vk.main.menu.matches "Ұсыныстар">
+<!ENTITY vk.main.menu.opinions "Пікірлер">
+<!ENTITY vk.main.menu.apps "Қосымшалар">
+<!ENTITY vk.main.menu.questions "Сұрақтар">
+<!ENTITY vk.main.menu.settings "Баптаулар">
+<!ENTITY vk.main.menu.logout "Шығу">
+<!ENTITY vk.msg.tooltip_empty "ВКонтакте жүйесінде менің хабарламаларым">
+<!ENTITY vk.msg.tooltip_auth "ВКонтакте жүйесінде жаңа хабарламаларыңызды көрсетеді">
+
+<!ENTITY vk.msg.tooltip "Сізде \d жаңа хабарлама">
+<!ENTITY vk.msg.menu.mymsg "Менің хабарламаларым">
+<!ENTITY vk.photo.tooltip_empty "ВКонтакте жүйесінде менің фотосуреттерім">
+<!ENTITY vk.photo.tooltip_auth "ВКонтакте жүйесінде жаңа фотосуреттеріңізді көрсетеді">
+<!ENTITY vk.video.tooltip_empty "ВКонтакте жүйесінде менің бейнежазбаларым">
+<!ENTITY vk.video.tooltip_auth "ВКонтакте жүйесінде жаңа бейнежазбаларыңызды көрсетеді">
+
+<!ENTITY vk.friend.tooltip "Сізде достасуға \d сұраным">
+<!ENTITY vk.friend.tooltip_empty "ВКонтакте жүйесінде менің достарым">
+<!ENTITY vk.friend.tooltip_auth "ВКонтакте жүйесінде достарыңызды көрсетеді">
+<!ENTITY vk.friend.menu.myfriends "Менің достарым">
+<!ENTITY vk.friend.menu.my_new_friends "Менің жаңа достарым">
+<!ENTITY vk.event.tooltip "ВКонтакте жүйесінде менің кездесулерім">
+<!ENTITY vk.event.tooltip_auth "ВКонтакте жүйесінде жаңа кездесулеріңізді көрсетеді">
+<!ENTITY vk.group.tooltip "ВКонтакте жүйесінде менің топтарым">
+<!ENTITY vk.group.tooltip_auth "ВКонтакте жүйесінде топтарыңызды көрсетеді">
+<!ENTITY vk.note.tooltip "ВКонтакте жүйесінде менің белгілерім">
+<!ENTITY vk.note.tooltip_auth "ВКонтакте жүйесінде белгілеріңізді көрсетеді">
+<!ENTITY vk.notify.settings "Баптаулар">
+<!ENTITY vk.notify.close "Жабу">
+<!ENTITY error.connect "Жүйелік қосылуды тексеруіңізді сұраймыз">
+<!ENTITY error.auth "Авторизациялау мүмкін болмады">
+<!ENTITY error.auth.net "Авторизациялау үшін ВКонтакте серверіне қосылу мүмкін болмады">
+
+<!ENTITY plural.rule "0">
+
+<!ENTITY vk.notify.follow "Достарға қосуыңызды сұрайды">
+<!ENTITY vk.notify.wall "Бетіңізге жазба қосты">
+<!ENTITY vk.notify.comment_post "Жарияланымыңызға пікір жазды">
+<!ENTITY vk.notify.comment_photo "Фотоңызға пікір жазды">
+<!ENTITY vk.notify.comment_video "Видеоңызға пікір жазды">
+<!ENTITY vk.notify.reply_comment "Пікіріңізге жауап берді">
+<!ENTITY vk.notify.reply_topic "Пікіріңізге жауап берді">
+
+<!ENTITY vk.notify.follow_f "Достарға қосуыңызды сұрайды">
+<!ENTITY vk.notify.wall_f "Бетіңізге жазба қосты">
+<!ENTITY vk.notify.comment_post_f "Жарияланымыңызға пікір жазды">
+<!ENTITY vk.notify.comment_photo_f "Фотоңызға пікір жазды">
+<!ENTITY vk.notify.comment_video_f "Видеоңызға пікір жазды">
+<!ENTITY vk.notify.reply_comment_f "Пікіріңізге жауап берді">
+<!ENTITY vk.notify.reply_topic_f "Пікіріңізге жауап берді">
+
+<!ENTITY vk.notify.g.message "Сізде {N} жаңа хабарлама;">
+<!ENTITY vk.notify.g.wall "Бетіңізде жаңа {N} жазба;">
+<!ENTITY vk.notify.g.comment "Сізде жаңа {N} пікір;">
+<!ENTITY vk.notify.g.reply_topic "Сізде талқылауда жаңа {N} жауап;">
+<!ENTITY settings.show_notifications "Хабарландыруларды көрсету">
+<!ENTITY vk.notify.friend_request "достарға қосуыңызды сұрайды">
+<!ENTITY vk.notify.friend_request_f "достарға қосуыңызды сұрайды">
+<!ENTITY settings.show_comment_notifications "Пікірлер, талқылаулар туралы қалқымалы хабарландыруларды көрсету">
+<!ENTITY settings.show_friend_notifications "Достар, жазылымдар қатарына қосылу сұранымдары туралы қалқымалы хабарландыруларды көрсету">
+<!ENTITY settings.show_mention_notifications "Сіз аталған жарияланымдар мен пікірлер туралы қалқымалы хабарландыруларды көрсету">
+<!ENTITY settings.show_message_notifications "Хабарламалар туралы қалқымалы хабарландыруларды көрсету">
+<!ENTITY vk.friend.tooltip_not_empty0 "Сізде достасуға \d сұраным">
+<!ENTITY vk.friend.tooltip_not_empty1 "Сізде достасуға \d сұраным">
+<!ENTITY vk.friend.tooltip_not_empty2 "Сізде достасуға \d сұраным">
+<!ENTITY vk.msg.tooltip_not_empty0 "Сізде \d жаңа хабарлама">
+<!ENTITY vk.msg.tooltip_not_empty1 "Сізде \d жаңа хабарлама">
+<!ENTITY vk.msg.tooltip_not_empty2 "Сізде \d жаңа хабарлама">
+<!ENTITY vk.notify.g.mention "Сізді {N} жарияланымда ерекшеледі;Сізді {N} жарияланымда ерекшеледі;Сізді {N} жарияланымда ерекшеледі">
+<!ENTITY vk.notify.mention "Жарияланымында сізді ерекшеледі">
+<!ENTITY vk.notify.mention_comment "Пікірінде сізді атап өтті">
+<!ENTITY vk.notify.mention_comment_f "Пікірінде сізді атап өтті">
+<!ENTITY vk.notify.mention_f "Жарияланымында сізді ерекшеледі">
+<!ENTITY vk.notify.messages_file "Сізге хабарлама жіберді">
+<!ENTITY vk.notify.messages_file_f "Сізге хабарлама жолдады">
+<!ENTITY vk.notify.g.follow "достарға қосылуға {N} сұраным;достарға қосылуға {N} сұраным;достарға қосылуға {N} сұраным;">
+<!ENTITY error.update "Ақпарат алу мүмкін болмады">

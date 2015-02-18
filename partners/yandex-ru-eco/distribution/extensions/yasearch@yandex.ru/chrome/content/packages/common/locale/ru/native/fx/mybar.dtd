@@ -1,0 +1,74 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY _gen.descr.text "А также:">
+
+<!ENTITY vendor.title "&vendor.nom;">
+
+<!ENTITY bar.title "&product1.nom;">
+<!ENTITY bar.descr.title "это панель инструментов для поиска в интернете и&#160;быстрого&#160;доступа к персональным сервисам &vendor.gen;.">
+<!ENTITY bar.text.1 "Удобный поиск">
+<!ENTITY bar.text.2 "Новости&#160;от сервисов">
+<!ENTITY bar.text.3 "Информация о погоде">
+
+<!ENTITY mail.title "Яндекс.Почта">
+<!ENTITY mail.descr.title "это бесконечный почтовый ящик с надёжной защитой от спама и вирусов.">
+<!ENTITY mail.text.1 "Быстрая доставка писем">
+<!ENTITY mail.text.2 "Мобильная версия">
+<!ENTITY mail.text.3 "Пересылка файлов до 5Гб">
+
+<!ENTITY pdd.title "Яндекс.Почта для домена">
+<!ENTITY pdd.descr.title "это сервис, позволяющий создавать почтовые ящики с&#160;именем вашего домена или сайта.">
+<!ENTITY pdd.text.1 "Бесконечный почтовый ящик">
+<!ENTITY pdd.text.2 "Защита от спама&#160;и вирусов">
+<!ENTITY pdd.text.3 "Быстрая доставка писем">
+
+<!ENTITY narod.title "Народ">
+<!ENTITY narod.descr.title "">
+<!ENTITY narod.text.1 "Бесплатный хостинг сайтов">
+<!ENTITY narod.text.2 "Защита от вирусов">
+<!ENTITY narod.text.3 "Место хранения файлов">
+<!ENTITY narod.text.4 "Обмен файлами">
+
+<!ENTITY fotki.title "Яндекс.Фотки">
+<!ENTITY fotki.descr.title "это неограниченное пространство для ваших фотографий и возможность просмотреть снимки других авторов.">
+<!ENTITY fotki.text.1 "Простая загрузка">
+<!ENTITY fotki.text.2 "Красивые фотографии">
+<!ENTITY fotki.text.3 "Интересные конкурсы">
+
+<!ENTITY yaru.title "Я.ру">
+<!ENTITY yaru.descr.title "это ваш личный профиль в интернете и способ узнавать обо всём, что происходит с вашими друзьями.">
+<!ENTITY yaru.text.1 "Клубы по интересам">
+<!ENTITY yaru.text.2 "Списки желаний">
+<!ENTITY yaru.text.3 "Настроение друзей">
+
+<!ENTITY moikrug.title "Мой Круг">
+<!ENTITY moikrug.descr.title "это ваш деловой профиль в интернете и&#160;возможность&#160;найти услуги по рекомендациям.">
+<!ENTITY moikrug.text.1 "Поиск работы">
+<!ENTITY moikrug.text.2 "Объявления об&#160;услугах">
+<!ENTITY moikrug.text.3 "Деловые связи">
+
+<!ENTITY money.title "Яндекс.Деньги">
+<!ENTITY money.descr.title "это надёжная система для оплаты товаров и услуг через интернет — без комиссии, в любое время суток.">
+<!ENTITY money.descr.text "Яндекс.Деньгами платят за:">
+<!ENTITY money.text.1 "Услуги связи, игры">
+<!ENTITY money.text.2 "Домены, хостинг">
+<!ENTITY money.text.3 "Билеты">
+
+<!ENTITY bookmarks.title "Яндекс.Закладки">
+<!ENTITY bookmarks.descr.title "это сервис, который позволяет сохранять ссылки и пользоваться ими с любого компьютера.">
+<!ENTITY bookmarks.text.1 "Сортировка ссылок">
+<!ENTITY bookmarks.text.2 "Сохранение в&#160;один&#160;клик">
+<!ENTITY bookmarks.text.3 "Импорт&#160;и экспорт">
+
+<!ENTITY calendar.title "Яндекс.Календарь">
+
+<!ENTITY lenta.title "Яндекс.Подписки">
+<!ENTITY lenta.descr.title "это сервис, позволяющий собирать и читать все интересные вам новости на одной странице.">
+<!ENTITY lenta.text.1 "Трансляция блогов">
+<!ENTITY lenta.text.2 "Сортировка новостей">
+<!ENTITY lenta.text.3 "Подписка на&#160;новости">
+
+<!ENTITY cards.title "Яндекс.Открытки">
+
+<!ENTITY play.title "Яндекс.Игрушки">

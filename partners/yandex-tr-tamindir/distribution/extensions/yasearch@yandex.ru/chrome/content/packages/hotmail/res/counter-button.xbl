@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <binding extends="chrome://global/content/bindings/toolbarbutton.xml#menu-button" id="counter-menubutton">
+        <content>
+            <children includes="observes|template|menupopup|panel|tooltip"/>
+            <xul:toolbarbutton allowevents="true" anonid="button" class="box-inherit toolbarbutton-menubutton-button" flex="1" xbl:inherits="disabled,crop,image,label,label-ex,accesskey,command,align,dir,pack,orient"/>
+            <xul:dropmarker class="toolbarbutton-menubutton-dropmarker" xbl:inherits="align,dir,pack,orient,disabled,label" type="menu-button"/>
+        </content>
+    </binding>
+    <binding extends="chrome://global/content/bindings/toolbarbutton.xml#toolbarbutton" id="counter-button">
+        <resources>
+            <stylesheet src="counter-button.css"/>
+        </resources>
+        <content>
+            <children includes="observes|template|menupopup|panel|tooltip"/>
+            <xul:image class="toolbarbutton-icon" xbl:inherits="validate,src=image,label"/>
+            <xul:label class="toolbarbutton-text" crop="right" flex="1" xbl:inherits="value=label,accesskey,crop"/>
+            <xul:label class="toolbarbutton-text toolbarbutton-text-ex" crop="right" flex="1" xbl:inherits="value=label-ex,accesskey,crop"/>
+        </content>
+    </binding>
+</bindings>

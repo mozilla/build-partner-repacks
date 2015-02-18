@@ -28,8 +28,9 @@ const favicons = {
             } catch (e) {
             }
         }
-        if (!(uri && uri.asciiHost))
+        if (!(uri && uri.asciiHost)) {
             return callback(null);
+        }
         let self = this;
         FAVICON_SRV.getFaviconDataForPage(uri, function Favicons_requestFaviconForURL_onDataGot(aURI, aDataLen, aData, aMimeType) {
             let faviconData;
@@ -53,7 +54,7 @@ const favicons = {
     getYandexNetFaviconURL: function Favicons_getYandexNetFaviconURL(uri) {
         return FAVICON_URL + uri.asciiHost;
     },
-    EMPTY_ICON: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAD9JREFUeNpiZGBgYAdiASBmZiAN/AXiD4xAQpwMzXBDQAZIMVAARg0YNWAYGUBJZvoHMoADmp2ZyMjOHwECDADJLweHaL6l7AAAAABJRU5ErkJggg==",
+    EMPTY_ICON: "data:image/png;base64," + "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5cc" + "llPAAAAD9JREFUeNpiZGBgYAdiASBmZiAN/AXiD4xAQpwMzXBDQAZIMVAARg0YNWAYGUBJZvoHMoADmp2ZyMjOHwEC" + "DADJLweHaL6l7AAAAABJRU5ErkJggg==",
     _application: null,
     _logger: null
 };

@@ -1,0 +1,39 @@
+<!ENTITY % brandNames SYSTEM "yafd://plus.branding/names.dtd">
+%brandNames;
+
+<!ENTITY aboutSupport.pageTitle "&product1.nom;">
+
+<!ENTITY aboutSupport.supportInfo.title "Destek ekibi için bilgiler">
+<!ENTITY aboutSupport.collectingInfo.label "veri hazırlanıyor">
+<!ENTITY aboutSupport.rebuildPack.label "Güncelle">
+<!ENTITY aboutSupport.browserScreenshot.label "yeni eklentisi olan tarayıcı penceresinin resmi">
+<!ENTITY aboutSupport.snapshotData.label "uzantı ve ayarlar hakkında bilgiler">
+<!ENTITY aboutSupport.debugLog.label "hata ayıklama kayıtları">
+<!ENTITY aboutSupport.fastdialData.label "görsel favoriler hakkında bilgi">
+<!ENTITY aboutSupport.openInNewTab.label "Yeni sekmede aç">
+<!ENTITY aboutSupport.savePack.label "Farklı kaydet...">
+
+<!ENTITY aboutSupport.columnName "İsim">
+<!ENTITY aboutSupport.columnVersion "Sürüm ">
+<!ENTITY aboutSupport.columnEnabled "Etkinleştirildi">
+<!ENTITY aboutSupport.columnId "ID">
+<!ENTITY aboutSupport.columnURL "Sitenin adresi">
+<!ENTITY aboutSupport.columnValue "Değer">
+<!ENTITY aboutSupport.columnType "Tür">
+
+<!ENTITY aboutSupport.basicsVersion "Sürüm ">
+<!ENTITY aboutSupport.basicsDate "Yayın tarihi">
+<!ENTITY aboutSupport.basicsOS "Sistem">
+<!ENTITY aboutSupport.basicsBrowser "Tarayıcı">
+<!ENTITY aboutSupport.basicsUserAgent "User-Agent">
+<!ENTITY aboutSupport.basicsTheme "Tasarım teması">
+<!ENTITY aboutSupport.basicsLightTheme "Tasarım teması (aydınlık)">
+
+<!ENTITY aboutSupport.extensionsTitle "Tarayıcı uzantıları">
+<!ENTITY aboutSupport.componentsTitle "Bileşenler">
+<!ENTITY aboutSupport.extensionPreferencesTitle "Uzantı ayarları">
+<!ENTITY aboutSupport.browserPreferencesTitle "Tarayıcı ayarları">
+
+<!ENTITY aboutSupport.restore.button "Yeniden kazandır">
+<!ENTITY aboutSupport.restore.title "Arşivden getir">
+<!ENTITY aboutSupport.restore.nothing "Şimdilik kaydedilen veri yok">

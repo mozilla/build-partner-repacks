@@ -1,0 +1,10 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY music.name "Yandex.Müzik oynatıcı">
+
+<!ENTITY music.action.pause "Durdur">
+<!ENTITY music.action.play "Oynat">
+<!ENTITY music.noflash "Widget&#39;in çalışması için Adobe Flash eklentisinin son sürümü gerekiyor.">
+<!ENTITY music.noflash.link "[a]Buradan indirebilirsiniz[/a].">
+<!ENTITY music.nointernet "İnternet bağlantısı yok">

@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE plugin SYSTEM "ts.dtd"><plugin bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="icons/ts.png" name="&typosquatting.component.name;">
+    <f:setting default="0" name="lastUpdate" scope="plugin"/>
+    <f:setting default="900" name="updateInterval" scope="plugin"/>
+    <f:setting default="" name="jsonLastModified" scope="plugin"/>
+
+    <modules>
+        <module browser="firefox" file="modules/typosquatting.js"/>
+    </modules>
+</plugin>

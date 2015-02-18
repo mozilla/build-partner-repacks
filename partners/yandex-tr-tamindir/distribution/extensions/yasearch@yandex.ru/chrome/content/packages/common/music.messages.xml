@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Messages SYSTEM "native/fx/music.dtd"><Messages>
+    <Message key="music.nointernet" value="&music.nointernet;"/>
+    <Message key="music.noflash" value="&music.noflash;"/>
+    <Message key="music.noflash.link" value="&music.noflash.link;"/>
+    <Message key="music.name" value="&music.name;"/>
+</Messages>

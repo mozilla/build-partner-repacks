@@ -1,0 +1,89 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+
+<!ENTITY button.update "Оновити">
+<!ENTITY button.postpone "Відкласти">
+<!ENTITY button.cancel "Скасувати">
+<!ENTITY button.accept "Продовжити">
+<!ENTITY button.install "Встановити">
+<!ENTITY button.save "Зберегти">
+<!ENTITY button.repeat "Спробувати знову">
+<!ENTITY button.finish "Закрити">
+
+
+<!ENTITY placement.placement.label "Додати кнопки:">
+
+
+<!ENTITY more.opened "приховати">
+<!ENTITY more.closed "налаштувати">
+
+
+<!ENTITY error.more.opened "&more.opened;">
+<!ENTITY error.more.closed "докладніше">
+<!ENTITY error.head.title "Ой...">
+<!ENTITY error.head.description "Невідома помилка">
+
+
+
+<!ENTITY component.save "зберегти">
+<!ENTITY component.update "оновити">
+
+
+<!ENTITY install.dialog.title "Встановлення компонентів">
+<!ENTITY install.head.title "&install.dialog.title;">
+<!ENTITY disclaimer "Ви встановлюєте компоненти не з довіреного джерела, це може бути потенційно небезпечно.">
+<!ENTITY install.download.label "Завантаження...">
+<!ENTITY install.conflict.head.title "Ой...">
+<!ENTITY install.conflict.head.description "Під час встановлення припинять працювати деякі компоненти. Виберіть компоненти, які слід зберегти.">
+<!ENTITY install.placement.head.title "Встановлення успішно завершене">
+<!ENTITY install.placement.head.description "Доступні нові компоненти">
+
+
+<!ENTITY update.dialog.title "Оновлення компонентів">
+<!ENTITY update.select.head.title "Доступні оновлення компонентів">
+<!ENTITY update.select.head.description "Для продовження натисніть кнопку &#171;Оновити&#187;">
+<!ENTITY update.select.list.description "Доступне оновлення для таких компонентів:">
+<!ENTITY update.download.head.title "Триває оновлення компонентів">
+<!ENTITY update.download.head.description "Завантаження...">
+<!ENTITY update.conflict.head.title "Ой...">
+<!ENTITY update.conflict.head.description "Під час оновлення перестануть працювати деякі компоненти. Виберіть компоненти, які слід зберегти.">
+<!ENTITY update.placement.head.title "Оновлення успішно завершено">
+<!ENTITY update.placement.head.description "Після оновлення збірок стали доступними нові компоненти">
+<!ENTITY update.finish.head.title "Оновлення успішно завершено">
+<!ENTITY update.finish.head.description "Тепер ви можете використовувати нові версії компонентів">
+
+
+<!ENTITY notification.update.title "Доступні оновлення">
+<!ENTITY notification.update.message "Виявлено нові версії компонентів.">
+<!ENTITY notification.update.install "Встановити">
+<!ENTITY notification.update.custom "Налаштувати">
+
+
+<!ENTITY ban.notification.title "Зміни в &product1.loc;">
+<!ENTITY ban.notification.message "Змінився склад деяких компонентів">
+<!ENTITY ban.notification.show "Докладніше">
+<!ENTITY ban.notification.close "Закрити">
+<!ENTITY ban.dialog.title "Зміни в &product1.loc;">
+<!ENTITY ban.dialog.head.title "Змінився склад компонентів:">
+<!ENTITY ban.dialog.praise "Ми піклуємося про вашу безпеку та постійно стежимо за дотриманням стандартів і коректною поведінкою компонентів.">
+<!ENTITY ban.dialog.ok "OK">
+<!ENTITY ban.package.unban "Розблоковано">
+
+
+<!ENTITY permissions.title "Потрібні дозволи на: "> 
+<!ENTITY permissions.title.preset "Компоненти запитують дозвіл на: "> 
+<!ENTITY permissions.title.package "Компоненти запитують дозвіл на: "> 
+<!ENTITY permission.private.one_domain "доступ до особистих даних на сайті "> 
+<!ENTITY permission.private.many_domains "доступ до особистих даних на сайтах: "> 
+<!ENTITY permission.private.all_domains "доступ до особистих даних на будь-яких сайтах">
+<!ENTITY permission.public.one_domain "одержання даних із сайту "> 
+<!ENTITY permission.public.many_domains "одержання даних із сайтів: "> 
+<!ENTITY permission.public.all_domains "одержання даних із будь-яких сайтів">
+<!ENTITY permission.navigate.one_domain "відкриття сторінок за адресою "> 
+<!ENTITY permission.navigate.many_domains "відкриття сторінок за адресами: "> 
+<!ENTITY permission.navigate.all_domains "відкриття сторінок за будь-якими адресами">
+<!ENTITY permission.pageInfo.one_domain "доступ до інформації про відкриту сторінку за адресою "> 
+<!ENTITY permission.pageInfo.many_domains "доступ до інформації про відкриту сторінку за адресами: "> 
+<!ENTITY permission.pageInfo.all_domains "доступ до інформації про відкриту сторінку з будь-якою адресою">
+<!ENTITY permission.clipboard "доступ до вмісту буфера обміну">

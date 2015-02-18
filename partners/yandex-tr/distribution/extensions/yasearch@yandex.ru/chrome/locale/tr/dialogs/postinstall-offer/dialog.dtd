@@ -1,0 +1,6 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY postinstall.offer.title "&vendor.gen; servislerinin geliştirilmesine yardım edin:">
+<!ENTITY postinstall.offer.statsend.label "tarayıcının anonin kullanım istatistiklerinin &#60;html:a&#62;lisans sözleşmesine&#60;/html:a&#62; uygun şekilde gönderilmesine izin ver">
+<!ENTITY postinstall.offer.continue.label "Devam">

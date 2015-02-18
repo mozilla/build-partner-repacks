@@ -1,0 +1,15 @@
+@namespace url(http://www.w3.org/1999/xhtml);.b-checkbox{display:inline-block;cursor:default;position:relative;min-height:15px;-webkit-user-select:none;-moz-user-select:none;-ie-user-select:none;-o-user-select:none;user-select:none}
+.b-checkbox>.b-button{position:absolute;left:0;top:2px;width:16px;height:16px}
+.b-checkbox>.b-button .b-button__label{padding:0}
+.b-checkbox>.b-button .b-button__label:focus{outline:0}
+.b-checkbox>.b-button .b-button__label::-moz-focus-inner{border:0}
+.b-checkbox>.b-button_state_checked:after{content:'';color:#333;position:absolute;z-index:2;left:2px;top:-2px;width:16px;height:15px;background:left top no-repeat url(../icons/check.svg);opacity:.85}
+.b-checkbox.b-checkbox_mode_radio>.b-button_state_checked:after{content:'';background:#000;border-radius:100%;width:6px;height:6px;left:5px;top:5px}
+.b-checkbox.b-checkbox_mode_radio>.b-button,.b-checkbox.b-checkbox_mode_radio>.b-button:before{border-radius:100%}
+.b-checkbox__label{display:inline-block;padding-left:23px;text-shadow:0 1px rgba(255,255,255,.2)}
+.b-checkbox__holder{visibility:hidden;display:inline-block;width:15px}
+.b-checkbox_S>.b-button{top:1px;width:14px;height:14px}
+.b-checkbox_S .b-checkbox__label{font-size:13px;line-height:18px;padding-left:20px}
+.b-checkbox_S>.b-button_state_checked:after{left:1px;top:-3px;width:16px;height:15px}
+.b-checkbox_S.b-checkbox_mode_radio>.b-button_state_checked:after{width:6px;height:6px;left:4px;top:4px}
+.b-checkbox,.b-checkbox__label{display:block}

@@ -1,0 +1,20 @@
+﻿<!ENTITY direct.name "Yandex.Direct" >
+<!ENTITY direct.currency "units" >
+<!ENTITY direct.setting.minutes "min." >
+<!ENTITY direct.setting.update_interval "Update interval:" >
+<!ENTITY direct.button.label "Direct" >
+<!ENTITY direct.tooltip.notlogged.row1 "This shows the current status of your Yandex.Direct account" >
+<!ENTITY direct.tooltip.notlogged.row2 "Please log in" >
+<!ENTITY direct.tooltip.error.row1 "Unfortunately, information from your Yandex.Direct account could not be obtained" >
+<!ENTITY direct.tooltip.error.row2 "Please check your internet connection" >
+<!ENTITY direct.tooltip.nocampaigns.row1 "Unfortunately, information from your Yandex.Direct account could not be obtained" >
+<!ENTITY direct.tooltip.nocampaigns.row2 "Please place an ad to begin using this service" >
+<!ENTITY direct.tooltip "Go to My Clients in Yandex.Direct" >
+<!ENTITY direct.tooltip.cashstate "Your current Yandex.Direct account status" >
+<!ENTITY direct.tooltip.balance "Remaining balance:" >
+<!ENTITY direct.tooltip.delay "Balance deferred:" >
+<!ENTITY direct.tooltip.debts "Outstanding balance:" >
+<!ENTITY direct.tooltip.activecamp "Active campaigns:" >
+<!ENTITY direct.updateinfo "Update information" >
+<!ENTITY direct.movetocamp "Go to My Campaigns" >
+<!ENTITY direct.sincdebt "Settle outstanding balance" >

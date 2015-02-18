@@ -1,5 +1,5 @@
 "use strict";
-let NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
+var NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
     constructor: function NativeWidgetPrototype(protoID, name, unique, iconPath, nativeModulePath, unit) {
         if (!nativeModulePath) {
             throw new CustomErrors.EArgRange("nativeModulePath", "FilePath", nativeModulePath);
@@ -161,7 +161,7 @@ let NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
         }
     },
     _consts: {
-        MSG_SETTING_NOT_REGISTERED: "Setting \"%1\" is not registered",
+        MSG_SETTING_NOT_REGISTERED: "Setting '%1' is not registered",
         ERR_FINALIZING_CORE: "Could not finalize native module core. ",
         ERR_FINALIZING_API: "Could not finalize native API object. ",
         ERR_NOTIFYING_CORE: "Could not notify native widget core. ",
@@ -253,7 +253,7 @@ let NativeWidgetPrototype = BarPlatform.WidgetPrototypeBase.extend({
         this._stopObserving();
     }
 });
-let NativeWidgetInstance = Base.extend({
+var NativeWidgetInstance = Base.extend({
     constructor: function NativeWidgetInstance(IID, proto, widgetHost, settingsInfo) {
         if (!(proto instanceof NativeWidgetPrototype)) {
             throw new CustomErrors.EArgType("proto", "NativeWidgetPrototype", proto);

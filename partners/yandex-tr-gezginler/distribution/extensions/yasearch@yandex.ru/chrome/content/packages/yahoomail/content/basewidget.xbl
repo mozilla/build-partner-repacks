@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="//toolkit/native/bindings/widget.xml#widget" id="toolbarbuttonbase">
+        <resources>
+            <stylesheet src="basewidget.css"/>
+        </resources>
+    </binding>
+</bindings>

@@ -1,0 +1,19 @@
+<!ENTITY widget.name "Поле пошуку">
+
+<!ENTITY cmd_engineManager.label "Керування пошуковими плагінами...">
+
+<!ENTITY searchbox.checkbox.site.label "шукати на цьому сайті">
+<!ENTITY searchbox.button.label "Знайти">
+<!ENTITY searchbox.button.context.label "Приховати кнопку &#34;Знайти&#34;">
+<!ENTITY searchbox.resizer.tooltiptext "Змінити ширину текстового поля пошуку">
+
+<!ENTITY searchbox.highlighter.tooltiptext "Підсвічування знайденого">
+<!ENTITY searchbox.highlighter.highlight.label "Увімкнути підсвічування знайденого">
+<!ENTITY searchbox.highlighter.teleport.label "Прокручувати до першого підсвіченого слова">
+<!ENTITY searchbox.highlighter.serp.label "Підсвічувати слова запиту на знайденій сторінці">
+
+<!ENTITY searchbox.preferences.history.label "Історія пошукових запитів">
+<!ENTITY searchbox.preferences.history.enable.label "Зберігати історію запитів">
+<!ENTITY searchbox.preferences.history.clear.label "Очистити">
+<!ENTITY searchbox.preferences.highlighter.enabled.label "Показувати кнопку &#171;Підсвічування знайденого&#187;">
+<!ENTITY searchbox.preferences.show.site.search.label "Показувати опцію &#171;Шукати на цьому сайті&#187;">

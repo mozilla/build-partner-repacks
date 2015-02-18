@@ -1,0 +1,52 @@
+<!ENTITY location.bar.search "http://yandex.com.tr/yandsearch?clid={clid9}&amp;text=">
+<!ENTITY ctxmenu.search "Yandex&#39;te bul">
+<!ENTITY fd.home.tooltip "Yandex ana sayfasına git">
+
+<!ENTITY google.label "Google">
+<!ENTITY google.url "http://www.google.com.tr/">
+<!ENTITY google.search.tooltip "Google&#39;de ara">
+<!ENTITY google.search.url "http://www.google.com.tr/search?q={searchTerms}">
+<!ENTITY google.search.site-url "http://www.google.com.tr/search?q={searchTerms}+site:{searchSite}">
+<!ENTITY google.suggestions.url "http://suggestqueries.google.com/complete/search?output=firefox&amp;client=firefox&amp;hl=tr&amp;q={searchTerms}">
+
+<!ENTITY bing.label "Bing">
+<!ENTITY bing.url "http://bing.com/">
+<!ENTITY bing.search.tooltip "Bing&#39;de ara">
+<!ENTITY bing.search.url "http://www.bing.com/search?q={searchTerms}">
+<!ENTITY bing.search.site-url "http://www.bing.com/search?q={searchTerms}+site:{searchSite}">
+<!ENTITY bing.suggestions.url "">
+
+<!ENTITY yandex.label "Yandex">
+<!ENTITY yandex.search.tooltip "Yandex&#39;te bul">
+<!ENTITY yandex.url "http://www.yandex.com.tr/">
+<!ENTITY yandex.search.url "http://yandex.com.tr/yandsearch?text={searchTerms}">
+<!ENTITY yandex.search.site-url "http://yandex.com.tr/yandsearch?text={searchTerms}&amp;surl_manually=true&amp;surl={searchSite}">
+<!ENTITY yandex.suggestions.url "http://suggest.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=tr">
+<!ENTITY yandex.qs.keywordsearch "http://yandex.com.tr/yandsearch?clid={clid9}&amp;text={searchTerms}">
+
+<!ENTITY wikipedia.label "Wikipedia">
+<!ENTITY wikipedia.url "http://tr.wikipedia.org/">
+<!ENTITY wikipedia.search.tooltip "Wikipedia&#39;da ara">
+<!ENTITY wikipedia.search.url "http://tr.wikipedia.org/w/index.php?search={searchTerms}">
+<!ENTITY wikipedia.suggestions.url "http://tr.wikipedia.org/w/api.php?action=opensearch&amp;search={searchTerms}&amp;namespace=0|100|102">
+
+<!ENTITY yagorsel.label "Yandex.Görsel">
+<!ENTITY yagorsel.search.tooltip "Yandex.Görsel&#39;de bul">
+<!ENTITY yagorsel.url "http://www.gorsel.yandex.com.tr/">
+<!ENTITY yagorsel.search.url "http://gorsel.yandex.com.tr/yandsearch?text={searchTerms}">
+<!ENTITY yagorsel.search.site-url "http://gorsel.yandex.com.tr/yandsearch?text={searchTerms}&amp;surl_manually=true&amp;site={searchSite}">
+<!ENTITY yagorsel.suggestions.url "http://suggest-images.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=tr">
+<!ENTITY yagorsel.qs.keywordsearch "http://gorsel.yandex.com.tr/yandsearch?text={searchTerms}">
+
+<!ENTITY yavideo.label "Yandex.Video">
+<!ENTITY yavideo.search.tooltip "Yandex.Video&#39;da bul">
+<!ENTITY yavideo.url "http://www.video.yandex.com.tr/">
+<!ENTITY yavideo.search.url "http://video.yandex.com.tr/#search?text={searchTerms}">
+<!ENTITY yavideo.suggestions.url "http://suggest-video.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=tr">
+<!ENTITY yavideo.qs.keywordsearch "http://video.yandex.com.tr/#search?text={searchTerms}">
+
+<!ENTITY yahaber.label "Yandex.Haberler">
+<!ENTITY yahaber.search.tooltip "Yandex.Haberler&#39;de bul">
+<!ENTITY yahaber.url "http://haber.yandex.com.tr/">
+<!ENTITY yahaber.search.url "http://haber.yandex.com.tr/yandsearch?text={searchTerms}&amp;rpt=nnews2&amp;grhow=clutop">
+<!ENTITY yahaber.qs.keywordsearch "http://haber.yandex.com.tr/yandsearch?text={searchTerms}&amp;rpt=nnews2&amp;grhow=clutop">

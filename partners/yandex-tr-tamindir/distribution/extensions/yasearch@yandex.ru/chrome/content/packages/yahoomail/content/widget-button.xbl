@@ -1,0 +1,144 @@
+<?xml version='1.0'?>
+<bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <binding extends="chrome://global/content/bindings/toolbarbutton.xml#menu-button" id="widget-menubutton">
+        <content>
+            <children includes="observes|template|menupopup|panel|tooltip"/>
+            <xul:toolbarbutton allowevents="true" anonid="button" class="box-inherit toolbarbutton-menubutton-button" flex="1" xbl:inherits="disabled,crop,image,label,
+                                             counter,accesskey,command,align,dir,pack,orient,
+                                             yb-native-badge-icon,yb-native-not-authorized"/>
+            <xul:dropmarker class="toolbarbutton-menubutton-dropmarker" xbl:inherits="align,dir,pack,orient,disabled,label" type="menu-button"/>
+        </content>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/toolbarbutton.xml#toolbarbutton" id="widget-button">
+        <resources>
+            <stylesheet src="widget-button.css"/>
+        </resources>
+        <content>
+            <children includes="observes|template|menupopup|panel|tooltip"/>
+            <xul:image class="toolbarbutton-icon" xbl:inherits="validate,src=image,label,yb-native-badge-icon,yb-native-not-authorized"/>
+            <xul:label class="toolbarbutton-text toolbarbutton-label" crop="right" flex="1" xbl:inherits="value=label,accesskey,crop"/>
+            <xul:label class="toolbarbutton-counter" crop="right" flex="1" xbl:inherits="value=counter,accesskey,crop"/>
+        </content>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/toolbarbutton.xml#menu" id="widget-menuonlybutton">
+        <resources>
+            <stylesheet src="widget-button.css"/>
+        </resources>
+        <content>
+            <children includes="observes|template|menupopup|panel|tooltip"/>
+            <xul:image class="toolbarbutton-icon" xbl:inherits="validate,src=image,label,yb-native-badge-icon,yb-native-not-authorized"/>
+            <xul:label class="toolbarbutton-text toolbarbutton-label" crop="right" flex="1" xbl:inherits="value=label,accesskey,crop"/>
+            <xul:label class="toolbarbutton-counter" crop="right" flex="1" xbl:inherits="value=counter,accesskey,crop"/>
+            <xul:dropmarker class="toolbarbutton-menubutton-dropmarker" xbl:inherits="align,dir,pack,orient,disabled,label" type="menu-button"/>
+        </content>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/menu.xml#menuitem-iconic" id="widget-menuitem-iconic">
+        <implementation>
+            <constructor><![CDATA[    if (!/menuitem\-with\-favicon/.test(this.className))
+        this.className += " menuitem-with-favicon";]]></constructor>
+        </implementation>
+    </binding>
+
+    <binding id="tt-row-counter">
+        <content>
+            <xul:cell><xul:label class="tt-row-counter-label" xbl:inherits="value=label"/></xul:cell>
+            <xul:cell><xul:label class="tt-row-counter-counter" xbl:inherits="value=counter"/></xul:cell>
+        </content>
+    </binding>
+
+    <binding display="xul:box" extends="chrome://global/content/bindings/general.xml#image" id="toolbarbutton-icon">
+        <resources>
+            <stylesheet src="button-icon.css"/>
+        </resources>
+
+        <content>
+            <xul:stack>
+                <xul:image anonid="base-image-normal" xbl:inherits="src,validate"/>
+                <xul:image anonid="base-image-inverted" xbl:inherits="validate"/>
+                <xul:vbox anonid="auth-images-container" xbl:inherits="yb-native-not-authorized">
+                    <xul:image anonid="auth-image-normal" xbl:inherits="validate"/>
+                    <xul:image anonid="auth-image-inverted" xbl:inherits="validate"/>
+                </xul:vbox>
+                <xul:vbox anonid="badge-images-container" xbl:inherits="yb-native-badge-icon">
+                    <xul:image anonid="badge-image-normal" xbl:inherits="src=yb-native-badge-icon,validate"/>
+                    <xul:image anonid="badge-image-inverted" xbl:inherits="validate"/>
+                </xul:vbox>
+            </xul:stack>
+        </content>
+
+        <implementation>
+            <field name="_mutationObserver"/>
+
+            <constructor><![CDATA[    let baseNormal = document.getAnonymousElementByAttribute(this, "anonid", "base-image-normal");
+    let baseInverted = document.getAnonymousElementByAttribute(this, "anonid", "base-image-inverted");
+    let badgeNormal = document.getAnonymousElementByAttribute(this, "anonid", "badge-image-normal");
+    let badgeInverted = document.getAnonymousElementByAttribute(this, "anonid", "badge-image-inverted");
+    let setInvertedSrc = function setInvertedSrc(baseNode, invertedNode) {
+        if (baseNode.hasAttribute("src")) {
+            let src = baseNode.getAttribute("src");
+            if (src)
+                src = src.replace(/(\.[a-z]+)$/, "-inverted$1");
+            invertedNode.setAttribute("src", src);
+        } else {
+            invertedNode.removeAttribute("src");
+        }
+    };
+    let setSrcAttribute = function setSrcAttribute() {
+        setInvertedSrc(baseNormal, baseInverted);
+        setInvertedSrc(badgeNormal, badgeInverted);
+    };
+    setSrcAttribute();
+    this._mutationObserver = new MutationObserver(setSrcAttribute);
+    let mutationObserverOptions = {
+        attributes: true,
+        attributeFilter: ["src"]
+    };
+    this._mutationObserver.observe(baseNormal, mutationObserverOptions);
+    this._mutationObserver.observe(badgeNormal, mutationObserverOptions);
+    this._updatePaddings = function () {
+        let image = document.getAnonymousElementByAttribute(this.parentNode, "class", "toolbarbutton-icon");
+        let label = document.getAnonymousElementByAttribute(this.parentNode, "class", "toolbarbutton-counter");
+        if (!label || !image)
+            return;
+        let setSize = true;
+        let parent = this.parentNode;
+        while (parent && !(typeof parent.getAttribute === "function" && parent.getAttribute("id") === "nav-bar"))
+            parent = parent.parentNode;
+        let toolbox = parent && parent.parentNode;
+        if (!toolbox || toolbox.getAttribute("cb-os") !== "windows" || toolbox.getAttribute("defaultmode") && toolbox.getAttribute("iconsize") !== "large")
+            setSize = false;
+        if (setSize) {
+            let width = label.boxObject.width + (!!label.value ? 8 : 4);
+            image.setAttribute("style", "-moz-padding-end: " + (width + 4) + "px !important;");
+            label.setAttribute("style", "-moz-margin-start: -" + width + "px !important;");
+        } else {
+            image.removeAttribute("style");
+            label.removeAttribute("style");
+        }
+    }.bind(this);
+    this._mutationObserverPaddings = new MutationObserver(this._updatePaddings);
+    let mutationObserverOptionsPaddings = {
+        attributes: true,
+        attributeFilter: ["value"]
+    };
+    let label = document.getAnonymousElementByAttribute(this.parentNode, "class", "toolbarbutton-counter");
+    this._mutationObserverPaddings.observe(label, mutationObserverOptionsPaddings);
+    setTimeout(function () {
+        if (typeof this._updatePaddings === "function")
+            this._updatePaddings();
+    }.bind(this), 0);]]></constructor>
+
+            <destructor><![CDATA[    if (this._mutationObserver) {
+        this._mutationObserver.disconnect();
+        this._mutationObserver = null;
+    }
+    if (this._mutationObserverPaddings) {
+        this._mutationObserverPaddings.disconnect();
+        this._mutationObserverPaddings = null;
+    }]]></destructor>
+        </implementation>
+    </binding>
+</bindings>

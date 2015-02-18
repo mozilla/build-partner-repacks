@@ -1,0 +1,27 @@
+<!ENTITY rambler.name "Rambler">
+
+<!ENTITY rambler.settings.label "Update interval">
+<!ENTITY rambler.settings.label_after "min.">
+<!ENTITY rambler.settings.write.show "Show &#34;New message&#34; button ">
+<!ENTITY rambler.settings.checktext "Show &#34;Rambler&#34; button name">
+<!ENTITY rambler.settings.write.checktext "Show &#34;New message&#34; button name">
+
+<!ENTITY rambler.tooltip.please_auth "Please log in">
+<!ENTITY rambler.tooltip.off "Shows new messages in your Rambler inbox">
+<!ENTITY rambler.tooltip.on "New messages in your inbox">
+<!ENTITY rambler.tooltip.empty "No new messages">
+<!ENTITY rambler.tooltip.write.off "Write a new message using your Rambler account">
+<!ENTITY rambler.tooltip.write.on "Write a new message using your Rambler account">
+<!ENTITY rambler.tooltip.error "Connection to your inbox failed">
+
+<!ENTITY rambler.button.text "Rambler">
+<!ENTITY rambler.button.text.write "Compose">
+
+<!ENTITY rambler.menu.update "Check e-mail">
+<!ENTITY rambler.menu.write "Compose a message">
+<!ENTITY rambler.menu.read "Go to Inbox">
+<!ENTITY rambler.menu.addressbook "Go to Contacts">
+<!ENTITY rambler.menu.yandex "Forward messages from this account to Yandex.Mail">
+<!ENTITY notify.letters "{N} new message;{N} new messages">
+<!ENTITY plural.rule "1">
+<!ENTITY settings.show_notifications "Show notifications">

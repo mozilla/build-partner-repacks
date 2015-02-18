@@ -1,0 +1,19 @@
+<!ENTITY widget.name "Поле поиска">
+
+<!ENTITY cmd_engineManager.label "Управление поисковыми плагинами...">
+
+<!ENTITY searchbox.checkbox.site.label "искать на этом сайте">
+<!ENTITY searchbox.button.label "Найти">
+<!ENTITY searchbox.button.context.label "Скрыть кнопку &#34;Найти&#34;">
+<!ENTITY searchbox.resizer.tooltiptext "Изменить ширину текстового поля поиска">
+
+<!ENTITY searchbox.highlighter.tooltiptext "Подсветка найденного">
+<!ENTITY searchbox.highlighter.highlight.label "Включить подсветку найденного">
+<!ENTITY searchbox.highlighter.teleport.label "Прокручивать к первому подсвеченному слову">
+<!ENTITY searchbox.highlighter.serp.label "Подсвечивать слова запроса на найденной странице">
+
+<!ENTITY searchbox.preferences.history.label "История поисковых запросов">
+<!ENTITY searchbox.preferences.history.enable.label "Сохранять историю запросов">
+<!ENTITY searchbox.preferences.history.clear.label "Очистить">
+<!ENTITY searchbox.preferences.highlighter.enabled.label "Показывать кнопку &#171;Подсветка найденного&#187;">
+<!ENTITY searchbox.preferences.show.site.search.label "Показывать опцию &#171;Искать на этом сайте&#187;">

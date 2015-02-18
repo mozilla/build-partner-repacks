@@ -1,0 +1,102 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % settings SYSTEM "/native/fx/spam.dtd">
+%settings;
+]>
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="//toolkit/native/bindings/widget.xml#widget" id="widget">
+        <resources>
+            <stylesheet src="spam.css"/>
+        </resources>
+
+        <content>
+            <toolbarbutton anonid="spam-button" class="chromeclass-toolbar-additional toolbarbutton-1 label2" disabled="true" label="&spam.name;" oncommand="_reportSpam(event)" tooltiptext="&spam.tooltiptext;" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" yb-icon-overlay="false">
+                <menupopup anonid="spam-menupopup">
+                    <menuitem label="&spam.action.label;" oncommand="event.stopPropagation(); _reportSpam(event);"/>
+                    <menuseparator/>
+                    <menuitem label="&spam.help.label;" oncommand="event.stopPropagation(); module.navToSpamPage(event);"/>
+                </menupopup>
+            </toolbarbutton>
+        </content>
+        <implementation>
+            <field name="API">(this.module.API)</field>
+            <field name="utils">(this.module.utils)</field>
+
+            <field name="_button" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "spam-button");]]></field>
+
+            <property name="disabled" onget="return this._button.getAttribute('disabled') == 'true'" onset="this._button.setAttribute('disabled', val)"/>
+
+            <constructor><![CDATA[    this.disabled = this._disabledForURI(gBrowser.selectedBrowser.currentURI);
+    let winListener = this.API.Browser.getWindowListener(window);
+    winListener.addListener("WindowLocationChange", this);]]></constructor>
+
+            <method name="spamDestroy">
+                <body><![CDATA[    if (window) {
+        let winListener = this.API.Browser.getWindowListener(window);
+        winListener.removeListener("WindowLocationChange", this);
+    }]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="subject"/>
+                <parameter name="topic"/>
+                <parameter name="pageInfo"/>
+                <body><![CDATA[    switch (topic) {
+    case "WindowLocationChange":
+        this.disabled = this._disabledForURI(pageInfo.uri);
+        break;
+    }]]></body>
+            </method>
+
+            <method name="_disabledForURI">
+                <parameter name="uri"/>
+                <body><![CDATA[    return !uri || !/^http/.test(uri.spec) || Boolean(this.module.visitedURLs[uri.spec]);]]></body>
+            </method>
+
+            <method name="_reportSpam">
+                <parameter name="event"/>
+                <body><![CDATA[    let result = this.utils.showPromptExWithYesNo(null, this.module.strBundle.GetStringFromName("ConfirmCYSpamTitle"), this.module.strBundle.GetStringFromName("ConfirmCYSpamMessage"));
+    if (result) {
+        return;
+    }
+    this.disabled = true;
+    let currBrowser = gBrowser.selectedBrowser;
+    let prevURL;
+    try {
+        prevURL = currBrowser.contentWindow.history.previous;
+    } catch (e) {
+    }
+    let refURI = currBrowser.webNavigation.referringURI;
+    let reportURL = this.module.buildReportURL(currBrowser.currentURI.spec, prevURL, refURI);
+    this.utils.sendRequest(reportURL, {
+        bypassCache: true,
+        background: true,
+        callbackFunc: this._onReqFinished.bind(this, currBrowser.currentURI.spec)
+    });]]></body>
+            </method>
+
+            <method name="_onReqFinished">
+                <parameter name="strOrigPageURL"/>
+                <parameter name="req"/>
+                <body><![CDATA[    if (this.utils.isReqError(req)) {
+        this._onReportFailed(strOrigPageURL);
+    } else {
+        this._onReportOK(strOrigPageURL);
+    }]]></body>
+            </method>
+
+            <method name="_onReportOK">
+                <parameter name="strOrigPageURL"/>
+                <body><![CDATA[    this.module.visitedURLs[strOrigPageURL] = true;
+    this.disabled = true;]]></body>
+            </method>
+
+            <method name="_onReportFailed">
+                <parameter name="strOrigPageURL"/>
+                <body><![CDATA[    this.utils.showAlert(null, null, this.module.strBundle.GetStringFromName("spamError"));
+    this.disabled = false;]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

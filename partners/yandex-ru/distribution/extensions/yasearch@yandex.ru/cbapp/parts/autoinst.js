@@ -36,7 +36,12 @@ const autoinstaller = {
         this._application.preferences.set(this.ACTIVATED_IDS_PREF_NAME, JSON.stringify(val));
     },
     _autoActivatedComponentIds: [],
-    set autoActivatedComponentIds(val) this._autoActivatedComponentIds = val,
+    get autoActivatedComponentIds() {
+        throw new Error("Setter only available");
+    },
+    set autoActivatedComponentIds(val) {
+        this._autoActivatedComponentIds = val;
+    },
     get currentLimits() {
         let limits = {
             __proto__: null,
@@ -179,24 +184,24 @@ const autoinstaller = {
             }
             return false;
         }
+        let historyConditions = [];
+        for (let [
+                    ,
+                    historyElement
+                ] in Iterator(historyElements)) {
+            let histDomain = historyElement.getAttribute("domain");
+            historyConditions.push({
+                domain: historyElement.getAttribute("domain"),
+                path: historyElement.getAttribute("path")
+            });
+        }
         let minVisits = xmlutils.queryXMLDoc("number(./history/@min-visits)", rulesElement);
-        let totalVisits = this._getBrowserHistoryVisitsFor(historyElements, minVisits);
+        let totalVisits = this.getBrowserHistoryVisitsFor(historyConditions, minVisits);
         return totalVisits >= minVisits;
     },
-    _getBrowserHistoryVisitsFor: function Autoinstaller__getBrowserHistoryVisitsFor(historyElements, minVisits) {
+    getBrowserHistoryVisitsFor: function Autoinstaller_getBrowserHistoryVisitsFor(historyConditions, minVisits) {
         if (typeof minVisits == "undefined") {
             minVisits = Number.POSITIVE_INFINITY;
-        }
-        let domains = historyElements;
-        if (Array.isArray(historyElements)) {
-            domains = Object.create(null);
-            for (let [
-                        ,
-                        historyElement
-                    ] in Iterator(historyElements)) {
-                let histDomain = historyElement.getAttribute("domain");
-                domains[histDomain] = true;
-            }
         }
         let historyService = Cc["@mozilla.org/browser/nav-history-service;1"].getService(Ci.nsINavHistoryService);
         let queryOptions = historyService.getNewQueryOptions();
@@ -210,10 +215,15 @@ const autoinstaller = {
         histQuery.endTime = 0;
         histQuery.domainIsHost = false;
         let totalVisits = 0;
-        for (let histDomain in domains) {
+        for (let i = 0, len = historyConditions.length; i < len; i++) {
+            let historyCondition = historyConditions[i];
+            let histDomain = historyCondition.domain;
+            let histPath = historyCondition.path;
             let subdomainsOnly = histDomain[0] == ".";
             if (subdomainsOnly) {
                 histDomain = histDomain.substring(1);
+            }
+            if (subdomainsOnly || histPath) {
                 queryOptions.maxResults = -1;
             } else {
                 queryOptions.maxResults = 0;
@@ -227,15 +237,15 @@ const autoinstaller = {
             let resultRoot = queryResult.root;
             resultRoot.containerOpen = true;
             try {
-                if (!subdomainsOnly) {
-                    totalVisits += resultRoot.accessCount;
-                    this._logger.debug("Domain " + histDomain + " was accesed at least " + resultRoot.accessCount + " times");
-                } else {
+                if (subdomainsOnly || histPath) {
                     let subdomainsAccessCount = 0;
                     for (let i = 0, len = resultRoot.childCount; i < len; i++) {
                         let resultNode = resultRoot.getChild(i);
                         let resultURI = netutils.newURI(resultNode.uri);
-                        if (resultURI.host == histDomain) {
+                        if (subdomainsOnly && resultURI.host === histDomain) {
+                            continue;
+                        }
+                        if (histPath && resultURI.path.indexOf(histPath) !== 0) {
                             continue;
                         }
                         subdomainsAccessCount += resultNode.accessCount;
@@ -244,7 +254,10 @@ const autoinstaller = {
                             break;
                         }
                     }
-                    this._logger.debug("Subdomains of " + histDomain + " were accesed at least " + subdomainsAccessCount + " times");
+                    this._logger.debug((subdomainsOnly ? "Subdomains of" : "Domain") + "\"" + histDomain + "\" " + (histPath ? " and path \"" + histPath + "\" " : "") + "were accesed at least " + subdomainsAccessCount + " times");
+                } else {
+                    totalVisits += resultRoot.accessCount;
+                    this._logger.debug("Domain \"" + histDomain + "\" was accesed at least " + resultRoot.accessCount + " times");
                 }
             } finally {
                 resultRoot.containerOpen = false;

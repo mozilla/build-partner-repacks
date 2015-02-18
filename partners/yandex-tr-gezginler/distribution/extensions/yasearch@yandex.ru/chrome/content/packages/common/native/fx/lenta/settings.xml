@@ -1,0 +1,20 @@
+<?xml version='1.0'?>
+<!DOCTYPE component SYSTEM "/native/fx/lenta.dtd"><gui:component xmlns:gui="http://bar.yandex.ru/dev/native/gui" xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <html:script type="application/javascript;version=1.8"><![CDATA[
+        let JSProtoObject = {
+            onShow: function () {
+                let canShowNotifications = JSNativeModule.core.canShowNotifications;
+                document.getElementById("{{UNIC_STR}}-notificationsCheckbox").hidden = !canShowNotifications;
+            }
+        };
+    ]]>
+    </html:script>
+
+    <gui:gui onshown="JSProtoObject.onShow()">
+        <gui:nodes name="showTextAlert">
+            <checkbox id="{{UNIC_STR}}-notificationsCheckbox" label="&lenta.alert.text.label;" preference="%pref%"/>
+        </gui:nodes>
+    </gui:gui>
+
+</gui:component>

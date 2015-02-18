@@ -1,0 +1,29 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY mail.name "Почта">
+<!ENTITY mail.tooltiptext "Новые сообщения в вашей почте">
+<!ENTITY mail.noauthtooltiptext "Показывает новые сообщения в вашей почте">
+<!ENTITY mail.tooltip.from "От:">
+<!ENTITY mail.tooltip.subject "Тема:">
+<!ENTITY mail.login.yandex.label "Войти в Яндекс.Почту">
+<!ENTITY mail.login.mfd.label "Войти в почтовый ящик на моём домене">
+<!ENTITY mail.logout.label "Завершить работу с почтовым ящиком">
+<!ENTITY mail.reloadCounter.label "Проверить почту">
+<!ENTITY mail.open.label "Читать письма">
+<!ENTITY mail.openAdBook.label "Открыть адресную книгу">
+<!ENTITY mail.writeMail.label "Написать письмо">
+<!ENTITY mail.sendPage.label "Рассказать о странице">
+<!ENTITY mail.send.page.label "Отправить ссылку на текущую страницу по почте">
+<!ENTITY mail.send.selected.label "Отправить выделенный текст по почте">
+<!ENTITY mail.send.image.label "Отправить ссылку на изображение по почте">
+<!ENTITY mail.send.accesskey "ч">
+
+
+<!ENTITY mail.uri.open.new.label "Открывать страницу только с новыми письмами">
+<!ENTITY mail.alert.text.label "Показывать текстовые уведомления о новых письмах">
+<!ENTITY mail.integration.label "Открывать ссылки &#171;mailto:&#187; в Яндекс.Почте">
+<!ENTITY mail.alert.sound.label "Проигрывать звуковые уведомления о новых письмах">
+<!ENTITY mail.alert.sound.select.label "Выбрать">
+<!ENTITY mail.alert.sound.preview.label "Прослушать">
+<!ENTITY mail.openServiceOnClick.label "По нажатию на кнопку открывать страницу сервиса">

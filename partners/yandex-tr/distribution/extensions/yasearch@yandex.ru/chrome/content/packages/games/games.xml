@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings [
+<!ENTITY % games SYSTEM "/games.dtd">
+%games;
+]>
+<widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="icons/games.svg" name="&games.title;" xmlns="http://bar.yandex.ru/dev/gui">
+        <modules>
+            <module browser="firefox" file="native/fx/games/games.js"/>
+        </modules>
+</widget>

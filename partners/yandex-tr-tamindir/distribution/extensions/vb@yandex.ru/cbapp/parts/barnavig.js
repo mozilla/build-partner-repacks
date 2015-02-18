@@ -14,8 +14,9 @@ this.__defineGetter__("isContentWindowPrivate", function isContentWindowPrivate(
     let {PrivateBrowsingUtils} = Cu.import("resource://gre/modules/PrivateBrowsingUtils.jsm", {});
     let privateCheckFunctionName = "isContentWindowPrivate" in PrivateBrowsingUtils ? "isContentWindowPrivate" : "isWindowPrivate";
     this.isContentWindowPrivate = function _isContentWindowPrivate(aWindow) {
-        if (aWindow)
+        if (aWindow) {
             return PrivateBrowsingUtils[privateCheckFunctionName](aWindow);
+        }
         return false;
     };
     return this.isContentWindowPrivate;
@@ -39,7 +40,7 @@ XPCOMUtils.defineLazyGetter(this, "mozWorker", function () {
 });
 XPCOMUtils.defineLazyServiceGetter(this, "UUID_GENERATOR", "@mozilla.org/uuid-generator;1", "nsIUUIDGenerator");
 function isErrorRequest(aReq) {
-    return !!(!aReq || aReq.type == "error" || !aReq.target || aReq.target.status != 200);
+    return !aReq || aReq.type === "error" || !aReq.target || aReq.target.status !== 200;
 }
 function getWindowListenerForWindow(window) {
     let controllerName = barnavig._application.name + "OverlayController";
@@ -89,14 +90,13 @@ const barnavig = {
         } catch (e) {
             this._logger.debug(e);
         }
-        Services.obs.addObserver(linkClickListener, "http-on-modify-request", false);
     },
     finalize: function BarNavig_finalize(aDoCleanup) {
-        Services.obs.removeObserver(linkClickListener, "http-on-modify-request");
         this.listenStatEventsEnabled = false;
         this.transmissionEnabled = false;
-        if (aDoCleanup)
+        if (aDoCleanup) {
             this._application.core.Lib.fileutils.removeFileSafe(this._barnavigR1File);
+        }
         this._browsersData = null;
         this._dataProviders = [];
         this._logger = null;
@@ -109,22 +109,24 @@ const barnavig = {
         return this._transmit;
     },
     set transmissionEnabled(val) {
-        this._transmit = !!val;
+        this._transmit = Boolean(val);
     },
     get listenStatEventsEnabled() {
         return this._listenStatEvents;
     },
     set listenStatEventsEnabled(val) {
-        if (!!val == this._listenStatEvents)
+        if (Boolean(val) === this._listenStatEvents) {
             return;
-        this._listenStatEvents = !!val;
+        }
+        this._listenStatEvents = Boolean(val);
         if (this._application.core.CONFIG.APP.TYPE === "vbff") {
             try {
                 let barAppBarNavig = Cc["@yandex.ru/custombarcore;yasearch"].getService().wrappedJSObject.application.barnavig;
-                if (!this._listenStatEvents)
+                if (!this._listenStatEvents) {
                     barAppBarNavig.addDataProvider(this._barAppDataProvider);
-                else
+                } else {
                     barAppBarNavig.removeDataProvider(this._barAppDataProvider);
+                }
             } catch (e) {
             }
         }
@@ -142,10 +144,12 @@ const barnavig = {
         onWindowLocationChange: function BarNavig__barAppDataProvider_onWindowLocationChange() {
         },
         onPageLoad: function BarNavig__barAppDataProvider_onPageLoad(barAppParams) {
-            if (!barnavig.transmissionEnabled)
+            if (!barnavig.transmissionEnabled) {
                 return;
-            if (barnavig.alwaysSendUsageStat === false)
+            }
+            if (barnavig.alwaysSendUsageStat === false) {
                 return;
+            }
             let barNavigParamsLength = Object.keys(barAppParams.barNavigParams).length;
             let [
                 params,
@@ -160,37 +164,42 @@ const barnavig = {
                     "brandID"
                 ].forEach(paramName => barAppParams.barNavigParams["vb" + paramName] = emptyParams[paramName]);
             }
-            if (!callbacks.length)
+            if (!callbacks.length) {
                 return;
+            }
             return function BarNavig__barAppDataProvider_onPageLoadCallback(params) {
                 callbacks.filter(callback => typeof callback == "object" || typeof callback == "function").forEach(function (callback) {
                     try {
-                        if (typeof callback == "function")
+                        if (typeof callback == "function") {
                             callback(params);
-                        else
+                        } else {
                             callback.onBarNavigResponse(params);
+                        }
                     } catch (e) {
-                        barnavig._logger.error("Notify provider error \"onBarNavigResponse\": " + e);
+                        barnavig._logger.error("Notify provider error 'onBarNavigResponse': " + e);
                     }
                 });
             };
         }
     },
     addDataProvider: function BarNavig_addDataProvider(aProvider) {
-        if (!this._dataProviders.some(provider => provider === aProvider))
+        if (!this._dataProviders.some(provider => provider === aProvider)) {
             this._dataProviders.push(aProvider);
+        }
     },
     removeDataProvider: function BarNavig_removeDataProvider(aProvider) {
         this._dataProviders = this._dataProviders.filter(provider => provider !== aProvider);
     },
     sendRequest: function BarNavig_sendRequest(aRequestParams, aCallback) {
-        if (!this.transmissionEnabled || this.alwaysSendUsageStat === false)
+        if (!this.transmissionEnabled || this.alwaysSendUsageStat === false) {
             return;
+        }
         this._prepeareAndSendRequest(aRequestParams, aCallback);
     },
     forceRequest: function BarNavig_forceRequest(aRequestParams, aCallback) {
-        if (!this.transmissionEnabled)
+        if (!this.transmissionEnabled) {
             return;
+        }
         this._prepeareAndSendRequest(aRequestParams, aCallback);
     },
     get barnavigR1String() {
@@ -205,8 +214,9 @@ const barnavig = {
         return this._barnavigR1String;
     },
     set barnavigR1String(val) {
-        if (val === this.barnavigR1String)
+        if (val === this.barnavigR1String) {
             return;
+        }
         try {
             this._application.core.Lib.fileutils.writeTextFile(this._barnavigR1File, val);
         } catch (e) {
@@ -218,11 +228,13 @@ const barnavig = {
     },
     _sendWaitingRequests: function BarNavig__sendWaitingRequests() {
         let requests = this._application.preferences.get("stat.usage.requests", null);
-        if (!requests)
+        if (!requests) {
             return;
+        }
         this._application.preferences.reset("stat.usage.requests");
-        if (this._application.preferences.get("stat.usage.requests", null))
+        if (this._application.preferences.get("stat.usage.requests", null)) {
             return;
+        }
         requests = JSON.parse(requests);
         (requests.forced || []).forEach(function (params) {
             this.forceRequest(params);
@@ -246,13 +258,15 @@ const barnavig = {
                 oldurl: null
             };
             let clidData = this._application.clids.vendorData.clid1;
-            if (clidData && clidData.clidAndVid)
+            if (clidData && clidData.clidAndVid) {
                 this.__emptyBarNavigParamsObject.clid = clidData.clidAndVid;
+            }
         }
         let cloned = this._application.core.Lib.sysutils.copyObj(this.__emptyBarNavigParamsObject);
         let r1 = this.barnavigR1String;
-        if (r1)
+        if (r1) {
             cloned.r1 = this.barnavigR1String;
+        }
         return cloned;
     },
     _prepeareAndSendRequest: function BarNavig__prepeareAndSendRequest(aRequestParams, aCallback) {
@@ -269,8 +283,9 @@ const barnavig = {
                 for (let [
                             key,
                             value
-                        ] in Iterator(aRequestParams))
+                        ] in Iterator(aRequestParams)) {
                     params.barNavigParams[key] = value;
+                }
             }
         }
         this._appendOtherStatParams(params, false).then(function () {
@@ -280,36 +295,44 @@ const barnavig = {
     },
     _makeBarNavigParams: function BarNavig__makeBarNavigParams(aWindowListenerData) {
         let params = this._emptyBarNavigParamsObject;
-        if (!aWindowListenerData)
+        if (!aWindowListenerData) {
             return params;
+        }
         let browser = aWindowListenerData.tab;
         let [
             uri,
             url
         ] = this._getBrowserURI(browser);
         params.url = url;
-        let webNavigation = browser.webNavigation;
         try {
-            if (webNavigation instanceof Ci.nsIWebPageDescriptor) {
-                let descriptor = webNavigation.currentDescriptor;
-                if (descriptor instanceof Ci.nsISHEntry && descriptor.postData)
-                    params.post = 1;
+            let sessionHistory = browser.sessionHistory;
+            let historyEntry = sessionHistory.getEntryAtIndex(sessionHistory.index, false);
+            if (Boolean(historyEntry.postData)) {
+                params.post = 1;
             }
         } catch (e) {
         }
-        let referringURI = webNavigation.referringURI;
-        if (referringURI && !referringURI.userPass)
+        let docShellProps = aWindowListenerData.docShellProps;
+        let referringURI = docShellProps && docShellProps.referringURI;
+        if (referringURI && !referringURI.userPass) {
             params.referer = referringURI.spec;
-        let realReferer = linkClickListener.getRealReferer(browser);
-        if (realReferer)
-            params["real-referer"] = realReferer;
-        if (browser.contentTitle)
+        }
+        if (params.referer) {
+            let realReferer = linkClickListener.getRealReferer(browser);
+            if (realReferer) {
+                params["real-referer"] = realReferer;
+            }
+        }
+        if (browser.contentTitle) {
             params.title = String(browser.contentTitle || "").substr(0, 1000);
-        let {originalURL, responseStatus} = (aWindowListenerData.docShellProps || {}).currentDocumentChannel || {};
-        if (originalURL && originalURL !== "about:blank" && originalURL !== url)
+        }
+        let {originalURL, responseStatus} = (docShellProps || {}).currentDocumentChannel || {};
+        if (originalURL && originalURL !== "about:blank" && originalURL !== url) {
             params.oldurl = originalURL;
-        if (responseStatus)
+        }
+        if (responseStatus) {
             params.httpstatus = parseInt(responseStatus, 10) || 0;
+        }
         return params;
     },
     get BAR_NAVIG_URL() {
@@ -322,14 +345,15 @@ const barnavig = {
         try {
             statisticsDoc = this._application.branding.brandPackage.getXMLDocument("/statistics/statistics.xml");
         } catch (e) {
-            this._logger.error("Can not get \"statistics/statistics.xml\" file from branding");
+            this._logger.error("Can not get 'statistics/statistics.xml' file from branding");
         }
         let domainElement = statisticsDoc && statisticsDoc.querySelector("Statistics > BarNavigDomain");
         if (domainElement) {
             for (let prop in this.BAR_NAVIG_URL) {
                 let value = domainElement.getAttribute(prop);
-                if (value)
+                if (value) {
                     this.BAR_NAVIG_URL[prop] = value;
+                }
             }
         }
         return this.BAR_NAVIG_URL;
@@ -353,10 +377,11 @@ const barnavig = {
                 return;
             }
             let url = aURL;
-            if (url.indexOf(this.BARNAVIG_URL_PATH) == 0) {
+            if (url.indexOf(this.BARNAVIG_URL_PATH) === 0) {
                 ip = yield DNSInfo.getIPForURL(url);
-                if (!ip)
+                if (!ip) {
                     url = url.replace(this.BARNAVIG_URL_PATH, this.BARNAVIG_BACKUP_URL_PATH);
+                }
             }
             url = "https://" + url;
             let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
@@ -372,18 +397,20 @@ const barnavig = {
                         key,
                         value
                     ] in Iterator(aParams.barNavigParams)) {
-                if (value !== null)
+                if (value !== null) {
                     params.push(key + "=" + encodeURIComponent(String(value)));
+                }
             }
             request.send(params.join("&"));
         }.bind(this));
     },
     _getBrowserURI: function BarNavig__getBrowserURI(aBrowser) {
-        if (!aBrowser)
+        if (!aBrowser) {
             return [
                 null,
                 null
             ];
+        }
         let uri;
         try {
             uri = aBrowser.currentURI;
@@ -393,8 +420,9 @@ const barnavig = {
         let url = null;
         try {
             url = uri.spec || "";
-            if (url == "about:blank")
+            if (url == "about:blank") {
                 url = "";
+            }
         } catch (e) {
         }
         return [
@@ -409,8 +437,6 @@ const barnavig = {
             return defer.promise;
         }
         let params = aParams.barNavigParams;
-        let app = this._application;
-        params.action = app.componentsUsage && app.componentsUsage.readActions() || null;
         let downloadData = downloadsStat.getRecord();
         if (downloadData) {
             params.dlu = downloadData.prePath;
@@ -426,20 +452,23 @@ const barnavig = {
             let docShellProps = aParams.windowListenerData.docShellProps;
             if (docShellProps && docShellProps.loadType & Ci.nsIDocShell.LOAD_CMD_NORMAL) {
                 try {
-                    let sessionHistory = browser.webNavigation.sessionHistory;
+                    let sessionHistory = browser.sessionHistory;
                     if (sessionHistory.count == 1) {
                         params.target = "t";
-                        if (browser.getTabBrowser().browsers.length == 1)
+                        if (browser.getTabBrowser().browsers.length == 1) {
                             params.target = "w";
+                        }
                     }
                 } catch (e) {
                 }
             }
         }
+        let app = this._application;
         if (app.browserUsage) {
             let browserUsage = app.browserUsage.readUsageStat();
-            for (let i = 0, len = browserUsage.length; i < len; i++)
+            for (let i = 0, len = browserUsage.length; i < len; i++) {
                 params["k" + (i + 1)] = browserUsage[i];
+            }
         }
         linkClickListener.appendLinkData(aParams);
         task.spawn(function () {
@@ -470,33 +499,39 @@ const barnavig = {
         };
     },
     onWindowLocationChange: function BarNavig_onWindowLocationChange(aWindowListenerData) {
-        if (isContentWindowPrivate(aWindowListenerData.tab.contentWindow))
+        if (isContentWindowPrivate(aWindowListenerData.tab.contentWindow)) {
             return;
-        if (!this._dataProviders.length)
+        }
+        if (!this._dataProviders.length) {
             return;
+        }
         let [
             params,
             callbacks
         ] = this._callDataProviders("onWindowLocationChange", aWindowListenerData);
     },
     onPageLoad: function BarNavig_onPageLoad(aWindowListenerData) {
-        if (isContentWindowPrivate(aWindowListenerData.tab.contentWindow))
+        if (isContentWindowPrivate(aWindowListenerData.tab.contentWindow)) {
             return;
-        if (!this._dataProviders.length && this.alwaysSendUsageStat !== true)
+        }
+        if (!this._dataProviders.length && this.alwaysSendUsageStat !== true) {
             return;
+        }
         let [
             params,
             callbacks
         ] = this._callDataProviders("onPageLoad", aWindowListenerData);
         if (!callbacks.length) {
-            if (this.alwaysSendUsageStat !== true)
+            if (this.alwaysSendUsageStat !== true) {
                 return;
+            }
             let [
                 uri,
                 url
             ] = this._getBrowserURI(aWindowListenerData.tab);
-            if (!/^https?/.test(url))
+            if (!/^https?/.test(url)) {
                 return;
+            }
         }
         this._appendOtherStatParams(params, true).then(function () {
             params._callbacks = callbacks.filter(c => typeof c == "object" || typeof c == "function");
@@ -508,10 +543,11 @@ const barnavig = {
         let callbacks = [];
         this._dataProviders.forEach(function BarNavig__callDataProviders_NotificatorFunc(provider) {
             try {
-                if (this._dataProviders.indexOf(provider) != -1)
+                if (this._dataProviders.indexOf(provider) != -1) {
                     callbacks.push(provider[eventType](params));
+                }
             } catch (e) {
-                this._logger.error("Notify provider error \"" + eventType + "\": " + e);
+                this._logger.error("Notify provider error '" + eventType + "': " + e);
             }
         }, this);
         callbacks = callbacks.filter(Boolean);
@@ -521,6 +557,9 @@ const barnavig = {
         ];
     },
     onBarNavigResponse: function BarNavig_onBarNavigResponse(aParams, aRequest, aIP) {
+        if (!this._application) {
+            return;
+        }
         if (aRequest && isErrorRequest(aRequest)) {
             try {
                 let reqURL = aRequest.target.channel.name;
@@ -551,24 +590,27 @@ const barnavig = {
         aParams.request = aRequest;
         try {
             aParams.responseXML = aRequest.target.responseXML;
-            if (!(aParams.responseXML instanceof Ci.nsIDOMDocument))
+            if (!(aParams.responseXML instanceof Ci.nsIDOMDocument)) {
                 delete aParams.responseXML;
+            }
         } catch (e) {
         }
         if (aParams.responseXML) {
             let r1 = aParams.responseXML.querySelector("urlinfo > r1");
             r1 = r1 && r1.textContent;
-            if (r1)
+            if (r1) {
                 this.barnavigR1String = r1;
+            }
         }
         aParams._callbacks.filter(callback => typeof callback == "object" || typeof callback == "function").forEach(function (callback) {
             try {
-                if (typeof callback == "function")
+                if (typeof callback == "function") {
                     callback(aParams);
-                else
+                } else {
                     callback.onBarNavigResponse(aParams);
+                }
             } catch (e) {
-                this._logger.error("Notify provider error \"onBarNavigResponse\": " + e);
+                this._logger.error("Notify provider error 'onBarNavigResponse': " + e);
             }
         }, this);
     },
@@ -609,15 +651,17 @@ const windowMediatorListener = {
                 win.addEventListener("unload", function WML_win_onUnload() {
                     win.removeEventListener("unload", WML_win_onUnload, false);
                     winListener.removeListener("TabClose", tabsInfoListener);
-                    win.removeEventListener("click", linkClickListener, true);
                     winListener.removeListener("PageStateStart", linkClickListener);
+                    winListener.removeListener("TabOpen", linkClickListener);
+                    linkClickListener.removeContentClickListener(win);
                     winListener.removeListener("WindowLocationChange", windowEventsListener);
                     winListener.removeListener("PageLoad", windowEventsListener);
                 }, false);
                 winListener.addListener("WindowLocationChange", windowEventsListener);
                 winListener.addListener("PageLoad", windowEventsListener);
                 winListener.addListener("PageStateStart", linkClickListener);
-                win.addEventListener("click", linkClickListener, true);
+                winListener.addListener("TabOpen", linkClickListener);
+                linkClickListener.addContentClickListener(win);
                 winListener.addListener("TabClose", tabsInfoListener);
             }
             break;
@@ -625,172 +669,138 @@ const windowMediatorListener = {
     }
 };
 const linkClickListener = {
+    addContentClickListener: function linkClickListener_addContentClickListener(chromeWindow) {
+        let frameScriptSource = " " + "function () {" + "    addEventListener('click', function clickContentListener(event) {" + "        if (!event.isTrusted) {" + "            return;" + "        }" + "        let protocol = event.view.location.protocol;" + "        let target = event.originalTarget;" + "        let isContextMenu = protocol === 'chrome:'" + "            && target.localName === 'menuitem'" + "            && target.parentNode" + "            && target.parentNode.id === 'contentAreaContextMenu';" + "        let linkText = null;" + "        let linkURL = null;" + "        if (/^https?:/.test(protocol)) {" + "            let linkTarget = target;" + "            while (linkTarget && linkTarget.localName !== 'a') {" + "                linkTarget = linkTarget.parentNode;" + "            }" + "            if (linkTarget) {" + "                linkURL = linkTarget.href;" + "                if (protocol === 'http:') {" + "                    linkText = linkTarget.textContent.trim().substr(0, 500) || null;" + "                }" + "            }" + "        }" + "        let view = event.view;" + "        if (isContextMenu && target.parentNode.triggerNode) {" + "            view = target.parentNode.triggerNode.ownerDocument.defaultView;" + "        }" + "        let viewLocation = /^https?:$/.test(view.location.protocol)" + "            ? view.location.toString()" + "            : null;" + "        let messageData = {" + "            isContextMenu: isContextMenu," + "            linkText: linkText," + "            linkURL: linkURL," + "            viewLocation: viewLocation" + "        };" + "        sendAsyncMessage('{{PREFIX}}click', messageData);" + "    }, false);" + "}";
+        let frameScriptURL = "data:application/javascript;charset=utf-8," + encodeURIComponent("(" + frameScriptSource.replace(/\{\{PREFIX\}\}/g, this.FRAME_MESSAGES_PREFIX) + ")()");
+        let messageManager = chromeWindow.messageManager;
+        messageManager.loadFrameScript(frameScriptURL, true);
+        this._MESSAGES_NAMES.forEach(function (eventType) {
+            messageManager.addMessageListener(eventType, this);
+        }, this);
+    },
+    removeContentClickListener: function linkClickListener_removeContentClickListener(chromeWindow) {
+        let messageManager = chromeWindow.messageManager;
+        this._MESSAGES_NAMES.forEach(function (eventType) {
+            messageManager.removeMessageListener(eventType, this);
+        }, this);
+    },
+    get FRAME_MESSAGES_PREFIX() {
+        let prefix;
+        switch (__URI__.match(/^resource:\/\/(.+)\-app.+/)[1]) {
+        case "yasearch":
+            prefix = "yasearch@yandex.ru";
+            break;
+        case "yandex-vb":
+            prefix = "vb@yandex.ru";
+            break;
+        default:
+            throw new Error("Unknown application type");
+        }
+        delete this.FRAME_MESSAGES_PREFIX;
+        return this.FRAME_MESSAGES_PREFIX = prefix + ":barnavig:";
+    },
+    get _MESSAGES_NAMES() {
+        return ["click"].map(function (msg) {
+            return this.FRAME_MESSAGES_PREFIX + msg;
+        }, this);
+    },
     appendLinkData: function linkClickListener_appendLinkData({
         browser: tab,
         uri,
         barNavigParams
     }) {
-        if (!(uri && /^https?/.test(uri.scheme)))
+        if (!(uri && /^https?/.test(uri.scheme))) {
             return;
+        }
         let winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
-        if (!winListener)
+        if (!winListener) {
             return;
+        }
         let tabData = winListener.getTabData(tab, "linkClick");
-        if (!tabData)
+        if (!tabData) {
             return;
-        if (!tabData.linkText)
+        }
+        if (!tabData.linkText) {
             return;
+        }
         barNavigParams.lt = tabData.linkText;
         tabData.linkText = null;
     },
     getRealReferer: function linkClickListener_getRealReferer(tab) {
-        let webNavigation = tab.webNavigation;
-        let referringURI = webNavigation.referringURI;
-        if (!referringURI)
-            return null;
-        let sessionHistory = webNavigation.sessionHistory;
+        let sessionHistory = tab.sessionHistory;
         let prevSHEntryIndex = sessionHistory.index - 1;
         if (prevSHEntryIndex < 0) {
             let winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
-            if (!winListener)
+            if (!winListener) {
                 return;
+            }
             let tabData = winListener.getTabData(tab, "linkClick");
-            if (!tabData)
+            if (!tabData) {
                 return;
+            }
             return tabData.lastViewLocation || null;
         }
         try {
             let prevSHEntry = sessionHistory.getEntryAtIndex(prevSHEntryIndex, false);
             let uri = prevSHEntry.URI;
-            if (uri && !uri.userPass && /^https?$/.test(uri.scheme))
+            if (uri && !uri.userPass && /^https?$/.test(uri.scheme)) {
                 return prevSHEntry.URI.spec;
+            }
         } catch (e) {
         }
         return null;
     },
-    handleEvent: function linkClickListener_handleEvent(event) {
-        if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false)
+    receiveMessage: function linkClickListener_receiveMessage({data}) {
+        if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false) {
             return;
-        switch (event.type) {
-        case "click":
-            this._lastActionText = this._getLinkText(event);
-            this._lastActionTimestamp = Date.now();
-            this._lastActionViewLocation = this._getViewLocation(event);
-            break;
         }
+        this._lastActionText = data.linkText;
+        this._lastActionTimestamp = Date.now();
+        this._lastActionViewLocation = data.viewLocation;
+        this._lastLinkURL = data.linkURL;
     },
     observe: function linkClickListener_observe(subject, topic, data) {
-        switch (topic) {
-        case "http-on-modify-request":
-            this._onModifyRequest(subject);
-            break;
-        case "PageStateStart":
+        if (topic === "PageStateStart") {
             this._onPageStateStart(data);
-            break;
         }
     },
-    ACTION_LIVE_TIME: 1000,
     PAGE_START_WAIT_TIME: 10000,
     _lastActionTimestamp: null,
     _lastActionText: null,
-    _getLinkText: function linkClickListener__getLinkText(event) {
-        let protocol = event.view.location.protocol;
-        let target = event.originalTarget;
-        if (protocol === "chrome:") {
-            return target.localName === "menuitem" && target.parentNode && target.parentNode.id === "contentAreaContextMenu" && this._lastActionText || null;
-        }
-        if (protocol !== "http:")
-            return null;
-        while (target && target.localName !== "a")
-            target = target.parentNode;
-        return target && target.textContent.trim().substr(0, 500) || null;
-    },
-    _getViewLocation: function linkClickListener__getViewLocation(event) {
-        let view = event.view;
-        if (view.location.protocol === "chrome:") {
-            let target = event.originalTarget;
-            if (target.localName === "menuitem" && target.parentNode && target.parentNode.id === "contentAreaContextMenu") {
-                if (target.parentNode.triggerNode) {
-                    view = target.parentNode.triggerNode.ownerDocument.defaultView;
-                }
-            }
-        }
-        if (!/^https?:$/.test(view.location.protocol))
-            return null;
-        return view.location.toString();
-    },
-    _onModifyRequest: function linkClickListener__onModifyRequest(channel) {
-        if (!(this._lastActionText || this._lastActionViewLocation))
-            return;
-        if (Date.now() - this._lastActionTimestamp > this.ACTION_LIVE_TIME) {
-            this._lastActionText = null;
-            this._lastActionViewLocation = null;
+    _lastActionViewLocation: null,
+    _lastLinkURL: null,
+    _onPageStateStart: function linkClickListener__onPageStateStart({tab, request}) {
+        if (request.URI.spec === "about:blank") {
             return;
         }
-        try {
-            channel.QueryInterface(Ci.nsIHttpChannel);
-            if (!(channel.loadFlags & Ci.nsIHttpChannel.LOAD_INITIAL_DOCUMENT_URI))
+        if (Date.now() - this._lastActionTimestamp > this.PAGE_START_WAIT_TIME) {
+            return;
+        }
+        if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false) {
+            return;
+        }
+        if (this._lastLinkURL === request.URI.spec) {
+            let winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
+            if (!winListener) {
                 return;
-        } catch (e) {
-            return;
+            }
+            let tabData = winListener.getTabData(tab, "linkClick");
+            if (!tabData) {
+                return;
+            }
+            tabData.linkText = this._lastActionText;
+            tabData.lastViewLocation = this._lastActionViewLocation;
         }
-        let tabData = this._getTabDataForChannel(channel);
-        if (!tabData)
-            return;
-        tabData.linkText = this._lastActionText;
-        tabData.lastURL = channel.URI.spec;
-        tabData.lastViewLocation = this._lastActionViewLocation;
         this._lastActionText = null;
         this._lastActionViewLocation = null;
     },
-    _onPageStateStart: function linkClickListener__onPageStateStart({tab, request}) {
-        if (Date.now() - this._lastActionTimestamp > this.PAGE_START_WAIT_TIME)
-            return;
-        if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false)
-            return;
-        let winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
-        if (!winListener)
-            return;
-        let tabData = winListener.getTabData(tab, "linkClick");
-        if (!tabData)
-            return;
-        if (tabData.lastURL !== request.URI.spec)
-            tabData.linkText = null;
-    },
-    _getTabDataForChannel: function linkClickListener__getTabDataForChannel(channel) {
-        let win = this._getDOMWindowForChannel(channel);
-        if (!(win && win === win.parent))
-            return null;
-        return this._getTabDataForDOMWindow(win);
-    },
-    _getDOMWindowForChannel: function linkClickListener__getDOMWindowForChannel(channel) {
-        try {
-            return channel.loadGroup.groupObserver.QueryInterface(Ci.nsIWebProgress).DOMWindow;
-        } catch (e) {
-        }
-        return null;
-    },
-    _getTabDataForDOMWindow: function linkClickListener__getTabDataForDOMWindow(window) {
-        let docShellTree = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIWebNavigation).QueryInterface(Ci.nsIDocShellTreeItem);
-        if (docShellTree.itemType !== Ci.nsIDocShellTreeItem.typeContent)
-            return null;
-        try {
-            let chromeWindow = docShellTree.rootTreeItem.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow).wrappedJSObject;
-            if (!chromeWindow)
-                return null;
-            let tab = chromeWindow.getBrowser().getBrowserForDocument(window.document);
-            if (!tab)
-                return null;
-            return getTabDataForTab(tab, "linkClick");
-        } catch (e) {
-        }
-        return null;
-    }
+    QueryInterface: XPCOMUtils.generateQI([Ci.nsIMessageListener])
 };
 const windowEventsListener = {
     observe: function WindowEventsListener_observe(aSubject, aTopic, aData) {
-        if (!barnavig.listenStatEventsEnabled)
+        if (!barnavig.listenStatEventsEnabled) {
             return;
+        }
         switch (aTopic) {
         case "WindowLocationChange":
             barnavig.onWindowLocationChange(aData);
@@ -809,8 +819,9 @@ const DNSInfo = {
             if (ips) {
                 ips.some(function makeHIP4(ip) {
                     let parts = ip ? ip.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/) : null;
-                    if (!parts)
+                    if (!parts) {
                         return false;
+                    }
                     strHIP = parts[1] * 16777216 + parts[2] * 65536 + parts[3] * 256 + parts[4] * 1;
                     return true;
                 });
@@ -840,8 +851,9 @@ const DNSInfo = {
         let host;
         try {
             let url = strURL;
-            if (!/^https?:\/\//.test(strURL))
+            if (!/^https?:\/\//.test(strURL)) {
                 url = "http://" + url;
+            }
             host = Services.io.newURI(url, null, null).host;
         } catch (e) {
         }
@@ -857,9 +869,7 @@ const DNSInfo = {
                         cbl = true;
                     }.bind(this));
                     this._dnsService.asyncResolve(host, 0, dnsListener, this._currentThread);
-                    sysutils.promiseSleep(2000, function () {
-                        return !!cbl;
-                    }).then(function () {
+                    sysutils.promiseSleep(2000, () => Boolean(cbl)).then(function () {
                         defer.resolve(this._dnsCache.get(host));
                     }.bind(this));
                 } catch (e) {
@@ -882,8 +892,9 @@ const DNSInfo = {
                 host: strHost,
                 data: arrIPs
             };
-            if (this._cached.unshift(cached) > this.MAX_CACHED_COUNT)
+            if (this._cached.unshift(cached) > this.MAX_CACHED_COUNT) {
                 this._cached.splice(-this.MAX_CACHED_COUNT / 2);
+            }
         },
         get: function dnsCache_get(strHost) {
             let cached = null;
@@ -913,11 +924,13 @@ const DNSInfo = {
             onLookupComplete: function DNSListener_onLookupComplete(aRequest, aRecord, aStatus) {
                 let arrIPs = [];
                 if (aStatus === 0 && aRecord) {
-                    while (aRecord.hasMore())
+                    while (aRecord.hasMore()) {
                         arrIPs.push(aRecord.getNextAddrAsString());
+                    }
                 }
-                if (this.callback)
+                if (this.callback) {
                     this.callback(arrIPs);
+                }
             },
             QueryInterface: XPCOMUtils.generateQI([
                 Ci.nsIDNSListener,
@@ -930,49 +943,61 @@ const DNSInfo = {
 };
 const pageStat = {
     appendTimesData: function pageStat_appendTimesData(aParams) {
-        if (!aParams.browser)
+        if (!aParams.browser) {
             return;
+        }
         let contentWindow = aParams.browser.contentWindow;
-        if (!contentWindow)
+        if (!contentWindow) {
             return;
-        if (!this._checkConditions(contentWindow.location))
+        }
+        if (!this._checkConditions(contentWindow.location)) {
             return;
+        }
         let winPerformance = "performance" in contentWindow && contentWindow.performance;
         let timing = winPerformance && winPerformance.timing;
-        if (!timing)
+        if (!timing) {
             return;
-        if (!timing.loadEventEnd)
+        }
+        if (!timing.loadEventEnd) {
             return;
-        if (aParams.windowListenerData.hashOnlyChanged)
+        }
+        if (aParams.windowListenerData.hashOnlyChanged) {
             return;
-        if (aParams.windowListenerData.URIWasModified)
+        }
+        if (aParams.windowListenerData.URIWasModified) {
             return;
+        }
         let times = [
             timing.responseStart - timing.navigationStart,
             timing.domContentLoadedEventEnd - timing.responseStart,
             timing.loadEventEnd - timing.domContentLoadedEventEnd
         ];
-        if (times.some(v => !(typeof v == "number" && v >= 0)))
+        if (times.some(v => !(typeof v == "number" && v >= 0))) {
             return;
-        if (times[0] == 0 || times[1] == 0)
+        }
+        if (times[0] === 0 || times[1] === 0) {
             return;
+        }
         let params = aParams.barNavigParams;
         params.tv = 5;
         params.t = times.map(t => parseInt(t / 10, 10)).join("-");
     },
     appendYammData: function pageStat_appendYammData(aParams) {
-        if (!aParams.browser)
+        if (!aParams.browser) {
             return;
-        let contentDocument = aParams.browser.contentDocument;
-        if (!contentDocument)
+        }
+        let contentDocument = aParams.browser.contentDocumentAsCPOW || aParams.browser.contentDocument;
+        if (!contentDocument) {
             return;
-        if (!this._isYandexHost(contentDocument.location))
+        }
+        if (!this._isYandexHost(contentDocument.location)) {
             return;
+        }
         let metaNodes = contentDocument.getElementsByTagName("meta");
         for (let i = 0, len = metaNodes.length; i < len; i++) {
             let metaName = (metaNodes[i].name || "").toLowerCase();
             if (metaName == "yamm" && metaNodes[i].content) {
-                aParams.barNavigParams.yamm = ("" + metaNodes[i].content).substr(0, 10);
+                aParams.barNavigParams.yamm = String(metaNodes[i].content).substr(0, 10);
                 break;
             }
         }
@@ -987,15 +1012,20 @@ const pageStat = {
         ].join(":");
         let listener = function listener(event) {
             let {type, data, taskId} = event.data;
-            if (type !== workerTaskType)
+            if (type !== workerTaskType) {
+                defer.resolve();
                 return;
-            if (taskId !== workerTaskId)
+            }
+            if (taskId !== workerTaskId) {
+                defer.resolve();
                 return;
+            }
             mozWorker.removeEventListener("message", listener, false);
             let apiCrypto = barnavig.application.core.Lib.misc.CryptoHash;
             let hash = data && pageStat._fnv1a_32(apiCrypto.getBinaryFromString(data, "MD5"));
-            if (hash)
+            if (hash) {
                 aParams.barNavigParams.psu = hash;
+            }
             defer.resolve();
         };
         mozWorker.addEventListener("message", listener, false);
@@ -1026,19 +1056,23 @@ const pageStat = {
     _hostReS: new RegExp("(^|(nova|www|go)\\.)(yandex|google|mail|rambler)\\.(?:com(\\.tr)?|ru|ua|by|kz)$", "i"),
     _pathReS: new RegExp("^((yand)?search|srch)\\?", "i"),
     _hostReM: new RegExp("^((web)?mail\\.yandex\\.(com(\\.tr)?|ru|ua|by|kz)|(win|e)\\.mail\\.ru|mail\\.rambler\\.ru)$", "i"),
-    _urlReM: new RegExp("^https?://([^/]+/(cgi\\-bin/sendmsg\\?)?compose|webmail\\.yandex\\.(com(\\.tr)?|ru|ua|by|kz)/messages|mail\\.yandex\\.(com(\\.tr)?|ru|ua|by|kz)/((classic|modern|neo)/)?(messages|compose)|(win|e)\\.mail\\.ru/cgi\\-bin/(sentmsg\\?compose|msglist))|mail\\.rambler\\.ru/m/(folder/INBOX|compose)|mail\\.rambler\\.ru/mail/(startpage\\?|mail.cgi\\?(r|mode=(startpage|compose|mailbox;mbox=INBOX)))", "i"),
+    _urlReM: new RegExp("^https?://([^/]+/(cgi\\-bin/sendmsg\\?)?compose|webmail\\.yandex\\.(com(\\.tr)?|ru|ua|by|kz)" + "/messages|mail\\.yandex\\.(com(\\.tr)?|ru|ua|by|kz)/((classic|modern|neo)/)?(messages|compose)|" + "(win|e)\\.mail\\.ru/cgi\\-bin/(sentmsg\\?compose|msglist))|mail\\.rambler\\.ru/m/(folder/INBOX|compose)|" + "mail\\.rambler\\.ru/mail/(startpage\\?|mail.cgi\\?(r|mode=(startpage|compose|mailbox;mbox=INBOX)))", "i"),
     _checkConditions: function pageStat__checkConditions(aURL) {
         let url = String(aURL);
-        if (!url || !url.match(/^https?:\/\/([^\/]+)\/?(.*)/))
+        if (!url || !url.match(/^https?:\/\/([^\/]+)\/?(.*)/)) {
             return false;
+        }
         let host = RegExp.$1;
         let path = RegExp.$2;
-        if (!this._hostQuickRe.test(host))
+        if (!this._hostQuickRe.test(host)) {
             return false;
-        if (!path && this._hostOnlyRe.test(host))
+        }
+        if (!path && this._hostOnlyRe.test(host)) {
             return true;
-        if (this._hostReM.test(host) && url.match(this._urlReM))
+        }
+        if (this._hostReM.test(host) && url.match(this._urlReM)) {
             return true;
+        }
         if (this._pathReS.test(path) && host.match(this._hostReS)) {
             let q = "text";
             switch (RegExp.$3) {
@@ -1053,17 +1087,20 @@ const pageStat = {
                 break;
             }
             let re = new RegExp("[?&](?:" + q + ")=([^#&?]*)");
-            if (re.test(path))
+            if (re.test(path)) {
                 return true;
+            }
         }
-        if (this._hostYaRe.test(host))
+        if (this._hostYaRe.test(host)) {
             return true;
+        }
         return false;
     },
     _isYandexHost: function pageStat__isYandexHost(aURL) {
         let url = String(aURL);
-        if (!url || !url.match(/^https?:\/\/([^\/]+)\/?(.*)/))
+        if (!url || !url.match(/^https?:\/\/([^\/]+)\/?(.*)/)) {
             return false;
+        }
         return this._hostYaRe.test(RegExp.$1);
     }
 };
@@ -1074,8 +1111,9 @@ const downloadsStat = {
     finalize: function DlStat_finalize() {
         try {
             let {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
-            if (!("getList" in Downloads))
+            if (!("getList" in Downloads)) {
                 throw new Error("Old 'Downloads' module");
+            }
             let that = this;
             Downloads.getList(Downloads.PUBLIC).then(list => list.removeView(that));
         } catch (ex1) {
@@ -1099,27 +1137,27 @@ const downloadsStat = {
         __proto__: null,
         1: {
             extensions: " bat bin com cmd deb dll dmg exe hqx img iso java msi msm msp scr ",
-            mimes: " application/bat                           application/x-bat                           application/x-apple-diskimage                           application/x-msdos-program                           application/x-msdownload                           application/x-msi                           application/mac-binhex40                           application/macbinhex40                           application/mac-binary                           application/macbinary                           application/x-binary                           application/x-macbinary                           application/java                           application/java-byte-code                           application/x-java-class                         "
+            mimes: " " + " application/bat" + " application/x-bat" + " application/x-apple-diskimage" + " application/x-msdos-program" + " application/x-msdownload" + " application/x-msi" + " application/mac-binhex40" + " application/macbinhex40" + " application/mac-binary" + " application/macbinary" + " application/x-binary" + " application/x-macbinary" + " application/java" + " application/java-byte-code" + " application/x-java-class" + " "
         },
         2: {
             extensions: " 7z boz bz bz2 gtar gz lha lhz rar tar tar.bz2 tar.gz tbz tgz x zip ",
-            mimes: " application/gnutar                           application/x-gzip                           application/x-tgz                           application/x-tar                           application/zip                           application/x-bzip                           application/x-bzip2                           application/x-bzip-compressed-tar                           application/x-7z-compressed                           application/x-rar-compressed                           application/rar                           application/x-compress                           application/x-compressed                           application/x-zip-compressed                           application/x-gtar                           multipart/x-zip                         "
+            mimes: " " + " application/gnutar" + " application/x-gzip" + " application/x-tgz" + " application/x-tar" + " application/zip" + " application/x-bzip" + " application/x-bzip2" + " application/x-bzip-compressed-tar" + " application/x-7z-compressed" + " application/x-rar-compressed" + " application/rar" + " application/x-compress" + " application/x-compressed" + " application/x-zip-compressed" + " application/x-gtar" + " multipart/x-zip" + " "
         },
         3: {
-            extensions: " 3gp 3gpp afl asf asf asr asx avi avs flv lsf lsx m1v m2v mng mov movie                           mp2 mp4 mpa mpe mpeg mpg mpv2 qt qtc swf viv vivo wmv ",
-            mimes: " application/x-mplayer2                           application/x-shockwave-flash                         "
+            extensions: " 3gp 3gpp afl asf asf asr asx avi avs flv lsf lsx m1v m2v mng mov movie " + " mp2 mp4 mpa mpe mpeg mpg mpv2 qt qtc swf viv vivo wmv ",
+            mimes: " application/x-mplayer2 application/x-shockwave-flash"
         },
         4: {
             extensions: " aif aifc aiff au cda flac kar m2a m3u m4a mid midi mp3 ogg ra ram rmi snd voc wav ",
-            mimes: " application/ogg                           application/x-cda                           application/x-midi                         "
+            mimes: " application/ogg application/x-cda application/x-midi "
         },
         5: {
-            extensions: " art bm bmp cmx cod gif ico ico ief jfif jng jpe jpeg jpg pbm pct pcx pgm                           pic pict png pnm ppm qif qti qtif ras rgb svg tif tiff wbmp xbm xpm xwd ",
+            extensions: " art bm bmp cmx cod gif ico ico ief jfif jng jpe jpeg jpg pbm pct pcx pgm " + " pic pict png pnm ppm qif qti qtif ras rgb svg tif tiff wbmp xbm xpm xwd ",
             mimes: ""
         },
         6: {
-            extensions: " ai djv djvu doc docx dot eps epub fb2 latex ltx odt odg odp ods odc odi odf odm                           pdf pps ppt pptx ps rtf rtx txt word xl xla xlb xlc xld xlk xll xlm xls                           xlsx xlt xlv xlw ",
-            mimes: " application/pdf                           application/msword                           application/rtf                           application/postscript                           application/x-rtf                           application/x-latex                           text/richtext                           application/excel                           application/x-excel                           application/x-msexcel                           application/vnd.ms-excel                           application/vnd.ms-powerpoint                           application/vnd.openxmlformats-officedocument.presentationml.presentation                           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet                           application/vnd.openxmlformats-officedocument.wordprocessingml.document                           application/vnd.oasis.opendocument.text                           application/vnd.oasis.opendocument.graphics                           application/vnd.oasis.opendocument.presentation                           application/vnd.oasis.opendocument.spreadsheet                           application/vnd.oasis.opendocument.chart                           application/vnd.oasis.opendocument.image                           application/vnd.oasis.opendocument.formula                           application/vnd.oasis.opendocument.text-master                           image/vnd.djvu                         "
+            extensions: " ai djv djvu doc docx dot eps epub fb2 latex ltx odt odg odp ods odc odi odf odm " + " pdf pps ppt pptx ps rtf rtx txt word xl xla xlb xlc xld xlk xll xlm xls " + " xlsx xlt xlv xlw ",
+            mimes: " " + " application/pdf " + " application/msword" + " application/rtf" + " application/postscript" + " application/x-rtf" + " application/x-latex" + " text/richtext" + " application/excel" + " application/x-excel" + " application/x-msexcel" + " application/vnd.ms-excel" + " application/vnd.ms-powerpoint" + " application/vnd.openxmlformats-officedocument.presentationml.presentation" + " application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" + " application/vnd.openxmlformats-officedocument.wordprocessingml.document" + " application/vnd.oasis.opendocument.text" + " application/vnd.oasis.opendocument.graphics" + " application/vnd.oasis.opendocument.presentation" + " application/vnd.oasis.opendocument.spreadsheet" + " application/vnd.oasis.opendocument.chart" + " application/vnd.oasis.opendocument.image" + " application/vnd.oasis.opendocument.formula" + " application/vnd.oasis.opendocument.text-master" + " image/vnd.djvu" + " "
         },
         7: {
             extensions: " torrent ",
@@ -1178,7 +1216,7 @@ const downloadsStat = {
             onCacheEntryDoomed: function DlStat_cacheListener_onCacheEntryDoomed() {
             }
         };
-        let asyncOpenCacheEntry = function asyncOpenCacheEntry(url) {
+        var asyncOpenCacheEntry = function asyncOpenCacheEntry(url) {
             if (this._diskCacheStorage) {
                 this._diskCacheStorage.asyncOpenURI(Services.io.newURI(url, null, null), "", Ci.nsICacheStorage.OPEN_READONLY, listener);
             } else {
@@ -1220,8 +1258,9 @@ const downloadsStat = {
                     type,
                     data
                 ] in Iterator(this.EXT_TYPES)) {
-            if (data.mimes.indexOf(mime) != -1)
+            if (data.mimes.indexOf(mime) != -1) {
                 return type;
+            }
         }
         return null;
     },
@@ -1231,23 +1270,26 @@ const downloadsStat = {
                     type,
                     data
                 ] in Iterator(this.EXT_TYPES)) {
-            if (data.extensions.indexOf(extension) != -1)
+            if (data.extensions.indexOf(extension) != -1) {
                 return type;
+            }
         }
         return null;
     },
     _collectDownloadData: function DlStat__collectDownloadData(aDownload, aRequest) {
         let downloadId = this._getIdForDownload(aDownload);
         let downloadData = this._activeDownloads[downloadId] || null;
-        if (!downloadData)
+        if (!downloadData) {
             return;
+        }
         delete this._activeDownloads[downloadId];
         let downloadURI = aDownload.source;
         let url = downloadURI.spec;
         let prePath = downloadURI.prePath;
         let userName = downloadURI.userName;
-        if (userName)
+        if (userName) {
             prePath = prePath.split(userName + "@").join("");
+        }
         let referrerURL = downloadData.referrerURL;
         let collect = function collect(mimeType) {
             let extensionType;
@@ -1296,8 +1338,9 @@ const downloadsStat = {
             Services.obs.removeObserver(this, "final-ui-startup", true);
             try {
                 let {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
-                if (!("getList" in Downloads))
+                if (!("getList" in Downloads)) {
                     throw new Error("Old 'Downloads' module");
+                }
                 let that = this;
                 Downloads.getList(Downloads.PUBLIC).then(list => list.addView(that));
             } catch (ex1) {
@@ -1313,11 +1356,13 @@ const downloadsStat = {
     },
     _wrapDownloadObject: function DlStat__wrapDownloadObject(download) {
         let sourceURI = barnavig.application.core.Lib.misc.tryCreateFixupURI(download.source.url);
-        if (!sourceURI)
+        if (!sourceURI) {
             return null;
+        }
         let targetURI = barnavig.application.core.Lib.misc.tryCreateFixupURI(download.target.path);
-        if (!targetURI)
+        if (!targetURI) {
             return null;
+        }
         let referrerURI = barnavig.application.core.Lib.misc.tryCreateFixupURI(download.source.referrer);
         return {
             id: download.source.url + "|" + download.target.path,
@@ -1330,36 +1375,43 @@ const downloadsStat = {
     },
     _setReferrerForDownload: function DlStat__setReferrerForDownload(download) {
         let downloadId = this._getIdForDownload(download);
-        if (downloadId in this._activeDownloads)
+        if (downloadId in this._activeDownloads) {
             return;
+        }
         let referrerURL = download.referrer && download.referrer.spec;
         if (!referrerURL) {
             try {
                 let win = Services.wm.getMostRecentWindow("navigator:browser");
                 let ref = win.gBrowser.mCurrentBrowser.currentURI.spec;
-                if (/^(http|ftp)s?:\/\//.test(ref))
+                if (/^(http|ftp)s?:\/\//.test(ref)) {
                     referrerURL = ref;
+                }
             } catch (e) {
             }
         }
-        if (referrerURL)
+        if (referrerURL) {
             this._activeDownloads[downloadId] = { referrerURL: referrerURL };
+        }
     },
     onDownloadAdded: function DlStat_onDownloadAdded(download) {
         let wrappedDownload = this._wrapDownloadObject(download);
-        if (wrappedDownload)
+        if (wrappedDownload) {
             this._setReferrerForDownload(wrappedDownload);
+        }
     },
     onDownloadChanged: function DlStat_onDownloadChanged(download) {
-        if (!download.succeeded)
+        if (!download.succeeded) {
             return;
+        }
         let wrappedDownload = this._wrapDownloadObject(download);
-        if (wrappedDownload)
+        if (wrappedDownload) {
             this._collectDownloadData(wrappedDownload);
+        }
     },
     onDownloadStateChange: function DlStat_onDownloadStateChange(aState, aDownload) {
-        if (!/^(http|ftp)s?:\/\//.test(aDownload.source.spec))
+        if (!/^(http|ftp)s?:\/\//.test(aDownload.source.spec)) {
             return;
+        }
         const nsIDM = Ci.nsIDownloadManager;
         let state = aDownload.state;
         switch (state) {
@@ -1391,21 +1443,28 @@ const searchPersonalization = {
             defer.resolve();
             return defer.promise;
         }
-        if (!aParams.browser)
+        if (!aParams.browser) {
             return resolvedPromise();
+        }
         let contentDocument = aParams.browser.contentDocument;
-        if (!contentDocument)
+        if (!contentDocument) {
             return resolvedPromise();
-        if (!/^http:\/\//.test(contentDocument.location))
+        }
+        if (!/^http:\/\//.test(contentDocument.location)) {
             return resolvedPromise();
+        }
+        if (!contentDocument.documentElement) {
+            return resolvedPromise();
+        }
         let documentInnerHTML;
         try {
             documentInnerHTML = contentDocument.documentElement.innerHTML;
         } catch (e) {
             barnavig._logger.debug("searchPersonalization.appendBarNavigParam, innerHTML error: " + e);
         }
-        if (!documentInnerHTML)
+        if (!documentInnerHTML) {
             return resolvedPromise();
+        }
         let workerTaskType = "calculateSearchPersonalization";
         let workerTaskId = [
             workerTaskType,
@@ -1414,13 +1473,16 @@ const searchPersonalization = {
         ].join(":");
         let listener = function listener(event) {
             let {type, data, taskId} = event.data;
-            if (type !== workerTaskType)
+            if (type !== workerTaskType) {
                 return;
-            if (taskId !== workerTaskId)
+            }
+            if (taskId !== workerTaskId) {
                 return;
+            }
             mozWorker.removeEventListener("message", listener, false);
-            if (data)
+            if (data) {
                 aParams.barNavigParams.body = data;
+            }
             defer.resolve();
         };
         mozWorker.addEventListener("message", listener, false);
@@ -1453,14 +1515,16 @@ const tabsInfoListener = {
     },
     _onTabClose: function tabsInfoListener__onTabClose(windowListenerData) {
         let tabId = barnavig._browsersData.getBrowserId(windowListenerData.tab);
-        if (!tabId)
+        if (!tabId) {
             return;
+        }
         this._collectedTabIds.push(tabId);
         this._setSendTimer();
     },
     _setSendTimer: function tabsInfoListener__setSendTimer() {
-        if (this._sendTimer)
+        if (this._sendTimer) {
             return;
+        }
         this._sendTimer = new sysutils.Timer(this._send.bind(this), this.SEND_TIMER_INTERVAL);
     },
     _stopSendTimer: function tabsInfoListener__stopSendTimer() {
@@ -1482,10 +1546,12 @@ const tabsInfoListener = {
         this._stopSendTimer();
         let closedTabIds = this._collectedTabIds.join(".");
         this._collectedTabIds = [];
-        if (!closedTabIds)
+        if (!closedTabIds) {
             return;
-        if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false)
+        }
+        if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false) {
             return;
+        }
         let url = "https://" + barnavig.BARNAVIG_URL_PATH;
         let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
         request.mozBackgroundRequest = true;
@@ -1502,8 +1568,9 @@ const tabsInfoListener = {
                     key,
                     value
                 ] in Iterator(barnavig._emptyBarNavigParamsObject)) {
-            if (value !== null)
+            if (value !== null) {
                 params.push(key + "=" + encodeURIComponent(String(value)));
+            }
         }
         params.push("ctab-ids=" + encodeURIComponent(closedTabIds));
         request.send(params.join("&"));

@@ -74,8 +74,9 @@ const metrika = {
             this._logger.error("Data could not be serialized: " + strutils.formatError(ex));
             this._logger.debug(ex.stack);
         }
-        if (!serializedData)
+        if (!serializedData) {
             return;
+        }
         this._paramsQueue[serializedData] = this._paramsQueue[serializedData] || 0;
         this._paramsQueue[serializedData] += 1;
     },
@@ -148,16 +149,16 @@ const metrika = {
         Log4Moz.Appender.call(appender, this._logFormatter);
         const APP_NAME = this._application.name;
         appender.doAppend = function (aMessage) {
-            if (aMessage.module.indexOf(APP_NAME) !== 0)
+            if (aMessage.module.indexOf(APP_NAME) !== 0) {
                 return;
+            }
             metrika.param(aMessage.msg, 0, aMessage);
         };
         appender.level = Log4Moz.Level.Error;
         return this._logAppender = appender;
     },
     get _appBasePath() {
-        let {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
-        let appBasePath = Services.io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler).getURLSpecFromFile(this._application.core.extensionPathFile);
+        let appBasePath = this._application.core.extensionURI.spec;
         delete this._appBasePath;
         return this._appBasePath = decodeURIComponent(appBasePath);
     },

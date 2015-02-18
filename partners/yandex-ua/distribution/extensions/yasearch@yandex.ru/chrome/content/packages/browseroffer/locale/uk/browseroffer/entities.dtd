@@ -1,0 +1,24 @@
+<!ENTITY browseroffer.name "Показувати контекстні пропозиції Яндекс.Браузера">
+
+<!ENTITY browseroffer.menu.openLink "Відкрити посилання у Яндекс.Браузері">
+
+<!ENTITY browseroffer.settings.openLink "Показувати пункт &#171;Відкрити посилання в Яндекс.Браузері&#187;">
+
+<!ENTITY browseroffer.notification.button.noYaBrowser "Докладніше">
+<!ENTITY browseroffer.notification.button.yaBrowser "Відкрити">
+<!ENTITY browseroffer.notification.text.noYaBrowser "Для перегляду деяких елементів на цій сторінці потрібен Flash&browseroffer.notification.text.rmark; Player. Завантажте Яндекс.Браузер із вбудованим плеєром">
+<!ENTITY browseroffer.notification.text.yaBrowser "Для перегляду деяких елементів на цій сторінці потрібен Flash&browseroffer.notification.text.rmark; Player. Відкрийте її в Яндекс.Браузері із вбудованим плеєром">
+<!ENTITY browseroffer.notification.tooltip.close "Закрити сповіщення">
+<!ENTITY browseroffer.notification.text.rmark "&#60;html:sup&#62;&#174;&#60;/html:sup&#62;">
+<!ENTITY browseroffer.notification.button.add "Так">
+<!ENTITY browseroffer.notification.wdgt-suggest.fb "Facebook">
+<!ENTITY browseroffer.notification.wdgt-suggest.ok "«Однокласники»">
+<!ENTITY browseroffer.notification.wdgt-suggest.text "Хочете отримувати сповіщення про нові повідомлення від друзів із {button}?">
+<!ENTITY browseroffer.notification.wdgt-suggest.vk "«Вконтакті»">
+<!ENTITY browseroffer.settings.showSuggest "Показувати контекстні пропозиції кнопок Елементів Яндекса">
+<!ENTITY browseroffer.notification.button.deny "Ні">
+<!ENTITY browseroffer.notification.button.no "Ні">
+<!ENTITY pagetranslator.tutorial.button.noYaBrowser "Докладніше">
+<!ENTITY pagetranslator.tutorial.button.yaBrowser "Відкрити">
+<!ENTITY pagetranslator.tutorial.text.noYaBrowser "Спробуйте всі можливості перекладу в Яндекс.Браузері.">
+<!ENTITY pagetranslator.tutorial.text.yaBrowser "Спробуйте всі можливості перекладу в Яндекс.Браузері.">

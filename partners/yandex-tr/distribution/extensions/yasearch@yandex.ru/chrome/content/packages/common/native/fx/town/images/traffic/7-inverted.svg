@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="18px" height="16px" viewBox="0 0 18 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.1 (8751) - http://www.bohemiancoding.com/sketch -->
+    <title>7-16</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <path d="M8.14034598,4.93447113 C8.2030029,4.75114351 8.27460757,4.57103384 8.35450363,4.39453549 C9.37767624,2.13424519 11.7606458,0.466216283 14.1248605,0.216627938 C14.8626022,0.138745105 15.0663893,0.0573225701 15.7774839,0.0491816048 C16.6550818,0.0391344245 17.4342857,0.0999984741 17.4342857,0.0999984741 C17.4342857,0.0999984741 17.0953796,0.231511981 16.8808898,0.292211955 C16.4367293,0.417908086 15.9870643,0.575615881 15.5399943,0.762115207 C12.3585817,2.08926998 12.3385302,8.33094372 11.2077623,8.99700601 C8.06778173,8.99700601 7.27528591,7.46554672 8.14034598,4.93447113 Z" id="Oval-32-copy" fill="#B32323" sketch:type="MSShapeGroup" transform="translate(12.714286, 4.599998) scale(-1, 1) translate(-12.714286, -4.599998) "></path>
+        <circle id="Oval-32-copy" fill="#FF3333" sketch:type="MSShapeGroup" transform="translate(8.000000, 8.000000) scale(-1, 1) translate(-8.000000, -8.000000) " cx="8" cy="8" r="8"></circle>
+        <path d="M2.76853655,0.030403075 C2.07064104,0.0177164818 1.30739886,-0.025531286 0.0843129185,0.09876245 C3.34439593,0.232909004 6.34845354,2.03444883 7.56024554,5.81187106 C7.93245047,7.05602912 9.54044267,8.58886221 10.7067867,8.68331358 C10.7281566,8.44805499 10.7390737,8.20980622 10.7390737,7.96902787 C10.7390737,3.62964747 7.14171559,0.109900278 2.76853655,0.030403075 Z" id="Oval-24-copy" fill="#333333" sketch:type="MSShapeGroup" transform="translate(5.428571, 4.285714) scale(-1, 1) translate(-5.428571, -4.285714) "></path>
+        <text id="7" sketch:type="MSTextLayer" font-family="Helvetica Neue" font-size="11" font-weight="420" fill="#FFFFFF">
+            <tspan x="5.30000305" y="12">7</tspan>
+        </text>
+    </g>
+</svg>

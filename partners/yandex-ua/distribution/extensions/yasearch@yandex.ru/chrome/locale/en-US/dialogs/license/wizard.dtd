@@ -1,0 +1,11 @@
+<!ENTITY setup.done.label "Installation completed">
+<!ENTITY license.read.desc "Before you start, please read the Terms of Use of the software">
+<!ENTITY license.agree.label "I accept the terms of the License Agreement">
+
+<!ENTITY button.accept "Continue">
+<!ENTITY button.cancel "Cancel">
+<!ENTITY license.confirm.text.1 "By running this browser, you accept the terms of the">
+<!ENTITY license.confirm.text.2 "License Agreement">
+<!ENTITY setup.ok.label "Installation completed successfully">
+<!ENTITY license.header "License agreement">
+<!ENTITY button.close "Close">

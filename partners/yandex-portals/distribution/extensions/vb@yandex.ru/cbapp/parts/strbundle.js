@@ -33,8 +33,9 @@ appStrings.StringBundle.prototype = {
         return appStrings._application.branding.expandBrandTemplates(nonBrandResult);
     },
     getPlural: function StringBundle_getPlural(key, pluralData, args) {
-        if (typeof pluralData == "number")
+        if (typeof pluralData == "number") {
             return this._getPluralString(key, pluralData);
+        }
         let str = this.get(key, args);
         for (let i = pluralData.length; i--;) {
             let purIndex = i + 1;

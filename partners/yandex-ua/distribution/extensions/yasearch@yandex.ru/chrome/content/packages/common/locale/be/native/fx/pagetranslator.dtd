@@ -1,0 +1,41 @@
+<!ENTITY pagetranslator.name "Перакласці старонку">
+<!ENTITY pagetranslator.translate "Перакласці">
+
+<!ENTITY pagetranslator.notification.revert "Арыгінал старонкі">
+<!ENTITY pagetranslator.notification.label "Перакладзены з">
+<!ENTITY pagetranslator.notification.process "Выконваецца пераклад старонкі">
+
+<!ENTITY pagetranslator.notification.english.gen "англійскай">
+<!ENTITY pagetranslator.notification.russian.gen "рускай">
+<!ENTITY pagetranslator.notification.german.gen "нямецкай">
+<!ENTITY pagetranslator.notification.spanish.gen "іспанскай">
+<!ENTITY pagetranslator.notification.italian.gen "італьянскай">
+<!ENTITY pagetranslator.notification.french.gen "французскай">
+<!ENTITY pagetranslator.notification.ukrainian.gen "украінскай">
+<!ENTITY pagetranslator.notification.turkish.gen "турэцкай">
+
+<!ENTITY pagetranslator.notification.prompt.preambula "Пераклад выкананы">
+<!ENTITY pagetranslator.notification.prompt.name "праграмай PROMT">
+
+<!ENTITY pagetranslator.notification.polish.gen "польскай">
+<!ENTITY pagetranslator.notification.promt.name "праграмай PROMT">
+<!ENTITY pagetranslator.notification.promt.preambula "Пераклад выкананы">
+<!ENTITY pagetranslator.notification.english.nom "англійская">
+<!ENTITY pagetranslator.notification.french.nom "французская">
+<!ENTITY pagetranslator.notification.german.nom "нямецкая">
+<!ENTITY pagetranslator.notification.italian.nom "італьянская">
+<!ENTITY pagetranslator.notification.polish.nom "польская">
+<!ENTITY pagetranslator.notification.russian.nom "руская">
+<!ENTITY pagetranslator.notification.spanish.nom "іспанская">
+<!ENTITY pagetranslator.notification.turkish.nom "турэцкая">
+<!ENTITY pagetranslator.notification.ukrainian.nom "украінская">
+<!ENTITY pagetranslator.settings.tlang.label "Выберыце мову, на якую трэба перакладаць тэкст">
+<!ENTITY pagetranslator.notification.error "Страніца поўнасцю не перакладзеная. Пры выкананні перакладу адбылася памылка">
+<!ENTITY pagetranslator.notification.error.repeat "Паспрабуйце зноў">
+<!ENTITY pagetranslator.notification.timeout "Не ўдалося выканаць пераклад старонкі. Адсутнічае сувязь з Інтэрнэтам">
+<!ENTITY pagetranslator.notification.close "Зачыніць">
+<!ENTITY pagetranslator.notification.tooltip "Для перакладу старонкі націсніце на кнопку {button} у адрасным радку">
+<!ENTITY pagetranslator.notification.suggest.button.noYaBrowser "Падрабязней">
+<!ENTITY pagetranslator.notification.suggest.button.yaBrowser "Адчыніць">
+<!ENTITY pagetranslator.notification.suggest "Паспрабуйце ўсе магчымасці перакладу ў Яндекс.Браўзеры">
+<!ENTITY pagetranslator.notification.translation.promo "Усе магчымасці перакладу ў Яндекс.Браўзеры">

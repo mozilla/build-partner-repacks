@@ -1,0 +1,58 @@
+<!ENTITY notify.friend_request "sent friend request">
+<!ENTITY notify.friend_request_f "sent friend request">
+
+<!ENTITY notify.friends "{N} friend request;{N} friend requests">
+<!ENTITY plural.rule "1">
+<!ENTITY facebook.widget.name "Facebook">
+<!ENTITY facebook.settings.label "Update interval">
+<!ENTITY facebook.settings.label_after "min.">
+<!ENTITY facebook.settings.friend "Show &#34;Friends&#34; button on panel">
+<!ENTITY facebook.settings.messages "Show &#34;New messages&#34; button on panel">
+<!ENTITY facebook.settings.notifications "Show &#34;Notifications&#34; button on panel">
+<!ENTITY facebook.settings.share "Show &#34;Share&#34; button on panel">
+<!ENTITY facebook.settings.msgsys "Use new messages system (Facebook Messages)">
+<!ENTITY facebook.settings.hideallbtn "Hide additional button when not logged in">
+<!ENTITY menu.refresh "Refresh data">
+<!ENTITY menu.lenta "News feed">
+<!ENTITY menu.wall "Wall">
+<!ENTITY menu.friends "Friends list">
+<!ENTITY menu.messages "Messages">
+<!ENTITY menu.notif "Notifications">
+<!ENTITY menu.share "Share link">
+<!ENTITY menu.setstatus "Set status">
+<!ENTITY menu.fotovideo "Photos/Videos">
+<!ENTITY menu.notes "Notes">
+<!ENTITY menu.groups "Groups">
+<!ENTITY menu.events "Events">
+<!ENTITY menu.logout "Log out">
+<!ENTITY please.auth "Please sign in">
+<!ENTITY main.tooltip "My page on Facebook">
+<!ENTITY inet.error.main "Unfortunately, we were unable to receive information on updates">
+<!ENTITY friend.tooltip "Friend requests on Facebook">
+<!ENTITY inet.error.friend "Unfortunately, we were unable to receive information on requests">
+<!ENTITY menu.friend.req "Request from {username}">
+<!ENTITY messages.tooltip "New messages on Facebook">
+<!ENTITY inet.error.msg "Unfortunately, we were unable to receive information on messages">
+<!ENTITY menu.message.from "Message from {username}">
+<!ENTITY notif.tooltip "Notifications on Facebook">
+<!ENTITY inet.error.notif "Unfortunately, we were unable to receive information on notifications">
+<!ENTITY share.tooltip "Share link on Facebook">
+<!ENTITY user1 "user">
+<!ENTITY user2 "User">
+<!ENTITY error.connect "Please check your network connection">
+<!ENTITY error.auth "Authorization has failed">
+<!ENTITY error.net "Unable to connect to Facebook server">
+<!ENTITY error.unk "Unknown error">
+
+<!ENTITY notify.messages "{N} new message;{N} new messages;{N} new messages">
+
+<!ENTITY notify.notifications "{N} new notification;{N} new notifications;{N} new notifications">
+<!ENTITY settings.show_notifications "Show notifications">
+<!ENTITY notify.fiends "{N} friend request;{N} friend requests;{N} friend requests">
+<!ENTITY notify.messages.foto "Sent you a photo">
+<!ENTITY notify.messages.foto_f "Sent you a photo">
+<!ENTITY notify.messages_file "Sent you a message">
+<!ENTITY notify.messages_file_f "Sent you a message">
+<!ENTITY settings.show_friend_notifications "Show friend request notifications">
+<!ENTITY settings.show_message_notifications "Show message notifications">
+<!ENTITY settings.show_notification_notifications "Show other notifications">

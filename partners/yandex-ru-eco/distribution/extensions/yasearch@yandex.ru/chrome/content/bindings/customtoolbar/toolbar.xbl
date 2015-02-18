@@ -1,0 +1,686 @@
+<?xml version='1.0'?>
+
+<!DOCTYPE bindings><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+
+    <binding extends="chrome://browser/content/customizableui/toolbar.xml#toolbar" id="toolbar" inheritstyle="false">
+        <resources>
+            <stylesheet src="toolbar.css"/>
+        </resources>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="_appName">this.getAttribute("cb-app")</field>
+            <field name="_barCore">
+                Components.classes["@yandex.ru/custombarcore;" + this._appName].getService().wrappedJSObject
+            </field>
+            <field name="_barApp">this._barCore.application</field>
+            <field name="_logger">this._barApp.getLogger("Toolbar")</field>
+
+            <field name="_wndCtrl">window[this._appName + "OverlayController"]</field>
+
+            <constructor><![CDATA[    let constructorEx = this._constructorEx.bind(this);
+    function constructorExTimed() {
+        window.setTimeout(constructorEx, 0);
+    }
+    if (document.readyState == "complete") {
+        constructorExTimed();
+    } else {
+        document.addEventListener("readystatechange", function readystatechangeHandler(event) {
+            if (document.readyState == "complete") {
+                document.removeEventListener("readystatechange", readystatechangeHandler, false);
+                constructorExTimed();
+            }
+        }, false);
+    }]]></constructor>
+
+            <method name="_constructorEx">
+                <body><![CDATA[    if (this.parentNode) {
+        this.parentNode.addEventListener("beforecustomization", this, false);
+        this.parentNode.addEventListener("aftercustomization", this, false);
+        this.parentNode.addEventListener(this._appName + "-beforecustomization", this, false);
+        this.parentNode.addEventListener(this._appName + "-aftercustomization", this, false);
+    }]]></body>
+            </method>
+
+            <destructor><![CDATA[    if (this.parentNode) {
+        this.parentNode.removeEventListener("beforecustomization", this, false);
+        this.parentNode.removeEventListener("aftercustomization", this, false);
+        this.parentNode.removeEventListener(this._appName + "-beforecustomization", this, false);
+        this.parentNode.removeEventListener(this._appName + "-aftercustomization", this, false);
+    }]]></destructor>
+
+            <method name="_getComputedElementHeight">
+                <parameter name="aElement"/>
+                <body><![CDATA[    return parseInt(window.getComputedStyle(aElement, null).getPropertyValue("height"), 10);]]></body>
+            </method>
+
+            <method name="toggleCollapsed">
+                <parameter name="forceCollapseState"/>
+                <body><![CDATA[    let collapsedState = forceCollapseState !== undefined ? forceCollapseState : this.getAttribute("data-collapsed") !== "true";
+    this.setAttribute("data-collapsed", collapsedState);
+    this._wndCtrl.getAlienToolbars().forEach(function (toolbar) {
+        if (!collapsedState && !toolbar.hasChildNodes()) {
+            return;
+        }
+        toolbar.collapsed = collapsedState;
+        document.persist(toolbar.id, "collapsed");
+    });
+    this.collapsed = this.hasChildNodes() ? collapsedState : true;
+    document.persist(this.id, "collapsed");]]></body>
+            </method>
+
+            <method name="showWelcomeSlice">
+                <body><![CDATA[    let alienToolbars = this._wndCtrl.getAlienToolbars();
+    if (!(alienToolbars.length > 0 || this.hasChildNodes())) {
+        return;
+    }
+    const CHEVRON_STATE_PREF = "chevronState";
+    let chevronButton = window.document.getElementById(this._appName + "-toggle-barless-button");
+    let chevronBindElem = window.document.getElementById(this._appName + "-toggle-barless-toolbaritem");
+    let allToolbarsCollapsed = this.collapsed;
+    if (allToolbarsCollapsed) {
+        for (let i = 0; i < alienToolbars.length; i++) {
+            if (!alienToolbars[i].collapsed) {
+                allToolbarsCollapsed = false;
+                break;
+            }
+        }
+    }
+    let xulName = allToolbarsCollapsed ? "welcome-collapsed" : "welcome";
+    let sliceObj = this._barApp.slices.create({
+        url: "chrome://" + this._appName + "/content/dialogs/chevron-welcome/" + xulName + ".xul",
+        windowProperties: { width: 610 },
+        system: true,
+        disposable: true,
+        noautohide: true,
+        injectedProperties: { chevron: chevronButton }
+    });
+    function _showChevronInFrontOfViewer() {
+        this.focusOnTabWithToolbar();
+        sliceObj.show(chevronBindElem);
+        chevronButton.welcomeSlice = sliceObj;
+    }
+    setTimeout(_showChevronInFrontOfViewer.bind(this), 300);
+    this._barApp.preferences.set(CHEVRON_STATE_PREF, 1);]]></body>
+            </method>
+
+            <method name="focusOnTabWithToolbar">
+                <body><![CDATA[    let isHideChromeForLocation = function isHideChromeForLocation(spec) {
+        if (XULBrowserWindow && typeof XULBrowserWindow.hideChromeForLocation == "function") {
+            return XULBrowserWindow.hideChromeForLocation(spec);
+        }
+        Components.utils.reportError("Can not find XULBrowserWindow.hideChromeForLocation.");
+        return false;
+    };
+    if (isHideChromeForLocation(gBrowser.currentURI.spec)) {
+        let browserWithChrome = null;
+        let browsers = gBrowser.browsers;
+        for (let i = 0, len = browsers.length; i < len; i++) {
+            if (!isHideChromeForLocation(browsers[i].currentURI.spec)) {
+                browserWithChrome = gBrowser.tabContainer.childNodes[i];
+                break;
+            }
+        }
+        if (browserWithChrome) {
+            gBrowser.selectedTab = browserWithChrome;
+        } else {
+            window.BrowserOpenTab();
+        }
+    }]]></body>
+            </method>
+
+            <method name="setForceHideAttribute">
+                <body><![CDATA[    let forceHideAfterCustomize = this.collapsed && this.hasChildNodes();
+    this.setAttribute("data-forceHide", forceHideAfterCustomize);]]></body>
+            </method>
+
+            <method name="onToolbarCustomize">
+                <parameter name="aEnabled"/>
+                <parameter name="aNativeEvent"/>
+                <body><![CDATA[    if (aEnabled) {
+        this.focusOnTabWithToolbar();
+        if (aNativeEvent) {
+            this.setForceHideAttribute();
+        }
+    } else {
+        if (!this.collapsed && !this.hasChildNodes()) {
+            this.collapsed = true;
+            document.persist(this.id, "collapsed");
+        } else {
+            let forceHide = this.getAttribute("data-forceHide") === "true";
+            if (!forceHide && this.hasChildNodes()) {
+                this.collapsed = false;
+                document.persist(this.id, "collapsed");
+            } else if (forceHide) {
+                this.collapsed = true;
+                document.persist(this.id, "collapsed");
+            }
+        }
+        const CHEVRON_STATE_PREF = "chevronState";
+        let chevronCurrentState = this._barApp.preferences.get(CHEVRON_STATE_PREF, 0);
+        let isChevronButtonVisible = this.hasChildNodes() || this._wndCtrl.getAlienToolbars().length > 0;
+        this._logger.debug("Toolbar customized. Chevron state is now " + chevronCurrentState);
+        if (isChevronButtonVisible) {
+            if (chevronCurrentState === 3 || chevronCurrentState === 2) {
+                this.showWelcomeSlice();
+            }
+        } else {
+            if (chevronCurrentState !== 1) {
+                this._barApp.preferences.set(CHEVRON_STATE_PREF, 3);
+            }
+        }
+    }]]></body>
+            </method>
+
+            <method name="updateChevronState">
+                <body><![CDATA[    let button = window.document.querySelector("#" + this._appName + "-toggle-barless-button");
+    if (!button) {
+        return;
+    }
+    let allToolbarsAreCollapsed = !this._wndCtrl.getAlienToolbars(true).some(toolbar => toolbar.collapsed === false);
+    button.setAttribute("cb-collapsed-state", allToolbarsAreCollapsed);
+    this.setAttribute("data-collapsed", allToolbarsAreCollapsed);]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "beforecustomization":
+        this.onToolbarCustomize(true, true);
+        break;
+    case "aftercustomization":
+        this.onToolbarCustomize(false, true);
+        this._wndCtrl.checkNeedSetBarlessMode();
+        break;
+    case this._appName + "-beforecustomization":
+        this.onToolbarCustomize(true, false);
+        break;
+    case this._appName + "-aftercustomization":
+        this.onToolbarCustomize(false, false);
+        this.updateChevronState();
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/toolbar.xml#toolbar" id="toolbar-old" inheritstyle="false">
+        <resources>
+            <stylesheet src="toolbar.css"/>
+        </resources>
+
+        <content>
+            <xul:box flex="1">
+                <xul:box align="center" class="toolbar-container" flex="1">
+                    <children/>
+                </xul:box>
+                <xul:toolbaritem id="toggle-multiline-toolbaritem" removable="false">
+                    <xul:button cb-collapsed-state="true" id="toggle-multiline-button"/>
+                </xul:toolbaritem>
+            </xul:box>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="mNodeContainer">document.getAnonymousElementByAttribute(this, "class", "toolbar-container")</field>
+            <field name="_appName">this.getAttribute("cb-app")</field>
+            <field name="_barCore">
+                Components.classes["@yandex.ru/custombarcore;" + this._appName].getService().wrappedJSObject
+            </field>
+            <field name="_barApp">this._barCore.application</field>
+            <field name="_logger">this._barApp.getLogger("Toolbar")</field>
+            <field name="mVisibilityPositionToken">null</field>
+
+            <property name="mClassicMode" readonly="true">
+                <getter><![CDATA[    return this.parentNode && this.parentNode.getAttribute("cb-barless") == "false";]]></getter>
+            </property>
+
+            <field name="_wndCtrl">window[this._appName + "OverlayController"]</field>
+
+            <field name="mCSSRules"><![CDATA[    let rules = {
+        __proto__: null,
+        multiline: { rule: "toolbar[cb-app='" + this._appName + "'][xb-toolbar-multiline] > * {" + " vertical-align: middle; " + " display: -moz-inline-box; " + "}" },
+        excess: { rule: "toolbar[cb-app='" + this._appName + "'] > [xb-toolbar-item-excess] {" + "visibility: hidden;" + "margin-bottom: -512px;" + "}" },
+        height: { rule: "toolbar[cb-app='" + this._appName + "'][xb-toolbar-multiline] > * {}" }
+    };
+    rules;]]></field>
+
+            <constructor><![CDATA[    this.createCSSRules();
+    let constructorEx = this._constructorEx.bind(this);
+    function constructorExTimed() {
+        window.setTimeout(constructorEx, 0);
+    }
+    if (document.readyState == "complete") {
+        constructorExTimed();
+    } else {
+        document.addEventListener("readystatechange", function readystatechangeHandler(event) {
+            if (document.readyState == "complete") {
+                document.removeEventListener("readystatechange", readystatechangeHandler, false);
+                constructorExTimed();
+            }
+        }, false);
+    }
+    setTimeout(function (me) {
+        if (me && "_constructorEx" in me && !me.hasAttribute("currentset")) {
+            let currentset = me.currentSet;
+            if (currentset && currentset != "__empty") {
+                me.setAttribute("currentset", currentset);
+                me.ownerDocument.persist(me.id, "currentset");
+            }
+        }
+    }, 4000, this);]]></constructor>
+
+            <method name="_constructorEx">
+                <body><![CDATA[    if (this.parentNode) {
+        this.parentNode.addEventListener("beforecustomization", this, false);
+        this.parentNode.addEventListener("aftercustomization", this, false);
+        this.parentNode.addEventListener(this._appName + "-beforecustomization", this, false);
+        this.parentNode.addEventListener(this._appName + "-aftercustomization", this, false);
+    }
+    if (this.mClassicMode) {
+        this.mNodeContainer.addEventListener("overflow", this, false);
+        this.mNodeContainer.addEventListener("underflow", this, false);
+        this.mNodeContainer.addEventListener("DOMSubtreeModified", this, false);
+    }
+    this._setUrlbarSizeTimed();
+    window.addEventListener("resize", this, false);
+    this.checkVisibility(true);]]></body>
+            </method>
+
+            <destructor><![CDATA[    this.destroyCSSRules();
+    window.removeEventListener("resize", this, false);
+    if (this.mClassicMode) {
+        this.mNodeContainer.removeEventListener("overflow", this, false);
+        this.mNodeContainer.removeEventListener("underflow", this, false);
+        this.mNodeContainer.removeEventListener("DOMSubtreeModified", this, false);
+    }
+    if (this.parentNode) {
+        this.parentNode.removeEventListener("beforecustomization", this, false);
+        this.parentNode.removeEventListener("aftercustomization", this, false);
+        this.parentNode.removeEventListener(this._appName + "-beforecustomization", this, false);
+        this.parentNode.removeEventListener(this._appName + "-aftercustomization", this, false);
+    }]]></destructor>
+
+            <method name="_getComputedElementHeight">
+                <parameter name="aElement"/>
+                <body><![CDATA[    return parseInt(window.getComputedStyle(aElement, null).getPropertyValue("height"), 10);]]></body>
+            </method>
+
+            <property name="multiline">
+                <getter><![CDATA[    return this.hasAttribute("xb-toolbar-multiline");]]></getter>
+                <setter><![CDATA[    if (!this.mClassicMode || this.getAttribute("xb-toolbar-multiline") == Boolean(val)) {
+        return;
+    }
+    if (val) {
+        let items = this.getElementsByAttribute("xb-toolbar-item-excess", "true");
+        for (let i = items.length; i-- > 0;) {
+            items[i].removeAttribute("xb-toolbar-item-excess");
+        }
+        let height = this._getComputedElementHeight(this);
+        let childNodes = this.childNodes;
+        for (let i = childNodes.length; i-- > 0;) {
+            height = Math.min(height, Math.max(20, this._getComputedElementHeight(childNodes[i]) || height));
+        }
+        this.setButtonsHeight(height);
+        this.setAttribute("xb-toolbar-multiline", "true");
+    } else {
+        this.setButtonsHeight(null);
+        this.removeAttribute("xb-toolbar-multiline");
+    }]]></setter>
+            </property>
+
+            <property name="overflow">
+                <getter><![CDATA[    return this.getAttribute("cb-toolbar-overflow") == "true";]]></getter>
+                <setter><![CDATA[    this.setAttribute("cb-toolbar-overflow", Boolean(val));]]></setter>
+            </property>
+
+            <method name="toggleMultiline">
+                <body><![CDATA[    this.multiline = !this.multiline;
+    this.checkVisibility();]]></body>
+            </method>
+
+            <method name="toggleCollapsed">
+                <parameter name="forceCollapseState"/>
+                <body><![CDATA[    let collapsedState = forceCollapseState !== undefined ? forceCollapseState : this.getAttribute("data-collapsed") !== "true";
+    this.setAttribute("data-collapsed", collapsedState);
+    this._wndCtrl.getAlienToolbars().forEach(function (toolbar) {
+        if (!collapsedState && !toolbar.hasChildNodes()) {
+            return;
+        }
+        toolbar.collapsed = collapsedState;
+        document.persist(toolbar.id, "collapsed");
+    });
+    this.collapsed = this.hasChildNodes() ? collapsedState : true;
+    document.persist(this.id, "collapsed");]]></body>
+            </method>
+
+            <method name="_setUrlbarSizeTimed">
+                <body><![CDATA[    if (this._setUrlbarSizeTimeout) {
+        clearTimeout(this._setUrlbarSizeTimeout);
+    }
+    this._setUrlbarSizeTimeout = setTimeout(function doCheck() {
+        this._setUrlbarSize();
+    }.bind(this), 100);]]></body>
+            </method>
+
+            <method name="_setUrlbarSize">
+                <body><![CDATA[    let urlbarContainer = document.getElementById("urlbar-container");
+    if (urlbarContainer && urlbarContainer.parentNode === this) {
+        urlbarContainer.style.minWidth = 0.5 * document.defaultView.outerWidth + "px";
+    }]]></body>
+            </method>
+
+            <method name="showWelcomeSlice">
+                <body><![CDATA[    let alienToolbars = this._wndCtrl.getAlienToolbars();
+    if (!(alienToolbars.length > 0 || this.hasChildNodes())) {
+        return;
+    }
+    const CHEVRON_STATE_PREF = "chevronState";
+    let chevronButton = window.document.getElementById(this._appName + "-toggle-barless-button");
+    let chevronBindElem = window.document.getElementById(this._appName + "-toggle-barless-toolbaritem");
+    let allToolbarsCollapsed = this.collapsed;
+    if (allToolbarsCollapsed) {
+        for (let i = 0; i < alienToolbars.length; i++) {
+            if (!alienToolbars[i].collapsed) {
+                allToolbarsCollapsed = false;
+                break;
+            }
+        }
+    }
+    let xulName = allToolbarsCollapsed ? "welcome-collapsed" : "welcome";
+    let sliceObj = this._barApp.slices.create({
+        url: "chrome://" + this._appName + "/content/dialogs/chevron-welcome/" + xulName + ".xul",
+        windowProperties: { width: 610 },
+        system: true,
+        disposable: true,
+        noautohide: true,
+        injectedProperties: { chevron: chevronButton }
+    });
+    function _showChevronInFrontOfViewer() {
+        this.focusOnTabWithToolbar();
+        sliceObj.show(chevronBindElem);
+        chevronButton.welcomeSlice = sliceObj;
+    }
+    setTimeout(_showChevronInFrontOfViewer.bind(this), 300);
+    this._barApp.preferences.set(CHEVRON_STATE_PREF, 1);]]></body>
+            </method>
+
+            <method name="focusOnTabWithToolbar">
+                <body><![CDATA[    let isHideChromeForLocation = function isHideChromeForLocation(spec) {
+        if (XULBrowserWindow && typeof XULBrowserWindow.hideChromeForLocation == "function") {
+            return XULBrowserWindow.hideChromeForLocation(spec);
+        }
+        Components.utils.reportError("Can not find XULBrowserWindow.hideChromeForLocation.");
+        return false;
+    };
+    if (isHideChromeForLocation(gBrowser.currentURI.spec)) {
+        let browserWithChrome = null;
+        let browsers = gBrowser.browsers;
+        for (let i = 0, len = browsers.length; i < len; i++) {
+            if (!isHideChromeForLocation(browsers[i].currentURI.spec)) {
+                browserWithChrome = gBrowser.tabContainer.childNodes[i];
+                break;
+            }
+        }
+        if (browserWithChrome) {
+            gBrowser.selectedTab = browserWithChrome;
+        } else {
+            window.BrowserOpenTab();
+        }
+    }]]></body>
+            </method>
+
+            <method name="setForceHideAttribute">
+                <body><![CDATA[    let forceHideAfterCustomize = this.collapsed && this.hasChildNodes();
+    this.setAttribute("data-forceHide", forceHideAfterCustomize);]]></body>
+            </method>
+
+            <method name="onToolbarCustomize">
+                <parameter name="aEnabled"/>
+                <parameter name="aNativeEvent"/>
+                <body><![CDATA[    if (aEnabled) {
+        this.focusOnTabWithToolbar();
+        if (aNativeEvent) {
+            this.setForceHideAttribute();
+        }
+        this.multilineBeforeCustomizeDialog = this.multiline;
+        this.multiline = true;
+    } else {
+        this.multiline = this.isOverflow() && this.multilineBeforeCustomizeDialog;
+        if (!this.mClassicMode && !this.collapsed && !this.hasChildNodes()) {
+            this.collapsed = true;
+            document.persist(this.id, "collapsed");
+        } else {
+            let forceHide = this.getAttribute("data-forceHide") === "true";
+            if (!forceHide && this.hasChildNodes()) {
+                this.collapsed = false;
+                document.persist(this.id, "collapsed");
+            } else if (forceHide) {
+                this.collapsed = true;
+                document.persist(this.id, "collapsed");
+            }
+        }
+        const CHEVRON_STATE_PREF = "chevronState";
+        let chevronCurrentState = this._barApp.preferences.get(CHEVRON_STATE_PREF, 0);
+        let isChevronButtonVisible = this.hasChildNodes() || this._wndCtrl.getAlienToolbars().length > 0;
+        this._logger.debug("Toolbar customized. Chevron state is now " + chevronCurrentState);
+        if (isChevronButtonVisible) {
+            if (chevronCurrentState === 3 || chevronCurrentState === 2) {
+                this.showWelcomeSlice();
+            }
+        } else {
+            if (chevronCurrentState !== 1) {
+                this._barApp.preferences.set(CHEVRON_STATE_PREF, 3);
+            }
+        }
+    }
+    this.checkVisibility();]]></body>
+            </method>
+
+            <method name="updateChevronState">
+                <body><![CDATA[    let button = window.document.querySelector("#" + this._appName + "-toggle-barless-button");
+    if (!button) {
+        return;
+    }
+    let allToolbarsAreCollapsed = !this._wndCtrl.getAlienToolbars(true).some(toolbar => toolbar.collapsed === false);
+    button.setAttribute("cb-collapsed-state", allToolbarsAreCollapsed);
+    this.setAttribute("data-collapsed", allToolbarsAreCollapsed);]]></body>
+            </method>
+
+            <method name="createCSSRules">
+                <body><![CDATA[    let stylesheet = window.document.styleSheets[0];
+    let cssRules = stylesheet.cssRules;
+    for (let [
+                ,
+                ruleItem
+            ] in Iterator(this.mCSSRules)) {
+        let rule = ruleItem.rule;
+        ruleItem.object = cssRules[stylesheet.insertRule(rule, cssRules.length)];
+    }]]></body>
+            </method>
+
+            <method name="destroyCSSRules">
+                <body><![CDATA[    for (let [
+                ,
+                ruleItem
+            ] in Iterator(this.mCSSRules)) {
+        let rule = ruleItem.object;
+        if (!rule) {
+            continue;
+        }
+        let stylesheet = rule.parentStyleSheet;
+        let rules = stylesheet.cssRules;
+        for (let i = rules.length; i--;) {
+            if (rules[i] === rule) {
+                stylesheet.deleteRule(i);
+                break;
+            }
+        }
+    }]]></body>
+            </method>
+
+            <method name="setButtonsHeight">
+                <parameter name="aHeight"/>
+                <body><![CDATA[    let ruleObject = this.mCSSRules.height.object;
+    if (ruleObject) {
+        ruleObject.style.minHeight = aHeight ? aHeight + "px" : "";
+    }]]></body>
+            </method>
+
+            <method name="isOverflow">
+                <body><![CDATA[    let firstVisibleItem = this.firstVisibleItem;
+    if (!firstVisibleItem) {
+        return false;
+    }
+    if (this.multiline) {
+        return firstVisibleItem.getBoundingClientRect().bottom <= this.lastVisibleItem.getBoundingClientRect().top;
+    }
+    return this.lastVisibleItem.getBoundingClientRect().right > this.mNodeContainer.getBoundingClientRect().right;]]></body>
+            </method>
+
+            <method name="checkOverflow">
+                <parameter name="aAutoOffMultiline"/>
+                <body><![CDATA[    let overflow = this.isOverflow();
+    this.overflow = overflow;
+    if (aAutoOffMultiline && !overflow && this.multiline) {
+        this.multiline = false;
+    }]]></body>
+            </method>
+
+            <method name="checkVisibilityDefer">
+                <parameter name="aAutoOffMultiline"/>
+                <body><![CDATA[    if (this._checkVisibilityTimeout) {
+        clearTimeout(this._checkVisibilityTimeout);
+    }
+    function doCheck(context, aAutoOffMultiline) {
+        context.checkVisibility(aAutoOffMultiline);
+    }
+    this._checkVisibilityTimeout = setTimeout(doCheck, 250, this, aAutoOffMultiline);]]></body>
+            </method>
+
+            <method name="checkVisibility">
+                <parameter name="aAutoOffMultiline"/>
+                <body><![CDATA[    if (!this.mClassicMode) {
+        this.overflow = true;
+        return;
+    }
+    let item = this.lastChild;
+    if (!item) {
+        this.overflow = false;
+        return;
+    }
+    let right = this.mNodeContainer.getBoundingClientRect().right;
+    let token = right - item.getBoundingClientRect().right;
+    if (this.mVisibilityPositionToken == token) {
+        return;
+    }
+    this.mVisibilityPositionToken = token;
+    this.checkOverflow(aAutoOffMultiline);
+    let overflowed = this.overflow;
+    while (item) {
+        if (this.isNormalToolbarItem(item)) {
+            if (overflowed) {
+                overflowed = item.getBoundingClientRect().right > right;
+            }
+            if (!overflowed && !item.hasAttribute("xb-toolbar-item-excess")) {
+                break;
+            }
+            if (overflowed) {
+                item.setAttribute("xb-toolbar-item-excess", "true");
+            } else {
+                item.removeAttribute("xb-toolbar-item-excess");
+            }
+        }
+        item = item.previousSibling;
+    }
+    while (item) {
+        if (item.hasAttribute("xb-toolbar-item-excess")) {
+            item.removeAttribute("xb-toolbar-item-excess");
+        }
+        item = item.previousSibling;
+    }]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "overflow":
+        if (aEvent.target != aEvent.currentTarget) {
+            return;
+        }
+        if (aEvent.detail === 0) {
+            return;
+        }
+        this.overflow = true;
+        this.checkVisibility();
+        break;
+    case "underflow":
+        if (aEvent.target != aEvent.currentTarget) {
+            return;
+        }
+        if (aEvent.detail === 0) {
+            return;
+        }
+        this.overflow = false;
+        this.checkVisibility();
+        break;
+    case "DOMSubtreeModified":
+        this.checkVisibilityDefer();
+        break;
+    case "resize":
+        if (aEvent.eventPhase === aEvent.AT_TARGET) {
+            this._setUrlbarSizeTimed();
+            if (this.mClassicMode) {
+                this.checkVisibilityDefer(true);
+            }
+        }
+        break;
+    case "beforecustomization":
+        this.onToolbarCustomize(true, true);
+        break;
+    case "aftercustomization":
+        this.onToolbarCustomize(false, true);
+        this._wndCtrl.checkNeedSetBarlessMode();
+        break;
+    case this._appName + "-beforecustomization":
+        this.onToolbarCustomize(true, false);
+        break;
+    case this._appName + "-aftercustomization":
+        this.onToolbarCustomize(false, false);
+        this.updateChevronState();
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+
+            <property name="firstVisibleItem" readonly="true">
+                <getter><![CDATA[    let node = this.firstChild;
+    while (node) {
+        if (this.isNormalToolbarItem(node)) {
+            return node;
+        }
+        node = node.nextSibling;
+    }
+    return null;]]></getter>
+            </property>
+
+            <property name="lastVisibleItem" readonly="true">
+                <getter><![CDATA[    let node = this.lastChild;
+    while (node) {
+        if (this.isNormalToolbarItem(node)) {
+            return node;
+        }
+        node = node.previousSibling;
+    }
+    return null;]]></getter>
+            </property>
+
+            <method name="isNormalToolbarItem">
+                <parameter name="node"/>
+                <body><![CDATA[    return node.localName != "toolbarseparator" || window.getComputedStyle(node, null).getPropertyValue("display") != "none";]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

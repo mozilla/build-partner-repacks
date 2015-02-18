@@ -1,0 +1,1956 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % omniboxDTD SYSTEM "/smartbox.dtd">
+%omniboxDTD;
+]>
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="button">
+        <implementation implements="nsIDOMEventListener">
+            <field name="api" readonly="true">this.module.api</field>
+
+            <field name="mPanelId" readonly="true">"yaOmniboxPanel"</field>
+            <field name="mUrlbarPlaceholder">"&wgt.smartbox.addressbarLabel;"</field>
+
+            <property name="_browserURLBar" onget="return gURLBar;" readonly="true"/>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    let urlbar = this._browserURLBar;
+    if (!urlbar) {
+        this.api.logger.debug("Can't find urlbar.");
+        return;
+    }
+    urlbar.placeholder = this.mUrlbarPlaceholder;
+    urlbar._yaOmniboxModule = this.module;
+    let panel = document.getElementById(this.mPanelId);
+    if (!panel) {
+        panel = document.createElement("panel");
+        panel.setAttribute("id", this.mPanelId);
+        panel.style.MozBinding = "url(" + this.api.Package.resolvePath("/native/bindings.xbl#popup") + ")";
+        panel.setAttribute("type", "autocomplete");
+        panel.setAttribute("noautofocus", "true");
+        panel.setAttribute("yaOS", this.api.Environment.os.name);
+        let mainPopupSet = document.getElementById("mainPopupSet");
+        if (!mainPopupSet) {
+            this.api.logger.debug("Can't find mainPopupSet.");
+            return;
+        }
+        mainPopupSet.appendChild(panel);
+    }
+    this.module.onDelayedInit(this._initDelayed.bind(this));
+    this._statisticListener.enable();]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    this._statisticListener.disable();
+    let panel = document.getElementById(this.mPanelId);
+    if (panel) {
+        panel.parentNode.removeChild(panel);
+    }
+    let urlbar = this._browserURLBar;
+    if (!urlbar) {
+        this.api.logger.debug("Can't find urlbar.");
+        return;
+    }
+    try {
+        let action = urlbar._yaParseActionURL(urlbar.value || "");
+        if (action) {
+            urlbar.value = action.actionurl || action.param;
+        }
+    } catch (e) {
+    }
+    this._removeCustomizedUrlbarMethods();
+    urlbar.setAttribute("autocompletepopup", urlbar.getAttribute("yaOmniboxPreviousPopup"));
+    urlbar.setAttribute("autocompletesearch", urlbar.getAttribute("yaOmniboxPreviousAutocompletesearch"));
+    urlbar.setAttribute("sizetopopup", urlbar.getAttribute("yaOmniboxPreviousSizetopopup"));
+    urlbar.setAttribute("maxrows", urlbar.getAttribute("yaOmniboxMaxRows"));
+    delete urlbar.completeDefaultIndex;
+    this._setURLBarPopup();
+    urlbar.mSearchNames = null;
+    if ("initSearchNames" in urlbar) {
+        urlbar.initSearchNames();
+    }
+    let keySet = document.getElementById(this.module.WIDGET_ID + "keyset");
+    if (keySet) {
+        Array.slice(keySet.parentNode.getElementsByAttribute("command", "Tools:Search")).forEach(function (key) {
+            key.setAttribute("disabled", "false");
+        });
+        keySet.parentNode.removeChild(keySet);
+    }]]></body>
+            </method>
+
+            <method name="_initDelayed">
+                <body><![CDATA[    let urlbar = this._browserURLBar;
+    let panel = document.getElementById(this.mPanelId);
+    urlbar.setAttribute("yaOmniboxPreviousPopup", urlbar.getAttribute("autocompletepopup"));
+    urlbar.setAttribute("autocompletepopup", this.mPanelId);
+    urlbar.setAttribute("yaOmniboxPreviousAutocompletesearch", urlbar.getAttribute("autocompletesearch"));
+    urlbar.setAttribute("autocompletesearch", this.module.OmniBox.SEARCH_PROTOCOL_NAME);
+    urlbar.setAttribute("yaOmniboxPreviousSizetopopup", urlbar.getAttribute("sizetopopup"));
+    urlbar.removeAttribute("sizetopopup");
+    urlbar.setAttribute("yaOmniboxMaxRows", urlbar.getAttribute("maxrows"));
+    urlbar.setAttribute("maxrows", "100");
+    this._setURLBarPopup();
+    urlbar.mSearchNames = null;
+    urlbar.initSearchNames();
+    urlbar.completeDefaultIndex = false;
+    urlbar._yaInfoCollector = { metric: "not_used" };
+    if (urlbar._value && urlbar._value.indexOf("moz-action:yaaction-") === 0) {
+        urlbar.value = urlbar._value;
+    }
+    switch (this.api.Environment.os.name) {
+    case "windows": {
+            let urlbarStyle = window.getComputedStyle(urlbar, null);
+            let panelBorderStyle = [
+                urlbarStyle.getPropertyValue("border-bottom-width"),
+                urlbarStyle.getPropertyValue("border-bottom-style"),
+                urlbarStyle.getPropertyValue("border-bottom-color")
+            ].join(" ");
+            panel.style.setProperty("border", panelBorderStyle, "important");
+            break;
+        }
+    case "linux":
+        panel.style.setProperty("border", "1px solid #999", "important");
+        break;
+    }
+    let widgetId = this.module.WIDGET_ID;
+    if (!document.getElementById(widgetId + "keyset")) {
+        let mainKeyset = document.getElementById("mainKeyset");
+        if (mainKeyset) {
+            let keySet = document.createElement("keyset");
+            keySet.setAttribute("id", widgetId + "keyset");
+            ["k"].forEach(function (aKey, aIndex) {
+                let keyNode = document.createElement("key");
+                keyNode.setAttribute("id", widgetId + "-key-" + aIndex);
+                keyNode.setAttribute("modifiers", "accel");
+                keyNode.setAttribute("key", aKey);
+                keyNode.setAttribute("oncommand", "gURLBar && gURLBar.focus();");
+                keySet.appendChild(keyNode);
+            });
+            Array.slice(mainKeyset.getElementsByAttribute("command", "Tools:Search")).forEach(function (key) {
+                key.setAttribute("disabled", "true");
+            });
+            mainKeyset.parentNode.appendChild(keySet);
+        }
+    }
+    window.setTimeout(function () {
+        if (typeof this._customizeUrlbarMethods === "function") {
+            this._customizeUrlbarMethods();
+        }
+    }.bind(this), 0);]]></body>
+            </method>
+
+            <method name="_setURLBarPopup">
+                <body><![CDATA[    let urlbar = this._browserURLBar;
+    if (!urlbar) {
+        return;
+    }
+    let popup = null;
+    let popupId = urlbar.getAttribute("autocompletepopup");
+    if (popupId) {
+        popup = document.getElementById(popupId);
+    }
+    if (!popup) {
+        popup = document.createElement("panel");
+        popup.setAttribute("type", "autocomplete");
+        popup.setAttribute("noautofocus", "true");
+        let popupset = document.getAnonymousElementByAttribute(urlbar, "anonid", "popupset");
+        popupset.appendChild(popup);
+    }
+    popup.mInput = urlbar;
+    urlbar.popup = popup;]]></body>
+            </method>
+
+            <method name="showTutorWithText">
+                <parameter name="text"/>
+                <body><![CDATA[    let urlbar = this._browserURLBar;
+    if (!urlbar) {
+        return;
+    }
+    let focusManager = Cc["@mozilla.org/focus-manager;1"].getService(Ci.nsIFocusManager);
+    focusManager.setFocus(urlbar, focusManager.FLAG_RAISE | focusManager.FLAG_BYMOUSE);
+    urlbar.popup.lastChild.mSearchTutorBox.showUsageExample(0, text);]]></body>
+            </method>
+
+            <method name="saveSearchToForm">
+                <parameter name="value"/>
+                <body><![CDATA[    let param = gURLBar._yaOmniboxModule.OmniBox.URLEngine.extractSearchParam(value);
+    if (!param) {
+        return;
+    }
+    this.module.addToFormHistory(this.api.Autocomplete.commonHistoryCategory, param);]]></body>
+            </method>
+
+            <method name="_makePathParam">
+                <body><![CDATA[    let stat = this.module.OmniBox.currentStat;
+    if (!stat) {
+        return "ff-smartbox";
+    }
+    let [type] = this.module.OmniBox.URLEngine.getInputType(stat.user_input);
+    let currentStyle = "";
+    let selectedIndex = gURLBar.popup.selectedIndex;
+    if (selectedIndex !== -1 && selectedIndex < gURLBar.mController.matchCount) {
+        currentStyle = gURLBar.mController.getStyleAt(selectedIndex);
+    } else {
+        if (type == "url" || gURLBar._yaInfoCollector.completed) {
+            currentStyle = "nav";
+        } else {
+            currentStyle = "yaSearchSuggest";
+        }
+    }
+    let position = gURLBar.popup.selectedIndex + 1;
+    let metric = stat.metric == "not_shown" ? stat.metric : position === 0 ? "not_used" : gURLBar._yaInfoCollector.metric;
+    let current_state = stat.current_state || (type == "url" ? "nav" : "search");
+    let path = [
+        "ff-smartbox",
+        "14_0",
+        current_state + "_" + (currentStyle.indexOf("yaSearchSuggest") !== -1 ? "to_search" : "to_nav"),
+        metric,
+        "p" + position
+    ];
+    return path.join(".");]]></body>
+            </method>
+
+            <method name="sendNavigationStatistic">
+                <body><![CDATA[    if (!this.module.api.Statistics.alwaysSendUsageStat) {
+        return;
+    }
+    let stat = this.module.OmniBox.currentStat;
+    let params = {
+        cid: 70833,
+        pid: 0
+    };
+    let urlbar = gURLBar;
+    let urlbarController = urlbar.mController;
+    let selectedIndex = urlbar.popup.selectedIndex;
+    let style = urlbarController.matchCount && urlbarController.getStyleAt(0);
+    let used = style && style.indexOf("yaSuperNavigationSuggest") !== -1 && selectedIndex === 0;
+    let top_suggest_value = "";
+    for (let i = 0; i < urlbarController.matchCount; i++) {
+        let itemStyle = urlbarController.getStyleAt(i);
+        if (itemStyle.indexOf("yaSearchSuggest") == -1) {
+            continue;
+        }
+        let val = urlbarController.getValueAt(i);
+        let action = urlbar._yaParseActionURL(val);
+        top_suggest_value = action ? action.param : val;
+        break;
+    }
+    let pos = -1;
+    for (let i = 0; i < urlbarController.matchCount; i++) {
+        let itemStyle = urlbarController.getStyleAt(i);
+        if (itemStyle.indexOf("yaSuperNavigationSuggest") == -1) {
+            continue;
+        }
+        pos = i + 1;
+        break;
+    }
+    if (pos !== -1) {
+        params.pos = pos;
+    }
+    params.path = used ? "ff-smartbox.used" : "ff-smartbox.not_used";
+    params.user_input = stat.user_input;
+    params.top_suggest = top_suggest_value;
+    params.r = stat.r;
+    params.exprt = stat.exprt;
+    let value = selectedIndex >= 0 && selectedIndex < urlbarController.matchCount && urlbarController.getValueAt(selectedIndex) || "";
+    let action = selectedIndex !== -1 ? urlbar._yaParseActionURL(value) : "";
+    let navUrl = action ? action.actionurl : value;
+    params.nav_url = navUrl || "";
+    params.rnd = Date.now();
+    params["*"] = "";
+    let data = Object.keys(params).map(function (k) {
+        return k + "=" + encodeURIComponent(params[k]);
+    });
+    let url = "http://clck.yandex.ru/jclck/" + data.join("/");
+    let request = new XMLHttpRequest();
+    request.open("GET", url, true);
+    request.send(null);]]></body>
+            </method>
+
+            <method name="sendStatistic">
+                <body><![CDATA[    if (!this.module.api.Statistics.alwaysSendUsageStat) {
+        return;
+    }
+    let stat = this.module.OmniBox.currentStat || {
+        exprt: 0,
+        r: 0,
+        user_input: "",
+        matches: []
+    };
+    let urlbar = gURLBar;
+    let selectedIndex = urlbar.popup.selectedIndex;
+    let urlbarController = urlbar.mController;
+    let params = {
+        dtype: "stred",
+        pid: 0,
+        cid: 71477,
+        path: this._makePathParam(),
+        pos: urlbar.selectionStart,
+        user_input: stat.user_input
+    };
+    let value = selectedIndex >= 0 && selectedIndex < urlbarController.matchCount && urlbarController.getValueAt(selectedIndex) || "";
+    let action = selectedIndex !== -1 ? urlbar._yaParseActionURL(value) : "";
+    let suggestText = action ? action.param : value;
+    params.text = suggestText || "";
+    params.rnd = Date.now();
+    params.times = this.module.OmniBox.onlinetimes.join(".");
+    params.loc_times = this.module.OmniBox.localtimes.join(".");
+    params.matches = stat.matches.join(".");
+    params.ratio = [
+        stat.user_input.length,
+        this._getUrlBarValue().length,
+        urlbar._yaInfoCollector.user_actions
+    ].join(".");
+    if (this.module.api.Environment.barPlatform.version > 4) {
+        params.ui = this.module.api.Environment.addon.userID;
+    }
+    let searchURL = this.module.OmniBox.core.makeSearchURLForString("");
+    let engineHost = this.module.OmniBox.URLEngine.getURIParam(searchURL, "host");
+    params.seng = engineHost;
+    params.cpst = urlbar._yaInfoCollector.pasted;
+    params.crtd = Number(!this.module.OmniBox.hasCurrentLayout(urlbar.value));
+    params.sstime = Date.now() - urlbar._yaInfoCollector.startTime;
+    params.idletime = Date.now() - urlbar._yaInfoCollector.endTime;
+    params["*"] = "";
+    let data = Object.keys(params).map(function (k) {
+        return k + "=" + encodeURIComponent(params[k]);
+    });
+    let url = "http://clck.yandex.ru/jclck/" + data.join("/");
+    let request = new XMLHttpRequest();
+    request.open("GET", url, true);
+    request.send(null);
+    if (params.matches.indexOf("n") !== -1) {
+        this.sendNavigationStatistic();
+    }
+    urlbar._yaInfoCollector = {};
+    urlbar._yaInfoCollector.metric = "not_used";
+    urlbar._yaInfoCollector.user_actions = 0;
+    this.module.OmniBox.dropTimes();]]></body>
+            </method>
+
+            <field name="_statisticListener"><![CDATA[    ({
+        enable: function statisticListener_enable() {
+            this._switch(true);
+        },
+        disable: function statisticListener_disable() {
+            this._switch(false);
+        },
+        handleEvent: function statisticListener_handleEvent(event) {
+            let attrValue = event.target.getAttribute("id") || event.target.getAttribute("anonid");
+            this._objects.some(function (props) {
+                if (props[2] !== attrValue) {
+                    return false;
+                }
+                this._that.module.logClickStatistics(props[0]);
+                return true;
+            }, this);
+        },
+        _switch: function statisticListener__switch(enable) {
+            this._objects.forEach(function (props) {
+                let [
+                    type,
+                    attrName,
+                    attrValue
+                ] = props;
+                let elem = attrName === "anonid" ? document.getAnonymousElementByAttribute(gURLBar, "anonid", attrValue) : document.getElementById(attrValue);
+                if (!elem) {
+                    return;
+                }
+                if (enable) {
+                    elem.addEventListener("click", this, false);
+                } else {
+                    elem.removeEventListener("click", this, false);
+                }
+            }, this);
+        },
+        _objects: [
+            [
+                "toplist",
+                "anonid",
+                "historydropmarker"
+            ],
+            [
+                "go",
+                "id",
+                "urlbar-go-button"
+            ],
+            [
+                "update",
+                "id",
+                "urlbar-reload-button"
+            ],
+            [
+                "stop",
+                "id",
+                "urlbar-stop-button"
+            ]
+        ],
+        _that: this
+    });]]></field>
+
+            <method name="_getUrlBarValue">
+                <body><![CDATA[    let action = gURLBar._yaParseActionURL(gURLBar.value);
+    return action ? action.param : gURLBar.value;]]></body>
+            </method>
+
+            <method name="_customizeUrlbarMethods">
+                <body><![CDATA[    let urlbar = this._browserURLBar;
+    if (!urlbar) {
+        return;
+    }
+    let ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
+    urlbar._yaLastSelectedIndex = -1;
+    urlbar._yaInfoCollector.user_actions = 0;
+    let that = this;
+    const COMPLETE_SEPARATOR = "​ ​";
+    let currentAutoCompletedString = "";
+    let _getUrlbarSelection = function _getUrlbarSelection() {
+        let selectionController = urlbar.editor.selectionController;
+        return selectionController.getSelection(selectionController.SELECTION_NORMAL);
+    };
+    urlbar._yaParseActionURL = function _yaParseActionURL(aURL) {
+        if (/^moz\-action:yaaction\-/.test(aURL)) {
+            let parts = aURL.split("_yaacsep_");
+            if (parts.length) {
+                let [
+                    ,
+                    type,
+                    actionurl
+                ] = parts[0].match(/^moz\-action:([^,]+),(.*)$/);
+                let param = "";
+                try {
+                    param = decodeURIComponent(parts[1]);
+                } catch (e) {
+                    param = encodeURIComponent(parts[1]);
+                }
+                actionurl = type.indexOf("opensearch") !== -1 ? that.module.OmniBox.core.makeSearchURLForString(param) : actionurl;
+                return {
+                    type: type,
+                    param: param,
+                    actionurl: actionurl
+                };
+            }
+        }
+        return this._parseActionUrl.apply(this, arguments);
+    };
+    let _onUrlbarSearchComplete = function _onUrlbarSearchComplete() {
+        if (this._yaOBXStopComplete) {
+            return;
+        }
+        let selection = _getUrlbarSelection();
+        if (currentAutoCompletedString && selection.toString() == currentAutoCompletedString) {
+            selection.deleteFromDocument();
+        }
+        let controller = this.mController;
+        let searchString = controller.searchString;
+        this.popup.selectedIndex = searchString ? 0 : -1;
+        if (controller.searchStatus != controller.STATUS_COMPLETE_MATCH) {
+            return;
+        }
+        if (!controller.matchCount) {
+            return;
+        }
+        let firstResultStyle = controller.getStyleAt(0);
+        if (!/(^|\s)yaDefaultComplete(\s|$)/.test(firstResultStyle)) {
+            return;
+        }
+        let currentValue = this.value;
+        let typedValue = currentValue.replace(selection.toString(), "");
+        if (!typedValue) {
+            return;
+        }
+        if (searchString.toLowerCase() != typedValue.toLowerCase()) {
+            return;
+        }
+        if (this.selectionStart > this.selectionEnd || this.selectionEnd < typedValue.length) {
+            return;
+        }
+        let suggestedValue = controller.getLabelAt(0);
+        let action = this._yaParseActionURL(suggestedValue);
+        if (action && action.param) {
+            suggestedValue = action.param;
+        }
+        if (suggestedValue.length < typedValue.length || suggestedValue == typedValue) {
+            return;
+        }
+        let mayTrimURLsSavedValue = this._mayTrimURLs;
+        this._mayTrimURLs = false;
+        action = this._yaParseActionURL(currentValue);
+        let newValue = action && action.param || suggestedValue || "";
+        newValue = newValue.replace(/^[-\w]*:\/+/, "");
+        newValue = newValue.split("/")[0];
+        this.value = newValue;
+        if (newValue.indexOf(typedValue) !== 0) {
+            let indx = newValue.toLowerCase().indexOf(typedValue.toLowerCase());
+            if (indx === 0) {
+                let substrIndx = typedValue.length;
+                let completedString = newValue.substr(substrIndx);
+                this.value = typedValue + completedString;
+            } else {
+                this.value = typedValue + COMPLETE_SEPARATOR + newValue;
+            }
+        }
+        selection.removeAllRanges();
+        let textNode = this.editor.rootElement.firstChild;
+        let value = textNode.textContent;
+        let startIndex = typedValue.length;
+        let rangeLength = value.length;
+        let range = document.createRange();
+        range.setStart(textNode, startIndex);
+        range.setEnd(textNode, rangeLength);
+        selection.addRange(range);
+        preventScroll();
+        currentAutoCompletedString = selection.toString();
+        this._mayTrimURLs = mayTrimURLsSavedValue;
+    };
+    urlbar._yaFocusEventHandler = function _yaFocusEventHandler() {
+        this._yaInfoCollector.startTime = Date.now();
+    };
+    urlbar.addEventListener("focus", urlbar._yaFocusEventHandler, false);
+    let originalOnSearchComplete = urlbar.onSearchComplete;
+    urlbar.onSearchComplete = function _onSearchComplete() {
+        let origRes = originalOnSearchComplete.apply(this, arguments);
+        _onUrlbarSearchComplete.apply(urlbar, arguments);
+        return origRes;
+    };
+    let originalOnBeforeValueGet = urlbar.onBeforeValueGet;
+    urlbar.onBeforeValueGet = function _onBeforeValueGet() {
+        if (this.hasAttribute("actiontype")) {
+            let action = this._yaParseActionURL(this._value);
+            let val = (action && action.param || "").replace(/^https?:\/\//, "").replace(/\/$/, "");
+            let currentValue = this.inputField.value.replace(/^https?:\/\//, "").replace(/\/$/, "");
+            if (val !== currentValue) {
+                this.removeAttribute("actiontype");
+                return null;
+            }
+            return { value: this._value };
+        }
+        return null;
+    };
+    let originalOnBeforeValueSet = urlbar.onBeforeValueSet;
+    urlbar.onBeforeValueSet = function _onBeforeValueSet(aValue) {
+        this._value = aValue;
+        let returnValue = aValue;
+        let action = this._yaParseActionURL(aValue);
+        if (action) {
+            returnValue = action.param;
+            this.setAttribute("actiontype", action.type);
+        } else {
+            this.removeAttribute("actiontype");
+        }
+        return returnValue;
+    };
+    let originalOnPasteEvent = urlbar.onpaste;
+    urlbar.onpaste = function (aEvent) {
+        this._yaInfoCollector.pasted = 1;
+        this._yaInfoCollector.endTime = Date.now();
+        if (originalOnPasteEvent) {
+            return originalOnPasteEvent.apply(this, arguments);
+        }
+    };
+    let getValueIfKeyword = function getValueIfKeyword() {
+        if (urlbar.popup.selectedIndex !== -1) {
+            return null;
+        }
+        let suggestedValue = urlbar.mController.getLabelAt(0);
+        let action = urlbar._yaParseActionURL(suggestedValue);
+        if (action && action.param && action.type == "yaaction-keyword") {
+            return urlbar.value;
+        }
+        return null;
+    };
+    let _getCurrentInputType = function _getCurrentInputType() {
+        let url = urlbar.value;
+        let action = urlbar._yaParseActionURL(url);
+        if (action && action.actionurl) {
+            return [
+                action.type == "yaaction-opensearch" ? "search" : "url",
+                action.actionurl
+            ];
+        }
+        return _getInputType(url.split(COMPLETE_SEPARATOR)[1] || url);
+    };
+    let module = this.module;
+    let _getInputType = function _getInputType(aString) {
+        let [
+            type,
+            url
+        ] = module.OmniBox.URLEngine.getInputType(aString);
+        if (type == "maybeurl" && /\s/.test(aString.trim())) {
+            type = "search";
+        }
+        if (type == "url") {
+            return [
+                "url",
+                url
+            ];
+        }
+        if (type == "maybeurl") {
+            let uri;
+            try {
+                uri = ioService.newURI(url, null, null);
+            } catch (e) {
+            }
+            try {
+                if (!uri.host || uri.host.indexOf(" ") !== -1) {
+                    type = "search";
+                }
+            } catch (e) {
+                if (aString.indexOf("moz-action") !== 0 && aString.indexOf(" ") !== -1) {
+                    type = "search";
+                }
+            }
+            if (uri && /^https?$/.test(uri.scheme) && uri.path == "/" && aString.substr(-1) !== "/") {
+                type = "search";
+            }
+        }
+        if (type == "search") {
+            return [
+                "search",
+                module.makeSearchURLForString(aString)
+            ];
+        }
+        return [
+            type,
+            aString
+        ];
+    };
+    let originalHandleCommand = urlbar.handleCommand;
+    urlbar.handleCommand = function handleCommand() {
+        let url;
+        if (this._yaLastSelectedIndex < 0 && currentAutoCompletedString.length && this.mController.matchCount) {
+            let action = this._yaParseActionURL(this.mController.getValueAt(0));
+            if (action && action.actionurl) {
+                url = action.actionurl;
+            }
+            let firstStyle = this.mController.getStyleAt(0);
+            if (firstStyle.indexOf("yaSuperNavigationSuggest") !== -1) {
+                this._yaLastSelectedIndex = 0;
+            }
+        }
+        currentAutoCompletedString = "";
+        let value = getValueIfKeyword() || url;
+        if (value) {
+            this.value = value;
+        }
+        if (!value && this.value) {
+            let mayTrimURLsSavedValue = this._mayTrimURLs;
+            this._mayTrimURLs = false;
+            [
+                ,
+                this.value
+            ] = _getCurrentInputType();
+            this._mayTrimURLs = mayTrimURLsSavedValue;
+        }
+        let yaReferrerURI = null;
+        if (this._yaLastSelectedIndex >= 0 && this._yaLastSelectedIndex < this.mController.matchCount) {
+            let navType = this.mController.getStyleAt(this._yaLastSelectedIndex);
+            if (/(^|\s)ya(Super)?NavigationSuggest($|\s)/.test(navType)) {
+                yaReferrerURI = ioService.newURI("http://www.yandex.ru", null, null);
+            }
+        }
+        let originalLoadURIWithFlags = yaReferrerURI && gBrowser.loadURIWithFlags;
+        let originalOpenUILinkIn = yaReferrerURI && window.openUILinkIn;
+        if (originalLoadURIWithFlags) {
+            gBrowser.loadURIWithFlags = function () {
+                let params = arguments;
+                if (yaReferrerURI && !params[2]) {
+                    params[2] = yaReferrerURI;
+                }
+                return originalLoadURIWithFlags.apply(this, params);
+            };
+        }
+        if (originalOpenUILinkIn) {
+            window.openUILinkIn = function () {
+                let params = arguments;
+                if (yaReferrerURI && params[2] && !params[2].referrerURI) {
+                    params[2].referrerURI = yaReferrerURI;
+                }
+                return originalOpenUILinkIn.apply(this, params);
+            };
+        }
+        try {
+            return originalHandleCommand.apply(this, arguments);
+        } finally {
+            if (originalLoadURIWithFlags) {
+                gBrowser.loadURIWithFlags = originalLoadURIWithFlags;
+            }
+            if (originalOpenUILinkIn) {
+                window.openUILinkIn = originalOpenUILinkIn;
+            }
+        }
+    };
+    let preventScroll = function preventScroll() {
+        let selectionController = urlbar.editor.selectionController;
+        selectionController.scrollSelectionIntoView(selectionController.SELECTION_NORMAL, selectionController.SELECTION_ANCHOR_REGION, 0);
+    };
+    let preventSelectionFlash = function preventSelectionFlash(aCurrentValue, aInputChar, aSelection) {
+        let selectedString = aSelection.toString();
+        if (selectedString.length <= 1) {
+            return false;
+        }
+        if ((aCurrentValue.split(selectedString)[1] || "") !== "") {
+            return false;
+        }
+        if (selectedString.toLowerCase().indexOf(aInputChar.toLowerCase()) !== 0) {
+            return false;
+        }
+        let completedString = aSelection.toString().substr(1);
+        let data = aInputChar + completedString;
+        let ssText = Cc["@mozilla.org/supports-string;1"].createInstance(Ci.nsISupportsString);
+        ssText.data = data;
+        let transferable = Cc["@mozilla.org/widget/transferable;1"].createInstance(Ci.nsITransferable);
+        transferable.addDataFlavor("text/unicode");
+        transferable.setTransferData("text/unicode", ssText, data.length * 2);
+        let editor = urlbar.editor;
+        editor.pasteTransferable(transferable);
+        aSelection.removeAllRanges();
+        let textNode = editor.rootElement.firstChild;
+        let inputValueLength = urlbar.inputField.value.length;
+        let completedStringLength = completedString.length;
+        if (completedStringLength) {
+            let range = document.createRange();
+            range.setStart(textNode, inputValueLength - completedStringLength);
+            range.setEnd(textNode, inputValueLength);
+            aSelection.addRange(range);
+            preventScroll();
+        }
+        currentAutoCompletedString = aSelection.toString();
+        return true;
+    };
+    urlbar._yaProcessInput = function _yaProcessInput() {
+        let value;
+        if (this._yaInfoCollector.metric == "mouse") {
+            let selectedIndex = this.popup.selectedIndex;
+            value = selectedIndex >= 0 && selectedIndex < this.mController.matchCount && this.mController.getValueAt(selectedIndex) || "";
+            if (value.indexOf("moz-action") !== -1) {
+                let parsed = this._yaParseActionURL(value);
+                if (parsed) {
+                    value = parsed.actionurl;
+                }
+            }
+        } else {
+            [
+                ,
+                value
+            ] = _getCurrentInputType();
+        }
+        if (currentAutoCompletedString.length) {
+            this._yaInfoCollector.completed = true;
+        }
+        that.saveSearchToForm(value);
+        that.sendStatistic();
+    };
+    let yaOnProcessAction = function yaOnProcessAction(e) {
+        let selection = _getUrlbarSelection();
+        let selectionString = selection && selection.toString() || "";
+        if (!selectionString && urlbar.value && urlbar.value == gURLBar.mController.getLabelAt(0)) {
+            urlbar._yaInfoCollector.prevAction = null;
+            urlbar._yaInfoCollector.metric = "not_used";
+        } else if (urlbar._yaInfoCollector.prevAction == "edit") {
+            urlbar._yaInfoCollector.metric = "edit";
+        } else {
+            let controller = gURLBar.mController;
+            let suggestedValue = controller.getLabelAt(0);
+            let action = this._yaParseActionURL(suggestedValue);
+            if (action && action.param) {
+                suggestedValue = action.param;
+            }
+            if (selectionString.indexOf(suggestedValue) !== -1 || currentAutoCompletedString.length) {
+                urlbar._yaInfoCollector.metric = "auto";
+            }
+        }
+    };
+    let yaOnReturn = function yaOnReturn(e) {
+        let selection = _getUrlbarSelection();
+        let urlBarValue = urlbar.value;
+        let urlBarValueAction = this._yaParseActionURL(urlBarValue);
+        if (urlBarValueAction && urlBarValueAction.param) {
+            urlBarValue = urlBarValueAction.param;
+        }
+        let suggestedValue = this.mController.getLabelAt(this.popup.selectedIndex);
+        let action = this._yaParseActionURL(suggestedValue);
+        if (action && action.param) {
+            suggestedValue = action.param;
+        }
+        if (selection !== "" && suggestedValue.indexOf(selection) !== -1 && urlBarValue == suggestedValue) {
+            urlbar._yaInfoCollector.metric = "auto";
+        } else if (urlBarValue == suggestedValue) {
+            urlbar._yaInfoCollector.metric = "keyboard";
+        }
+    };
+    urlbar._yaOnKeyDown = function _yaOnKeyDown(e) {
+        if (e.keyCode === KeyEvent.DOM_VK_ALT || e.keyCode === KeyEvent.DOM_VK_SHIFT) {
+            this.popup.removeAttribute("noactions");
+            return;
+        }
+        if (e.keyCode != KeyEvent.DOM_VK_CONTROL) {
+            return;
+        }
+        if (!that.module) {
+            return;
+        }
+        let [
+            type,
+            str
+        ] = that.module.OmniBox.URLEngine.getInputType(this.inputField.value);
+        if (!this._controlHandled && type == "maybeurl" && this.inputField.value.indexOf("http://") !== 0) {
+            this._controlHandled = true;
+            this.mController.startSearch(this.inputField.value);
+        }
+    };
+    urlbar.addEventListener("keydown", urlbar._yaOnKeyDown, false);
+    urlbar._yaOnKeyUp = function _yaOnKeyUp(e) {
+        if (e.keyCode == KeyEvent.DOM_VK_CONTROL && urlbar._controlHandled === true) {
+            urlbar._controlHandled = null;
+            this.mController.startSearch(this.inputField.value);
+        }
+    };
+    urlbar.addEventListener("keyup", urlbar._yaOnKeyUp, false);
+    let originalOnKeyPress = urlbar.onKeyPress;
+    urlbar.onKeyPress = function _onKeyPress(aEvent) {
+        if (aEvent.target.localName !== "textbox") {
+            return;
+        }
+        if (aEvent.defaultPrevented) {
+            return false;
+        }
+        this._yaOBXStopComplete = false;
+        if (!aEvent.metaKey && !aEvent.ctrlKey) {
+            let selection = _getUrlbarSelection();
+            if (preventSelectionFlash(this.inputField.value, String.fromCharCode(aEvent.charCode), selection)) {
+                this._yaInfoCollector.user_actions++;
+                this.mController.startSearch(this.inputField.value.substr(0, selection.anchorOffset));
+                return false;
+            }
+        }
+        switch (aEvent.keyCode) {
+        case KeyEvent.DOM_VK_RIGHT:
+            if (currentAutoCompletedString) {
+                let completedText = this.value.split(COMPLETE_SEPARATOR)[1];
+                if (completedText) {
+                    this.value = completedText;
+                }
+                currentAutoCompletedString = "";
+                this._yaLastSelectedIndex = -1;
+            }
+            if (this.popup.selectedIndex !== -1) {
+                urlbar._yaInfoCollector.prevAction = "vk_right";
+            }
+            this.closePopup();
+            this._yaOBXStopComplete = true;
+            return;
+        case KeyEvent.DOM_VK_RETURN:
+            if (this.popup.selectedIndex == -1) {
+                yaOnProcessAction.call(this);
+            } else {
+                yaOnReturn.call(this);
+            }
+            this._yaProcessInput();
+            break;
+        case KeyEvent.DOM_VK_LEFT:
+        case KeyEvent.DOM_VK_HOME: {
+                if (currentAutoCompletedString) {
+                    let selection = _getUrlbarSelection();
+                    if (selection.toString() === currentAutoCompletedString) {
+                        selection.deleteFromDocument();
+                        currentAutoCompletedString = "";
+                    }
+                }
+                this.closePopup();
+                this._yaOBXStopComplete = true;
+                return;
+            }
+        case KeyEvent.DOM_VK_TAB:
+        case KeyEvent.DOM_VK_UP:
+        case KeyEvent.DOM_VK_DOWN:
+            this._yaLastSelectedIndex = this.popup.selectedIndex;
+            urlbar._yaOmniboxModule.OmniBox.ProvidersManager.stopSearch();
+            urlbar._yaInfoCollector.prevAction = null;
+            currentAutoCompletedString = "";
+            break;
+        case KeyEvent.DOM_VK_BACK_SPACE:
+        case KeyEvent.DOM_VK_DELETE:
+            this._yaOBXStopComplete = true;
+            urlbar._yaOmniboxModule.OmniBox.ProvidersManager.stopSearch();
+            return;
+        case KeyEvent.DOM_VK_ESCAPE:
+            currentAutoCompletedString = "";
+            break;
+        }
+        this._yaInfoCollector.pasted = 0;
+        this._yaInfoCollector.endTime = Date.now();
+        if (urlbar._yaInfoCollector.prevAction && urlbar._yaInfoCollector.prevAction == "vk_right" && this.popup.selectedIndex !== -1) {
+            urlbar._yaInfoCollector.prevAction = "edit";
+        }
+        let res = originalOnKeyPress.apply(this, arguments);
+        if (aEvent.keyCode == KeyEvent.DOM_VK_DOWN || aEvent.keyCode == KeyEvent.DOM_VK_UP) {
+            this._yaLastSelectedIndex = this.popup.selectedIndex;
+        } else if (aEvent.keyCode != KeyEvent.DOM_VK_RETURN && aEvent.keyCode != KeyEvent.DOM_VK_UP && aEvent.keyCode != KeyEvent.DOM_VK_DOWN) {
+            this._yaInfoCollector.user_actions++;
+            urlbar._yaInfoCollector.prevAction = "edit";
+        }
+        return res;
+    };
+    urlbar._yaBlurEventHandler = function _yaBlurEventHandler() {
+        this._yaInfoCollector.startTime = 0;
+        this._yaLastSelectedIndex = -1;
+        if (!currentAutoCompletedString) {
+            return;
+        }
+        let selection = _getUrlbarSelection();
+        if (selection.toString() !== currentAutoCompletedString) {
+            return;
+        }
+        selection.deleteFromDocument();
+        currentAutoCompletedString = "";
+        this.textValue = this.value;
+    };
+    urlbar.addEventListener("blur", urlbar._yaBlurEventHandler, false);
+    let selEventHandler = function selEventHandler(aSelectUserInput) {
+        if (!currentAutoCompletedString) {
+            return;
+        }
+        let urlbarValue = urlbar.value;
+        let indexOfComplete = urlbarValue.indexOf(COMPLETE_SEPARATOR);
+        if (indexOfComplete == -1) {
+            indexOfComplete = urlbarValue.lastIndexOf(currentAutoCompletedString);
+        }
+        if (indexOfComplete == -1) {
+            return;
+        }
+        currentAutoCompletedString = "";
+        urlbar.closePopup();
+        urlbar.value = urlbarValue.substring(0, indexOfComplete);
+        if (!aSelectUserInput) {
+            return;
+        }
+        let textNode = urlbar.editor.rootElement.firstChild;
+        let range = document.createRange();
+        range.setStart(textNode, 0);
+        range.setEnd(textNode, urlbar.inputField.value.length);
+        _getUrlbarSelection().addRange(range);
+    };
+    urlbar._yaSelectionEventHandler = function _yaSelectionEventHandler() {
+        return selEventHandler(true);
+    };
+    urlbar.addEventListener("select", urlbar._yaSelectionEventHandler, false);
+    urlbar._yaClickEventHandler = function _yaClickEventHandler() {
+        return selEventHandler(false);
+    };
+    urlbar.addEventListener("click", urlbar._yaClickEventHandler, false);
+    urlbar.yaShowUsageExample = function yaShowUsageExample(aText) {
+        if (this._yaShowUsageExampleTimeout) {
+            window.clearTimeout(this._yaShowUsageExampleTimeout);
+            delete this._yaShowUsageExampleTimeout;
+        }
+        this.focus();
+        this.inputField.value = "";
+        let typeInterval = 30;
+        let chars = aText.split("");
+        let typeOneChar = function _typeOneChar() {
+            this.inputField.value += chars.shift();
+            if (chars.length) {
+                this._yaShowUsageExampleTimeout = window.setTimeout(typeOneChar, typeInterval);
+                return;
+            }
+            this.mController.startSearch(this.inputField.value);
+        }.bind(this);
+        typeOneChar();
+    };]]></body>
+            </method>
+
+            <method name="_removeCustomizedUrlbarMethods">
+                <body><![CDATA[    let urlbar = this._browserURLBar;
+    if (!urlbar) {
+        return;
+    }
+    if (urlbar._yaOnKeyDown) {
+        urlbar.removeEventListener("keydown", urlbar._yaOnKeyDown, false);
+        delete urlbar._yaOnKeyDown;
+    }
+    if (urlbar._yaOnKeyUp) {
+        urlbar.removeEventListener("keyup", urlbar._yaOnKeyUp, false);
+        delete urlbar._yaOnKeyUp;
+    }
+    if (urlbar._yaBlurEventHandler) {
+        urlbar.removeEventListener("blur", urlbar._yaBlurEventHandler, false);
+        delete urlbar._yaBlurEventHandler;
+    }
+    if (urlbar._yaFocusEventHandler) {
+        urlbar.removeEventListener("focus", urlbar._yaFocusEventHandler, false);
+        delete urlbar._yaFocusEventHandler;
+    }
+    if (urlbar._yaSelectionEventHandler) {
+        urlbar.removeEventListener("select", urlbar._yaSelectionEventHandler, false);
+        delete urlbar._yaSelectionEventHandler;
+    }
+    if (urlbar._yaClickEventHandler) {
+        urlbar.removeEventListener("click", urlbar._yaClickEventHandler, false);
+        delete urlbar._yaClickEventHandler;
+    }
+    if (this._yaShowUsageExampleTimeout) {
+        window.clearTimeout(this._yaShowUsageExampleTimeout);
+        delete this._yaShowUsageExampleTimeout;
+    }
+    delete urlbar.onBeforeValueGet;
+    delete urlbar.onBeforeValueSet;
+    delete urlbar.onSearchComplete;
+    delete urlbar.handleCommand;
+    delete urlbar.onKeyPress;
+    delete urlbar.oninput;
+    delete urlbar.yaShowUsageExample;
+    delete urlbar._yaOmniboxModule;
+    delete urlbar._yaProcessInput;
+    delete urlbar._yaParseActionURL;
+    delete urlbar._yaLastSelectedIndex;
+    delete urlbar._yaInfoCollector;]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding id="panel-tutor">
+        <resources>
+            <stylesheet src="panel-tutor.css"/>
+        </resources>
+
+        <content class="searchTutorBox" flex="1">
+            <xul:vbox>
+                <xul:hbox class="searchTutorClose">
+                    <xul:image onclick="close(true);"/>
+                </xul:hbox>
+                <html:div class="searchTutorExamples">
+                    <html:div>
+                        <html:p>Задавайте поисковые запросы прямо в адресной строке.</html:p>
+                        <html:p>
+                            Введите &#171;&#187; и получите ответ Яндекса.
+                        </html:p>
+                    </html:div>
+                    <html:div>
+                        <html:p>Не обращайте внимания на раскладку клавиатуры.</html:p>
+                        <html:p>
+                            Ваш браузер поймет и &#171;нфтву&#187;, и &#171;вкон&#187;.
+                        </html:p>
+                    </html:div>
+                    <html:div>
+                        <html:p>Перевод слова можно получить прямо в подсказках.</html:p>
+                        <html:p>
+                            Введите &#171;&#187; или &#171;аллилуйя по-английски&#187;.
+                        </html:p>
+                    </html:div>
+                    <html:div>
+                        <html:p>Цифры и факты легко узнать из поисковых подсказок.</html:p>
+                        <html:p>
+                            Спросите Яндекс про &#171;число пи&#187; или &#171;длина окружности&#187;.
+                        </html:p>
+                    </html:div>
+                </html:div>
+                <html:div class="searchTutorVariants">
+                    <html:span data-exampleId="qsrch" data-statParam="search">Быстрый поиск</html:span>
+                    <html:span data-exampleId="kbrd" data-statParam="keyboard">Другая раскладка</html:span>
+                    <html:span data-exampleId="trnsl" data-statParam="tran">Быстрый перевод</html:span>
+                    <html:span data-exampleId="fcts" data-statParam="fact">Полезные факты</html:span>
+                </html:div>
+            </xul:vbox>
+        </content>
+
+        <implementation>
+            <field name="mOmniboxModule" readonly="true">gURLBar._yaOmniboxModule</field>
+            <field name="api" readonly="true">this.mOmniboxModule.api</field>
+            <field name="mParentFooter" readonly="true">document.getBindingParent(this)</field>
+
+            <field name="mSearchTutorExamples" readonly="true">
+                document.getAnonymousElementByAttribute(this, "class", "searchTutorExamples");
+            </field>
+
+            <field name="mSearchTutorVariants" readonly="true">
+                document.getAnonymousElementByAttribute(this, "class", "searchTutorVariants");
+            </field>
+
+            <field name="mAutoShow">null</field>
+
+            <field name="_variantsIds" readonly="true"><![CDATA[    Array.map(this.mSearchTutorVariants.children, function (el) {
+        return el.getAttribute("data-exampleId");
+    });]]></field>
+
+            <field name="_qsrchVariants" readonly="true"><![CDATA[    "                                                       ;                посторонним в                                           ;                головоногий моллюск                                     ;                страус фото                                             ;                купить машину                                           ;                аптеки                                                  ;                семейный кодекс                                         ;                сколько варить яйца                                     ;                рецепт глинтвейна                                       ;                гадание на кофейной гуще                                ;                универсальная электронная карта                         ;                как завязать галстук                                    ;                через тернии к звездам                                  ;                карнавала не будет                                      ;                что ты сделал                                           ;                проблема                                                ;                ".split(";").map(function (el) {
+        return el.trim();
+    }).filter(Boolean);]]></field>
+
+            <field name="_trnslVariants" readonly="true"><![CDATA[    "                                                       ;                carpe diem перевод                                      ;                je t'aime перевод                                      ;                nice перевод                                            ;                cat перевод                                             ;                swag перевод                                            ;                try перевод                                             ;                occupation перевод                                      ;                hall of fame перевод                                    ;                stuff перевод                                           ;                cute перевод                                            ;                remove перевод                                          ;                still перевод                                           ;                paradise перевод                                        ;                performance перевод                                     ;                male перевод                                            ;                enterprise перевод                                      ;                value перевод                                           ;                intermediate перевод                                    ;                issue перевод                                           ;                available перевод                                       ;                draw перевод                                            ;                chest перевод                                           ;                же тем перевод                                          ;                pending перевод                                         ;                enough перевод                                          ;                charge перевод                                          ;                sweet перевод                                           ;                just перевод                                            ;                advanced перевод                                        ;                ".split(";").map(function (el) {
+        return el.trim();
+    }).filter(Boolean);]]></field>
+
+            <property name="_selectedVariant" readonly="true">
+                <getter><![CDATA[    let selectedVariantElement = this.mSearchTutorVariants.querySelector("span.selected");
+    if (!selectedVariantElement) {
+        return null;
+    }
+    return {
+        element: selectedVariantElement,
+        exampleId: selectedVariantElement.getAttribute("data-exampleId"),
+        statParam: selectedVariantElement.getAttribute("data-statParam")
+    };]]></getter>
+            </property>
+
+            <constructor><![CDATA[    if (this.mOmniboxModule.getStaticPref("tutor.clicked", false)) {
+        this.mAutoShow = false;
+    }
+    this.mParentFooter.wrapVisualModification(this, "_selectTutorVariant");]]></constructor>
+
+            <method name="autoOpen">
+                <body><![CDATA[    let module = this.mOmniboxModule;
+    if (!module.canShowTutorial) {
+        return;
+    }
+    if (!this.hidden) {
+        if (!module.currentEngineIsBranded) {
+            this.close();
+        }
+        return;
+    }
+    if (this.mAutoShow === null) {
+        if (!module.currentEngineIsBranded) {
+            return;
+        }
+        switch (module.brandedWeekSearchIsOverflowed) {
+        case true:
+            this.mAutoShow = false;
+        case null:
+            return;
+        }
+        this.mAutoShow = true;
+    }
+    if (!this.mAutoShow || !module.currentEngineIsBranded) {
+        return;
+    }
+    this._incrementAutoOpenCounter();
+    this.mParentFooter.switchSearchTutor();]]></body>
+            </method>
+
+            <method name="updateOnPopupShowing">
+                <body><![CDATA[    if (this.hidden) {
+        return;
+    }
+    this.open();
+    if (this.mAutoShow === true) {
+        this._incrementAutoOpenCounter();
+    }]]></body>
+            </method>
+
+            <method name="showUsageExample">
+                <parameter name="aExampleIndex"/>
+                <parameter name="aExampleText"/>
+                <body><![CDATA[    let updateOnPopupShowing = this.updateOnPopupShowing;
+    this.updateOnPopupShowing = function () {
+    };
+    let savedHiddenState = this.hidden;
+    this.hidden = false;
+    this.open(aExampleIndex, aExampleText);
+    this.mSearchTutorExamples.children[aExampleIndex].querySelector("a").click();
+    let popuphiddenListener = function _popuphiddenListener(event) {
+        event.currentTarget.removeEventListener("popuphidden", popuphiddenListener, false);
+        if (this.hidden === false) {
+            this.hidden = savedHiddenState;
+        }
+        this.updateOnPopupShowing = updateOnPopupShowing;
+    }.bind(this);
+    gURLBar.popup.addEventListener("popuphidden", popuphiddenListener, false);]]></body>
+            </method>
+
+            <method name="open">
+                <parameter name="aExampleIndex"/>
+                <parameter name="aExampleText"/>
+                <body><![CDATA[    this._selectTutorVariant(aExampleIndex, aExampleText);
+    this.mOmniboxModule.logClickStatistics("helpuse.show");]]></body>
+            </method>
+
+            <method name="close">
+                <parameter name="aManual"/>
+                <body><![CDATA[    this.mParentFooter.switchSearchTutor(aManual);]]></body>
+            </method>
+
+            <method name="onCloseButtonClick">
+                <body><![CDATA[    this.close(true);
+    this.mOmniboxModule.logClickStatistics("helpuse.close");]]></body>
+            </method>
+
+            <method name="_incrementAutoOpenCounter">
+                <body><![CDATA[    let module = this.mOmniboxModule;
+    let shownCounter = module.getStaticPref("tutor.shownCounter", 0);
+    if (++shownCounter > 50) {
+        this.close(true);
+        return;
+    }
+    module.setStaticPref("tutor.shownCounter", Math.min(50, shownCounter));]]></body>
+            </method>
+
+            <method name="_selectTutorVariant">
+                <parameter name="aExampleIndex"/>
+                <parameter name="aExampleText"/>
+                <body><![CDATA[    if (typeof aExampleIndex == "undefined") {
+        aExampleIndex = this.mOmniboxModule.searchTutorClickedInfo.getFirstUnclikedIndex(this._variantsIds);
+    }
+    if (aExampleIndex < 0 || aExampleIndex >= this.mSearchTutorExamples.children.length) {
+        aExampleIndex = 0;
+    }
+    this._makeExampleLinks(aExampleIndex, aExampleText);
+    let select = function select(element, index) {
+        if (index == aExampleIndex) {
+            element.classList.add("selected");
+        } else {
+            element.classList.remove("selected");
+        }
+    };
+    Array.forEach(this.mSearchTutorExamples.children, select);
+    Array.forEach(this.mSearchTutorVariants.children, select);]]></body>
+            </method>
+
+            <method name="_makeExampleLinks">
+                <parameter name="aExampleIndex"/>
+                <parameter name="aExampleText"/>
+                <body><![CDATA[    let exampleElement = this.mSearchTutorExamples.children[aExampleIndex].children[1];
+    let text = exampleElement.textContent;
+    if (aExampleText) {
+        text = text.replace(/\u00AB[^\u00BB]*\u00BB/, "«" + aExampleText + "»");
+    } else if (aExampleIndex === 0) {
+        let sampleIndex = Math.floor(Math.random() * (this._qsrchVariants.length - 1));
+        let sample = this._qsrchVariants[sampleIndex].replace(/[\u00AB\u00BB]/g, "'");
+        text = text.replace(/\u00AB[^\u00BB]*\u00BB/, "«" + sample + "»");
+    } else if (aExampleIndex === 2) {
+        let sampleIndex = Math.floor(Math.random() * (this._trnslVariants.length - 1));
+        let sample = this._trnslVariants[sampleIndex].replace(/[\u00AB\u00BB]/g, "'");
+        text = text.replace(/\u00AB[^\u00BB]*\u00BB/, "«" + sample + "»");
+    }
+    let parts = text.split(/[\u00AB\u00BB]/);
+    if (parts.length < 2) {
+        return;
+    }
+    while (exampleElement.firstChild) {
+        exampleElement.removeChild(exampleElement.firstChild);
+    }
+    parts.forEach(function (part, index) {
+        let el = document.createTextNode(part);
+        if (index % 2) {
+            exampleElement.appendChild(document.createTextNode("«"));
+            let link = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
+            link.appendChild(el);
+            exampleElement.appendChild(link);
+            exampleElement.appendChild(document.createTextNode("»"));
+        } else {
+            exampleElement.appendChild(el);
+        }
+    });]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="0" event="click"><![CDATA[    let target = event.originalTarget;
+    switch (target.localName) {
+    case "a": {
+            gURLBar.yaShowUsageExample(target.textContent);
+            let selectedVariant = this._selectedVariant;
+            if (selectedVariant) {
+                this.mOmniboxModule.searchTutorClickedInfo.put(selectedVariant.exampleId);
+                if (selectedVariant.statParam) {
+                    this.mOmniboxModule.logClickStatistics("helpuse." + selectedVariant.statParam + "click");
+                }
+            }
+            break;
+        }
+    case "span":
+        if (target.parentNode !== this.mSearchTutorVariants) {
+            return;
+        }
+        if (target.classList.contains("selected")) {
+            return false;
+        }
+        Array.some(this.mSearchTutorVariants.children, function (element, index) {
+            if (element !== target) {
+                return false;
+            }
+            this._selectTutorVariant(index);
+            let selectedVariant = this._selectedVariant;
+            if (selectedVariant && selectedVariant.statParam) {
+                this.mOmniboxModule.logClickStatistics("helpuse." + selectedVariant.statParam);
+            }
+            return true;
+        }, this);
+        break;
+    }]]></handler>
+        </handlers>
+    </binding>
+
+    <binding id="popup-footer">
+        <resources>
+            <stylesheet src="panel-footer.css"/>
+        </resources>
+
+        <content flex="1">
+            <xul:hbox class="searchProvidersBox" flex="1">
+                <xul:hbox flex="1">
+                    <xul:vbox flex="1">
+                        <html:div anonid="searchProviders"/>
+                        <xul:hbox anonid="restoreDefaultEngine">
+                            <xul:hbox onclick="if (event.button === 0) _restoreDefaultEngine();">
+                                <xul:label anonid="restoreDefaultEngineLabel" value="&wgt.smartbox.restoreDefaultEngine;"/>
+                            </xul:hbox>
+                            <xul:image onclick="if (event.button === 0) _acceptDefaultEngine();"/>
+                        </xul:hbox>
+                    </xul:vbox>
+                    <xul:hbox align="center">
+                        <xul:hbox active="false" anonid="searchTutorIcon" hidden="true">
+                            <xul:image onclick="if (event.button === 0) switchSearchTutor(true);"/>
+                        </xul:hbox>
+                        <xul:hbox anonid="searchSettings" class="searchSettings">
+                            <xul:image/>
+                            <xul:label value="&wgt.smartbox.searchSettings;"/>
+                        </xul:hbox>
+                    </xul:hbox>
+                </xul:hbox>
+            </xul:hbox>
+            <xul:vbox class="searchTutorBox" hidden="true"/>
+        </content>
+
+        <implementation implements="nsIObserver">
+            <field name="mOmniboxModule" readonly="true">gURLBar._yaOmniboxModule</field>
+            <field name="api" readonly="true">this.mOmniboxModule.api</field>
+
+            <field name="mSearchProviders" readonly="true">
+                document.getAnonymousElementByAttribute(this, "anonid", "searchProviders");
+            </field>
+
+            <field name="mRestoreDefaultEngine" readonly="true">
+                document.getAnonymousElementByAttribute(this, "anonid", "restoreDefaultEngine");
+            </field>
+
+            <field name="mSearchSettings" readonly="true">
+                document.getAnonymousElementByAttribute(this, "anonid", "searchSettings");
+            </field>
+
+            <field name="mSearchTutorIcon" readonly="true">
+                document.getAnonymousElementByAttribute(this, "anonid", "searchTutorIcon");
+            </field>
+
+            <field name="mSearchTutorBox" readonly="true">
+                document.getAnonymousElementByAttribute(this, "class", "searchTutorBox");
+            </field>
+
+            <field name="mSearchSettingsMenuPopup">null</field>
+
+            <field name="mEngineChangedEventName">"yandex-omnibox-search-modified"</field>
+
+            <constructor>
+                let defaultEngineLabel = '&wgt.smartbox.searchSettings.menu.defaultEngine.label;';
+                let searchSettingsLabel = '&wgt.smartbox.searchSettings.menu.settings.label;';<![CDATA[    let menupopupId = "ybOmniboxSearchSettingsMenu";
+    let menupopup = document.getElementById(menupopupId);
+    if (!menupopup) {
+        menupopup = document.createElement("menupopup");
+        menupopup.setAttribute("id", menupopupId);
+        let mainPopupSet = document.getElementById("mainPopupSet");
+        mainPopupSet.appendChild(menupopup);
+    }
+    this.mSearchSettingsMenuPopup = menupopup;
+    this.mSearchSettings.setAttribute("popup", menupopupId);
+    Services.obs.addObserver(this, this.mEngineChangedEventName, false);
+    this.mOmniboxModule.onDelayedInit(this.constructorEx.bind(this));]]></constructor>
+
+            <method name="constructorEx">
+                <body><![CDATA[    this.setAttribute("data-os", this.api.Environment.os.name);
+    this.recalculateSearchTutorVisibility();
+    this.wrapVisualModification(this, "switchSearchTutor");
+    this.wrapVisualModification(this, "constructEnginesList");
+    this.wrapVisualModification(this, "_showOtherSearches");]]></body>
+            </method>
+
+            <destructor><![CDATA[    Services.obs.removeObserver(this, this.mEngineChangedEventName);
+    if (this.mSearchSettingsMenuPopup) {
+        this.mSearchSettingsMenuPopup.parentNode.removeChild(this.mSearchSettingsMenuPopup);
+        this.mSearchSettingsMenuPopup = null;
+    }]]></destructor>
+
+            <method name="observe">
+                <parameter name="subject"/>
+                <parameter name="topic"/>
+                <parameter name="data"/>
+                <body><![CDATA[    if (topic === this.mEngineChangedEventName) {
+        if (!this.mSearchTutorBox.hidden) {
+            this.switchSearchTutor();
+        }
+        this.constructEnginesList();
+    }]]></body>
+            </method>
+
+
+            <method name="wrapVisualModification">
+                <parameter name="aThisObject"/>
+                <parameter name="aMethod"/>
+                <body><![CDATA[    let originalMethod = aThisObject[aMethod];
+    aThisObject[aMethod] = function _wrapVisualModification() {
+        this.style.minHeight = "";
+        let result = originalMethod.apply(aThisObject, arguments);
+        this.style.minHeight = this.getBoundingClientRect().height + "px";
+        return result;
+    }.bind(this);]]></body>
+            </method>
+
+            <method name="switchSearchTutor">
+                <parameter name="aManual"/>
+                <body><![CDATA[    if (aManual) {
+        this.mOmniboxModule.setStaticPref("tutor.clicked", true);
+        this.mSearchTutorBox.mAutoShow = false;
+    }
+    let hidden = !this.mSearchTutorBox.hidden;
+    this.mSearchTutorIcon.setAttribute("active", !hidden);
+    if (!hidden) {
+        this.mSearchTutorBox.open();
+    }
+    this.mSearchTutorBox.hidden = hidden;]]></body>
+            </method>
+
+            <method name="recalculateSearchTutorVisibility">
+                <body><![CDATA[    if (!this.mOmniboxModule.canShowTutorial) {
+        return;
+    }
+    if (this.mOmniboxModule.currentEngineIsBranded) {
+        this.mSearchTutorIcon.hidden = false;
+        if ("autoOpen" in this.mSearchTutorBox) {
+            this.mSearchTutorBox.autoOpen();
+        }
+    } else {
+        this.mSearchTutorIcon.hidden = true;
+    }]]></body>
+            </method>
+
+            <method name="updateOnPopupShowing">
+                <body><![CDATA[    if ("updateOnPopupShowing" in this.mSearchTutorBox) {
+        this.mSearchTutorBox.updateOnPopupShowing();
+        this.mSearchTutorBox.autoOpen();
+    }
+    this.constructEnginesList();]]></body>
+            </method>
+
+            <method name="constructEnginesList">
+                <body><![CDATA[    this._clearEnginesList();
+    let boxRect = this.parentNode.getBoundingClientRect();
+    let settingsRect = this.mSearchSettings.getBoundingClientRect();
+    this.mSearchProviders.style.width = boxRect.width - settingsRect.width - 42 + "px";
+    let hiddenNodes = [];
+    let current = this.mOmniboxModule.currentEngineName;
+    let visibleEngines = this.mOmniboxModule.getVisibleEnginesSorted();
+    let defaultEngineName = visibleEngines[0].engine.name;
+    let restoreDefaultEngineLabel = document.getAnonymousElementByAttribute(this, "anonid", "restoreDefaultEngineLabel");
+    restoreDefaultEngineLabel.value = restoreDefaultEngineLabel.value.replace("{providerName}", defaultEngineName);
+    if (current === defaultEngineName || current === this.mOmniboxModule.acceptedDefaultEngineName) {
+        this.mRestoreDefaultEngine.hidden = true;
+    } else {
+        this.mRestoreDefaultEngine.hidden = false;
+    }
+    const MSECS_IN_DAY = 60 * 60 * 24 * 1000;
+    visibleEngines.forEach(function (item, index) {
+        let name = item.engine.name;
+        let url = item.engine.searchForm;
+        let isCurrent = current === name;
+        let newItem = this._createNewEngineItem(name, url, isCurrent);
+        if (index < 3 || isCurrent || item.usageData.mounthVisits > 2 || Math.abs(Date.now() - item.usageData.lastUsedTime) < MSECS_IN_DAY) {
+            this.mSearchProviders.appendChild(newItem);
+        } else {
+            newItem.hidden = true;
+            hiddenNodes.push(newItem);
+        }
+    }, this);
+    if (hiddenNodes.length > 0) {
+        hiddenNodes.forEach(function (node) {
+            this.appendChild(node);
+        }, this.mSearchProviders);
+        let otherItems = document.createElement("hbox");
+        otherItems.setAttribute("class", "button-more");
+        let label = document.createElement("label");
+        label.setAttribute("value", "...");
+        otherItems.appendChild(label);
+        let that = this;
+        otherItems.onclick = function (e) {
+            that._showOtherSearches();
+            this.hidden = true;
+        };
+        this.mSearchProviders.appendChild(otherItems);
+    }
+    this.recalculateSearchTutorVisibility();]]></body>
+            </method>
+
+            <method name="_clearEnginesList">
+                <body><![CDATA[    let box = this.mSearchProviders;
+    while (box.firstChild) {
+        box.removeChild(box.firstChild);
+    }]]></body>
+            </method>
+
+            <method name="_showOtherSearches">
+                <body><![CDATA[    Array.slice(this.mSearchProviders.querySelectorAll(".engine-item")).forEach(function (n) {
+        n.hidden = false;
+    });
+    this.style.minHeight = this.getBoundingClientRect().height + "px";]]></body>
+            </method>
+
+            <method name="_createNewEngineItem">
+                <parameter name="engineName"/>
+                <parameter name="engineUrl"/>
+                <parameter name="current"/>
+                <body><![CDATA[    let hbox = document.createElement("hbox");
+    hbox.setAttribute("class", "engine-item" + (current ? " selected" : ""));
+    let label = document.createElement("label");
+    label.setAttribute("class", "ya-se-label");
+    label.setAttribute("value", engineName);
+    hbox.setAttribute("engine-id", engineName);
+    hbox.setAttribute("engine-url", engineUrl);
+    hbox.appendChild(label);
+    return hbox;]]></body>
+            </method>
+
+            <method name="_restoreDefaultEngine">
+                <body><![CDATA[    this.mOmniboxModule.restoreDefaultEngine();
+    this.constructEnginesList();]]></body>
+            </method>
+
+            <method name="_acceptDefaultEngine">
+                <body><![CDATA[    this.mOmniboxModule.acceptCurrentEngineAsDefault();
+    this.constructEnginesList();]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="0" event="click"><![CDATA[    let target = event.originalTarget;
+    while (target && target !== this && !target.hasAttribute("engine-id")) {
+        target = target.parentNode;
+    }
+    let engineId = target && target.getAttribute("engine-id");
+    let anonidTarget = event.originalTarget;
+    let anonid = null;
+    while (anonidTarget && anonidTarget !== this && !(anonid = anonidTarget.getAttribute("anonid"))) {
+        anonidTarget = anonidTarget.parentNode;
+    }
+    if (anonid === "searchProviders" && !engineId) {
+        anonid = null;
+    }
+    if (anonid) {
+        let statisticPapam = {
+            searchProviders: "searchselect",
+            searchSettings: "searchset",
+            searchTutorIcon: "help",
+            restoreDefaultEngineLabel: "yadefault"
+        }[anonid];
+        if (statisticPapam === "help" && event.originalTarget.localName !== "image") {
+            statisticPapam = null;
+        }
+        if (statisticPapam) {
+            this.mOmniboxModule.logClickStatistics(statisticPapam);
+        }
+    }
+    if (!engineId) {
+        return;
+    }
+    gURLBar.click();
+    let action = gURLBar._yaParseActionURL(gURLBar.value);
+    let textToSearch = action ? action.param : gURLBar.value;
+    if (gURLBar.value.length) {
+        let url = this.mOmniboxModule.makeEngineSearchURLForString(engineId, textToSearch);
+        gBrowser.loadURI(url, null, null, false);
+        this.mOmniboxModule.recordEngineUsage(engineId);
+    } else {
+        let ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
+        let yaReferrerURI = ioService.newURI(this.mOmniboxModule.brandingData.searchSite, null, null);
+        gBrowser.loadURI(target.getAttribute("engine-url"), yaReferrerURI, null, false);
+    }
+    this.parentNode.hidePopup();]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/popup.xml#popup" id="settings-menu">
+        <content position="after_end">
+            <xul:menuitem anonid="default-engine-label" disabled="true" label="&wgt.smartbox.searchSettings.menu.defaultEngine.label;"/>
+            <children includes="menuitem"/>
+            <xul:menuseparator anonid="engines-separator"/>
+            <xul:menuitem anonid="settings-item" label="&wgt.smartbox.searchSettings.menu.settings.label;"/>
+        </content>
+
+        <implementation>
+            <field name="mOmniboxModule" readonly="true">gURLBar._yaOmniboxModule</field>
+        </implementation>
+
+        <handlers>
+            <handler event="popupshowing"><![CDATA[    if (event.target !== this) {
+        return;
+    }
+    if (document.getElementById("yaOmniboxPanel").state !== "open") {
+        event.preventDefault();
+        return;
+    }
+    while (this.firstChild) {
+        this.removeChild(this.firstChild);
+    }
+    let currentEngineName = this.mOmniboxModule.currentEngineName;
+    let docFrag = document.createDocumentFragment();
+    this.mOmniboxModule.getVisibleEngines().forEach(function (searchEngine) {
+        let menuitem = document.createElement("menuitem");
+        let label = searchEngine.name;
+        if (searchEngine.name == currentEngineName) {
+            label = "✓ " + label;
+            menuitem.setAttribute("yb-current", true);
+        }
+        menuitem.setAttribute("crop", "end");
+        menuitem.setAttribute("label", label);
+        menuitem.classList.add("engine-menuitem");
+        docFrag.appendChild(menuitem);
+    });
+    this.appendChild(docFrag);]]></handler>
+
+            <handler event="command"><![CDATA[    let target = event.originalTarget;
+    if (target.localName !== "menuitem") {
+        return;
+    }
+    if (target.getAttribute("yb-current") === "true") {
+        return;
+    }
+    if (target.classList && target.classList.contains("engine-menuitem")) {
+        this.mOmniboxModule.saveSearchEngineChoice(target.getAttribute("label"));
+    } else {
+        switch (target.getAttribute("anonid")) {
+        case "settings-item":
+            this.mOmniboxModule.api.Controls.openSettingsDialog(window, this.mOmniboxModule.api.componentID);
+            break;
+        }
+    }]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="chrome://browser/content/urlbarBindings.xml#urlbar-rich-result-popup" id="popup">
+        <resources>
+            <stylesheet src="panel.css"/>
+        </resources>
+
+        <implementation>
+            <field name="api" readonly="true">gURLBar._yaOmniboxModule.api</field>
+            <field name="mPopupId" readonly="true">"yaOmniboxOtherSearchesPopup"</field>
+
+            <field name="_cssRules">null</field>
+
+            <constructor><![CDATA[    this._constructSearchEnginesList();
+    this.height = "";
+    let originalOnPopupClick = this.onPopupClick.toSource();
+    let strForInject1 = "let yaReferrerURI = null;" + "if (this.selectedIndex != null && this.selectedIndex !== -1) {" + "    let navType = controller.getStyleAt(this.selectedIndex);" + "    if (/(^|\\s)ya(Super)?NavigationSuggest($|\\s)/.test(navType)) {" + "        let iOService = Cc['@mozilla.org/network/io-service;1'].getService(Ci.nsIIOService);" + "        yaReferrerURI = iOService.newURI('http://www.yandex.ru', null, null);" + "    }" + "}";
+    let strForInject2 = "let parsedYaAction = this.mInput._yaParseActionURL(url);" + "if (parsedYaAction && parsedYaAction.actionurl) {" + "    url = parsedYaAction.actionurl;" + "}";
+    originalOnPopupClick = Function("return " + originalOnPopupClick.replace(/(\.nsIAutoCompleteController\);)/, "$1 " + strForInject1).replace(/(controller\.handleEnter)/, "gURLBar._yaLastSelectedIndex = this.selectedIndex;\n $1").replace(/(this\.closePopup)/, strForInject2 + " $1").replace(/(openUILink\(url, aEvent)/, "$1, false, false, false, null, yaReferrerURI"))();
+    this.onPopupClick = function onPopupClick() {
+        gURLBar._yaInfoCollector.metric = "mouse";
+        gURLBar._yaProcessInput();
+        return originalOnPopupClick.apply(this, arguments);
+    };
+    let originalInvalidate = this.invalidate;
+    this.invalidate = function _invalidate() {
+        gURLBar.onSearchComplete();
+        return originalInvalidate.apply(this, arguments);
+    };
+    let stylesheet = window.document.styleSheets[0];
+    let cssRules = stylesheet.cssRules;
+    function insertCSSRule(rule) {
+        return cssRules[stylesheet.insertRule(rule, cssRules.length)];
+    }
+    this._cssRules = {
+        itemsMargin: insertCSSRule("#" + this.id + " .autocomplete-richlistitem {}"),
+        boxesPadding: insertCSSRule("#" + this.id + " .searchProvidersBox," + "#" + this.id + " .searchTutorBox {}"),
+        titleMargin: insertCSSRule("#" + this.id + " .autocomplete-richlistitem .ac-title-box {}")
+    };
+    let originalAppendCurrentResult = this._appendCurrentResult;
+    this._appendCurrentResult = function _appendCurrentResult() {
+        this.setAttribute("yaTempHideTitle", "true");
+        this._setTitleMargin(null);
+        originalAppendCurrentResult.apply(this, arguments);
+        setTimeout(function () {
+            let items = Array.slice(this.richlistbox.childNodes).filter(function (item) {
+                return !item.collapsed;
+            });
+            let margin = Number.POSITIVE_INFINITY;
+            items.forEach(function (item) {
+                let titleBoxMargin = item._urlBox.boxObject.width - Math.max(item._urlDescription.boxObject.width, item._actionDescription.boxObject.width);
+                titleBoxMargin = Math.max(0, titleBoxMargin);
+                if (titleBoxMargin < margin) {
+                    margin = titleBoxMargin;
+                }
+            });
+            this._setTitleMargin(margin);
+            this.removeAttribute("yaTempHideTitle");
+        }.bind(this), 0);
+    };
+    this._setTitleMargin(null);]]></constructor>
+
+            <destructor><![CDATA[    let createdRules = [];
+    for (let [
+                ruleName,
+                rule
+            ] in Iterator(this._cssRules)) {
+        createdRules.push(rule);
+    }
+    let stylesheet = this._cssRules.itemsMargin.parentStyleSheet;
+    let rules = stylesheet.cssRules;
+    for (let i = rules.length; i--;) {
+        if (createdRules.indexOf(rules[i]) !== -1) {
+            stylesheet.deleteRule(i);
+        }
+    }]]></destructor>
+
+            <method name="_setTitleMargin">
+                <parameter name="margin"/>
+                <body><![CDATA[    if (margin === null) {
+        this._cssRules.titleMargin.style.removeProperty("margin-left");
+        this._titleMargin = null;
+    } else {
+        if (this._titleMargin === null || margin < this._titleMargin) {
+            this._cssRules.titleMargin.style.setProperty("margin-left", "-" + margin + "px", "important");
+            this._titleMargin = margin;
+        }
+    }]]></body>
+            </method>
+
+            <method name="_constructSearchEnginesList">
+                <body><![CDATA[    let footer = document.createElement("vbox");
+    footer.style.MozBinding = "url(" + this.api.Package.resolvePath("/native/bindings.xbl#popup-footer") + ")";
+    this.appendChild(footer);]]></body>
+            </method>
+
+            <method name="_selectItemByMouseEvent">
+                <parameter name="event"/>
+                <body><![CDATA[    let target = event.originalTarget;
+    while (target && target.localName !== "richlistitem") {
+        target = target.parentNode;
+    }
+    if (!target) {
+        return;
+    }
+    let targetIndex = Array.indexOf(target.parentNode.childNodes, target);
+    this.selectedIndex = targetIndex;
+    gURLBar._yaLastSelectedIndex = this.selectedIndex;
+    this.mInput.value = this.mInput.mController.getValueAt(this.selectedIndex);]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="popupshowing"><![CDATA[    if (event.target != this) {
+        return;
+    }
+    let input = this.mInput;
+    if (!input) {
+        return;
+    }
+    let toolbar;
+    let parent = input.parentNode;
+    while (parent && !toolbar) {
+        if (parent.localName === "toolbar") {
+            toolbar = parent;
+        }
+        parent = parent.parentNode;
+    }
+    if (!toolbar) {
+        return;
+    }
+    let docRect = toolbar.getBoundingClientRect();
+    let popupWidth = docRect.width + "px";
+    this.style.minWidth = popupWidth;
+    this.style.maxWidth = popupWidth;
+    let toolbarBoxObject = toolbar.boxObject;
+    this.style.marginLeft = toolbarBoxObject.screenX - input.boxObject.screenX + "px";
+    this.style.marginTop = toolbarBoxObject.screenY + toolbarBoxObject.height - this.boxObject.screenY + "px";
+    let margin = input.getBoundingClientRect().left;
+    this._cssRules.itemsMargin.style.setProperty("margin-left", margin + "px", "important");
+    this._cssRules.itemsMargin.style.setProperty("margin-right", margin + "px", "important");
+    this._cssRules.boxesPadding.style.setProperty("padding-left", margin + "px", "important");
+    let footer = this.lastChild;
+    if (footer) {
+        footer.updateOnPopupShowing();
+    }]]></handler>
+
+            <handler event="popuphidden"><![CDATA[    if (event.target !== this) {
+        return;
+    }
+    this.style.minWidth = "";
+    this.style.maxWidth = "";
+    this.style.marginLeft = "";
+    this.style.marginTop = "";
+    this._setTitleMargin(null);]]></handler>
+
+
+            <handler event="mousedown" phase="capturing"><![CDATA[    if (event.button == 2) {
+        return;
+    }
+    this._selectItemByMouseEvent(event);]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/autocomplete.xml#autocomplete-richlistitem" id="autocomplete-richlistitem">
+        <content equalsize="always" flex="1">
+            <xul:hbox align="center" class="ac-url-box" flex="1">
+                <xul:image anonid="type-image" class="ac-type-icon"/>
+                <xul:spacer class="ac-site-icon"/>
+                <xul:image class="ac-action-icon"/>
+                <xul:hbox align="center" anonid="url-box" class="ac-url" flex="1">
+                    <xul:description anonid="url" class="ac-normal-text ac-url-text" xbl:inherits="selected type"/>
+                    <xul:description anonid="action" class="ac-normal-text ac-action-text" xbl:inherits="selected type"/>
+                    <xul:description anonid="ya-gotosearch-label" class="ac-normal-text" xbl:inherits="selected,xbl:text=yaGotoSearchLabel"/>
+                </xul:hbox>
+                <xul:label anonid="url-overflow-ellipsis" class="ac-ellipsis-after ac-url-text" xbl:inherits="selected"/>
+            </xul:hbox>
+            <xul:hbox align="center" class="ac-title-box" flex="1">
+                <xul:image class="ac-site-icon" hidden="true" xbl:inherits="src=image"/>
+                <xul:hbox anonid="title-box" class="ac-title" flex="1">
+                    <xul:description anonid="title" class="ac-normal-text" xbl:inherits="selected"/>
+                    <xul:description anonid="ya-switchtab-label" class="ac-normal-text" xbl:inherits="selected">&#160;&#8212;&#160;&wgt.smartbox.action.switchToTab.label;</xul:description>
+                </xul:hbox>
+                <xul:label anonid="title-overflow-ellipsis" class="ac-ellipsis-after" xbl:inherits="selected"/>
+                <xul:label anonid="ya-type-debug" xbl:inherits="selected,value=type"/>
+                <xul:hbox align="center" anonid="extra-box" class="ac-extra" hidden="true">
+                    <xul:image class="ac-result-type-tag"/>
+                    <xul:label class="ac-normal-text" xbl:inherits="selected" value=":"/>
+                    <xul:description anonid="extra" class="ac-normal-text" xbl:inherits="selected"/>
+                </xul:hbox>
+            </xul:hbox>
+        </content>
+
+        <implementation>
+            <field name="_acTitleBox">document.getAnonymousElementByAttribute(this, "class", "ac-title-box")</field>
+            <field name="_urlBox">document.getAnonymousElementByAttribute(this, "anonid", "url-box")</field>
+            <field name="_urlDescription">document.getAnonymousElementByAttribute(this, "anonid", "url")</field>
+            <field name="_actionDescription">document.getAnonymousElementByAttribute(this, "anonid", "action")</field>
+
+            <method name="_getSearchTokens">
+                <parameter name="aSearch"/>
+                <body><![CDATA[    let search = aSearch.toLowerCase();
+    if (aSearch.length > 1) {
+        let alternate = gURLBar._yaOmniboxModule.OmniBox.getSwitchedLayout(aSearch);
+        if (alternate) {
+            alternate = alternate.toLowerCase();
+            if (alternate !== search) {
+                search += " " + alternate;
+            }
+        }
+    }
+    return search.split(/\s+/).filter(Boolean);]]></body>
+            </method>
+
+            <method name="_getUnescapedText">
+                <parameter name="aText"/>
+                <body><![CDATA[    if (!/^moz\-action:yaaction\-/.test(aText) && /%[A-F0-9]{2}/.test(aText)) {
+        let unescapedURL = Cc["@mozilla.org/intl/texttosuburi;1"].getService(Ci.nsITextToSubURI).unEscapeURIForUI("windows-1251", aText);
+        if (/[А-яЁ]/i.test(unescapedURL)) {
+            return unescapedURL;
+        }
+    }
+    return aText;]]></body>
+            </method>
+
+            <constructor><![CDATA[    this.setAttribute("yaOS", gURLBar._yaOmniboxModule.api.Environment.os.name);
+    let originalBoundaryIndices = this._getBoundaryIndices;
+    this._getBoundaryIndices = function _getBoundaryIndices(aText, aSearchTokens) {
+        let boundaryIndices = originalBoundaryIndices.apply(this, arguments);
+        let urlEngine = gURLBar._yaOmniboxModule && gURLBar._yaOmniboxModule.OmniBox.URLEngine;
+        if (urlEngine) {
+            let res = [boundaryIndices[0]];
+            for (let i = 1, len = boundaryIndices.length; i < len; i = i + 2) {
+                if (!urlEngine.aroundPillarPoint(aText, boundaryIndices[i])) {
+                    continue;
+                }
+                res.push(boundaryIndices[i]);
+                res.push(boundaryIndices[i + 1]);
+            }
+            res.push(boundaryIndices[boundaryIndices.length - 1]);
+            boundaryIndices = res;
+        }
+        return boundaryIndices;
+    };
+    let originalSetUpDescription = this._setUpDescription;
+    this._setUpDescription = function _setUpDescription(aDescriptionElement, aText, aNoEmphasis) {
+        let text = aText;
+        switch (aDescriptionElement) {
+        case this._title: {
+                let title = this.getAttribute("title");
+                if (!title || text == this.getAttribute("url")) {
+                    text = "";
+                } else {
+                    text = title;
+                }
+                if (text) {
+                    this._acTitleBox.removeAttribute("hidden");
+                } else {
+                    this._acTitleBox.setAttribute("hidden", "true");
+                }
+                this._setUpDescription(this._action, aText, aNoEmphasis);
+                break;
+            }
+        case this._action: {
+                let url = this.getAttribute("url");
+                if (/^moz\-action:yaaction\-/.test(url)) {
+                    let parts = url.split("_yaacsep_");
+                    if (parts.length) {
+                        text = parts[1];
+                    }
+                } else if (/^moz\-action:switchtab,/.test(url)) {
+                    let [
+                        tmp1,
+                        tmp2,
+                        param
+                    ] = url.match(/^moz-action:([^,]+),(.*)$/);
+                    text = param.replace(/^(https?|ftp):\/\//, "").replace(/\/$/, "");
+                    text = this._getUnescapedText(text);
+                }
+                break;
+            }
+        case this._url: {
+                text = this._getUnescapedText(this.getAttribute("url"));
+                break;
+            }
+        }
+        this.setAttribute("yaGotoSearchLabel", " — " + gURLBar._yaOmniboxModule.getSearchLabel(gURLBar.value));
+        let tmpImageReplacer = "@@@@@@" + Date.now() + "@@@@@@";
+        let imageHTMLText;
+        text = text.replace(/<img data\-type='(weather|traffic)' src='(http|xb):\/\/[^']+'\/>/, function (s) {
+            imageHTMLText = s;
+            return tmpImageReplacer;
+        });
+        originalSetUpDescription.apply(this, [
+            aDescriptionElement,
+            text,
+            false
+        ]);
+        if (imageHTMLText) {
+            Array.forEach(aDescriptionElement.childNodes, function (el) {
+                let parts = el.textContent.split(tmpImageReplacer);
+                if (parts.length != 2) {
+                    return;
+                }
+                let imagePart = document.createElementNS("http://www.w3.org/1999/xhtml", "span");
+                imagePart.innerHTML = imageHTMLText;
+                let span = document.createElementNS("http://www.w3.org/1999/xhtml", "span");
+                span.appendChild(document.createTextNode(parts[0]));
+                span.appendChild(imagePart);
+                span.appendChild(document.createTextNode(parts[1]));
+                el.parentNode.replaceChild(span, el);
+            });
+        }
+        this._titleBox.tooltipText = "";
+        this._urlBox.tooltipText = "";
+    };
+    this._adjustAcItem();]]></constructor>
+        </implementation>
+    </binding>
+</bindings>

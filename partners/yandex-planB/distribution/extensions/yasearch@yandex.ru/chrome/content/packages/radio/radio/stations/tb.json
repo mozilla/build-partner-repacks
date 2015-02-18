@@ -1,0 +1,28 @@
+{
+    "stations": [
+        {"n":1, "name":"Bizim FM", "url":"http://78.129.159.205:8058", "id":"CtyT1LA5k5VP8PQq"},
+        {"n":2, "name":"Dance FM", "url":"http://www.dancefm.com.tr:8050", "id":"K2ZbSlkZdtAPilyL"},
+        {"n":3, "name":"Dost FM", "url":"http://www.dosttv.com:8000", "id":"LweovKqNL0BeUMuM"},
+        {"n":4, "name":"Dunya Radyo", "url":"http://88.255.168.86:8000", "id":"5liOHX15wnTUoOSJ"},
+        {"n":5, "name":"Joy FM", "url":"http://joyfm.radyolarburada.com:10060", "id":"TDiNpcTXdvIq8uAT"},
+        {"n":6, "name":"Joy Turk FM", "url":"http://joyturk.radyolarburada.com:8900", "id":"0PaABhpaeTQtFO4O"},
+        {"n":7, "name":"Metropol FM", "url":"http://metropolfm.webradiostreaming.de:8200", "id":"koXFUHaaTBLK3AKn"},
+        {"n":8, "name":"Olay FM", "url":"http://yayin5.yayindayiz.biz:8195", "id": "dQTB8AITCuL4iivZ"},
+        {"n":9, "name":"Dance Radio", "url":"http://icecast2.play.cz:8000/dance-radio192.mp3", "id": "5TDZTR9tLlWAxLl7"},
+        {"n":10, "name":"Radyo 2000", "url":"http://84.16.230.129:5038", "id":"cP2aTRqPhP9Til8u"},
+        {"n":11, "name":"Radio 7", "url":"http://iphone.noc.com.tr:8000", "id":"JE0ZbXOfnOD7eOJO"},
+        {"n":12, "name":"Radyo Aktif", "url":"http://sunucu2.radyolarburada.com:5484", "id":"7rhm3uZvJwXBhOAL"},
+        {"n":13, "name":"Radyo Alaturka", "url":"http://92.48.118.17:9100", "id":"iCKwSUNvDhIidVuK"},
+        {"n":14, "name":"Radio Eksen", "url":"http://rd1.cdntr.com/eksen.mp3", "id":"r67RLDyQ8pyrTDOp"},
+        {"n":15, "name":"Radio IZ ", "url":"http://yayin4.selcuklu.net:7070", "id":"xD46TIs7oUH3QtIz"},
+        {"n":16, "name":"Radyo Romantik Turk", "url":"http://live.radyotvonline.com:7600", "id":"fLShk3cwrLQk1ywL"},
+        {"n":17, "name":"Radyo Ses", "url":"http://91.93.131.207:8005", "id":"Hx3AWJ1DbwrrViO3"},
+        {"n":18, "name":"Radio Voyage", "url":"http://rd1.cdntr.com/voyage.mp3", "id":"aTpawTus6SuM7TNT"},
+        {"n":19, "name":"TRD1", "url":"http://213.246.42.127:8000", "id":"qlSdp9lafBisbWqG"},
+        {"n":20, "name":"Turkiyem FM", "url":"http://turkiyemfm.de:8000", "id":"0xlkXZhA1qmXpz6y"}
+    ],
+    "selected": "Bizim FM",
+    "ver": "2.0",
+    "autocount": 21,
+    "updated": 0
+}

@@ -1,0 +1,22 @@
+<!ENTITY translate.name "Переклад слів">
+
+<!ENTITY translate.button.tooltip_before "Переклад слів">
+<!ENTITY translate.button.tooltip_no_dir "Будь ласка, виберіть напрям перекладу">
+<!ENTITY translate.menu.enable "Ввімкнути перекладач слів">
+<!ENTITY translate.menu.onmouse "Перекладати наведенням курсора">
+<!ENTITY translate.menu.onkey "Перекладати комбінацією клавіш">
+<!ENTITY translate.menu.source_lang "Мова оригіналу">
+<!ENTITY translate.menu.target_lang "Мова перекладу">
+<!ENTITY translate.linklabel "Знайти всі варіанти">
+
+<!ENTITY translate.settings.translate_on "Перекладати слова:">
+<!ENTITY translate.settings.radio_hover "наведенням курсора">
+<!ENTITY translate.settings.radio_hotkey "комбінацією клавіш">
+<!ENTITY translate.settings.hotkey_value "Комбінація клавіш для перекладу:">
+
+<!ENTITY translate.alt_key "Alt">
+<!ENTITY translate.shift_key "Shift">
+<!ENTITY translate.ctrl_key "Ctrl">
+
+
+<!ENTITY translate.showYandex "http://www.yandex.ua">

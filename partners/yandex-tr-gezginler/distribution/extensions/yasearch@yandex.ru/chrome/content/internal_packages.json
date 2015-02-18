@@ -1,0 +1,47 @@
+{
+  "http://bar.yandex.ru/packages/yandexbar": {
+    "dirName": "common"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml": {
+    "dirName": "omnibox"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/283/manifest.xml": {
+    "dirName": "altsearch"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/284/manifest.xml": {
+    "dirName": "esync"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/126/manifest.xml": {
+    "dirName": "yahoomail"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/127/manifest.xml": {
+    "dirName": "news"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/130/manifest.xml": {
+    "dirName": "games"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/131/manifest.xml": {
+    "dirName": "facebook"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/134/manifest.xml": {
+    "dirName": "hotmail"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/135/manifest.xml": {
+    "dirName": "gmail"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/136/manifest.xml": {
+    "dirName": "twitter"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml": {
+    "dirName": "safe-browsing"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/286/manifest.xml": {
+    "dirName": "browseroffer"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/287/manifest.xml": {
+    "dirName": "powerfm"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/288/manifest.xml": {
+    "dirName": "yadisk"
+  }
+}

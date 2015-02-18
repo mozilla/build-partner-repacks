@@ -1,0 +1,21 @@
+<!ENTITY translate.name "Перевод слов">
+
+<!ENTITY translate.button.tooltip_before "Перевод слов">
+<!ENTITY translate.button.tooltip_no_dir "Пожалуйста, выберите направление перевода">
+<!ENTITY translate.menu.enable "Включить переводчик слов">
+<!ENTITY translate.menu.onmouse "Переводить по наведению курсора">
+<!ENTITY translate.menu.onkey "Переводить по сочетанию клавиш">
+<!ENTITY translate.menu.source_lang "Язык оригинала">
+<!ENTITY translate.menu.target_lang "Язык перевода">
+<!ENTITY translate.linklabel "Найти все варианты">
+
+<!ENTITY translate.settings.translate_on "Переводить слова:">
+<!ENTITY translate.settings.radio_hover "по наведению курсора">
+<!ENTITY translate.settings.radio_hotkey "по сочетанию клавиш">
+<!ENTITY translate.settings.hotkey_value "Сочетание клавиш для перевода:">
+
+<!ENTITY translate.alt_key "Alt">
+<!ENTITY translate.shift_key "Shift">
+<!ENTITY translate.ctrl_key "Ctrl">
+
+<!ENTITY translate.showYandex "http://www.yandex.ru">

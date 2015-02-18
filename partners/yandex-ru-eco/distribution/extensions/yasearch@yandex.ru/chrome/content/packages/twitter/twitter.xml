@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "twitter/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="twitter/content/img/twitter.png" icon-vector="twitter/content/img/twitter.svg" name="&twitter.widget.name;" unique="true">
+
+    <f:setting default="5" name="update-interval" scope="widget">
+        <control empty-default="5" label="&twitter.widget.setting.update-interval;" label-after="&twitter.widget.setting.update-interval-units;" max="99" min="3" spin="1" type="textedit" value-type="int"/>
+    </f:setting>
+
+    <f:setting default="false" name="show-username" scope="widget"/>
+
+    <f:setting default="" name="slice-data" scope="widget"/>
+
+    <modules>
+        <module browser="firefox" file="twitter/core/widget.jsm"/>
+    </modules>
+</widget>

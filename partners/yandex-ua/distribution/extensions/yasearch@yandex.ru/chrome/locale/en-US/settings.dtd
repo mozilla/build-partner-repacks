@@ -1,0 +1,5 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY settings.title "Settings">
+<!ENTITY settings.titleProduct "Customize &product2.gen;">

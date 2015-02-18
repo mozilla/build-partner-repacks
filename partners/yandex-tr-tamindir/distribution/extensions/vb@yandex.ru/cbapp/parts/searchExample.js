@@ -12,10 +12,7 @@ const UPDATE_API_ERROR_INTERVAL = 3600;
 const UPDATE_LOCAL_INTERVAL = 3600;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-if ("nsIPrivateBrowsingChannel" in Ci)
-    XPCOMUtils.defineLazyModuleGetter(this, "PrivateBrowsingUtils", "resource://gre/modules/PrivateBrowsingUtils.jsm");
-else
-    this.PrivateBrowsingUtils = null;
+XPCOMUtils.defineLazyModuleGetter(this, "PrivateBrowsingUtils", "resource://gre/modules/PrivateBrowsingUtils.jsm");
 const searchExample = {
     init: function searchExample_init(application) {
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
@@ -23,10 +20,12 @@ const searchExample = {
         this._logger = application.getLogger("SearchExample");
     },
     finalize: function searchExample_finalize() {
-        if (this._timerLocal)
+        if (this._timerLocal) {
             this._timerLocal.cancel();
-        if (this._timerRequest)
+        }
+        if (this._timerRequest) {
             this._timerRequest.cancel();
+        }
         this._application = null;
         this._logger = null;
     },
@@ -70,13 +69,15 @@ const searchExample = {
         }, REQUEST_TIMEOUT);
         if (PrivateBrowsingUtils && request.channel instanceof Ci.nsIPrivateBrowsingChannel) {
             let topBrowserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-            if (topBrowserWindow)
+            if (topBrowserWindow) {
                 request.channel.setPrivate(PrivateBrowsingUtils.isWindowPrivate(topBrowserWindow));
+            }
         }
         request.onload = function () {
             timer.cancel();
-            if (!request.response || !request.response.data || !request.response.data.length)
+            if (!request.response || !request.response.data || !request.response.data.length) {
                 return callback("error");
+            }
             let examples = request.response.data.map(el => el.text);
             let weights = {};
             request.response.data.forEach(function (el) {
@@ -112,11 +113,13 @@ const searchExample = {
         } catch (ex) {
             return;
         }
-        if (typeof prefValue !== "object" || !Array.isArray(prefValue.examples) && !prefValue.examples.length)
+        if (typeof prefValue !== "object" || !Array.isArray(prefValue.examples) && !prefValue.examples.length) {
             return;
+        }
         let newIndex = prefValue.index + 1;
-        if (!prefValue.examples[newIndex])
+        if (!prefValue.examples[newIndex]) {
             newIndex = 0;
+        }
         prefValue.index = newIndex;
         this.current = prefValue;
     },

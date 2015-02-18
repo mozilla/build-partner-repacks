@@ -1,0 +1,29 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY mail.name "Mail">
+<!ENTITY mail.tooltiptext "Hesabınızdaki yeni e-postalar">
+<!ENTITY mail.noauthtooltiptext "Hesabınızdaki yeni e-postaları gösterir">
+<!ENTITY mail.tooltip.from "Kimden:">
+<!ENTITY mail.tooltip.subject "Konu:  ">
+<!ENTITY mail.login.yandex.label "Yandex.Mail&#39;e giriş yap">
+<!ENTITY mail.login.mfd.label "E-posta kutusuna benim alanımdan gir">
+<!ENTITY mail.logout.label "E-posta kutusundaki işlemi bitir">
+<!ENTITY mail.reloadCounter.label "E-postayı kontrol et ">
+<!ENTITY mail.open.label "E-posta oku">
+<!ENTITY mail.openAdBook.label "Adres defterini aç ">
+<!ENTITY mail.writeMail.label "E-posta yaz ">
+<!ENTITY mail.sendPage.label "Sayfadan bahset ">
+<!ENTITY mail.send.page.label "Bu sayfa için bağlantıyı e-posta ile gönder">
+<!ENTITY mail.send.selected.label "Seçilen metni e-posta ile gönder">
+<!ENTITY mail.send.image.label "Görsel için bağlantıyı e-posta ile gönder">
+<!ENTITY mail.send.accesskey "e">
+
+
+<!ENTITY mail.uri.open.new.label "Sadece yeni e-postaları içeren sayfayı aç">
+<!ENTITY mail.integration.label "mailto: bağlantısını Yandex.Mail ile aç">
+<!ENTITY mail.alert.text.label "Yeni gelen e-postalar için yazılı bildirim göster ">
+<!ENTITY mail.alert.sound.label "Yeni e-posta bildirimlerinde sesli uyar">
+<!ENTITY mail.alert.sound.select.label "Seç ">
+<!ENTITY mail.alert.sound.preview.label "Dinle ">
+<!ENTITY mail.openServiceOnClick.label "Butonuna tıklandığında servis sayfasını aç">

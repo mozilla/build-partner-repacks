@@ -1,0 +1,47 @@
+<!ENTITY site.name "Сайт">
+<!ENTITY site.request-failed-1 "Информацию о ваших сайтах в Яндекс.Вебмастере">
+<!ENTITY site.request-failed-2 "и Яндекс.Метрике получить не удалось">
+<!ENTITY site.master-rigts-failed-1 "Сайт отсутствует в списке подтвержденных сайтов в Яндекс.Вебмастере">
+<!ENTITY site.master-rigts-failed-2 "Пожалуйста, подтвердите права на сайт">
+<!ENTITY site.master-add-site "Добавьте сайт в систему Яндекс.Вебмастер">
+
+<!ENTITY site.metrika-rigts-failed-1 "Статистика отсутствует. ">
+<!ENTITY site.metrika-rigts-failed-2 "Убедитесь, что код Метрики добавлен на сайт">
+<!ENTITY site.metrika-add-site "Добавьте сайт в систему Яндекс.Метрика">
+
+<!ENTITY site.noindex "Сайт не проиндексирован Яндексом">
+<!ENTITY site.update-interval "Интервал обновления">
+<!ENTITY site.tooltip.noauth1 "Позволяет работать с данными по вашему сайту">
+<!ENTITY site.tooltip.noauth2 "в сервисах  Яндекс.Вебмастер и Яндекс.Метрика.">
+<!ENTITY site.tooltip.noauth3 "Пожалуйста, авторизуйтесь">
+<!ENTITY site.update.label "Обновить данные">
+<!ENTITY site.sitename.label "Сайт">
+<!ENTITY site.tyc.label "ТИЦ:">
+<!ENTITY site.pages.label "Cтраниц в поиске:">
+<!ENTITY site.urls.label "Внешних ссылок:">
+<!ENTITY site.state.label "Статус:">
+<!ENTITY site.state.virused "Заражен">
+<!ENTITY site.state.clean "OK">
+<!ENTITY site.settings.label "Настройки">
+<!ENTITY site.settings.add "Добавить на панель еще один сайт">
+<!ENTITY site.settings.remove "Удалить этот сайт с панели">
+<!ENTITY site.tooltip.invalidsite1 "Сайт отсутствует в списке Ваших сайтов в Яндекс.Вебмастере">
+<!ENTITY site.tooltip.invalidsite2 "Пожалуйста, проверьте настройки">
+<!ENTITY site.tooltip.nosites1 "В Яндекс.Вебмастере и Яндекс.Метрика у вас не добавлено ни одного сайта">
+<!ENTITY site.tooltip.nosites2 "Пожалуйста, добавьте ваш сайт в список">
+<!ENTITY site.tyc10 "меньше 10">
+<!ENTITY site.upgrade-snippets "Улучшить сниппеты">
+<!ENTITY site.show-name "Показывать название">
+<!ENTITY site.show-warning "Показывать предупреждения об отсутствии сайта в системах">
+
+<!ENTITY site.custom-name "Название">
+
+<!ENTITY site.metrika.vizit "Количество визитов">
+<!ENTITY site.metrika.pageviews "Количество просмотров">
+<!ENTITY site.metrika.visitors "Уникальных пользователей">
+
+<!ENTITY site.setts.autosite "Автоопределение">
+
+<!ENTITY webmaster.setts.never "Не обновлять">
+<!ENTITY webmaster.setts.12 "12 часов">
+<!ENTITY webmaster.setts.24 "24 часа">

@@ -1,0 +1,14 @@
+<!ENTITY powerfm.widget.name "Power Radyoları">
+
+<!ENTITY powerfm.update.browser.unsupported "Tarayıcı sürümünüz, Power Radyoları&#39;nın çalışmasını desteklemiyor.">
+<!ENTITY powerfm.update.browser.needupdate "Tarayıcıyı daha yeni bir sürüme güncelleyin.">
+<!ENTITY powerfm.update.browser.link "Tarayıcıyı güncelle">
+
+<!ENTITY powerfm.api.unavailable "Teknik nedenlerden dolayı Power Radyoları&#39;na geçici olarak erişilemiyor. ">
+<!ENTITY powerfm.try.later "Daha sonra deneyin.">
+
+<!ENTITY powerfm.internet.unavailable "İnternet bağlantısı yok">
+
+<!ENTITY extension.title "Yandex Elements&#39;te Radyo">
+<!ENTITY powerfm.name "Power Radyoları">
+<!ENTITY extension.description "Power radyolarına Yandex Elements aracılığıyla tarayıcınızın panelinden ulaşın">

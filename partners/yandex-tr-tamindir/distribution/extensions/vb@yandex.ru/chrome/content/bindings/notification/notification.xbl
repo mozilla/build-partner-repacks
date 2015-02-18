@@ -1,0 +1,122 @@
+<?xml version='1.0'?>
+<!DOCTYPE notification [
+<!ENTITY % alien-addon-notification SYSTEM "chrome://yandex-vb/locale/notification/alien-addon-notification.dtd">
+%alien-addon-notification;
+<!ENTITY % pref-addon-notification SYSTEM "chrome://yandex-vb/locale/notification/pref-addon-notification.dtd">
+%pref-addon-notification;
+]>
+
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="chrome://global/content/bindings/notification.xml#notification" id="notification">
+        <resources>
+            <stylesheet src="notification.css"/>
+        </resources>
+
+        <implementation>
+            <field name="app" readonly="true">Components.classes["@yandex.ru/vb-core;1"].getService().wrappedJSObject.application</field>
+
+            <method name="_setStatus">
+                <parameter name="status"/>
+                <body/>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="0" event="click"><![CDATA[    let target = event.originalTarget;
+    if (target.getAttribute("anonid") == "close") {
+        this._setStatus("accept");
+        return;
+    }
+    if (target.localName == "span") {
+        target = target.parentNode;
+    }
+    if (!(target && target.localName == "a")) {
+        return;
+    }
+    this._setStatus(target.getAttribute("anonid"));]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="#notification" id="alien-addon-notification">
+        <content>
+            <xul:hbox flex="1">
+                <html:span>&notification.label;</html:span>
+                <html:span anonid="link-container">
+                    <html:a anonid="accept" class="button" href="#"><html:span>&notification.accept;</html:span></html:a>
+                    <html:a anonid="reject" class="button" href="#"><html:span>&notification.reject;</html:span></html:a>
+                    <html:a anonid="help" class="link" href="#">&notification.help;</html:a>
+                </html:span>
+            </xul:hbox>
+            <xul:image anonid="close"/>
+        </content>
+
+        <implementation>
+            <method name="_setStatus">
+                <parameter name="status"/>
+                <body><![CDATA[    let tabUrl;
+    switch (status) {
+    case "accept":
+        setTimeout(function (app) {
+            tabUrl = app.preferences.get("browser.alien.newtab.url", "");
+            app.barnavig.sendRequest({ "vb-accepted": tabUrl });
+        }, 0, this.app);
+        this.setStatus("disabled");
+        break;
+    case "reject":
+        tabUrl = this.app.preferences.get("browser.alien.newtab.url", "");
+        setTimeout(function (app) {
+            if (app.barnavig.alwaysSendUsageStat) {
+                app.barnavig.sendRequest({ "vb-denied": tabUrl }, function () {
+                    app.addonManager.removeAddon();
+                });
+            } else {
+                app.addonManager.removeAddon();
+            }
+        }, 0, this.app);
+        this.setStatus("enabled");
+        break;
+    case "help":
+        gBrowser.loadOneTab("help.yandex.ru/visual/interaction.xml", { inBackground: false });
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding extends="#notification" id="pref-addon-notification">
+        <resources>
+            <stylesheet src="pref-addon-notification.css"/>
+        </resources>
+
+        <content>
+            <xul:hbox flex="1">
+                <html:span anonid="label">&pref-addon-notification.label;</html:span>
+                <html:span anonid="link-container">
+                    <html:a anonid="fix" class="button" href="#"><html:span>&pref-addon-notification.fix;</html:span></html:a>
+                    <html:a anonid="disable" class="button" href="#"><html:span>&pref-addon-notification.disable;</html:span></html:a>
+                    <html:span class="notice">&pref-addon-notification.notice;</html:span>
+                </html:span>
+            </xul:hbox>
+        </content>
+
+        <implementation>
+            <method name="_setStatus">
+                <parameter name="status"/>
+                <body><![CDATA[    switch (status) {
+    case "fix":
+        this.setStatus("fix");
+        break;
+    case "disable":
+        this.app.addonManager.removeAddon();
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+</bindings>

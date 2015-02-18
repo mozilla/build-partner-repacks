@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "radio/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="radio/content/img/on.png" icon-vector="radio/content/img/on.svg" name="&widget.name;" unique="true">
+
+    <f:setting default="true" name="show_name" scope="widget"/>
+
+    <modules>
+        <module browser="firefox" file="radio/core/widget.jsm"/>
+    </modules>
+</widget>

@@ -1,0 +1,324 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % town SYSTEM "/town.dtd">
+%town;
+]>
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="//toolkit/native/bindings/widget.xml#widget" id="town">
+        <resources>
+            <stylesheet src="styles/main.css"/>
+        </resources>
+
+        <content>
+            <xul:toolbarbutton anonid="title-button" class="chromeclass-toolbar-additional toolbarbutton-1 label2" hidden="true" label="&wgt.town.widget.name;" oncommand="if (event.target == this) _showWidgetMenu();" type="menu" yb-second-label="&wgt.town.widget.name;">
+                <xul:menupopup anonid="title-menu">
+                    <xul:menuitem anonid="title-menu-update" label="&wgt.town.refresh;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem anonid="title-menu-settings" label="&wgt.town.setup;"/>
+                    <xul:menuitem anonid="title-menu-remove" label="&wgt.town.delete;"/>
+                    <xul:menuitem anonid="title-menu-add" label="&wgt.town.add;"/>
+                </xul:menupopup>
+            </xul:toolbarbutton>
+
+            <xul:toolbarbutton anonid="weather-button" class="chromeclass-toolbar-additional toolbarbutton-1 label2" data-sliceOnly="true" hidden="true" label="&wgt.town.weather.tooltip;" oncommand="event.stopPropagation(); _onWeatherButtonCommand(event);" tooltip="weather-tooltip" tooltip-text="&wgt.town.weather.tooltip;" type="menu" yb-second-label-off="false">
+                <xul:menupopup onpopupshowing="_showWeatherSlice(true); return false;"/>
+            </xul:toolbarbutton>
+
+            <xul:toolbarbutton anonid="traffic-button" class="chromeclass-toolbar-additional toolbarbutton-1 label2" data-sliceOnly="true" hidden="true" label="&wgt.town.traffic.tooltip;" oncommand="event.stopPropagation(); _onTrafficButtonCommand(event);" tooltip="traffic-tooltip" tooltip-text="&wgt.town.traffic.tooltip;" type="menu" yb-second-label-off="true">
+                <xul:menupopup onpopupshowing="_showTrafficSlice(true); return false;"/>
+            </xul:toolbarbutton>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="api" readonly="true">this.module.API</field>
+            <field name="mWIID" readonly="true">this.getAttribute("yb-native-widget-wiid")</field>
+
+            <field name="mTitleButton" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "title-button")</field>
+            <field name="mTrafficButton" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "traffic-button")</field>
+            <field name="mWeatherButton" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "weather-button")</field>
+            <field name="mTitleMenu" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "title-menu")</field>
+            <field name="_updateMenuItem" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "title-menu-update")</field>
+
+            <field name="_wdgtxConstructed">false</field>
+            <field name="_throbberTimer">null</field>
+            <field name="_lastThrobberTime">null</field>
+
+            <property name="mTrafficSliceOnly">
+                <getter><![CDATA[    return this.mTrafficButton.getAttribute("data-sliceOnly") == "true";]]></getter>
+
+                <setter><![CDATA[    this.mTrafficButton.setAttribute("data-sliceOnly", val);
+    this.mTrafficButton.setAttribute("type", val ? "menu" : "menu-button");]]></setter>
+            </property>
+
+            <property name="mWeatherSliceOnly">
+                <getter><![CDATA[    return this.mWeatherButton.getAttribute("data-sliceOnly") == "true";]]></getter>
+
+                <setter><![CDATA[    this.mWeatherButton.setAttribute("data-sliceOnly", val);
+    this.mWeatherButton.setAttribute("type", val ? "menu" : "menu-button");]]></setter>
+            </property>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    let settings = this.api.Settings;
+    this.mWeatherSliceOnly = !settings.getValue("openWeatherPageOnClick");
+    this.mTrafficSliceOnly = !settings.getValue("openTrafficPageOnClick");
+    settings.observeChanges(this, this.mWIID);
+    this.mTitleMenu.addEventListener("command", this);
+    this.updateTitle();
+    this.updateWeatherData();
+    this.updateTrafficData();
+    this._setElementsVisibility();]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    this.api.Settings.ignoreChanges(this, this.mWIID);
+    this.mTitleMenu.removeEventListener("command", this);
+    if (this._throbberTimer) {
+        this._throbberTimer.cancel();
+        this._throbberTimer = null;
+    }]]></body>
+            </method>
+
+            <method name="updateTitle">
+                <body><![CDATA[    let title = this.api.Settings.getValue("title", this.mWIID) || this.module.getTitle(this.mWIID) || "";
+    if (title) {
+        this.mTitleButton.removeAttribute("image");
+        this.mTitleButton.setAttribute("yb-second-label-off", "false");
+    } else {
+        this.mTitleButton.setAttribute("image", this.module.defaultTownIconPath);
+        this.mTitleButton.setAttribute("yb-second-label-off", "true");
+    }
+    this.mTitleButton.setAttribute("yb-second-label", title);]]></body>
+            </method>
+
+            <method name="updateWeatherData">
+                <body><![CDATA[    let weatherIcon = this.module.defaultWeatherIconPath;
+    let weatherLabel = "";
+    let weatherData = this.module.getWeatherData(this.mWIID);
+    if (weatherData) {
+        weatherIcon = weatherData.image;
+        weatherLabel = weatherData.temperature;
+    }
+    this.mWeatherButton.setAttribute("image", weatherIcon);
+    this.mWeatherButton.setAttribute("yb-second-label", weatherLabel);
+    this._switchThrobber();]]></body>
+            </method>
+
+            <method name="updateTrafficData">
+                <body><![CDATA[    let trafficIcon = "";
+    let trafficLevel = "";
+    let trafficData = this.module.getTrafficData(this.mWIID);
+    if (trafficData) {
+        trafficIcon = trafficData.image;
+        trafficLevel = trafficData.level;
+    }
+    this.mTrafficButton.setAttribute("image", trafficIcon);
+    this.mTrafficButton.setAttribute("yaTrafficLevel", trafficLevel);
+    this._switchThrobber();]]></body>
+            </method>
+
+            <method name="_manualUpdate">
+                <body><![CDATA[    this._switchThrobber(true);
+    this.module.manualUpdate(this.mWIID);]]></body>
+            </method>
+
+            <method name="_openCurrentSettings">
+                <body><![CDATA[    this.api.Controls.openSettingsDialog(window, this.mWIID);]]></body>
+            </method>
+
+            <method name="_removeCurrentWidget">
+                <body><![CDATA[    this.api.Controls.removeWidget(this.mWIID);]]></body>
+            </method>
+
+            <method name="_addNewWidget">
+                <body><![CDATA[    let [
+        instanceID,
+        widgetElement
+    ] = this.api.Controls.addWidget("http://bar.yandex.ru/packages/yandexbar#town", null, this, true);
+    this.api.Controls.openSettingsDialog(window, instanceID);]]></body>
+            </method>
+
+            <method name="_switchThrobber">
+                <parameter name="aShow"/>
+                <body><![CDATA[    if (aShow) {
+        if (this._throbberTimer) {
+            this._throbberTimer.cancel();
+        }
+        this.mWeatherButton.setAttribute("yb-native-loading", true);
+        this.mTrafficButton.setAttribute("yb-native-loading", true);
+        this._updateMenuItem.setAttribute("disabled", true);
+        this._lastThrobberTime = Date.now();
+    } else {
+        if (this._throbberTimer) {
+            return;
+        }
+        let delay = Math.max(700 - Math.abs(Date.now() - this._lastThrobberTime), 0);
+        this._throbberTimer = new this.api.SysUtils.Timer(function () {
+            this._throbberTimer = null;
+            this._lastThrobberTime = null;
+            [
+                this.mWeatherButton,
+                this.mTrafficButton
+            ].forEach(function (button) {
+                button.removeAttribute("yb-native-loading");
+            });
+            this._updateMenuItem.removeAttribute("disabled");
+        }.bind(this), delay);
+    }]]></body>
+            </method>
+
+            <method name="_setElementsVisibility">
+                <body><![CDATA[    let settings = this.api.Settings;
+    this.mTitleButton.setAttribute("hidden", !settings.getValue("show-name", this.mWIID));
+    this.mWeatherButton.setAttribute("hidden", !settings.getValue("show-weather", this.mWIID));
+    this.mTrafficButton.setAttribute("hidden", !settings.getValue("show-traffic", this.mWIID));]]></body>
+            </method>
+
+            <method name="_showWidgetMenu">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    this.mTitleMenu.openPopup(this.mTitleButton, "after_start");]]></body>
+            </method>
+
+            <method name="_onWeatherButtonCommand">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    if (this.mWeatherSliceOnly) {
+        this._showWeatherSlice();
+    } else {
+        this._navigateToService("weather", aEvent);
+    }]]></body>
+            </method>
+
+            <method name="_showWeatherSlice">
+                <parameter name="fromPicker"/>
+                <body><![CDATA[    let weatherSlice = this.module.getWeatherSlice(this.mWIID);
+    let button = this.mWeatherButton;
+    weatherSlice.show(button, function onHide() {
+        button.checked = false;
+        weatherSlice.notify("slice-event-hide");
+    });
+    weatherSlice.notify({
+        message: "slice-event-show",
+        data: { sender: fromPicker ? "menu" : "button" }
+    });]]></body>
+            </method>
+
+            <method name="_onTrafficButtonCommand">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    if (this.mTrafficSliceOnly) {
+        this._showTrafficSlice();
+    } else {
+        this._navigateToService("traffic", aEvent);
+    }]]></body>
+            </method>
+
+            <method name="_showTrafficSlice">
+                <parameter name="fromPicker"/>
+                <body><![CDATA[    let trafficSlice = this.module.getTrafficSlice(this.mWIID);
+    let button = this.mTrafficButton;
+    trafficSlice.show(button, function onHide() {
+        button.checked = false;
+        trafficSlice.notify("slice-event-hide");
+    });
+    trafficSlice.notify({
+        message: "slice-event-show",
+        data: { sender: fromPicker ? "menu" : "button" }
+    });]]></body>
+            </method>
+
+            <method name="_navigateToService">
+                <parameter name="serviceName"/>
+                <parameter name="event"/>
+                <body><![CDATA[    this.module.navigateToService(this.mWIID, serviceName, event);]]></body>
+            </method>
+
+            <method name="_onMenuCommand">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    let target = aEvent.target;
+    let anonid = target.getAttribute("anonid");
+    switch (anonid) {
+    case "title-menu-update":
+        this._manualUpdate();
+        break;
+    case "title-menu-settings":
+        this._openCurrentSettings();
+        break;
+    case "title-menu-remove":
+        this._removeCurrentWidget();
+        break;
+    case "title-menu-add":
+        this._addNewWidget();
+        break;
+    default:
+        return;
+    }]]></body>
+            </method>
+
+            <method name="_sendStatistics">
+                <parameter name="aAction"/>
+                <body><![CDATA[    this.api.Statistics.logClickStatistics({
+        cid: 72359,
+        path: "fx." + aAction
+    });]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "command":
+        this._onMenuCommand(aEvent);
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+
+            <method name="onSettingChange">
+                <parameter name="aSettingName"/>
+                <parameter name="aNewValue"/>
+                <body><![CDATA[    switch (aSettingName) {
+    case "openWeatherPageOnClick":
+        this.mWeatherSliceOnly = !aNewValue;
+        break;
+    case "openTrafficPageOnClick":
+        this.mTrafficSliceOnly = !aNewValue;
+        break;
+    case "title":
+        this.updateTitle();
+        break;
+    default:
+        break;
+    }
+    this._setElementsVisibility();]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="1" event="click"><![CDATA[    let target = event.originalTarget;
+    if (target.hasAttribute("xbl:inherits")) {
+        target = target.parentNode;
+    }
+    switch (target) {
+    case this.mWeatherButton:
+        this._navigateToService("weather", event);
+        break;
+    case this.mTrafficButton:
+        this._navigateToService("traffic", event);
+        break;
+    default:
+        break;
+    }]]></handler>
+        </handlers>
+    </binding>
+</bindings>

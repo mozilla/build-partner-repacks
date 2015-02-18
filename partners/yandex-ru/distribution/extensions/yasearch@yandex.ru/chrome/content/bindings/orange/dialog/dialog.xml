@@ -1,0 +1,151 @@
+<?xml version='1.0'?>
+
+<bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="dialog" inheritstyle="false">
+        <resources>
+            <stylesheet src="dialog.css"/>
+        </resources>
+
+        <content hidechrome="true">
+            <xul:vbox class="body">
+                <xul:hbox class="title">
+                    <xul:label class="title-text" xbl:inherits="value=title"/>
+                    <xul:hbox class="title-close" onclick="close();"/>
+                </xul:hbox>
+                <xul:vbox class="content">
+                    <children/>
+                </xul:vbox>
+            </xul:vbox>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="nodeClose">document.getAnonymousElementByAttribute(this, "class", "title-close")</field>
+            <field name="nodeTitle">document.getAnonymousElementByAttribute(this, "class", "title-text")</field>
+            <field name="nodeBody">document.getAnonymousElementByAttribute(this, "class", "body")</field>
+            <field name="nodeContent">document.getAnonymousElementByAttribute(this, "class", "content")</field>
+            <field name="nodeDraggable">this.nodeTitle</field>
+            <field name="dragStartPoint">null</field>
+            <field name="parameters">window.parameters</field>
+            <field name="_application">this.parameters.application</field>
+            <field name="_logger">this._application.getLogger("Dialog")</field>
+            <field name="_platformInfo">this._application.core.Lib.sysutils.platformInfo</field>
+
+
+            <constructor><![CDATA[    let shadow = false;
+    let transparent = true;
+    if (this._platformInfo.os.name == "windows") {
+        shadow = true;
+    } else if (this._platformInfo.os.name == "linux") {
+        transparent = false;
+    }
+    this.setAttribute("style", "background: none !important");
+    this.setAttribute("ex-shadow", shadow);
+    this.setAttribute("ex-transparent", transparent);
+    window.addEventListener("load", this, false);
+    window.addEventListener("unload", this, false);
+    this.parameters = window.parameters;
+    if (window.parameters) {
+        this.init(parameters);
+    }]]></constructor>
+
+            <method name="init">
+                <body><![CDATA[]]></body>
+            </method>
+
+            <method name="sizeToContent">
+                <body><![CDATA[    this._sizeToContent();]]></body>
+            </method>
+
+            <method name="_sizeToContent">
+                <body><![CDATA[    var rect = this.nodeBody.getBoundingClientRect();
+    window.resizeTo(rect.left + rect.right, rect.top + rect.bottom);]]></body>
+            </method>
+
+            <method name="centerWindowOnScreen">
+                <body><![CDATA[    var xOffset = screen.availWidth / 2 - window.outerWidth / 2;
+    var yOffset = screen.availHeight / 2 - window.outerHeight / 2;
+    xOffset = xOffset > 0 ? xOffset : 0;
+    yOffset = yOffset > 0 ? yOffset : 0;
+    window.moveTo(xOffset, yOffset);]]></body>
+            </method>
+
+            <method name="contains">
+                <parameter name="child"/>
+                <parameter name="parent"/>
+                <body><![CDATA[    try {
+        return parent && (child == parent || parent.compareDocumentPosition(child) & Node.DOCUMENT_POSITION_CONTAINED_BY);
+    } catch (ex) {
+    }
+    return false;]]></body>
+            </method>
+
+            <method name="move">
+                <body><![CDATA[    this.centerWindowOnScreen();]]></body>
+            </method>
+
+            <method name="close">
+                <body><![CDATA[    window.close();]]></body>
+            </method>
+
+            <method name="load">
+                <parameter name="event"/>
+                <body><![CDATA[    this.sizeToContent();
+    this.move();]]></body>
+            </method>
+
+            <method name="unload">
+                <parameter name="event"/>
+                <body><![CDATA[]]></body>
+            </method>
+
+            <method name="dragMouseDown">
+                <parameter name="event"/>
+                <body><![CDATA[    if (this.contains(event.originalTarget, this.nodeDraggable)) {
+        this.dragStartPoint = {
+            x: event.screenX - window.screenX,
+            y: event.screenY - window.screenY
+        };
+        window.addEventListener("mousemove", this, false);
+    }]]></body>
+            </method>
+
+            <method name="dragMouseMove">
+                <parameter name="event"/>
+                <body><![CDATA[    if (this.dragStartPoint) {
+        window.moveTo(event.screenX - this.dragStartPoint.x, event.screenY - this.dragStartPoint.y);
+    }]]></body>
+            </method>
+
+            <method name="dragMouseUp">
+                <parameter name="event"/>
+                <body><![CDATA[    window.removeEventListener("mousemove", this, false);
+    this.dragStartPoint = null;]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="event"/>
+                <body><![CDATA[    switch (event.type) {
+    case "mousemove":
+        this.dragMouseMove(event);
+        break;
+    case "load":
+        window.removeEventListener("load", this, false);
+        this.load(event);
+        break;
+    case "unload":
+        window.removeEventListener("unload", this, false);
+        this.unload(event);
+        break;
+    }]]></body>
+            </method>
+
+        </implementation>
+
+        <handlers>
+            <handler event="mousedown"><![CDATA[    this.dragMouseDown(event);]]></handler>
+
+            <handler event="mouseup"><![CDATA[    this.dragMouseUp(event);]]></handler>
+        </handlers>
+    </binding>
+</bindings>

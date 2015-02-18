@@ -1,0 +1,293 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="//toolkit/native/bindings/widget.xml#widget" id="toolbarbuttonbase">
+        <resources>
+            <stylesheet src="basewidget.css"/>
+        </resources>
+
+        <implementation>
+            <constructor><![CDATA[    this.firstConstructor = !this.__XBID__;
+    var tag = this;
+    var isPalette = false;
+    while (tag && tag.localName != "toolbar") {
+        if (tag.localName == "toolbarpaletteitem") {
+            isPalette = true;
+            break;
+        }
+        tag = tag.parentNode;
+    }
+    this.setAttribute("widget-state-palette", isPalette);
+    this.statePalette = isPalette;
+    if (this.firstConstructor) {
+        this.__XBID__ = "xb_" + Math.random();
+        if (typeof this.ybwInit == "function") {
+            this.ybwInit();
+        }
+        this.__addObservers();
+    }]]></constructor>
+
+            <method name="getWindowListener">
+                <body><![CDATA[    return this.common.api.Browser.getWindowListener(window);]]></body>
+            </method>
+
+            <method name="getCurrentURL">
+                <body><![CDATA[    return this.getWindowListener().windowLocation;]]></body>
+            </method>
+
+            <method name="createNode">
+                <parameter name="ns"/>
+                <parameter name="name"/>
+                <parameter name="attrs"/>
+                <parameter name="style"/>
+                <body><![CDATA[    var ni = ns ? document.createElementNS(ns, name) : document.createElement(name);
+    if (attrs) {
+        for (var i in attrs) {
+            if (attrs.hasOwnProperty(i)) {
+                ni.setAttribute(i, attrs[i]);
+            }
+        }
+    }
+    if (style) {
+        this.common.utils.copy(style, ni.style);
+    }
+    return ni;]]></body>
+            </method>
+
+            <method name="setMenuitemCounter">
+                <parameter name="node"/>
+                <parameter name="value"/>
+                <body><![CDATA[    if (typeof node == "string") {
+        node = document.getAnonymousElementByAttribute(this, "anonid", node);
+    }
+    if (node) {
+        node.setAttribute("counter", value);
+        node.setAttribute("acceltext", value);
+    }]]></body>
+            </method>
+
+            <method name="getMenuitemCounter">
+                <parameter name="node"/>
+                <parameter name="value"/>
+                <body><![CDATA[    if (typeof node == "string") {
+        node = document.getAnonymousElementByAttribute(this, "anonid", node);
+    }
+    return node ? node.getAttribute("acceltext") : "";]]></body>
+            </method>
+
+            <method name="createMenuItem">
+                <parameter name="text"/>
+                <parameter name="attrs"/>
+                <body><![CDATA[    attrs = attrs || {};
+    attrs.label = attrs.label || text;
+    if (typeof attrs.counter !== "undefined") {
+        attrs.acceltext = attrs.counter;
+    } else {
+        if (typeof attrs.acceltext !== "undefined") {
+            attrs.counter = attrs.acceltext;
+        }
+    }
+    return this.createNode(null, "menuitem", attrs);]]></body>
+            </method>
+
+            <method name="log">
+                <parameter name="text"/>
+                <parameter name="method"/>
+                <body><![CDATA[    this.application.log("[*XB*]: " + text, method);]]></body>
+            </method>
+
+            <method name="logObj">
+                <parameter name="obj"/>
+                <parameter name="prefix"/>
+                <parameter name="method"/>
+                <body><![CDATA[    this.application.logObj(obj, "[*XB*]: " + (prefix || ""), method);]]></body>
+            </method>
+
+            <method name="openSettingsDialog">
+                <body><![CDATA[    this.common.api.Controls.openSettingsDialog(window, this.WIID || this.application.WIID);]]></body>
+            </method>
+
+            <method name="__addObservers">
+                <body><![CDATA[    if (!this.observers || this.__addedObservers || !this.common.observerService) {
+        return;
+    }
+    this.log("addObservers");
+    var winListener = this.getWindowListener();
+    this.__addedObservers = [];
+    function f(th, observers, method) {
+        if (!observers) {
+            return;
+        }
+        for (var topic in observers) {
+            if (observers.hasOwnProperty(topic)) {
+                var obj = null;
+                var isWinLsr = winListener.KNOWN_TOPICS.indexOf(topic) >= 0;
+                if (isWinLsr) {
+                    obj = {
+                        topic: topic,
+                        _xbWinObserver: {
+                            observe: function (x, t, d) {
+                                observers[t].call(th, t, d, x);
+                            }
+                        }
+                    };
+                    winListener.addListener(topic, obj._xbWinObserver);
+                } else {
+                    var dtopic = topic, handler = observers[topic];
+                    if (topic.charAt(0) == "#") {
+                        dtopic = dtopic.substr(1);
+                        topic = th.WIID + topic;
+                    }
+                    obj = th.common.observerService[method](topic, handler, th, dtopic);
+                }
+                if (obj) {
+                    th.__addedObservers.push(obj);
+                }
+            }
+        }
+    }
+    f(this, this.observers, "addAppObserver");]]></body>
+            </method>
+
+            <method name="__removeObservers">
+                <body><![CDATA[    if (!this.__addedObservers || !this.common.observerService) {
+        return;
+    }
+    this.log("removeObservers");
+    var winListener = this.getWindowListener();
+    for (var i = 0; i < this.__addedObservers.length; i++) {
+        var obj = this.__addedObservers[i];
+        if (obj._xbWinObserver) {
+            winListener.removeListener(obj.topic, obj._xbWinObserver);
+        } else {
+            this.common.observerService.removeObserver(obj);
+        }
+    }
+    this.__addedObservers = null;]]></body>
+            </method>
+
+            <method name="xbStatLog">
+                <parameter name="path"/>
+                <body><![CDATA[    var name = this.application.config.statName;
+    this.common.statistics.logWidget("fx." + name + "." + path);]]></body>
+            </method>
+
+            <method name="__OnCommand">
+                <parameter name="event"/>
+                <parameter name="isMiddleBtn"/>
+                <body><![CDATA[    var target = event.originalTarget;
+    if (target.hasAttribute("xbl:inherits")) {
+        target = target.parentNode;
+    }
+    var name = String(target.localName).toLowerCase();
+    if (isMiddleBtn && name == "menuitem") {
+        return;
+    }
+    if (this.application.config.useClickStatistics !== false) {
+        this.xbStatLog(name == "toolbarbutton" ? "button" : "menuclick");
+    }
+    var commandAttributeName = "item-command";
+    var hrefAttributeName = "item-href";
+    var targetAttributeName = "item-target";
+    var paramAttributeName = "item-param";
+    function getAttr(attr) {
+        var v = target.getAttribute(attr);
+        var newTgt = target;
+        if (!v) {
+            newTgt = document.getBindingParent(target);
+            v = newTgt.getAttribute(attr);
+        }
+        return {
+            val: v,
+            target: newTgt
+        };
+    }
+    var command = getAttr(commandAttributeName);
+    var href = getAttr(hrefAttributeName);
+    var param = getAttr(paramAttributeName);
+    var hrefPrior = href.val && (isMiddleBtn || event.ctrlKey || event.shiftKey);
+    if (command.val && !hrefPrior) {
+        if (this._runCommand(event, command, param.val, name, isMiddleBtn) !== true) {
+            return;
+        }
+    }
+    if (href.val) {
+        var obj = { url: href.val };
+        var tgt = target.getAttribute(targetAttributeName);
+        if (!isMiddleBtn && !event.ctrlKey && !event.shiftKey && tgt) {
+            obj.target = tgt;
+        } else {
+            obj.eventInfo = event;
+        }
+        this.application.navigateBrowser(obj, param.val);
+    }]]></body>
+            </method>
+
+            <method name="_runCommand">
+                <parameter name="event"/>
+                <parameter name="command"/>
+                <parameter name="param"/>
+                <parameter name="name"/>
+                <parameter name="isMiddleBtn"/>
+                <body><![CDATA[    var scope = this;
+    var commands = this.commands;
+    var eventInfo = {
+        param: param,
+        WIID: this.WIID,
+        widget: this,
+        event: event,
+        target: command.target,
+        isMiddleBtn: isMiddleBtn,
+        isMenuItem: name == "menuitem"
+    };
+    var commandf = commands ? commands[command.val] : null;
+    if (!commandf && this.appinst) {
+        scope = this.appinst;
+        commands = this.appinst.uiCommands;
+        commandf = commands ? commands[command.val] : null;
+    }
+    if (!commandf) {
+        scope = this.application;
+        commands = this.application.uiCommands;
+        commandf = commands ? commands[command.val] : null;
+    }
+    while (commandf && typeof commandf == "string") {
+        commandf = commands[commandf];
+    }
+    if (commandf) {
+        return commandf.call(scope, command.val, eventInfo);
+    } else {
+        if (command.val == "settings") {
+            this.openSettingsDialog();
+            return false;
+        }
+    }
+    return true;]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="1" event="click"><![CDATA[    this.__OnCommand(event, true);]]></handler>
+
+            <handler event="command"><![CDATA[    this.__OnCommand(event, false);]]></handler>
+
+            <handler event="popupshowing"><![CDATA[    if (event.originalTarget.localName == "menupopup") {
+        if (this.application.config.useClickStatistics !== false) {
+            this.xbStatLog("menu");
+        }
+        var tg = event.originalTarget;
+        var cmd = tg.getAttribute("item-command");
+        if (cmd) {
+            var param = tg.getAttribute("item-param");
+            if (this._runCommand(event, {
+                    target: tg,
+                    val: cmd
+                }, param, "menupopup", false) === false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }
+    }]]></handler>
+        </handlers>
+    </binding>
+</bindings>

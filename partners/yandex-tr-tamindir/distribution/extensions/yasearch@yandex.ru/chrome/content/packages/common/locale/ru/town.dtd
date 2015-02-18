@@ -1,0 +1,39 @@
+<!ENTITY wgt.town.widget.name "Город">
+
+<!ENTITY wgt.town.setting.town "Город">
+<!ENTITY wgt.town.setting.town.popular "Популярные города">
+<!ENTITY wgt.town.setting.title "Имя города на панели">
+<!ENTITY wgt.town.setting.show.name "Показывать название города">
+<!ENTITY wgt.town.setting.show.weather "Показывать погоду">
+<!ENTITY wgt.town.setting.show.traffic "Показывать пробки">
+<!ENTITY wgt.town.setting.interval "Интервал обновления">
+<!ENTITY wgt.town.settings.autodetect "Определять автоматически">
+<!ENTITY wgt.town.settings.min.label "мин.">
+
+<!ENTITY wgt.town.setup "Настроить информер">
+<!ENTITY wgt.town.refresh "Обновить данные">
+<!ENTITY wgt.town.delete "Удалить город">
+<!ENTITY wgt.town.add "Добавить город">
+
+<!ENTITY wgt.town.weather.tooltip "Прогноз погоды">
+<!ENTITY wgt.town.weather.nodata "Нет данных о погоде">
+<!ENTITY wgt.town.weather.label "Погода">
+<!ENTITY wgt.town.temperature.label "Температура">
+<!ENTITY wgt.town.wind.label "Ветер">
+<!ENTITY wgt.town.wind.ms "м/с">
+<!ENTITY wgt.town.pressure.label "Давление">
+<!ENTITY wgt.town.pressure.mm.label "мм.рт.ст.">
+<!ENTITY wgt.town.dampness.label "Влажность">
+<!ENTITY wgt.town.night "Ночью">
+<!ENTITY wgt.town.tomorrow "Завтра">
+
+<!ENTITY wgt.town.traffic.tooltip "Пробки в городе">
+<!ENTITY wgt.town.traffic.points "Баллов">
+<!ENTITY wgt.town.traffic.description "Описание">
+<!ENTITY wgt.town.traffic.length "Протяженность">
+<!ENTITY wgt.town.traffic.length.km "км">
+
+<!ENTITY wgt.town.request.lang "ru">
+
+<!ENTITY wgt.town.setting.openPageOnClick.traffic "По нажатию на кнопку Пробок открывать страницу сервиса">
+<!ENTITY wgt.town.setting.openPageOnClick.weather "По нажатию на кнопку Погоды открывать страницу сервиса">

@@ -1,0 +1,8 @@
+body,html{background:transparent!important;overflow:hidden;margin:0;padding:0;border:0}
+.b-news-slice *{-webkit-user-select:none;-moz-user-select:none}
+.b-news-slice{position:absolute;top:0;left:0;right:0;bottom:0}
+.b-news-slice__inner{position:absolute;top:0;left:0;right:0;bottom:0;border:0 solid #b5bed2;border-radius:5px;-moz-border-radius:5px;background:#d9e0f0 url(b-news-slice.gif) repeat-x left bottom}
+.b-news-slice__angle{position:absolute;top:0;width:15px;height:8px;background:url(b-news-slice__arrow.png)}
+.left-auto-important{left:auto!important}
+#throbber{background:url(xb://toolkit/images/throbber.gif) center center no-repeat #fff;display:none}
+#error{text-align:center;padding-top:6%;display:none}

@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="styles/main.css"/>
+        </resources>
+
+        <content>
+            <xul:toolbarbutton anonid="button-auth" class="toolbarbutton-1 widget-button" item-href="auth" label="&ya.metrika.name;" tooltip="metrika-no-auth-tooltip" yb-native-not-authorized="true"/>
+
+            <toolbarbutton anonid="metrika-button" class="toolbarbutton-1 widget-button" item-href="home" label="&ya.metrika.name;" tooltip="metrika-tooltip" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+                <menupopup anonid="metrika-menupopup">
+                    <menuitem anonid="menuitem-update" item-command="update" label="&ya.metrika.menu.update;"/>
+                    <menuseparator anonid="menuitem-before-counters"/>
+                    <menuseparator anonid="menuitem-after-counters"/>
+                    <menuitem anonid="menuitem-add" item-href="add" label="&ya.metrika.add-counter;"/>
+                    <menuseparator/>
+                    <menuitem anonid="menuitem-settings" item-command="settings" label="&ya.metrika.menu.settings;"/>
+                </menupopup>
+            </toolbarbutton>
+
+            <tooltip anonid="metrika-noauth-tooltip" id="metrika-no-auth-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <grid flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&ya.metrika.logged-out-tooltip-1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&ya.metrika.logged-out-tooltip-2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+            </tooltip>
+
+            <tooltip anonid="metrika-tooltip" id="metrika-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <grid anonid="tooltip-nocounters-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&ya.metrika.no-have-counters-1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&ya.metrika.no-have-counters-2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <hbox anonid="tooltip-header" flex="1">&ya.metrika.go-to-counters;</hbox>
+            </tooltip>
+        </content>
+
+        <implementation>
+            <field name="WIID" readonly="true">this.application.WIID</field>
+
+            <field name="_authButton">document.getAnonymousElementByAttribute(this, "anonid", "button-auth")</field>
+            <field name="_button">document.getAnonymousElementByAttribute(this, "anonid", "metrika-button")</field>
+            <field name="_authTooltip">document.getAnonymousElementByAttribute(this, "anonid", "metrika-noauth-tooltip")</field>
+            <field name="_tooltip">document.getAnonymousElementByAttribute(this, "anonid", "metrika-tooltip")</field>
+            <field name="_menuPopup">document.getAnonymousElementByAttribute(this, "anonid", "metrika-menupopup")</field>
+
+            <field name="_menuSeparatorPopulatePoint">document.getAnonymousElementByAttribute(this, "anonid", "menuitem-after-counters")</field>
+            <field name="_menuUpdatePoint">document.getAnonymousElementByAttribute(this, "anonid", "menuitem-update")</field>
+
+            <field name="_throbberTimer">null</field>
+
+            <field name="observers"><![CDATA[    ({
+        throbber: function metrika_observers_throbber(topic, data) {
+            let show = false;
+            let dataObj;
+            try {
+                dataObj = JSON.parse(data);
+            } catch (e) {
+            }
+            if (!dataObj || dataObj.wiid !== this.WIID) {
+                return;
+            }
+            show = !!dataObj.value;
+            if (show) {
+                if (this._throbberTimer) {
+                    this._throbberTimer.cancel();
+                }
+                this._button.setAttribute("throbber", true);
+                this._menuUpdatePoint.setAttribute("disabled", true);
+                this._lastThrobberTime = Date.now();
+            } else {
+                if (this._throbberTimer) {
+                    return;
+                }
+                let delay = 700 - (Date.now() - this._lastThrobberTime);
+                if (delay < 0) {
+                    delay = 0;
+                }
+                this._throbberTimer = new this.application.api.SysUtils.Timer(function () {
+                    this._throbberTimer = null;
+                    this._lastThrobberTime = null;
+                    this._button.setAttribute("throbber", false);
+                    this._menuUpdatePoint.removeAttribute("disabled");
+                }.bind(this), delay);
+            }
+        },
+        display: function metrika_observers_display(topic, data) {
+            if (data) {
+                let dataObj;
+                try {
+                    dataObj = JSON.parse(data);
+                } catch (e) {
+                }
+                if (!dataObj || dataObj.wiid != this.WIID) {
+                    return;
+                }
+            }
+            this.updateView();
+        }
+    });]]></field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.ybwFinalize();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this.updateView();]]></body>
+            </method>
+
+            <method name="ybwFinalize">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    if (this._throbberTimer) {
+        this._throbberTimer.cancel();
+        this._throbberTimer = null;
+    }]]></body>
+            </method>
+
+            <method name="updateView">
+                <body><![CDATA[    if (!this.application.isAuth()) {
+        this.setAttribute("auth", false);
+        return;
+    }
+    this.setAttribute("auth", true);
+    this.setAttribute("yb-no-data", true);
+    this._populateMenuItems();
+    let tooltip = this._tooltip;
+    let noCountersGrid = tooltip.querySelector("grid[anonid=\"tooltip-nocounters-grid\"]");
+    let tooltipHeader = tooltip.querySelector("hbox[anonid=\"tooltip-header\"]");
+    let data = this.application.getUserData(this.WIID, "main");
+    if (!(data && data.counters && data.counters.length) || data._error) {
+        if (tooltipHeader) {
+            tooltipHeader.hidden = true;
+        }
+        if (noCountersGrid) {
+            noCountersGrid.hidden = false;
+        }
+    } else {
+        this.removeAttribute("yb-no-data");
+        if (tooltipHeader) {
+            tooltipHeader.hidden = false;
+        }
+        if (noCountersGrid) {
+            noCountersGrid.hidden = true;
+        }
+    }]]></body>
+            </method>
+
+            <method name="_populateMenuItems">
+                <body><![CDATA[    this._cleanMenuItems();
+    let data = this.application.getUserData(this.WIID, "main");
+    if (!data) {
+        return;
+    }
+    if (!(data.counters && data.counters.length)) {
+        return;
+    }
+    let menu = this._menuPopup;
+    let menuSep = this._menuSeparatorPopulatePoint;
+    var creator = function (item) {
+        let menuitem = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
+        menuitem.setAttribute("item-command", "go");
+        menuitem.setAttribute("item-param", item.id);
+        menuitem.setAttribute("label", item.name || "");
+        menu.insertBefore(menuitem, menuSep);
+    };
+    data.counters.forEach(creator);]]></body>
+            </method>
+
+            <method name="_cleanMenuItems">
+                <body><![CDATA[    let elem = this._menuSeparatorPopulatePoint;
+    while (elem.previousSibling && elem.previousSibling.getAttribute("anonid") !== "menuitem-before-counters") {
+        this._menuPopup.removeChild(elem.previousSibling);
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+</bindings>

@@ -10,7 +10,6 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const BRAND_SVC_COMPONENT_ID = "ru.yandex.custombar.branding";
 const BRAND_SVC_NAME = "package";
-const BRAND_SVC_PKG_UPD_TOPIC = "package updated";
 let application;
 let appCore;
 let BarPlatform;
@@ -23,7 +22,6 @@ const NativeComponents = {
         this._loggersRoot = application.name + ".NC";
         this._logger = Log4Moz.repository.getLogger(this._loggersRoot);
         this._loadModules();
-        this._application.branding.addListener(BRAND_SVC_PKG_UPD_TOPIC, this);
         this.registerService(BRAND_SVC_COMPONENT_ID, BRAND_SVC_NAME, brandingService);
         BarPlatform.registerUnitParser("native", "widget", nativeComponentsParser);
         BarPlatform.registerUnitParser("native", "plugin", nativeComponentsParser);
@@ -144,14 +142,7 @@ const NativeComponents = {
         if (this._findServiceData(BRAND_SVC_COMPONENT_ID, BRAND_SVC_NAME)) {
             this.unregisterService(BRAND_SVC_COMPONENT_ID, BRAND_SVC_NAME);
         }
-        this._application.branding.removeListener(BRAND_SVC_PKG_UPD_TOPIC, this);
         application = appCore = BarPlatform = null;
-    },
-    observe: function NativeComponents_observe(subject, topic, data) {
-        if (subject == this._application.branding && topic == BRAND_SVC_PKG_UPD_TOPIC) {
-            this._logger.info("Notifying native components about branding update...");
-            this.notifyServiceUsers(BRAND_SVC_COMPONENT_ID, BRAND_SVC_NAME, BRAND_SVC_PKG_UPD_TOPIC, null);
-        }
     },
     _modules: [
         "npwidget.js",
@@ -163,8 +154,8 @@ const NativeComponents = {
     ],
     _registeredServices: {},
     _consts: {
-        ERR_SVC_NOT_REGISTERED: "Provider (%1) did not register service \"%2\"",
-        ERR_SVC_ALREADY_REGISTERED: "Provider (%1) already registered service \"%2\""
+        ERR_SVC_NOT_REGISTERED: "Provider (%1) did not register service '%2'",
+        ERR_SVC_ALREADY_REGISTERED: "Provider (%1) already registered service '%2'"
     },
     _loadModules: function NativeComponents__loadModules() {
         const xbDirPath = this._application.partsURL + "native/";
@@ -181,7 +172,7 @@ const NativeComponents = {
         return window[appCore.appName + "OverlayController"];
     },
     _interpretSettingValue: function NativeComponents__interpretSettingValue(rawValue, prefferredType) {
-        if (rawValue == undefined) {
+        if (rawValue === undefined || rawValue === null) {
             return undefined;
         }
         let types = BarPlatform.Unit.settingTypes;
@@ -250,18 +241,20 @@ const NativeComponents = {
     _makeServiceData: function NativeComponents__makeServiceData(providerID, serviceName, serviceObject) {
         if (!(providerID in this._registeredServices)) {
             let servicesData = this._registeredServices[providerID] = {};
-            return servicesData[serviceName] = {
+            servicesData[serviceName] = {
                 serviceObject: serviceObject,
                 usersData: []
             };
+            return servicesData[serviceName];
         }
         let componentServices = this._registeredServices[providerID];
         let serviceData = componentServices[serviceName];
         if (!serviceData) {
-            return componentServices[serviceName] = {
+            componentServices[serviceName] = {
                 serviceObject: serviceObject,
                 usersData: []
             };
+            return componentServices[serviceName];
         }
         if (serviceData.serviceObject) {
             throw new Error(strutils.formatString(this._consts.ERR_SVC_ALREADY_REGISTERED, [

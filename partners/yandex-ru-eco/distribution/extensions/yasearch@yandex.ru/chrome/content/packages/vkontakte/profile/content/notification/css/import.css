@@ -1,0 +1,17 @@
+html,body{overflow:hidden}
+body{font:11px/15px Tahoma,Arial,Helvetica,sans-serif;background:#fff}
+a{color:#3c6185}
+p{margin:0;font-size:11px;line-height:15px}
+h1{color:#3c6185;font:700 11px/15px Tahoma,Arial,Helvetica,Geneva,sans-serif;margin:0;padding:0}
+li.notify{min-height:50px;padding:7px 0 10px;position:relative;background:#fff;border:6px solid #ccc}
+div.b-notify-avatar{float:left;width:76px;margin:3px 0 0 10px;display:inline;background:url(../i/vk.png) top left no-repeat}
+div.b-notify-avatar img{margin-left:26px}
+div.b-notify-data{margin:0 26px 0 95px}
+div.b-notify-data p{word-wrap:break-word}
+div.b-notify-data span{color:#999}
+div.b-notify-friends{padding-top:6px}
+div.b-notify-friends img{margin-right:5px}
+i.notify-status{display:inline-block;width:5px;height:8px;margin-left:5px;background:url(../i/offline.png) top left no-repeat}
+i.notify-online{background:url(../i/online.png) top left no-repeat!important}
+b.notify-close{position:absolute;top:4px;right:4px;width:12px;height:12px;cursor:pointer}
+b.notify-options{position:absolute;bottom:4px;right:4px;width:12px;height:12px;cursor:pointer}

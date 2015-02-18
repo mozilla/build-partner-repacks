@@ -1,0 +1,34 @@
+<!ENTITY lenta.name "Падпіскі">
+<!ENTITY lenta.tooltiptext "Новыя паведамленні ў Яндекс.Падпісках">
+<!ENTITY lenta.noauthtooltiptext "Паказвае новыя паведамленні ў Яндекс.Падпісках">
+<!ENTITY lenta.addFeed.label "Дабавіць паток са старонкі ў Падпіскі">
+<!ENTITY lenta.add "Дабаўленне патоку ў Падпіскі">
+<!ENTITY lenta.reloadCounter.label "Праверыць паведамленні">
+<!ENTITY lenta.link.readMessages.label "Чытаць паведамленні">
+
+
+<!ENTITY feeds.dialog.title "Дабаўленне патоку ў падпіскі">
+<!ENTITY feeds.page.label "Старонка">
+<!ENTITY feeds.name.label "Паток">
+<!ENTITY feeds.name.accesskey "П">
+<!ENTITY feeds.groups.label "У папку">
+<!ENTITY feeds.groups.accesskey "а">
+<!ENTITY feeds.groups.loader.label "Загрузка спісу папак...">
+
+<!ENTITY feeds.addgroup.label "У новую папку">
+<!ENTITY feeds.addgroup.accesskey "н">
+
+<!ENTITY feeds.groups.manual.refresh.label "абнавіць">
+
+<!ENTITY feeds.showwebform.label "Адкрыць старонку дабаўлення патоку">
+<!ENTITY feeds.showwebform.accesskey "А">
+
+<!ENTITY feeds.dialog.MenuAllFeedsLabel "Па-за папкамі">
+<!ENTITY feeds.dialog.MenuNewGroupLabel "У новую папку...">
+<!ENTITY feeds.dialog.ErrorFeedGroupsRefreshTitle "Памылка абнаўлення спісу папак">
+
+
+<!ENTITY lenta.alert.text.label "Паказваць тэкставыя апавяшчэнні пра новыя паведамленні">
+<!ENTITY lenta.alert.sound.label "Прайграваць гукавыя апавяшчэнні пра новыя паведамленні">
+<!ENTITY lenta.alert.sound.select.label "Абраць">
+<!ENTITY lenta.alert.sound.preview.label "Праслухаць">

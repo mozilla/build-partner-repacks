@@ -1,0 +1,4 @@
+<?xml version='1.0'?>
+<bindings xmlns="http://www.mozilla.org/xbl">
+  <binding extends="chrome://yasearch/content/bindings/ui/widget.xbl#widget" id="widget"/>
+</bindings>

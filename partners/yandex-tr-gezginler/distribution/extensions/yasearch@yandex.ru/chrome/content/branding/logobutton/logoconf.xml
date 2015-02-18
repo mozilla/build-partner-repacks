@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE logoconf SYSTEM "logoconf.dtd">
+<LogoButton>
+	<Tooltip>&lc.button.tooltip;</Tooltip>
+	<Link url="http://www.yandex.com.tr/?clid={clid4}" action="1001"/>
+	<Menu>
+		<History length="5"></History>
+
+		<Link label="&lc.label.yandex;" url="http://www.yandex.com.tr/?clid={clid4}" action="1002" image="logobutton/icons/yandex.png" />
+		<Link label="&lc.label.yamail;" url="http://mail.yandex.com.tr" action="1003" image="logobutton/icons/yandexmail.png" />
+
+		<Link label="&lc.label.bing;" url="http://bing.com" action="1004" image="logobutton/bing.png" />
+		<Link label="&lc.label.google;" url="http://google.com.tr" action="1005" image="logobutton/google.png" />
+		<Link label="&lc.label.yahoo;" url="http://tr.yahoo.com" action="1006" image="logobutton/yahoo.ico" />
+
+		<Category label="&lc.cat.webportals;">
+				<Link id="ekolay" label="&lc.label.ekolay;" url="http://ekolay.net" action="1007" image="logobutton/icons/ekolay.png" />
+				<Link id="msn" label="&lc.label.msn;" url="http://tr.msn.com" action="1008" image="logobutton/icons/msn.ico" />
+				<Link id="mynet" label="&lc.label.mynet;" url="http://mynet.com" action="1009" image="logobutton/icons/mynet.ico" />
+				<Link label="&lc.label.yahoo;" url="http://tr.yahoo.com" action="1010" image="logobutton/icons/yahoo.ico" />
+		</Category>
+
+		<Category label="&lc.cat.sports;">
+				<Link id="sahadan" label="&lc.label.sahadan;" url="http://sahadan.com" action="1011" image="logobutton/icons/sahadan.ico" />
+				<Link id="sporx" label="&lc.label.sporx;" url="http://sporx.com" action="1012" image="logobutton/icons/sporx.png" />
+				<Link id="mackolik" label="&lc.label.mackolik;" url="http://mackolik.com" action="1013" image="logobutton/icons/mackolik.png" />
+				<Link id="fotomac" label="&lc.label.fotomac;" url="http://fotomac.com.tr"  action="1014" image="logobutton/icons/fotomac.ico" />
+				<Link id="fanatik" label="&lc.label.fanatik;" url="http://fanatik.com.tr"  action="1015" image="logobutton/icons/fanatik.ico" />
+				<Link id="htspor" label="&lc.label.htspor;" url="http://htspor.com"  action="1016" image="logobutton/icons/htspor.ico" />
+		</Category>
+
+		<Category label="&lc.cat.news;">
+				<Link id="haberturk" label="&lc.label.haberturk;" url="http://haberturk.com"  action="1017" image="logobutton/icons/haberturk.ico" />
+				<Link id="sabah" label="&lc.label.sabah;" url="http://sabah.com.tr" action="1018" image="logobutton/icons/sabah.ico" />
+				<Link id="haberler" label="&lc.label.haberler;" url="http://haberler.com" action="1019" image="logobutton/icons/haberler.png" />
+				<Link id="hurriyet" label="&lc.label.hurriyet;" url="http://hurriyet.com.tr" action="1020" image="logobutton/icons/hurriyet.png" />
+				<Link id="milliyet" label="&lc.label.milliyet;" url="http://milliyet.com.tr" action="1021" image="logobutton/icons/milliyet.ico" />
+				<Link id="haber7" label="&lc.label.haber7;" url="http://haber7.com" action="1022" image="logobutton/icons/haber7.png" />
+				<Link id="gazetevatan" label="&lc.label.gazetevatan;" url="http://gazetevatan.com" action="1023" image="logobutton/icons/gazetevatan.png" />
+				<Link id="haber365" label="&lc.label.haber365;" image="logobutton/icons/365.ico" action="1024" url="http://haber365.com" />
+		</Category>
+
+		<Category label="&lc.cat.social;">
+				<Link id="facebook" label="&lc.label.facebook;" image="logobutton/icons/facebook.png" action="1025" url="http://facebook.com" />
+				<Link id="twitter" label="&lc.label.twitter;" image="logobutton/icons/twitter.ico" action="1026" url="http://twitter.com" />
+				<Link id="blogger" label="&lc.label.blogger;" image="logobutton/icons/blogger.ico" action="1027" url="http://blogger.com" />
+				<Link id="blogcu" label="&lc.label.blogcu;" image="logobutton/icons/blogcu.ico" action="1028" url="http://blogcu.com" />
+				<Link id="wordpress" label="&lc.label.wordpress;" image="logobutton/icons/wordpress.ico" action="1029" url="http://wordpress.com" />
+				<Link id="friendfeed" label="&lc.label.friendfeed;" image="logobutton/icons/friendfeed.ico" action="1030" url="http://friendfeed.com" />
+				<Link id="bedavasitem" label="&lc.label.bedavasitem;" image="logobutton/icons/bedavasitem.ico" action="1031" url="http://bedava-sitem.com" />
+		</Category>
+
+		<Category label="&lc.cat.video;">
+				<Link id="youtube" label="&lc.label.youtube;" image="logobutton/icons/youtube.ico" action="1032" url="http://www.youtube.com" />
+				<Link id="dailymotion" label="&lc.label.dailymotion;" image="logobutton/icons/dailymotion.ico" action="1033" url="http://dailymotion.com" />
+				<Link id="izlesene" label="&lc.label.izlesene;" image="logobutton/icons/izlesene.ico" action="1034" url="http://izlesene.com" />
+				<Link id="diziport" label="&lc.label.diziport;" image="logobutton/icons/diziport.png" action="1035" url="http://diziport.com" />
+				<Link id="vidivodo" label="&lc.label.vidivodo;" image="logobutton/icons/vidivodo.ico" action="1036" url="http://vidivodo.com" />
+				<Link id="facebookvideo" label="&lc.label.facebookvideo;" image="logobutton/icons/facebookvideo.ico" action="1037" url="http://facebookvideoindir.gen.tr" />
+		</Category>
+
+		<Category label="&lc.cat.music;">
+				<Link id="fizy" label="&lc.label.fizy;" image="logobutton/icons/fizy.jpg" action="1038" url="http://fizy.com/tr" />
+		</Category>
+
+		<Category label="&lc.cat.classifieds;">
+				<Link id="sahibinden" label="&lc.label.sahibinden;" image="logobutton/icons/sahibinden.ico" action="1039" url="http://sahibinden.com" />
+				<Link id="gittigidiyor" label="&lc.label.gittigidiyor;" image="logobutton/icons/gittigidiyor.ico" action="1040" url="http://gittigidiyor.com" />
+				<Link id="hepsiburada" label="&lc.label.hepsiburada;" image="logobutton/icons/hepsiburada.ico" action="1041" url="http://hepsiburada.com" />
+				<Link id="araba" label="&lc.label.araba;" image="logobutton/icons/araba.ico" action="1042" url="http://araba.com" />
+		</Category>
+
+		<Category label="&lc.cat.games;">
+				<Link id="travian" label="&lc.label.travian;" image="logobutton/icons/travian.png" action="1043" url="http://travian.com.tr" />
+				<Link id="oyunlar1" label="&lc.label.oyunlar1;" image="logobutton/icons/oyunlar1.png" action="1044" url="http://oyunlar1.com" />
+				<Link id="oyunskor" label="&lc.label.oyunskor;" image="logobutton/icons/oyunskor.ico" action="1045" url="http://oyunskor.com" />
+				<Link id="kraloyun" label="&lc.label.kraloyun;" image="logobutton/icons/kraloyun.ico" action="1046" url="http://kraloyun.com" />
+				<Link id="bigpoint" label="&lc.label.bigpoint;" image="logobutton/icons/bigpoint.ico" action="1047" url="http://tr.bigpoint.com" />
+		</Category>
+
+		<Category label="&lc.cat.education;">
+				<Link id="meb" label="&lc.label.meb;" image="logobutton/icons/meb.png" action="1048" url="http://www.meb.gov.tr" />
+				<Link id="osym" label="&lc.label.osym;" image="logobutton/icons/osym.ico" action="1049" url="http://osym.gov.tr" />
+				<Link id="antoloji" label="&lc.label.antoloji;" image="logobutton/icons/antoloji.png" action="1050" url="http://antoloji.com" />
+				<Link id="eksisozluk" label="&lc.label.eksisozluk;" image="logobutton/icons/eksisozluk.ico" action="1051" url="http://eksisozluk.com" />
+				<Link id="uludagsozluk" label="&lc.label.uludagsozluk;" image="logobutton/icons/uludagsozluk.ico" action="1052" url="http://uludagsozluk.com" />
+		</Category>
+	</Menu>
+</LogoButton>

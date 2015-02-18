@@ -1,0 +1,9 @@
+toolbar [ybar-native-widget-name] toolbarbutton.widget-button[type=menu-button]{-moz-binding:url(widget-button.xbl#widget-menubutton)!important}
+toolbar [ybar-native-widget-name] toolbarbutton.widget-button[type=menu-button]>toolbarbutton{-moz-binding:url(widget-button.xbl#widget-button)!important}
+toolbar [ybar-native-widget-name] toolbarbutton.widget-button[type=button]{-moz-binding:url(widget-button.xbl#widget-button)!important}
+toolbar [ybar-native-widget-name] toolbarbutton.widget-button:not([type]){-moz-binding:url(widget-button.xbl#widget-button)!important}
+toolbar [ybar-native-widget-name] toolbarbutton.widget-button[type=menu]{-moz-binding:url(widget-button.xbl#widget-menuonlybutton)!important}
+toolbar [ybar-native-widget-name] toolbarbutton.widget-button menuitem.menuitem-iconic{-moz-binding:url(widget-button.xbl#widget-menuitem-iconic)!important}
+[ybar-native-widget-name] rows row.tt-row-counter,[ybar-native-widget-name] rows.tt-rows-counters row{-moz-binding:url(widget-button.xbl#tt-row-counter)!important}
+.bold-menu-counter .menu-accel-container>*{font-weight:700}
+[ybar-native-widget-name] [hidden=true],[ybar-native-widget-name] toolbarbutton menupopup menuseparator:last-child,[ybar-native-widget-name] toolbarbutton menupopup menuseparator+menuseparator,[ybar-native-widget-name] rows row.tt-row-counter[counter=""],[ybar-native-widget-name] rows.tt-rows-counters row[counter=""],[ybar-native-widget-name] rows row.tt-row-counter:not([counter]),[ybar-native-widget-name] rows.tt-rows-counters row:not([counter]){display:none!important}

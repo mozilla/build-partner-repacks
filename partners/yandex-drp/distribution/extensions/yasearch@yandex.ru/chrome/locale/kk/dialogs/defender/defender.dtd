@@ -1,0 +1,23 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY homepage.defence.changed.title "Үй парағы өзгерді">
+<!ENTITY homepage.defence.changedAgain.title "Үй парағы тағы өзгерді ">
+
+<!ENTITY homepage.defence.changed.from.prefix "">
+<!ENTITY homepage.defence.changed.from.postfix "еді">
+<!ENTITY homepage.defence.changed.to.prefix "">
+<!ENTITY homepage.defence.changed.to.postfix "">
+<!ENTITY homepage.defence.changed.empty "мекенжайы жоқ">
+
+<!ENTITY homepage.defence.again.help "Мүмкін, үй парағының өзгергені басқа бағдарламаның жұмысына байланысты болар. &product1.nom; енді сіздің үй парағыңызды қорғамайды">
+<!ENTITY homepage.defence.again.help.more "Толығырақ">
+
+<!ENTITY homepage.defence.change.question "Бұл өзгеріске рұқсат беру">
+<!ENTITY homepage.defence.change.checkbox "Үй парағының өзгеруі туралы ескерту">
+
+<!ENTITY homepage.defence.ok.button "OK">
+<!ENTITY homepage.defence.deny.button "Тыйым салу">
+<!ENTITY homepage.defence.allow.button "Рұқсат беру">
+
+<!ENTITY homepage.defence.changed.help "&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;Беттің қорғанысын қайта қосу үшін, бөгде бағдарламаны сөндіріп, қажетті үй парағын орнатыңыз және келесі опцияны қосыңыз: &product1.gen; &#60;strong&#62;Баптаулар&#60;/strong&#62; бөлімінің &#60;strong&#62;Қорғау&#60;/strong&#62; қойындысының&#60;br/&#62;&#60;strong&#62;«Үй парағын қорғауды қосу»&#60;/strong&#62;.&#60;/p&#62;&#60;p xmlns=&#39;http://www.w3.org/1999/xhtml&#39;&#62;Барлық сұрақтар бойынша біздің &#60;a anonid=&#39;mailtoSupportLink&#39; href=&#39;mailto:support@element.yandex.ru&#39;&#62;қолдау қызметіне&#60;/a&#62; хабарласыңыз.&#60;/p&#62;">

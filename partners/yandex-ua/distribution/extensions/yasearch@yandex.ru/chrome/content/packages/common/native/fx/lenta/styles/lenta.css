@@ -1,0 +1,4 @@
+@import url(../../styles/buttons.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarbutton{list-style-image:url(../icons/lenta.svg)!important}
+toolbarbutton[hasFeeds=true],toolbarbutton[hasFeeds=true] toolbarbutton{list-style-image:url(../icons/lenta-feeds.svg)!important}
+toolbaritem[cb-theme-color=dark] toolbarbutton{list-style-image:url(../icons/lenta-inverted.svg)!important}
+toolbaritem[cb-theme-color=dark] toolbarbutton[hasFeeds=true],toolbaritem[cb-theme-color=dark] toolbarbutton[hasFeeds=true] toolbarbutton{list-style-image:url(../icons/lenta-feeds-inverted.svg)!important}

@@ -1,0 +1,10 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);.yahoomail-label-counter{font-weight:700}
+#yasearch-yahoomail-button .toolbarbutton-text{display:-moz-box!important;margin-left:3px!important}
+#yasearch-yahoomail-button[label=""] .toolbarbutton-text{display:none!important}
+#yasearch-yahoomail-button[label=""] .yahoomail-label-counter{display:-moz-box!important}
+#yasearch-yahoomail-button{list-style-image:url(gfx/icons/yahoomail.svg)}
+#yasearch-yahoomail-button[waiting=true]{list-style-image:url(xb://toolkit/images/throbber.gif)}
+.yahoomail_check-mailbox{list-style-image:url(gfx/icons/refresh.png)}
+.yahoomail_compose{list-style-image:url(gfx/icons/writemail.png)}
+.yahoomail_read{list-style-image:url(gfx/icons/readmail.png)}
+.yahoomail_contacts{list-style-image:url(gfx/icons/contacts.png)}

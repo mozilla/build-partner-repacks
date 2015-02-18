@@ -1,0 +1,22 @@
+<!ENTITY translate.name "Сөздердің аудармасы">
+
+<!ENTITY translate.button.tooltip_before "Сөздердің аудармасы">
+<!ENTITY translate.button.tooltip_no_dir "Аударма бағытын таңдауыңызды сұраймыз">
+<!ENTITY translate.menu.enable "Сөздерді аударуды қосу">
+<!ENTITY translate.menu.onmouse "Курсор қойған сөздерді аудару">
+<!ENTITY translate.menu.onkey "Пернелер тіркесімі бойынша аудару">
+<!ENTITY translate.menu.source_lang "Түпнұсқа тілі">
+<!ENTITY translate.menu.target_lang "Аударма тілі">
+<!ENTITY translate.linklabel "Барлық нұсқаларды табу">
+
+<!ENTITY translate.settings.translate_on "Сөздерді аудару:">
+<!ENTITY translate.settings.radio_hover "курсор қойған">
+<!ENTITY translate.settings.radio_hotkey "пернелер тіркесімі бойынша">
+<!ENTITY translate.settings.hotkey_value "Аударма үшін пернелер тіркесімі:">
+
+<!ENTITY translate.alt_key "Alt">
+<!ENTITY translate.shift_key "Shift">
+<!ENTITY translate.ctrl_key "Ctrl">
+
+
+<!ENTITY translate.showYandex "http://www.yandex.kz">

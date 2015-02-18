@@ -1,0 +1,27 @@
+<!ENTITY gmail.name "Gmail">
+
+<!ENTITY gmail.settings.label "Update interval">
+<!ENTITY gmail.settings.label_after "min.">
+<!ENTITY gmail.settings.write.show "Show &#34;New message&#34; button ">
+<!ENTITY gmail.settings.checktext "Show &#34;Gmail&#34; button name">
+<!ENTITY gmail.settings.write.checktext "Show &#34;New message&#34; button name">
+
+<!ENTITY gmail.tooltip.please_auth "Please log in">
+<!ENTITY gmail.tooltip.off "Shows new messages in your Gmail inbox">
+<!ENTITY gmail.tooltip.on "New messages in your inbox">
+<!ENTITY gmail.tooltip.empty "No new messages">
+<!ENTITY gmail.tooltip.write.off "Write a new message using your Gmail account">
+<!ENTITY gmail.tooltip.write.on "Write a new message using your Gmail account">
+<!ENTITY gmail.tooltip.error "Connection to your inbox failed">
+
+<!ENTITY gmail.button.text "Gmail">
+<!ENTITY gmail.button.text.write "Compose">
+
+<!ENTITY gmail.menu.update "Check e-mail">
+<!ENTITY gmail.menu.write "Compose a message">
+<!ENTITY gmail.menu.read "Go to Inbox">
+<!ENTITY gmail.menu.addressbook "Go to Contacts">
+<!ENTITY gmail.menu.yandex "Forward messages from this account to Yandex.Mail">
+<!ENTITY notify.letters "{N} new message;{N} new messages">
+<!ENTITY plural.rule "1">
+<!ENTITY settings.show_notifications "Show notifications">

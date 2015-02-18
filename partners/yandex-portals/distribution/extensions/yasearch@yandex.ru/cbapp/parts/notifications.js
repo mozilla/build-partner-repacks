@@ -23,7 +23,7 @@ const notifications = {
         };
         let overrideKnockQueueTimer = new sysutils.Timer(function () {
             try {
-                Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService).hiddenDOMWindow;
+                let tmpValue = Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService).hiddenDOMWindow;
                 if (!animator.hiddenDocument) {
                     return;
                 }

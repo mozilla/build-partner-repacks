@@ -1,0 +1,59 @@
+﻿<!ENTITY widget.name "Радыё">
+<!ENTITY widget.show-name "Паказваць назву радыястанцыі">
+
+<!ENTITY widget.tooltiptext.source "Крыніца - ">
+<!ENTITY widget.tooltiptext.paused "Націсніце, каб слухаць {radioname}">
+<!ENTITY widget.tooltiptext.normal1 "Вы слухаеце {radioname}">
+<!ENTITY widget.tooltiptext.normal2 "Каб спыніць праслухоўванне, націсніце на кнопку">
+<!ENTITY widget.tooltiptext.no-stations1 "Спіс радыястанцый пусты.">
+<!ENTITY widget.tooltiptext.no-stations2 "Калі ласка, дадайце радыястанцыю">
+<!ENTITY widget.tooltiptext.error "Памылка прайгравання">
+<!ENTITY widget.no-station "Няма радыястанцыі">
+<!ENTITY widget.noflash1 "Для прайгравання радыё патрэбны Flash player">
+<!ENTITY widget.noflash2 "Націсніце на кнопку, каб усталяваць яго">
+<!ENTITY widget.tooltiptext.throbber "Буферызуецца плыня радыё.  Калі ласка, пачакайце.">
+
+<!ENTITY widget.play "Прайграваць">
+<!ENTITY widget.pause "Спыніць">
+<!ENTITY widget.add "Дадаць радыястанцыю">
+<!ENTITY widget.settings "Спіс радыястанцый">
+<!ENTITY widget.settings2 "Налады">
+<!ENTITY widget.search "Знайсці радыястанцыю">
+<!ENTITY widget.noflash "Усталяваць Flash player">
+
+<!ENTITY dialog.addstation.title "Дадаць радыястанцыю">
+<!ENTITY dialog.addstation.name "Назва: ">
+<!ENTITY dialog.addstation.url "Адрас: ">
+<!ENTITY dialog.addstation.autoplay "Пайграць радыястанцыю пасля яе дадавання">
+<!ENTITY dialog.addstation.prefix "Радыястанцыя ">
+<!ENTITY dialog.addstation.error2 " ужо ёсць у спісе.">
+<!ENTITY dialog.addstation.error3 "Калі ласка, увядзіце іншую назву.">
+<!ENTITY dialog.addstation.notice "Кнопка «Радыё» працуе карэктна толькі з mp3-плынямі і плэйлістамі, якія ўтрымліваюць mp3-плыні">
+
+<!ENTITY dialog.delstattion.title "Выдаленне радыястанцыі">
+<!ENTITY dialog.delstation.question "Вы ўпэўнены, што хочаце выдаліць выбраную радыястанцыю?">
+
+<!ENTITY dialog.changestation.title "Змяніць радыястанцыю">
+<!ENTITY dialog.changestation.alert "Пайграць радыястанцыю пасля яе змянення">
+
+<!ENTITY dialog.settings.title "Спіс радыястанцый">
+<!ENTITY dialog.settings.row.play "*">
+<!ENTITY dialog.settings.row.name "Назва">
+<!ENTITY dialog.settings.row-url "Адрас">
+<!ENTITY dialog.settings.button-add "Дадаць">
+<!ENTITY dialog.settings.button-change "Змяніць">
+<!ENTITY dialog.settings.button-delete "Выдаліць">
+<!ENTITY dialog.settings.button-play "Прайграваць">
+<!ENTITY dialog.settings.button-stop "Спыніць">
+<!ENTITY dialog.settings.button-close "Закрыць">
+<!ENTITY dialog.settings.row.name "Назва">
+<!ENTITY dialog.settings.row.address "Адрас">
+
+<!ENTITY dialog.yes "Так">
+<!ENTITY dialog.no "Не">
+<!ENTITY dialog.ok "Ok">
+<!ENTITY dialog.cancel "Скасувати">
+<!ENTITY MSG_DELETEMANY "Вы ўпэўнены, што хочаце выдаліць выбраныя радыёстанцыі?">
+<!ENTITY TOOLTIP_ERROR "Памылка загрузкі плыні радыё ">
+<!ENTITY dialog.settings.row-name "Назва">
+<!ENTITY dialog.addstation.error-url "Пазначце карэктны адрас.">

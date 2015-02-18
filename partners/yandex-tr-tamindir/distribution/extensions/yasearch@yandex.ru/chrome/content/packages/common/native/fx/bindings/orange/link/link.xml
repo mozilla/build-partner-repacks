@@ -1,0 +1,17 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings><bindings xmlns="http://www.mozilla.org/xbl">
+    <binding id="link" inheritstyle="false">
+        <resources>
+            <stylesheet src="link.css"/>
+        </resources>
+
+        <handlers>
+            <handler button="0" event="click"><![CDATA[    let attrDisabled = this.getAttribute("disabled");
+    if (attrDisabled != "true") {
+        let newEvent = document.createEvent("Events");
+        newEvent.initEvent("link", true, true);
+        this.dispatchEvent(newEvent);
+    }]]></handler>
+        </handlers>
+    </binding>
+</bindings>

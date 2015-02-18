@@ -1,0 +1,6 @@
+<!ENTITY agree.with.statistics.header "Дозвольте Яндексу отримувати статистику про використання браузера">
+<!ENTITY about.confidential.desc "Це не зачіпає ваші персональні дані та ніяк не впливає на роботу браузера. Яндекс використовує цю інформацію для поліпшення власних сервісів.">
+<!ENTITY help.label "Докладніше">
+
+<!ENTITY button.accept "Дозволяю">
+<!ENTITY button.cancel "Ні">

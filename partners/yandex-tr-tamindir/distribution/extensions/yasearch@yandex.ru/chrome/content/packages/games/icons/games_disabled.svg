@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.0.1 (7597) - http://www.bohemiancoding.com/sketch -->
+    <title>games-no-falsh@1x</title>
+    <description>Created with Sketch.</description>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Slices" sketch:type="MSLayerGroup" transform="translate(-726.000000, -58.000000)"></g>
+        <g id="Group-2" sketch:type="MSLayerGroup" transform="translate(1.000000, 2.000000)">
+            <path d="M0.931034053,11.9465786 C0.159846026,11.5634964 -0.287857066,9.77163726 0.139389036,6.51821665 C0.566635139,3.26479604 1.55161482,1.68433062 1.85954173,0.981523546 C2.16746863,0.278716472 3.40153964,-0.314767547 4.37476607,0.185995191 C5.34799249,0.686757929 5.20651774,0.981523589 7,0.98152355 C8.79348226,0.981523512 9.07138329,0.832147509 9.85741433,0.278716483 C10.6434454,-0.274714543 11.7671841,0.0880788354 12.175989,0.80601942 C12.584794,1.52396001 13.6131508,4.37670506 13.8454437,6.51821665 C14.0777367,8.65972823 14.2921471,11.9168763 13.128038,11.9168762 C11.9639288,11.916876 11.3275595,11.1202186 10.6434456,10.1270503 C9.95933165,9.13388205 8.7618105,9.02514663 6.99999991,9.02514648 C5.23818931,9.02514634 4.35765372,8.98977471 3.73234578,9.77163754 C3.10703784,10.5535004 1.70222208,12.3296608 0.931034053,11.9465786 Z" id="Path-956" stroke-opacity="0.2" stroke="#000000" fill="#D0D0D0" sketch:type="MSShapeGroup"></path>
+            <circle id="Oval-49" fill="#F6A623" sketch:type="MSShapeGroup" cx="11" cy="4" r="1"></circle>
+            <circle id="Oval-51" fill="#D0011B" sketch:type="MSShapeGroup" cx="11" cy="6" r="1"></circle>
+            <circle id="Oval-52" fill="#417505" sketch:type="MSShapeGroup" cx="9" cy="6" r="1"></circle>
+            <circle id="Oval-53" fill="#4990E2" sketch:type="MSShapeGroup" cx="9" cy="4" r="1"></circle>
+            <rect id="Rectangle-84" stroke="#979797" fill="#D8D8D8" sketch:type="MSShapeGroup" x="3" y="3" width="2" height="4"></rect>
+            <rect id="Rectangle-85" stroke="#979797" fill="#D8D8D8" sketch:type="MSShapeGroup" transform="translate(4.000000, 5.000000) rotate(-90.000000) translate(-4.000000, -5.000000) " x="3" y="3" width="2" height="4"></rect>
+        </g>
+    </g>
+</svg>

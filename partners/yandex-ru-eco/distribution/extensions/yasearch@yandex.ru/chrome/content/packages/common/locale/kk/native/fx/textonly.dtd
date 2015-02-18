@@ -1,0 +1,8 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY textonly.label "Тек мәтін ғана">
+<!ENTITY textonly.tooltip.open "&product1.nom;: бетті оқуға ыңғайлы түрде көрсету">
+<!ENTITY textonly.tooltip.close "&product1.nom;: бетті бастапқы түрде көрсету">
+<!ENTITY textonly.tooltip.not-available "&product1.nom;: мәтінді ыңғайлы түрде көру бұл бетте қол жетімсіз">
+<!ENTITY textonly.tooltip.introduce "&product1.nom;: &#171;Тек мәтін ғана&#187; батырмасы бетті&#10;оқуға ыңғайлы түрде көрсетеді">

@@ -1,0 +1,13 @@
+<?xml version='1.0'?>
+<!DOCTYPE window PUBLIC "-//MOZILLA//DTD XUL V1.0//EN" "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" [
+<!ENTITY % locale SYSTEM "../../../../locale/dialogs/defender/defender.dtd">
+%locale;
+]>
+
+<?xml-stylesheet href="defender.css" type="text/css"?>
+
+<dialog id="notification-hp-defence" xmlns:orange="http://bar.yandex.ru/ui/orange" title="&homepage.defence.changed.title;" windowtype="notification-hp-defence-notification" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <orange:notification-hp-defence/>
+
+</dialog>

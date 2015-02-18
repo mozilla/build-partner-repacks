@@ -1,6 +1,11 @@
 "use strict";
 const EXPORTED_SYMBOLS = ["application"];
-const Cc = Components.classes, Ci = Components.interfaces, Cu = Components.utils, GLOBAL = this;
+const {
+    classes: Cc,
+    interfaces: Ci,
+    utils: Cu
+} = Components;
+const GLOBAL = this;
 Cu.import("resource://gre/modules/Services.jsm");
 const application = {
     init: function VBApp_init(core) {
@@ -44,8 +49,9 @@ const application = {
         return appPrefs;
     },
     generateDelay: function VBApp_generateDelay() {
-        if (!this._delayMultiplier)
+        if (!this._delayMultiplier) {
             this._delayMultiplier = this.preferences.get("debug.delayMultiplier", 60);
+        }
         this._lastGeneratedDelay += this._delayMultiplier;
         return this._lastGeneratedDelay;
     },
@@ -64,8 +70,9 @@ const application = {
         return this._localeString || "ru";
     },
     get locale() {
-        if (!this._locale)
+        if (!this._locale) {
             this._locale = misc.parseLocale(this.localeString);
+        }
         return this._locale;
     },
     get soundsEnabled() {
@@ -78,8 +85,9 @@ const application = {
         return "resource://" + this.name + "-app/parts/";
     },
     navigate: function VBApp_navigate(aNavigateData) {
-        if (typeof aNavigateData != "object")
+        if (typeof aNavigateData !== "object") {
             throw new Error("Object required.");
+        }
         let url;
         let unsafe = false;
         if ("url" in aNavigateData) {
@@ -88,28 +96,33 @@ const application = {
             url = aNavigateData.unsafeURL;
             unsafe = true;
         }
-        if (!url)
+        if (!url) {
             return false;
+        }
         let uri = misc.tryCreateFixupURI(url);
-        if (!uri)
+        if (!uri) {
             throw new CustomErrors.EArgRange("url", "URL", url);
-        if (unsafe && !/^(http|ftp)s?$/.test(uri.scheme))
+        }
+        if (unsafe && !/^(http|ftp)s?$/.test(uri.scheme)) {
             throw new CustomErrors.ESecurityViolation("application.navigate", "URL=" + url);
+        }
         url = uri.spec;
         let target = "target" in aNavigateData ? aNavigateData.target : null;
         if (!target) {
             let eventInfo = "eventInfo" in aNavigateData ? aNavigateData.eventInfo : null;
             if (eventInfo) {
                 if (eventInfo instanceof Ci.nsIDOMEvent) {
-                    if (eventInfo.ctrlKey || eventInfo.metaKey || eventInfo.button == 1)
+                    if (eventInfo.ctrlKey || eventInfo.metaKey || eventInfo.button == 1) {
                         target = "new tab";
-                    else if (eventInfo.shiftKey)
+                    } else if (eventInfo.shiftKey) {
                         target = "new window";
+                    }
                 } else {
-                    if (eventInfo.keys.ctrl || eventInfo.keys.meta || eventInfo.mouse.button == 1)
+                    if (eventInfo.keys.ctrl || eventInfo.keys.meta || eventInfo.mouse.button == 1) {
                         target = "new tab";
-                    else if (eventInfo.keys.shift)
+                    } else if (eventInfo.keys.shift) {
                         target = "new window";
+                    }
                 }
             }
         }
@@ -170,7 +183,7 @@ const application = {
         return true;
     },
     isYandexHost: function VBApp_isYandexHost(hostName) {
-        return /(^|\.)(yandex\.(ru|ua|by|kz|net|com(\.tr)?)|(ya|narod|moikrug)\.ru)$/i.test(hostName);
+        return /(^|\.)(yandex\.(ru|ua|by|kz|net|com(\.tr)?)|(ya|kinopoisk|moikrug)\.ru)$/i.test(hostName);
     },
     isYandexURL: function VBApp_isYandexURL(url) {
         try {
@@ -180,27 +193,43 @@ const application = {
             return false;
         }
     },
-    getHostAliases: function VBApp_getHostAliases(searchingHost) {
-        let xmlDoc;
+    getHostAliases: function VBApp_getHostAliasesContainer() {
+        let cache = Object.create(null);
+        return function VBApp_getHostAliases(searchingHost) {
+            if (cache[searchingHost]) {
+                return cache[searchingHost];
+            }
+            let res = [];
+            let xmlDoc = this._domainGroupsDoc;
+            let matchedDomainGroupName;
+            let domainGroups = Object.create(null);
+            if (xmlDoc) {
+                Array.forEach(xmlDoc.querySelectorAll("domain"), function (domainNode) {
+                    let domainGroupName = domainNode.parentNode.getAttribute("name");
+                    let domain = domainNode.textContent;
+                    if (searchingHost === domain) {
+                        matchedDomainGroupName = domainGroupName;
+                    }
+                    domainGroups[domainGroupName] = domainGroups[domainGroupName] || [];
+                    domainGroups[domainGroupName].push(domain);
+                });
+            }
+            if (matchedDomainGroupName) {
+                res = domainGroups[matchedDomainGroupName];
+            }
+            cache[searchingHost] = res;
+            return res;
+        };
+    }(),
+    get _domainGroupsDoc() {
+        let xmlDoc = null;
         try {
             xmlDoc = this.branding.brandPackage.getXMLDocument("fastdial/domaingroups.xml");
         } catch (err) {
         }
-        if (!xmlDoc)
-            return [];
-        let matchedDomainGroupName;
-        let domainGroups = Object.create(null);
-        Array.forEach(xmlDoc.querySelectorAll("domain"), function (domainNode) {
-            let domainGroupName = domainNode.parentNode.getAttribute("name");
-            let domain = domainNode.textContent;
-            if (searchingHost === domain)
-                matchedDomainGroupName = domainGroupName;
-            domainGroups[domainGroupName] = domainGroups[domainGroupName] || [];
-            domainGroups[domainGroupName].push(domain);
-        });
-        if (matchedDomainGroupName)
-            return domainGroups[matchedDomainGroupName];
-        return [];
+        delete this._domainGroupsDoc;
+        this.__defineGetter__("_domainGroupsDoc", () => xmlDoc);
+        return xmlDoc;
     },
     _consts: {
         DOWNLOAD_HOST_NAME: "download.yandex.ru",
@@ -282,6 +311,7 @@ const application = {
             this._barCore.buidRevision,
             this._barCore.buildDate
         ]));
+        let startTime = Date.now();
         try {
             this._loadParts();
         } catch (e) {
@@ -292,12 +322,14 @@ const application = {
         let alias = netutils.ioService.newFileURI(this.core.rootDir);
         resource.setSubstitution("vb-profile-data", alias);
         let disableBarnavigIfYBarIsActive = function (aBarAddon) {
-            if (!aBarAddon || !aBarAddon.isActive)
+            if (!aBarAddon || !aBarAddon.isActive) {
                 return;
+            }
             try {
                 let barAppBarNavig = Cc["@yandex.ru/custombarcore;yasearch"].getService().wrappedJSObject.application.barnavig;
-                if (barAppBarNavig.alwaysSendUsageStat === false)
+                if (barAppBarNavig.alwaysSendUsageStat === false) {
                     return;
+                }
             } catch (e) {
             }
             this._logger.config("Yandex.Bar is active. Will turn off barnavig events (page load, downloads, etc.) listening...");
@@ -305,6 +337,7 @@ const application = {
         }.bind(this);
         AddonManager.gre_AddonManager.getAddonByID("yasearch@yandex.ru", disableBarnavigIfYBarIsActive);
         this.addonStatus.onApplicationInitialized();
+        this._logger.config("Init done in " + (Date.now() - startTime) + "ms");
     },
     _loadParts: function VBApp__loadParts() {
         const partsDirPath = this.partsURL;
@@ -312,11 +345,13 @@ const application = {
             let partDescr = this._partNames[i];
             let partName = partDescr.name;
             let partPath = partsDirPath + partDescr.file;
-            this._logger.debug("Loading " + partName + " part from " + partPath + "...");
+            let loadPartStart = Date.now();
             Cu.import(partPath, this._parts);
+            this._logger.debug("Loading " + partName + " part from " + partPath + " (" + (Date.now() - loadPartStart) + " ms)");
             let part = this._parts[partName];
-            if (!part)
+            if (!part) {
                 throw new Error("Part " + partName + " not loaded!");
+            }
             sysutils.defineLazyGetter(this, partName, () => part);
             if (typeof part.init == "function") {
                 this._logger.trace("Part " + partName + " start init...");
@@ -330,10 +365,12 @@ const application = {
         let asyncFinalizingParts = {};
         let finalizeInProgress = true;
         let callback = function callback() {
-            if (finalizeInProgress)
+            if (finalizeInProgress) {
                 return;
-            if (typeof partsFinalizedCallback === "function" && sysutils.isEmptyObject(asyncFinalizingParts))
+            }
+            if (typeof partsFinalizedCallback === "function" && sysutils.isEmptyObject(asyncFinalizingParts)) {
                 partsFinalizedCallback();
+            }
         };
         this._partNames.reverse().forEach(function (part) {
             let partName = part.name;
@@ -345,8 +382,9 @@ const application = {
                         delete asyncFinalizingParts[partName];
                         callback();
                     }.bind(this));
-                    if (finalizeIsAsync === true)
+                    if (finalizeIsAsync === true) {
                         asyncFinalizingParts[partName] = true;
+                    }
                 } catch (e) {
                     this._logger.error("Error finalizing part. " + strutils.formatError(e));
                     this._logger.debug(e.stack);
@@ -375,8 +413,9 @@ const application = {
             "centerscreen",
             modal ? "modal" : "dialog=no"
         ];
-        if (resizeable)
+        if (resizeable) {
             features.push("resizable");
+        }
         let ownerWindow = navigatorWindow || misc.getTopBrowserWindow();
         let openParams = [
             path,

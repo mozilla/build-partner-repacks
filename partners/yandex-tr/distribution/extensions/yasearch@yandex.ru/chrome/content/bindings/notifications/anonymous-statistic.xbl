@@ -1,0 +1,11 @@
+<?xml version='1.0'?>
+
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="chrome://global/content/bindings/notification.xml#notification" id="notification">
+        <resources>
+            <stylesheet src="./anonymous-statistic.css"/>
+        </resources>
+    </binding>
+
+</bindings>

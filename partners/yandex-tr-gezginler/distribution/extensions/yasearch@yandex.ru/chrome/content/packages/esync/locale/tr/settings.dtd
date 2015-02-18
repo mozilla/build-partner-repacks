@@ -1,0 +1,6 @@
+<!ENTITY esync.open.barsync.page "Ayarlar sayfasını aç">
+
+<!ENTITY esync.panel.sync.outdated.header "Eşitleme">
+<!ENTITY esync.panel.sync.outdated.message "giriş bilgileri eskidi">
+<!ENTITY esync.panel.sync.outdated.button.label "Düzelt">
+<!ENTITY esync.panel.close.tooltip "Bildirimleri kapat">

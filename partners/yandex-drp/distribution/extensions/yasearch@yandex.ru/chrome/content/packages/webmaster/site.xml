@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "site/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/site/content/icons/ico.png" icon-vector="/site/content/icons/ico.svg" name="&site.name;" xmlns:ui="http://bar.yandex.ru/dev/gui" unique="false">
+
+    <f:setting default="" name="selectedSitenameSetting" scope="instance">
+        <control label="&site.sitename.label;:" source="https://export.yandex.ru/bar/metrika.xml" template="/site/content/setting.xsl" type="combobox"/>
+    </f:setting>
+
+    <f:setting default="" name="customSitename" scope="instance">
+        <control label="&site.custom-name;:" type="textedit"/>
+    </f:setting>
+
+    <f:setting default="true" name="show-sitename" scope="instance">
+        <control label="&site.show-name;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="true" name="show-warning" scope="instance">
+        <control label="&site.show-warning;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="12" name="updateInterval" scope="instance">
+        <control label="&site.update-interval;" source="/site/content/intervals.xml" type="combobox"/>
+    </f:setting>
+
+    <f:setting default="" name="metrikaSaveId" scope="instance"/>
+    <f:setting default="" name="masterSaveId" scope="instance"/>
+
+    <modules>
+        <module browser="firefox" file="site/core/widget.jsm"/>
+    </modules>
+</widget>

@@ -1,0 +1,438 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % translate SYSTEM "../translator.dtd">
+%translate;
+]>
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="chrome://global/content/bindings/popup.xml#panel" id="balloon">
+
+        <resources>
+            <stylesheet src="/native/fx/translator/css/balloon.css"/>
+        </resources>
+
+
+        <content>
+            <xul:vbox anonid="outer-container"><xul:hbox class="helper top"/><html:div class="scroll-box"><html:div class="scroll-box_box"><html:div anonid="inner-container" class="scroll-box_content"><html:div class="border"><html:div class="slovari-icon"><html:a href="#">&translate.linklabel;</html:a><html:div/></html:div><html:table cellspacing="0"><html:tr><html:td class="translations"/></html:tr></html:table></html:div><html:div class="scroll-box_bar"><html:div class="scroll-box_bardrag"><html:div class="scroll-box_bardragtop"/><html:div class="scroll-box_bardragbottom"/></html:div></html:div></html:div></html:div></html:div><html:div anonid="user-action-panel" class="user-action-panel"><html:div class="helper"/><html:div class="clearfix"><html:div class="langs"/><html:div class="settings"/></html:div></html:div><xul:hbox class="helper bottom"/></xul:vbox></content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="_tooltipController"/>
+
+            <field name="_timeoutNodeCheckId"/>
+            <field name="_timeoutHideId"/>
+
+            <field name="_mouseoutTimestamp">0</field>
+            <field name="_mouseOver">false</field>
+            <field name="_scrollBarMouseDowned">false</field>
+
+            <field name="_hideEvents">["mouseout"]</field>
+
+            <field name="_translations">document.getAnonymousElementByAttribute(this, "class", "translations")</field>
+            <field name="_border">document.getAnonymousElementByAttribute(this, "class", "border")</field>
+            <field name="_langs">document.getAnonymousElementByAttribute(this, "class", "langs")</field>
+            <field name="_settingsIcon">document.getAnonymousElementByAttribute(this, "class", "settings")</field>
+            <field name="_slovari">document.getAnonymousElementByAttribute(this, "class", "slovari-icon")</field>
+
+            <field name="_box">document.getAnonymousElementByAttribute(this, "class", "scroll-box_box")</field>
+            <field name="_boxParent">document.getAnonymousElementByAttribute(this, "class", "scroll-box")</field>
+            <field name="_scrollbar">document.getAnonymousElementByAttribute(this, "class", "scroll-box_bar")</field>
+            <field name="_scrollbardrag">document.getAnonymousElementByAttribute(this, "class", "scroll-box_bardrag")</field>
+
+            <field name="_translateContainer">document.getAnonymousElementByAttribute(this, "anonid", "inner-container")</field>
+            <field name="_translateOuterContainer">document.getAnonymousElementByAttribute(this, "anonid", "outer-container")</field>
+            <field name="_userPanel">document.getAnonymousElementByAttribute(this, "anonid", "user-action-panel")</field>
+
+            <field name="_translationData">{}</field>
+            <field name="_logger">this.tooltipController.module.API.logger</field>
+            <field name="_lastBottom">null</field>
+            <field name="_wasShowed">false</field>
+
+            <property name="tooltipController" onget="return this._tooltipController;" onset="this._tooltipController = val;"/>
+
+
+            <property name="langs">
+                <setter><![CDATA[    const kHTMLNS = "http://www.w3.org/1999/xhtml";
+    let docFragment = document.createDocumentFragment();
+    this._clearLangs();
+    Array.forEach(val, function (lang) {
+        let langElem = document.createElementNS(kHTMLNS, "span");
+        langElem.textContent = this.tooltipController.module.getLangName(lang, "short").toLowerCase().replace(/[\(|\)]/g, "");
+        langElem.setAttribute("data-lang", lang);
+        if (val.active === lang) {
+            langElem.classList.add("active");
+        }
+        docFragment.appendChild(langElem);
+    }, this);
+    this._langs.appendChild(docFragment);]]></setter>
+            </property>
+
+            <property name="translations">
+                <setter><![CDATA[    this._translationData = val;
+    this.showTranslationData();]]></setter>
+            </property>
+
+            <property name="pageZoom">
+                <setter><![CDATA[    if (val < 1) {
+        val = 1;
+    }
+    this.style.fontSize = val * 100 + "%";]]></setter>
+            </property>
+
+            <property name="_screenMargin" readonly="true">
+                <getter><![CDATA[    return window.screen.height * 0.05;]]></getter>
+            </property>
+
+            <property name="_contentWidth" readonly="true">
+                <getter><![CDATA[    let isInt = Number.isInteger ? Number.isInteger : this._isInteger;
+    let st = window.getComputedStyle(this._translateContainer, null);
+    let stWidth = st.getPropertyValue("width");
+    let width = this._translateContainer.offsetWidth;
+    if (!isInt(stWidth)) {
+        width++;
+    }
+    return width;]]></getter>
+            </property>
+
+            <property name="_contentHeight" readonly="true">
+                <getter><![CDATA[    let isInt = Number.isInteger ? Number.isInteger : this._isInteger;
+    let st = window.getComputedStyle(this._translateContainer, null);
+    let stHeight = st.getPropertyValue("height");
+    let height = this._translateContainer.offsetHeight;
+    if (!isInt(stHeight)) {
+        height++;
+    }
+    return height;]]></getter>
+            </property>
+
+            <method name="_isInteger">
+                <parameter name="nVal"/>
+                <body><![CDATA[    return typeof nVal === "number" && isFinite(nVal) && nVal > -9007199254740992 && nVal < 9007199254740992 && Math.floor(nVal) === nVal;]]></body>
+            </method>
+
+            <method name="_updateScrollBar">
+                <body><![CDATA[    let viewPortHeight = this._boxParent.offsetHeight;
+    let contentHeight = this._contentHeight;
+    this._scrollBarVisible = contentHeight > viewPortHeight;
+    if (this._scrollBarVisible) {
+        let scrollMarginTop = 0;
+        let scrollMarginBottom = 5;
+        let scrollBarHeight = viewPortHeight - (scrollMarginTop + scrollMarginBottom);
+        let scrollTop = this._box.scrollTop;
+        this._scrollbar.style.height = scrollBarHeight + "px";
+        this._scrollbar.style.top = scrollTop + scrollMarginTop + "px";
+        var hDrag = Math.floor(scrollBarHeight * scrollBarHeight / contentHeight);
+        var tDrag = Math.floor(scrollTop * (scrollBarHeight - hDrag) / (contentHeight - viewPortHeight));
+        this._scrollbardrag.style.height = Math.round(hDrag) + "px";
+        this._scrollbardrag.style.top = Math.round(tDrag) + "px";
+        this._scrollbar.style.display = "block";
+    } else {
+        this._scrollbar.style.display = "none";
+    }
+    if (typeof this._onUpdateScrollBar == "function") {
+        this._onUpdateScrollBar(this._scrollBarVisible);
+    }]]></body>
+            </method>
+
+            <method name="_onUpdateScrollBar">
+                <parameter name="aIsScrlVisible"/>
+                <parameter name="aScrldFraction"/>
+                <body><![CDATA[    let className = "scrollable";
+    if (!aIsScrlVisible) {
+        this._box.classList.remove(className);
+    } else {
+        this._box.classList.add(className);
+    }]]></body>
+            </method>
+
+            <method name="_fixSize">
+                <body><![CDATA[    let bo = this.boxObject;
+    let openAtY = this.openAtY;
+    let screenHeight = window.screen.height;
+    let contentWidth = this._contentWidth;
+    let contentHeight = this._contentHeight;
+    let boxStyle = window.getComputedStyle(this._translateOuterContainer, null);
+    let containerHeightWithoutPadding = parseFloat(boxStyle.getPropertyValue("height"), 10);
+    let containerPadding = Math.ceil(Math.abs(this._translateOuterContainer.boxObject.height - containerHeightWithoutPadding));
+    let exceptContentSpace = containerPadding + this._langs.offsetHeight;
+    let availSpace = Math.max(openAtY, screenHeight - openAtY);
+    if (this._lastBottom > this.openAtY) {
+        availSpace = this._lastBottom;
+    }
+    availSpace -= this._screenMargin + exceptContentSpace;
+    if (contentHeight > availSpace) {
+        this._boxParent.style.height = availSpace + "px";
+    } else {
+        this._boxParent.style.height = contentHeight + "px";
+    }
+    this._translateContainer.style.width = contentWidth + "px";
+    this._boxParent.style.width = contentWidth + "px";
+    this._box.style.width = contentWidth * 1.3 + "px";
+    this.removeAttribute("height");
+    this.removeAttribute("width");]]></body>
+            </method>
+
+            <method name="_resetSize">
+                <body><![CDATA[    this._boxParent.style.height = "";
+    this._box.style.width = "";
+    this._boxParent.style.width = "";
+    this._translateContainer.style.width = "";]]></body>
+            </method>
+
+            <method name="_placeBalloon">
+                <body><![CDATA[    this._fixSize();
+    let bo = this.boxObject;
+    let currentBottom = bo.screenY + Math.max(bo.height, this._translateOuterContainer.boxObject.height);
+    if (this._lastBottom == currentBottom) {
+        return;
+    }
+    let newY = bo.screenY - (currentBottom - this._lastBottom);
+    if (newY > 0) {
+        this.moveTo(bo.screenX, newY);
+    } else {
+        this.moveTo(bo.screenX, 0);
+    }]]></body>
+            </method>
+
+            <method name="showTranslationData">
+                <body><![CDATA[    const kHTMLNS = "http://www.w3.org/1999/xhtml";
+    this._clearTranslations();
+    let translationsContainer = document.createElementNS(kHTMLNS, "ul");
+    let langSelected = this._langs.querySelector("span.active").getAttribute("data-lang");
+    this._translationData[langSelected].forEach(function (translation) {
+        let translationItem = document.createElementNS(kHTMLNS, "li");
+        let translatedWord = document.createElementNS(kHTMLNS, "ul");
+        let sourceWord = document.createElementNS(kHTMLNS, "li");
+        sourceWord.textContent = translation.word;
+        translatedWord.appendChild(sourceWord);
+        translation.parts.forEach(function (partName) {
+            let destinationWords = document.createElementNS(kHTMLNS, "li");
+            let destinationType = document.createElementNS(kHTMLNS, "span");
+            destinationWords.textContent = translation.part[partName].join(", ");
+            destinationType.textContent = partName;
+            destinationWords.appendChild(destinationType);
+            translatedWord.appendChild(destinationWords);
+        });
+        translationItem.appendChild(translatedWord);
+        translationsContainer.appendChild(translationItem);
+    });
+    if (this._translationData[langSelected].url) {
+        this._slovari.classList.remove("hidden");
+    } else {
+        this._slovari.classList.add("hidden");
+    }
+    this._translations.appendChild(translationsContainer);]]></body>
+            </method>
+
+            <method name="_clearTranslations">
+                <body><![CDATA[    let translations = this._translations.querySelector("ul");
+    if (translations) {
+        translations.parentNode.removeChild(translations);
+    }]]></body>
+            </method>
+
+            <method name="_clearLangs">
+                <body><![CDATA[    while (this._langs.hasChildNodes()) {
+        this._langs.removeChild(this._langs.lastChild);
+    }]]></body>
+            </method>
+
+            <method name="contains">
+                <parameter name="aChild"/>
+                <parameter name="aParent"/>
+                <body><![CDATA[    let parent = arguments.length == 1 ? this : aParent;
+    try {
+        return aChild == parent || Boolean(parent.compareDocumentPosition(aChild) & Node.DOCUMENT_POSITION_CONTAINED_BY);
+    } catch (e) {
+    }
+    return false;]]></body>
+            </method>
+
+            <method name="showMore">
+                <parameter name="event"/>
+                <parameter name="moreURL"/>
+                <body><![CDATA[    this.tooltipController.hideBalloon();
+    this.tooltipController.module.API.Controls.navigateBrowser({
+        url: moreURL,
+        target: "new tab",
+        action: 630
+    });]]></body>
+            </method>
+
+            <method name="_checkForNewNode">
+                <parameter name="self"/>
+                <parameter name="aRangeParent"/>
+                <parameter name="aRangeOffset"/>
+                <body><![CDATA[    self._clearNodeCheckTimeout();
+    self.tooltipController.checkForNewNode(aRangeParent, aRangeOffset);]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "mouseout":
+        this._setHideTimeout();
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+
+            <method name="_setHideTimeout">
+                <parameter name="force"/>
+                <parameter name="delay"/>
+                <body><![CDATA[    delay = delay || 800;
+    if (this._timeoutHideId && !force) {
+        return;
+    }
+    if (force) {
+        this.clearHideTimeout();
+    }
+    if (!this._timeoutHideCallback) {
+        this._timeoutHideCallback = function (self) {
+            self._timeoutHideId = null;
+            if (self && self.state == "open" && !self._mouseOver) {
+                self.tooltipController.hideBalloon();
+            }
+        };
+    }
+    this._timeoutHideId = setTimeout(this._timeoutHideCallback, delay, this);]]></body>
+            </method>
+
+            <method name="clearHideTimeout">
+                <body><![CDATA[    if (this._timeoutHideId) {
+        clearTimeout(this._timeoutHideId);
+        this._timeoutHideId = null;
+    }]]></body>
+            </method>
+
+            <method name="triggerRedraw">
+                <body><![CDATA[    this.style.visibility = "hidden";
+    this.style.height = "0px";
+    this.style.visibility = "visible";
+    setTimeout(function () {
+        this.style.height = "";
+    }.bind(this), 0);]]></body>
+            </method>
+
+            <method name="_clearNodeCheckTimeout">
+                <body><![CDATA[    if (!this._timeoutNodeCheckId) {
+        return;
+    }
+    clearTimeout(this._timeoutNodeCheckId);
+    this._timeoutNodeCheckId = null;]]></body>
+            </method>
+
+            <destructor><![CDATA[    this.tooltipController = null;]]></destructor>
+
+        </implementation>
+
+        <handlers>
+            <handler button="0" event="mousedown"><![CDATA[    this.tooltipController.clearDeactivateTimeout();
+    if (this.contains(event.originalTarget, this._settingsIcon)) {
+        this.tooltipController.hideBalloon();
+        let API = this.tooltipController.module.API;
+        API.Controls.openSettingsDialog(null, API.componentID);
+        this.tooltipController.module.logClickStatistics("word.settings");
+        return;
+    }
+    if (this.contains(event.originalTarget, this._slovari)) {
+        if (event.originalTarget.parentNode === this._slovari) {
+            let langSelected = this._langs.querySelector("span.active").getAttribute("data-lang");
+            let moreURL = this._translationData[langSelected].url;
+            event.preventDefault();
+            this.showMore(event, moreURL);
+            this.tooltipController.module.logClickStatistics("word.variants");
+            return;
+        }
+    }
+    if (this.contains(event.originalTarget, this._langs)) {
+        if (event.originalTarget.parentNode === this._langs) {
+            if (event.originalTarget.classList.contains("active")) {
+                return;
+            }
+            this._langs.querySelector("span.active").classList.remove("active");
+            event.originalTarget.classList.add("active");
+            let langSelected = event.originalTarget.getAttribute("data-lang");
+            this.tooltipController.module.logClickStatistics("word.langchange." + langSelected);
+            let boxObject = this.boxObject;
+            this.style.visibility = "hidden";
+            this._resetSize();
+            this.showTranslationData();
+            this._placeBalloon();
+            this._updateScrollBar();
+            this.triggerRedraw();
+            return;
+        }
+        return;
+    }
+    if (this.contains(event.originalTarget, this._scrollbar)) {
+        if (!this._scrollBarVisible) {
+            return;
+        }
+        let yd = event.screenY;
+        let w = this.ownerDocument.defaultView;
+        let bo = this._scrollbardrag.getBoundingClientRect();
+        let scrolld = this._box.scrollTop;
+        let dragTop = bo.top + w.mozInnerScreenY;
+        let hDrag = bo.height;
+        if (yd < dragTop) {
+            this._box.scrollTop = scrolld - 300;
+        } else if (yd > dragTop + hDrag) {
+            this._box.scrollTop = scrolld + 300;
+        } else {
+            this._scrollBarMouseDowned = yd;
+            this._scrlld = scrolld;
+        }
+        return;
+    }
+    this.tooltipController.hideBalloon();]]></handler>
+
+            <handler event="mouseup"><![CDATA[    if (this._scrollBarMouseDowned !== false) {
+        this._scrollBarMouseDowned = false;
+        event.preventDefault();
+        return false;
+    }]]></handler>
+
+            <handler event="mousemove" phase="capturing"><![CDATA[    if (this._scrollBarMouseDowned !== false) {
+        let delta = event.screenY - this._scrollBarMouseDowned;
+        let scrollBarHeight = this._scrollbar.getBoundingClientRect().height;
+        let hDrag = this._scrollbardrag.getBoundingClientRect().height;
+        let contentContainerBO = this._boxParent.getBoundingClientRect();
+        this._box.scrollTop = this._scrlld + Math.round(delta * (this._contentHeight - contentContainerBO.height) / (scrollBarHeight - hDrag));
+    }
+    event.stopPropagation();]]></handler>
+
+            <handler event="mouseover"><![CDATA[    this._mouseOver = true;
+    this.tooltipController.clearShowTimeout();
+    this.clearHideTimeout();]]></handler>
+
+            <handler event="mouseout" phase="capturing"><![CDATA[    this._mouseOver = false;]]></handler>
+
+            <handler event="scroll"><![CDATA[    this._updateScrollBar();]]></handler>
+
+            <handler event="popupshowing"><![CDATA[    this._hideEvents.forEach(function (aEventName) {
+        window.addEventListener(aEventName, this, false);
+    }, this);
+    this._fixSize();
+    this._updateScrollBar();]]></handler>
+
+            <handler event="popupshown"><![CDATA[    if (this._wasShowed) {
+        return;
+    }
+    let bo = this.boxObject;
+    this._lastBottom = bo.screenY + bo.height;
+    this._wasShowed = true;]]></handler>
+
+            <handler event="popuphiding"><![CDATA[    this._hideEvents.forEach(function (aEventName) {
+        window.removeEventListener(aEventName, this, false);
+    }, this);
+    this._clearNodeCheckTimeout();
+    this._mouseOver = false;
+    this._wasShowed = false;
+    this._lastBottom = null;
+    this._clearTranslations();
+    this._clearLangs();
+    this._resetSize();]]></handler>
+        </handlers>
+    </binding>
+</bindings>

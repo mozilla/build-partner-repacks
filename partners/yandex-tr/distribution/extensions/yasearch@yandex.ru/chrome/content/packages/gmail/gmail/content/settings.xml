@@ -1,0 +1,8 @@
+<?xml version='1.0'?>
+<!DOCTYPE component SYSTEM "gmail/entities.dtd"><gui:component xmlns:gui="http://bar.yandex.ru/dev/native/gui" xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <gui:gui>
+        <gui:nodes name="show-notifications">
+            <checkbox label="&settings.show_notifications;" preference="%pref%"/>
+        </gui:nodes>
+    </gui:gui>
+</gui:component>

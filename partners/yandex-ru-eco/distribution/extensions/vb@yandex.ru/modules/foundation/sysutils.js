@@ -27,9 +27,9 @@ const sysutils = {
                     } else {
                         if (typeof val == "string") {
                             valStr = [
-                                "\"",
+                                "'",
                                 val,
-                                "\""
+                                "'"
                             ].join("");
                         } else {
                             valStr = String(val);
@@ -89,7 +89,7 @@ const sysutils = {
                         return comparator.compare(this, aVersion) > 0;
                     },
                     isEqual: function PBVersion_isEqual(aVersion) {
-                        return comparator.compare(this, aVersion) == 0;
+                        return comparator.compare(this, aVersion) === 0;
                     }
                 },
                 architecture: info.XPCOMABI,
@@ -246,7 +246,7 @@ const sysutils = {
     },
     ensureValueTypeIs: function SysUtils_ensureValueTypeIs(val, typeDescr) {
         if (!this.valueTypeIs(val, typeDescr)) {
-            throw new TypeError(strutils.formatString("Value '%1' type is not '%2'", [
+            throw new TypeError(strutils.formatString("Value \"%1\" type is not \"%2\"", [
                 val,
                 typeDescr
             ]));
@@ -436,6 +436,9 @@ sysutils.Timer.prototype = {
         }
         return result;
     },
+    get delay() {
+        return this.timer && this.timer.delay || undefined;
+    },
     set delay(val) {
         if (this.timer) {
             this.timer.delay = val;
@@ -499,17 +502,18 @@ sysutils.DataContainer.prototype = {
     },
     set: function DataContainer_set(aKey, aValue) {
         let key = this._convertKey(aKey);
-        return this._data[key] = {
+        this._data[key] = {
             value: aValue,
             lastAccessTime: Date.now()
         };
+        return this._data[key];
     },
     has: function DataContainer_has(aKey) {
         return Boolean(this._checkExpiredByKey(aKey));
     },
     remove: function DataContainer_remove(aKey) {
         let key = this._convertKey(aKey);
-        return delete this._data[key];
+        delete this._data[key];
     },
     clear: function DataContainer_clear() {
         this._dropAllData();

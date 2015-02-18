@@ -1,0 +1,19 @@
+<?xml version='1.0'?>
+
+<bindings xmlns="http://www.mozilla.org/xbl">
+
+    <binding extends="chrome://global/content/bindings/text.xml#text-label" id="label" inheritstyle="false">
+
+        <implementation>
+            <property name="value">
+                <getter><![CDATA[    return this.getAttribute("value");]]></getter>
+                <setter><![CDATA[    this.setAttribute("value", val);
+    this.tooltipText = val;
+    if (!this.crop) {
+        this.crop = "end";
+    }
+    return val;]]></setter>
+            </property>
+        </implementation>
+    </binding>
+</bindings>

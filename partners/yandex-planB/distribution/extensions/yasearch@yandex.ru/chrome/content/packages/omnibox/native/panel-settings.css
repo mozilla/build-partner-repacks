@@ -1,0 +1,11 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);#ybOmniboxSearchSettingsMenu{-moz-binding:url(bindings.xbl#settings-menu)!important;-moz-appearance:none;border:1px solid #ddd!important;font-size:1.222em;padding:0}
+#ybOmniboxSearchSettingsMenu menuseparator{-moz-appearance:none!important;background-color:#ddd;border:0;height:1px;margin:0!important;padding:0!important}
+#ybOmniboxSearchSettingsMenu menu menupopup{font-size:1em}
+#ybOmniboxSearchSettingsMenu menuitem,#ybOmniboxSearchSettingsMenu menu{-moz-appearance:none;background-color:#fff;border:1px solid transparent;color:#000;font-family:Arial,sans-serif!important;font-size:15px;max-width:20em;height:2em;padding:0;-moz-padding-end:40px}
+#ybOmniboxSearchSettingsMenu menuitem[_moz-menuactive=true],#ybOmniboxSearchSettingsMenu menu[_moz-menuactive=true]{color:#000;background-color:#ffecaf}
+#ybOmniboxSearchSettingsMenu menuitem[disabled=true]{color:graytext!important}
+#ybOmniboxSearchSettingsMenu menuitem[disabled=true][_moz-menuactive=true]{background-color:#fff}
+#ybOmniboxSearchSettingsMenu .menu-text{-moz-appearance:none;-moz-margin-start:2px!important;-moz-margin-end:0!important;padding:0!important}
+#ybOmniboxSearchSettingsMenu menuitem.engine-menuitem .menu-text{-moz-padding-start:30px!important}
+#ybOmniboxSearchSettingsMenu .menu-text,#ybOmniboxSearchSettingsMenu menuitem[yb-current=true] .menu-text{-moz-padding-start:15px!important}
+#ybOmniboxSearchSettingsMenu .menu-accel,#ybOmniboxSearchSettingsMenu .menu-iconic-accel,#ybOmniboxSearchSettingsMenu .menu-accel-container{margin:0!important;padding:0!important}

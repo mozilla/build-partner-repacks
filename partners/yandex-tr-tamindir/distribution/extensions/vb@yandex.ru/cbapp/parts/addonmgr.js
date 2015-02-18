@@ -15,12 +15,20 @@ const addonManager = {
         this.info = {
             __proto__: null,
             addonVersionState: 0,
-            get addonVersionChanged() this.addonVersionState != 0,
-            get addonUpgraded() this.addonVersionState > 0,
-            get addonDowngraded() this.addonVersionState < 0,
+            get addonVersionChanged() {
+                return this.addonVersionState !== 0;
+            },
+            get addonUpgraded() {
+                return this.addonVersionState > 0;
+            },
+            get addonDowngraded() {
+                return this.addonVersionState < 0;
+            },
             addonLastVersion: "0",
             buildNumberChanged: false,
-            get isFreshAddonInstall() this.addonLastVersion === "0"
+            get isFreshAddonInstall() {
+                return this.addonLastVersion === "0";
+            }
         };
         AddonManager.watchAddonUninstall(this.addonId);
         this._checkVersions();
@@ -30,21 +38,17 @@ const addonManager = {
         this._logger = null;
         this.info = null;
     },
-    get addonDir() {
-        return this._application.core.extensionPathFile;
+    get extensionURI() {
+        return this._application.core.extensionURI;
     },
     get addonId() {
-        let id = AddonManager.getAddonId(this.addonDir);
-        this.__defineGetter__("addonId", function addonId() {
-            return id;
-        });
+        let id = AddonManager.getAddonId(this.extensionURI);
+        this.__defineGetter__("addonId", () => id);
         return this.addonId;
     },
     get addonVersion() {
-        let ver = AddonManager.getAddonVersion(this.addonDir);
-        this.__defineGetter__("addonVersion", function addonVersion() {
-            return ver;
-        });
+        let ver = AddonManager.getAddonVersion(this.extensionURI);
+        this.__defineGetter__("addonVersion", () => ver);
         return this.addonVersion;
     },
     get isAddonUninstalling() {

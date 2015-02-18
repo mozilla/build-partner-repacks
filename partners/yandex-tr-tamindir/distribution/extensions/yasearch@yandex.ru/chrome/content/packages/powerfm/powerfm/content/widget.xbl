@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="main.css"/>
+        </resources>
+
+        <content>
+            <xul:toolbarbutton anonid="powerfm-button-main" class="toolbarbutton-1 widget-button" item-command="show" item-href="home" tooltiptext="&powerfm.widget.name;" type="button"/>
+        </content>
+
+        <implementation>
+            <method name="showSlice">
+                <body><![CDATA[    let button = document.getAnonymousElementByAttribute(this, "anonid", "powerfm-button-main");
+    button.doCommand();]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

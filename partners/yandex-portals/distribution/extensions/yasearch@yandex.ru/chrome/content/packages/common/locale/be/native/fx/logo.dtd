@@ -1,0 +1,8 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY widget.name "&vendor.nom;">
+<!ENTITY widget.action.openSettingsDialod.label "Наладкі">
+<!ENTITY widget.action.openSettingsDialod.tooltip "Адчыніць акно наладак">
+<!ENTITY widget.action.openAboutDialog.label "Пра праграму">
+<!ENTITY widget.action.openAboutDialog.tooltip "Пра праграму">

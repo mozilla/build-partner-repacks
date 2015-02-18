@@ -7,8 +7,8 @@ const {
 } = Components;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-const EXTENSION_PATH = Services.io.newFileURI(__LOCATION__.parent.parent).spec;
-Cu.import(EXTENSION_PATH + "config.js");
+let extDir = Services.io.newURI(__URI__, null, null);
+Cu.import(extDir.resolve("..") + "config.js");
 const SEARCH_RESPONSE_SUGGESTION_JSON = "application/x-suggestions+json";
 const BROWSER_SUGGEST_PREF = "browser.search.suggest.enabled";
 const XPCOM_SHUTDOWN_TOPIC = "xpcom-shutdown";
@@ -69,7 +69,7 @@ SuggestAutoCompleteResult.prototype = {
         if (!this._comments[index]) {
             return null;
         }
-        if (index == 0) {
+        if (index === 0) {
             return "suggestfirst";
         }
         return "suggesthint";
@@ -88,6 +88,35 @@ SuggestAutoCompleteResult.prototype = {
         Ci.nsIAutoCompleteResult,
         Ci.nsISupports
     ])
+};
+let lastResultHack = {
+    _result: null,
+    get result() {
+        return this._result;
+    },
+    set result(aValue) {
+        this._result = aValue;
+    },
+    clear: function lastResultHack_clear() {
+        if (this._result) {
+            this._result._results = [];
+            this._result = null;
+        }
+    },
+    get first() {
+        let result = this.result;
+        if (result) {
+            return result._results[0];
+        }
+        return null;
+    },
+    get last() {
+        let result = this.result;
+        if (result) {
+            return result._results[result._lastResultIndex];
+        }
+        return null;
+    }
 };
 function SuggestAutoComplete() {
     this._init();
@@ -265,7 +294,7 @@ SuggestAutoComplete.prototype = {
                     searchString = results[0] || "";
                     suggestionResults = results[1] || [];
                     suggestionResults = suggestionResults.filter(function (term) {
-                        return historyResults.indexOf(term) == -1;
+                        return historyResults.indexOf(term) === -1;
                     });
                 }
             }
@@ -393,35 +422,6 @@ SuggestAutoComplete.prototype = {
         Ci.nsIAutoCompleteObserver,
         Ci.nsISupports
     ])
-};
-let lastResultHack = {
-    _result: null,
-    get result() {
-        return this._result;
-    },
-    set result(aValue) {
-        this._result = aValue;
-    },
-    clear: function lastResultHack_clear() {
-        if (this._result) {
-            this._result._results = [];
-            this._result = null;
-        }
-    },
-    get first() {
-        let result = this.result;
-        if (result) {
-            return result._results[0];
-        }
-        return null;
-    },
-    get last() {
-        let result = this.result;
-        if (result) {
-            return result._results[result._lastResultIndex];
-        }
-        return null;
-    }
 };
 const DIACRITICS_MAP = [
     {

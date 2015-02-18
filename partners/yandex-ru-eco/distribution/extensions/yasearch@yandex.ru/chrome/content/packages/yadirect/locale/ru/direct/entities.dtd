@@ -1,0 +1,23 @@
+﻿<!ENTITY direct.name "Яндекс.Директ">
+
+<!ENTITY direct.setting.minutes "мин.">
+<!ENTITY direct.setting.update_interval "Интервал обновления:">
+
+<!ENTITY direct.currency "у.е.">
+
+<!ENTITY direct.button.label "Директ">
+<!ENTITY direct.tooltip.notlogged.row1 "Показывает состояние вашего счета в Яндекс.Директе">
+<!ENTITY direct.tooltip.notlogged.row2 "Пожалуйста, авторизуйтесь">
+<!ENTITY direct.tooltip.error.row1 "Данные по вашему счету в Яндекс.Директе получить не удалось">
+<!ENTITY direct.tooltip.error.row2 "Пожалуйста, проверьте соединение">
+<!ENTITY direct.tooltip.nocampaigns.row1 "Данные по вашему счету в Яндекс.Директе получить не удалось">
+<!ENTITY direct.tooltip.nocampaigns.row2 "Пожалуйста, разместите рекламное объявление">
+<!ENTITY direct.tooltip "Перейти к моим Клиентам в Яндекс.Директ">
+<!ENTITY direct.tooltip.cashstate "Состояние вашего счета в Яндекс.Директе">
+<!ENTITY direct.tooltip.balance "Общий остаток:">
+<!ENTITY direct.tooltip.delay "Отсрочка:">
+<!ENTITY direct.tooltip.debts "Задолженность:">
+<!ENTITY direct.tooltip.activecamp "Активных кампаний:">
+<!ENTITY direct.updateinfo "Обновить информацию">
+<!ENTITY direct.movetocamp "Перейти к Моим Кампаниям">
+<!ENTITY direct.sincdebt "Погасить задолженность">

@@ -1,0 +1,22 @@
+<!ENTITY translate.name "Çevirmen">
+
+<!ENTITY translate.button.tooltip_before "Çevirmen">
+<!ENTITY translate.button.tooltip_no_dir "Lütfen, tercüme yönünü seçin">
+<!ENTITY translate.menu.enable "Çevirmeni aç">
+<!ENTITY translate.menu.onmouse "İmlecin hareketiyle tercüme et">
+<!ENTITY translate.menu.onkey "Tuş kombinasyonuyla tercüme et">
+<!ENTITY translate.menu.source_lang "Orijinal dil">
+<!ENTITY translate.menu.target_lang "Hedef dil">
+<!ENTITY translate.linklabel "Tüm seçenekleri bul">
+
+<!ENTITY translate.settings.translate_on "Sözcüğü çevir:">
+<!ENTITY translate.settings.radio_hover "imlecin hareketiyle">
+<!ENTITY translate.settings.radio_hotkey "tuş kombinasyonuyla">
+<!ENTITY translate.settings.hotkey_value "Tercüme için tuş kombinasyonu:">
+
+<!ENTITY translate.alt_key "Alt">
+<!ENTITY translate.shift_key "Shift">
+<!ENTITY translate.ctrl_key "Ctrl">
+
+
+<!ENTITY translate.showYandex "http://www.yandex.com.tr">

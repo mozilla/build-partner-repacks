@@ -1,0 +1,7 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarbutton[anonid=button-auth],toolbarbutton[anonid=webmaster-button]{list-style-image:url(../icons/ico.svg)!important}
+[cb-theme-color=dark] toolbarbutton[anonid=button-auth],[cb-theme-color=dark] toolbarbutton[anonid=webmaster-button]{list-style-image:url(../icons/ico-inverted.svg)!important}
+toolbarbutton[anonid=webmaster-button][yb-virused=true]{list-style-image:url(../icons/warning.png)!important}
+menuitem[yb-virused=true]{list-style-image:url(../icons/virused.png)!important}
+toolbarbutton[anonid=webmaster-button][throbber=true]{list-style-image:url(/-common/img/throbber.gif)!important}
+toolbaritem:not([auth=true]) toolbarbutton:not([anonid=button-auth]),toolbaritem[auth=true] toolbarbutton[anonid=button-auth],menuitem[label=""]{display:none!important}
+toolbaritem[yb-no-data] tooltip[anonid=webmaster-tooltip]>:not([anonid=tooltip-error-grid]),toolbaritem:not([yb-no-data=true]) tooltip[anonid=webmaster-tooltip] grid[anonid=tooltip-error-grid]{display:none}

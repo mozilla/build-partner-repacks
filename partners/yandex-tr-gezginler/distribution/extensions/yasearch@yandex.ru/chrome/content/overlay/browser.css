@@ -1,0 +1,18 @@
+@import url(chrome://global/skin/);@import url(xb-ui-elements.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);window:not([chromehidden~=toolbar]) toolbar#yasearch-bar{-moz-binding:url(../bindings/customtoolbar/toolbar.xbl#toolbar)!important;-moz-box-align:center}
+window:not([chromehidden~=toolbar]) toolbar#yasearch-bar[cb-australis=false]{-moz-binding:url(../bindings/customtoolbar/toolbar.xbl#toolbar-old)!important}
+#yasearch-toggle-barless-button{-moz-binding:url(../bindings/chevron/chevron.xml#toggle-barless-button)!important}
+toolbar toolbaritem[cb-app=yasearch] toolbarbutton{-moz-box-orient:horizontal!important}
+toolbaritem[cb-app=yasearch] toolbarbutton .toolbarbutton-icon,toolbaritem[cb-app=yasearch] toolbarbutton .toolbarbutton-icon stack>image{height:16px}
+#navigator-toolbox:not([cb-os=mac])>#nav-bar toolbaritem[cb-app=yasearch] .toolbarbutton-1:not([type=menu-button])>.toolbarbutton-icon,#navigator-toolbox:not([cb-os=mac])>#nav-bar toolbaritem[cb-app=yasearch] .toolbarbutton-1>.toolbarbutton-menubutton-button>.toolbarbutton-icon{height:24px}
+#PanelUI-popup toolbaritem[cb-app=yasearch] toolbarbutton .toolbarbutton-icon,#PanelUI-popup toolbaritem[cb-app=yasearch] toolbarbutton .toolbarbutton-icon stack>image{width:32px;height:32px}
+toolbaritem[xb-customize=removed]{display:none!important}
+toolbar[cb-app=yasearch] #urlbar-container{min-width:30em!important;min-width:50vw!important}
+#yasearch-urlbar-icons{-moz-box-align:center!important}
+#yasearch-slice-panel{-moz-binding:url(../bindings/slices/slices.xbl#slice-panel)}
+#yasearch-slice-panel[yaOSName=mac]{margin-top:5px}
+#yasearch-slice-browser{border:1px solid rgba(0,0,0,.1)!important}
+#yasearch-slice-panel[yaOSName=windows] #yasearch-slice-browser{box-shadow:0 10px 20px -5px rgba(0,0,0,.4);margin-left:20px;margin-right:20px}
+#yasearch-slice-panel[yaOSName=mac] #yasearch-slice-browser{border-color:transparent!important}
+#yasearch-slice-panel[yaOSName=linux]{border:1px solid transparent!important}
+notification[value$="-anonymous-statistic-notification"]{-moz-binding:url(../bindings/notifications/anonymous-statistic.xbl#notification)}
+notification{border:0;margin:0;padding:0}

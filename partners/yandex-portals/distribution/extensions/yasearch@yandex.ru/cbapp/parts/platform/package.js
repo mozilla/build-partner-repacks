@@ -48,13 +48,17 @@ BarPlatform.FilePackage = Base.extend({
     getFile: function FilePkg_getFile(path) {
         let file = this.findFile(path);
         if (!file) {
-            throw new Error(this._consts.ERR_FILE_NOT_FOUND + " \"" + path + "\"");
+            throw new Error(this._consts.ERR_FILE_NOT_FOUND + " '" + path + "'");
         }
         return file;
     },
     QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports]),
-    get wrappedJSObject() this,
-    get UUID() this._domain,
+    get wrappedJSObject() {
+        return this;
+    },
+    get UUID() {
+        return this._domain;
+    },
     newChannel: function FilePkg_newChannel(aURI) {
         let file = this.getFile(aURI.QueryInterface(Ci.nsIURL).filePath);
         let filesStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
@@ -231,7 +235,9 @@ BarPlatform.ComponentPackage = BarPlatform.FilePackage.extend({
         this._settings = null;
         this.base();
     },
-    get id() this._id,
+    get id() {
+        return this._id;
+    },
     getUnit: function ComponentPackage_getUnit(unitName) {
         let unit = this._units[unitName];
         if (!unit) {
@@ -248,7 +254,7 @@ BarPlatform.ComponentPackage = BarPlatform.FilePackage.extend({
         }
     },
     removeSettingUser: function ComponentPackage_removeSettingUser(settingName, componentID) {
-        if (!settingName in this._settings) {
+        if (!(settingName in this._settings)) {
             return;
         }
         let users = this._settings[settingName];

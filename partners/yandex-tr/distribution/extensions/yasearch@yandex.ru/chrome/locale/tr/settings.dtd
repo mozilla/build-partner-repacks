@@ -1,0 +1,5 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY settings.title "Ayarlar">
+<!ENTITY settings.titleProduct "&product1.gen; ayarlarını yap">

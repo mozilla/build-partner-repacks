@@ -1,0 +1,41 @@
+<!ENTITY pagetranslator.name "Бетті аудару">
+<!ENTITY pagetranslator.translate "Аудару">
+
+<!ENTITY pagetranslator.notification.revert "Бет түпнұсқасы">
+<!ENTITY pagetranslator.notification.label "аударылды">
+<!ENTITY pagetranslator.notification.process "Бет аудармасы">
+
+<!ENTITY pagetranslator.notification.english.gen "ағылшын тілінен">
+<!ENTITY pagetranslator.notification.russian.gen "орыс тілінен">
+<!ENTITY pagetranslator.notification.german.gen "неміс тілінен">
+<!ENTITY pagetranslator.notification.spanish.gen "испан тілінен">
+<!ENTITY pagetranslator.notification.italian.gen "итальян тілінен">
+<!ENTITY pagetranslator.notification.french.gen "француз тілінен">
+<!ENTITY pagetranslator.notification.ukrainian.gen "украин тілінен">
+<!ENTITY pagetranslator.notification.turkish.gen "түрік тілінен">
+
+<!ENTITY pagetranslator.notification.prompt.preambula "Аударма">
+<!ENTITY pagetranslator.notification.prompt.name "PROMT бағдарламасымен орындалуда">
+
+<!ENTITY pagetranslator.notification.polish.gen "поляк тілінен">
+<!ENTITY pagetranslator.notification.promt.name "PROMT бағдарламасымен орындалды">
+<!ENTITY pagetranslator.notification.promt.preambula "Аударма">
+<!ENTITY pagetranslator.notification.english.nom "ағылшын тілі">
+<!ENTITY pagetranslator.notification.french.nom "француз тілі">
+<!ENTITY pagetranslator.notification.german.nom "неміс тілі">
+<!ENTITY pagetranslator.notification.italian.nom "итальян тілі">
+<!ENTITY pagetranslator.notification.polish.nom "поляк тілі">
+<!ENTITY pagetranslator.notification.russian.nom "орыс тілі">
+<!ENTITY pagetranslator.notification.spanish.nom "испан тілі">
+<!ENTITY pagetranslator.notification.turkish.nom "түрік тілі">
+<!ENTITY pagetranslator.notification.ukrainian.nom "украин тілі">
+<!ENTITY pagetranslator.settings.tlang.label "Мәтіннің аударылатын тілін таңдаңыз">
+<!ENTITY pagetranslator.notification.error "Бет толық аударылған жоқ. Аударма орындау барысында қате кетт">
+<!ENTITY pagetranslator.notification.error.repeat "Тағы сынап көріңіз">
+<!ENTITY pagetranslator.notification.timeout "Бетті аудару іске аспады. Интернетке қосылыс жоқ">
+<!ENTITY pagetranslator.notification.close "Жабу">
+<!ENTITY pagetranslator.notification.tooltip "Беттің аудармасы үшін мекен-жай жолағындағы {button} батырмасына басыңыз">
+<!ENTITY pagetranslator.notification.suggest.button.noYaBrowser "Толығырақ">
+<!ENTITY pagetranslator.notification.suggest.button.yaBrowser "Ашу">
+<!ENTITY pagetranslator.notification.suggest "Аударманың барлық мүмкіндіктерін Яндекс.Браузерден байқап көріңіз">
+<!ENTITY pagetranslator.notification.translation.promo "Яндекс.Браузердегі аударманың барлық мүмкіндіктері">

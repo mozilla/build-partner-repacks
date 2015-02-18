@@ -1,3 +1,4 @@
+"use strict";
 var EXPORTED_SYMBOLS = ["commonAdvertisement"];
 var commonAdvertisement = function () {
     var SILENT_PERIOD_MS = 24 * 60 * 60 * 1000;
@@ -35,12 +36,8 @@ var commonAdvertisement = function () {
                 return config.ads[id] && config.ads[id].enabled;
             });
             ids = ids.filter(function (id) {
-                if (config.ads[id]["max-refuse-count"] === 0)
-                    return true;
-                if (config.ads[id]["max-show-count"] === 0)
-                    return true;
-                var overRefused = stateJson.blocks[id].refuseCount >= config.ads[id]["max-refuse-count"];
-                var overShown = stateJson.blocks[id].showCount >= config.ads[id]["max-show-count"];
+                var overRefused = config.ads[id]["max-refuse-count"] > 0 && stateJson.blocks[id].refuseCount >= config.ads[id]["max-refuse-count"];
+                var overShown = config.ads[id]["max-show-count"] > 0 && stateJson.blocks[id].showCount >= config.ads[id]["max-show-count"];
                 return !overRefused && !overShown;
             });
             var now = Date.now();
@@ -110,7 +107,7 @@ var commonAdvertisement = function () {
             if (adBlock) {
                 return adBlock.urls[key];
             }
-            return str;
+            return key;
         },
         isFileForYB: function (filename) {
             return /\.(epub|fb2|pdf|doc|docx|ppt|pptx|rtf)$/i.test(filename);

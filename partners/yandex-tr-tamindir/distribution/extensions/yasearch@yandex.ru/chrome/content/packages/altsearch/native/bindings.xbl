@@ -1,0 +1,427 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % altsearchDTD SYSTEM "/altsearch.dtd">
+%altsearchDTD;
+]>
+
+<bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="panel">
+        <resources>
+            <stylesheet src="styles/panel.css"/>
+        </resources>
+
+        <content hidden="true">
+            <hbox align="center" anonid="container" flex="1" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <hbox align="baseline" anonid="search-box" flex="1">
+                    <label value="&wgt.altsearch.searchAnother.start.label; «"/>
+                    <label anonid="search-string-full" class="bold" xbl:inherits="value=searchString"/>
+                    <label anonid="search-string-cropped" class="bold" crop="end" flex="1" hidden="true" xbl:inherits="value=searchString"/>
+                    <label value="» &wgt.altsearch.searchAnother.end.label;:"/>
+                    <hbox align="baseline" anonid="search-engines"/>
+                </hbox>
+                <hbox align="baseline" anonid="image-box">
+                    <hbox class="hoverable">
+                        <image anonid="setting-image" class="clickable hoverable-item" onclick="if (event.button !== 2) {_sendStatistic('set'); _openComponentSettings();}"/>
+                    </hbox>
+                    <hbox class="hoverable">
+                        <image anonid="close-image" class="clickable hoverable-item" onclick="if (event.button !== 2) {_sendStatistic('close'); _hideForCurrentPage();}"/>
+                    </hbox>
+                </hbox>
+            </hbox>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="api" readonly="true">this._moduleElement.api</field>
+            <field name="wListener" readonly="true">this._moduleElement.wListener</field>
+
+            <field name="_moduleElement" readonly="true">this.module</field>
+            <field name="mSearchBox">this._getElementByAttr("anonid", "search-box")</field>
+            <field name="mFullSearchString">this._getElementByAttr("anonid", "search-string-full")</field>
+            <field name="mCroppedSearchString">this._getElementByAttr("anonid", "search-string-cropped")</field>
+            <field name="mSearchEngines">this._getElementByAttr("anonid", "search-engines")</field>
+
+            <field name="_windowEventsListen">false</field>
+            <field name="_previousWindowWidth">0</field>
+
+            <field name="_packageVersion"><![CDATA[    {
+        let version = "0";
+        if (this.api.Package.info && this.api.Package.info.version) {
+            version = this.api.Package.info.version;
+        }
+        version = version.replace(".", "-", "g");
+    }]]></field>
+
+            <property name="currentBrowser" onget="return gBrowser.mCurrentBrowser;" readonly="true"/>
+
+            <property name="contentWindow" readonly="true">
+                <getter><![CDATA[    return this.currentBrowser.contentWindowAsCPOW || this.currentBrowser.contentWindow;]]></getter>
+            </property>
+
+            <property name="contentDocument" readonly="true">
+                <getter><![CDATA[    return this.currentBrowser.contentDocumentAsCPOW || this.currentBrowser.contentDocument;]]></getter>
+            </property>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+    this._moduleElement.module.searchEnginesInfo.forEach(function (engine) {
+        let button = document.createElementNS(XUL_NS, "button");
+        button.setAttribute("label", engine.name);
+        button.setAttribute("data-engine-id", engine.id);
+        button.classList.add("clickable");
+        this.mSearchEngines.appendChild(button);
+    }, this);
+    this.mSearchBox.addEventListener("overflow", this, false);
+    this.mSearchEngines.addEventListener("click", this, false);
+    this.setAttribute("data-ya-os", this.api.Environment.os.name);]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    this.hide();
+    this.mSearchBox.removeEventListener("overflow", this, false);
+    this.mSearchEngines.removeEventListener("click", this, false);
+    this.wListener.removeAllTabData("altSearchTabData");]]></body>
+            </method>
+
+            <field name="_contentMessageName">'yasearch@yandex.ru:altsearch:event'</field>
+
+            <field name="_contentMessageListener"><![CDATA[    {
+        let messageListener = function messageListener({data}) {
+            if (data.eventType) {
+                this._checkPageScroll();
+            }
+        }.bind(this);
+        messageListener;
+    }]]></field>
+
+            <method name="fill">
+                <parameter name="aEngineId"/>
+                <parameter name="aSearchString"/>
+                <body><![CDATA[    this.setAttribute("searchString", aSearchString);
+    this.setAttribute("searchEngine", aEngineId);
+    this.mCroppedSearchString.hidden = true;
+    this.mFullSearchString.hidden = false;
+    Array.slice(this.mSearchEngines.querySelectorAll("[data-engine-id]")).forEach(label => label.hidden = label.getAttribute("data-engine-id") === aEngineId);
+    if (!this._windowEventsListen) {
+        this._windowEventsListen = true;
+        window.addEventListener("resize", this, false);
+        this._loadFrameScript();
+        window.messageManager.addMessageListener(this._contentMessageName, this._contentMessageListener);
+    }
+    let readyState = this.contentDocument.readyState;
+    let checkScrollTimeout = readyState == "complete" ? 0 : 2000;
+    setTimeout(function () {
+        this._checkPageScroll(true);
+    }.bind(this), checkScrollTimeout);
+    this._previousWindowWidth = window.innerWidth;]]></body>
+            </method>
+
+            <method name="_loadFrameScript">
+                <body><![CDATA[    let frameScript = "function altsearchFrameScript() {" + "    let eventHandler = function (event) {" + "        switch (event.type) {" + "            case 'scroll':" + "                sendAsyncMessage(" + "                    '" + this._contentMessageName + "'," + "                    {eventType: event.type}" + "                );" + "                break;" + " " + "            default:" + "                break;" + "        }" + "    };" + "    " + "    addEventListener('scroll', eventHandler, false);" + "}";
+    let frameScriptURL = "data:application/javascript;charset=utf-8," + encodeURIComponent("(" + frameScript + ")()");
+    window.messageManager.loadFrameScript(frameScriptURL, false);
+    this.loadFrameScript = function emptyLoadFrameScript() {
+    };]]></body>
+            </method>
+
+            <method name="hide">
+                <body><![CDATA[    if (this._windowEventsListen) {
+        this._windowEventsListen = false;
+        window.removeEventListener("resize", this, false);
+        window.messageManager.removeMessageListener(this._contentMessageName, this._contentMessageListener);
+    }
+    this.removeAttribute("searchEngine");
+    this.hidden = true;]]></body>
+            </method>
+
+            <method name="_hideForCurrentPage">
+                <body><![CDATA[    let tabData = this.wListener.getTabData(this.currentBrowser, "altSearchTabData");
+    if (tabData) {
+        tabData.closedByUser = true;
+    }
+    this.hide();]]></body>
+            </method>
+
+            <method name="_checkPageScroll">
+                <parameter name="aWaitOnNullScroll"/>
+                <body><![CDATA[    if (!this.hidden) {
+        return;
+    }
+    let [
+        ,
+        searchString
+    ] = this._moduleElement.module.getSearchPropsFromURI(this.currentBrowser.currentURI);
+    if (!searchString) {
+        this.hide();
+        return;
+    }
+    let tabData = this.wListener.getTabData(this.currentBrowser, "altSearchTabData");
+    if ("url" in tabData) {
+        if (tabData.url === this.contentWindow.location.href) {
+            if (tabData.closedByUser) {
+                this.hide();
+            } else {
+                this.setSearchBoxMargin();
+                this.hidden = false;
+            }
+            return;
+        } else {
+            delete tabData.url;
+            delete tabData.closedByUser;
+        }
+    }
+    let {scrollY, scrollMaxY} = this.contentWindow;
+    if (aWaitOnNullScroll && scrollY === 0 && scrollMaxY === 0) {
+        setTimeout(this._checkPageScroll.bind(this), 2000);
+        return;
+    }
+    if (scrollMaxY * 0.05 < scrollMaxY - scrollY) {
+        return;
+    }
+    tabData.url = this.contentWindow.location.href;
+    this.setSearchBoxMargin();
+    this.hidden = false;
+    this.api.Statistics.logCustomAction(100);
+    this._sendStatistic("show");]]></body>
+            </method>
+
+            <method name="setSearchBoxMargin">
+                <body><![CDATA[    let leftMargin = 20;
+    let inputName = this._moduleElement.module.getPageInputName(gBrowser.currentURI);
+    if (inputName) {
+        let input = this.contentDocument.querySelector("input[name='" + inputName + "']");
+        if (input) {
+            try {
+                let formMargin = Math.max(leftMargin, input.getBoundingClientRect().left);
+                if (formMargin < this.contentWindow.innerWidth / 2) {
+                    leftMargin = formMargin;
+                }
+            } catch (e) {
+            }
+        }
+    }
+    this.mSearchBox.style.marginLeft = leftMargin + "px";]]></body>
+            </method>
+
+            <method name="_openComponentSettings">
+                <body><![CDATA[    this.api.Controls.openSettingsDialog(null, this.api.componentID);]]></body>
+            </method>
+
+            <method name="_getElementByAttr">
+                <parameter name="aAttr"/>
+                <parameter name="aValue"/>
+                <body><![CDATA[    return document.getAnonymousElementByAttribute(this, aAttr, aValue);]]></body>
+            </method>
+
+            <method name="_sendStatistic">
+                <parameter name="aAction"/>
+                <body><![CDATA[    let version = this._packageVersion;
+    let fromEngineId = this.getAttribute("searchEngine");
+    if (!fromEngineId) {
+        return;
+    }
+    fromEngineId = "on" + fromEngineId;
+    if ("logClickStatistics" in this.api.Statistics) {
+        this.api.Statistics.logClickStatistics({
+            cid: 72213,
+            path: "fx." + version + "." + fromEngineId + "." + aAction
+        });
+    }]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "click": {
+            if (aEvent.target.localName !== "button") {
+                return;
+            }
+            if (aEvent.button === 2) {
+                return;
+            }
+            let engineId = aEvent.target.getAttribute("data-engine-id");
+            if (!engineId) {
+                return;
+            }
+            let searchString = this.getAttribute("searchString");
+            let {prepearedQuery, action} = this._moduleElement.module.getEngineData(engineId, searchString);
+            this.api.Controls.navigateBrowser({
+                url: prepearedQuery,
+                eventInfo: aEvent,
+                target: "new tab"
+            });
+            if (action) {
+                this.api.Statistics.logCustomAction(action);
+            }
+            this._sendStatistic(engineId);
+            break;
+        }
+    case "resize":
+        if (aEvent.target !== aEvent.currentTarget) {
+            return;
+        }
+        let previousWidth = this._previousWindowWidth;
+        this._previousWindowWidth = window.innerWidth;
+        if (window.innerWidth - previousWidth < 0) {
+            return;
+        }
+        if (this.mCroppedSearchString.hidden) {
+            return;
+        }
+        if (!this.mCroppedSearchString.boxObject.width) {
+            return;
+        }
+        setTimeout(function (text) {
+            this.mCroppedSearchString.hidden = true;
+            this.mFullSearchString.hidden = false;
+        }.bind(this), 0);
+        break;
+    case "overflow":
+        if (aEvent.target !== aEvent.currentTarget) {
+            return;
+        }
+        if (aEvent.detail === 0) {
+            return;
+        }
+        this.mCroppedSearchString.hidden = false;
+        this.mFullSearchString.hidden = true;
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding id="button">
+        <implementation implements="nsIObserver">
+            <field name="api" readonly="true">this.module.API</field>
+            <field name="mPanel">null</field>
+            <field name="wListener">this.api.Browser.getWindowListener(window)</field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this._createPanel();
+    window.setTimeout(function wdgtxConstructorTimed() {
+        if (!this._wdgtxConstructed) {
+            return;
+        }
+        this.wListener.addListener("WindowLocationChange", this);
+        this.wListener.addListener("DOMContentLoaded", this);
+        if (!(this.mPanel && this.mPanel.hidden)) {
+            return;
+        }
+        try {
+            if (this.contentDocument.readyState === "loading") {
+                return;
+            }
+        } catch (e) {
+        }
+        this._processURI(gBrowser.currentURI);
+    }.bind(this), 500);]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    this.wListener.removeListener("WindowLocationChange", this);
+    this.wListener.removeListener("DOMContentLoaded", this);
+    this._removePanel();]]></body>
+            </method>
+
+            <method name="_processURI">
+                <parameter name="aURI"/>
+                <body><![CDATA[    let [
+        searchId,
+        searchString
+    ] = this.module.getSearchPropsFromURI(aURI);
+    if (!searchString) {
+        this._hidePanel();
+        return;
+    }
+    this._showPanel(searchId, searchString);]]></body>
+            </method>
+
+            <method name="_showPanel">
+                <parameter name="aEngineId"/>
+                <parameter name="aSearchString"/>
+                <body><![CDATA[    if (!this.mPanel) {
+        this._createPanel();
+    }
+    if (this.mPanel && typeof this.mPanel.fill == "function") {
+        this.mPanel.fill(aEngineId, aSearchString);
+    }]]></body>
+            </method>
+
+            <method name="_hidePanel">
+                <body><![CDATA[    if (this.mPanel && typeof this.mPanel.hide == "function") {
+        this.mPanel.hide();
+    }]]></body>
+            </method>
+
+            <method name="_createPanel">
+                <body><![CDATA[    const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+    let panel = document.createElementNS(XUL_NS, "hbox");
+    panel.setAttribute("id", this.module.PANEL_ID);
+    let browserBottombox = document.getElementById("browser-bottombox");
+    browserBottombox.parentNode.insertBefore(panel, browserBottombox);
+    panel.module = this;
+    this.mPanel = panel;]]></body>
+            </method>
+
+            <method name="_removePanel">
+                <body><![CDATA[    if (!this.mPanel) {
+        return;
+    }
+    if (this.mPanel.parentNode) {
+        this.mPanel.parentNode.removeChild(this.mPanel);
+    }
+    delete this.mPanel.module;
+    this.mPanel = null;]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="subject"/>
+                <parameter name="topic"/>
+                <parameter name="data"/>
+                <body><![CDATA[    if (!data.isCurrentTab) {
+        return;
+    }
+    switch (topic) {
+    case "WindowLocationChange":
+        this._hidePanel();
+        if (data.readyState === "loading") {
+            return;
+        }
+    case "DOMContentLoaded":
+        let doc = data.tab.contentDocumentAsCPOW || data.tab.contentDocument;
+        if (!doc || !/^https?:\/\//.test(doc.documentURI) || !/[^x]html/.test(doc.contentType)) {
+            this._hidePanel();
+            return;
+        }
+        if (topic === "DOMContentLoaded") {
+            let tabData = this.wListener.getTabData(gBrowser.mCurrentBrowser, "altSearchTabData");
+            if (tabData) {
+                delete tabData.closedByUser;
+            }
+        }
+        this._processURI(data.uri);
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

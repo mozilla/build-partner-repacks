@@ -1,0 +1,369 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="styles/main.css"/>
+        </resources>
+
+        <content>
+            <xul:toolbarbutton anonid="button-auth" class="toolbarbutton-1 widget-button" item-href="auth" label="&direct.button.label;" tooltip="direct-no-auth-tooltip" yb-native-not-authorized="true"/>
+
+            <xul:toolbarbutton anonid="direct-agency-button" class="toolbarbutton-1 widget-button" item-href="camp" label="&direct.button.label;" tooltip="direct-agency-tooltip"/>
+
+            <toolbarbutton anonid="direct-button" class="toolbarbutton-1 widget-button" item-href="camp" label="&direct.button.label;" tooltip="direct-not-agency-tooltip" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+                <menupopup anonid="direct-menupopup">
+                    <menuitem anonid="menuitem-update" item-command="update" label="&direct.updateinfo;"/>
+                    <menuseparator anonid="menuitem-before-camplist"/>
+                    <menuseparator anonid="menuitem-after-camplist"/>
+                    <menuitem anonid="menuitem-camps" item-href="camp" label="&direct.movetocamp;"/>
+                    <menuseparator anonid="menuitem-before-sincdebt"/>
+                    <menuitem anonid="menuitem-sincdebt" item-href="sincdebt" label="&direct.sincdebt;"/>
+                </menupopup>
+            </toolbarbutton>
+
+            <tooltip anonid="direct-noauth-tooltip" id="direct-no-auth-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <grid flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&direct.tooltip.notlogged.row1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&direct.tooltip.notlogged.row2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+            </tooltip>
+
+            <tooltip anonid="direct-agency-tooltip" id="direct-agency-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <grid anonid="tooltip-error-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&direct.tooltip.error.row1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&direct.tooltip.error.row2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <hbox anonid="tooltip-header">&direct.tooltip;</hbox>
+            </tooltip>
+
+            <tooltip anonid="direct-tooltip" id="direct-not-agency-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <grid anonid="tooltip-error-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&direct.tooltip.error.row1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&direct.tooltip.error.row2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <hbox anonid="tooltip-header" flex="1">&direct.tooltip.cashstate;</hbox>
+
+                <grid anonid="tooltip-nocampaigns-grid" flex="1">
+                    <rows>
+                        <row>
+                            <hbox>&direct.tooltip.nocampaigns.row1;</hbox>
+                        </row>
+                        <row>
+                            <hbox>&direct.tooltip.nocampaigns.row2;</hbox>
+                        </row>
+                    </rows>
+                </grid>
+
+                <grid anonid="tooltip-content" flex="1">
+                    <columns><column/><column flex="1"/></columns>
+                    <rows>
+                        <row align="center" anonid="sumrest-tooltip">
+                            <hbox pack="end"><label value="&direct.tooltip.balance;"/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="overdraftrest-tooltip">
+                            <hbox pack="end"><label value="&direct.tooltip.delay;"/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="isoverdraft-tooltip">
+                            <hbox pack="end"><label value="&direct.tooltip.debts;"/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="camps-tooltip">
+                            <hbox pack="end"><label value="&direct.tooltip.activecamp;"/></hbox>
+                            <label/>
+                        </row>
+                    </rows>
+                </grid>
+            </tooltip>
+        </content>
+
+        <implementation>
+            <field name="WIID" readonly="true">this.application.WIID</field>
+
+            <field name="BUTTON_TEXT" readonly="true">"&direct.button.label;"</field>
+
+            <field name="_authButton">document.getAnonymousElementByAttribute(this, "anonid", "button-auth")</field>
+            <field name="_agencyButton">document.getAnonymousElementByAttribute(this, "anonid", "direct-agency-button")</field>
+            <field name="_button">document.getAnonymousElementByAttribute(this, "anonid", "direct-button")</field>
+            <field name="_authTooltip">document.getAnonymousElementByAttribute(this, "id", "direct-no-auth-tooltip")</field>
+            <field name="_agencyTooltip">document.getAnonymousElementByAttribute(this, "anonid", "direct-agency-tooltip")</field>
+            <field name="_tooltip">document.getAnonymousElementByAttribute(this, "anonid", "direct-tooltip")</field>
+            <field name="_menuPopup">document.getAnonymousElementByAttribute(this, "anonid", "direct-menupopup")</field>
+
+            <field name="_menuSeparatorPopulatePoint">document.getAnonymousElementByAttribute(this, "anonid", "menuitem-after-camplist")</field>
+            <field name="_menuUpdatePoint">document.getAnonymousElementByAttribute(this, "anonid", "menuitem-update")</field>
+
+            <field name="_throbberTimer">null</field>
+
+            <field name="observers"><![CDATA[    ({
+        throbber: function direct_observers_throbber(topic, data) {
+            let show = false;
+            let dataObj;
+            try {
+                dataObj = JSON.parse(data);
+            } catch (e) {
+            }
+            if (!dataObj || dataObj.wiid !== this.WIID) {
+                return;
+            }
+            show = !!dataObj.value;
+            if (show) {
+                if (this._throbberTimer) {
+                    this._throbberTimer.cancel();
+                }
+                this._button.setAttribute("throbber", true);
+                this._menuUpdatePoint.setAttribute("disabled", true);
+                this._lastThrobberTime = Date.now();
+            } else {
+                if (this._throbberTimer) {
+                    return;
+                }
+                let delay = 700 - (Date.now() - this._lastThrobberTime);
+                if (delay < 0) {
+                    delay = 0;
+                }
+                this._throbberTimer = new this.application.api.SysUtils.Timer(function () {
+                    this._throbberTimer = null;
+                    this._lastThrobberTime = null;
+                    this._button.setAttribute("throbber", false);
+                    this._menuUpdatePoint.removeAttribute("disabled");
+                }.bind(this), delay);
+            }
+        },
+        display: function direct_observers_display(topic, data) {
+            if (data) {
+                let dataObj;
+                try {
+                    dataObj = JSON.parse(data);
+                } catch (e) {
+                }
+                if (!dataObj || dataObj.wiid !== this.WIID) {
+                    return;
+                }
+            }
+            this.updateView();
+        }
+    });]]></field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.ybwFinalize();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this._agencyButton.hidden = true;
+    this.updateView();]]></body>
+            </method>
+
+            <method name="ybwFinalize">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    if (this._throbberTimer) {
+        this._throbberTimer.cancel();
+        this._throbberTimer = null;
+    }]]></body>
+            </method>
+
+            <method name="updateView">
+                <body><![CDATA[    if (!this.application.isAuth()) {
+        this.setAttribute("auth", false);
+        return;
+    }
+    this.setAttribute("auth", true);
+    this.setAttribute("yb-no-data", true);
+    this._setLabel();
+    this._populateMenuItems();
+    this._populateTooltip();
+    let data = this.application.getUserData(this.WIID, "main");
+    if (data) {
+        if (data._error) {
+            return;
+        }
+        if (data.isAgency) {
+            this._button.hidden = true;
+            this._agencyButton.hidden = false;
+        } else {
+            this._button.hidden = false;
+            this._agencyButton.hidden = true;
+        }
+        this.removeAttribute("yb-no-data");
+    }]]></body>
+            </method>
+
+            <method name="_setLabel">
+                <body>
+                    let buttonText = "&direct.button.label;";
+
+                <![CDATA[    let data = this.application.getUserData(this.WIID, "main");
+    let commonData = data && data.common;
+    if (commonData && !data._error) {
+        if (!data.isAgency && commonData.sumrest) {
+            buttonText += " " + commonData.sumrest + " " + commonData.currency;
+        }
+    }
+    this._button.setAttribute("counter", buttonText);]]></body>
+            </method>
+
+            <method name="_populateMenuItems">
+                <body><![CDATA[    this._cleanMenuItems();
+    let data = this.application.getUserData(this.WIID, "main");
+    if (!(data && data.menu) || data._menuError) {
+        return;
+    }
+    let commonData = data.common;
+    let menuData = data.menu;
+    if (!(commonData && commonData.noCampaigns)) {
+        let item = this._menuPopup.querySelector("menuitem[anonid=\"menuitem-camps\"]");
+        if (item) {
+            item.hidden = false;
+            this._menuSeparatorPopulatePoint.previousElementSibling.hidden = false;
+        }
+    }
+    if (commonData && commonData.isoverdraft) {
+        let item = this._menuPopup.querySelector("menuitem[anonid=\"menuitem-sincdebt\"]");
+        if (item) {
+            item.hidden = false;
+            if (item.previousElementSibling) {
+                item.previousElementSibling.hidden = false;
+            }
+        }
+    }
+    let menuSep = this._menuSeparatorPopulatePoint;
+    let menu = this._menuPopup;
+    if (menuData.campsInfo) {
+        let added = false;
+        menuData.campsInfo.forEach(function (campObj) {
+            added = true;
+            if (campObj.sumrest && campObj.cid) {
+                let menuitem = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
+                menuitem.setAttribute("item-href", "go");
+                menuitem.setAttribute("item-param", campObj.cid);
+                menuitem.setAttribute("label", campObj.name + "(" + campObj.cid + ") - " + campObj.sumrest + " " + (commonData && commonData.currency));
+                menu.insertBefore(menuitem, menuSep);
+            }
+        });
+        if (added) {
+            let separator = menu.querySelector("[anonid=\"menuitem-before-camplist\"]");
+            if (separator) {
+                separator.hidden = false;
+            }
+        }
+    }]]></body>
+            </method>
+
+            <method name="_cleanMenuItems">
+                <body><![CDATA[    let elem = this._menuSeparatorPopulatePoint;
+    let menu = this._menuPopup;
+    while (elem && elem.previousElementSibling && elem.previousElementSibling.getAttribute("anonid") !== "menuitem-before-camplist") {
+        this._menuPopup.removeChild(elem.previousElementSibling);
+    }
+    if (elem && elem.previousElementSibling) {
+        elem.previousElementSibling.hidden = true;
+    }
+    [
+        "menuitem-camps",
+        "menuitem-before-sincdebt",
+        "menuitem-sincdebt"
+    ].forEach(function (anonid) {
+        let item = menu.querySelector("[anonid=\"" + anonid + "\"]");
+        if (item) {
+            item.hidden = true;
+        }
+    });]]></body>
+            </method>
+
+            <method name="_populateTooltip">
+                <body><![CDATA[    let tooltip = this._tooltip;
+    let contentGrid = tooltip.querySelector("grid[anonid=\"tooltip-content\"]");
+    Array.slice(tooltip.children).forEach(function (child) {
+        if (child.getAttribute("anonid") != "tooltip-error-grid") {
+            child.hidden = true;
+        }
+    });
+    let data = this.application.getUserData(this.WIID, "main");
+    if (!(data && data.common) || data._error) {
+        return;
+    }
+    let commonData = data.common;
+    if (data.noCampaigns) {
+        let element = tooltip.querySelector("grid[anonid=\"tooltip-nocampaigns-grid\"]");
+        if (element) {
+            element.hidden = false;
+        }
+    } else {
+        let tooltipHeader = tooltip.querySelector("hbox[anonid=\"tooltip-header\"]");
+        if (tooltipHeader) {
+            tooltipHeader.hidden = false;
+        }
+        if (!contentGrid) {
+            return;
+        }
+        contentGrid.hidden = false;
+        Array.slice(contentGrid.querySelectorAll("rows > *")).forEach(function (row) {
+            row.hidden = true;
+        });
+        let values = [];
+        [
+            "sumrest",
+            "overdraftrest",
+            "isoverdraft"
+        ].forEach(function (rest) {
+            if (commonData[rest]) {
+                values.push({
+                    elem: "row[anonid=\"" + rest + "-tooltip\"]",
+                    value: commonData[rest] + " " + commonData.currency
+                });
+            }
+        });
+        if (commonData.camps) {
+            values.push({
+                elem: "row[anonid=\"camps-tooltip\"]",
+                value: commonData.camps
+            });
+        }
+        values.forEach(function (obj) {
+            let elem = contentGrid.querySelector(obj.elem);
+            if (elem) {
+                if (obj.value) {
+                    elem.lastChild.setAttribute("value", obj.value);
+                } else {
+                    elem.lastChild.removeAttribute("value");
+                }
+                elem.hidden = false;
+            }
+        });
+    }]]></body>
+            </method>
+
+        </implementation>
+    </binding>
+
+</bindings>

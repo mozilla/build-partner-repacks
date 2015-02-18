@@ -1,0 +1,39 @@
+<!ENTITY wgt.town.widget.name "Горад">
+
+<!ENTITY wgt.town.setting.town "Горад">
+<!ENTITY wgt.town.setting.town.popular "Папулярныя гарады">
+<!ENTITY wgt.town.setting.title "Імя горада на панэлі">
+<!ENTITY wgt.town.setting.show.name "Паказваць назву горада">
+<!ENTITY wgt.town.setting.show.weather "Паказваць надвор’е">
+<!ENTITY wgt.town.setting.show.traffic "Паказваць заторы">
+<!ENTITY wgt.town.setting.interval "Інтэрвал абнаўлення">
+<!ENTITY wgt.town.settings.autodetect "Вызначаць аўтаматычна">
+<!ENTITY wgt.town.settings.min.label "хв.">
+
+<!ENTITY wgt.town.setup "Наладзіць інформер">
+<!ENTITY wgt.town.refresh "Абнавіць дадзеныя">
+<!ENTITY wgt.town.delete "Выдаліць горад">
+<!ENTITY wgt.town.add "Дабавіць горад">
+
+<!ENTITY wgt.town.weather.nodata "Няма дадзеных пра надвор&#39;е">
+<!ENTITY wgt.town.weather.label "Надвор’е">
+<!ENTITY wgt.town.temperature.label "Тэмпература">
+<!ENTITY wgt.town.wind.label "Вецер">
+<!ENTITY wgt.town.wind.ms "м/с">
+<!ENTITY wgt.town.pressure.label "Ціск">
+<!ENTITY wgt.town.pressure.mm.label "мм.рт.сл.">
+<!ENTITY wgt.town.dampness.label "Вільготнасть">
+<!ENTITY wgt.town.night "Уначы">
+<!ENTITY wgt.town.tomorrow "Заўтра">
+
+<!ENTITY wgt.town.traffic.points "Балаў">
+<!ENTITY wgt.town.traffic.description "Апісанне">
+<!ENTITY wgt.town.traffic.length "Пратягласць">
+<!ENTITY wgt.town.traffic.length.km "км">
+
+<!ENTITY wgt.town.request.lang "be">
+
+<!ENTITY wgt.town.traffic.tooltip "Пробкі ў горадзе">
+<!ENTITY wgt.town.weather.tooltip "Прагноз надвор&#39;я">
+<!ENTITY wgt.town.setting.openPageOnClick.traffic "Па націсканні на кнопку Пробак адчыняць старонку сервіса">
+<!ENTITY wgt.town.setting.openPageOnClick.weather "Па націсканні на кнопку Надвор&#39;я адчыняць старонку сервіса">

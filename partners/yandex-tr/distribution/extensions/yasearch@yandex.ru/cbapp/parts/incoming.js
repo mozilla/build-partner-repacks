@@ -119,11 +119,11 @@ const incomingCompMgr = {
             }
             switch (entry.componentType) {
             case entry.TYPE_WIDGET:
-                widgetLibrary.registerWidgets(compID, true, true);
+                widgetLibrary.registerWidgets(compID, true);
                 weHaveNewWidgets = true;
                 break;
             case entry.TYPE_PLUGIN:
-                widgetLibrary.registerPlugins(compID, true, true);
+                widgetLibrary.registerPlugins(compID, true);
                 weHaveNewPlugins = true;
                 break;
             default:

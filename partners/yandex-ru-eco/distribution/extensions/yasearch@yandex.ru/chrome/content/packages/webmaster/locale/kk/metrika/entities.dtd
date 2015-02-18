@@ -1,0 +1,19 @@
+<!ENTITY ya.metrika.name "Метрика">
+
+<!ENTITY ya.metrika.show-buttonname "Показывать название кнопки">
+<!ENTITY ya.metrika.update-interval-label "Интервал обновления">
+<!ENTITY ya.metrika.settings.interval.unit "часов">
+
+
+<!ENTITY ya.metrika.request-failed-1 "Информацию о ваших счетчиках в Яндекс.Метрике">
+<!ENTITY ya.metrika.request-failed-2 "получить не удалось">
+<!ENTITY ya.metrika.logged-out-tooltip-1 "Позволяет работать c вашими сайтами в сервисе Яндекс.Метрика">
+<!ENTITY ya.metrika.logged-out-tooltip-2 "Пожалуйста, авторизуйтесь">
+<!ENTITY ya.metrika.no-have-counters-1 "У вас нет счетчиков в Яндекс.Метрике">
+<!ENTITY ya.metrika.no-have-counters-2 "Пожалуйста, добавьте счетчики">
+<!ENTITY ya.metrika.go-to-counters "Перейти к счетчикам в Яндекс.Метрике">
+
+<!ENTITY ya.metrika.menu.update "Обновить данные">
+<!ENTITY ya.metrika.add-counter "Добавить счетчик">
+<!ENTITY ya.metrika.menu.settings "Настройки">
+

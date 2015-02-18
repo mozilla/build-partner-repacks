@@ -1,0 +1,123 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % locale SYSTEM "chrome://yasearch/locale/dialogs/defender/defender.dtd">
+%locale;
+]>
+
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="hp-defence" inheritstyle="false">
+        <resources>
+            <stylesheet src="defender.css"/>
+        </resources>
+
+        <content>
+            <xul:image anonid="product-logo"/>
+            <xul:vbox class="content">
+                <xul:label class="title changed" value="&homepage.defence.changed.title;"/>
+                <xul:label class="title changedAgain" value="&homepage.defence.changedAgain.title;"/>
+
+                <xul:grid anonid="pageURLContainer" flex="1">
+                    <xul:columns><xul:column/><xul:column flex="1"/></xul:columns>
+                    <xul:rows>
+                        <xul:row align="center">
+                            <xul:label class="plain" value="&homepage.defence.changed.from.prefix;"/>
+                            <xul:hbox>
+                                <xul:label anonid="hostProtectedLabel" class="plain bold" crop="end" flex="1" value="(&homepage.defence.changed.empty;)"/>
+                                <xul:label class="plain" flex="1000" value="&homepage.defence.changed.from.postfix;"/>
+                            </xul:hbox>
+                        </xul:row>
+                        <xul:row align="center">
+                            <xul:label class="plain" value="&homepage.defence.changed.to.prefix;"/>
+                            <xul:hbox>
+                                <xul:label anonid="hostCurrentLabel" class="plain bold" crop="end" flex="1" value="(&homepage.defence.changed.empty;)"/>
+                                <xul:label class="plain" flex="1000" value="&homepage.defence.changed.to.postfix;"/>
+                            </xul:hbox>
+                        </xul:row>
+                    </xul:rows>
+                </xul:grid>
+
+                <html:div anonid="changesHelp" class="changedAgain" moreHelpShowed="false">
+                    <html:p>
+                        &homepage.defence.again.help;.
+                        <html:span anonid="showMore">&homepage.defence.again.help.more;&#8230;</html:span>
+                    </html:p>
+                    <html:div anonid="homePageChangeHelpText">&homepage.defence.changed.help;</html:div>
+                </html:div>
+
+                <html:p class="changed">&homepage.defence.change.question;?</html:p>
+
+                <html:p class="changed">
+                    <xul:checkbox anonid="protectEnabledCheckbox" checked="true" label="&homepage.defence.change.checkbox;"/>
+                </html:p>
+
+                <xul:hbox class="buttons footerHolder changedAgain">
+                    <xul:button label="&homepage.defence.ok.button;" oncommand="window.close()"/>
+                </xul:hbox>
+
+                <xul:hbox class="buttons footerHolder changed">
+                    <xul:button label="&homepage.defence.allow.button;" oncommand="setHomePageAndExit(true)"/>
+                    <xul:spacer flex="1"/>
+                    <xul:button label="&homepage.defence.deny.button;" oncommand="setHomePageAndExit(false)"/>
+                </xul:hbox>
+            </xul:vbox>
+        </content>
+
+        <implementation>
+            <field name="dialog">document.documentElement</field>
+            <field name="parameters">window.parameters</field>
+            <field name="_application">this.parameters.application</field>
+            <field name="_logger">this._application.getLogger("DefenderDialog")</field>
+            <field name="_bundle">new this._application.appStrings.StringBundle("dialogs/defender/defender.properties")</field>
+            <field name="_acceptCurrent">null</field>
+
+            <constructor><![CDATA[    try {
+        let logoImage = this._getElementByAnonidAttr("product-logo");
+        let logoURL = this._application.branding.brandPackage.resolvePath("/about/logo-fx-medium.png");
+        logoImage.setAttribute("src", logoURL);
+    } catch (e) {
+        this._logger.error(e);
+    }
+    if (this.parameters.protectedHost) {
+        this._getElementByAnonidAttr("hostProtectedLabel").value = this.parameters.protectedHost;
+    }
+    if (this.parameters.currentHost) {
+        this._getElementByAnonidAttr("hostCurrentLabel").value = this.parameters.currentHost;
+    }
+    this.setAttribute("changedAgain", this.parameters.isChangedAgain);]]></constructor>
+
+            <method name="_getElementByAnonidAttr">
+                <parameter name="aAnonidAttrValue"/>
+                <body><![CDATA[    return document.getAnonymousElementByAttribute(this, "anonid", aAnonidAttrValue);]]></body>
+            </method>
+
+            <method name="setHomePageAndExit">
+                <parameter name="aAcceptCurrent"/>
+                <body><![CDATA[    this._acceptCurrent = aAcceptCurrent;
+    window.close();]]></body>
+            </method>
+
+            <destructor><![CDATA[    this.parameters.then(this._acceptCurrent, this._getElementByAnonidAttr("protectEnabledCheckbox").checked);]]></destructor>
+        </implementation>
+
+        <handlers>
+            <handler button="0" event="click"><![CDATA[    let target = event.originalTarget;
+    let anonidAttrValue = target.getAttribute("anonid");
+    switch (anonidAttrValue) {
+    case "mailtoSupportLink":
+        let targetHref = target.getAttribute("href");
+        this._application.core.Lib.misc.navigateBrowser({
+            url: targetHref,
+            target: "new tab"
+        });
+        window.close();
+        break;
+    case "showMore":
+        this._getElementByAnonidAttr("changesHelp").setAttribute("moreHelpShowed", "true");
+        document.documentElement.sizeToContent();
+        document.documentElement.move();
+        break;
+    }]]></handler>
+        </handlers>
+    </binding>
+</bindings>

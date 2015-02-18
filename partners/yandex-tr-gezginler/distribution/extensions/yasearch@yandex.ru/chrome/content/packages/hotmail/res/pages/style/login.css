@@ -1,0 +1,9 @@
+html,body{margin:0;padding:0;overflow:hidden}
+body{font-family:Verdana;font-size:11px;color:#666;cursor:default}
+input[type=button]{font-family:Arial;font-size:13px;color:#000}
+input.text{font-family:Verdana;font-size:11px;width:180px}
+input.placeholder{color:#b2b2b2}
+.field{margin:8px 0}
+#content-wrapper{background:#FFF no-repeat top left url(background.png);width:220px}
+#content{position:relative;padding:64px 20px 20px}
+#error-message{color:#ed1c24;margin:8px 0;display:none}

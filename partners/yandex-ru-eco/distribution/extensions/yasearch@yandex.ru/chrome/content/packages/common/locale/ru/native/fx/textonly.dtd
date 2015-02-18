@@ -1,0 +1,9 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY textonly.label "Только текст">
+<!ENTITY textonly.tooltip.open "&product1.nom;: показать страницу в удобном для чтения виде">
+<!ENTITY textonly.tooltip.close "&product1.nom;: показать страницу в первоначальном виде">
+<!ENTITY textonly.tooltip.not-available "&product1.nom;: удобный просмотр текста на данной странице недоступен">
+
+<!ENTITY textonly.tooltip.introduce "&product1.nom;: Кнопка &#171;Только текст&#187; покажет&#10;страницу в удобном для чтения виде">

@@ -1,0 +1,32 @@
+<!ENTITY wgt.smartbox.name "Ақылды жол">
+<!ENTITY wgt.smartbox.changeSearchEngine "Іздестіру жүйелері">
+<!ENTITY wgt.smartbox.searchEngineSettings "Іздестіру баптаулары">
+<!ENTITY wgt.smartbox.nowUsedSearch "қазір қолданылуда">
+
+<!ENTITY wgt.smartbox.action.switchToTab.label "койындысына өту">
+<!ENTITY wgt.smartbox.action.searchBy.label "{providerName} арқылы іздеу">
+<!ENTITY wgt.smartbox.action.navigate.label "Өту">
+
+<!ENTITY wgt.smartbox.popup.desc "Мекен-жай жолағына іздестіру сұранымын енгізіңіз және сыбырсөздердің ішінен жиі қойылатын сұранымдарды, бұрын қаралған сайттарды және бетбелгілерді көресіз.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.desc "Кеңейту сіздің браузеріңізде істемейді. Браузерді жаңарту.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.url "http://browser.yandex.ru">
+
+
+<!ENTITY wgt.smartbox.dropDownOptions.toggleExpandedState "Іздестіруді баптау">
+<!ENTITY wgt.smartbox.dropDownOptions.disableSuggest "Сыбырсөздерді сөндіру (пернелердің басылуын {providerName} жолдамау)">
+<!ENTITY wgt.smartbox.dropDownOptions.enabledSuggest "Сыбырсөздерді қосу (пернелердің басылуын {providerName} жолдау)">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.label "Іздестіру жабдықтаушысын қосу">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.url "http://go.microsoft.com/fwlink/?LinkId=122812">
+<!ENTITY wgt.smartbox.qs.window.title "Әдепкі іздестіру">
+<!ENTITY wgt.smartbox.qs.tree.col "Іздестіру">
+<!ENTITY wgt.smartbox.qs.add "Қосу">
+<!ENTITY wgt.smartbox.qs.button.ok "Дайын">
+<!ENTITY wgt.smartbox.qs.addsearch "Іздестіруді қосу">
+<!ENTITY wgt.smartbox.qs.searchsettings "Іздестіруді баптау">
+<!ENTITY wgt.smartbox.qs.search "Іздестіру">
+<!ENTITY wgt.smartbox.qs.searchYandex "Яндекс арқылы іздестіру">
+<!ENTITY wgt.smartbox.addressbarLabel "Іздестіру сұранымын енгізіңіз">
+<!ENTITY wgt.smartbox.searchSettings "Іздестіруді баптау">
+<!ENTITY wgt.smartbox.restoreDefaultEngine "{providerName}-ты әдепкі іздестіру жасау">
+<!ENTITY wgt.smartbox.searchSettings.menu.defaultEngine.label "Әдепкі іздестіру">
+<!ENTITY wgt.smartbox.searchSettings.menu.settings.label "Баптаулар">

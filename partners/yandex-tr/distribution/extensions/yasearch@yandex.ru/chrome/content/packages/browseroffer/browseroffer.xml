@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE plugin SYSTEM "browseroffer/entities.dtd"><plugin bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="browseroffer/content/icons/ico.png" name="&browseroffer.name;" xmlns:ui="http://bar.yandex.ru/dev/gui">
+
+    <f:setting default="true" name="showContextMenuLink" scope="plugin">
+        <ui:control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting default="true" name="showContextWidgetSuggest" scope="plugin">
+        <control label="&browseroffer.settings.showSuggest;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="0" name="noflash.userActionTime" scope="plugin"/>
+    <f:setting default="0" name="noflash.closedCounter" scope="plugin"/>
+
+    <modules>
+        <module browser="firefox" file="browseroffer/core/plugin.jsm"/>
+    </modules>
+</plugin>

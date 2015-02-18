@@ -1,0 +1,4 @@
+<!ENTITY package.counters.upd-interval.label "Update interval">
+<!ENTITY package.counters.upd-interval.units "min.">
+
+<!ENTITY package.logout.noprompt.label "Do not confirm log out">

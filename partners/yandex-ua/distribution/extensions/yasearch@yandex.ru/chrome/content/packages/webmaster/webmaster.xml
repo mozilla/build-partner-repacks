@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "webmaster/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="webmaster/content/icons/ico.png" icon-vector="webmaster/content/icons/ico.svg" name="&webmaster.name;" xmlns:ui="http://bar.yandex.ru/dev/gui" unique="true">
+
+    <f:setting default="12" name="update-interval" scope="widget">
+        <control label="&webmaster.update-interval;" source="/webmaster/content/intervals.xml" type="combobox"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="webmaster/core/widget.jsm"/>
+    </modules>
+</widget>

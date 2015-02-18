@@ -1,0 +1,15 @@
+@import url(chrome://global/skin/global.css);@import url(../../bindings/orange/orange.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace orange url(http://bar.yandex.ru/ui/orange);@namespace html url(http://www.w3.org/1999/xhtml);orange|notification-hp-defence{-moz-binding:url(hp-defence.xml#hp-defence);-moz-box-flex:1;min-width:420px;max-width:420px}
+orange|notification-hp-defence{-moz-box-orient:horizontal;-moz-box-align:start}
+orange|notification-hp-defence>image{margin:10px 10px 0 0}
+orange|notification-hp-defence .button-custom{position:relative;-moz-box-flex:0}
+orange|notification-hp-defence .buttons{margin-top:10px;-moz-box-pack:end}
+orange|notification-hp-defence label{margin-top:10px}
+orange|notification-hp-defence .title{font-weight:700;font-size:12pt;color:#000;margin:0}
+orange|notification-hp-defence .content{-moz-box-flex:1}
+orange|notification-hp-defence[changedAgain=false] .changedAgain,orange|notification-hp-defence[changedAgain=false] html|div.changedAgain,orange|notification-hp-defence[changedAgain=false] orange|notification-hp-defence.changedAgain,orange|notification-hp-defence[changedAgain=true] .changed,orange|notification-hp-defence[changedAgain=true] orange|notification-hp-defence.changed,orange|notification-hp-defence[changedAgain=true] html|p.changed{display:none}
+grid[anonid=pageURLContainer] label:not([value=""]){margin-right:.4em!important}
+rows,row{margin:0;padding:0}
+.bold{font-weight:700}
+html|div[anonid=changesHelp][moreHelpShowed=true] html|span[anonid=showMore],html|div[anonid=changesHelp]:not([moreHelpShowed=true])>html|div{display:none}
+html|span[anonid=showMore],html|a{cursor:pointer;color:#1455D6;text-decoration:underline;outline:0}
+html|a:hover{color:#424F63}

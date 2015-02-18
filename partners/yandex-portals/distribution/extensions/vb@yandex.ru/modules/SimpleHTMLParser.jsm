@@ -3,9 +3,15 @@ var EXPORTED_SYMBOLS = ["SimpleHTMLParser"];
 function SimpleHTMLParser() {
 }
 SimpleHTMLParser.prototype = {
-    get contentHandler() this._contentHandler,
-    set contentHandler(val) this._contentHandler = val,
-    get currentPosition() this._currentPosition,
+    get contentHandler() {
+        return this._contentHandler;
+    },
+    set contentHandler(val) {
+        this._contentHandler = val;
+    },
+    get currentPosition() {
+        return this._currentPosition;
+    },
     parseFromString: function SimpleHTMLParser_parseFromString(htmlString) {
         if (!this._contentHandler) {
             throw new Error("No content handler.");
@@ -18,8 +24,9 @@ SimpleHTMLParser.prototype = {
         }
         while (!this._stopped && htmlString) {
             var specialTag = null;
+            var index;
             if (htmlString.substring(0, 4) === "<!--") {
-                var index = htmlString.indexOf("-->");
+                index = htmlString.indexOf("-->");
                 if (index !== -1) {
                     if ("comment" in this._contentHandler) {
                         this._contentHandler.comment(htmlString.substring(4, index));
@@ -49,7 +56,7 @@ SimpleHTMLParser.prototype = {
                 }
             }
             if (treatAsChars || specialTag) {
-                var index = -1;
+                index = -1;
                 if (specialTag) {
                     if (new RegExp("</" + specialTag + ">", "im").test(htmlString)) {
                         index = RegExp.leftContext.length;
@@ -88,8 +95,12 @@ SimpleHTMLParser.prototype = {
     cancel: function SimpleHTMLParser_cancel() {
         this._stopped |= this.CANCEL_FLAG;
     },
-    get stopped() this._stopped & this._STOP_FLAG,
-    get canceled() this._stopped & this._CANCEL_FLAG,
+    get stopped() {
+        return this._stopped & this._STOP_FLAG;
+    },
+    get canceled() {
+        return this._stopped & this._CANCEL_FLAG;
+    },
     _parseStartTag: function SimpleHTMLParser__parseStartTag(tag, tagName, rest) {
         var attrs = this._parseAttributes(tagName, rest);
         this._contentHandler.startElement(tagName, attrs);
@@ -108,9 +119,9 @@ SimpleHTMLParser.prototype = {
         }.bind(this));
         return attrs;
     },
-    _START_TAG_RE: /^<([^>\s\/]+)((\s+[^=>\s]+(\s*=\s*((\"[^"]*\")|(\'[^']*\')|[^>\s]+))?)*)\s*\/?\s*>/m,
+    _START_TAG_RE: /^<([^>\s\/]+)((\s+[^=>\s]+(\s*=\s*((\'[^']*\')|(\'[^']*\')|[^>\s]+))?)*)\s*\/?\s*>/m,
     _END_TAG_RE: /^<\/([^>\s]+)[^>]*>/m,
-    _ATTR_RE: /([-A-Za-z0-9_]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/gm,
+    _ATTR_RE: /([-A-Za-z0-9_]+)(?:\s*=\s*(?:(?:'((?:\\.|[^'])*)')|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/gm,
     _FILL_ATTRS: "checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected".split(","),
     _contentHandler: null,
     _totalLength: 0,

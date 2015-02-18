@@ -1,0 +1,142 @@
+<!--Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY app.name "{product1.nom}">
+<!--Надпись на кнопке поиска-->
+<!ENTITY app.searchButtonTitle "Bul ">
+<!ENTITY bookmarks.otherBookmarks "Diğer favoriler">
+<!ENTITY footer.apps "Uygulamalar ">
+<!ENTITY footer.bookmarks "Favoriler">
+<!ENTITY footer.closedTabs "Kapatılmış sekmeler">
+<!ENTITY footer.downloads "İndirilenler">
+<!ENTITY footer.history "Geçmiş ">
+<!ENTITY settings "Ayarlar ">
+<!--Фоновое изображение-->
+<!ENTITY settings.backgroundImage "Arkaplan görseli">
+<!ENTITY settings.cancel "İptal  ">
+<!--Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY settings.copyright "{branding}">
+<!ENTITY settings.layoutX "yatay  ">
+<!ENTITY settings.layoutY "dikey  ">
+<!--URL-страница лицензионного соглашения. Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY settings.licenseAgreement.link "{branding}">
+<!ENTITY settings.licenseAgreement.title "Lisans Sözleşmesi">
+<!ENTITY settings.releaseDate "yayın tarihi">
+<!ENTITY settings.save "Kaydet">
+<!ENTITY settings.sendstat "Yandex servislerinin iyileştirilmesi için tarayıcının kullanım istatistiklerini otomatik ve anonim olarak paylaş">
+<!ENTITY settings.showBookmarksPanel "Favori panelini göster">
+<!ENTITY settings.thumbsNum "Favori sayısı">
+<!--Надпись, отображающася в пустом поле ввода названия страницы-->
+<!ENTITY settings.titleInput.placeholder "Site adını girin">
+<!--Надпись, отображающася в пустом поле ввода URL-адреса страницы-->
+<!ENTITY settings.urlInput.placeholder "Site adresini girin">
+
+<!ENTITY app.searchExampleTitle "Örneğin">
+<!ENTITY settings.upload "Yükle">
+<!ENTITY app.editThumb "ayarlar">
+<!ENTITY app.empty "Boş ">
+<!ENTITY app.pinThumb "ekle">
+<!ENTITY app.removeThumb "sil">
+<!ENTITY app.unpinThumb "kaldır">
+<!ENTITY settings.isHomePage "{product1.nom} ana sayfanız olarak ayarlandı">
+<!ENTITY settings.setAsHomePage "Ana sayfa olarak ayarla">
+<!ENTITY app.searchTutorial.description "Buraya sadece URL değil, Yandex&#39;te aramak istediğiniz sorgularınızı da girebilirsiniz.">
+<!ENTITY app.searchTutorial.example "Kongo&#39;nun başkenti">
+<!ENTITY app.searchTutorial.thanks "Tamam">
+<!ENTITY settings.showSearchForm "Arama kutusunu göster">
+<!ENTITY app.confirmRemoveThumb "Favori silinsin mi?">
+
+<!ENTITY settings.collapsed "Diğer ayarlar">
+<!ENTITY sync.advertText "Deneyin; Görsel favorilerinizi, seçtiğiniz siteleri ve şifreleri hem evde hem de işyerindeki farklı bilgisayarlarda kullanabilirsiniz.">
+<!ENTITY sync.closeAdvert "Kapat">
+<!ENTITY sync.enable "Eşitlemeyi aç">
+<!ENTITY sync.enabled "Eşitleme açık">
+<!ENTITY sync.outdated "Giriş bilgileri eskidi">
+<!ENTITY sync.repair "Düzelt">
+<!ENTITY sync.offerText "Eşitlemeyi kullanıyorsunuz ancak Görsel Favorileri eşitlemiyorsunuz. Eşitlemek ister misiniz? [Evet, istiyorum](url)">
+<!ENTITY footer.apps.missing "Hiçbir uygulama yok">
+<!ENTITY modalStat.accept "İzin ver">
+<!ENTITY modalStat.cancel "İptal">
+<!ENTITY modalStat.header "Tarayıcı kullanımıyla ilgili istatistiklerin alınması için {vendor.dat} firmasına izin verin">
+<!ENTITY modalStat.moreInfoText "Daha fazla bilgi">
+<!ENTITY modalStat.moreInfoLink "http://legal.yandex.com/confidential/">
+<!ENTITY modalStat.text "Kişisel bilgilerinizi kullanmadığı gibi tarayıcının çalışmasını da etkilemez. {vendor.nom}, bu bilgileri, kendi servislerini geliştirmek için kullanır.">
+<!ENTITY sync.settings "Eşitleme ayarları">
+<!ENTITY sync.turnOn "Aç">
+<!ENTITY sync.vbDisabled "Görsel Favoriler eşitlemesi kapalı">
+<!ENTITY sync.vbEnabled "Görsel Favoriler eşitlemesi açık">
+<!ENTITY dialog.cancel "İptal">
+<!ENTITY dialog.ok "Tamam">
+<!ENTITY modal.cancel "İptal">
+<!ENTITY modal.ok "Tamam">
+<!ENTITY dialog.no "Hayır">
+<!ENTITY dialog.yes "Evet">
+<!ENTITY app.closedWindow "Kapatılan pencere">
+<!ENTITY app.noInternet "Sunucu ile bağlantı yok. Daha sonra tekrar deneyin.">
+<!ENTITY settings.showSites "Favori türü">
+<!ENTITY settings.thumbStyle.logosAndScreenshots "Logolar ve ekran görüntüleri">
+<!ENTITY settings.thumbStyle.logosAndTitles "Logolar ve başlıklar">
+<!ENTITY settings.thumbStyle.screenshots "Sitelerin ekran görüntüleri">
+<!ENTITY contextmenu.addThumb "Favoriyi ekle">
+<!ENTITY contextmenu.editThumb "Favori ayarları">
+<!ENTITY contextmenu.openSettings "Görsel favorilerde arkaplanı değiştir">
+<!ENTITY contextmenu.pinThumb "Favoriyi sabitle">
+<!ENTITY contextmenu.removeThumb "Favoriyi sil">
+<!ENTITY contextmenu.unpinThumb "Favoriyi kaldır">
+<!ENTITY app.newBackgroundsAdvert "Yeni arkaplanları deneyin">
+<!ENTITY settings.otherSoft "Yandex&#39;in diğer uygulamaları">
+<!ENTITY settings.showAdvertisement "Görsel favorilerde içerik önerilerini göster">
+<!ENTITY app.sync "Eşitleme">
+<!ENTITY advertisement.yandexBrowser.docs "Belgeleri doğrudan Yandex.Browser&#39;da açın">
+<!ENTITY advertisement.yandexBrowser.downloads "İndir">
+<!ENTITY advertisement.yandexBrowser.open "Yandex.Browser&#39;ı aç">
+<!ENTITY advertisement.yandexBrowser.updated "Yenilenmiş Yandex.Browser&#39;ı deneyin">
+<!ENTITY app.setBackgroundsAdvert "Arkaplan, ayarlardan değiştirilebilir">
+<!ENTITY auth.addUser "Başka isimle giriş yap">
+<!ENTITY auth.passport "Pasaport">
+<!ENTITY auth.signin "Giriş yap">
+<!ENTITY auth.signout "Çıkış">
+<!ENTITY auth.tune "{vendor.gen} ayarları">
+<!ENTITY settings.editTitle "Açıklamayı düzenle">
+<!ENTITY settings.lastVisited "Kısa süre önce ziyaret edilen">
+<!ENTITY settings.popularSites "Popüler">
+<!ENTITY newyear.18.12.2014.button "Посмотреть">
+<!ENTITY newyear.18.12.2014.text "Текст про новый год">
+<!ENTITY newyear.19.12.2014.button "Показать">
+<!ENTITY newyear.19.12.2014.text "Текст про новый год. Второй день.">
+<!ENTITY newyear.20.12.2014.button "Скачать">
+<!ENTITY newyear.20.12.2014.text "Текст про новый год. Третий день.">
+<!ENTITY newyear.21.12.2014.button "Купить">
+<!ENTITY newyear.21.12.2014.text "Текст про новый год. Четвертый день.">
+<!ENTITY newyear.22.12.2014.button "Установить">
+<!ENTITY newyear.22.12.2014.text "Текст про новый год. Пятый день.">
+<!ENTITY newyear.23.12.2014.button "Попробовать">
+<!ENTITY newyear.23.12.2014.text "Текст про новый год. Шестой день.">
+<!ENTITY newyear.24.12.2014.button "Посмотреть">
+<!ENTITY newyear.24.12.2014.text "Текст про новый год. Седьмой день.">
+<!ENTITY newyear.25.12.2014.button "Посмотреть">
+<!ENTITY newyear.25.12.2014.text "Текст про новый год. Восьмой день.">
+<!ENTITY newyear.26.12.2014.button "Посмотреть">
+<!ENTITY newyear.26.12.2014.text "Текст про новый год. Девятый день.">
+<!ENTITY newyear.27.12.2014.button "Посмотреть">
+<!ENTITY newyear.27.12.2014.text "Текст про новый год. Десятый день.">
+<!ENTITY newyear.28.12.2014.button "Посмотреть">
+<!ENTITY newyear.28.12.2014.text "Текст про новый год. Одиннадцатый день.">
+<!ENTITY newyear.29.12.2014.button "Посмотреть">
+<!ENTITY newyear.29.12.2014.text "Текст про новый год. Двенадцатый день.">
+<!ENTITY newyear.30.12.2014.button "Посмотреть">
+<!ENTITY newyear.30.12.2014.text "Текст про новый год. Тринадцатый день.">
+<!ENTITY newyear.31.12.2014.button "Посмотреть">
+<!ENTITY newyear.31.12.2014.text "Текст про новый год. Четырнадцатый день.">
+<!ENTITY newyear.18.12.2014.header "Yılbaşına 14 gün kaldı">
+<!ENTITY newyear.19.12.2014.header "Yılbaşına 13 gün kaldı">
+<!ENTITY newyear.20.12.2014.header "Yılbaşına 12 gün kaldı">
+<!ENTITY newyear.21.12.2014.header "Yılbaşına 11 gün kaldı">
+<!ENTITY newyear.22.12.2014.header "Yılbaşına 10 gün kaldı">
+<!ENTITY newyear.23.12.2014.header "Yılbaşına 9 gün kaldı">
+<!ENTITY newyear.24.12.2014.header "Yılbaşına 8 gün kaldı">
+<!ENTITY newyear.25.12.2014.header "Yılbaşına 7 gün kaldı">
+<!ENTITY newyear.26.12.2014.header "Yılbaşına 6 gün kaldı">
+<!ENTITY newyear.27.12.2014.header "Yılbaşına 5 gün kaldı">
+<!ENTITY newyear.28.12.2014.header "Yılbaşına 4 gün kaldı">
+<!ENTITY newyear.29.12.2014.header "Yılbaşına 3 gün kaldı">
+<!ENTITY newyear.30.12.2014.header "Yılbaşına 2 gün kaldı">
+<!ENTITY newyear.31.12.2014.header "До Нового года остался 1 день">

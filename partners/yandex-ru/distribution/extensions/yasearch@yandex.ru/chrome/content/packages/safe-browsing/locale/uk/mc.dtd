@@ -1,0 +1,10 @@
+﻿<!ENTITY mc.widget.name "Точно за адресою">
+
+<!ENTITY mc.widget.cancel.label "Закрити підказку">
+<!ENTITY mc.widget.changedFrom.label "Виправлено з">
+<!ENTITY mc.widget.changedTo.label "на">
+<!ENTITY mc.widget.changedTo2.label "">
+<!ENTITY mc.widget.close.label "Закрити">
+<!ENTITY mc.widget.go.label "Перейти">
+<!ENTITY mc.widget.removeRule.label "Видалити правило">
+<!ENTITY mc.widget.suggestion.label "Можливо, ви хотіли відкрити">

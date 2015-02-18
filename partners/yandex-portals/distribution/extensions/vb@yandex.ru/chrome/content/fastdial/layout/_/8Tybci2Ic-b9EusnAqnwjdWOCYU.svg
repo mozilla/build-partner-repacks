@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="15px" height="13px" viewBox="0 0 15 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.0.3 (7892) - http://www.bohemiancoding.com/sketch -->
+    <title>alarm</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="alarm" sketch:type="MSLayerGroup">
+            <path d="M8.51647656,0.716674784 C7.95429586,-0.231418542 7.04057189,-0.227357376 6.48099371,0.716674814 L0.217576857,11.2833255 C-0.344408581,12.2314189 0.0924989926,13.0000004 1.20235712,13.0000003 L13.7976429,13.0000001 C14.9035074,13.0000001 15.3418422,12.2273575 14.7820696,11.2833253 L8.51647656,0.716674784 Z" id="Rectangle-1" fill="#FF0000" sketch:type="MSShapeGroup"></path>
+            <circle id="Oval-1" fill="#FFFFFF" sketch:type="MSShapeGroup" cx="7.5" cy="10.5" r="1.5"></circle>
+            <path d="M7.5,8.5 C8.32842712,8.5 9,5.32842712 9,4.5 C9,3.67157288 8.32842712,3 7.5,3 C6.67157288,3 6,3.67157288 6,4.5 C6,5.32842712 6.67157288,8.5 7.5,8.5 Z" id="Oval-2" fill="#FFFFFF" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

@@ -20,8 +20,9 @@ const bookmarks = {
     },
     finalize: function Bookmarks_finalize(doCleanup, callback) {
         PlacesUtils.bookmarks.removeObserver(this._changesObserver);
-        if (this._bookmarksStateTimer)
+        if (this._bookmarksStateTimer) {
             this._bookmarksStateTimer.cancel();
+        }
         this._application = null;
         this._logger = null;
     },
@@ -35,6 +36,7 @@ const bookmarks = {
         id = id || PlacesUtils.bookmarks.toolbarFolder;
         let query = PlacesUtils.history.getNewQuery();
         query.setFolders([id], 1);
+        let result = PlacesUtils.history.executeQuery(query, options);
         let historyResultObserver = {
             batching: function Bookmarks_requestBookmarksBranch_batching() {
             },
@@ -73,8 +75,9 @@ const bookmarks = {
             sortingChanged: function Bookmarks_requestBookmarksBranch_sortingChanged() {
             },
             containerStateChanged: function Bookmarks_requestBookmarksBranch_historyContainerStateChanged(node, oldState, newState) {
-                if (newState !== Ci.nsINavHistoryContainerResultNode.STATE_OPENED)
+                if (newState !== Ci.nsINavHistoryContainerResultNode.STATE_OPENED) {
                     return;
+                }
                 result.removeObserver(historyResultObserver);
                 if (result.root.childCount) {
                     let tasks = [];
@@ -86,7 +89,7 @@ const bookmarks = {
                                 if (!isFolder && node.type !== node.RESULT_TYPE_URI) {
                                     return callback();
                                 }
-                                let id = isFolder ? node.itemId + "" : "";
+                                let id = isFolder ? String(node.itemId) : "";
                                 let bookmark = {
                                     url: isFolder ? "" : node.uri,
                                     title: node.title || "",
@@ -115,7 +118,7 @@ const bookmarks = {
                         }(i));
                     }
                     async.parallel(tasks, function (err, results) {
-                        let bookmarks = results.filter(bookmark => !!bookmark);
+                        let bookmarks = results.filter(Boolean);
                         callback(bookmarks);
                     });
                     result.root.containerOpen = false;
@@ -132,7 +135,6 @@ const bookmarks = {
             },
             QueryInterface: XPCOMUtils.generateQI([Ci.nsINavHistoryResultObserver])
         };
-        let result = PlacesUtils.history.executeQuery(query, options);
         result.addObserver(historyResultObserver, false);
         result.root.containerOpen = true;
     },
@@ -169,6 +171,39 @@ const bookmarks = {
             }
         });
     },
+    findBookmarks: function Bookmarks_findBookmarks(searchText) {
+        let deferred = promise.defer();
+        let options = PlacesUtils.history.getNewQueryOptions();
+        options.queryType = options.QUERY_TYPE_BOOKMARKS;
+        options.excludeQueries = true;
+        options.excludeItems = false;
+        options.asyncEnabled = true;
+        options.sortingMode = options.SORT_BY_VISITCOUNT_DESCENDING;
+        let query = PlacesUtils.history.getNewQuery();
+        query.searchTerms = searchText;
+        let db = PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase);
+        let bookmarks = [];
+        db.asyncExecuteLegacyQueries([query], 1, options, {
+            handleResult: resultSet => {
+                let row;
+                while (row = resultSet.getNextRow()) {
+                    let url = row.getResultByIndex(1);
+                    let title = row.getResultByIndex(2);
+                    bookmarks.push({
+                        url: url,
+                        title: title
+                    });
+                }
+            },
+            handleError: error => {
+                deferred.reject(error);
+            },
+            handleCompletion: reason => {
+                deferred.resolve(bookmarks);
+            }
+        });
+        return deferred.promise;
+    },
     requestList: function Bookmarks_requestList(limit, callback) {
         let tasks = [];
         [
@@ -184,15 +219,6 @@ const bookmarks = {
         });
         let queue = tasks.length;
         let allBookmarks = [];
-        tasks.forEach(function (task) {
-            task(data => {
-                allBookmarks.push(data);
-                queue--;
-                if (!queue) {
-                    onLoad();
-                }
-            });
-        });
         let onLoad = () => {
             allBookmarks = allBookmarks.reduce((res, val) => {
                 return res.concat(val.map(bookmark => {
@@ -205,6 +231,15 @@ const bookmarks = {
             }, []);
             callback(allBookmarks);
         };
+        tasks.forEach(function (task) {
+            task(data => {
+                allBookmarks.push(data);
+                queue--;
+                if (!queue) {
+                    onLoad();
+                }
+            });
+        });
     },
     _getLivemark: function Bookmarks__getLivemark(aLivemarkInfo, aCallback) {
         try {
@@ -221,6 +256,17 @@ const bookmarks = {
         let livemarksParsedNum = 0;
         let totalLivemarksNum = 0;
         let asyncFetch = false;
+        let onIconReady = function _fetchLivemarkChildren__onIconReady(livemark, url) {
+            livemark.favicon = url || self._application.favicons.EMPTY_ICON;
+            livemarks.push(livemark);
+            livemarksParsedNum += 1;
+            if (livemarksParsedNum === totalLivemarksNum) {
+                if (asyncFetch) {
+                    aLivemark.unregisterForUpdates(aContainerNode);
+                }
+                callback(livemarks);
+            }
+        };
         let onLivemarkReady = function Bookmarks__fetchLivemarkChildren_onLivemarkReady(node) {
             let isFolder = node.type === node.RESULT_TYPE_FOLDER;
             let livemark = {
@@ -244,17 +290,6 @@ const bookmarks = {
                 }
             } else {
                 onIconReady(livemark);
-            }
-        };
-        let onIconReady = function _fetchLivemarkChildren__onIconReady(livemark, url) {
-            livemark.favicon = url || self._application.favicons.EMPTY_ICON;
-            livemarks.push(livemark);
-            livemarksParsedNum += 1;
-            if (livemarksParsedNum === totalLivemarksNum) {
-                if (asyncFetch) {
-                    aLivemark.unregisterForUpdates(aContainerNode);
-                }
-                callback(livemarks);
             }
         };
         let cachedChildren = aLivemark.getNodesForContainer(aContainerNode);
@@ -315,8 +350,9 @@ const bookmarks = {
         }, 1000);
     },
     _sendStateChanged: function Bookmarks__sendStateChanged() {
-        if (this._bookmarksStateTimer)
+        if (this._bookmarksStateTimer) {
             this._bookmarksStateTimer.cancel();
+        }
         let self = this;
         let showBookmarks = this._application.preferences.get("ftabs.showBookmarks");
         this._bookmarksStateTimer = new sysutils.Timer(function () {
@@ -352,44 +388,48 @@ const bookmarks = {
         },
         onItemAdded: function Bookmarks__changesObserver_onItemAdded(aItemId, aParentId, aIndex) {
             bookmarks._logger.trace("onItemAdded [id=" + aItemId + "] [parentId=" + aParentId + "] [index=" + aIndex + "]");
-            if (~[
+            if ([
                     PlacesUtils.bookmarks.toolbarFolder,
                     PlacesUtils.bookmarks.bookmarksMenuFolder,
                     PlacesUtils.bookmarks.unfiledBookmarksFolder
-                ].indexOf(aParentId))
+                ].indexOf(aParentId) === -1) {
                 bookmarks._sendStateChanged();
+            }
         },
         onItemRemoved: function Bookmarks__changesObserver_onItemRemoved(aItemId, aParentId, aIndex) {
             bookmarks._logger.trace("onItemRemoved [id=" + aItemId + "] [parentId=" + aParentId + "] [index=" + aIndex + "]");
-            if (~[
+            if ([
                     PlacesUtils.bookmarks.toolbarFolder,
                     PlacesUtils.bookmarks.bookmarksMenuFolder,
                     PlacesUtils.bookmarks.unfiledBookmarksFolder
-                ].indexOf(aParentId))
+                ].indexOf(aParentId) === -1) {
                 bookmarks._sendStateChanged();
+            }
         },
         onItemChanged: function Bookmarks__changesObserver_onItemChanged(aItemId, aProperty, aIsAnnotationProperty, aNewValue) {
             bookmarks._logger.trace("onItemChanged [id=" + aItemId + "] [property=" + aProperty + "] [isAnnotationProperty=" + aIsAnnotationProperty + "] [newValue=" + aNewValue + "]");
             let parentId = PlacesUtils.bookmarks.getFolderIdForItem(aItemId);
-            if (~[
+            if ([
                     PlacesUtils.bookmarks.toolbarFolder,
                     PlacesUtils.bookmarks.bookmarksMenuFolder,
                     PlacesUtils.bookmarks.unfiledBookmarksFolder
-                ].indexOf(parentId))
+                ].indexOf(parentId) === -1) {
                 bookmarks._sendStateChanged();
+            }
         },
         onItemMoved: function Bookmarks__changesObserver_onItemMoved(aItemId, aOldParentId, aOldIndex, aNewParentId, aNewIndex) {
             bookmarks._logger.trace("onItemMoved [id=" + aItemId + "] [oldParentId=" + aOldParentId + "] [oldIndex=" + aOldIndex + "] [newParentId=" + aNewParentId + "] [newIndex=" + aNewIndex + "]");
-            if (~[
+            if ([
                     PlacesUtils.bookmarks.toolbarFolder,
                     PlacesUtils.bookmarks.bookmarksMenuFolder,
                     PlacesUtils.bookmarks.unfiledBookmarksFolder
-                ].indexOf(aOldParentId) || ~[
+                ].indexOf(aOldParentId) === -1 || [
                     PlacesUtils.bookmarks.toolbarFolder,
                     PlacesUtils.bookmarks.bookmarksMenuFolder,
                     PlacesUtils.bookmarks.unfiledBookmarksFolder
-                ].indexOf(aNewParentId))
+                ].indexOf(aNewParentId) === -1) {
                 bookmarks._sendStateChanged();
+            }
         },
         QueryInterface: XPCOMUtils.generateQI([
             Ci.nsISupports,

@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Browser [
+<!ENTITY % servicesDTD SYSTEM "../services.dtd">
+%servicesDTD;
+<!ENTITY % browserconfDTD SYSTEM "browserconf.dtd">
+%browserconfDTD;
+]>
+
+<Browser xmlns:yb="http://bar.yandex.ru/">
+	<HomePage title="&yandex.label;">&yandex.url;/?clid={clid5}</HomePage>
+	<QuickSearch>
+		<OpenSearchDescription yb:uniqName="yandex" xmlns="http://a9.com/-/spec/opensearch/1.1/">
+			<ShortName>&yandex.label;</ShortName>
+			<Description>&yandex.search.tooltip;</Description>
+			<Url template="&yandex.qs.url;" type="text/html"/>
+			<Url rel="suggestions" template="&yandex.qs.suggestions;" type="application/json"/>
+			<Url rel="search-form" template="&yandex.url;" type="text/html"/>
+            <Url rel="moz-keywordsearch" template="&yandex.qs.keywordsearch;" type="application/x-moz-keywordsearch"/>
+			<Image height="16" width="16">icons/fav-yandex.ico</Image>
+            <Image height="26" width="65">icons/yandex-65x26.png</Image>
+            <Image height="52" width="130">icons/yandex-130x52.png</Image>
+			<InputEncoding>UTF-8</InputEncoding>
+		</OpenSearchDescription>
+	</QuickSearch>
+
+	<LocationBarSearch>
+		<Url>&locationbar.search.url;</Url>
+	</LocationBarSearch>
+</Browser>

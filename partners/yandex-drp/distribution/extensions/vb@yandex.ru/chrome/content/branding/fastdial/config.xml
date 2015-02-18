@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE fastdial SYSTEM "config.dtd"><fastdial>
+    <logo alt="&logo.alt;" img_clear="logo.png" title="&logo.title;" url="http://www.yandex.ru/?clid={clid7}"/>
+
+    <auth mail="https://mail.yandex.ru/" main="https://www.yandex.ru/" passport="https://passport.yandex.ru/passport?mode=passport" redirect="http://api.browser.yandex.ru/elements/embeddedauth.html" settings="https://tune.yandex.ru/"/>
+
+    <search design="arrow" example_domain="http://api.browser.yandex.ru" navigate_title="&search.navigate.title;" placeholder="" suggest="http://api.browser.yandex.ru/suggest/get-elements?part={searchTerms}&amp;brandID={brandID}" suggest_url="http://suggest-internal.yandex.ru/suggest-v-tablo?part={searchTerms}" url="http://yandex.ru/yandsearch?text={searchTerms}&amp;clid={clid8}"/>
+
+    <background file="earth.jpg" force="false"/>
+
+    <pages>
+        <page custom_title="&thumb.yandex;" force="true" index="1" url="http://www.yandex.ru/?clid={clid7}"/>
+        <page boost="10" custom_title="&thumb.yamail;" force="false" index="2" url="http://mail.yandex.ru/?from={vbID}"/>
+        <page custom_title="&thumb.yamaps;" force="false" index="3" url="http://maps.yandex.ru/?from={vbID}"/>
+        <page boost="10" custom_title="&thumb.yamarket;" force="true" index="4" url="http://market.yandex.ru/?clid={clid20}"/>
+        <page custom_title="&thumb.yamusic;" force="false" index="5" url="http://music.yandex.ru/?from={vbID}"/>
+        <page custom_title="&thumb.vkontakte;" force="false" index="6" url="http://vk.com/"/>
+        <page custom_title="&thumb.lentaru;" force="false" index="7" url="http://lenta.ru/"/>
+        <page custom_title="&thumb.yasoft;" force="false" index="8" url="http://soft.yandex.ru/?from=vb_dist"/>
+        <page boost="0" custom_title="&thumb.youtube;" force="false" index="9" url="http://youtube.com/"/>
+    </pages>
+</fastdial>

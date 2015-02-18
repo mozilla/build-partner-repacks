@@ -1,0 +1,12 @@
+<!ENTITY cy.name "CI">
+<!ENTITY cy.fullname "Citation index">
+<!ENTITY cy.pages.all.label "All website pages">
+<!ENTITY cy.data.theme.label "Subject">
+<!ENTITY cy.data.domain.label "Domain">
+<!ENTITY cy.data.region.label "Region">
+<!ENTITY cy.data.value.label "Value">
+<!ENTITY cy.data.yaca.label "(according to Yandex.Catalog)">
+<!ENTITY cy.no-data.label "no data">
+
+
+<!ENTITY cy.showValue.label "Display Citation Index exact value">

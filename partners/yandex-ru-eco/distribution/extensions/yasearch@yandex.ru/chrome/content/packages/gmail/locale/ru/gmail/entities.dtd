@@ -1,0 +1,28 @@
+<!ENTITY gmail.name "Почта Gmail">
+
+<!ENTITY gmail.settings.label "Интервал обновления">
+<!ENTITY gmail.settings.label_after "мин.">
+<!ENTITY gmail.settings.write.show "Отображать кнопку «Написать письмо»">
+<!ENTITY gmail.settings.checktext "Показывать название кнопки «Gmail»">
+<!ENTITY gmail.settings.write.checktext "Показывать название кнопки «Написать письмо»">
+<!ENTITY settings.show_notifications "Показывать уведомления">
+
+<!ENTITY gmail.tooltip.please_auth "Пожалуйста, авторизуйтесь">
+<!ENTITY gmail.tooltip.off "Показывает новые сообщения в почте Gmail">
+<!ENTITY gmail.tooltip.on "Новые сообщения в почтовом ящике">
+<!ENTITY gmail.tooltip.empty "Новых писем нет">
+<!ENTITY gmail.tooltip.write.off "Позволяет написать новое письмо в почте Gmail">
+<!ENTITY gmail.tooltip.write.on "Написать письмо в почте Gmail">
+<!ENTITY gmail.tooltip.error "К сожалению, информацию о ваших письмах получить не удалось">
+
+<!ENTITY gmail.button.text "Gmail">
+<!ENTITY gmail.button.text.write "Написать">
+
+<!ENTITY gmail.menu.update "Проверить почту">
+<!ENTITY gmail.menu.write "Написать письмо">
+<!ENTITY gmail.menu.read "Читать письма">
+<!ENTITY gmail.menu.addressbook "Открыть контакты">
+<!ENTITY gmail.menu.yandex "Получать письма из этого ящика в Яндекс.Почте">
+
+<!ENTITY notify.letters "{N} новое письмо;{N} новых письма;{N} новых писем">
+<!ENTITY plural.rule "7">

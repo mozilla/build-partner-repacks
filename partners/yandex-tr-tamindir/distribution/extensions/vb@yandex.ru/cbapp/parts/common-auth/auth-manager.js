@@ -191,6 +191,9 @@ const authManager = {
     get _branding() {
         return this.api.Environment.branding;
     },
+    get _passportConfig() {
+        throw new Error("Only setter available");
+    },
     set _passportConfig(config) {
         if (typeof config != "object" || !(config.mainDomain && config.authPassportURL && config.rootPassportURL)) {
             throw new TypeError("Invalig passport config object");
@@ -402,13 +405,13 @@ const authManager = {
                 }
             }
         };
+        let webProgress = authTab.linkedBrowser.webProgress;
         let tabHandler = function authManager__sendEmbeddedAuthRequest_tabHandler(aEvent) {
             gBrowser.tabContainer.removeEventListener("TabClose", tabHandler, false);
             webProgress.removeProgressListener(progressListener);
             cancelRevealTimer();
             progressListener.cancelProgressTimer();
         };
-        let webProgress = authTab.linkedBrowser.webProgress;
         gBrowser.tabContainer.addEventListener("TabClose", tabHandler, false);
         webProgress.addProgressListener(progressListener, webProgress.NOTIFY_STATE_ALL);
         let tabRevealTimer = this.api.SysUtils.Timer(revealTab, 3000);
@@ -683,7 +686,7 @@ _User.prototype = {
     get socialDescriptor() {
         return this.__socialDescriptor;
     },
-    set _socialDescriptor(aDescriptor) {
+    set socialDescriptor(aDescriptor) {
         this.__socialDescriptor = aDescriptor || {};
     },
     get socialAuthProvider() {
@@ -695,7 +698,7 @@ _User.prototype = {
     get authStateChangedTimestamp() {
         return this.__authStateChanged;
     },
-    set _authStateChangedTimestamp(val) {
+    set authStateChangedTimestamp(val) {
         this.__authStateChanged = val;
     },
     update: function User_update(data) {

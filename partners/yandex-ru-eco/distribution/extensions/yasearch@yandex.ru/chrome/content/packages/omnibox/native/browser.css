@@ -1,0 +1,2 @@
+@import url(panel-settings.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#omnibox"]{-moz-binding:url(bindings.xbl#button)!important;margin:1px}
+#urlbar[actiontype|=yaaction]>#urlbar-display-box{display:none}

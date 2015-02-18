@@ -1,0 +1,19 @@
+<!ENTITY wgt.quotes.name "Quotations">
+<!ENTITY wgt.quotes.default-quote-id "1">
+
+<!ENTITY wgt.quotes.refresh "Refresh quotation data">
+<!ENTITY wgt.quotes.copy "Copy rate">
+<!ENTITY wgt.quotes.change "Change quotation">
+<!ENTITY wgt.quotes.delete "Delete quotation">
+<!ENTITY wgt.quotes.add "Add new quotation">
+<!ENTITY wgt.quotes.nodata "Data unavailable">
+
+<!ENTITY wgt.quotes.tooltip.today "Today">
+<!ENTITY wgt.quotes.tooltip.tomorrow "Tomorrow">
+<!ENTITY wgt.quotes.tooltip.yesterday "Yesterday">
+
+<!ENTITY wgt.quotes.settings.id.label "Quotation">
+<!ENTITY wgt.quotes.settings.autodetect "Define automatically">
+
+<!ENTITY wgt.quotes.settings.interval.label "Update interval">
+<!ENTITY wgt.quotes.settings.min.label "min.">

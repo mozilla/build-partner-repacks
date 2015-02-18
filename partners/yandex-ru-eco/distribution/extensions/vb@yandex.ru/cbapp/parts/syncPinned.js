@@ -19,8 +19,9 @@ const syncPinned = {
         this._application = null;
     },
     save: function SyncPinned_save() {
-        if (!this._application.sync.svc || !this.engine.enabled || !this._engineInitFinished)
+        if (!this._application.sync.svc || !this.engine.enabled || !this._engineInitFinished) {
             return;
+        }
         let records = {};
         this._application.internalStructure.iterate({
             pinned: true,
@@ -39,16 +40,21 @@ const syncPinned = {
         this.engine.set(records);
     },
     get engine() {
-        if (!this._application.sync.svc)
+        if (!this._application.sync.svc) {
             return null;
+        }
         return this._application.sync.svc.getEngine("Pinned");
+    },
+    get initFinished() {
+        return this._engineInitFinished;
     },
     set initFinished(val) {
         this._engineInitFinished = val;
     },
     processInitial: function SyncPinned_processInitial() {
-        if (!this._engineInitFinished)
+        if (!this._engineInitFinished) {
             return;
+        }
         let records = this.engine.get(null);
         let minTimestamp = Math.round(Date.now() / 1000);
         let currentThumbsNum = this._application.layout.getThumbsNum();
@@ -76,8 +82,9 @@ const syncPinned = {
             let isInvisible = serverThumb.index >= currentThumbsNum;
             minTimestamp = Math.min(minTimestamp, serverThumb.timestamp);
             Object.keys(localThumbs).forEach(function (position) {
-                if (isInvisible && position < currentThumbsNum)
+                if (isInvisible && position < currentThumbsNum) {
                     return;
+                }
                 if (this._isEqualURL(localThumbs[position].url, serverThumb.url)) {
                     delete localThumbs[position];
                 }
@@ -85,8 +92,9 @@ const syncPinned = {
         }, this);
         Object.keys(localThumbs).forEach(function (position) {
             let localThumb = localThumbs[position];
-            if (position >= currentThumbsNum)
+            if (position >= currentThumbsNum) {
                 return;
+            }
             Object.keys(records).forEach(function (key) {
                 if (this._isEqualURL(localThumb.url, records[key].url)) {
                     delete records[key];
@@ -109,8 +117,9 @@ const syncPinned = {
         this.processData(output, true);
     },
     processData: function SyncPinned_processData(records, isInitialSync) {
-        if (!this._engineInitFinished)
+        if (!this._engineInitFinished) {
             return;
+        }
         this._logger.trace("Engine initialized. Processing data");
         this._logger.trace("Process data: " + JSON.stringify(records));
         let localPinnedThumbs = {};
@@ -122,8 +131,9 @@ const syncPinned = {
         }, this);
         let fastPickupSet = {};
         this._application.internalStructure.iterate({ nonempty: true }, function (thumbData, index) {
-            if (thumbData.pinned)
+            if (thumbData.pinned) {
                 return;
+            }
             fastPickupSet[index] = thumbData;
         });
         let self = this;
@@ -167,8 +177,9 @@ const syncPinned = {
                 wereChangesMade = true;
             } else {
                 this._logger.trace("This temporary resolved position is empty. Check thumbs for equality");
-                if (localPinnedThumbs[currentIndex] && localPinnedThumbs[currentIndex].source && this._isEqualURL(serverThumb.url, localPinnedThumbs[currentIndex].source))
+                if (localPinnedThumbs[currentIndex] && localPinnedThumbs[currentIndex].source && this._isEqualURL(serverThumb.url, localPinnedThumbs[currentIndex].source)) {
                     serverThumb.title = localPinnedThumbs[currentIndex].thumb.title || "";
+                }
                 if (this._wereChangesMade(localPinnedThumbs, serverThumb)) {
                     this._logger.trace("Thumbs differ");
                     wereChangesMade = true;
@@ -226,8 +237,9 @@ const syncPinned = {
     _isEqualURL: function SyncPinned__isEqualURL(url1, url2) {
         let locationObj1 = this._application.fastdial.getDecodedLocation(url1);
         let locationObj2 = this._application.fastdial.getDecodedLocation(url2);
-        if (!locationObj1.location || !locationObj2.location)
+        if (!locationObj1.location || !locationObj2.location) {
             return false;
+        }
         try {
             locationObj1.location.QueryInterface(Ci.nsIURL);
             locationObj2.location.QueryInterface(Ci.nsIURL);
@@ -239,13 +251,15 @@ const syncPinned = {
         return locationObj1.location.spec === locationObj2.location.spec;
     },
     _cutParams: function SyncPinned__cutParams(uri) {
-        if (!this._application.isYandexHost(uri.host))
+        if (!this._application.isYandexHost(uri.host)) {
             return uri;
+        }
         uri.host = uri.host.replace(/^www\./, "");
         let parsedQuery = netutils.querystring.parse(uri.query);
         delete parsedQuery.clid;
-        if (parsedQuery.from === this._application.core.CONFIG.APP.TYPE)
+        if (parsedQuery.from === this._application.core.CONFIG.APP.TYPE) {
             delete parsedQuery.from;
+        }
         uri.query = netutils.querystring.stringify(parsedQuery);
     },
     _findEmptyPosition: function SyncPinned__findEmptyPosition(pinnedThumbs, startPos) {
@@ -268,8 +282,9 @@ const syncPinned = {
     },
     _wereChangesMade: function SyncPinned__wereChangesMade(currentPinnedThumbs, serverThumb) {
         let thumb = currentPinnedThumbs[serverThumb.index];
-        if (!thumb)
+        if (!thumb) {
             return true;
+        }
         let urlsAreEqual = this._isEqualURL(serverThumb.url, thumb.source);
         let entriesKeysAreEqual = serverThumb.key === thumb.sync.id;
         let instancesAreEqual = serverThumb.instance === thumb.sync.instance;

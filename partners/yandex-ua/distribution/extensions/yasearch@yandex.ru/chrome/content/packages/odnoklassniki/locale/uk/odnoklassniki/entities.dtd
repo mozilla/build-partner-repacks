@@ -1,0 +1,54 @@
+<!ENTITY widget.name "Однокласники">
+<!ENTITY widget.window.title "Однокласники">
+<!ENTITY widget.tooltip.messages "Нові повідомлення на Однокласниках">
+<!ENTITY widget.tooltip.notifications "Сповіщення на Однокласниках">
+<!ENTITY widget.tooltip.guests "Гості на Однокласниках">
+<!ENTITY widget.tooltip.marks "Оцінки фотографій на Однокласниках">
+<!ENTITY widget.tooltip.bd "Друзі на Однокласниках">
+<!ENTITY widget.tooltip.bd-hd "Дні народження друзів на Однокласниках">
+<!ENTITY widget.tooltip.no-auth1 "Показує нові події на Однокласниках">
+<!ENTITY widget.tooltip.no-auth2 "Будь ласка, авторизуйтеся">
+<!ENTITY widget.menuitem.update "Оновити інформацію">
+<!ENTITY widget.menuitem.home "Перейти на Однокласники">
+<!ENTITY widget.menuitem.messages-follow "Перейти до повідомлень">
+<!ENTITY widget.menuitem.notifications-follow "Перейти до сповіщень">
+<!ENTITY widget.menuitem.guests-follow "Перейти до гостей">
+<!ENTITY widget.menuitem.marks-follow "Перейти до оцінок фотографій">
+<!ENTITY widget.menuitem.messages "Повідомлення">
+<!ENTITY widget.menuitem.notifications "Сповіщення">
+<!ENTITY widget.menuitem.guests "Гості">
+<!ENTITY widget.menuitem.marks "Оцінки фотографій">
+<!ENTITY widget.menuitem.bd "Друзі">
+<!ENTITY widget.menuitem.bd2 "Дні народження друзів">
+<!ENTITY widget.menuitem.bd-hd "Свята друзів">
+<!ENTITY widget.menuitem.bd-follow "Перейти до друзів">
+<!ENTITY widget.menuitem.bd-hd-follow "Перейти до свят друзів">
+<!ENTITY widget.menuitem.settings "Налаштування">
+<!ENTITY widget.menuitem.quit "Вийти з Однокласникiв">
+<!ENTITY settings.update-interval-label "Інтервал оновлення">
+<!ENTITY settings.update-interval-min "хв">
+<!ENTITY settings.show-messages "Показувати кнопку «Повідомлення»">
+<!ENTITY settings.show-notifications "Показувати кнопку «Сповіщення»">
+<!ENTITY settings.show-guests "Показувати кнопку «Гості»">
+<!ENTITY settings.show-marks "Показувати кнопку «Оцінки»">
+<!ENTITY settings.show-bd "Показувати кнопку «Дні народження»">
+
+<!ENTITY widget.info.age "{N} рік;{N} роки;{N} років">
+<!ENTITY widget.info.months "січень,лютий,березень,квітень,травень,червень,липень,серпень,вересень,жовтень,листопад,грудень">
+<!ENTITY error.connect "Будь ласка, перевірте мережеве з&#39;єднання">
+<!ENTITY error.data "Дані з Однокласників отримати не вдалося">
+<!ENTITY error.update "Помилка оновлення даних">
+<!ENTITY error.auth "Не вдалось авторизуватися">
+<!ENTITY error.auth.net "Не вдалось підключитися до сервера Однокласників для авторизації">
+<!ENTITY settings.show-friends "Показувати кнопку «Друзі»">
+<!ENTITY settings.show_notifications "Показувати сповіщення">
+<!ENTITY widget.info.marks "1 бал,2 бали,3 бали,4 бали,5 балів">
+<!ENTITY widget.main_tooltip.marks "Оцінки">
+<!ENTITY widget.main_tooltip.new-messages "Нові повідомлення">
+<!ENTITY widget.tooltip.noauth "Показує нові події на Однокласниках&#13;Будь ласка, авторизуйтесь">
+<!ENTITY widget.tooltip.nodata "Дані з Однокласників отримати не вдалося&#13;Будь ласка, перевірте мережеве з&#39;єднання">
+<!ENTITY widget.tooltip.update.fail "&#13;Помилка оновлення даних">
+<!ENTITY notify.comments "{N} новий коментар;{N} нові коментарі;{N} нових коментарів">
+<!ENTITY notify.messages "{N} нове повідомлення;{N} нові повідомлення;{N} нових повідомлень">
+<!ENTITY notify.messages_file "Надіслав вам повідомлення">
+<!ENTITY notify.messages_file_f "Надіслала вам повідомлення">

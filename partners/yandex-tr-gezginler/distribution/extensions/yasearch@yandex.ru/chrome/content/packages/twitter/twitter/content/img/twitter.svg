@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <title>Twitter</title>
+    <description>Created with Sketch (http://www.bohemiancoding.com/sketch)</description>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Light" sketch:type="MSLayerGroup" transform="translate(0.000000, -78.000000)">
+            <g id="Social" sketch:type="MSShapeGroup">
+                <g id="Twitter" transform="translate(0.000000, 78.000000)">
+                    <rect id="Rectangle-25" fill="#00ACF2" x="0" y="0" width="16" height="16" rx="1"></rect>
+                    <path d="M14.018,6.16 C13.753,6.323 12.931,6.5 12.477,6.331 C12.454,6.224 12.43,6.123 12.405,6.031 C12.059,4.76 10.874,3.735 9.634,3.859 C9.734,3.818 9.835,3.781 9.938,3.746 C10.074,3.697 10.876,3.566 10.749,3.284 C10.643,3.034 9.663,3.471 9.479,3.529 C9.722,3.437 10.125,3.28 10.168,3 C9.795,3.051 9.429,3.227 9.146,3.484 C9.248,3.374 9.326,3.24 9.342,3.096 C8.347,3.732 7.766,5.014 7.296,6.259 C6.927,5.9 6.599,5.618 6.305,5.461 C5.482,5.019 4.497,4.558 2.951,3.983 C2.903,4.495 3.204,5.177 4.069,5.629 C3.881,5.604 3.539,5.66 3.265,5.725 C3.377,6.312 3.741,6.796 4.729,7.029 C4.278,7.059 4.044,7.162 3.833,7.383 C4.038,7.791 4.541,8.271 5.442,8.173 C4.439,8.606 5.033,9.408 5.85,9.288 C4.457,10.728 2.261,10.622 1,9.418 C4.292,13.908 11.449,12.073 12.515,7.748 C13.315,7.754 13.784,7.471 14.075,7.158 C13.615,7.237 12.948,7.155 12.594,7.008 C13.329,6.947 13.826,6.613 14.018,6.16 Z" id="Fill-22" fill="#FFFFFF"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

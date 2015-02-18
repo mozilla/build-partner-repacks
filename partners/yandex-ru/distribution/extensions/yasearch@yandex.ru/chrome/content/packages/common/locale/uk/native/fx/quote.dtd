@@ -1,0 +1,19 @@
+<!ENTITY wgt.quotes.name "Котирування">
+<!ENTITY wgt.quotes.default-quote-id "3005">
+
+<!ENTITY wgt.quotes.refresh "Оновити дані котирування">
+<!ENTITY wgt.quotes.copy "Скопіювати курс">
+<!ENTITY wgt.quotes.change "Змінити котирування">
+<!ENTITY wgt.quotes.delete "Видалити котирування">
+<!ENTITY wgt.quotes.add "Додати нове котирування">
+<!ENTITY wgt.quotes.nodata "Немає даних">
+
+<!ENTITY wgt.quotes.tooltip.today "Сьогодні">
+<!ENTITY wgt.quotes.tooltip.tomorrow "Завтра">
+<!ENTITY wgt.quotes.tooltip.yesterday "Учора">
+
+<!ENTITY wgt.quotes.settings.id.label "Котирування">
+<!ENTITY wgt.quotes.settings.autodetect "Визначати автоматично">
+
+<!ENTITY wgt.quotes.settings.interval.label "Інтервал оновлення">
+<!ENTITY wgt.quotes.settings.min.label "хв.">

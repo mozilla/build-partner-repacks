@@ -1,0 +1,27 @@
+<!ENTITY gmail.name "Gmail поштасы">
+
+<!ENTITY gmail.settings.label "Жаңарту интервалы">
+<!ENTITY gmail.settings.label_after "мин.">
+<!ENTITY gmail.settings.write.show "«Жазу» батырмасы">
+<!ENTITY gmail.settings.checktext "«Gmail» батырма аталымын көрсету">
+<!ENTITY gmail.settings.write.checktext "«Жазу» батырма аталымын көрсету">
+
+<!ENTITY gmail.tooltip.please_auth "Авторизациядан өтуіңізді сұраймыз">
+<!ENTITY gmail.tooltip.off "Gmail поштасында жаңа хабарламаларыңызды көрсетеді">
+<!ENTITY gmail.tooltip.on "Пошта жәшігіндегі жаңа хабарламалар">
+<!ENTITY gmail.tooltip.empty "Жаңа хат жоқ">
+<!ENTITY gmail.tooltip.write.off "Gmail поштасынан хат жазуға мүмкіндік береді">
+<!ENTITY gmail.tooltip.write.on "Gmail поштасында хат жазу">
+<!ENTITY gmail.tooltip.error "Өкінішке орай, сіздің хаттарыңыз туралы ақпарат алу мүмкін емес">
+
+<!ENTITY gmail.button.text "Gmail">
+<!ENTITY gmail.button.text.write "Жазу">
+
+<!ENTITY gmail.menu.update "Поштаны тексеру">
+<!ENTITY gmail.menu.write "Хат жазу">
+<!ENTITY gmail.menu.read "Хат оқу">
+<!ENTITY gmail.menu.addressbook "Контакттарды ашу">
+<!ENTITY gmail.menu.yandex "Осы жәшіктің хаттарын Яндекс.Поштадан алу">
+<!ENTITY notify.letters "{N} жаңа хат">
+<!ENTITY plural.rule "0">
+<!ENTITY settings.show_notifications "Хабарландыруларды көрсету">

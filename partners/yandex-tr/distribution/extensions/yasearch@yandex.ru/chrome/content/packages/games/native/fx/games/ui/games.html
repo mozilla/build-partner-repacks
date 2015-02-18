@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>Games</title>
+    <link rel="stylesheet" type="text/css" href="css/widget.imports.css" />
+    
+    <style type="text/css">
+    #frameWrapper {
+        display: none;
+    }
+    </style>
+    <script type="text/javascript" src="jquery/jquery.js"></script>
+    <script type="text/javascript" src="jquery/jquery.tmpl.js"></script>
+    <script type="text/javascript" src="gameslist.js"></script>
+    <script type="text/javascript" src="games.js"></script>
+
+</head>
+<body>
+
+    <script id="thumbTemplate" type="text/x-jquery-tmpl">
+        <tr>
+            <td class="b-widget-games__side" rowspan="3"><i class="b-widget-games__spacer"></i></td>
+            {{each $data}}
+
+                {{if (($index % 4 == 0) && ($index != 0))}}
+                	</tr><tr>
+                {{/if}}
+
+                <td class="b-widget-games__cell">
+                    <a href=""
+                       onclick="showMenuItem('${id}', true); return false;"
+                       class="b-widget-games__link"
+                       title="${title}">
+                       		<img src="${thumb}" alt="" class="b-widget-games__logo" />
+                        	${title}
+                    </a>
+                </td>
+                {{if ($index == 3)}}
+                	<td class="b-widget-games__side" rowspan="3"><i class="b-widget-games__spacer"></i></td>
+                {{/if}}
+
+
+            {{/each}}
+         </tr>
+    </script>
+
+    <script id="frameTemplate" type="test/x-jquery-tmpl">
+        <iframe {{if fx3url}} src="${fx3url}" {{else}} src="${url}" {{/if}}
+        		id="itemFrame"  width="100%" height="100%" frameborder="0" scrolling="no"></iframe>
+    </script>
+
+    <div class="b-widget">
+        <div class="b-widget__header">
+            <div class="b-widget__header-text">
+                <span class="b-widget__title"><i class="b-widget__title-icon"></i><span id="menuTitle">All Games</span></span>
+                <span class="b-widget__subtitle">&rarr; <span id="title"></span></span>
+            </div>
+            <p id="sourceContainer" class="b-widget__source-container">
+                <a target="_blank" id="sourceLink" href="" class="b-widget__source-link"></a>
+            </p>
+        </div>
+        <div class="b-widget__content" id="menuWrapper">
+            <table class="b-widget-games">
+                <thead>
+                    <tr>
+                        <td class="b-widget-games__top" colspan="6"></td>
+                    </tr>
+                </thead>
+                <tbody id="menuContainer">
+
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="b-widget-games__bottom" colspan="6"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="b-widget__content" id="frameWrapper">
+            <table class="b-widget-flash">
+                <tr>
+                    <td class="b-widget-flash__cell" id="frameContainer">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

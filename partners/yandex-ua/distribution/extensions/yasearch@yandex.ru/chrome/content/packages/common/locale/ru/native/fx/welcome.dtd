@@ -1,0 +1,46 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY welcome.dialog.title "Мой &product2.nom;">
+
+<!ENTITY welcome.login.button.label "Войти">
+
+<!ENTITY welcome.enter.label "Вход">
+<!ENTITY welcome.mybar.label "&product1.nom;">
+
+<!ENTITY welcome.login.label "Логин">
+<!ENTITY welcome.login.vaild.tooltiptext "Логин должен состоять из&#160;латинских символов, цифр, одинарного дефиса или точки, начинаться с&#160;буквы&#160;и заканчиваться буквой или цифрой">
+<!ENTITY welcome.password.label "Пароль">
+<!ENTITY welcome.store-password.label "запомнить меня">
+<!ENTITY welcome.remember-password.1.label "забыли">
+<!ENTITY welcome.remember-password.2.label "пароль">
+<!ENTITY welcome.registration.label "регистрация">
+
+<!ENTITY welcome.show.label "показать">
+<!ENTITY welcome.hide.label "скрыть">
+
+<!ENTITY welcome.maxErrors1.label "Попробуйте войти через&#160;">
+<!ENTITY welcome.maxErrors2.label "Яндекс.Паспорт">
+
+<!ENTITY welcome.status.request.error.label "Отправить настроение не удалось!">
+<!ENTITY welcome.status.request.error.close.label "закрыть">
+<!ENTITY welcome.status.empty.label "не в настроении">
+
+<!ENTITY welcome.status.request.label "Выполняется вход">
+<!ENTITY welcome.status.error.label "Проверьте правильность логина и пароля">
+<!ENTITY welcome.status.neterror.label "Проверьте сетевое соединение">
+
+<!ENTITY welcome.user.switch.label "Войти под другим именем">
+<!ENTITY welcome.user.exit.label "Выйти">
+
+<!ENTITY services.iuse.label "Я использую">
+<!ENTITY services.iuse.all.label "Все мои сервисы">
+<!ENTITY services.status.request.label "Идёт получение данных">
+<!ENTITY services.status.error.label "Ошибка получения данных">
+
+<!ENTITY welcome.or.label "или">
+<!ENTITY welcome.go.registration.label "зарегистрироваться">
+<!ENTITY welcome.go.remember.password.label "вспомнить пароль">
+<!ENTITY welcome.strange.computer.label "чужой компьютер">
+
+<!ENTITY welcome.social.enter.label "войти через">

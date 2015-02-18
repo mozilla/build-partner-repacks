@@ -131,7 +131,6 @@ if (!WINDOW_OS) {
                 break;
             default:
                 throw new TypeError("nsIYaSearch.WinReg: wrong key type");
-                break;
             }
         },
         _removeChildren: function WinReg__removeChildren(wrk) {

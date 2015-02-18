@@ -1,0 +1,54 @@
+<!ENTITY widget.name "Odnoklassniki">
+<!ENTITY widget.window.title "Odnoklassniki">
+<!ENTITY widget.tooltip.messages "New messages on Odnoklassniki">
+<!ENTITY widget.tooltip.notifications "Odnoklassniki notifications">
+<!ENTITY widget.tooltip.guests "Odnoklassniki guests">
+<!ENTITY widget.tooltip.marks "Odnoklassniki photo ratings">
+<!ENTITY widget.tooltip.bd "Odnoklassniki friends">
+<!ENTITY widget.tooltip.bd-hd "Friends birthdays on Odnoklassniki">
+<!ENTITY widget.tooltip.no-auth1 "Shows Odnoklassniki updates">
+<!ENTITY widget.tooltip.no-auth2 "Please log in">
+<!ENTITY widget.menuitem.update "Update">
+<!ENTITY widget.menuitem.home "Go to Odnoklassniki">
+<!ENTITY widget.menuitem.messages-follow "Go to messages">
+<!ENTITY widget.menuitem.notifications-follow "Go to notifications">
+<!ENTITY widget.menuitem.guests-follow "Go to guests">
+<!ENTITY widget.menuitem.marks-follow "Go to photo ratings">
+<!ENTITY widget.menuitem.messages "Messages">
+<!ENTITY widget.menuitem.notifications "Notifications">
+<!ENTITY widget.menuitem.guests "Guests">
+<!ENTITY widget.menuitem.marks "Photo ratings">
+<!ENTITY widget.menuitem.bd "Friends">
+<!ENTITY widget.menuitem.bd2 "Birthdays">
+<!ENTITY widget.menuitem.bd-hd "Friends&#39; celebrations">
+<!ENTITY widget.menuitem.bd-follow "Go to friends">
+<!ENTITY widget.menuitem.bd-hd-follow "Go to friends&#39; celebrations">
+<!ENTITY widget.menuitem.settings "Settings">
+<!ENTITY widget.menuitem.quit "Log out">
+<!ENTITY settings.update-interval-label "Update interval">
+<!ENTITY settings.update-interval-min "min.">
+<!ENTITY settings.show-messages "Show “Messages” button">
+<!ENTITY settings.show-notifications "Show “Notifications” button">
+<!ENTITY settings.show-guests "Show “Guests” button">
+<!ENTITY settings.show-marks "Show “Ratings” button">
+<!ENTITY settings.show-bd "Show “Birthdays” button">
+
+<!ENTITY widget.info.age "{N} years old;{N} years old;{N} years old">
+<!ENTITY widget.info.months "January,February,March,April,May,June,July,August,September,October,November,December">
+<!ENTITY error.connect "Please check your internet connection">
+<!ENTITY error.data "Data from Odnoklassniki could not be retrieved">
+<!ENTITY error.update "Update error">
+<!ENTITY error.auth "Unable to log in">
+<!ENTITY error.auth.net "Unable to connect to Odnoklassniki&#39;s server for log in">
+<!ENTITY settings.show-friends "Show &#34;Friends&#34; button">
+<!ENTITY settings.show_notifications "Show notifications">
+<!ENTITY widget.info.marks "1 point,2 points,3 points,4 points,5 points">
+<!ENTITY widget.main_tooltip.marks "Grade">
+<!ENTITY widget.main_tooltip.new-messages "New messages">
+<!ENTITY widget.tooltip.noauth "Displays new messages on Odnoklassniki&#13;Please sign in">
+<!ENTITY widget.tooltip.nodata "Failed to receive data from Odnoklassniki&#13;Please check the network connection">
+<!ENTITY widget.tooltip.update.fail "&#13;Error updating data">
+<!ENTITY notify.comments "{N} new comment;{N} new comments;{N} new comments">
+<!ENTITY notify.messages "{N} new message;{N} new messages;{N} new messages">
+<!ENTITY notify.messages_file "Sent you a message">
+<!ENTITY notify.messages_file_f "Sent you a message">

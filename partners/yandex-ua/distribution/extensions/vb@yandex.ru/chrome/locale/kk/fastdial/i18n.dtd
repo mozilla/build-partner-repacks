@@ -1,0 +1,141 @@
+<!--Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY app.name "{product1.nom}">
+<!--Надпись на кнопке поиска-->
+<!ENTITY app.searchButtonTitle "Табу">
+<!ENTITY bookmarks.otherBookmarks "Басқа бетбелгілер">
+<!ENTITY footer.apps "Қосымшалар">
+<!ENTITY footer.bookmarks "Бетбелгілер ">
+<!ENTITY footer.closedTabs "Жабылған қойындылар">
+<!ENTITY footer.downloads "Жүктеулер">
+<!ENTITY footer.history "Тарих">
+<!ENTITY settings "Баптаулар">
+<!--Фоновое изображение-->
+<!ENTITY settings.backgroundImage "Фон">
+<!ENTITY settings.cancel "Болдырмау">
+<!--Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY settings.copyright "{branding}">
+<!ENTITY settings.layoutX "көлденеңінен">
+<!ENTITY settings.layoutY "тігінен">
+<!--URL-страница лицензионного соглашения. Данные берутся из нашего пакета брендирования. Не менять-->
+<!ENTITY settings.licenseAgreement.link "{branding}">
+<!ENTITY settings.licenseAgreement.title "Лицензиялық келісім">
+<!ENTITY settings.releaseDate "шығарылған күні">
+<!ENTITY settings.save "Сақтау">
+<!ENTITY settings.sendstat "Яндекстің сервистерін жақсартуға қатысу: браузерді пайдаланудың аноним статистикасын автоматты түрде жіберу">
+<!ENTITY settings.showBookmarksPanel "Бетбелгілер панелін көрсету">
+<!ENTITY settings.thumbsNum "Бетбелгілер саны">
+<!--Надпись, отображающася в пустом поле ввода названия страницы-->
+<!ENTITY settings.titleInput.placeholder "Бет атауын енгізіңіз">
+<!--Надпись, отображающася в пустом поле ввода URL-адреса страницы-->
+<!ENTITY settings.urlInput.placeholder "Беттің мекен-жайын енгізіңіз">
+
+<!ENTITY app.searchExampleTitle "Мысалы">
+<!ENTITY settings.upload "Жүктеу">
+<!ENTITY app.editThumb "баптау">
+<!ENTITY app.empty "Бос">
+<!ENTITY app.pinThumb "бекіту">
+<!ENTITY app.removeThumb "жою">
+<!ENTITY app.unpinThumb "шығару">
+<!ENTITY settings.isHomePage "{product1.nom} сіздің үй бетіңіз болып табылады">
+<!ENTITY settings.setAsHomePage "Бастапқы бет ретінде жасау">
+<!ENTITY app.searchTutorial.description "Мұнда сіз тек мекен-жайларды енгізіп қана қоймай, Яндексте де іздей аласыз.">
+<!ENTITY app.searchTutorial.example "Конго астанасы">
+<!ENTITY app.searchTutorial.thanks "Мен білемін, рақмет">
+<!ENTITY settings.showSearchForm "Іздестіру жолағын көрсету">
+<!ENTITY app.confirmRemoveThumb "Бетбелгіні жояйын ба?">
+<!ENTITY sync.advertText "Байқап көріңіз: көрнекі бетбелгілер, таңдаулы сайттар мен құпиясөздер үй мен жұмыстағы түрлі компьютерлерде қолжетімді болады.">
+<!ENTITY sync.closeAdvert "Жабу">
+<!ENTITY sync.enable "Синхрондауды қосу">
+<!ENTITY sync.enabled "Синхрондау қосылды">
+<!ENTITY sync.outdated "авторизациялау ескірді">
+<!ENTITY sync.repair "Түзету">
+<!ENTITY settings.collapsed "Басқа параметрлер">
+<!ENTITY sync.offerText "Синхрондауды пайдалануды бастадыңыз, бірақ визуалды бетбелгілерді әлі синхрондамадыңыз. Оларды синхрондауды қалайсыз ба?  [Иә, қалаймын](url)">
+<!ENTITY footer.apps.missing "Қосымша жоқ">
+<!ENTITY modalStat.accept "Рұқсат беру">
+<!ENTITY modalStat.cancel "Болдырмау">
+<!ENTITY modalStat.header "{vendor.dat} бағдарламасына браузерді қолдану туралы статистиканы алуға рұқсат беріңіз">
+<!ENTITY modalStat.moreInfoText "Толығырақ">
+<!ENTITY modalStat.moreInfoLink "http://legal.yandex.ru/confidential/">
+<!ENTITY modalStat.text "Бұл сіздің жеке мәліметтеріңізді қозғамайды және браузер жұмысына еш әсер етпейді. {vendor.nom} осы ақпаратты жеке сервистердің жұмысын жақсартуда қолданады.">
+<!ENTITY sync.settings "Синхрондау баптаулары">
+<!ENTITY sync.turnOn "Қосу">
+<!ENTITY sync.vbDisabled "Көрнекі бетбелгілерді синхрондау сөндірулі">
+<!ENTITY sync.vbEnabled "Көрнекі бетбелгілерді синхрондау қосулы">
+<!ENTITY dialog.cancel "Болдырмау">
+<!ENTITY dialog.ok "ОК">
+<!ENTITY modal.cancel "Болдырмау">
+<!ENTITY modal.ok "OK">
+<!ENTITY dialog.no "Жоқ">
+<!ENTITY dialog.yes "Ия">
+<!ENTITY app.closedWindow "Жабық терезе">
+<!ENTITY app.noInternet "Сервермен байланыс жоқ. Кейінірек қайта байқап көріңіз.">
+<!ENTITY settings.showSites "Бетбелгілер түрі">
+<!ENTITY settings.thumbStyle.logosAndScreenshots "Логотиптер мен скриншоттар">
+<!ENTITY settings.thumbStyle.logosAndTitles "Логотип пен тақырыптар">
+<!ENTITY settings.thumbStyle.screenshots "Сайт скриншоттары">
+<!ENTITY contextmenu.addThumb "Бетбелгіні қосу">
+<!ENTITY contextmenu.editThumb "Бетбелгілер баптаулары">
+<!ENTITY contextmenu.openSettings "Көрнекі Бетбелгілердегі фонды өзгерту">
+<!ENTITY contextmenu.pinThumb "Бетбелгіні бекіту">
+<!ENTITY contextmenu.removeThumb "Бетбелгіні жою">
+<!ENTITY contextmenu.unpinThumb "Бетбелгіні шығарып жіберу">
+<!ENTITY app.newBackgroundsAdvert "Жаңа фондарды байқап көріңіз">
+<!ENTITY settings.otherSoft "Яндекстің басқа бағдарламалары">
+<!ENTITY settings.showAdvertisement "Көрнекі бетбелгілерден мазмұндық ұсыныстарды көрсету">
+<!ENTITY app.sync "Синхрондау">
+<!ENTITY advertisement.yandexBrowser.docs "Құжаттарды тікелей Яндекс.Браузерден ашыңыз">
+<!ENTITY advertisement.yandexBrowser.downloads "Жүктеу">
+<!ENTITY advertisement.yandexBrowser.open "Яндекс.Браузерді ашу">
+<!ENTITY advertisement.yandexBrowser.updated "Жаңартылған Яндекс.Браузерді байқап көріңіз">
+<!ENTITY app.setBackgroundsAdvert "Фонды баптаулардан өзгертуге болады">
+<!ENTITY auth.addUser "Басқа пайдаланушы атымен кіру">
+<!ENTITY auth.passport "Төлқұжат">
+<!ENTITY auth.signin "Кіру">
+<!ENTITY auth.signout "Шығу">
+<!ENTITY auth.tune "{vendor.gen} Баптауы">
+<!ENTITY settings.editTitle "Сипаттаманы редакциялау">
+<!ENTITY settings.lastVisited "Жақында қаралғандар">
+<!ENTITY settings.popularSites "Атақтылар">
+<!ENTITY newyear.18.12.2014.button "Посмотреть">
+<!ENTITY newyear.18.12.2014.text "Текст про новый год">
+<!ENTITY newyear.19.12.2014.button "Показать">
+<!ENTITY newyear.19.12.2014.text "Текст про новый год. Второй день.">
+<!ENTITY newyear.20.12.2014.button "Скачать">
+<!ENTITY newyear.20.12.2014.text "Текст про новый год. Третий день.">
+<!ENTITY newyear.21.12.2014.button "Купить">
+<!ENTITY newyear.21.12.2014.text "Текст про новый год. Четвертый день.">
+<!ENTITY newyear.22.12.2014.button "Установить">
+<!ENTITY newyear.22.12.2014.text "Текст про новый год. Пятый день.">
+<!ENTITY newyear.23.12.2014.button "Попробовать">
+<!ENTITY newyear.23.12.2014.text "Текст про новый год. Шестой день.">
+<!ENTITY newyear.24.12.2014.button "Посмотреть">
+<!ENTITY newyear.24.12.2014.text "Текст про новый год. Седьмой день.">
+<!ENTITY newyear.25.12.2014.button "Посмотреть">
+<!ENTITY newyear.25.12.2014.text "Текст про новый год. Восьмой день.">
+<!ENTITY newyear.26.12.2014.button "Посмотреть">
+<!ENTITY newyear.26.12.2014.text "Текст про новый год. Девятый день.">
+<!ENTITY newyear.27.12.2014.button "Посмотреть">
+<!ENTITY newyear.27.12.2014.text "Текст про новый год. Десятый день.">
+<!ENTITY newyear.28.12.2014.button "Посмотреть">
+<!ENTITY newyear.28.12.2014.text "Текст про новый год. Одиннадцатый день.">
+<!ENTITY newyear.29.12.2014.button "Посмотреть">
+<!ENTITY newyear.29.12.2014.text "Текст про новый год. Двенадцатый день.">
+<!ENTITY newyear.30.12.2014.button "Таңдау">
+<!ENTITY newyear.30.12.2014.text "Текст про новый год. Тринадцатый день.">
+<!ENTITY newyear.31.12.2014.button "Посмотреть">
+<!ENTITY newyear.31.12.2014.text "Текст про новый год. Четырнадцатый день.">
+<!ENTITY newyear.18.12.2014.header "До Нового года осталось 14 дней">
+<!ENTITY newyear.19.12.2014.header "До Нового года осталось 13 дней">
+<!ENTITY newyear.20.12.2014.header "До Нового года осталось 12 дней">
+<!ENTITY newyear.21.12.2014.header "До Нового года осталось 11 дней">
+<!ENTITY newyear.22.12.2014.header "До Нового года осталось 10 дней">
+<!ENTITY newyear.23.12.2014.header "До Нового года осталось 9 дней">
+<!ENTITY newyear.24.12.2014.header "До Нового года осталось 8 дней">
+<!ENTITY newyear.25.12.2014.header "До Нового года осталось 7 дней">
+<!ENTITY newyear.26.12.2014.header "До Нового года осталось 6 дней">
+<!ENTITY newyear.27.12.2014.header "До Нового года осталось 5 дней">
+<!ENTITY newyear.28.12.2014.header "До Нового года осталось 4 дня">
+<!ENTITY newyear.29.12.2014.header "До Нового года осталось 3 дня">
+<!ENTITY newyear.30.12.2014.header "До Нового года осталось 2 дня">
+<!ENTITY newyear.31.12.2014.header "До Нового года остался 1 день">

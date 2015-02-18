@@ -1,0 +1,23 @@
+﻿<!ENTITY camp.name "Кампанiя" >
+<!ENTITY camp.number "Нумар кампаніі" >
+<!ENTITY camp.currency "у.а." >
+<!ENTITY camp.setting.update_interval "Інтэрвал абнаўлення:" >
+<!ENTITY camp.setting.minutes "хв." >
+<!ENTITY camp.tooltip.notlogged.row1 "Паказвае стан вашай кампаніі ў Яндекс.Дырэкце" >
+<!ENTITY camp.tooltip.notlogged.row2 "Калі ласка, аўтарызуйцеся" >
+<!ENTITY camp.tooltip.nocamapigns.row1 "Дадзеныя па вашай кампаніі ў Яндекс.Дырэкце не атрыманы" >
+<!ENTITY camp.tooltip.nocamapigns.row2 "Калі ласка, размясціце рэкламную аб’яву" >
+<!ENTITY camp.tooltip.invalid_num.row1 "Дадзеныя па вашай кампаніі ў Яндекс.Дырэкце не атрыманы" >
+<!ENTITY camp.tooltip.invalid_num.row2 "Калі ласка, праверце настройкі" >
+<!ENTITY camp.tooltip.error.row1 "Дадзеныя па вашай кампаніі ў Яндекс.Дырэкце не атрыманы" >
+<!ENTITY camp.tooltip.error.row2 "Калі ласка, праверце злучэнне" >
+<!ENTITY camp.tooltip.number "Нумар:" >
+<!ENTITY camp.tooltip.state "Статус:" >
+<!ENTITY camp.tooltip.balance "Астача:" >
+<!ENTITY camp.tooltip.todayclicks "Клікаў сёння:" >
+<!ENTITY camp.updateinfo "Абнавіць інфармацыю" >
+<!ENTITY camp.pay "Даплаціць" >
+<!ENTITY camp.status.shows "Идут показы" >
+<!ENTITY camp.status.outofmoney "Нет средств" >
+<!ENTITY camp.status.disabled "Отключена" >
+<!ENTITY camp.status.stopped "Остановлена" >

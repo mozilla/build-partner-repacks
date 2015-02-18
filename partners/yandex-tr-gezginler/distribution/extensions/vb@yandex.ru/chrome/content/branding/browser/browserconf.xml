@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Browser [
+<!ENTITY % servicesDTD SYSTEM "../services.dtd">
+%servicesDTD;
+<!ENTITY % browserconfDTD SYSTEM "browserconf.dtd">
+%browserconfDTD;
+]>
+
+<Browser xmlns:yb="http://bar.yandex.ru/">
+    <HomePage title="&yandex.label;">&yandex.url;?clid={clid5}</HomePage>
+    <QuickSearch>
+        <OpenSearchDescription yb:uniqName="yandex" xmlns="http://a9.com/-/spec/opensearch/1.1/">
+            <ShortName>&yandex.label;</ShortName>
+            <Description>&yandex.search.tooltip;</Description>
+            <Url template="&yandex.search.url;&amp;clid={clid6}" type="text/html"/>
+            <Url rel="suggestions" template="&yandex.suggestions.url;" type="application/json"/>
+            <Url rel="moz-keywordsearch" template="&yandex.qs.keywordsearch;" type="application/x-moz-keywordsearch"/>
+            <Image height="16" width="16">icons/yandex.ico</Image>
+            <Image height="26" width="65">icons/yandex-65x26.png</Image>
+            <Image height="52" width="130">icons/yandex-130x52.png</Image>
+            <InputEncoding>UTF-8</InputEncoding>
+        </OpenSearchDescription>
+
+        <OpenSearchDescription yb:uniqName="yagorsel" xmlns="http://a9.com/-/spec/opensearch/1.1/">
+            <ShortName>&yagorsel.label;</ShortName>
+            <Description>&yagorsel.search.tooltip;</Description>
+            <Url template="&yagorsel.search.url;&amp;clid={clid6}" type="text/html"/>
+            <Url rel="site-search" template="&yagorsel.search.site-url;&amp;clid={clid6}" type="text/html"/>
+            <Url rel="suggestions" template="&yagorsel.suggestions.url;" type="application/json"/>
+            <Url rel="moz-keywordsearch" template="&yagorsel.search.site-url;&amp;clid={clid9}" type="application/x-moz-keywordsearch"/>
+            <Image height="16" width="16">icons/yagorsel.ico</Image>
+            <InputEncoding>UTF-8</InputEncoding>
+        </OpenSearchDescription>
+
+        <OpenSearchDescription yb:uniqName="yavideo" xmlns="http://a9.com/-/spec/opensearch/1.1/">
+            <ShortName>&yavideo.label;</ShortName>
+            <Description>&yavideo.search.tooltip;</Description>
+            <Url template="&yavideo.search.url;&amp;clid={clid6}" type="text/html"/>
+            <Url rel="suggestions" template="&yavideo.suggestions.url;" type="application/json"/>
+            <Url rel="moz-keywordsearch" template="&yavideo.search.url;&amp;clid={clid9}" type="application/x-moz-keywordsearch"/>
+            <Image height="16" width="16">icons/yavideo.ico</Image>
+            <InputEncoding>UTF-8</InputEncoding>
+        </OpenSearchDescription>
+
+        <OpenSearchDescription yb:uniqName="yahaber" xmlns="http://a9.com/-/spec/opensearch/1.1/">
+            <ShortName>&yahaber.label;</ShortName>
+            <Description>&yahaber.search.tooltip;</Description>
+            <Url template="&yahaber.search.url;&amp;clid={clid6}" type="text/html"/>
+            <Url rel="moz-keywordsearch" template="&yahaber.search.url;&amp;clid={clid9}" type="application/x-moz-keywordsearch"/>
+            <Image height="16" width="16">icons/yahaber.ico</Image>
+            <InputEncoding>UTF-8</InputEncoding>
+        </OpenSearchDescription>
+    </QuickSearch>
+
+    <LocationBarSearch>
+        <Url>&location.bar.search;</Url>
+    </LocationBarSearch>
+</Browser>

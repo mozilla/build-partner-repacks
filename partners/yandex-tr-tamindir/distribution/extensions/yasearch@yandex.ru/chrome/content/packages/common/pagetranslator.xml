@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE plugin SYSTEM "/native/fx/pagetranslator.dtd"><plugin bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="icons/pagetranslator.png" name="&pagetranslator.name;">
+
+    <f:setting name="tlang" scope="plugin"/>
+    <f:setting default="0" name="show-tooltip" scope="plugin"/>
+    <f:setting default="0" name="suggest.shownAt" scope="plugin"/>
+    <f:setting default="0" name="suggest.closedCounter" scope="plugin"/>
+
+    <modules>
+        <module browser="firefox" file="/native/fx/pagetranslator/pagetranslator.js"/>
+    </modules>
+
+</plugin>

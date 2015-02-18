@@ -1,0 +1,17 @@
+@import url(chrome://global/skin/);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace html url(http://www.w3.org/1999/xhtml);dialog{padding:0!important;background-color:#fff!important;font-family:Arial,"Lucida Grande",sans-serif!important;font-size:13px!important;line-height:17px!important}
+.dialog-button-box{display:none}
+#send-usage-stat-content{padding:20px 125px;border-top:1px solid #a3a3a3;background-color:#f0f0f0}
+.header{font-weight:700;margin:0 0 .2em}
+checkbox{padding:0!important;margin:.4em 0 0!important}
+html|div#checkbox-description{margin:0 .5em .3em 0}
+.accept-button-box{margin-bottom:-.5ex}
+html|div#checkbox-description html|a{color:#3b7eb7;text-decoration:underline;cursor:pointer}
+html|iframe{border:0!important;display:block;-moz-box-flex:1}
+deck{opacity:1;transition-property:opacity;transition-duration:1s;transition-delay:.2s}
+deck.hidden{opacity:0}
+html|a.button{background:url(images/normal-start.png) left top no-repeat;display:inline-block;height:22px;line-height:22px;padding:0 0 0 3px;margin:0 5px;border:5px solid #cee3f8;border-radius:3px}
+html|a.button html|span{background:url(images/normal-end.png) right top;display:inline-block;padding:0 10px 0 7px}
+html|a.button:hover{background-image:url(images/hover-start.png)}
+html|a.button:hover html|span{background-image:url(images/hover-end.png)}
+html|a.button:active{background-image:url(images/active-start.png);height:26px;line-height:26px;padding:0 0 0 7px;margin:0 3px;border-color:#fcf6d7}
+html|a.button:active html|span{background-image:url(images/active-end.png);padding:0 12px 0 5px}

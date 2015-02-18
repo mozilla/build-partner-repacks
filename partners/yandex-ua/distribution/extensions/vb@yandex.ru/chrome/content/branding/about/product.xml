@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Product SYSTEM "product.dtd"><Product>
+  <BrandID>ua</BrandID>
+
+  <ProductName1 acc="&product.name.acc;" dat="&product.name.dat;" ex1="&product.name.nom;" ex2="&product.name.nom;" gen="&product.name.gen;" ins="&product.name.ins;" loc="&product.name.loc;" nom="&product.name.nom;" pre="&product.name.pre;"/>
+    
+  <ProductName2 acc="&product.shortname.acc;" dat="&product.shortname.dat;" ex1="&product.shortname.nom;" ex2="&product.shortname.nom;" gen="&product.shortname.gen;" ins="&product.shortname.ins;" loc="&product.shortname.loc;" nom="&product.shortname.nom;" pre="&product.shortname.pre;"/>
+
+  <VendorName acc="&vendor.name.acc;" dat="&vendor.name.dat;" ex1="&vendor.name.nom;" ex2="&vendor.name.nom;" gen="&vendor.name.gen;" ins="&vendor.name.ins;" loc="&vendor.name.loc;" nom="&vendor.name.nom;" pre="&vendor.name.pre;"/>
+
+  <ProductDescription fx="&product.description;" ie="&product.description;"/>
+
+  <NoteLine fx="&product.note.fx;" ie="&product.note.ie;"/>
+  <HomePage action="3010">&product.homepage;</HomePage>
+  <Copyright fx="&product.copyright.fx;" ie="&product.copyright.ie;"/>
+  <LicenseURL fx="&product.license.url.fx;" ie="&product.license.url.ie;"/>
+  <BrandingURL>https://download.yandex.ru/bar/vb/branding/default.zip</BrandingURL>
+  <SoftURL>http://soft.yandex.ua/?from=vb_sett</SoftURL>
+
+  <YandexFeatures visual-bookmarks="true"/>
+
+  <Languages>ru, en, tr, uk, kk, be</Languages>
+
+  <Setup>
+    <License display="false"/>
+    <HomePage checked="false" display="false"/>
+    <DefaultSearch checked="false" display="false"/>
+    <UsageStat checked="false" display="false"/>
+  </Setup>
+</Product>

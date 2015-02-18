@@ -1,0 +1,7 @@
+<!ENTITY games.title "Games">
+<!ENTITY games.menutitle "All games">
+<!ENTITY games.tooltip "Play online">
+<!ENTITY games.error_connect "Could not load game.">
+<!ENTITY games.error_connect2 "Check your Internet connection">
+<!ENTITY games.error_flash "To run games, download and install Flash player.&#13;Click to go to the download page.">
+<!ENTITY games.source "Source">

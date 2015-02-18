@@ -1,0 +1,4 @@
+[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#pagetranslator"]{-moz-binding:url(../bindings/pagetranslator.xbl#button)!important;margin:0 1px;display:none}
+notification[anonid=pagetranslator-notification]>.notification-inner{-moz-binding:url(../bindings/notification.xbl#panel)!important}
+notification[anonid=pagetranslator-tooltip]>.notification-inner{-moz-binding:url(../bindings/notification.xbl#tooltip)!important}
+notification[anonid=pagetranslator-suggest]>.notification-inner{-moz-binding:url(../bindings/notification.xbl#suggest)!important}

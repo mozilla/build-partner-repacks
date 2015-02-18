@@ -44,7 +44,7 @@ CustomErrors.EArgRange = function EArgRange(argName, expectedRange, actualValue)
     CustomErrors.ECustom.apply(this, arguments);
     this._argName = argName.toString();
     this._expectedRange = expectedRange.toString();
-    this._actualValue = actualValue == undefined ? "[" + String(actualValue) + "]" : actualValue.toString();
+    this._actualValue = actualValue === undefined ? "[" + String(actualValue) + "]" : actualValue.toString();
 };
 CustomErrors.EArgRange.prototype = {
     _name: "EArgRange",
@@ -54,11 +54,13 @@ CustomErrors.EArgRange.prototype = {
     _argName: undefined,
     _expectedRange: undefined,
     _actualValue: undefined,
-    get _details() [
-        this._argName,
-        this._expectedRange,
-        this._actualValue
-    ]
+    get _details() {
+        return [
+            this._argName,
+            this._expectedRange,
+            this._actualValue
+        ];
+    }
 };
 CustomErrors.EArgType = function EArgType(argName, expectedTypeName, actualTypeNameOrValue) {
     CustomErrors.ECustom.apply(this, arguments);
@@ -78,11 +80,13 @@ CustomErrors.EArgType.prototype = {
     _argName: undefined,
     _expectedTypeName: undefined,
     _actualTypeName: undefined,
-    get _details() [
-        this._argName,
-        this._expectedTypeName,
-        this._actualTypeName
-    ],
+    get _details() {
+        return [
+            this._argName,
+            this._expectedTypeName,
+            this._actualTypeName
+        ];
+    },
     _guessType: function EArgType__guessType(value) {
         if (value === null || value === undefined) {
             return String(value);
@@ -126,10 +130,12 @@ CustomErrors.ESecurityViolation.prototype = {
     _message: "Security violation",
     _where: undefined,
     _what: undefined,
-    get _details() [
-        this._where,
-        this._what
-    ]
+    get _details() {
+        return [
+            this._where,
+            this._what
+        ];
+    }
 };
 CustomErrors.EDownload = function EDownload(uri, reason) {
     CustomErrors.ECustom.apply(this, arguments);
@@ -143,8 +149,10 @@ CustomErrors.EDownload.prototype = {
     _message: "Download error",
     _uri: undefined,
     _reason: undefined,
-    get _details() [
-        this._uri,
-        this._reason
-    ]
+    get _details() {
+        return [
+            this._uri,
+            this._reason
+        ];
+    }
 };

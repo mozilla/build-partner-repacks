@@ -40,14 +40,10 @@ const nativeComponentsParser = {
     },
     _chooseNativeModule: function NCParser__chooseNativeModule(componentElement) {
         let modulesElements = xmlutils.queryXMLDoc("./*[local-name() = 'modules']/*[local-name() = 'module']", componentElement);
-        let numModules = modulesElements.length;
-        if (numModules < 1) {
+        if (modulesElements.length < 1) {
             throw new BarPlatform.Unit.EUnitSyntax(componentElement.nodeName, "No module declaration");
         }
-        let platformInfo = sysutils.platformInfo;
-        let moduleItems = [];
-        for (let i = 0; i < numModules; i++) {
-            let moduleElement = modulesElements[i];
+        let moduleItems = modulesElements.map(function (moduleElement) {
             let moduleItem = {};
             moduleItem.filePath = moduleElement.getAttribute("file");
             [
@@ -59,8 +55,8 @@ const nativeComponentsParser = {
                     moduleItem[attrName] = moduleElement.getAttribute(attrName);
                 }
             });
-            moduleItems.push(moduleItem);
-        }
+            return moduleItem;
+        });
         let moduleInfo = BarPlatform.findPlatformMatch(moduleItems);
         if (!moduleInfo) {
             throw new Error("No native module for this platform");
@@ -83,7 +79,7 @@ const nativeComponentsParser = {
             case "modules":
                 break;
             default:
-                this._logger.warn(strutils.formatString("Unknown element \"%1\" was ignored.", [child.nodeName]));
+                this._logger.warn(strutils.formatString("Unknown element '%1' was ignored.", [child.nodeName]));
             }
         }
     }

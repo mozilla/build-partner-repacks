@@ -1,0 +1,15 @@
+<!ENTITY logo.alt "Яндекс">
+<!ENTITY logo.title "Яндекс">
+
+<!ENTITY search.navigate.title "найти Яндексом">
+<!ENTITY search.placeholder "Вы можете искать здесь">
+
+<!ENTITY thumb.yandex "Яндекс">
+<!ENTITY thumb.yamail "Яндекс.Почта">
+<!ENTITY thumb.yamaps "Яндекс.Карты">
+<!ENTITY thumb.yamarket "Яндекс.Маркет">
+<!ENTITY thumb.yasoft "Яндекс.Программы">
+<!ENTITY thumb.mynet "Mynet">
+<!ENTITY thumb.facebook "Facebook">
+<!ENTITY thumb.youtube "Youtube">
+<!ENTITY thumb.milliyet "Milliyet">

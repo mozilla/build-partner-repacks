@@ -90,10 +90,8 @@ const barnavig = {
         } catch (e) {
             this._logger.debug(e);
         }
-        Services.obs.addObserver(linkClickListener, "http-on-modify-request", false);
     },
     finalize: function BarNavig_finalize(aDoCleanup) {
-        Services.obs.removeObserver(linkClickListener, "http-on-modify-request");
         this.listenStatEventsEnabled = false;
         this.transmissionEnabled = false;
         if (aDoCleanup) {
@@ -178,7 +176,7 @@ const barnavig = {
                             callback.onBarNavigResponse(params);
                         }
                     } catch (e) {
-                        barnavig._logger.error("Notify provider error \"onBarNavigResponse\": " + e);
+                        barnavig._logger.error("Notify provider error 'onBarNavigResponse': " + e);
                     }
                 });
             };
@@ -306,28 +304,29 @@ const barnavig = {
             url
         ] = this._getBrowserURI(browser);
         params.url = url;
-        let webNavigation = browser.webNavigation;
         try {
-            if (webNavigation instanceof Ci.nsIWebPageDescriptor) {
-                let descriptor = webNavigation.currentDescriptor;
-                if (descriptor instanceof Ci.nsISHEntry && descriptor.postData) {
-                    params.post = 1;
-                }
+            let sessionHistory = browser.sessionHistory;
+            let historyEntry = sessionHistory.getEntryAtIndex(sessionHistory.index, false);
+            if (Boolean(historyEntry.postData)) {
+                params.post = 1;
             }
         } catch (e) {
         }
-        let referringURI = webNavigation.referringURI;
+        let docShellProps = aWindowListenerData.docShellProps;
+        let referringURI = docShellProps && docShellProps.referringURI;
         if (referringURI && !referringURI.userPass) {
             params.referer = referringURI.spec;
         }
-        let realReferer = linkClickListener.getRealReferer(browser);
-        if (realReferer) {
-            params["real-referer"] = realReferer;
+        if (params.referer) {
+            let realReferer = linkClickListener.getRealReferer(browser);
+            if (realReferer) {
+                params["real-referer"] = realReferer;
+            }
         }
         if (browser.contentTitle) {
             params.title = String(browser.contentTitle || "").substr(0, 1000);
         }
-        let {originalURL, responseStatus} = (aWindowListenerData.docShellProps || {}).currentDocumentChannel || {};
+        let {originalURL, responseStatus} = (docShellProps || {}).currentDocumentChannel || {};
         if (originalURL && originalURL !== "about:blank" && originalURL !== url) {
             params.oldurl = originalURL;
         }
@@ -346,7 +345,7 @@ const barnavig = {
         try {
             statisticsDoc = this._application.branding.brandPackage.getXMLDocument("/statistics/statistics.xml");
         } catch (e) {
-            this._logger.error("Can not get \"statistics/statistics.xml\" file from branding");
+            this._logger.error("Can not get 'statistics/statistics.xml' file from branding");
         }
         let domainElement = statisticsDoc && statisticsDoc.querySelector("Statistics > BarNavigDomain");
         if (domainElement) {
@@ -378,7 +377,7 @@ const barnavig = {
                 return;
             }
             let url = aURL;
-            if (url.indexOf(this.BARNAVIG_URL_PATH) == 0) {
+            if (url.indexOf(this.BARNAVIG_URL_PATH) === 0) {
                 ip = yield DNSInfo.getIPForURL(url);
                 if (!ip) {
                     url = url.replace(this.BARNAVIG_URL_PATH, this.BARNAVIG_BACKUP_URL_PATH);
@@ -438,8 +437,6 @@ const barnavig = {
             return defer.promise;
         }
         let params = aParams.barNavigParams;
-        let app = this._application;
-        params.action = app.componentsUsage && app.componentsUsage.readActions() || null;
         let downloadData = downloadsStat.getRecord();
         if (downloadData) {
             params.dlu = downloadData.prePath;
@@ -455,7 +452,7 @@ const barnavig = {
             let docShellProps = aParams.windowListenerData.docShellProps;
             if (docShellProps && docShellProps.loadType & Ci.nsIDocShell.LOAD_CMD_NORMAL) {
                 try {
-                    let sessionHistory = browser.webNavigation.sessionHistory;
+                    let sessionHistory = browser.sessionHistory;
                     if (sessionHistory.count == 1) {
                         params.target = "t";
                         if (browser.getTabBrowser().browsers.length == 1) {
@@ -466,6 +463,7 @@ const barnavig = {
                 }
             }
         }
+        let app = this._application;
         if (app.browserUsage) {
             let browserUsage = app.browserUsage.readUsageStat();
             for (let i = 0, len = browserUsage.length; i < len; i++) {
@@ -549,7 +547,7 @@ const barnavig = {
                     callbacks.push(provider[eventType](params));
                 }
             } catch (e) {
-                this._logger.error("Notify provider error \"" + eventType + "\": " + e);
+                this._logger.error("Notify provider error '" + eventType + "': " + e);
             }
         }, this);
         callbacks = callbacks.filter(Boolean);
@@ -612,7 +610,7 @@ const barnavig = {
                     callback.onBarNavigResponse(aParams);
                 }
             } catch (e) {
-                this._logger.error("Notify provider error \"onBarNavigResponse\": " + e);
+                this._logger.error("Notify provider error 'onBarNavigResponse': " + e);
             }
         }, this);
     },
@@ -653,15 +651,17 @@ const windowMediatorListener = {
                 win.addEventListener("unload", function WML_win_onUnload() {
                     win.removeEventListener("unload", WML_win_onUnload, false);
                     winListener.removeListener("TabClose", tabsInfoListener);
-                    win.removeEventListener("click", linkClickListener, true);
                     winListener.removeListener("PageStateStart", linkClickListener);
+                    winListener.removeListener("TabOpen", linkClickListener);
+                    linkClickListener.removeContentClickListener(win);
                     winListener.removeListener("WindowLocationChange", windowEventsListener);
                     winListener.removeListener("PageLoad", windowEventsListener);
                 }, false);
                 winListener.addListener("WindowLocationChange", windowEventsListener);
                 winListener.addListener("PageLoad", windowEventsListener);
                 winListener.addListener("PageStateStart", linkClickListener);
-                win.addEventListener("click", linkClickListener, true);
+                winListener.addListener("TabOpen", linkClickListener);
+                linkClickListener.addContentClickListener(win);
                 winListener.addListener("TabClose", tabsInfoListener);
             }
             break;
@@ -669,6 +669,41 @@ const windowMediatorListener = {
     }
 };
 const linkClickListener = {
+    addContentClickListener: function linkClickListener_addContentClickListener(chromeWindow) {
+        let frameScriptSource = " " + "function () {" + "    addEventListener('click', function clickContentListener(event) {" + "        if (!event.isTrusted) {" + "            return;" + "        }" + "        let protocol = event.view.location.protocol;" + "        let target = event.originalTarget;" + "        let isContextMenu = protocol === 'chrome:'" + "            && target.localName === 'menuitem'" + "            && target.parentNode" + "            && target.parentNode.id === 'contentAreaContextMenu';" + "        let linkText = null;" + "        let linkURL = null;" + "        if (/^https?:/.test(protocol)) {" + "            let linkTarget = target;" + "            while (linkTarget && linkTarget.localName !== 'a') {" + "                linkTarget = linkTarget.parentNode;" + "            }" + "            if (linkTarget) {" + "                linkURL = linkTarget.href;" + "                if (protocol === 'http:') {" + "                    linkText = linkTarget.textContent.trim().substr(0, 500) || null;" + "                }" + "            }" + "        }" + "        let view = event.view;" + "        if (isContextMenu && target.parentNode.triggerNode) {" + "            view = target.parentNode.triggerNode.ownerDocument.defaultView;" + "        }" + "        let viewLocation = /^https?:$/.test(view.location.protocol)" + "            ? view.location.toString()" + "            : null;" + "        let messageData = {" + "            isContextMenu: isContextMenu," + "            linkText: linkText," + "            linkURL: linkURL," + "            viewLocation: viewLocation" + "        };" + "        sendAsyncMessage('{{PREFIX}}click', messageData);" + "    }, false);" + "}";
+        let frameScriptURL = "data:application/javascript;charset=utf-8," + encodeURIComponent("(" + frameScriptSource.replace(/\{\{PREFIX\}\}/g, this.FRAME_MESSAGES_PREFIX) + ")()");
+        let messageManager = chromeWindow.messageManager;
+        messageManager.loadFrameScript(frameScriptURL, true);
+        this._MESSAGES_NAMES.forEach(function (eventType) {
+            messageManager.addMessageListener(eventType, this);
+        }, this);
+    },
+    removeContentClickListener: function linkClickListener_removeContentClickListener(chromeWindow) {
+        let messageManager = chromeWindow.messageManager;
+        this._MESSAGES_NAMES.forEach(function (eventType) {
+            messageManager.removeMessageListener(eventType, this);
+        }, this);
+    },
+    get FRAME_MESSAGES_PREFIX() {
+        let prefix;
+        switch (__URI__.match(/^resource:\/\/(.+)\-app.+/)[1]) {
+        case "yasearch":
+            prefix = "yasearch@yandex.ru";
+            break;
+        case "yandex-vb":
+            prefix = "vb@yandex.ru";
+            break;
+        default:
+            throw new Error("Unknown application type");
+        }
+        delete this.FRAME_MESSAGES_PREFIX;
+        return this.FRAME_MESSAGES_PREFIX = prefix + ":barnavig:";
+    },
+    get _MESSAGES_NAMES() {
+        return ["click"].map(function (msg) {
+            return this.FRAME_MESSAGES_PREFIX + msg;
+        }, this);
+    },
     appendLinkData: function linkClickListener_appendLinkData({
         browser: tab,
         uri,
@@ -692,12 +727,7 @@ const linkClickListener = {
         tabData.linkText = null;
     },
     getRealReferer: function linkClickListener_getRealReferer(tab) {
-        let webNavigation = tab.webNavigation;
-        let referringURI = webNavigation.referringURI;
-        if (!referringURI) {
-            return null;
-        }
-        let sessionHistory = webNavigation.sessionHistory;
+        let sessionHistory = tab.sessionHistory;
         let prevSHEntryIndex = sessionHistory.index - 1;
         if (prevSHEntryIndex < 0) {
             let winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
@@ -720,140 +750,51 @@ const linkClickListener = {
         }
         return null;
     },
-    handleEvent: function linkClickListener_handleEvent(event) {
+    receiveMessage: function linkClickListener_receiveMessage({data}) {
         if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false) {
             return;
         }
-        switch (event.type) {
-        case "click":
-            this._lastActionText = this._getLinkText(event);
-            this._lastActionTimestamp = Date.now();
-            this._lastActionViewLocation = this._getViewLocation(event);
-            break;
-        }
+        this._lastActionText = data.linkText;
+        this._lastActionTimestamp = Date.now();
+        this._lastActionViewLocation = data.viewLocation;
+        this._lastLinkURL = data.linkURL;
     },
     observe: function linkClickListener_observe(subject, topic, data) {
-        switch (topic) {
-        case "http-on-modify-request":
-            this._onModifyRequest(subject);
-            break;
-        case "PageStateStart":
+        if (topic === "PageStateStart") {
             this._onPageStateStart(data);
-            break;
         }
     },
-    ACTION_LIVE_TIME: 1000,
     PAGE_START_WAIT_TIME: 10000,
     _lastActionTimestamp: null,
     _lastActionText: null,
-    _getLinkText: function linkClickListener__getLinkText(event) {
-        let protocol = event.view.location.protocol;
-        let target = event.originalTarget;
-        if (protocol === "chrome:") {
-            return target.localName === "menuitem" && target.parentNode && target.parentNode.id === "contentAreaContextMenu" && this._lastActionText || null;
-        }
-        if (protocol !== "http:") {
-            return null;
-        }
-        while (target && target.localName !== "a") {
-            target = target.parentNode;
-        }
-        return target && target.textContent.trim().substr(0, 500) || null;
-    },
-    _getViewLocation: function linkClickListener__getViewLocation(event) {
-        let view = event.view;
-        if (view.location.protocol === "chrome:") {
-            let target = event.originalTarget;
-            if (target.localName === "menuitem" && target.parentNode && target.parentNode.id === "contentAreaContextMenu") {
-                if (target.parentNode.triggerNode) {
-                    view = target.parentNode.triggerNode.ownerDocument.defaultView;
-                }
-            }
-        }
-        if (!/^https?:$/.test(view.location.protocol)) {
-            return null;
-        }
-        return view.location.toString();
-    },
-    _onModifyRequest: function linkClickListener__onModifyRequest(channel) {
-        if (!(this._lastActionText || this._lastActionViewLocation)) {
-            return;
-        }
-        if (Date.now() - this._lastActionTimestamp > this.ACTION_LIVE_TIME) {
-            this._lastActionText = null;
-            this._lastActionViewLocation = null;
-            return;
-        }
-        try {
-            channel.QueryInterface(Ci.nsIHttpChannel);
-            if (!(channel.loadFlags & Ci.nsIHttpChannel.LOAD_INITIAL_DOCUMENT_URI)) {
-                return;
-            }
-        } catch (e) {
-            return;
-        }
-        let tabData = this._getTabDataForChannel(channel);
-        if (!tabData) {
-            return;
-        }
-        tabData.linkText = this._lastActionText;
-        tabData.lastURL = channel.URI.spec;
-        tabData.lastViewLocation = this._lastActionViewLocation;
-        this._lastActionText = null;
-        this._lastActionViewLocation = null;
-    },
+    _lastActionViewLocation: null,
+    _lastLinkURL: null,
     _onPageStateStart: function linkClickListener__onPageStateStart({tab, request}) {
+        if (request.URI.spec === "about:blank") {
+            return;
+        }
         if (Date.now() - this._lastActionTimestamp > this.PAGE_START_WAIT_TIME) {
             return;
         }
         if (!barnavig.transmissionEnabled || barnavig.alwaysSendUsageStat === false) {
             return;
         }
-        let winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
-        if (!winListener) {
-            return;
-        }
-        let tabData = winListener.getTabData(tab, "linkClick");
-        if (!tabData) {
-            return;
-        }
-        if (tabData.lastURL !== request.URI.spec) {
-            tabData.linkText = null;
-        }
-    },
-    _getTabDataForChannel: function linkClickListener__getTabDataForChannel(channel) {
-        let win = this._getDOMWindowForChannel(channel);
-        if (!(win && win === win.parent)) {
-            return null;
-        }
-        return this._getTabDataForDOMWindow(win);
-    },
-    _getDOMWindowForChannel: function linkClickListener__getDOMWindowForChannel(channel) {
-        try {
-            return channel.loadGroup.groupObserver.QueryInterface(Ci.nsIWebProgress).DOMWindow;
-        } catch (e) {
-        }
-        return null;
-    },
-    _getTabDataForDOMWindow: function linkClickListener__getTabDataForDOMWindow(window) {
-        let docShellTree = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIWebNavigation).QueryInterface(Ci.nsIDocShellTreeItem);
-        if (docShellTree.itemType !== Ci.nsIDocShellTreeItem.typeContent) {
-            return null;
-        }
-        try {
-            let chromeWindow = docShellTree.rootTreeItem.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow).wrappedJSObject;
-            if (!chromeWindow) {
-                return null;
+        if (this._lastLinkURL === request.URI.spec) {
+            let winListener = getWindowListenerForWindow(tab.ownerDocument.defaultView);
+            if (!winListener) {
+                return;
             }
-            let tab = chromeWindow.getBrowser().getBrowserForDocument(window.document);
-            if (!tab) {
-                return null;
+            let tabData = winListener.getTabData(tab, "linkClick");
+            if (!tabData) {
+                return;
             }
-            return getTabDataForTab(tab, "linkClick");
-        } catch (e) {
+            tabData.linkText = this._lastActionText;
+            tabData.lastViewLocation = this._lastActionViewLocation;
         }
-        return null;
-    }
+        this._lastActionText = null;
+        this._lastActionViewLocation = null;
+    },
+    QueryInterface: XPCOMUtils.generateQI([Ci.nsIMessageListener])
 };
 const windowEventsListener = {
     observe: function WindowEventsListener_observe(aSubject, aTopic, aData) {
@@ -1034,7 +975,7 @@ const pageStat = {
         if (times.some(v => !(typeof v == "number" && v >= 0))) {
             return;
         }
-        if (times[0] == 0 || times[1] == 0) {
+        if (times[0] === 0 || times[1] === 0) {
             return;
         }
         let params = aParams.barNavigParams;
@@ -1045,7 +986,7 @@ const pageStat = {
         if (!aParams.browser) {
             return;
         }
-        let contentDocument = aParams.browser.contentDocument;
+        let contentDocument = aParams.browser.contentDocumentAsCPOW || aParams.browser.contentDocument;
         if (!contentDocument) {
             return;
         }
@@ -1072,9 +1013,11 @@ const pageStat = {
         let listener = function listener(event) {
             let {type, data, taskId} = event.data;
             if (type !== workerTaskType) {
+                defer.resolve();
                 return;
             }
             if (taskId !== workerTaskId) {
+                defer.resolve();
                 return;
             }
             mozWorker.removeEventListener("message", listener, false);
@@ -1273,7 +1216,7 @@ const downloadsStat = {
             onCacheEntryDoomed: function DlStat_cacheListener_onCacheEntryDoomed() {
             }
         };
-        let asyncOpenCacheEntry = function asyncOpenCacheEntry(url) {
+        var asyncOpenCacheEntry = function asyncOpenCacheEntry(url) {
             if (this._diskCacheStorage) {
                 this._diskCacheStorage.asyncOpenURI(Services.io.newURI(url, null, null), "", Ci.nsICacheStorage.OPEN_READONLY, listener);
             } else {
@@ -1508,6 +1451,9 @@ const searchPersonalization = {
             return resolvedPromise();
         }
         if (!/^http:\/\//.test(contentDocument.location)) {
+            return resolvedPromise();
+        }
+        if (!contentDocument.documentElement) {
             return resolvedPromise();
         }
         let documentInnerHTML;

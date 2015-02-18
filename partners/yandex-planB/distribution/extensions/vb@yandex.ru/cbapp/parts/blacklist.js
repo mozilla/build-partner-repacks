@@ -25,8 +25,9 @@ const blacklist = {
         });
     },
     finalize: function Blacklist_finalize(doCleanup, callback) {
-        if (this._timer && this._timer.isRunning)
+        if (this._timer && this._timer.isRunning) {
             this._timer.cancel();
+        }
         let dbClosedCallback = function Backup_finalize_dbClosedCallback() {
             this._database = null;
             this._application = null;
@@ -64,47 +65,64 @@ const blacklist = {
                 this._logger.debug(ex.stack);
             }
         }
-        this._database.execQueryAsync("SELECT domain FROM blacklist", {}, function (rowsData, storageError) {
-            if (storageError) {
-                let errorMsg = strutils.formatString("DB error while fetching blacklist: %1 (code %2)", [
-                    storageError.message,
-                    storageError.result
-                ]);
-                throw new Error(errorMsg);
+        this._database.executeQueryAsync({
+            query: "SELECT domain FROM blacklist",
+            columns: ["domain"],
+            callback: function (rowsData, storageError) {
+                if (storageError) {
+                    let errorMsg = strutils.formatString("DB error while fetching blacklist: %1 (code %2)", [
+                        storageError.message,
+                        storageError.result
+                    ]);
+                    throw new Error(errorMsg);
+                }
+                rowsData.forEach(function (row) {
+                    output.domains.push(row.domain);
+                });
+                callback(null, output);
             }
-            rowsData.forEach(function (row) {
-                output.domains.push(row.domain);
-            });
-            callback(null, output);
         });
     },
     upsertDomain: function Blacklist_upsertDomain(domain, callback) {
-        this._database.execQueryAsync("INSERT OR REPLACE INTO blacklist (domain) VALUES (:domain)", { domain: domain }, function (rowsData, storageError) {
-            if (storageError) {
-                let errorMsg = strutils.formatString("DB error while upserting item into blacklist: %1 (code %2)", [
-                    storageError.message,
-                    storageError.result
-                ]);
-                throw new Error(errorMsg);
+        this._database.executeQueryAsync({
+            query: "INSERT OR REPLACE INTO blacklist (domain) VALUES (:domain)",
+            parameters: { domain: domain },
+            callback: function (rowsData, storageError) {
+                if (storageError) {
+                    let errorMsg = strutils.formatString("DB error while upserting item into blacklist: %1 (code %2)", [
+                        storageError.message,
+                        storageError.result
+                    ]);
+                    throw new Error(errorMsg);
+                }
+                if (callback) {
+                    callback();
+                }
             }
-            callback && callback();
         });
     },
     deleteDomain: function Blacklist_deleteDomain(domain, callback) {
-        this._database.execQueryAsync("DELETE FROM blacklist WHERE domain = :domain", { domain: domain }, function (rowsData, storageError) {
-            if (storageError) {
-                let errorMsg = strutils.formatString("DB error while deleting item from blacklist: %1 (code %2)", [
-                    storageError.message,
-                    storageError.result
-                ]);
-                throw new Error(errorMsg);
+        this._database.executeQueryAsync({
+            query: "DELETE FROM blacklist WHERE domain = :domain",
+            parameters: { domain: domain },
+            callback: function (rowsData, storageError) {
+                if (storageError) {
+                    let errorMsg = strutils.formatString("DB error while deleting item from blacklist: %1 (code %2)", [
+                        storageError.message,
+                        storageError.result
+                    ]);
+                    throw new Error(errorMsg);
+                }
+                if (callback) {
+                    callback();
+                }
             }
-            callback && callback();
         });
     },
     get _brandingDoc() {
         delete this._brandingDoc;
-        return this._brandingDoc = this._application.branding.brandPackage.getXMLDocument("fastdial/blacklist.xml");
+        this._brandingDoc = this._application.branding.brandPackage.getXMLDocument("fastdial/blacklist.xml");
+        return this._brandingDoc;
     },
     get _serverFile() {
         let file = this._application.directories.appRootDir;

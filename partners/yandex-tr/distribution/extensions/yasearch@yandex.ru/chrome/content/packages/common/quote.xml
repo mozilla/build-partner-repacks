@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget [
+<!ENTITY % widget SYSTEM "/native/fx/quote.dtd">
+%widget;
+<!ENTITY % package SYSTEM "/native/fx/package.dtd">
+%package;
+]>
+<widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/native/fx/quote/icons/quote_up.svg" name="&wgt.quotes.name;" unique="false">
+
+    <f:setting default="0" name="quote-id" scope="instance">
+        <control label="&wgt.quotes.settings.id.label;" source="/native/fx/quote/quotelist.xml" template="/native/fx/quote/quotelist.xsl" type="combobox"/>
+    </f:setting>
+
+    <f:setting default="15" name="update-interval" scope="widget">
+        <control empty-default="15" label="&package.counters.upd-interval.label;" label-after="&package.counters.upd-interval.units;" max="10000" min="0" spin="5" type="textedit" value-type="int"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="/native/fx/quote/modules/module.jsm"/>
+    </modules>
+</widget>

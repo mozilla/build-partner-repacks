@@ -1,0 +1,31 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="chrome://global/skin/"?>
+<?xml-stylesheet href="../../../../skin/dialogs/chevron-welcome/welcome.css"?>
+
+<!DOCTYPE window [
+<!ENTITY % chevronWelcomeDTD SYSTEM "../../../../locale/chevron-welcome/welcome.dtd">
+%chevronWelcomeDTD;
+<!ENTITY % appDTD SYSTEM "../../bar.dtd">
+%appDTD;
+]>
+
+<window onload="resizeWindowOnLoad();" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <vbox>
+        <hbox align="start">
+            <image class="chevron" height="137" src="../../../../skin/dialogs/chevron-welcome/chevron-collapsed.png" width="219"/>
+            <vbox class="text">
+                <description>&welcome.newfeature;</description>
+                <description id="howitworks">&welcome.howitworks;</description>
+            </vbox>
+            <image height="97" src="../../../../skin/dialogs/chevron-welcome/arrow.png" width="49"/>
+        </hbox>
+        <hbox>
+            <spacer flex="1"/>
+            <button data-action="show" id="toggleAllPanels" label="&welcome.openpanels;"/>
+            <spacer flex="1"/>
+        </hbox>
+    </vbox>
+
+    <script src="./welcome.js" type="application/x-javascript"/>
+</window>

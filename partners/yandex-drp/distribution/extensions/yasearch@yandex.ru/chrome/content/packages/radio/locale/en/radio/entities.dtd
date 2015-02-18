@@ -1,0 +1,59 @@
+<!ENTITY widget.name "Radio">
+<!ENTITY widget.show-name "Show radio station name">
+
+<!ENTITY widget.tooltiptext.source "Source - ">
+<!ENTITY widget.tooltiptext.paused "Press to listen {radioname}">
+<!ENTITY widget.tooltiptext.normal1 "You are listening to {radioname}">
+<!ENTITY widget.tooltiptext.normal2 "To stop playing, press button">
+<!ENTITY widget.tooltiptext.no-stations1 "The list of radio stations is empty.">
+<!ENTITY widget.tooltiptext.no-stations2 "Please add a station.">
+<!ENTITY widget.tooltiptext.error "Replay error.">
+<!ENTITY widget.no-station "no radio stations">
+<!ENTITY widget.noflash1 "You need Flash player to listen to radio">
+<!ENTITY widget.noflash2 "Click the button to install">
+<!ENTITY widget.tooltiptext.throbber "Radio stream is being buffered. Please wait.">
+
+<!ENTITY widget.play "Play">
+<!ENTITY widget.pause "Pause">
+<!ENTITY widget.add "Add a station">
+<!ENTITY widget.settings "List of radio stations">
+<!ENTITY widget.settings2 "Settings">
+<!ENTITY widget.search "Find radio stations">
+<!ENTITY widget.noflash "Install Flash player"> 
+
+<!ENTITY dialog.addstation.title "Add a station">
+<!ENTITY dialog.addstation.name "Name: ">
+<!ENTITY dialog.addstation.url "Address: ">
+<!ENTITY dialog.addstation.autoplay "Play the station after addition">
+<!ENTITY dialog.addstation.prefix "Radio station ">
+<!ENTITY dialog.addstation.error2 " is already in the list.">
+<!ENTITY dialog.addstation.error3 "Please choose a different name.">
+<!ENTITY dialog.addstation.notice "The “Radio” button operates correctly only with mp3 streams and with play lists containing mp3 streams">
+
+<!ENTITY dialog.delstattion.title "Deleting radio station">
+<!ENTITY dialog.delstation.question "Are you sure you want to delete the selected radio station?">
+
+<!ENTITY dialog.changestation.title "Change radio station">
+<!ENTITY dialog.changestation.alert "Listen to radio station after applying changes">
+
+<!ENTITY dialog.settings.title "List of radio stations">
+<!ENTITY dialog.settings.row.play "*">
+<!ENTITY dialog.settings.row.name "Name">
+<!ENTITY dialog.settings.row-url "Address">
+<!ENTITY dialog.settings.button-add "Add">
+<!ENTITY dialog.settings.button-change "Change">
+<!ENTITY dialog.settings.button-delete "Delete">
+<!ENTITY dialog.settings.button-play "Play">
+<!ENTITY dialog.settings.button-stop "Stop">
+<!ENTITY dialog.settings.button-close "Close">
+<!ENTITY dialog.settings.row.name "Name">
+<!ENTITY dialog.settings.row.address "Address">
+
+<!ENTITY dialog.yes "Yes">
+<!ENTITY dialog.no "No">
+<!ENTITY dialog.ok "Ok">
+<!ENTITY dialog.cancel "Cancel">
+<!ENTITY MSG_DELETEMANY "Are you sure you want to delete the selected radio stations?">
+<!ENTITY TOOLTIP_ERROR "Error loading radio station">
+<!ENTITY dialog.settings.row-name "Name">
+<!ENTITY dialog.addstation.error-url "Enter the correct URL">

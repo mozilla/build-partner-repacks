@@ -1,0 +1,23 @@
+﻿<!ENTITY camp.name "Кампания" >
+<!ENTITY camp.number "Кампания номері:" >
+<!ENTITY camp.currency "у.е." >
+<!ENTITY camp.setting.update_interval "Жаңарту интервалы:" >
+<!ENTITY camp.setting.minutes "мин." >
+<!ENTITY camp.tooltip.notlogged.row1 "Сіздің Яндекс.Директте кампанияңыздың жағдайын көрсетеді" >
+<!ENTITY camp.tooltip.notlogged.row2 "Авторизациядан өтуіңізді сұраймыз" >
+<!ENTITY camp.tooltip.nocamapigns.row1 "Сіздің Яндекс.Директте кампанияңыз бойынша деректерді алу мүмкін емес" >
+<!ENTITY camp.tooltip.nocamapigns.row2 "Жарнамалық хабарлама жариялауыңызды сұраймыз" >
+<!ENTITY camp.tooltip.invalid_num.row1 "Cіздің Яндекс.Директте кампанияңыз бойынша мәліметтерді алу мүмкін емес" >
+<!ENTITY camp.tooltip.invalid_num.row2 "Баптауларды тексеруіңізді сұраймыз" >
+<!ENTITY camp.tooltip.error.row1 "Cіздің Яндекс.Директте кампанияңыз бойынша мәліметтерді алу мүмкін емес" >
+<!ENTITY camp.tooltip.error.row2 "Байланысты тексеріп көріңіз" >
+<!ENTITY camp.tooltip.number "Номер:" >
+<!ENTITY camp.tooltip.state "Статус:" >
+<!ENTITY camp.tooltip.balance "Қалғаны:" >
+<!ENTITY camp.tooltip.todayclicks "Бүгін басу саны:" >
+<!ENTITY camp.updateinfo "Мәліметтерді жаңарту" >
+<!ENTITY camp.pay "Қосымша төлеу" >
+<!ENTITY camp.status.shows "Көрсетілу орындалуда " >
+<!ENTITY camp.status.outofmoney "Қаржы жоқ" >
+<!ENTITY camp.status.disabled "Сөндірілді" >
+<!ENTITY camp.status.stopped "Тоқтатылды" >

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "news/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="news/content/img/news.svg" name="&news.title;" unique="true" xmlns="http://bar.yandex.ru/dev/gui">
+
+        <f:setting default="3" name="autoreload-interval" scope="widget"/>
+
+        <f:setting default="" name="options" scope="widget"/>
+        <f:setting default="" name="feed" scope="widget"/>
+
+        <modules>
+            <module browser="firefox" file="news/core/widget.jsm"/>
+        </modules>
+</widget>

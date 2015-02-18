@@ -1,0 +1,5 @@
+
+<!ENTITY notification.accept "Keep">
+<!ENTITY notification.help "What&#39;s this?">
+<!ENTITY notification.label "Congratulations! You have successfully installed Yandex Visual Bookmarks">
+<!ENTITY notification.reject "Restore previous">

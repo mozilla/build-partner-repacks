@@ -1,0 +1,39 @@
+<!ENTITY wgt.town.widget.name "Şehir">
+
+<!ENTITY wgt.town.setting.town "Şehir">
+<!ENTITY wgt.town.setting.town.popular "Popüler şehirler">
+<!ENTITY wgt.town.setting.title "Şehir adı">
+<!ENTITY wgt.town.setting.show.name "Şehrin adını göster">
+<!ENTITY wgt.town.setting.show.weather "Hava durumunu göster">
+<!ENTITY wgt.town.setting.show.traffic "Trafik akışını göster">
+<!ENTITY wgt.town.setting.interval "Güncelleme sıklığı">
+<!ENTITY wgt.town.settings.autodetect "Otomatik ayarla">
+<!ENTITY wgt.town.settings.min.label "dk.">
+
+<!ENTITY wgt.town.setup "Bilgilendirici ayarları">
+<!ENTITY wgt.town.refresh "Bilgileri güncelle">
+<!ENTITY wgt.town.delete "Şehri sil">
+<!ENTITY wgt.town.add "Şehir ekle">
+
+<!ENTITY wgt.town.weather.nodata "Hava durumu bilgisi yok">
+<!ENTITY wgt.town.weather.label "Hava durumu">
+<!ENTITY wgt.town.temperature.label "Sıcaklık">
+<!ENTITY wgt.town.wind.label "Rüzgar">
+<!ENTITY wgt.town.wind.ms "m/sn.">
+<!ENTITY wgt.town.pressure.label "Basınç">
+<!ENTITY wgt.town.pressure.mm.label "hPa">
+<!ENTITY wgt.town.dampness.label "Nem">
+<!ENTITY wgt.town.night "Gece">
+<!ENTITY wgt.town.tomorrow "Yarın">
+
+<!ENTITY wgt.town.traffic.points "Derece">
+<!ENTITY wgt.town.traffic.description "Detay">
+<!ENTITY wgt.town.traffic.length "Süre">
+<!ENTITY wgt.town.traffic.length.km "km">
+
+<!ENTITY wgt.town.request.lang "tr">
+
+<!ENTITY wgt.town.traffic.tooltip "Trafik ">
+<!ENTITY wgt.town.weather.tooltip "Hava durumu">
+<!ENTITY wgt.town.setting.openPageOnClick.traffic "Trafik butonuna tıklandığında servis sayfasını aç">
+<!ENTITY wgt.town.setting.openPageOnClick.weather "Hava durumu butonuna tıklandığında servis sayfasını aç">

@@ -1,0 +1,354 @@
+<?xml version='1.0'?>
+<bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding display="xul:button" extends="chrome://global/content/bindings/toolbarbutton.xml#toolbarbutton" id="extended-toolbarbutton">
+        <resources>
+            <stylesheet src="btn-content.css"/>
+        </resources>
+
+        <content>
+            <children includes="observes|template|menupopup|panel"/>
+            <xul:image class="toolbarbutton-icon" xbl:inherits="validate,src=image,toolbarmode,buttonstyle,yb-native-badge-icon,yb-native-not-authorized,yb-native-loading"/>
+            <xul:label class="toolbarbutton-text first-label-text" crop="right" flex="1" xbl:inherits="value=label,visible=yb-label-visible,accesskey,crop,toolbarmode,buttonstyle"/>
+            <xul:label anonid="yb-second-label" class="second-label-text" crop="right" flex="1" xbl:inherits="value=yb-second-label,accesskey,crop,toolbarmode,buttonstyle"/>
+            <children includes="tooltip">
+                <xul:tooltip xbl:inherits="id=tooltip,hidden=yb-default-tooltip-hidden" noautohide="true" orient="vertical">
+                    <xul:label flex="1" xbl:inherits="value=tooltip-text"/>
+                    <xul:label flex="1" xbl:inherits="value=yb-second-tooltip-text,hidden=yb-second-tooltip-off"/>
+                </xul:tooltip>
+            </children>
+        </content>
+
+        <implementation>
+            <property name="_ownerWidget" readonly="true">
+                <getter><![CDATA[    let parent = this.parentNode;
+    while (parent && !(parent.nodeType == parent.ELEMENT_NODE && parent.localName == "toolbaritem")) {
+        parent = parent.parentNode;
+    }
+    return parent;]]></getter>
+            </property>
+
+            <field name="ybSecondLabelNode" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "yb-second-label");]]></field>
+
+            <constructor><![CDATA[    this._updatePaddings = function () {
+        let image = document.getAnonymousElementByAttribute(this, "class", "toolbarbutton-icon");
+        let label = document.getAnonymousElementByAttribute(this, "class", "second-label-text");
+        if (!label || !image) {
+            return;
+        }
+        let setSize = true;
+        let parent = this.parentNode;
+        while (parent && !(typeof parent.getAttribute === "function" && parent.getAttribute("id") === "nav-bar")) {
+            parent = parent.parentNode;
+        }
+        let toolbox = parent && parent.parentNode;
+        if (!toolbox || toolbox.getAttribute("cb-os") !== "windows" || toolbox.getAttribute("defaultmode") && toolbox.getAttribute("iconsize") !== "large") {
+            setSize = false;
+        }
+        if (setSize) {
+            let width = label.boxObject.width + (Boolean(label.value) ? 8 : 4);
+            let margin = width;
+            if (this.getAttribute("yb-button-icon-hidden")) {
+                margin += 4;
+            }
+            image.setAttribute("style", "-moz-padding-end: " + (width + 4) + "px !important;");
+            label.setAttribute("style", "-moz-margin-start: -" + margin + "px !important;");
+        } else {
+            image.removeAttribute("style");
+            label.removeAttribute("style");
+        }
+    }.bind(this);
+    this._mutationObserver = new MutationObserver(this._updatePaddings);
+    let mutationObserverOptions = {
+        attributes: true,
+        attributeFilter: ["value"],
+        subtree: true
+    };
+    let label = document.getAnonymousElementByAttribute(this, "class", "second-label-text");
+    this._mutationObserver.observe(label, mutationObserverOptions);
+    setTimeout(function () {
+        if (typeof this._updatePaddings === "function") {
+            this._updatePaddings();
+        }
+    }.bind(this), 0);]]></constructor>
+
+            <destructor><![CDATA[    if (this._mutationObserver) {
+        this._mutationObserver.disconnect();
+        this._mutationObserver = null;
+        this._updatePaddings = null;
+    }]]></destructor>
+        </implementation>
+    </binding>
+
+    <binding display="xul:box" extends="chrome://global/content/bindings/general.xml#image" id="toolbarbutton-icon">
+        <resources>
+            <stylesheet src="button-icon.css"/>
+        </resources>
+
+        <content>
+            <xul:stack>
+                <xul:image anonid="throbber-image"/>
+                <xul:image anonid="base-image-normal" xbl:inherits="src,validate"/>
+                <xul:image anonid="base-image-inverted" xbl:inherits="validate"/>
+                <xul:vbox anonid="auth-images-container" xbl:inherits="yb-native-not-authorized">
+                    <xul:image anonid="auth-image-normal" xbl:inherits="validate"/>
+                    <xul:image anonid="auth-image-inverted" xbl:inherits="validate"/>
+                </xul:vbox>
+                <xul:vbox anonid="badge-images-container" xbl:inherits="yb-native-badge-icon">
+                    <xul:image anonid="badge-image-normal" xbl:inherits="src=yb-native-badge-icon,validate"/>
+                    <xul:image anonid="badge-image-inverted" xbl:inherits="validate"/>
+                </xul:vbox>
+            </xul:stack>
+        </content>
+
+        <implementation>
+            <field name="_mutationObserver"/>
+
+            <constructor><![CDATA[    let baseNormal = document.getAnonymousElementByAttribute(this, "anonid", "base-image-normal");
+    let baseInverted = document.getAnonymousElementByAttribute(this, "anonid", "base-image-inverted");
+    let badgeNormal = document.getAnonymousElementByAttribute(this, "anonid", "badge-image-normal");
+    let badgeInverted = document.getAnonymousElementByAttribute(this, "anonid", "badge-image-inverted");
+    let setInvertedSrc = function setInvertedSrc(baseNode, invertedNode) {
+        if (baseNode.hasAttribute("src")) {
+            let src = baseNode.getAttribute("src");
+            if (src) {
+                src = src.replace(/(\.[a-z]+)$/, "-inverted$1");
+            }
+            invertedNode.setAttribute("src", src);
+        } else {
+            invertedNode.removeAttribute("src");
+        }
+    };
+    let setSrcAttribute = function setSrcAttribute() {
+        setInvertedSrc(baseNormal, baseInverted);
+        setInvertedSrc(badgeNormal, badgeInverted);
+    };
+    setSrcAttribute();
+    this._mutationObserver = new MutationObserver(setSrcAttribute);
+    let mutationObserverOptions = {
+        attributes: true,
+        attributeFilter: ["src"]
+    };
+    this._mutationObserver.observe(baseNormal, mutationObserverOptions);
+    this._mutationObserver.observe(badgeNormal, mutationObserverOptions);]]></constructor>
+
+            <destructor><![CDATA[    if (this._mutationObserver) {
+        this._mutationObserver.disconnect();
+        this._mutationObserver = null;
+    }]]></destructor>
+        </implementation>
+    </binding>
+
+
+    <binding display="xul:menu" extends="chrome://global/content/bindings/button.xml#menu-button-base" id="extended-menu-toolbarbutton">
+        <resources>
+            <stylesheet src="chrome://global/skin/toolbarbutton.css"/>
+        </resources>
+
+        <content>
+            <children includes="observes|template|menupopup|panel"/>
+            <xul:toolbarbutton allowevents="true" anonid="button" class="box-inherit toolbarbutton-menubutton-button" flex="1" xbl:inherits="label,yb-second-label,yb-second-label-off,yb-native-badge-icon,yb-native-not-authorized,
+                                             disabled,crop,image,label,accesskey,command,
+                                             align,dir,pack,orient,toolbarmode,buttonstyle,tooltip=tooltip,tooltip-text,
+                                             yb-second-tooltip-text,yb-second-tooltip-off" yb-second-label-off="true">
+                <children includes="tooltip"/>
+            </xul:toolbarbutton>
+            <xul:dropmarker class="toolbarbutton-menubutton-dropmarker" xbl:inherits="align,dir,pack,orient,disabled,toolbarmode,buttonstyle,label" type="menu-button"/>
+        </content>
+
+        <implementation>
+            <method name="__noSuchMethod__">
+                <parameter name="methodName"/>
+                <parameter name="args"/>
+                <body><![CDATA[    this._button[methodName].apply(this._button, args);]]></body>
+            </method>
+
+            <field name="_button" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "button");]]></field>
+        </implementation>
+    </binding>
+
+
+    <binding extends="#extended-toolbarbutton" id="yauth-toolbarbutton">
+        <implementation implements="nsIObserver">
+            <field name="_authModule">this._ownerWidget.yauth</field>
+            <field name="_authState">false</field>
+            <field name="_mutationObserver">null</field>
+
+            <constructor><![CDATA[    this.watchAuth();]]></constructor>
+
+            <destructor><![CDATA[    this.ignoreAuth();]]></destructor>
+
+            <property name="_tooltipText" readonly="true">
+                <getter><![CDATA[    return this._ownerWidget._button.getAttribute("tooltip-text");]]></getter>
+            </property>
+
+            <property name="_noauthTooltipText" readonly="true">
+                <getter><![CDATA[    return this._ownerWidget._button.getAttribute("noauth-tooltip-text");]]></getter>
+            </property>
+
+            <property name="_authorized">
+                <getter><![CDATA[    return this._authState;]]></getter>
+
+                <setter><![CDATA[    this._authState = val;
+    this.setAttribute("tooltip-text", val ? this._tooltipText : this._noauthTooltipText || this._tooltipText);
+    this.setAttribute("yb-second-tooltip-off", val);
+    this.setAttribute("yb-second-label-off", !val);
+    this.setAttribute("yb-native-not-authorized", !val);]]></setter>
+            </property>
+
+            <method name="watchAuth">
+                <body><![CDATA[    this._authorized = this._authModule.authorized;
+    this._authModule.addListener(this._authModule.EVENTS.AUTH_STATE_CHANGED, this);
+    this._watchingAuth = true;]]></body>
+            </method>
+
+            <method name="ignoreAuth">
+                <body><![CDATA[    if (!this._authModule) {
+        return;
+    }
+    this._authModule.removeListener(this._authModule.EVENTS.AUTH_STATE_CHANGED, this);
+    this._watchingAuth = false;]]></body>
+            </method>
+
+
+            <method name="observe">
+                <parameter name="subject"/>
+                <parameter name="topic"/>
+                <parameter name="data"/>
+                <body><![CDATA[    if (!this._authModule) {
+        return;
+    }
+    switch (topic) {
+    case this._authModule.EVENTS.AUTH_STATE_CHANGED:
+        this._authorized = this._authModule.authorized;
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding display="xul:menu" extends="#yauth-toolbarbutton" id="yauth-menu-toolbarbutton"/>
+
+    <binding extends="//toolkit/native/bindings/widget.xml#widget" id="ycounter-widget">
+        <implementation>
+            <field name="yauth">this.module.authManager</field>
+            <field name="counters">this.module.counters</field>
+            <field name="API">this.module.API</field>
+
+            <field name="counterServiceID" readonly="true">this.module.counterServiceID</field>
+            <field name="counterXpathExpr" readonly="true">this.module.counterXpathExpr</field>
+
+            <field name="_loadingData">false</field>
+            <field name="_loadingTimestamp">0</field>
+            <field name="_loadingTimerId"/>
+
+            <property name="loadingData">
+                <getter><![CDATA[    return this._loadingData;]]></getter>
+                <setter><![CDATA[    this._loadingData = val;
+    if (this._loadingTimerId) {
+        clearTimeout(this._loadingTimerId);
+    }
+    if (val) {
+        this._button.setAttribute("loading", val);
+        this._loadingTimestamp = Date.now() + 700;
+    } else {
+        this._loadingTimerId = setTimeout(function (me) {
+            if (me._button) {
+                me._button.setAttribute("loading", val);
+            }
+        }, Math.max(0, this._loadingTimestamp - Date.now()), this);
+    }]]></setter>
+            </property>
+
+            <method name="refreshData">
+                <parameter name="event"/>
+                <body><![CDATA[    this.loadingData = true;
+    this.module.refreshData(event, function _refreshData() {
+        this.loadingData = false;
+    }.bind(this));]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+
+            <handler event="command"><![CDATA[    if (event.originalTarget.localName == "toolbarbutton") {
+        this.module.onButtonClick(event, this);
+    } else {
+        let cmdName = event.originalTarget.getAttribute("yb-widget-command");
+        if (cmdName && cmdName in this.module) {
+            this.module[cmdName](event, this);
+        }
+    }]]></handler>
+
+            <handler button="1" event="click"><![CDATA[    if (event.originalTarget.localName == "toolbarbutton") {
+        this.module.onButtonClick(event, this);
+    }]]></handler>
+
+            <handler event="popupshowing"><![CDATA[    if (event.originalTarget == this._menu && !this.yauth.authorized) {
+        this.module.onButtonClick(event, this);
+        return false;
+    }
+    return true;]]></handler>
+        </handlers>
+    </binding>
+
+
+    <binding extends="#yauth-toolbarbutton" id="ycounter-toolbarbutton">
+        <implementation>
+            <constructor><![CDATA[    let module = this._ownerWidget.module;
+    if (module && "counterValue" in module) {
+        this._updateCounterText(module.counterValue);
+    }
+    this.watchCounters();]]></constructor>
+
+            <destructor><![CDATA[    this.ignoreCounters();
+    this.ignoreAuth();]]></destructor>
+
+            <method name="watchCounters">
+                <body><![CDATA[    if (!this._counters) {
+        return;
+    }
+    this._counters.requireService(this._counterServiceID, this);
+    if (this._counters.haveDataForService(this._counterServiceID)) {
+        this.onCountersChange();
+    } else {
+        if (this._authorized) {
+            this._counters.forceUpdate(this._counterServiceID, this.onCountersChange.bind(this));
+        }
+    }]]></body>
+            </method>
+
+            <method name="ignoreCounters">
+                <body><![CDATA[    if (!this._counters) {
+        return;
+    }
+    this._counters.ignoreService(this._counterServiceID, this);]]></body>
+            </method>
+
+            <method name="onCountersChange">
+                <body><![CDATA[    if (!this._counters) {
+        return;
+    }
+    let [
+        flags,
+        responseDoc
+    ] = this._counters.getLastResponse();
+    if (!flags || !("ok" in flags)) {
+        return;
+    }
+    let counterValue = this._ownerWidget.API.XMLUtils.queryXMLDoc(this._ownerWidget.counterXpathExpr, responseDoc);
+    this._updateCounterText(counterValue);]]></body>
+            </method>
+
+            <method name="_updateCounterText">
+                <parameter name="counterValue"/>
+                <body><![CDATA[    let counterText = counterValue > 0 ? counterValue : "";
+    this.setAttribute("yb-second-label", counterText);
+    this.setAttribute("yb-second-label-off", !counterText);]]></body>
+            </method>
+
+            <field name="_counterServiceID">this._ownerWidget.counterServiceID</field>
+            <field name="_counters">this._ownerWidget.counters</field>
+        </implementation>
+    </binding>
+</bindings>

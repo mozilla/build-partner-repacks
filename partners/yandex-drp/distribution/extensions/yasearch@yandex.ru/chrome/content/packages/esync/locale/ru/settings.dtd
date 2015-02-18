@@ -1,0 +1,6 @@
+<!ENTITY esync.open.barsync.page "Открыть страницу настроек">
+
+<!ENTITY esync.panel.sync.outdated.header "Синхронизация">
+<!ENTITY esync.panel.sync.outdated.message "данные авторизации устарели">
+<!ENTITY esync.panel.sync.outdated.button.label "Исправить">
+<!ENTITY esync.panel.close.tooltip "Закрыть уведомление">

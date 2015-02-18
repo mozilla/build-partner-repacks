@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Product [
+    <!ENTITY % productDTD SYSTEM "/about/product.dtd">
+    %productDTD;
+    <!ENTITY % fxProductDTD SYSTEM "product.dtd">
+    %fxProductDTD;
+]>
+
+<Product>
+    <YandexFeatures
+        safe-browsing="true"
+        homepage-protection="false"
+    />
+
+    <WelcomePage url="&product.welcomepage;"/>
+
+    <GoodbyeUrl>&product.goodbye.url.fx;</GoodbyeUrl>
+</Product>

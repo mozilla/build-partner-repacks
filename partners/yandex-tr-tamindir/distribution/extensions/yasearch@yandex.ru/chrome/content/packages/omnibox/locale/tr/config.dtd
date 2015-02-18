@@ -1,0 +1,5 @@
+<!ENTITY search.name "Yandex">
+<!ENTITY search.image "icons/Y_ico.png">
+<!ENTITY search.label "Yandex&#39;te bul">
+<!ENTITY search.navigate "git">
+<!ENTITY welcome.title "Hızlı ve akıllı Yandex arama">

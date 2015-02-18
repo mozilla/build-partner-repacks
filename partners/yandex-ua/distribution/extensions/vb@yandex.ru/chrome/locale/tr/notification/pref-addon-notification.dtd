@@ -1,0 +1,4 @@
+<!ENTITY pref-addon-notification.label "Yandex Görsel Favoriler yerine kullanılabilecek yeni bir uygulama var. Güncelleme yapılsın mı?">
+<!ENTITY pref-addon-notification.fix "Hayır, Görsel Favoriler kalsın">
+<!ENTITY pref-addon-notification.disable "Evet">
+<!ENTITY pref-addon-notification.notice "Tarayıcınız yeniden başlatılacak">

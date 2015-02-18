@@ -1,0 +1,8 @@
+.b-menu-ico{padding:0;margin:20px 0 25px;font-size:0;line-height:0}
+.b-menu-ico__item{width:auto;display:inline-block;margin:0 20px 0 0;padding:0;line-height:auto;list-style-type:none}
+.b-menu-ico__link{padding:0 0 0 19px;font:13px Arial,Verdana,Tahoma;position:relative}
+.b-menu-ico__img{width:16px;height:16px;display:block;left:0;top:0;position:absolute;background:url(b-menu-ico__img.png)}
+.b-menu-ico__img_func{background-position:0 0}
+.b-menu-ico__img_lib{background-position:-16px 0}
+.b-menu-ico__img_club{background-position:-32px 0}
+.b-menu-ico__img_all{background-position:-48px 0}

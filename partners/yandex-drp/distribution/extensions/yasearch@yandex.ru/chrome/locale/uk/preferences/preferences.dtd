@@ -1,0 +1,59 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY pref.window.title "Налаштувати &product2.nom;">
+
+
+<!ENTITY prefpane.widgets.delete.button "Видалити з доступних">
+<!ENTITY prefpane.widgets.extra2.button "Відновити початкові налаштування">
+
+<!ENTITY prefpane.widgets.label "Кнопки">
+
+<!ENTITY registered.widgets.list.title "Доступні кнопки">
+<!ENTITY active.widgets.list.title "Поточні кнопки">
+
+<!ENTITY add.widgets.label "Додати">
+<!ENTITY remove.widgets.label "Вилучити">
+
+<!ENTITY move.widgets.up.label "Вище">
+<!ENTITY move.widgets.down.label "Нижче">
+
+<!ENTITY global.setting.tooltip.prefix "Це налаштування поширюється на кнопки &#37;S">
+
+<!ENTITY controls.combobox.creating.label "завантаження списку">
+
+
+<!ENTITY prefpane.plugins.delete.button "Видалити розширення">
+
+<!ENTITY prefpane.plugins.label "Розширення">
+
+<!ENTITY registered.plugins.list.title "Доступні розширення">
+
+<!ENTITY registered.plugins.enable.label "Увімкнути">
+
+
+<!ENTITY prefpane.about.label "Про програму">
+
+
+<!ENTITY updates.check.text "Перевірити оновлення">
+<!ENTITY updates.check.install "Встановити">
+<!ENTITY updates.check.setup "Налаштувати">
+
+
+<!ENTITY prefpane.misc.label "Налаштування">
+
+<!ENTITY yasearch.pref.urlbar.caption "Адресний рядок">
+
+<!ENTITY yasearch.pref.misc.caption "Різне">
+<!ENTITY yasearch.pref.links.target.label "Відкривати всі посилання з &product2.gen; у новій вкладці">
+<!ENTITY yasearch.pref.sounds.enable.label "Дозволити програвання звуків для сповіщень/повідомлень">
+<!ENTITY yasearch.pref.silent.trusted.updates.label "Автоматично оновлювати компоненти з &#171;Бібліотеки кнопок&#187;">
+
+<!ENTITY yasearch.pref.defence.homepage.caption "Домашня сторінка">
+<!ENTITY yasearch.pref.defence.homepage.label "Увімкнути захист домашньої сторінки">
+<!ENTITY yasearch.pref.defence.homepage.description "&product1.nom; будуть повідомляти вам про спроби сторонніх програм змінити домашню сторінку">
+
+<!ENTITY yasearch.pref.confidentiality.caption "Конфіденційність">
+<!ENTITY yasearch.pref.stat.usage.send.label "Взяти участь у поліпшенні сервісів Яндекса: автоматично надсилати &#60;html:a href=&#34;http://legal.yandex.ua/confidential/&#34;&#62;анонімну статистику&#60;/html:a&#62; використання браузера">
+
+<!ENTITY prefpane.software.label "Інші програми">

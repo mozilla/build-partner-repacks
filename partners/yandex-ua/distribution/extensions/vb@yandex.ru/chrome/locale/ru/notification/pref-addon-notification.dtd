@@ -1,0 +1,4 @@
+<!ENTITY pref-addon-notification.label "Установлено новое приложение, которое будет использоваться вместо Визуальных закладок Яндекса. Подтвердить изменения?">
+<!ENTITY pref-addon-notification.fix "Нет, оставить Визуальные закладки">
+<!ENTITY pref-addon-notification.disable "Да">
+<!ENTITY pref-addon-notification.notice "браузер будет перезапущен">

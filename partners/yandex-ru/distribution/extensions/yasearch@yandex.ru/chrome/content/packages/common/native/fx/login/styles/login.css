@@ -1,0 +1,32 @@
+@import url(../../styles/buttons.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarbutton[type=menu].yauth-button{-moz-binding:url(../bindings/login-button.xbl#yauth-toolbarbutton)}
+label[anonid=yb-second-label]{-moz-binding:url(../bindings/login-button.xbl#yb-name-container);display:block}
+menuitem.menuitem-iconic.avatar-item{-moz-binding:url(../bindings/login-widget.xbl#avatar-menuitem)!important}
+menupopup[anonid=login-menupopup] menuitem{-moz-binding:url(chrome://global/content/bindings/menu.xml#menuitem)!important}
+toolbarbutton{list-style-image:url(../icons/auth.svg)!important}
+toolbaritem[cb-theme-color=dark] toolbarbutton{list-style-image:url(../icons/auth.svg)!important}
+image[anonid=base-image-normal],image[anonid=base-image-inverted]{opacity:1!important}
+vbox[anonid=auth-images-container]{display:none}
+toolbarbutton[yb-second-label-off=false] label.first-label-text{display:none}
+toolbarbutton hbox[anonid=yb-login] label{margin:0!important;font-weight:700}
+label[anonid=login-start]{color:red!important}
+label[anonid=login-middle-3]{opacity:.6}
+label[anonid=login-middle-2]{opacity:.35}
+label[anonid=login-middle-1]{opacity:.2}
+label[anonid|=login-middle][value=""]{display:none;border:2px solid red}
+menuseparator{-moz-appearance:none!important;background-color:#ddd;border:0;height:1px;margin:0!important;padding:0!important}
+menupopup{-moz-appearance:none;border:1px solid #ddd!important;font-size:1.222em;padding:0}
+menu menupopup{font-size:1em}
+menupopup menuitem,menupopup menu{-moz-appearance:none;background-color:#fff;border:1px solid transparent;color:#000;font-family:Arial,sans-serif!important;font-size:15px;max-width:20em;height:2em;padding:0;-moz-padding-end:40px}
+menupopup menuitem[_moz-menuactive=true],menupopup menu[_moz-menuactive=true]{color:#000;background-color:#ffecaf}
+menuitem.menuitem-iconic>.avatar-container{min-width:1.45em;width:35px;padding:0 5px}
+.menu-iconic-avatar-icon{background-size:100%;border-radius:8px;width:18px;height:18px}
+.menu-text{-moz-appearance:none;-moz-margin-start:2px!important;-moz-margin-end:0!important;padding:0!important;-moz-padding-start:35px!important}
+.menu-iconic-text{padding:0!important}
+.menu-accel,.menu-iconic-accel{margin:0!important;padding:0!important}
+.menu-accel-container{margin:0!important;padding:0!important}
+.popup-internal-box{padding:0}
+menuitem:not([yb-default-user=true]) .default-user-selector{display:none}
+menuitem[yb-user-no-auth=true] .menu-iconic-text{color:rgba(0,0,0,.4)}
+menuitem[yb-user-no-auth=true] .menu-iconic-avatar-icon{opacity:.4}
+[anonid=yb-avatar-container]{line-height:0;display:inline-block;-moz-margin-end:7px;vertical-align:top}
+[anonid=yb-avatar-icon]{background-color:#fff;background-size:100%;border-radius:8px;display:inline-block;width:16px;height:16px}

@@ -1,0 +1,217 @@
+<?xml version='1.0'?>
+
+
+
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" id="notifications" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="chrome://global/content/bindings/popup.xml#panel" id="notification">
+        <content>
+            <div anonid="stack" xmlns="http://www.w3.org/1999/xhtml">
+                <div anonid="images-container">
+                    <div anonid="notification-image"/>
+                    <div anonid="notification-icon"/>
+                </div>
+
+                <div anonid="text-container">
+                    <h1 anonid="notification-title"/>
+                    <div anonid="shadow-h1"/>
+                    <p anonid="notification-text"/>
+                    <div anonid="shadow-p"/>
+                </div>
+
+                <div anonid="action-buttons">
+                    <span anonid="settings-button"/>
+                    <span anonid="close-button"/>
+                </div>
+            </div>
+        </content>
+
+        <implementation>
+            <field name="yaWinArguments"/>
+
+            <field name="stage">0</field>
+
+            <field name="mAnimateWindowClose">false</field>
+            <field name="mAnimateWindowMove">true</field>
+
+            <field name="heightMargin">12</field>
+
+            <field name="_mousemoved">false</field>
+
+            <field name="_closeTimeout"/>
+
+            <field name="_minStartY">0</field>
+
+            <field name="TEMPLATE_TYPES"><![CDATA[    ({
+        1: "message",
+        2: "mail",
+        3: "group"
+    });]]></field>
+
+            <method name="getElement">
+                <parameter name="aAnonymousID"/>
+                <body><![CDATA[    return document.getAnonymousElementByAttribute(this, "anonid", aAnonymousID);]]></body>
+            </method>
+
+            <constructor><![CDATA[    let params = this.yaWinArguments;
+    let shadow = false;
+    let transparent = true;
+    if (params.osName == "windows") {
+        shadow = true;
+        this.heightMargin = -24;
+    } else if (params.osName == "linux") {
+        transparent = false;
+    }
+    this.setAttribute("style", "background: none !important");
+    this.setAttribute("ex-shadow", shadow);
+    this.setAttribute("ex-transparent", transparent);
+    if ("animateWindowClose" in params) {
+        this.mAnimateWindowClose = params.animateWindowClose;
+    }
+    if ("animateWindowMove" in params) {
+        this.mAnimateWindowMove = params.animateWindowMove;
+    }
+    if (params.osName == "linux") {
+        this.mAnimateWindowMove = false;
+    }
+    this.direction = 1;
+    this.stage = 0;
+    this.updateData();
+    this._closeTimeout = window.setTimeout(function () {
+        if ("hide" in this) {
+            this.hide();
+        }
+    }.bind(this), 7000);
+    this.openPopupAtScreen(99999, 99999);
+    setTimeout(function () {
+        if ("move" in this) {
+            this.move();
+        }
+    }.bind(this), 500);]]></constructor>
+
+            <method name="updateData">
+                <body><![CDATA[    let notificationData = this.yaWinArguments.notificationData;
+    let stack = this.getElement("stack");
+    stack.setAttribute("data-template", this.TEMPLATE_TYPES[notificationData.template || 1] || "message");
+    this._loadImage(notificationData.icon, this.getElement("notification-image"));
+    this._loadImage(notificationData.serviceIcon, this.getElement("notification-icon"));
+    if (/^[a-f\d]+$/.test(notificationData.titleColor || "")) {
+        this.getElement("notification-title").style.color = "#" + notificationData.titleColor;
+    }
+    this.getElement("notification-title").textContent = notificationData.title;
+    let textNode = this.getElement("notification-text");
+    textNode.textContent = notificationData.text;
+    textNode.innerHTML = textNode.innerHTML.replace(/^(\r?\n)+/g, "").replace(/(\r?\n)+/g, "<br/>");]]></body>
+            </method>
+
+            <method name="hide">
+                <body><![CDATA[    if (this.mAnimateWindowClose) {
+        this.direction = -1;
+        this.move();
+    } else {
+        this.close();
+    }]]></body>
+            </method>
+
+            <method name="closeByUser">
+                <body><![CDATA[    this.yaWinArguments.closePanel();
+    close();]]></body>
+            </method>
+
+            <method name="close">
+                <body><![CDATA[    this.hidePopup();]]></body>
+            </method>
+
+            <method name="transition">
+                <body><![CDATA[    this._minStartY = Math.max(this._minStartY, this.yaWinArguments.getMinStartY());
+    let heightDiff = (this.mAnimateWindowMove && this.direction > 0 ? this.stage : 1) * this.boxObject.height;
+    let widthDiff = (this.mAnimateWindowMove && this.direction < 0 ? this.stage : 1) * this.boxObject.width;
+    let scr = screen;
+    this.moveTo(scr.availLeft + scr.availWidth - widthDiff - 10, scr.availTop + scr.availHeight - heightDiff - this._minStartY - 10);
+    this.style.opacity = this.stage - 0.05;]]></body>
+            </method>
+
+            <method name="move">
+                <body><![CDATA[    this.stage += 0.1 * this.direction;
+    if (this.stage > 0.99) {
+        this.stage = 1;
+    } else if (this.stage < 0.01) {
+        this.stage = 0;
+        this.close();
+        return;
+    }
+    this.transition();]]></body>
+            </method>
+
+            <method name="onMouseOver">
+                <body><![CDATA[    if (this._mousemoved) {
+        this.setAttribute("data-hovered", "true");
+    }]]></body>
+            </method>
+
+            <method name="_loadImage">
+                <parameter name="imageURL"/>
+                <parameter name="container"/>
+                <body><![CDATA[    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+    if (!imageURL) {
+        return;
+    }
+    let containerStyle = window.getComputedStyle(container, null);
+    let maxContainerSize = parseInt(containerStyle.getPropertyValue("width"), 10);
+    if (!maxContainerSize) {
+        return;
+    }
+    let img = document.createElementNS("http://www.w3.org/1999/xhtml", "img");
+    img.onload = function () {
+        let {
+            naturalWidth: imgWidth,
+            naturalHeight: imgHeight
+        } = img;
+        let maxImageSize = Math.max(imgWidth, imgHeight);
+        if (maxImageSize > 0) {
+            let k = maxContainerSize / maxImageSize;
+            imgWidth *= k;
+            imgHeight *= k;
+        }
+        img.width = imgWidth;
+        img.height = imgHeight;
+        container.appendChild(img);
+    };
+    img.src = imageURL;]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="popuphidden"><![CDATA[    if (event.target === this) {
+        this.parentNode.removeChild(this);
+    }]]></handler>
+
+            <handler event="mouseover"><![CDATA[    this.onMouseOver();]]></handler>
+
+            <handler event="mousemove"><![CDATA[    this.onMouseOver();
+    this._mousemoved = true;]]></handler>
+
+            <handler event="mouseout"><![CDATA[    this.removeAttribute("data-hovered");]]></handler>
+
+            <handler event="mousedown"><![CDATA[    function contains(child, parent) {
+        try {
+            return parent && (child == parent || parent.compareDocumentPosition(child) & Node.DOCUMENT_POSITION_CONTAINED_BY);
+        } catch (ex) {
+        }
+        return false;
+    }
+    let target = this.yaWinArguments.CLICK_TARGET_OTHER;
+    if (contains(event.originalTarget, this.getElement("notification-title"))) {
+        target = this.yaWinArguments.CLICK_TARGET_TITLE;
+    } else if (contains(event.originalTarget, this.getElement("close-button"))) {
+        target = this.yaWinArguments.CLICK_TARGET_CLOSE;
+    } else if (contains(event.originalTarget, this.getElement("settings-button"))) {
+        target = this.yaWinArguments.CLICK_TARGET_OPTIONS;
+    }
+    setTimeout(this.yaWinArguments.closePanel, 150);
+    this.yaWinArguments.onClick(target);]]></handler>
+        </handlers>
+    </binding>
+</bindings>

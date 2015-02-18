@@ -1,0 +1,341 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="toolbarbutton">
+        <implementation implements="nsIObserver, nsIDOMEventListener">
+            <field name="NOTIFICATION_NAME" readonly="true">"browseroffer-notification"</field>
+            <field name="NOTIFICATION_SUGGEST_WIDGET_NAME" readonly="true">"browseroffer-notification-wdgt-suggest"</field>
+
+            <field name="api" readonly="true">this.application.api</field>
+
+            <field name="_wListener" readonly="true">this.api.Browser.getWindowListener(window)</field>
+            <field name="_contextMenu" readonly="true">document.getElementById("contentAreaContextMenu")</field>
+            <field name="_menuItem">null</field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.ybwFinalize();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this._wListener.addListener("WindowLocationChange", this);
+    this.api.Settings.observeChanges(this);
+    if (this.application.shouldAmendContextMenu()) {
+        this._doContextMenu();
+    }
+    if (this.application.shouldMonitorFlash()) {
+        this._doFlashNotifications();
+    }]]></body>
+            </method>
+
+            <method name="ybwFinalize">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    this._wListener.removeListener("WindowLocationChange", this);
+    this.api.Settings.ignoreChanges(this);
+    this._undoContextMenu();
+    this._undoFlashNotifications();
+    this._closeAllNotifications();]]></body>
+            </method>
+
+            <method name="_doContextMenu">
+                <body><![CDATA[    this._buildMenuItems();
+    this._contextMenu.addEventListener("popupshowing", this);
+    this._contextMenu.addEventListener("popuphiding", this);]]></body>
+            </method>
+
+            <method name="_undoContextMenu">
+                <body><![CDATA[    this._contextMenu.removeEventListener("popupshowing", this);
+    this._contextMenu.removeEventListener("popuphiding", this);
+    this._destroyMenuItems();]]></body>
+            </method>
+
+            <method name="_buildMenuItems">
+                <body>
+                    let label = "&browseroffer.menu.openLink;";
+
+                <![CDATA[    if (this._menuItem) {
+        return;
+    }
+    let menuitem = document.createElement("menuitem");
+    menuitem.setAttribute("id", this.api.Environment.barPlatform.name + "-context-menu-browseroffers");
+    menuitem.setAttribute("class", "menuitem-iconic menuitem-with-favicon");
+    menuitem.setAttribute("image", this.common.resolvePath("content/icons/ico-menu.png"));
+    menuitem.setAttribute("label", label);
+    menuitem.setAttribute("hidden", "true");
+    menuitem.addEventListener("command", this);
+    this._contextMenu.insertBefore(menuitem, this._contextMenu.querySelector("#context-sep-open"));
+    this._menuItem = menuitem;]]></body>
+            </method>
+
+            <method name="_destroyMenuItems">
+                <body><![CDATA[    if (!this._menuItem) {
+        return;
+    }
+    this._menuItem.removeEventListener("command", this);
+    this._contextMenu.removeChild(this._menuItem);
+    this._menuItem = null;]]></body>
+            </method>
+
+            <method name="_onContextMenuPopupShowing">
+                <body><![CDATA[    if (!gContextMenu.onLink) {
+        return;
+    }
+    if (!/^(https?|ftp):/.test(gContextMenu.linkURL)) {
+        return;
+    }
+    if ([
+            "mac",
+            "windows"
+        ].indexOf(this.api.Environment.os.name) > -1) {
+        this.sendStatistic("contextMenu", "showonlink");
+    }
+    if (!this.application.checkBrowserConditions()) {
+        return;
+    }
+    if (this._menuItem) {
+        this._menuItem.hidden = false;
+        this.sendStatistic("contextMenu", "addbbrun");
+    }]]></body>
+            </method>
+
+            <method name="_onContextMenuPopupHiding">
+                <body><![CDATA[    if (gContextMenu) {
+        return;
+    }
+    if (this._menuItem) {
+        this._menuItem.hidden = true;
+    }]]></body>
+            </method>
+
+            <method name="_doFlashNotifications">
+                <body><![CDATA[    gBrowser.addEventListener("PluginBindingAttached", this, true, true);]]></body>
+            </method>
+
+            <method name="_undoFlashNotifications">
+                <body><![CDATA[    gBrowser.removeEventListener("PluginBindingAttached", this, true);]]></body>
+            </method>
+
+            <method name="_onPluginBindingAttached">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    let plugin = aEvent.target;
+    if (!(plugin instanceof Ci.nsIObjectLoadingContent && plugin.pluginFallbackType === Ci.nsIObjectLoadingContent.PLUGIN_UNSUPPORTED)) {
+        return null;
+    }
+    if (this.application.checkNoFlashConditions()) {
+        let browser = gBrowser.getBrowserForDocument(plugin.ownerDocument.defaultView.top.document);
+        this._showNotification(browser);
+    }]]></body>
+            </method>
+
+            <method name="onNotificationAction">
+                <parameter name="aPart"/>
+                <parameter name="aAction"/>
+                <parameter name="aData"/>
+                <body><![CDATA[    switch (aPart) {
+    case "noflash":
+        switch (aAction) {
+        case "close":
+            let closed = this.api.Settings.getValue("noflash.closedCounter");
+            if (++closed >= 3) {
+                this.api.Settings.setValue("noflash.userActionTime", Date.now().toString());
+                this.api.Settings.setValue("noflash.closedCounter", 0);
+                this._closeAllNotifications(this.NOTIFICATION_NAME);
+            } else {
+                this.api.Settings.setValue("noflash.closedCounter", closed);
+            }
+            break;
+        case "button":
+            this.api.Settings.setValue("noflash.userActionTime", Date.now().toString());
+            this.api.Settings.setValue("noflash.closedCounter", 0);
+            break;
+        default:
+            return;
+        }
+        break;
+    case "wdgt-suggest":
+        switch (aAction) {
+        case "close":
+            this.application.pauseWidgetSuggestion(aData);
+            break;
+        case "agree":
+            this.application.markWidgetAdded(aData);
+            break;
+        default:
+            return;
+        }
+        gBrowser.browsers.forEach(function (aBrowser) {
+            let notification = this._getNotification(aBrowser, this.NOTIFICATION_SUGGEST_WIDGET_NAME);
+            if (notification && notification.getWidgetID() == aData) {
+                notification.setUserAction();
+                notification.close();
+            }
+        }, this);
+        break;
+    default:
+        return;
+    }]]></body>
+            </method>
+
+            <method name="_checkPageForWidgetSuggest">
+                <parameter name="aTab"/>
+                <body><![CDATA[    let host;
+    try {
+        host = this.application.ETLDService.getBaseDomain(aTab.currentURI);
+    } catch (e) {
+    }
+    if (!host) {
+        return;
+    }
+    let [
+        foundWidgetSuggest,
+        widgetID
+    ] = this.application.checkWidgetSuggestConditions(host);
+    if (!foundWidgetSuggest) {
+        return;
+    }
+    let overflowButton = document.getElementById("nav-bar-overflow-button");
+    if (overflowButton) {
+        let compStyle = this.ownerDocument.defaultView.getComputedStyle(overflowButton);
+        if (compStyle.getPropertyValue("display") !== "none") {
+            let urlbarContainer = document.getElementById("urlbar-container");
+            let nextElement = urlbarContainer;
+            let visibleFound = false;
+            while (nextElement = nextElement.nextElementSibling) {
+                if (nextElement && [
+                        "toolbaritem",
+                        "toolbarbutton"
+                    ].indexOf(nextElement.localName) > -1 && !nextElement.hidden) {
+                    visibleFound = true;
+                    break;
+                }
+            }
+            if (!visibleFound) {
+                return;
+            }
+        }
+    }
+    let notification = this._showNotification(aTab, this.NOTIFICATION_SUGGEST_WIDGET_NAME);
+    if (notification) {
+        notification.ybtype = foundWidgetSuggest;
+        notification.ybwidgetID = widgetID;
+    }]]></body>
+            </method>
+
+            <method name="_getNotification">
+                <parameter name="aTab"/>
+                <parameter name="aNotificationName"/>
+                <body><![CDATA[    aTab = aTab || gBrowser.mCurrentBrowser;
+    aNotificationName = aNotificationName || this.NOTIFICATION_NAME;
+    let notificationBox = gBrowser.getNotificationBox(aTab);
+    return notificationBox.getNotificationWithValue(aNotificationName);]]></body>
+            </method>
+
+            <method name="_showNotification">
+                <parameter name="aTab"/>
+                <parameter name="aNotificationName"/>
+                <body><![CDATA[    aNotificationName = aNotificationName || this.NOTIFICATION_NAME;
+    let notificationBox = gBrowser.getNotificationBox(aTab);
+    let notification = this._getNotification(aTab, aNotificationName);
+    if (notification) {
+        return;
+    }
+    notification = notificationBox.appendNotification("", aNotificationName, "", notificationBox.PRIORITY_WARNING_HIGH, []);
+    notification.module = this;
+    notification.setAttribute("anonid", aNotificationName);
+    return notification;]]></body>
+            </method>
+
+            <method name="_closeAllNotifications">
+                <parameter name="aNotificationName"/>
+                <body><![CDATA[    let notificationNames = [
+        this.NOTIFICATION_NAME,
+        this.NOTIFICATION_SUGGEST_WIDGET_NAME
+    ];
+    if (aNotificationName) {
+        notificationNames = Array.isArray(aNotificationName) ? aNotificationName : [aNotificationName];
+    }
+    gBrowser.browsers.forEach(function (tab) {
+        notificationNames.forEach(function (aName) {
+            let notification = this._getNotification(tab, aName);
+            if (notification) {
+                notification.close();
+            }
+        }, this);
+    }, this);]]></body>
+            </method>
+
+            <method name="sendStatistic">
+                <parameter name="aPart"/>
+                <parameter name="aAction"/>
+                <body><![CDATA[    this.application.sendStatistic(aPart, aAction);]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    let target = aEvent.originalTarget;
+    switch (aEvent.type) {
+    case "command":
+        this.sendStatistic("contextMenu", "run");
+        this.api.Statistics.BarNavig.sendRequest({ addbb: "cmbb" });
+        this.api.Integration.yandexBrowser.openBrowser(gContextMenu.linkURL);
+        break;
+    case "popupshowing":
+        this._onContextMenuPopupShowing();
+        break;
+    case "popuphiding":
+        this._onContextMenuPopupHiding();
+        break;
+    case "PluginBindingAttached":
+        this._onPluginBindingAttached(aEvent);
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="aSubject"/>
+                <parameter name="aTopic"/>
+                <parameter name="aData"/>
+                <body><![CDATA[    switch (aTopic) {
+    case "WindowLocationChange":
+        if (this.application.shouldPerformSuggest()) {
+            this._checkPageForWidgetSuggest(aData.tab);
+        }
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+
+            <method name="onSettingChange">
+                <parameter name="aSettingName"/>
+                <parameter name="aNewValue"/>
+                <body><![CDATA[    switch (aSettingName) {
+    case "showContextMenuLink":
+        if (aNewValue) {
+            this._doContextMenu();
+        } else {
+            this._undoContextMenu();
+        }
+        break;
+    case "showContextWidgetSuggest":
+        if (this.application.shouldPerformSuggest()) {
+            this._checkPageForWidgetSuggest(gBrowser.mCurrentBrowser);
+        } else {
+            this._closeAllNotifications(this.NOTIFICATION_SUGGEST_WIDGET_NAME);
+        }
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

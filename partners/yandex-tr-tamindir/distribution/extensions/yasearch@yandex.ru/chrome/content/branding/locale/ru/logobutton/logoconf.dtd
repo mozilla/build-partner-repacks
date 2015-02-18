@@ -1,0 +1,77 @@
+<!ENTITY lc.button.tooltip "Home">
+
+<!ENTITY lc.label.yandex "Yandex">
+<!ENTITY lc.label.yamail "Yandex.Mail">
+<!ENTITY lc.label.yahava "Yandex.Hava">
+<!ENTITY lc.label.yahaber "Yandex.Haber">
+<!ENTITY lc.label.yavideo "Yandex.Video">
+
+<!ENTITY lc.label.yaharita "Yandex.Maps">
+<!ENTITY lc.label.yagorsel "Yandex.Images">
+
+<!ENTITY lc.label.google "Google">
+<!ENTITY lc.label.bing "Bing">
+<!ENTITY lc.label.yahoo "Yahoo">
+
+<!ENTITY lc.cat.webportals "Web Portals">
+<!ENTITY lc.label.mynet "Mynet">
+<!ENTITY lc.label.msn "MSN">
+<!ENTITY lc.label.ekolay "E-Kolay">
+
+<!ENTITY lc.cat.sports "Sports">
+<!ENTITY lc.label.sahadan "Sahadan.com">
+<!ENTITY lc.label.sporx "Sporx">
+<!ENTITY lc.label.mackolik "Mackolik.com">
+<!ENTITY lc.label.fotomac "Fotomac">
+<!ENTITY lc.label.fanatik "Fanatik">
+<!ENTITY lc.label.htspor "HTSPOR">
+
+<!ENTITY lc.cat.news "News">
+<!ENTITY lc.label.haberturk "Haberturk">
+<!ENTITY lc.label.haberler "Haberler.com">
+<!ENTITY lc.label.sabah "Sabah">
+<!ENTITY lc.label.hurriyet "Hurriyet">
+<!ENTITY lc.label.milliyet "Milliyet">
+<!ENTITY lc.label.haber7 "Haber7com">
+<!ENTITY lc.label.gazetevatan "Gazetevatan">
+<!ENTITY lc.label.haber365 "Haber365">
+
+<!ENTITY lc.cat.social "Social Network &amp; Blogging">
+<!ENTITY lc.label.facebook "Facebook">
+<!ENTITY lc.label.twitter "Twitter">
+<!ENTITY lc.label.blogger "Blogger">
+<!ENTITY lc.label.blogcu "Blogcu">
+<!ENTITY lc.label.wordpress "WordPress">
+<!ENTITY lc.label.friendfeed "Friendfeed">
+<!ENTITY lc.label.bedavasitem "Bedava-Sitem">
+
+<!ENTITY lc.cat.video "Video">
+<!ENTITY lc.label.youtube "YouTube">
+<!ENTITY lc.label.dailymotion "Dailymotion">
+<!ENTITY lc.label.izlesene "Izlesene">
+<!ENTITY lc.label.diziport "Diziport">
+<!ENTITY lc.label.vidivodo "Vidivodo">
+<!ENTITY lc.label.facebookvideo "Facebook video">
+
+<!ENTITY lc.cat.music "Music">
+<!ENTITY lc.label.fizy "Fizy">
+
+<!ENTITY lc.cat.classifieds "Classifieds">
+<!ENTITY lc.label.sahibinden "Sahibinden">
+<!ENTITY lc.label.gittigidiyor "Gittigidiyor">
+<!ENTITY lc.label.hepsiburada "Hepsiburada.com">
+<!ENTITY lc.label.araba "Araba.com">
+
+<!ENTITY lc.cat.games "Online Games">
+<!ENTITY lc.label.travian "Travian">
+<!ENTITY lc.label.oyunlar1 "Oyunlar1">
+<!ENTITY lc.label.oyunskor "OyunSkor">
+<!ENTITY lc.label.kraloyun "KralOyun.com">
+<!ENTITY lc.label.bigpoint "Bigpoint">
+
+<!ENTITY lc.cat.education "Education">
+<!ENTITY lc.label.meb "T.C. Millî Eğitim Bakanlığı">
+<!ENTITY lc.label.osym "ÖSYM">
+<!ENTITY lc.label.antoloji "Antoloji.com">
+<!ENTITY lc.label.eksisozluk "Eksisozluk">
+<!ENTITY lc.label.uludagsozluk "Uludagsozluk">

@@ -1,0 +1,304 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % mail SYSTEM "/native/fx/mail.dtd">
+%mail;
+<!ENTITY % auth SYSTEM "/native/fx/login.dtd">
+%auth;
+]>
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="../../bindings/buttons.xbl#ycounter-widget" id="widget">
+        <resources>
+            <stylesheet src="../styles/mail.css"/>
+        </resources>
+
+        <content>
+            <toolbarbutton anonid="mail-button" class="chromeclass-toolbar-additional toolbarbutton-1 label2 ycounter-button" data-sliceOnly="true" label="&mail.name;" noauth-tooltip-text="&mail.noauthtooltiptext;" oncommand="event.stopPropagation(); _onCommand(event);" tooltip="mail-tooltip" tooltip-text="&mail.tooltiptext;" type="menu" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" yb-icon-overlay="true" yb-second-tooltip-text="&noauth.label;">
+                <menupopup onpopupshowing="showMailSlice(true); return false;"/>
+            </toolbarbutton>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="authManager">this.module.authManager</field>
+            <field name="utils">this.module.utils</field>
+            <field name="title">"&mail.name;"</field>
+
+            <field name="mWIID" readonly="true"><![CDATA[    this.getAttribute("yb-native-widget-wiid");]]></field>
+
+            <field name="_button" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "mail-button");]]></field>
+
+            <field name="_shareMenuitemId" readonly="true"><![CDATA[    this.getAttribute("id") + "-content-menu-item";]]></field>
+
+            <property name="mSliceOnly">
+                <getter><![CDATA[    return this._button.getAttribute("data-sliceOnly") == "true";]]></getter>
+
+                <setter><![CDATA[    this._button.setAttribute("data-sliceOnly", val);
+    this._button.setAttribute("type", val ? "menu" : "menu-button");]]></setter>
+            </property>
+
+            <property name="_shareMenuitem" onget="return document.getElementById(this._shareMenuitemId);"/>
+
+            <property name="_pageContextMenu" onget="return document.getElementById('contentAreaContextMenu');"/>
+
+            <constructor><![CDATA[    this.authManager.addListener(this.authManager.EVENTS.AUTH_STATE_CHANGED, this);
+    this.API.Settings.observeChanges(this);
+    this.mSliceOnly = !this.API.Settings.getValue("openMailPageOnClick");
+    if (this.API.Settings.getValue("mailToIntegration")) {
+        document.getElementById("content").onclick = this._contentAreaClick.bind(this);
+    }
+    this._addSendPageMenuItem();]]></constructor>
+
+            <method name="destroy">
+                <body><![CDATA[    this.authManager.removeListener(this.authManager.EVENTS.AUTH_STATE_CHANGED, this);
+    this.API.Settings.ignoreChanges(this);
+    document.getElementById("content").onclick = window.contentAreaClick;
+    this._removeSendPageMenuItem();]]></body>
+            </method>
+
+            <method name="showMailSlice">
+                <parameter name="fromPicker"/>
+                <parameter name="aEvent"/>
+                <body><![CDATA[    let sender = fromPicker ? "menu" : "button";
+    if (!this.authManager.authorized) {
+        this._goToService(aEvent, sender);
+        return;
+    }
+    let slice = this.module.mailSlices[this.mWIID];
+    if (!slice) {
+        return;
+    }
+    slice.show(this, function onHide() {
+        this.checked = false;
+        slice.notify("slice-event-hide");
+    }.bind(this));
+    slice.notify({
+        message: "slice-event-show",
+        data: { sender: sender }
+    });]]></body>
+            </method>
+
+            <method name="updateCounterText">
+                <parameter name="text"/>
+                <body><![CDATA[    let button = this._button._button || this._button;
+    if (button._updateCounterText) {
+        button._updateCounterText(text);
+    }]]></body>
+            </method>
+
+            <method name="_contentAreaClick">
+                <parameter name="event"/>
+                <body><![CDATA[    if (event.isTrusted && event.button === 0 && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey) {
+        let linkNode;
+        let target = event.target;
+        if (target instanceof HTMLAnchorElement || target instanceof HTMLAreaElement || target instanceof HTMLLinkElement) {
+            if (target.hasAttribute("href")) {
+                linkNode = target;
+            }
+        } else {
+            linkNode = event.originalTarget;
+            while (linkNode && !(linkNode instanceof HTMLAnchorElement)) {
+                linkNode = linkNode.parentNode;
+            }
+            if (linkNode && !linkNode.hasAttribute("href")) {
+                linkNode = null;
+            }
+        }
+        if (linkNode && linkNode.href) {
+            let hrefStr = linkNode.href;
+            if (hrefStr.indexOf("mailto:") > -1 && hrefStr.indexOf("mailto:") < 7) {
+                if (this.module.getPref("integrationHelperAlert", true)) {
+                    this.module.setPref("integrationHelperAlert", false);
+                    window.setTimeout(function () {
+                        this.utils.showAlert(window, this.module._stringBundle.get("MailIntegrationHelperTitle"), this.module._stringBundle.get("MailIntegrationHelperMessage"));
+                    }.bind(this), 1);
+                }
+                event.stopPropagation();
+                event.preventDefault();
+                this.module.mailto(event, hrefStr);
+                return false;
+            }
+        }
+    }
+    return window.contentAreaClick(event, false);]]></body>
+            </method>
+
+            <method name="_addSendPageMenuItem">
+                <body><![CDATA[
+                    let pageContextMenu = this._pageContextMenu;
+
+                    if (!pageContextMenu) {
+                        return;
+                    }
+
+                    if (this._shareMenuitem) {
+                        return;
+                    }
+
+                    let menuitem = document.createElement('menuitem');
+                    menuitem.setAttribute('id', this._shareMenuitemId);
+                    menuitem.setAttribute('class', 'menuitem-iconic menuitem-with-favicon');
+                    menuitem.setAttribute('image', this.API.Package.resolvePath('/native/fx/mail/icons/mail.svg'));
+                    menuitem.setAttribute('hidden', 'true');
+
+                    menuitem.setAttribute('yaMailLabel_ShareImage', ']]>&mail.send.image.label;<![CDATA[');
+                    menuitem.setAttribute('yaMailLabel_ShareSelection', ']]>&mail.send.selected.label;<![CDATA[');
+                    menuitem.setAttribute('yaMailLabel_SharePage', ']]>&mail.send.page.label;<![CDATA[');
+
+                    let itemInserted = ['frame-sep', 'context-sep-viewbgimage'].some(function (id) {
+                        let item = pageContextMenu.querySelector('#' + id);
+                        if (!item) {
+                            return false;
+                        }
+                        pageContextMenu.insertBefore(menuitem, item);
+                        return true;
+                    });
+
+                    if (!itemInserted) {
+                        pageContextMenu.appendChild(menuitem);
+                    }
+
+                    menuitem.addEventListener('command', this, false);
+
+                    pageContextMenu.addEventListener('popupshowing', this, false);
+                    pageContextMenu.addEventListener('popuphiding', this, false);
+                ]]></body>
+            </method>
+
+            <method name="_removeSendPageMenuItem">
+                <body><![CDATA[    let pageContextMenu = this._pageContextMenu;
+    if (!pageContextMenu) {
+        return;
+    }
+    pageContextMenu.removeEventListener("popupshowing", this, false);
+    pageContextMenu.removeEventListener("popuphiding", this, false);
+    let menuitem = this._shareMenuitem;
+    if (!menuitem) {
+        return;
+    }
+    menuitem.removeEventListener("command", this, false);
+    menuitem.parentNode.removeChild(menuitem);]]></body>
+            </method>
+
+            <method name="_onCommand">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    if (this.mSliceOnly) {
+        this.showMailSlice(false, aEvent);
+    } else {
+        this._goToService(aEvent);
+    }]]></body>
+            </method>
+
+            <method name="_goToService">
+                <parameter name="aEvent"/>
+                <parameter name="aSender"/>
+                <body><![CDATA[    let url = this.module.getYaMailURL();
+    this.API.Controls.navigateBrowser({
+        unsafeURL: url,
+        eventInfo: aEvent
+    });
+    this.API.Statistics.logCustomAction(1);
+    this.API.Statistics.logClickStatistics({
+        cid: 72359,
+        path: "fx.yamail." + (aSender || "button")
+    });]]></body>
+            </method>
+
+            <method name="_updateShareMenuitem">
+                <body><![CDATA[    let menuitem = this._shareMenuitem;
+    if (!menuitem) {
+        return;
+    }
+    let imageDescr = this._getContextImageData();
+    let contentType = imageDescr ? "ShareImage" : gContextMenu.isTextSelected ? "ShareSelection" : "SharePage";
+    let shareData = {
+        contentType: contentType,
+        image: imageDescr
+    };
+    menuitem.setAttribute("label", menuitem.getAttribute("yaMailLabel_" + contentType));
+    menuitem.yaMailShareData = shareData;
+    let cxtMenuTarget = gContextMenu.target;
+    let cxtPageDoc = cxtMenuTarget && cxtMenuTarget.ownerDocument;
+    let hideShareMenu = !cxtPageDoc || /^(chrome|file|about):$/.test(cxtPageDoc.location ? cxtPageDoc.location.protocol : window.gBrowser.selectedBrowser.currentURI.scheme);
+    menuitem.setAttribute("hidden", hideShareMenu);]]></body>
+            </method>
+
+            <method name="_getContextImageData">
+                <body><![CDATA[    let docPopupNode = document.popupNode;
+    if (docPopupNode && docPopupNode.nodeType == docPopupNode.ELEMENT_NODE && docPopupNode instanceof Ci.nsIImageLoadingContent && docPopupNode.currentURI) {
+        let imageURI = docPopupNode.currentURI;
+        if (/^(file|https?)$/.test(imageURI.scheme)) {
+            let altText = docPopupNode.getAttribute("alt") || "";
+            let titleText = docPopupNode.getAttribute("title") || "";
+            if (altText == imageURI.spec) {
+                altText = "";
+            }
+            if (titleText == imageURI.spec) {
+                titleText = "";
+            }
+            let imageName = titleText.length > altText.length ? titleText : altText;
+            if (imageName.length > 1000) {
+                imageName = imageName.substr(0, 1000);
+            }
+            return {
+                imageURL: imageURI.spec,
+                imageName: imageName
+            };
+        }
+    }
+    return null;]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "command":
+        this.module.shareContent(aEvent.originalTarget.yaMailShareData, aEvent);
+        break;
+    case "popupshowing":
+        if (aEvent.target === this._pageContextMenu) {
+            this._updateShareMenuitem();
+        }
+        break;
+    case "popuphiding":
+        if (aEvent.target === this._pageContextMenu) {
+            let menuitem = this._shareMenuitem;
+            if (menuitem) {
+                menuitem.setAttribute("hidden", "true");
+            }
+        }
+        break;
+    }]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="subject"/>
+                <parameter name="topic"/>
+                <parameter name="data"/>
+                <body><![CDATA[    switch (topic) {
+    case this.authManager.EVENTS.AUTH_STATE_CHANGED:
+        this.loadingData = false;
+        break;
+    }]]></body>
+            </method>
+
+            <method name="onSettingChange">
+                <parameter name="settingName"/>
+                <parameter name="newValue"/>
+                <body><![CDATA[    switch (settingName) {
+    case "mailToIntegration":
+        document.getElementById("content").onclick = newValue ? this._contentAreaClick.bind(this) : window.contentAreaClick;
+        break;
+    case "openMailPageOnClick":
+        this.mSliceOnly = !newValue;
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="1" event="click"><![CDATA[    if (event.originalTarget.getAttribute("anonid") == "button") {
+        this._goToService(event, "button");
+    }]]></handler>
+        </handlers>
+    </binding>
+</bindings>

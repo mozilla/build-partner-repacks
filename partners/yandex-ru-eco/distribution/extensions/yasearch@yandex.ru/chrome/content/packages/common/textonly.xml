@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE plugin SYSTEM "/native/fx/textonly.dtd"><plugin bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="icons/textonly/active.png" name="&textonly.label;">
+
+    <modules>
+        <module browser="firefox" file="/native/fx/textonly/textonly.js"/>
+    </modules>
+
+</plugin>

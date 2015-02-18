@@ -1,0 +1,59 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY pref.window.title "Наладзіць &product2.nom;">
+
+
+<!ENTITY prefpane.widgets.delete.button "Выдаліць з даступных">
+<!ENTITY prefpane.widgets.extra2.button "Аднавіць зыходныя наладкі">
+
+<!ENTITY prefpane.widgets.label "Кнопкі">
+
+<!ENTITY registered.widgets.list.title "Даступныя кнопкі">
+<!ENTITY active.widgets.list.title "Дзейныя кнопкі">
+
+<!ENTITY add.widgets.label "Дабавіць">
+<!ENTITY remove.widgets.label "Выдаліць">
+
+<!ENTITY move.widgets.up.label "Вышей">
+<!ENTITY move.widgets.down.label "Ніжэй">
+
+<!ENTITY global.setting.tooltip.prefix "Дадзеная настройка распаўсюджваецца на кнопкі &#37;S">
+
+<!ENTITY controls.combobox.creating.label "загрузка спісу">
+
+
+<!ENTITY prefpane.plugins.delete.button "Выдаліць пашырэнне">
+
+<!ENTITY prefpane.plugins.label "Пашырэнні">
+
+<!ENTITY registered.plugins.list.title "Даступныя пашырэнні">
+
+<!ENTITY registered.plugins.enable.label "Уключыць">
+
+
+<!ENTITY prefpane.about.label "Аб праграме">
+
+
+<!ENTITY updates.check.text "Праверыць абнаўленні">
+<!ENTITY updates.check.install "Усталяваць">
+<!ENTITY updates.check.setup "Наладзіць">
+
+
+<!ENTITY prefpane.misc.label "Наладкі">
+
+<!ENTITY yasearch.pref.urlbar.caption "Адрасны радок">
+
+<!ENTITY yasearch.pref.misc.caption "Рознае">
+<!ENTITY yasearch.pref.links.target.label "Адчыняць усе спасылкі з &product2.gen; у новай укладцы">
+<!ENTITY yasearch.pref.sounds.enable.label "Дазволіць прайграванне гукаў для апавяшчэнняў/паведамленняў">
+<!ENTITY yasearch.pref.silent.trusted.updates.label "Аўтаматычна абнаўляць кампаненты з &#171;Бібліятэкі кнопак&#187;">
+
+<!ENTITY yasearch.pref.defence.homepage.caption "Пачатковая старонка">
+<!ENTITY yasearch.pref.defence.homepage.label "Уключыць засцярогу пачатковай старонкі">
+<!ENTITY yasearch.pref.defence.homepage.description "&product1.nom; будзе паведамляць вам пра спробы іншых праграм змяніць пачатковую старонку">
+
+<!ENTITY yasearch.pref.confidentiality.caption "Канфідэнцыйнасць">
+<!ENTITY yasearch.pref.stat.usage.send.label "Узяць удзел у паляпшэнні сервісаў Яндекса: аўтаматычна адсылаць &#60;html:a href=&#34;http://legal.yandex.by/confidential/&#34;&#62;ананімную статыстыку&#60;/html:a&#62; выкарыстання браўзера">
+
+<!ENTITY prefpane.software.label "Іншыя праграмы">

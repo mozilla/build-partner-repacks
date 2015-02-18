@@ -1,0 +1,41 @@
+<!ENTITY pagetranslator.name "Sayfayı çevir">
+<!ENTITY pagetranslator.translate "Çevir ">
+
+<!ENTITY pagetranslator.notification.revert "Orijinal sayfa">
+<!ENTITY pagetranslator.notification.label "çevrildi">
+<!ENTITY pagetranslator.notification.process "Sayfanın çevirisi yapılıyor">
+
+<!ENTITY pagetranslator.notification.english.gen "İngilizce">
+<!ENTITY pagetranslator.notification.russian.gen "Rusça">
+<!ENTITY pagetranslator.notification.german.gen "Almanca">
+<!ENTITY pagetranslator.notification.spanish.gen "İspanyolca">
+<!ENTITY pagetranslator.notification.italian.gen "İtalyanca">
+<!ENTITY pagetranslator.notification.french.gen "Fransızca">
+<!ENTITY pagetranslator.notification.ukrainian.gen "Ukraynaca">
+<!ENTITY pagetranslator.notification.turkish.gen "Türkçe">
+
+<!ENTITY pagetranslator.notification.prompt.preambula "Çeviri Prompt">
+<!ENTITY pagetranslator.notification.prompt.name "tarafından yapıldı">
+
+<!ENTITY pagetranslator.notification.polish.gen "Lehçe">
+<!ENTITY pagetranslator.notification.promt.name "tarafından yapıldı">
+<!ENTITY pagetranslator.notification.promt.preambula "Çeviri PROMPT">
+<!ENTITY pagetranslator.notification.english.nom "İngilizce">
+<!ENTITY pagetranslator.notification.french.nom "Fransızca">
+<!ENTITY pagetranslator.notification.german.nom "Almanca">
+<!ENTITY pagetranslator.notification.italian.nom "İtalyanca">
+<!ENTITY pagetranslator.notification.polish.nom "Lehçe">
+<!ENTITY pagetranslator.notification.russian.nom "Rusça">
+<!ENTITY pagetranslator.notification.spanish.nom "İspanyolca">
+<!ENTITY pagetranslator.notification.turkish.nom "Türkçe">
+<!ENTITY pagetranslator.notification.ukrainian.nom "Ukraynaca">
+<!ENTITY pagetranslator.settings.tlang.label "Çeviri yapılacak dili seçin">
+<!ENTITY pagetranslator.notification.error "Sayfanın çevirisi tamamlanamadı. İşlem sırasında hata oluştu.">
+<!ENTITY pagetranslator.notification.error.repeat "Tekrar deneyin">
+<!ENTITY pagetranslator.notification.timeout "Sayfanın çevirisi yapılamadı. İnternet bağlantısı yok">
+<!ENTITY pagetranslator.notification.close "Kapat">
+<!ENTITY pagetranslator.notification.tooltip "Sayfayı çevirmek için adres satırında {button} butonuna tıklayın">
+<!ENTITY pagetranslator.notification.suggest.button.noYaBrowser "Daha fazla bilgi">
+<!ENTITY pagetranslator.notification.suggest.button.yaBrowser "Aç">
+<!ENTITY pagetranslator.notification.suggest "Yandex.Browser&#39;da çevirinin tüm özelliklerini keşfedin">
+<!ENTITY pagetranslator.notification.translation.promo "Все возможности перевода в Яндекс.Браузере">

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "powerfm/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="powerfm/content/img/icon.png" icon-vector="powerfm/content/img/icon.svg" name="&powerfm.widget.name;" unique="true">
+
+    <modules>
+        <module browser="firefox" file="powerfm/core/widget.jsm"/>
+    </modules>
+</widget>

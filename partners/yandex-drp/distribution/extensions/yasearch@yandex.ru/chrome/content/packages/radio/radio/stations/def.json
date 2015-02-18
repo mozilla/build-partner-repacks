@@ -1,0 +1,33 @@
+{
+    "stations": [
+        {"n":1, "name":"Авторадио", "url":"http://w03-cn03.akadostream.ru:8000/avtoradio128.mp3", "id":"FTQ3MeSGivQXlUEb"},
+        {"n":2, "name":"Бизнес FM", "url":"http://w03-cn03.akadostream.ru:8114/businessfm96.mp3", "id":"8OW13cOb1nUadfy9"},
+        {"n":3, "name":"Европа плюс", "url":"http://w04-cn03.akadostream.ru:8000/europaplus128.mp3", "id":"Hk51b9apSBnnHDtl"},
+        {"n":4, "name":"Маяк", "url":"http://w01-cn01.akadostream.ru:8000/mayak128.mp3", "id":"TvrfGQ3tMLLUuX19"},
+        {"n":5, "name":"Наше Радио", "url":"http://w02-cn01.akadostream.ru:8112/nashe128.mp3", "id":"mccSauCCZFvAT5KZ"},
+        {"n":6, "name":"Радио ДАЧА", "url":"http://w01-cn01.akadostream.ru:8110/radiodacha96.mp3", "id":"aRnyM3e5nTo4moFm"},
+        {"n":7, "name":"Радио Максимум", "url":"http://w01-cn01.akadostream.ru:8114/maximum128.mp3", "id":"KBXAG3xRzusD2xE5"},
+        {"n":8, "name":"Радио России", "url":"http://w01-cn01.akadostream.ru:8000/radiorussia128.mp3", "id": "ot7LJOzswTZkJxwV"},
+        {"n":9, "name":"Радио Спорт", "url":"http://w02-cn01.akadostream.ru:8108/radiosport128.mp3", "id": "FifCk937ul8Q6Xd8"},
+        {"n":10, "name":"Радио Шансон", "url":"http://w02-cn01.akadostream.ru:8108/shanson128.mp3", "id":"NrmvpXMLS6VqQ2Mn"},
+        {"n":11, "name":"Радио Юность", "url":"http://w04-cn03.akadostream.ru:8000/radioyunost128.mp3", "id":"dESz4XbgDQxQ9uoF"},
+        {"n":12, "name":"Радио NRJ", "url":"http://w02-cn01.akadostream.ru:8114/nrj192.mp3", "id":"XVTTkcL1o0oxfZaJ"},
+        {"n":13, "name":"Ретро FM", "url":"http://w04-cn03.akadostream.ru:8000/radioretro128.mp3", "id":"bt2VKeWeaqGf86fE"},
+        {"n":14, "name":"Русское Радио", "url":"http://w01-cn01.akadostream.ru:8000/russianradio128.mp3", "id":"TCXHJDt3mQfVRhBh"},
+        {"n":15, "name":"Серебряный дождь", "url":"http://radiosilver.corbina.net:8000/silver128.mp3", "id":"ZW5vGskNhRLxRpEs"},
+        {"n":16, "name":"Старое Радио — Детское", "url":"http://195.91.237.51:8000/detskoe128", "id":"WR3iG8kLhOZ4ybai"},
+        {"n":17, "name":"Старое Радио — Музыка", "url":"http://195.91.237.51:8000/music128", "id":"aJBzbhq32AL8hAUk"},
+        {"n":18, "name":"Старое Радио — Спектакли", "url":"http://195.91.237.51:8000/ices128", "id":"0193QcLxIwepHEfL"},
+        {"n":19, "name":"Эхо Москвы", "url":"http://w04-cn03.akadostream.ru:8000/moscowecho128.mp3", "id":"SL6Rfv6lsdEcPI1x"},
+        {"n":20, "name":"Юмор ФМ", "url":"http://w03-cn03.akadostream.ru:8114/jumorfm192.mp3", "id":"zkTZFR9ImIEmltKc"},
+        {"n":21, "name":"D-FM", "url":"http://w01-cn01.akadostream.ru:8000/dinamitfm128.mp3", "id":"fRRUTgcLo4XbTOwA"},
+        {"n":22, "name":"Deep Mix Moscow Radio", "url":"http://w01-cn01.akadostream.ru:8112/deepmix128.mp3", "id":"ffQO3y8c3CMfKxxh"},
+        {"n":23, "name":"Love Радио", "url":"http://w03-cn03.akadostream.ru:8102/loveradio96.mp3", "id":"RWfvAlCCAUTguI8J"},
+        {"n":24, "name":"Relax FM", "url":"http://w01-cn01.akadostream.ru:8114/relaxfm192.mp3", "id":"XgqIul0ihIlSZ1Gq"},
+        {"n":25, "name":"Rock FM", "url":"http://w01-cn01.akadostream.ru:8114/rockfm192.mp3", "id":"I08WrsnESEsRokNV"}
+    ],
+    "selected": "FTQ3MeSGivQXlUEb",
+    "ver": "2.0",
+    "autocount": 26,
+    "updated": 0
+}

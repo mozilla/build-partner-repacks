@@ -1,0 +1,58 @@
+<!ENTITY notify.friend_request "просить додати його у друзі">
+<!ENTITY notify.friend_request_f "просить додати її у друзі">
+
+<!ENTITY notify.friends "{N} запит на додавання в друзі;{N} запити на додавання в друзі;{N} запитів на додавання в друзі">
+<!ENTITY plural.rule "7">
+<!ENTITY facebook.widget.name "Facebook">
+<!ENTITY facebook.settings.label "Інтервал оновлення">
+<!ENTITY facebook.settings.label_after "хв">
+<!ENTITY facebook.settings.friend "Показувати кнопку «Друзі» на панелі">
+<!ENTITY facebook.settings.messages "Показувати кнопку «Нові повідомлення» на панелі">
+<!ENTITY facebook.settings.notifications "Показувати кнопку «Сповіщення» на панелі">
+<!ENTITY facebook.settings.share "Показувати кнопку «Поділитися» на панелі">
+<!ENTITY facebook.settings.msgsys "Використовувати нову систему повідомлень (Facebook Messages)">
+<!ENTITY facebook.settings.hideallbtn "Приховувати додаткові кнопки в разі відсутності авторизації">
+<!ENTITY menu.refresh "Оновити дані">
+<!ENTITY menu.lenta "Стрічка новин">
+<!ENTITY menu.wall "Стіна">
+<!ENTITY menu.friends "Список друзів">
+<!ENTITY menu.messages "Повідомлення">
+<!ENTITY menu.notif "Сповіщення">
+<!ENTITY menu.share "Поділитися посиланням">
+<!ENTITY menu.setstatus "Написати повідомлення">
+<!ENTITY menu.fotovideo "Фотографії/Відео">
+<!ENTITY menu.notes "Замітки">
+<!ENTITY menu.groups "Групи">
+<!ENTITY menu.events "Заходи">
+<!ENTITY menu.logout "Вийти">
+<!ENTITY please.auth "Будь ласка, авторизуйтеся">
+<!ENTITY main.tooltip "Моя сторінка у Facebook">
+<!ENTITY inet.error.main "На жаль, не вдалося отримати інформацію про оновлення">
+<!ENTITY friend.tooltip "Запити на додавання в друзі у Facebook">
+<!ENTITY inet.error.friend "На жаль, не вдалося отримати інформацію про запити">
+<!ENTITY menu.friend.req "Запит від {username}">
+<!ENTITY messages.tooltip "Нові повідомлення в Facebook">
+<!ENTITY inet.error.msg "На жаль, не вдалося отримати інформацію про повідомлення">
+<!ENTITY menu.message.from "Повідомлення від {username}">
+<!ENTITY notif.tooltip "Повідомлення в Facebook">
+<!ENTITY inet.error.notif "На жаль, не вдалося отримати інформацію про повідомлення">
+<!ENTITY share.tooltip "Поділитися посиланням у Facebook">
+<!ENTITY user1 "користувача">
+<!ENTITY user2 "Користувач">
+<!ENTITY error.connect "Будь ласка, перевірте мережеве з&#39;єднання">
+<!ENTITY error.auth "Не вдалось авторизуватися">
+<!ENTITY error.net "Не вдалося підключитися до сервера Facebook">
+<!ENTITY error.unk "Невідома помилка">
+
+<!ENTITY notify.messages "{N} нове повідомлення;{N} нові повідомлення;{N} нових повідомлень">
+
+<!ENTITY notify.notifications "{N} нове повідомлення;{N} нові повідомлення;{N} нових повідомлень">
+<!ENTITY settings.show_notifications "Показувати сповіщення">
+<!ENTITY notify.fiends "{N} запит на додавання у друзі;{N} запити на додавання у друзі;{N} запитів на додавання у друзі">
+<!ENTITY notify.messages.foto "Надіслав вам фото">
+<!ENTITY notify.messages.foto_f "Надіслала вам фото">
+<!ENTITY notify.messages_file "Надіслав вам повідомлення">
+<!ENTITY notify.messages_file_f "Надіслав вам повідомлення">
+<!ENTITY settings.show_friend_notifications "Показувати спливаючі сповіщення про запити у друзі">
+<!ENTITY settings.show_message_notifications "Показувати спливаючі сповіщення про повідомлення">
+<!ENTITY settings.show_notification_notifications "Показувати спливаючі сповіщення про інші події ">

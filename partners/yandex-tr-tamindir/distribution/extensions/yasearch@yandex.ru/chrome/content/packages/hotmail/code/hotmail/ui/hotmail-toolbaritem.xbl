@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!DOCTYPE bindings [
+<!ENTITY % widget SYSTEM "/widget.dtd">
+<!ENTITY % hotmail SYSTEM "/hotmail.dtd">
+%widget;
+%hotmail;
+]>
+
+<bindings id="hotmail" xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="basewidget.xbl#toolbarbuttonbase" id="hotmail-toolbaritem">
+        <resources>
+            <stylesheet src="/res/hotmail-toolbaritem.css"/>
+        </resources>
+
+        <content>
+            <xul:toolbarbutton anonid="hotmail-fake-button" class="toolbarbutton-1 widget-button" hotmail-command="login" label="Hotmail" type="button" yb-native-not-authorized="true"/>
+            <xul:toolbarbutton anonid="hotmail-button" class="toolbarbutton-1 counter-button widget-button" hotmail-command="navigate-read" label="Hotmail" label-ex="123" type="menu-button">
+                <xul:menupopup onpopupshowing="popupShowing()">
+                    <xul:menuitem anonid="update" class="menuitem-iconic menuitem-with-favicon" hotmail-command="update" label="&hotmail.menu.refresh;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem anonid="mailbox" class="menuitem-iconic menuitem-with-favicon" disabled="true" label="mailbox@hotmail.com"/>
+                    <xul:menuitem anonid="compose" class="menuitem-iconic menuitem-with-favicon" hotmail-command="navigate-compose" label="&hotmail.menu.write_letter;"/>
+                    <xul:menuitem anonid="read" class="menuitem-iconic menuitem-with-favicon" hotmail-command="navigate-read" label="&hotmail.menu.read_letter;"/>
+                    <xul:menuitem anonid="open-addressbook" class="menuitem-iconic menuitem-with-favicon" hotmail-command="navigate-addressbook" label="&hotmail.menu.addressbook;"/>
+                    <xul:menuseparator/>
+                    
+                    <xul:menuitem anonid="logout" class="menuitem-iconic menuitem-with-favicon" hotmail-command="logout" label="&hotmail.menu.logout;"/>
+                </xul:menupopup>
+            </xul:toolbarbutton>
+        </content>
+
+        <implementation>
+            <constructor>
+                var fakeTooltip = "&hotmail.tooltip.AUTH_NONE;";
+                <![CDATA[    var _this = this;
+    var fakeButton = document.getAnonymousElementByAttribute(this, "anonid", "hotmail-fake-button");
+    fakeButton.setAttribute("tooltiptext", fakeTooltip);
+    var options = document.getAnonymousElementByAttribute(this, "anonid", "options");
+    options && options.setAttribute("hotmail-command", "options-" + this.wiid);
+    var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+    this.hotmailUIObserver = {
+        observe: function (s, t, d) {
+            _this.updateView();
+        }
+    };
+    observerService.addObserver(this.hotmailUIObserver, this.uiManager.notifyTopic, false);
+    this.updateView();]]></constructor>
+
+            <destructor><![CDATA[    try {
+        var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+        observerService.removeObserver(this.hotmailUIObserver, this.uiManager.notifyTopic);
+    } catch (e) {
+    }]]></destructor>
+            <method name="popupShowing">
+                <body><![CDATA[    this.proxy.module("sklib.utils").statLog("menu");]]></body>
+            </method>
+            <method name="updateView">
+                <body>
+                    var mainTooltips = {
+                        AUTH_OK: "&hotmail.tooltip.AUTH_OK;",
+                        AUTH_UNKNOWN: "&hotmail.tooltip.AUTH_UNKNOWN;",
+                        AUTH_NONE: "&hotmail.tooltip.AUTH_NONE;"
+                    };
+
+                    <![CDATA[    var T = this.proxy.module("sklib.Template");
+    var data = this.displayData;
+    if (!data) {
+        return;
+    }
+    var hotmailButton = document.getAnonymousElementByAttribute(this, "anonid", "hotmail-button");
+    var mailboxElement = document.getAnonymousElementByAttribute(this, "anonid", "mailbox");
+    var auth = data.auth;
+    var settings = this.uiManager.getSettingsAttribute();
+    this.setAttribute("auth", auth || "AUTH_NONE");
+    this.setAttribute("settings", settings);
+    var unreadCount = data.unreadCount;
+    if (unreadCount > 0) {
+        hotmailButton.setAttribute("label-ex", String(unreadCount));
+    } else {
+        hotmailButton.removeAttribute("label-ex");
+    }
+    var mailbox = data.mailbox;
+    if (mailbox) {
+        mailboxElement.setAttribute("label", mailbox);
+    } else {
+        mailboxElement.setAttribute("label", "");
+    }
+    var mainTooltipTemplate = mainTooltips[auth || "AUTH_NONE"];
+    var mainTooltiptext = T(mainTooltipTemplate, {
+        mailbox: mailbox,
+        unreadCount: unreadCount
+    });
+    hotmailButton.setAttribute("tooltiptext", mainTooltiptext);
+    this.removeAttribute("updating");]]></body>
+            </method>
+
+
+            <method name="handleMouseClickStat">
+                <parameter name="event"/>
+                <body><![CDATA[    var target = event.originalTarget;
+    var tagName = target.localName.toLowerCase();
+    switch (tagName) {
+    case "menuitem":
+        this.proxy.module("sklib.utils").statLog("menuclick");
+        break;
+    case "toolbarbutton":
+        this.proxy.module("sklib.utils").statLog("button");
+        break;
+    }]]></body>
+            </method>
+
+            <method name="handleMouseClick">
+                <parameter name="event"/>
+                <parameter name="isMiddleBtn"/>
+                <body><![CDATA[    var target = event.originalTarget;
+    var name = String(target.localName).toLowerCase();
+    if (isMiddleBtn && name == "menuitem") {
+        return;
+    }
+    var commandAttributeName = "hotmail-command";
+    var command = target.getAttribute(commandAttributeName);
+    if (!command) {
+        target = document.getBindingParent(target);
+        command = target.getAttribute(commandAttributeName);
+    }
+    if (command) {
+        this.uiManager.executeUICommand(command);
+    }
+    if (command == "update") {
+        this.setAttribute("updating", "updating");
+    }
+    this.handleMouseClickStat(event);]]></body>
+            </method>
+
+        </implementation>
+
+        <handlers>
+            <handler button="1" event="click"><![CDATA[    this.handleMouseClick(event, true);]]></handler>
+            <handler event="command"><![CDATA[    this.handleMouseClick(event, false);]]></handler>
+        </handlers>
+    </binding>
+</bindings>

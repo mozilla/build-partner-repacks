@@ -1,0 +1,565 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % settings SYSTEM "/native/fx/quote.dtd">
+%settings;
+]>
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="//toolkit/native/bindings/widget.xml#widget" id="widget">
+        <resources>
+            <stylesheet src="../styles/main.css"/>
+        </resources>
+
+        <content>
+            <toolbarbutton anonid="quotes-button" class="chromeclass-toolbar-additional toolbarbutton-1 label2" label="&wgt.quotes.name;" tooltip-text="&wgt.quotes.nodata;" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" yb-second-label="&wgt.quotes.name;" yb-second-label-off="false">
+
+                <menupopup anonid="quotes-menupopup">
+                    <menuitem anonid="quotes-menuitem-refresh" label="&wgt.quotes.refresh;"/>
+                    <menuseparator/>
+                    <menuitem anonid="quotes-menuitem-copy" label="&wgt.quotes.copy;"/>
+                    <menuseparator anonid="quotes-menuitem-last-sep"/>
+                    <menuitem anonid="quotes-menuitem-change" label="&wgt.quotes.change;"/>
+                    <menuitem anonid="quotes-menuitem-remove" label="&wgt.quotes.delete;"/>
+                    <menuitem anonid="quotes-menuitem-add" label="&wgt.quotes.add;"/>
+                </menupopup>
+            </toolbarbutton>
+
+            <tooltip anonid="quotes-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <label anonid="tooltip-header" flex="1"/>
+                <grid anonid="tooltip-quotes" flex="1">
+                    <columns><column/><column flex="1"/></columns>
+                    <rows>
+                        <row align="center" anonid="today">
+                            <hbox pack="end"><label value="&wgt.quotes.tooltip.today;: "/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="tomorrow" hidden="true">
+                            <hbox pack="end"><label value="&wgt.quotes.tooltip.tomorrow;: "/></hbox>
+                            <label/>
+                        </row>
+                        <row align="center" anonid="yesterday" hidden="true">
+                            <hbox pack="end"><label value="&wgt.quotes.tooltip.yesterday;: "/></hbox>
+                            <label/>
+                        </row>
+                     </rows>
+                </grid>
+            </tooltip>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="api" readonly="true">this.module.api</field>
+            <field name="mWIID" readonly="true">this.getAttribute("yb-native-widget-wiid")</field>
+
+            <field name="_menuPopup" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "quotes-menupopup")</field>
+            <field name="_button" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "quotes-button")</field>
+            <field name="_tooltip" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "quotes-tooltip")</field>
+            <field name="_menuUpdatePoint" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "quotes-menuitem-refresh")</field>
+
+            <field name="_throbberTimer">null</field>
+            <field name="_lastThrobberTime">null</field>
+            <field name="_cachedResource">null</field>
+            <field name="_initialSetting">null</field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    if (this.module.isTrk) {
+        let itemsToHide = [
+            "quotes-menuitem-remove",
+            "quotes-menuitem-add",
+            "quotes-menuitem-change",
+            "quotes-menuitem-last-sep"
+        ];
+        itemsToHide.forEach(function (anonid) {
+            let item = document.getAnonymousElementByAttribute(this, "anonid", anonid);
+            if (item) {
+                item.hidden = true;
+            }
+        }.bind(this));
+    }
+    let quoteList = this.api.Package.readTextFile("native/fx/quote/quotelist.xml");
+    this.quoteList = this.api.XMLUtils.getDOMParser(null, null, true).parseFromString(quoteList, "text/xml");
+    let tooltipID = this.mWIID + this._tooltip.getAttribute("anonid");
+    this._tooltip.setAttribute("id", tooltipID);
+    this._button.setAttribute("tooltip", tooltipID);
+    this.api.Settings.observeChanges(this, this.mWIID);
+    this._menuPopup.addEventListener("popupshowing", this);
+    this._menuPopup.addEventListener("command", this);
+    this._resetRequest();]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    this.api.Settings.ignoreChanges(this, this.mWIID);
+    this._menuPopup.removeEventListener("popupshowing", this);
+    this._menuPopup.removeEventListener("command", this);
+    this.quoteList = null;
+    this._removeRequest();
+    if (this._throbberTimer) {
+        this._throbberTimer.cancel();
+        this._throbberTimer = null;
+    }]]></body>
+            </method>
+
+            <method name="_switchThrobber">
+                <parameter name="aShow"/>
+                <body><![CDATA[    if (aShow) {
+        if (this._throbberTimer) {
+            this._throbberTimer.cancel();
+        }
+        this._button.removeAttribute("image");
+        this._button.setAttribute("loading", true);
+        this._menuUpdatePoint.setAttribute("disabled", true);
+        this._lastThrobberTime = Date.now();
+    } else {
+        if (this._throbberTimer) {
+            return;
+        }
+        let delay = Math.max(700 - Math.abs(Date.now() - this._lastThrobberTime), 0);
+        this._throbberTimer = new this.api.SysUtils.Timer(function () {
+            this._throbberTimer = null;
+            this._lastThrobberTime = null;
+            let image = this._button.getAttribute("image-ico");
+            if (image) {
+                this._button.removeAttribute("image-ico");
+                this._button.setAttribute("image", image);
+            }
+            this._button.removeAttribute("loading");
+            this._menuUpdatePoint.removeAttribute("disabled");
+        }.bind(this), delay);
+    }]]></body>
+            </method>
+
+            <method name="_resetRequest">
+                <body><![CDATA[    this._removeRequest();
+    this._addRequest();]]></body>
+            </method>
+
+            <method name="_addRequest">
+                <body><![CDATA[    let url = this.module.getExportURL(this.mWIID);
+    let expireInterval = 420000;
+    let updateInterval = this._getUpdateInterval();
+    this._cachedResource = this.api.Network.getCachedResource({
+        url: url,
+        method: "GET",
+        updateInterval: updateInterval,
+        expireInterval: expireInterval
+    });
+    this._cachedResource.addListener("changed", this);
+    if (this._cachedResource.dataIsReady) {
+        this.observe(this._cachedResource, "changed");
+    }]]></body>
+            </method>
+
+            <method name="_removeRequest">
+                <body><![CDATA[    if (!this._cachedResource) {
+        return;
+    }
+    this._cachedResource.removeListener("changed", this);
+    this._cachedResource = null;]]></body>
+            </method>
+
+            <method name="_getUpdateInterval">
+                <parameter name="aForceUpdate"/>
+                <body><![CDATA[    if (!this._updateInterval || aForceUpdate) {
+        this._updateInterval = parseInt(this.api.Settings.getValue("update-interval", this.mWIID), 10) * 60;
+    }
+    return this._updateInterval;]]></body>
+            </method>
+
+            <method name="_openCurrentSettings">
+                <body><![CDATA[    this.api.Controls.openSettingsDialog(window, this.mWIID);]]></body>
+            </method>
+
+            <method name="_removeCurrentWidget">
+                <body><![CDATA[    this.api.Controls.removeWidget(this.mWIID, window);]]></body>
+            </method>
+
+            <method name="_addNewWidget">
+                <body><![CDATA[    let [
+        instanceID,
+        widgetElement
+    ] = this.api.Controls.addWidget("http://bar.yandex.ru/packages/yandexbar#quote", window, this, true);
+    this.api.Controls.openSettingsDialog(window, instanceID);]]></body>
+            </method>
+
+            <method name="_copyCurrentValue">
+                <body><![CDATA[    this.module.clipboardHelper.copyString(this.quotesToCopy || "");]]></body>
+            </method>
+
+            <method name="_manualUpdate">
+                <body><![CDATA[    if (!this._cachedResource) {
+        return;
+    }
+    this._switchThrobber(true);
+    this._cachedResource.update(true, true);]]></body>
+            </method>
+
+            <method name="_updateView">
+                <body><![CDATA[    const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+    let xml = this._cachedResource && this._cachedResource.contentAsXML;
+    let data = this._parseQuotes(xml);
+    if (!(data && data.length)) {
+        this.quotesToCopy = null;
+        this.url = null;
+        this._button.removeAttribute("image");
+        this._button.setAttribute("yb-no-data", true);
+        this._tooltip.classList.add("no-data");
+        this._setLabel();
+        this._populateTooltip();
+        return;
+    }
+    this._button.removeAttribute("yb-no-data");
+    this._tooltip.classList.remove("no-data");
+    let quotesToCopy = null;
+    let ico = null;
+    if (!this.module.isTrk) {
+        let quoteObj = data[0];
+        this.url = quoteObj.url;
+        quotesToCopy = quoteObj.quotesToCopy;
+        ico = quoteObj.icon;
+        this._setLabel(quoteObj.buttonText);
+        this._populateTooltip(quoteObj);
+    } else {
+        let menuPopup = this._menuPopup;
+        let updateMenuButton = document.getAnonymousElementByAttribute(this, "anonid", "quotes-menuitem-refresh");
+        while (menuPopup.firstChild && menuPopup.firstChild !== updateMenuButton) {
+            menuPopup.removeChild(this._menuPopup.firstChild);
+        }
+        let menuitems = [];
+        data.forEach(function (quoteObj) {
+            let checked = false;
+            if (quoteObj.active) {
+                quotesToCopy = quoteObj.quotesToCopy;
+                ico = quoteObj.icon;
+                checked = true;
+                this._setLabel(quoteObj.buttonText);
+                this._populateTooltip(quoteObj);
+            }
+            let menuitem = document.createElementNS(XUL_NS, "menuitem");
+            menuitem.setAttribute("quote-id", quoteObj.id);
+            menuitem.setAttribute("label", quoteObj.name);
+            menuitem.setAttribute("name", "quotes");
+            menuitem.setAttribute("type", "radio");
+            if (checked) {
+                menuitem.setAttribute("checked", true);
+            }
+            menuitem.setAttribute("oncommand", "getBindingParent(this)._changeQuotesTR(event);");
+            menuitems.push(menuitem);
+        }, this);
+        if (menuitems.length) {
+            let menusep = document.createElementNS(XUL_NS, "menuseparator");
+            menuitems.push(menusep);
+            menuitems.reverse();
+            menuitems.forEach(function (item) {
+                menuPopup.insertBefore(item, menuPopup.firstChild);
+            });
+        }
+    }
+    this.quotesToCopy = quotesToCopy;
+    let iconsPath = "icons/";
+    let image_ico = iconsPath + ico + ".svg";
+    if (!this.api.Package.fileExists(this.module.componentPackagePath + image_ico)) {
+        image_ico = iconsPath + "quote_up.svg";
+    }
+    this._button.setAttribute("image-ico", this.module.componentPath + image_ico);]]></body>
+            </method>
+
+            <method name="_parseQuotes">
+                <parameter name="aXML"/>
+                <body><![CDATA[    if (!aXML) {
+        return;
+    }
+    let quotesArray = aXML.querySelectorAll("quotes > quote");
+    let data = [];
+    for (let i = 0, length = quotesArray.length; i < length; i++) {
+        let quote = quotesArray[i];
+        let quoteObj = {};
+        let quoteListIcon = "";
+        if (!this.module.isTrk) {
+            quoteObj.id = quote.getAttribute("id");
+            quoteObj.name = quote.getAttribute("name");
+            let quoteDescription = this.quoteList.querySelector("quote[id='" + quoteObj.id + "']");
+            quoteListIcon = quoteDescription && (quoteDescription.getAttribute("icon") || quoteDescription.parentNode.getAttribute("icon"));
+            let value = quote.querySelector("value");
+            if (!value) {
+                continue;
+            }
+            quoteObj.value = value ? value.textContent : null;
+            let tvalue = quote.querySelector("tomorrow");
+            quoteObj.tvalue = tvalue ? tvalue.textContent : null;
+            let change = quote.querySelector("change");
+            quoteObj.change = change ? change.textContent : null;
+            let tchange = quote.querySelector("tomorrowchange");
+            quoteObj.tchange = tchange ? tchange.textContent : null;
+            let buy = quote.querySelector("buy > value");
+            quoteObj.buy = buy ? buy.textContent : null;
+            let tbuy = quote.querySelector("tomorrowbuy > tomorrow");
+            quoteObj.tbuy = tbuy ? tbuy.textContent : null;
+            let shortname = quoteDescription.querySelector("shortname");
+            quoteObj.shortname = shortname ? shortname.textContent : null;
+            let url = quoteDescription.querySelector("url");
+            quoteObj.url = url ? url.textContent : null;
+            let buttonText = "";
+            if (shortname) {
+                buttonText += quoteObj.shortname + " ";
+            }
+            let buyElement = quoteObj.tbuy || quoteObj.buy;
+            let quotesToCopy = null;
+            if (buyElement) {
+                buttonText += Number(buyElement).toFixed(2) + " — ";
+                quotesToCopy = buyElement;
+            }
+            buttonText += Number(quoteObj.tvalue || quoteObj.value).toFixed(2);
+            quoteObj.buttonText = buttonText;
+            quoteObj.quotesToCopy = quoteObj.tvalue || quoteObj.value;
+        } else {
+            quoteObj.id = quote.getAttribute("shortname");
+            quoteObj.name = quoteObj.id;
+            quoteListIcon = quote.getAttribute("icon");
+            let value = quote.querySelector("today");
+            if (!value) {
+                continue;
+            }
+            quoteObj.value = value ? value.textContent : null;
+            let yesterday = quote.querySelector("yesterday");
+            quoteObj.yesterday = yesterday ? yesterday.textContent : null;
+            quoteObj.change = (Number(quoteObj.value) - Number(quoteObj.yesterday)).toFixed(4);
+            let buttonText = "";
+            if (quoteObj.name) {
+                buttonText += quoteObj.name + " ";
+            }
+            buttonText += Number(quoteObj.value).toFixed(2);
+            quoteObj.buttonText = buttonText;
+            quoteObj.quotesToCopy = quoteObj.value;
+            let quoteID = this.api.Settings.getValue("quote-id", this.mWIID);
+            let activeQuote = aXML.querySelector("quotes > quote[shortname='" + quoteID + "']");
+            if (!activeQuote) {
+                if (i === 0) {
+                    this._initialSetting = true;
+                    this.api.Settings.setValue("quote-id", quoteObj.id, this.mWIID);
+                    quoteObj.active = true;
+                }
+            } else {
+                if (activeQuote == quote) {
+                    quoteObj.active = true;
+                }
+            }
+        }
+        let prefix = "quote";
+        if (quoteListIcon) {
+            prefix = quoteListIcon;
+        }
+        let suffix = "_up";
+        if (quoteObj.tchange) {
+            if (quoteObj.tchange < 0) {
+                suffix = "_down";
+            }
+        } else if (quoteObj.change) {
+            if (quoteObj.change < 0) {
+                suffix = "_down";
+            }
+        }
+        if (quoteObj.tchange > 0) {
+            quoteObj.tchange = "+" + quoteObj.tchange;
+        }
+        if (quoteObj.change > 0) {
+            quoteObj.change = "+" + quoteObj.change;
+        }
+        quoteObj.icon = prefix + suffix;
+        data.push(quoteObj);
+    }
+    return data;]]></body>
+            </method>
+
+            <method name="_changeQuotesTR">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    let menuItem = aEvent.target;
+    let quoteID = this.api.Settings.getValue("quote-id", this.mWIID);
+    let menuItemID = menuItem.getAttribute("quote-id");
+    if (quoteID == menuItemID) {
+        return;
+    }
+    this.api.Settings.setValue("quote-id", menuItemID, this.mWIID);]]></body>
+            </method>
+
+            <method name="_setLabel">
+                <parameter name="aLabel"/>
+                <body><![CDATA[    this._button.setAttribute("yb-second-label", aLabel || "");]]></body>
+            </method>
+
+            <method name="_populateTooltip">
+                <parameter name="aQuoteObj"/>
+                <body>
+                    let nodataText = '&wgt.quotes.nodata;';<![CDATA[    if (!this._tooltip) {
+        return;
+    }
+    let tooltip = this._tooltip;
+    let rows = tooltip.getElementsByTagName("row");
+    let header = tooltip.firstChild;
+    let i = 0;
+    while (row = rows.item(i++)) {
+        row.setAttribute("hidden", true);
+    }
+    if (!aQuoteObj) {
+        header.setAttribute("value", nodataText);
+        return;
+    }
+    if (aQuoteObj.name) {
+        header.setAttribute("value", aQuoteObj.name);
+        header.hidden = false;
+    } else {
+        header.hidden = true;
+    }
+    let todayText = "";
+    let tomorrowText = "";
+    let yesterdayText = "";
+    if (aQuoteObj.value) {
+        todayText = aQuoteObj.value;
+        if (aQuoteObj.change) {
+            todayText += " (" + aQuoteObj.change + ")";
+        }
+    }
+    if (aQuoteObj.tvalue) {
+        tomorrowText = aQuoteObj.tvalue;
+        if (aQuoteObj.tchange) {
+            tomorrowText += " (" + aQuoteObj.tchange + ")";
+        }
+    }
+    if (aQuoteObj.yesterday) {
+        yesterdayText = aQuoteObj.yesterday;
+    }
+    i = 0;
+    while (row = rows.item(i++)) {
+        if (row.getAttribute("anonid") == "today" && todayText) {
+            row.hidden = false;
+            row.lastChild.setAttribute("value", todayText);
+        }
+        if (row.getAttribute("anonid") == "tomorrow" && tomorrowText) {
+            row.hidden = false;
+            row.lastChild.setAttribute("value", tomorrowText);
+        }
+        if (row.getAttribute("anonid") == "yesterday" && yesterdayText) {
+            row.hidden = false;
+            row.lastChild.setAttribute("value", yesterdayText);
+        }
+    }]]></body>
+            </method>
+
+            <method name="_onMenuCommand">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    let target = aEvent.target;
+    this._sendStatistics("menuclick");
+    let anonid = target.getAttribute("anonid");
+    switch (anonid) {
+    case "quotes-menuitem-refresh":
+        this._manualUpdate();
+        break;
+    case "quotes-menuitem-copy":
+        this._copyCurrentValue();
+        break;
+    case "quotes-menuitem-change":
+        this._openCurrentSettings();
+        break;
+    case "quotes-menuitem-remove":
+        this._removeCurrentWidget();
+        break;
+    case "quotes-menuitem-add":
+        this._addNewWidget();
+        break;
+    default:
+        return;
+    }]]></body>
+            </method>
+
+            <method name="_sendStatistics">
+                <parameter name="aAction"/>
+                <body><![CDATA[    this.api.Statistics.logClickStatistics({
+        cid: 72359,
+        path: "fx.quotation." + aAction
+    });]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "command":
+        this._onMenuCommand(aEvent);
+        break;
+    case "popupshowing":
+        this._sendStatistics("menu");
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="aSubject"/>
+                <parameter name="aTopic"/>
+                <parameter name="aData"/>
+                <body><![CDATA[    if (aTopic == "changed") {
+        this._switchThrobber();
+        this._updateView();
+    }]]></body>
+            </method>
+
+            <method name="onSettingChange">
+                <parameter name="aSettingName"/>
+                <parameter name="aNewValue"/>
+                <body><![CDATA[    switch (aSettingName) {
+    case "quote-id":
+        if (this._initialSetting) {
+            this._initialSetting = false;
+            return;
+        }
+        this._resetRequest();
+        break;
+    case "update-interval":
+        this._getUpdateInterval(true);
+        this._resetRequest();
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="click"><![CDATA[    let mButton = event.button;
+    if (!(mButton === 0 || mButton === 1)) {
+        return;
+    }
+    let originalTarget = event.originalTarget;
+    if (this.module.isTrk && originalTarget.localName == "toolbarbutton") {
+        this._menuPopup.showPopup();
+        return false;
+    }
+    let currentTarget = originalTarget;
+    let anonid = originalTarget.getAttribute("anonid");
+    while (!anonid && currentTarget.parentNode) {
+        currentTarget = currentTarget.parentNode;
+        anonid = currentTarget.getAttribute("anonid");
+    }
+    if (anonid == "button") {
+        if (!this.url) {
+            return;
+        }
+        this._sendStatistics("button");
+        this.api.Controls.navigateBrowser({
+            unsafeURL: this.url,
+            eventInfo: event
+        });
+        return;
+    }]]></handler>
+        </handlers>
+    </binding>
+
+</bindings>

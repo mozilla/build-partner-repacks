@@ -1,0 +1,4 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarbutton[anonid=button-auth],toolbarbutton[anonid=metrika-button]{list-style-image:url(../icons/ico.svg)!important}
+toolbaritem:not([auth=true]) toolbarbutton:not([anonid=button-auth]),toolbaritem[auth=true] toolbarbutton[anonid=button-auth],menuitem[label=""]{display:none!important}
+toolbarbutton[anonid=metrika-button][throbber=true]{list-style-image:url(/-common/img/throbber.gif)!important}
+tooltip>hbox[anonid=tooltip-header]{text-align:center}

@@ -1,0 +1,201 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings SYSTEM "/settings.dtd"><bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="esync">
+        <implementation implements="nsIObserver">
+            <field name="api" readonly="true"><![CDATA[    this.module.API;]]></field>
+
+            <field name="mWindowListener" readonly="true"><![CDATA[    this.api.Browser.getWindowListener(window);]]></field>
+
+            <field name="_notification">null</field>
+
+            <field name="_esyncAuth"><![CDATA[    this.module.require("auth").Auth;]]></field>
+
+            <field name="_esyncURL"><![CDATA[    this.module.require("wpage").WPage.URL;]]></field>
+
+            <constructor><![CDATA[    this._wdgtConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this._wdgtDestructor();]]></destructor>
+
+            <method name="_wdgtConstructor">
+                <body><![CDATA[    let newTabURL = (this.api.Settings.PrefsModule.get("browser.newtab.url") || "about:blank").toLowerCase();
+    if (newTabURL.indexOf("yafd:tabs") > -1) {
+        return;
+    }
+    this._createNotification();
+    this.api.Async.nextTick(function () {
+        this._checkTab(gBrowser.mCurrentBrowser);
+        this.mWindowListener.addListener("WindowLocationChange", this);
+    }.bind(this));]]></body>
+            </method>
+
+            <method name="_wdgtDestructor">
+                <body><![CDATA[    this._removeNotification();
+    this.mWindowListener.removeListener("WindowLocationChange", this);]]></body>
+            </method>
+
+            <method name="_checkTab">
+                <parameter name="aTab"/>
+                <parameter name="aURL"/>
+                <body><![CDATA[    if (!aTab) {
+        return;
+    }
+    if (!this._esyncAuth.expired) {
+        return;
+    }
+    if (aURL) {
+        if (aURL.indexOf(this._esyncURL) > -1) {
+            this._hideNotification();
+            return;
+        }
+        this._showNotification();
+    } else {
+        this.api.Async.nextTick(function () {
+            let currentURI = aTab.currentURI.spec;
+            if (currentURI.indexOf(this._esyncURL) > -1) {
+                this._hideNotification();
+                return;
+            }
+            this._showNotification();
+        }.bind(this));
+    }]]></body>
+            </method>
+
+            <method name="_showNotification">
+                <body><![CDATA[    if (!this._notification) {
+        this._createNotification();
+    } else {
+        if (typeof this._notification.show === "function") {
+            this._notification.show();
+        }
+    }]]></body>
+            </method>
+
+            <method name="_hideNotification">
+                <body><![CDATA[    if (this._notification && typeof this._notification.hide === "function") {
+        this._notification.hide();
+    }]]></body>
+            </method>
+
+            <method name="_createNotification">
+                <body><![CDATA[    const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+    let panel = document.createElementNS(XUL_NS, "hbox");
+    panel.setAttribute("id", this.module.PANEL_ID);
+    panel.setAttribute("data-state", 0);
+    panel.setAttribute("data-esyncURL", this._esyncURL);
+    let browserBottombox = document.getElementById("browser-bottombox");
+    browserBottombox.parentNode.insertBefore(panel, browserBottombox);
+    panel.esyncItem = this;
+    panel.hidden = true;
+    this._notification = panel;]]></body>
+            </method>
+
+            <method name="_removeNotification">
+                <body><![CDATA[    if (!this._notification) {
+        return;
+    }
+    if (this._notification.parentNode) {
+        this._notification.parentNode.removeChild(this._notification);
+    }
+    delete this._notification.esyncItem;
+    this._notification = null;]]></body>
+            </method>
+
+            <method name="onUserHideNotification">
+                <body><![CDATA[    this.mWindowListener.removeListener("WindowLocationChange", this);
+    this._removeNotification();]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="aSubject"/>
+                <parameter name="aTopic"/>
+                <parameter name="aData"/>
+                <body><![CDATA[    switch (aTopic) {
+    case "WindowLocationChange":
+        this._checkTab(aData.tab, aData.url);
+        break;
+    }]]></body>
+            </method>
+
+        </implementation>
+    </binding>
+
+    <binding id="panel">
+        <resources>
+            <stylesheet src="../panel.css"/>
+        </resources>
+
+        <content>
+            <hbox anonid="container" flex="1" xmlns:islands="http://bar.yandex.ru/ui/islands" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <hbox anonid="container-inner" flex="1">
+                    <deck anonid="user-message" flex="1">
+                        <hbox anonid="warning">
+                            <image anonid="message-ico"/>
+                            <hbox>
+                                <hbox>&esync.panel.sync.outdated.header;: &esync.panel.sync.outdated.message;</hbox>
+                                <hbox xbl:inherits="href=data-esyncURL" onclick="_showPreferences(event);">
+                                    <islands:button label="&esync.panel.sync.outdated.button.label;" islands:size="S" islands:type="normal"/>
+                                </hbox>
+                            </hbox>
+                        </hbox>
+                    </deck>
+                    <hbox anonid="user-buttons">
+                        <hbox anonid="close-button" class="a-labels" onclick="userHide();" tooltiptext="&esync.panel.close.tooltip;">
+                            <image class="image-close"/>
+                        </hbox>
+                    </hbox>
+                </hbox>
+            </hbox>
+        </content>
+
+        <implementation>
+            <field name="_messageContainer"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "user-message");]]></field>
+
+            <constructor><![CDATA[    this._setState();]]></constructor>
+
+            <method name="_setState">
+                <parameter name="aState"/>
+                <body><![CDATA[    let state = aState ? aState : parseInt(this.getAttribute("data-state"), 10);
+    this._messageContainer.selectedIndex = state;]]></body>
+            </method>
+
+            <method name="show">
+                <parameter name="aState"/>
+                <body><![CDATA[    if (aState) {
+        this._setState(aState);
+    }
+    this.hidden = false;]]></body>
+            </method>
+
+            <method name="userHide">
+                <body><![CDATA[    this.hide();
+    this.esyncItem.onUserHideNotification();]]></body>
+            </method>
+
+            <method name="hide">
+                <body><![CDATA[    this.hidden = true;]]></body>
+            </method>
+
+            <method name="_showPreferences">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    aEvent.stopPropagation();
+    aEvent.preventDefault();
+    let url = aEvent.currentTarget.getAttribute("href");
+    for (let i = 0; i < gBrowser.browsers.length; i++) {
+        let browser = gBrowser.browsers[i];
+        if (browser.currentURI.spec == url) {
+            gBrowser.selectedTab = gBrowser.tabContainer.childNodes[i];
+            return;
+        }
+    }
+    this.esyncItem.api.Controls.navigateBrowser({
+        url: url,
+        target: "new tab"
+    });
+    this.hide();]]></body>
+            </method>
+
+        </implementation>
+    </binding>
+
+</bindings>

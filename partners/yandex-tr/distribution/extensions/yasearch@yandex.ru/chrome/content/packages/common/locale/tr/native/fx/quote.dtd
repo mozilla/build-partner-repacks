@@ -1,0 +1,19 @@
+<!ENTITY wgt.quotes.name "Döviz piyasası">
+<!ENTITY wgt.quotes.default-quote-id "1">
+
+<!ENTITY wgt.quotes.refresh "Geçerli değeri güncelle">
+<!ENTITY wgt.quotes.copy "Değeri kopyala">
+<!ENTITY wgt.quotes.change "Kotayı değiştir">
+<!ENTITY wgt.quotes.delete "Kotayı kaldır">
+<!ENTITY wgt.quotes.add "Yeni kotayı ekle">
+<!ENTITY wgt.quotes.nodata "Bilgi yok">
+
+<!ENTITY wgt.quotes.tooltip.today "Bugün">
+<!ENTITY wgt.quotes.tooltip.tomorrow "Yarın">
+<!ENTITY wgt.quotes.tooltip.yesterday "Dün">
+
+<!ENTITY wgt.quotes.settings.id.label "Döviz piyasası">
+<!ENTITY wgt.quotes.settings.autodetect "Otomatik ayarla">
+
+<!ENTITY wgt.quotes.settings.interval.label "Update interval">
+<!ENTITY wgt.quotes.settings.min.label "min.">

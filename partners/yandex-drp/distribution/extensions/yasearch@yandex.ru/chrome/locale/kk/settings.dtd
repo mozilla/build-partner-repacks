@@ -1,0 +1,5 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY settings.title "Баптаулар">
+<!ENTITY settings.titleProduct "&product2.gen; баптау">

@@ -1,0 +1,10 @@
+@import url(chrome://global/skin/);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace html url(http://www.w3.org/1999/xhtml);window>vbox{background:-moz-linear-gradient(top,rgba(255,255,255,.95),rgba(255,255,255,.65))!important;background:linear-gradient(top,rgba(255,255,255,.95),rgba(255,255,255,.65))!important;width:610px;padding:8px;-moz-box-sizing:border-box;box-sizing:border-box}
+window>vbox image.chevron{margin:8px 24px}
+window>vbox vbox.text{margin:8px 0 0;color:#4c4c4c;font:16px/24px Arial,sans-serif;width:280px}
+window>vbox image.btn{margin:0 2px}
+window>vbox image.arrow{margin-right:8px}
+window>vbox description{margin-bottom:8px}
+window>vbox.arrow-up image.btn{-moz-transform:rotate(180deg);transform:rotate(180deg)}
+button{-moz-appearance:none;color:#db667d;font:18px/28px Arial,sans-serif;padding:.2em 1em;background-image:-moz-linear-gradient(top,#f0f0f0,#e0e0e0);-moz-border-radius:3px;border-radius:3px}
+button:hover{background-image:-moz-linear-gradient(top,#fcfcfc,#dcdcdc)}
+button:active{background-image:-moz-linear-gradient(top,#dedede,#f0f0f0)}

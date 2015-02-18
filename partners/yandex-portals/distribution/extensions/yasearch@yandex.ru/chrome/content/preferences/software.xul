@@ -1,0 +1,19 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="preferences.css"?>
+<?xml-stylesheet href="controls.css"?>
+
+<!DOCTYPE overlay [
+<!ENTITY % preferencesDTD SYSTEM "../../../locale/preferences/preferences.dtd">
+%preferencesDTD;
+]>
+
+<overlay xmlns:html="http://www.w3.org/1999/xhtml" id="prefpane-software-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <prefpane flex="1" id="prefpane-software">
+        <vbox class="prefWindow-dlgbuttons-hack"/>
+
+        <preferences/>
+
+        <vbox class="container" flex="1"/>
+    </prefpane>
+</overlay>

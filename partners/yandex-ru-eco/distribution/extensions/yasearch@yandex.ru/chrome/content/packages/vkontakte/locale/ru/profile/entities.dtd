@@ -1,0 +1,105 @@
+<!ENTITY vk.name "Моя страница ВК">
+<!ENTITY settings.show_name "Показывать имя пользователя">
+<!ENTITY settings.hide_notifications "Отключить уведомления">
+<!ENTITY settings.msg_button "Мои сообщения">
+<!ENTITY settings.friends_button "Мои друзья">
+<!ENTITY settings.events_button "Мои встречи">
+<!ENTITY settings.groups_button "Мои группы">
+<!ENTITY settings.photo_button "Мои фотографии">
+<!ENTITY settings.video_button "Мои видеозаписи">
+<!ENTITY settings.notes_button "Мои заметки">
+<!ENTITY settings.update.label "Интервал обновления">
+<!ENTITY settings.update.after "мин.">
+<!ENTITY vk.menu.update "Обновить информацию">
+<!ENTITY vk.menu.no_name "Без названия">
+<!ENTITY vk.tooltip.need_auth "Пожалуйста, авторизуйтесь">
+<!ENTITY vk.main.tooltip "Перейти на мою страницу ВКонтакте">
+<!ENTITY vk.main.tooltip_auth "Позволяет перейти на вашу страницу ВКонтакте">
+<!ENTITY vk.main.menu.mypage "Моя страница">
+<!ENTITY vk.main.menu.msg "Мои сообщения">
+<!ENTITY vk.main.menu.friends "Мои друзья">
+<!ENTITY vk.main.menu.events "Мои встречи">
+<!ENTITY vk.main.menu.groups "Мои группы">
+<!ENTITY vk.main.menu.photo "Мои фотографии">
+<!ENTITY vk.main.menu.video "Мои видеозаписи">
+<!ENTITY vk.main.menu.notes "Мои заметки">
+<!ENTITY vk.main.menu.audio "Мои аудиозаписи">
+<!ENTITY vk.main.menu.feed "Мои новости">
+<!ENTITY vk.main.menu.fave "Мои закладки">
+<!ENTITY vk.main.menu.matches "Предложения">
+<!ENTITY vk.main.menu.opinions "Мнения">
+<!ENTITY vk.main.menu.apps "Приложения">
+<!ENTITY vk.main.menu.questions "Вопросы">
+<!ENTITY vk.main.menu.settings "Настройки">
+<!ENTITY vk.main.menu.logout "Выход">
+<!ENTITY vk.msg.tooltip_empty "Мои сообщения ВКонтакте">
+<!ENTITY vk.msg.tooltip_auth "Показывает ваши новые сообщения ВКонтакте">
+
+<!ENTITY vk.msg.tooltip "\d новое сообщение;\d новых сообщения;\d новых сообщений">
+<!ENTITY vk.msg.menu.mymsg "Мои сообщения">
+<!ENTITY vk.photo.tooltip_empty "Мои фотографии ВКонтакте">
+<!ENTITY vk.photo.tooltip_auth "Показывает ваши фотографии ВКонтакте">
+<!ENTITY vk.video.tooltip_empty "Мои видеозаписи ВКонтакте">
+<!ENTITY vk.video.tooltip_auth "Показывает ваши видеозаписи ВКонтакте">
+
+<!ENTITY vk.friend.tooltip "\d запрос на добавления в друзья;\d запроса на добавления в друзья;\d запросов на добавления в друзья">
+<!ENTITY vk.friend.tooltip_empty "Мои друзья ВКонтакте">
+<!ENTITY vk.friend.tooltip_auth "Показывает ваших друзей ВКонтакте">
+<!ENTITY vk.friend.menu.myfriends "Мои друзья">
+<!ENTITY vk.friend.menu.my_new_friends "Мои новые друзья">
+<!ENTITY vk.event.tooltip "Мои встречи ВКонтакте">
+<!ENTITY vk.event.tooltip_auth "Показывает ваши новые встречи ВКонтакте">
+<!ENTITY vk.group.tooltip "Мои группы ВКонтакте">
+<!ENTITY vk.group.tooltip_auth "Показывает ваши группы ВКонтакте">
+<!ENTITY vk.note.tooltip "Мои заметки ВКонтакте">
+<!ENTITY vk.note.tooltip_auth "Показывает ваши заметки ВКонтакте">
+<!ENTITY vk.notify.settings "Настройки">
+<!ENTITY vk.notify.close "Закрыть">
+<!ENTITY error.connect "Пожалуйста, проверьте сетевое соединение">
+<!ENTITY error.auth "Не удалось авторизоваться">
+<!ENTITY error.auth.net "Не удалось подключиться к серверу ВКонтакте для авторизации">
+<!ENTITY error.update "Информацию получить не удалось">
+
+<!ENTITY plural.rule "7">
+
+<!ENTITY vk.notify.follow "Просит добавить его в друзья">
+<!ENTITY vk.notify.wall "Добавил запись на вашу стену">
+<!ENTITY vk.notify.comment_post "Прокомментировал вашу публикацию">
+<!ENTITY vk.notify.comment_photo "Прокомментировал ваше фото">
+<!ENTITY vk.notify.comment_video "Прокомментировал ваше видео">
+<!ENTITY vk.notify.reply_comment "Ответил на ваш комментарий">
+<!ENTITY vk.notify.reply_topic "Ответил на ваш комментарий">
+
+<!ENTITY vk.notify.follow_f "Просит добавить её в друзья">
+<!ENTITY vk.notify.wall_f "Добавила запись на вашу стену">
+<!ENTITY vk.notify.comment_post_f "Прокомментировала вашу публикацию">
+<!ENTITY vk.notify.comment_photo_f "Прокомментировала ваше фото">
+<!ENTITY vk.notify.comment_video_f "Прокомментировала ваше видео">
+<!ENTITY vk.notify.reply_comment_f "Ответила на ваш комментарий">
+<!ENTITY vk.notify.reply_topic_f "Ответила на ваш комментарий">
+
+<!ENTITY vk.notify.g.message "{N} новое сообщение;{N} новых сообщения;{N} новых сообщений">
+<!ENTITY vk.notify.g.wall "{N} новая запись на стене;{N} новых записи на стене;{N} новых записей на стене">
+<!ENTITY vk.notify.g.comment "{N} новый комментарий;{N} новых комментария;{N} новых комментариев">
+<!ENTITY vk.notify.g.reply_topic "{N} новый ответ в обсуждении;{N} новых ответа в обсуждении;{N} новых ответов в обсуждении">
+<!ENTITY settings.show_notifications "Показывать уведомления">
+<!ENTITY vk.notify.friend_request "просит добавить его в друзья">
+<!ENTITY vk.notify.friend_request_f "просит добавить её в друзья">
+<!ENTITY settings.show_comment_notifications "Показывать всплывающие уведомления о комментариях,обсуждениях">
+<!ENTITY settings.show_friend_notifications "Показывать всплывающие уведомления о запросах в друзья, подписчиках">
+<!ENTITY settings.show_mention_notifications "Показывать всплывающие уведомления об упоминаниях вас в публикациях и комментариях">
+<!ENTITY settings.show_message_notifications "Показывать всплывающие уведомления о сообщениях">
+<!ENTITY vk.friend.tooltip_not_empty0 "\d запрос на добавления в друзья">
+<!ENTITY vk.friend.tooltip_not_empty1 "\d запроса на добавления в друзья">
+<!ENTITY vk.friend.tooltip_not_empty2 "\d запросов на добавления в друзья">
+<!ENTITY vk.msg.tooltip_not_empty0 "\d новое сообщение">
+<!ENTITY vk.msg.tooltip_not_empty1 "\d новых сообщения">
+<!ENTITY vk.msg.tooltip_not_empty2 "\d новых сообщений">
+<!ENTITY vk.notify.g.mention "Вас отметили в {N} публикации;Вас отметили в {N} публикациях;Вас отметили в {N} публикациях">
+<!ENTITY vk.notify.mention "Отметил вас в публикации">
+<!ENTITY vk.notify.mention_comment "Упомянул вас в комментарии">
+<!ENTITY vk.notify.mention_comment_f "Упомянула вас в комментарии">
+<!ENTITY vk.notify.mention_f "Отметила вас в публикации">
+<!ENTITY vk.notify.messages_file "Отправил вам сообщение">
+<!ENTITY vk.notify.messages_file_f "Отправила вам сообщение">
+<!ENTITY vk.notify.g.follow "{N} запрос на добавление в друзья;{N} запроса на добавление в друзья;{N} запросов на добавление в друзья">

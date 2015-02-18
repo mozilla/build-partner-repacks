@@ -1,0 +1,10 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY music.name "Плеер Яндекс.Музыки">
+<!ENTITY music.action.play "Играть">
+<!ENTITY music.action.pause "Приостановить">
+
+<!ENTITY music.nointernet "Нет подключения к интернету">
+<!ENTITY music.noflash "Для работы виджета необходима последняя версия плагина Adobe Flash.">
+<!ENTITY music.noflash.link "Вы можете [a]скачать его здесь[/a].">

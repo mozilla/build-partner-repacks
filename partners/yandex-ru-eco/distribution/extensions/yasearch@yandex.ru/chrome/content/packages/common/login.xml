@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget [
+<!ENTITY % widget SYSTEM "/native/fx/login.dtd">
+%widget;
+<!ENTITY % package SYSTEM "/native/fx/package.dtd">
+%package;
+]>
+
+<widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/native/fx/login/icons/auth.svg" name="&login.name;" unique="true">
+
+    <modules>
+        <module browser="firefox" file="/native/fx/login/module.jsm"/>
+    </modules>
+</widget>

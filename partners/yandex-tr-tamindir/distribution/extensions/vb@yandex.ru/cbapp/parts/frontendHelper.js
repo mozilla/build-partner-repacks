@@ -21,8 +21,9 @@ const frontendHelper = {
                 "info",
                 "error",
                 "warn"
-            ].indexOf(level) === -1)
+            ].indexOf(level) === -1) {
             throw new Error("Unknown debug level: " + level);
+        }
         msg = strutils.formatString("%1 on line %2 in %3 (%4)", [
             msg,
             line || 0,
@@ -31,16 +32,20 @@ const frontendHelper = {
         ]);
         this._logger[level](msg);
     },
+    get mute() {
+        return this._muteMessages;
+    },
     set mute(value) {
         this._muteMessages = value;
-        return value;
     },
     getDataForThumb: function InternalStructure_getFrontendDataForThumb(thumbData) {
-        if (this._muteMessages)
+        if (this._muteMessages) {
             return {};
+        }
         let output = { pinned: thumbData.pinned || false };
-        if (!thumbData.location)
+        if (!thumbData.location) {
             return output;
+        }
         output.url = thumbData.source;
         output.title = thumbData.thumb && thumbData.thumb.title || "";
         output.isIndexPage = true;
@@ -75,20 +80,24 @@ const frontendHelper = {
     getDataForIndex: function FrontendHelper_getFrontendDataForIndex(index) {
         let currentThumbsNum = this._application.layout.getThumbsNum();
         let emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
-        if (this._muteMessages)
+        if (this._muteMessages) {
             return {};
-        if (emptyLastThumb && index == currentThumbsNum - 1)
+        }
+        if (emptyLastThumb && index == currentThumbsNum - 1) {
             return { pinned: true };
+        }
         let thumbData = this._application.internalStructure.getItem(index);
-        if (!thumbData)
+        if (!thumbData) {
             return {};
+        }
         return this.getDataForThumb(thumbData);
     },
     get fullStructure() {
         let currentThumbsNum = this._application.layout.getThumbsNum();
         let output = {};
-        for (let i = 0; i < currentThumbsNum; i++)
+        for (let i = 0; i < currentThumbsNum; i++) {
             output[i] = this.getDataForIndex(i);
+        }
         return output;
     },
     _application: null,

@@ -1,0 +1,91 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % settings SYSTEM "/native/fx/lenta.dtd">
+%settings;
+<!ENTITY % auth SYSTEM "/native/fx/login.dtd">
+%auth;
+]>
+
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="../../bindings/buttons.xbl#ycounter-widget" id="widget">
+        <resources>
+            <stylesheet src="../styles/lenta.css"/>
+        </resources>
+
+        <content>
+            <toolbarbutton anonid="lenta-button" class="chromeclass-toolbar-additional toolbarbutton-1 label2 ycounter-button" hasFeeds="false" label="&lenta.name;" noauth-tooltip-text="&lenta.noauthtooltiptext;" tooltip="lenta-tooltip" tooltip-text="&lenta.tooltiptext;" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" yb-icon-overlay="true" yb-second-tooltip-text="&noauth.label;">
+                <menupopup anonid="lenta-menupopup" onpopupshowing="_setAddFeedsMenu()">
+                    <menuitem label="&lenta.reloadCounter.label;" oncommand="refreshData(event)"/>
+                    <menuseparator/>
+                    <menuitem label="&lenta.link.readMessages.label;" yb-widget-command="gotoMessages"/>
+                    <menuseparator/>
+                    <menuitem disabled="true" label="&lenta.addFeed.label;" yb-widget-command="addFeeds"/>
+                </menupopup>
+            </toolbarbutton>
+        </content>
+
+        <implementation>
+            <field name="title">"&lenta.name;"</field>
+
+            <field name="_menu" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "lenta-menupopup")</field>
+            <field name="_button" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "lenta-button")</field>
+
+            <method name="onAuthCommand">
+                <body><![CDATA[    this.module.onButtonClick();]]></body>
+            </method>
+
+            <property name="_hasFeeds" readonly="true">
+                <getter><![CDATA[    let feeds = "feeds" in gBrowser.mCurrentBrowser ? gBrowser.mCurrentBrowser.feeds : null;
+    return feeds && feeds.length !== 0;]]></getter>
+            </property>
+
+            <property name="_imgSrc">
+                <getter><![CDATA[    return this._button.getAttribute("image");]]></getter>
+                <setter><![CDATA[    this._button.setAttribute("image", val);]]></setter>
+            </property>
+
+            <constructor><![CDATA[    if (typeof FeedHandler == "object" && typeof FeedHandler.updateFeeds == "function") {
+        let origUpdateFeeds = FeedHandler.updateFeeds;
+        let me = this;
+        FeedHandler.updateFeeds = function _FeedHandlerUpdateFeeds() {
+            if (me && typeof me._updateFeeds == "function") {
+                me._updateFeeds();
+            } else {
+                FeedHandler.updateFeeds = origUpdateFeeds;
+            }
+            return origUpdateFeeds.apply(this, arguments);
+        };
+    }
+    this._updateFeeds();]]></constructor>
+
+            <method name="_setAddFeedsMenu">
+                <body><![CDATA[    this.module.utils.statistics.logWidget("fx.yasubscription.menu");
+    this._menu.lastChild.setAttribute("disabled", !this._hasFeeds);]]></body>
+            </method>
+
+            <method name="_updateFeeds">
+                <body><![CDATA[    this._button.setAttribute("hasFeeds", this._hasFeeds);
+    if (this._button.firstChild.open) {
+        this._menu.lastChild.setAttribute("disabled", !this._hasFeeds);
+    }]]></body>
+            </method>
+
+            <method name="_sendClickStat">
+                <parameter name="event"/>
+                <parameter name="middle"/>
+                <body><![CDATA[    var menuItem = event.originalTarget.localName == "menuitem";
+    if (!middle || !menuItem) {
+        this.module.utils.statistics.logWidget("fx.yasubscription." + (menuItem ? "menuclick" : "button"));
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="1" event="click"><![CDATA[    this._sendClickStat(event, true);]]></handler>
+
+            <handler event="command"><![CDATA[    this._sendClickStat(event, false);]]></handler>
+        </handlers>
+    </binding>
+
+</bindings>

@@ -1,0 +1,23 @@
+toolbarbutton[anonid=hotmail-button]{list-style-image:url(icons/hotmail-connected.svg)!important;display:none}
+toolbaritem .toolbarbutton-text{display:none!important}
+toolbarbutton[anonid=hotmail-button] .toolbarbutton-text-ex[value]{display:-moz-box!important}
+toolbaritem[settings ~="show-button-name"] .toolbarbutton-text[value]{display:-moz-box!important}
+toolbarbutton[anonid=hotmail-fake-button]{list-style-image:url(icons/hotmail-connected.svg)!important}
+toolbaritem[auth=AUTH_NONE] toolbarbutton[anonid=hotmail-button]{display:none}
+toolbaritem[auth=AUTH_OK] toolbarbutton[anonid=hotmail-button],toolbaritem[auth=AUTH_UNKNOWN] toolbarbutton[anonid=hotmail-button]{display:-moz-box}
+toolbaritem[auth=AUTH_UNKNOWN] toolbarbutton[anonid=hotmail-button]{list-style-image:url(icons/hotmail-connected.svg)!important}
+toolbaritem[updating] toolbarbutton[anonid=hotmail-button]{list-style-image:url(//toolkit/images/throbber.gif)!important}
+toolbaritem[auth=AUTH_NONE] toolbarbutton[anonid=hotmail-fake-button]{display:-moz-box}
+toolbaritem[auth=AUTH_OK] toolbarbutton[anonid=hotmail-fake-button],toolbaritem[auth=AUTH_UNKNOWN] toolbarbutton[anonid=hotmail-fake-button]{display:none}
+menuitem[anonid=update]{list-style-image:url(icons/hotmail-update.png)!important}
+menuitem[anonid=mailbox]{-moz-appearance:none}
+menuitem[anonid=mailbox][_moz-menuactive=true]{background-color:inherit}
+menuitem[anonid=compose]{list-style-image:url(icons/hotmail-connected.svg)!important}
+menuitem[anonid=read]{list-style-image:url(icons/hotmail-read.png)!important}
+menuitem[anonid=open-addressbook]{list-style-image:url(icons/hotmail-addressbook.png)!important}
+menuitem[anonid=options]{display:none;list-style-image:url(icons/bar-options.png)!important}
+toolbarbutton.counter-button{-moz-binding:url(counter-button.xbl#counter-menubutton)!important}
+toolbarbutton.counter-button>toolbarbutton{-moz-binding:url(counter-button.xbl#counter-button)!important}
+toolbarbutton .toolbarbutton-text-ex{font-weight:700;padding-left:2px!important}
+toolbarbutton .toolbarbutton-text-ex[value=""]{display:none!important}
+toolbarbutton .toolbarbutton-text{padding-left:4px!important}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <script type="text/javascript" src="common-libs/require.min.js"></script>
+    <script type="text/javascript" src="require-config.js"></script>
+    <script type="text/javascript" src="main-adapter.js"></script>
+    <script type="text/javascript" src="main-logic.js"></script>
+    <script type="text/javascript" src="main-ui.js"></script>
+    <div data-state="loading" class="b-traffic-widget b-spinner">
+      <div data-state="loading" class="b-traffic-map b-spinner">
+        <div class="b-traffic-map__ymap"></div>
+        <div class="b-map-button b-map-button_map"></div>
+        <div class="b-map-button b-map-button_pic b-map-button_pic_plus"></div>
+        <div class="b-map-button b-map-button_pic b-map-button_pic_minus"></div>
+        <div data-color="dis" class="b-map-button b-map-button_pic b-map-button_pic_ball"></div>
+        <div data-installed="false" class="b-map-button b-map-button_pic b-map-button_pic_route">
+          <div data-color="none" class="b-map-button_inner b-map-button_pic_ball"></div>
+          <div class="b-map-button_inner b-map-button_time"></div>
+        </div>
+        <div class="b-route-form"></div>
+        <div class="b-error-view">
+          <div class="b-error-message"></div>
+          <div class="b-refresh-button"></div>
+        </div>
+      </div>
+      <div class="b-error-view">
+        <div class="b-error-message"></div>
+        <div class="b-refresh-button"></div>
+      </div>
+    </div>
+  </body>
+</html>

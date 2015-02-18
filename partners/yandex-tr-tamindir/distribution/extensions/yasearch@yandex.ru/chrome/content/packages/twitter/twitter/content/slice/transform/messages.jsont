@@ -1,0 +1,175 @@
+[globals
+my_screen_name=
+my_id=
+mode=
+get-more=
+]
+
+*---------------------*
+[more_button]
+<div class="get-more-button">
+    <span class="more-message get-more-text -ui-Translate" message="twitter.slice.tab.load-more"></span>
+</div>
+
+*---------------------*
+[twitter_messages]
+{$networkerror
+    ??#networkerror
+    ::{@EQ($mode,dms)??#direct_messages($this,$this2)::#statuses($this,$this2)}}
+
+*---------------------*
+[networkerror]
+{@EQ($mode,search)
+    ??<div class="search-list-wrapper">
+            <div class="message-list-error-message">
+                {@EQ($networkerror,RATE_LIMIT)
+                    ??<span class="-ui-Translate" message="sad-bird.no-msg-limit"></span>
+                    ::<span class="-ui-Translate" message="sad-bird.no-search-net-1"></span>
+                        {$searchQuery}
+                        <span class="-ui-Translate" message="sad-bird.no-search-{@EQ($networkerror,FORBIDDEN)??::net-}2"></span>}
+            </div>
+        </div>
+    ::<div class="message-list-error-message">
+            <span class="-ui-Translate" message="sad-bird.no-{@EQ($networkerror,RATE_LIMIT)??msg-limit::{$mode}-net}"></span>
+        </div>}
+
+*---------------------*
+[statuses]
+{@COUNT($this)
+    ??#status[]($this)
+    ::<div class="message-list-error-message">
+            {@EQ($mode,mentions)
+                ??<span class="-ui-Translate" message="sad-bird.no-mentions"></span>
+                ::{@EQ($mode,search)
+                    ??<span class="-ui-Translate" message="sad-bird.no-search-1"></span>
+                        {$searchQuery}
+                        <span class="-ui-Translate" message="sad-bird.no-search-2"></span>
+                    ::<div>
+                            <span class="-ui-Translate" message="sad-bird.no-home-1"></span>
+                            <a href="javascript:twitlink.open('http://twitter.com/#!/who_to_follow/interests')" class="-ui-Translate" message="sad-bird.no-home-2"></a>
+                            <span class="-ui-Translate" message="sad-bird.no-home-3"></span>
+                        </div>}}
+        </div>}
+
+*---------------------*
+[status]
+{$retweeted_status
+    ??#message($this, msg=$retweeted_status, msg-id=$id_str, retweeted_by=$user/screen_name)
+    ::#message($this, retweeted_by=@IF($this/retweeted,$my_screen_name,))}
+
+*---------------------*
+[direct_messages]
+{@COUNT($this)
+    ??#direct_message[]($this)
+    ::<div class="message-list-error-message">
+            <span class="-ui-Translate" message="sad-bird.no-dms"></span>
+        </div>}
+
+*---------------------*
+[direct_message]
+{#message($this, user=$sender, recipient=$recipient, noretweet=true, is-own-message=true, show-fav-contorl=)}
+
+*---------------------*
+[message_author
+retweeted=@AND($retweeted_by,@EQ($this,$usr))
+]
+<div class="message-author">
+    <a href="javascript:twitlink.info('{$id_str}')">{$screen_name}</a>
+    <span class="message-author-name">{$name}</span>
+    {$retweeted??(<span class="rtby"></span>{@NOT($my_rtw)??<span class="rtby-text">{$retweeted_by}</span>})}
+</div>
+
+*---------------------*
+[message
+msg=$this
+retweeted_by=
+user=$msg/user
+recipient=$msg/recipient
+user-avatar=$user/profile_image_url
+user-screen_name=$user/screen_name
+user-id=$user/id_str
+user-name=$user/name
+user-following=$user/following
+msg-id=$msg/id_str
+msg-text=$msg/text
+msg-date=$msg/created_at
+noretweet=
+noreply=
+my-retweet=@EQ($retweeted_by,$my_screen_name)
+favorited=$msg/favorited
+entities=$msg/entities
+show-fav-contorl=true
+url_foto=@getFoto($entities)
+alternate-align=
+is-own-message=@EQ($user/screen_name,$my_screen_name)
+is-message-to-me=@EQ($recipient/screen_name,$my_screen_name)
+]
+<div id="msg-{$msg-id}" twitter:message-id="{$msg-id}"
+    class="message -ui-Message{$my-retweet?? message-my-retweet}{$is-message-to-me?? message-to-me}{$favorited?? message-favorited}{$recipient?? message-has-recipient}">
+
+    <div class="avatar-box">
+        <div class="avatar" twitter:user-id="{$user-id}">
+            <a href="javascript:twitlink.info('{$user-id}')">
+                <img src="{$user-avatar}" />
+            </a>
+        </div>
+    </div>
+
+    {$recipient
+        ??<div class="avatar-box avatar-box-recipient">
+            <div class="avatar" twitter:user-id="{$recipient/id}">
+                <a href="javascript:twitlink.info('{$recipient/id}')">
+                    <img src="{$recipient/profile_image_url}" />
+                </a>
+            </div>
+        </div>}
+
+    <div class="message-text">
+
+        {#message_author(@IF(@AND($recipient,@NOT($is-message-to-me)),$recipient,$user), usr=$user, retweeted_by=$retweeted_by, my_rtw=$my-retweet)}
+
+        <span id="msg-{$msg-id}-text">{@makeTwit($msg-text,$entities)}</span>
+    </div>
+    <div class="message-status">
+        <img src="i/birdie.png" class="message-status__birdie"/>
+
+        {@EQ($mode,dms)
+            ??<span class="message-time -ui-DiffTimer" twitter:status-created_at="{$msg-date}"></span>
+            ::<a class="message-time -ui-DiffTimer" href="javascript:twitlink.open_status('{$user-screen_name}','{$msg/id_str}')" twitter:status-created_at="{$msg-date}"></a>}
+
+        {$url_foto
+            ??<a href="javascript:twitlink.show_foto('{$msg-id}','{$url_foto}')" class="message-action message-action-show-foto">
+                    <i class="action-icon"></i><span  id="id_act_sf_{$msg-id}" class="-ui-Translate" message="action.show-message-foto"></span>
+                </a>}
+
+        {@AND(@NOT($is-own-message),@NOT($noretweet),@NOT($my-retweet))
+            ??<a href="javascript:twitlink.retweet('{$user-screen_name}', '{$msg-id}')" class="message-action message-action-retweet">
+                    <i class="action-icon"></i><span class="-ui-Translate" message="action.share"></span>
+                </a>}
+
+        {@NOT($noreply)
+            ??{@EQ($mode,dms)
+                ??<a href="javascript:twitlink.directReply('{$user-screen_name}','{$user-id}')" class="message-action message-action-reply">
+                        <i class="action-icon"></i><span class="-ui-Translate" message="action.direct-reply"></span>
+                    </a>
+                ::<a href="javascript:twitlink.reply('{$user-screen_name}', '{$msg-id}')" class="message-action message-action-reply">
+                        <i class="action-icon"></i><span class="-ui-Translate" message="action.reply"></span>
+                    </a>}}
+
+        {$is-own-message
+            ??<a href="javascript:twitlink.{@EQ($mode,dms)??deleteDMsg::deleteMsg}('{$msg-id}')" class="message-action message-action-delete">
+                    <i class="action-icon"></i><span class="-ui-Translate" message="action.delete"></span>
+                </a>}
+
+        {$show-fav-contorl
+            ??<a href="javascript:twitlink.favorite('{$msg-id}')" class="message-action message-action-favorite">
+                    <i class="action-icon"></i><span class="-ui-Translate" message="action.favorite"></span>
+                </a>
+                <a href="javascript:twitlink.unfavorite('{$msg-id}')" class="message-action message-action-unfavorite">
+                    <i class="action-icon"></i><span class="-ui-Translate" message="action.favorite"></span>
+                </a>}
+
+    </div>
+    {$url_foto??<div class="message-foto" style="display:none" id="id_foto_{$msg-id}"></div>}
+    <div class="message-border"></div>
+</div>

@@ -1,0 +1,20 @@
+﻿<!ENTITY direct.name "Яндекс.Дырэкт" >
+<!ENTITY direct.currency "у.а." >
+<!ENTITY direct.setting.minutes "хв." >
+<!ENTITY direct.setting.update_interval "Інтэрвал абнаўлення:" >
+<!ENTITY direct.button.label "Дырэкт" >
+<!ENTITY direct.tooltip.notlogged.row1 "Паказвае стан вашага рахунку ў Яндекс.Дырэкце" >
+<!ENTITY direct.tooltip.notlogged.row2 "Калі ласка, аўтарызуйцеся" >
+<!ENTITY direct.tooltip.error.row1 "Дадзеныя па вашым рахунку ў Яндекс.Дырэкце не атрыманы" >
+<!ENTITY direct.tooltip.error.row2 "Калі ласка, праверце злучэнне" >
+<!ENTITY direct.tooltip.nocampaigns.row1 "Дадзеныя па вашым рахунку ў Яндекс.Дырэкце не атрыманы" >
+<!ENTITY direct.tooltip.nocampaigns.row2 "Калі ласка, размясціце рэкламную аб’яву" >
+<!ENTITY direct.tooltip "Перайсці да маіх Кліентаў у Яндекс.Дырэкт" >
+<!ENTITY direct.tooltip.cashstate "Стан вашага рахунку ў Яндекс.Дырэкце" >
+<!ENTITY direct.tooltip.balance "Агульная астача:" >
+<!ENTITY direct.tooltip.delay "Адтэрміноўка:" >
+<!ENTITY direct.tooltip.debts "Запазычанасць:" >
+<!ENTITY direct.tooltip.activecamp "Актыўных кампаній:" >
+<!ENTITY direct.updateinfo "Абнавіць інфармацыю" >
+<!ENTITY direct.movetocamp "Перайсці да Маіх Кампаній" >
+<!ENTITY direct.sincdebt "Ліквідаваць запазычанасць" >

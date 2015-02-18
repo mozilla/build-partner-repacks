@@ -10,6 +10,8 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const MAX_INT = Math.pow(2, 31) - 1;
 const MIN_INT = -MAX_INT;
+let observers = [];
+let observers2 = [];
 function Preferences(args) {
     if (isObject(args)) {
         if (args.branch) {
@@ -85,7 +87,7 @@ Preferences.overwrite = function Preferences_overwrite(prefName, prefValue) {
 };
 Preferences._set = function Preferences__set(prefName, prefValue, overwrite) {
     let prefType;
-    if (typeof prefValue != "undefined" && prefValue != null) {
+    if (typeof prefValue !== "undefined" && prefValue !== null) {
         prefType = prefValue.constructor.name;
     }
     let storedValueType = this._prefs.getPrefType(prefName);
@@ -107,7 +109,7 @@ Preferences._set = function Preferences__set(prefName, prefValue, overwrite) {
             this._reset(prefName);
         }
         this._prefs.setIntPref(prefName, prefValue);
-        if (prefValue % 1 != 0) {
+        if (prefValue % 1 !== 0) {
             Cu.reportError("Warning: setting the " + prefName + " pref to the " + "non-integer number " + prefValue + " converted it " + "to the integer number " + this.get(prefName) + "; to retain fractional precision, store non-integer " + "numbers as strings.");
         }
         break;
@@ -235,7 +237,6 @@ Object.defineProperty(Preferences, "_prefs", {
     }
 });
 Preferences.prototype = Preferences;
-let observers = [];
 function PrefObserver(prefName, callback, thisObject) {
     this.prefName = prefName;
     this.callback = callback;
@@ -263,7 +264,7 @@ PrefObserver.prototype = {
     }
 };
 function isObject(val) {
-    return typeof val != "undefined" && val != null && typeof val == "object" && val.constructor.name == "Object";
+    return typeof val !== "undefined" && val !== null && typeof val === "object" && val.constructor.name === "Object";
 }
 Preferences.observe2 = function Preferences_observe2(prefName, callback, thisObject) {
     let fullPrefName = this._prefBranch + (prefName || "");
@@ -282,7 +283,6 @@ Preferences.ignore2 = function Preferences_ignore2(prefName, callback, thisObjec
         observers2.splice(observers2.indexOf(observer), 1);
     }
 };
-let observers2 = [];
 function PrefObserver2(prefName, callback, thisObject) {
     this.prefName = prefName;
     this.callback = callback;
@@ -294,7 +294,7 @@ PrefObserver2.prototype = {
         Ci.nsISupportsWeakReference
     ]),
     observe: function PrefObserver2_observe(subject, topic, data) {
-        if (this.prefName.indexOf(data) == 0) {
+        if (this.prefName.indexOf(data) === 0) {
             return;
         }
         if (typeof this.callback == "function") {
@@ -348,7 +348,7 @@ Preferences.loadFromString = function Preferences_loadFromString(prefsString) {
         try {
             if (/["']/.test(prefValue)) {
                 prefValue = "\"" + prefValue.replace(/"/g, "\\\"") + "\"";
-                prefValue = JSON.parse(prefValue).replace(/^["']|["']$/g, "");
+                prefValue = JSON.parse(prefValue).replace(/^['"]|["']$/g, "");
             } else {
                 prefValue = JSON.parse(prefValue);
             }
@@ -360,8 +360,7 @@ Preferences.loadFromString = function Preferences_loadFromString(prefsString) {
                 user_pref(prefName, prefValue);
                 break;
             default:
-                throw new Error("Unknown pref function name (\"" + fnName + "\")");
-                break;
+                throw new Error("Unknown pref function name ('" + fnName + "')");
             }
         } catch (e) {
             Cu.reportError(e);
@@ -381,7 +380,8 @@ Preferences.loadFromFile = function Preferences_loadFromFile(prefsFile) {
     let data = null;
     let is = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
     try {
-        is.init(prefsFile, 1, 0, is.CLOSE_ON_EOF);
+        const MODE_RDONLY = 1;
+        is.init(prefsFile, MODE_RDONLY, 0, is.CLOSE_ON_EOF);
         let streamSize = is.available();
         let convStream = Cc["@mozilla.org/intl/converter-input-stream;1"].createInstance(Ci.nsIConverterInputStream);
         convStream.init(is, "UTF-8", streamSize, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);

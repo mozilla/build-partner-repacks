@@ -1,0 +1,2 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#esync"]{-moz-binding:url(bindings/bindings.xbl#esync)!important;display:none}
+[id="http://bar.yandex.ru/packages/yandexbar#esync-panel"]{-moz-binding:url(bindings/bindings.xbl#panel)!important}

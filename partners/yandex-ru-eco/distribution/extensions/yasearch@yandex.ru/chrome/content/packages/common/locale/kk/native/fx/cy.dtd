@@ -1,0 +1,12 @@
+<!ENTITY cy.name "ЦИ">
+<!ENTITY cy.fullname "Цитата индексі">
+<!ENTITY cy.pages.all.label "Сайттың барлық беттері">
+<!ENTITY cy.data.theme.label "Тақырып">
+<!ENTITY cy.data.domain.label "Домен">
+<!ENTITY cy.data.region.label "Аймақ">
+<!ENTITY cy.data.value.label "Мән">
+<!ENTITY cy.data.yaca.label "(Яндекс.Каталогтың деректері бойынша)">
+<!ENTITY cy.no-data.label "мәлімет жоқ">
+
+
+<!ENTITY cy.showValue.label "Цитата Индексінің мәнін көрсету">

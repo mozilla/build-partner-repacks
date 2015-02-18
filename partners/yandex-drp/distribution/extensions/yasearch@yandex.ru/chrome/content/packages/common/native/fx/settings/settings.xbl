@@ -1,0 +1,28 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % settings SYSTEM "/native/fx/settings.dtd">
+%settings;
+]>
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="//toolkit/native/bindings/widget.xml#widget" id="widget">
+        <resources>
+            <stylesheet src="settings.css"/>
+        </resources>
+
+        <content>
+            <xul:toolbarbutton anonid="settings-button" class="chromeclass-toolbar-additional toolbarbutton-1 yb-no-label" label="&widget.settings.label;" tooltiptext="&widget.settings.tooltiptext;" type="button"/>
+        </content>
+
+        <implementation>
+            <field name="mButton" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "settings-button");]]></field>
+        </implementation>
+
+        <handlers>
+            <handler event="click"><![CDATA[    if (event.button === 2) {
+        return;
+    }
+    this.module.API.Controls.openSettingsDialog();]]></handler>
+        </handlers>
+    </binding>
+</bindings>

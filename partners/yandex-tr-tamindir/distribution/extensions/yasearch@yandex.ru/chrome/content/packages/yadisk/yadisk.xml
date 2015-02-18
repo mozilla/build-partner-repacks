@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "yadisk/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="yadisk/content/icons/ico.png" icon-vector="yadisk/content/icons/ico.svg" name="&widget.name;" unique="true">
+
+    <f:setting default="" name="yadisk-tokens" scope="widget"/>
+
+    <modules>
+        <module browser="firefox" file="yadisk/core/widget.jsm"/>
+    </modules>
+</widget>

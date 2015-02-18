@@ -1,0 +1,45 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="feeds.css" type="text/css"?>
+<!DOCTYPE dialog [
+<!ENTITY % yaFeedsDTD SYSTEM "/native/fx/lenta.dtd">
+%yaFeedsDTD;
+]>
+
+<dialog buttons="accept,cancel" id="feeds-add-dialog" ondialogaccept="return YaFeeds.onDialogAccept()" onload="YaFeeds.onDialogLoad()" onunload="YaFeeds.onDialogUnLoad()" persist="screenX screenY" title="&feeds.dialog.title;" windowtype="FeedsDialog" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <script src="feeds.js" type="application/x-javascript"/>
+    <stringbundle id="string-bundle-feeds" src="/native/fx/lenta.properties"/>
+
+     <grid>
+         <columns>
+             <column/>
+             <column flex="1"/>
+         </columns>
+         <rows>
+             <row align="center">
+                 <label value="&feeds.page.label;"/>
+                 <label crop="end" id="feed-label-page" value="{..ERROR..}"/>
+             </row>
+             <row align="center">
+                 <label accesskey="&feeds.name.accesskey;" id="feed-label-name" value="&feeds.name.label;"/>
+                 <vbox id="deck-feeds" pack="center">
+
+                 </vbox>
+             </row>
+             <row align="center">
+                 <label accesskey="&feeds.groups.accesskey;" value="&feeds.groups.label;"/>
+                 <deck id="feeds-newfolder-deck" selectedIndex="0">
+                     <vbox pack="center">
+                         <menulist disabled="true" id="feeds-select-group">
+                             <menupopup>
+                                 <menuitem label="&feeds.groups.loader.label;"/>
+                             </menupopup>
+                         </menulist>
+                     </vbox>
+                     <label id="feeds-add-group" oninput="YaFeeds.enableAcceptButton()"/>
+                 </deck>
+             </row>
+         </rows>
+     </grid>
+
+</dialog>

@@ -110,17 +110,13 @@ const statistics = {
     },
     get _subscriptsNames() {
         let subscriptNames = [];
-        let statisticsScriptsDir = this._application.core.extensionPathFile;
-        "cbapp/parts/statistics".split("/").forEach(s => statisticsScriptsDir.append(s));
-        if (statisticsScriptsDir.exists() && statisticsScriptsDir.isDirectory()) {
-            let entries = statisticsScriptsDir.directoryEntries;
-            while (entries.hasMoreElements()) {
-                let entry = entries.getNext().QueryInterface(Ci.nsIFile);
-                if (!entry.isFile()) {
-                    continue;
-                }
-                if (/.+\.js$/.test(entry.leafName)) {
-                    subscriptNames.push(entry.leafName);
+        let statisticsScriptsDir = this._application.addonFS.getEntry("cbapp/parts/statistics/");
+        if (statisticsScriptsDir.exists()) {
+            let scripts = statisticsScriptsDir.directoryEntries;
+            while (scripts.hasMoreElements()) {
+                let script = scripts.getNext();
+                if (script.isFile() && /.+\.js$/.test(script.leafName)) {
+                    subscriptNames.push(script.leafName);
                 }
             }
         }

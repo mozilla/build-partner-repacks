@@ -1,0 +1,54 @@
+<!ENTITY widget.name "Одноклассники">
+<!ENTITY widget.window.title "Одноклассники">
+<!ENTITY widget.tooltip.messages "Новые сообщения на Одноклассниках">
+<!ENTITY widget.tooltip.notifications "Оповещения на Одноклассниках">
+<!ENTITY widget.tooltip.guests "Гости на Одноклассниках">
+<!ENTITY widget.tooltip.marks "Оценки фотографий на Одноклассниках">
+<!ENTITY widget.tooltip.bd "Друзья на Одноклассниках">
+<!ENTITY widget.tooltip.bd-hd "Дни рождения друзей на Одноклассниках">
+<!ENTITY widget.tooltip.no-auth1 "Показывает новые события на Одноклассниках">
+<!ENTITY widget.tooltip.no-auth2 "Пожалуйста, авторизуйтесь">
+<!ENTITY widget.menuitem.update "Обновить информацию">
+<!ENTITY widget.menuitem.home "Перейти на Одноклассники">
+<!ENTITY widget.menuitem.messages-follow "Перейти к сообщениям">
+<!ENTITY widget.menuitem.notifications-follow "Перейти к оповещениям">
+<!ENTITY widget.menuitem.guests-follow "Перейти к гостям">
+<!ENTITY widget.menuitem.marks-follow "Перейти к оценкам фотографий">
+<!ENTITY widget.menuitem.messages "Сообщения">
+<!ENTITY widget.menuitem.notifications "Оповещения">
+<!ENTITY widget.menuitem.guests "Гости">
+<!ENTITY widget.menuitem.marks "Оценки фотографий">
+<!ENTITY widget.menuitem.bd "Друзья">
+<!ENTITY widget.menuitem.bd2 "Дни рождения друзей">
+<!ENTITY widget.menuitem.bd-hd "Праздники друзей">
+<!ENTITY widget.menuitem.bd-follow "Перейти к друзьям">
+<!ENTITY widget.menuitem.bd-hd-follow "Перейти к праздникам друзей">
+<!ENTITY widget.menuitem.settings "Настройки">
+<!ENTITY widget.menuitem.quit "Выйти из Одноклассников">
+<!ENTITY settings.update-interval-label "Интервал обновления">
+<!ENTITY settings.update-interval-min "мин.">
+<!ENTITY settings.show-messages "Показывать кнопку «Сообщения»">
+<!ENTITY settings.show-notifications "Показывать кнопку «Оповещения»">
+<!ENTITY settings.show-guests "Показывать кнопку «Гости»">
+<!ENTITY settings.show-marks "Показывать кнопку «Оценки»">
+<!ENTITY settings.show-bd "Показывать кнопку «Дни рождения»">
+
+<!ENTITY widget.info.age "{N} год;{N} года;{N} лет">
+<!ENTITY widget.info.months "января,февраля,марта,апреля,мая,июня,июля,августа,сентября,октября,ноября,декабря">
+<!ENTITY error.connect "Пожалуйста, проверьте сетевое соединение">
+<!ENTITY error.data "Данные с Одноклассников получить не удалось">
+<!ENTITY error.update "Ошибка обновления данных">
+<!ENTITY error.auth "Не удалось авторизоваться">
+<!ENTITY error.auth.net "Не удалось подключиться к серверу Одноклассников для авторизации">
+<!ENTITY settings.show_notifications "Показывать уведомления">
+<!ENTITY settings.show-friends "Показывать кнопку «Друзья»">
+<!ENTITY widget.info.marks "1 балл,2 балла,3 балла,4 балла,5 баллов">
+<!ENTITY widget.main_tooltip.marks "Оценки">
+<!ENTITY widget.main_tooltip.new-messages "Новые сообщения">
+<!ENTITY widget.tooltip.noauth "Показывает новые события на Одноклассниках&#13;Пожалуйста, авторизуйтесь">
+<!ENTITY widget.tooltip.nodata "Данные с Одноклассников получить не удалось&#13;Пожалуйста, проверьте сетевое соединение">
+<!ENTITY widget.tooltip.update.fail "&#13;Ошибка обновления данных">
+<!ENTITY notify.comments "{N} новый комментарий;{N} новых комментария;{N} новых комментариев">
+<!ENTITY notify.messages "{N} новое сообщение;{N} новых сообщения;{N} новых сообщений">
+<!ENTITY notify.messages_file "Отправил вам сообщение">
+<!ENTITY notify.messages_file_f "Отправила вам сообщение">

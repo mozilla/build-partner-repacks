@@ -1,0 +1,43 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % appDTD SYSTEM "../bar.dtd">
+%appDTD;
+]>
+<window id="&app.name;SlicePopupBrowser" title="" windowtype="&app.name;SlicePopupBrowser" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <script type="application/x-javascript">
+        const APP_NAME = "&app.name;";
+    </script>
+    <browser disablehistory="true" flex="1" id="&app.name;-slice-browser" src="about:blank" type="content"/>
+    <script type="application/x-javascript"><![CDATA[
+        (function () {
+            "use strict";
+
+            let sliceController = null;
+
+            function onLoad() {
+                let args = window.arguments[0] && window.arguments[0].wrappedJSObject;
+                sliceController = args.slicePanelCtrl;
+                args.callback();
+            }
+
+            function onUnload() {
+                if (sliceController) {
+                    sliceController.onHide();
+                    sliceController = null;
+                }
+            }
+
+            window.addEventListener("load", function loadEventListener() {
+                window.removeEventListener("load", loadEventListener, false);
+                window.addEventListener("unload", function unloadEventListener() {
+                    window.removeEventListener("unload", unloadEventListener, false);
+                    onUnload();
+                }, false);
+                onLoad();
+            }, false);
+        })();
+    ]]></script>
+</window>
+

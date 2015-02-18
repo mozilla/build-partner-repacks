@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "../../../site/entities.dtd"><options>
+    <option label="&webmaster.setts.never;" value="0"/>
+    <option label="&webmaster.setts.12;" value="12"/>
+    <option label="&webmaster.setts.24;" value="24"/>
+</options>

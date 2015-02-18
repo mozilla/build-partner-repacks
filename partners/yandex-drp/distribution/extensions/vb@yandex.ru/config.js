@@ -10,8 +10,8 @@ const VB_CONFIG = function () {
             PROTOCOL: "yafd"
         },
         BUILD: {
-            DATE: "Wed Nov 05 2014 09:45:46 GMT+0000",
-            REVISION: "5_5"
+            DATE: "Thu Feb 12 2015 15:01:23 GMT+0000",
+            REVISION: "6_17"
         },
         CORE: {
             CONTRACT_ID: "@yandex.ru/vb-core;1",
@@ -19,14 +19,16 @@ const VB_CONFIG = function () {
         }
     };
     function freeze(aObject) {
-        if (!(aObject && typeof aObject == "object"))
+        if (!(aObject && typeof aObject == "object")) {
             return aObject;
+        }
         Object.freeze(aObject);
         for (let [
                     ,
                     obj
-                ] in Iterator(aObject))
+                ] in Iterator(aObject)) {
             freeze(obj);
+        }
         return aObject;
     }
     return freeze(config);

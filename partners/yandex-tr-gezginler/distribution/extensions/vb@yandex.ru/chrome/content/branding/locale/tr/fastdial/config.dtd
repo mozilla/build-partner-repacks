@@ -1,0 +1,15 @@
+<!ENTITY logo.alt "Yandex">
+<!ENTITY logo.title "Yandex">
+
+<!ENTITY search.navigate.title "Yandex ile bul">
+<!ENTITY search.placeholder "Web&#39;de aramak için buraya yazabilirsin">
+
+<!ENTITY thumb.yandex "Yandex">
+<!ENTITY thumb.yamail "Yandex.Mail">
+<!ENTITY thumb.yamaps "Yandex.Haritalar">
+<!ENTITY thumb.yamarket "Yandex.Market">
+<!ENTITY thumb.yasoft "Yandex.Uygulamalar">
+<!ENTITY thumb.mynet "Mynet">
+<!ENTITY thumb.facebook "Facebook">
+<!ENTITY thumb.youtube "Youtube">
+<!ENTITY thumb.milliyet "Milliyet">

@@ -1,0 +1,17 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace html url(http://www.w3.org/1999/xhtml);stack>vbox{-moz-box-align:end;-moz-box-pack:end}
+stack>vbox image{height:8px;-moz-image-region:auto;z-index:100}
+[cb-theme-color=dark] image[anonid=base-image-normal],image[anonid=base-image-inverted]{display:none}
+[cb-theme-color=dark] image[anonid=base-image-inverted]{display:-moz-box}
+vbox[anonid=auth-images-container]{display:none}
+vbox[anonid=auth-images-container][yb-native-not-authorized=true]{display:-moz-box}
+image[anonid=auth-image-normal]{list-style-image:url(../img/key-overlay.png)!important}
+image[anonid=auth-image-inverted]{list-style-image:url(../img/key-overlay-inverted.png)!important}
+[cb-theme-color=dark] image[anonid=auth-image-normal],image[anonid=auth-image-inverted]{display:none}
+[cb-theme-color=dark] image[anonid=auth-image-inverted]{display:-moz-box}
+vbox[anonid=badge-images-container]{display:none}
+vbox[anonid=badge-images-container][yb-native-badge-icon]{display:-moz-box}
+[cb-theme-color=dark] image[anonid=badge-image-normal],image[anonid=badge-image-inverted]{display:none}
+[cb-theme-color=dark] image[anonid=badge-image-inverted]{display:-moz-box}
+html|img.toolbarbutton-icon-svg-hack{display:none}
+html|img.toolbarbutton-icon-svg-hack[src$=".svg"]:not(:-moz-broken){display:-moz-inline-box;width:0;height:0;visibility:hidden}
+#CustomizeToolbarWindow vbox[anonid=badge-images-container],#CustomizeToolbarSheet vbox[anonid=badge-images-container],#CustomizeToolbarWindow vbox[anonid=auth-images-container],#CustomizeToolbarSheet vbox[anonid=auth-images-container]{display:none}

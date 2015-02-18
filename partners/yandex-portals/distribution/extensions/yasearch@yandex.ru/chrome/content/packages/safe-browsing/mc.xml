@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE plugin SYSTEM "mc.dtd"><plugin bar-api="native" icon="icons/mc.png" name="&mc.widget.name;">
+    <modules>
+        <module browser="firefox" file="modules/mc.js"/>
+    </modules>
+</plugin>

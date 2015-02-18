@@ -5,6 +5,7 @@ const {
     interfaces: Ci,
     utils: Cu
 } = Components;
+Cu.import("resource://gre/modules/Services.jsm");
 const DEFAULT_VENDOR_XML_PATH = "defaults/vendor/vendor.xml";
 const clids = {
     init: function clids_init(aApplication) {
@@ -52,6 +53,11 @@ const clids = {
                     continue;
                 }
                 let clidData = data[nodeName] = Object.create(null);
+                if (nodeName in this._yandexFirefoxClids) {
+                    clidData.clid = this._yandexFirefoxClids[nodeName] || null;
+                    clidData.clidAndVid = clidData.clid;
+                    continue;
+                }
                 let attributes = node.attributes;
                 for (let i = attributes.length; i--;) {
                     let attribute = attributes[i];
@@ -199,5 +205,43 @@ const clids = {
     },
     _removeVendorFile: function clids__removeVendorFile() {
         this._application.core.Lib.fileutils.removeFileSafe(this._vendorFile);
+    },
+    get _yandexFirefoxClids() {
+        delete this._yandexFirefoxClids;
+        let clids = Object.create(null);
+        let yandexQSFile = !this._application.installer.isYandexFirefoxDistribution && this._application.installer.getYandexQSApplicationFile();
+        function profileYandexXMLNotPresent() {
+            let searchPluginsDir = Services.dirsvc.get("ProfD", Ci.nsIFile);
+            searchPluginsDir.append("searchplugins");
+            if (!searchPluginsDir.exists() || !searchPluginsDir.isDirectory()) {
+                return true;
+            }
+            let searchPluginsDirEntries = searchPluginsDir.directoryEntries;
+            while (searchPluginsDirEntries.hasMoreElements()) {
+                let qsFile = searchPluginsDirEntries.getNext().QueryInterface(Ci.nsIFile);
+                if (qsFile.isFile() && /.*yandex.*\.xml$/.test(qsFile.leafName)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        if (yandexQSFile && profileYandexXMLNotPresent()) {
+            let qsXML;
+            try {
+                qsXML = this._application.core.Lib.fileutils.xmlDocFromFile(yandexQSFile);
+            } catch (e) {
+                this._logger.error("Can not get XML from Yandex QS.");
+                this._logger.debug(e);
+            }
+            if (qsXML) {
+                let urlNode = qsXML.querySelector("SearchPlugin > Url[type=\"text/html\"]");
+                let clid10Node = urlNode && urlNode.querySelector("MozParam[name=\"clid\"][purpose=\"contextmenu\"][value]");
+                clids.clid10 = clid10Node && clid10Node.getAttribute("value") || null;
+                if (!clids.clid10 && this._application.locale.language === "ru" && this._application.core.Lib.sysutils.platformInfo.browser.version.isGreaterThan("35.0")) {
+                    this._logger.error("Can not get clid10 from Yandex QS.");
+                }
+            }
+        }
+        return this._yandexFirefoxClids = clids;
     }
 };

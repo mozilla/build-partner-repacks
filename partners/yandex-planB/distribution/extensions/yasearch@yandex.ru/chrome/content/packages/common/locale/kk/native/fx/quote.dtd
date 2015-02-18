@@ -1,0 +1,19 @@
+<!ENTITY wgt.quotes.name "Котировкалар">
+<!ENTITY wgt.quotes.default-quote-id "1">
+
+<!ENTITY wgt.quotes.refresh "Котировка деректерін жаңарту">
+<!ENTITY wgt.quotes.copy "Бағамды көшіру">
+<!ENTITY wgt.quotes.change "Котировканы ауыстыру">
+<!ENTITY wgt.quotes.delete "Котировканы жою">
+<!ENTITY wgt.quotes.add "Жаңа котировка қосу">
+<!ENTITY wgt.quotes.nodata "Деректер жоқ">
+
+<!ENTITY wgt.quotes.tooltip.today "Бүгін">
+<!ENTITY wgt.quotes.tooltip.tomorrow "Ертең">
+<!ENTITY wgt.quotes.tooltip.yesterday "Кеше">
+
+<!ENTITY wgt.quotes.settings.id.label "Котировка">
+<!ENTITY wgt.quotes.settings.autodetect "Автоматты түрде анықтау">
+
+<!ENTITY wgt.quotes.settings.interval.label "Жаңарту интервалы">
+<!ENTITY wgt.quotes.settings.min.label "мин.">

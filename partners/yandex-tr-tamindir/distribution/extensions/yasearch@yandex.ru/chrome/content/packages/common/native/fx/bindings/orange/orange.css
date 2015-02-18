@@ -1,0 +1,14 @@
+@import url(chrome://global/skin/global.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace orange url(http://bar.yandex.ru/ui/orange);window,dialog{-moz-binding:url(dialog/dialog.xml#dialog)}
+progressmeter{-moz-binding:url(progressmeter/progressmeter.xml#progressmeter)}
+progressmeter[mode=undetermined]{-moz-binding:url(progressmeter/progressmeter.xml#progressmeter-undetermined)}
+button{-moz-binding:url(button/button.xml#button)}
+button[link]{-moz-binding:url(link/button-link.xml#button-link)}
+checkbox{-moz-binding:url(checkbox/checkbox.xml#checkbox)}
+radio{-moz-binding:url(radio/radio.xml#radio)}
+label{-moz-binding:url(label/label.xml#label);margin:0}
+dialog[windowtype^=notification-],dialog[windowtype$="-notification"]{-moz-binding:url(notification/notification.xml#notification)}
+orange|*{-moz-user-focus:ignore;-moz-user-select:-moz-none;display:-moz-box;-moz-box-sizing:border-box}
+orange|:root{text-rendering:optimizeLegibility}
+orange|[hidden=true]{display:none}
+orange|[collapsed=true]{visibility:collapse}
+orange|more{-moz-binding:url(more/more.xml#more)}

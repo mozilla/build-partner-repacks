@@ -217,7 +217,7 @@ const BarPlatform = {
     _getParser: function BarPlatform__getParser(platformType, componentType) {
         let parser = this._parsers[platformType + "#" + componentType];
         if (!parser) {
-            throw new Error(strutils.formatString("No \"%2\" parser registered for API \"%1\".", [
+            throw new Error(strutils.formatString("No '%2' parser registered for API '%1'.", [
                 platformType,
                 componentType
             ]));

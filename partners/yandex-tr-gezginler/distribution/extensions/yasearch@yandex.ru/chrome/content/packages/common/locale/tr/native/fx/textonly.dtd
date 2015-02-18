@@ -1,0 +1,8 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY textonly.label "Sadece metin">
+<!ENTITY textonly.tooltip.open "Sayfayı rahat okunur olarak göster">
+<!ENTITY textonly.tooltip.close "Sayfayı asıl biçiminde göster">
+<!ENTITY textonly.tooltip.not-available "Geçerli sayfa rahat okunur olarak görüntülenemiyor">
+<!ENTITY textonly.tooltip.introduce "Sadece metin &#171;butonu&#187; sayfayı&#10;rahat okunur olarak gösterebilir">

@@ -1,0 +1,92 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="../../../../skin/dialogs/anonymous-statistic/dialog.css"?>
+<?xml-stylesheet href="../../bindings/islands/islands.css"?>
+
+<!DOCTYPE dialog [
+<!ENTITY % anonymousStatisticDialogDTD SYSTEM "../../../../locale/dialogs/anonymous-statistic/dialog.dtd">
+%anonymousStatisticDialogDTD;
+<!ENTITY % appDTD SYSTEM "../../bar.dtd">
+%appDTD;
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+]>
+
+<dialog hidechrome="true" xmlns:html="http://www.w3.org/1999/xhtml" id="&app.name;-anonymous-statistic-dialog" xmlns:islands="http://bar.yandex.ru/ui/islands" ondialogaccept="return anonymousStatistic.onAccept();" ondialogcancel="return anonymousStatistic.onCancel();" onkeypress="anonymousStatistic.onKeyPress(event);" windowtype="&app.name;:AnonymousStatisticDialog" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <hbox flex="1">
+        <vbox>
+            <image id="vendor-image" src="yasearch://branding/about/vendorlogo.png"/>
+        </vbox>
+        <vbox flex="1">
+            <html:h3>&agree.with.statistics.header;</html:h3>
+            <html:p>
+                &about.confidential.desc;
+                <html:a href="#" onclick="return anonymousStatistic.openConfidentialWindow();">&help.label;</html:a>.
+            </html:p>
+            <hbox>
+                <islands:button id="apply-button" label="&button.accept;" oncommand="document.documentElement.acceptDialog();" islands:size="M" islands:type="action"/>
+                <islands:button id="cancel-button" label="&button.cancel;" oncommand="document.documentElement.cancelDialog();" islands:size="M" islands:type="pseudo"/>
+            </hbox>
+        </vbox>
+    </hbox>
+
+    <script type="application/x-javascript"><![CDATA[
+        let [application, anonymousStatisticModule, osName] = window.arguments[0].wrappedJSObject;
+
+        const anonymousStatistic = {
+            onAccept: function anonymousStatistic_onAccept() {
+                anonymousStatisticModule.setState(true);
+                return true;
+            },
+
+            onCancel: function anonymousStatistic_onCancel() {
+                anonymousStatisticModule.setState(false);
+                return true;
+            },
+
+            onKeyPress: function anonymousStatistic_onKeyPress(event) {
+                if (event.keyCode !== KeyEvent.DOM_VK_RETURN) {
+                    return;
+                }
+
+                if (event.target.id === 'cancel-button') {
+                    return;
+                }
+
+                event.preventDefault();
+
+                document.documentElement.acceptDialog();
+            },
+
+            openConfidentialWindow: function anonymousStatistic_openConfidentialWindow() {
+                let width = parseInt(window.screen.width * 0.6, 10);
+                let height = parseInt(window.screen.height * 0.8, 10);
+
+                application.core.Lib.misc.openWindow({
+                    name: document.documentElement.getAttribute('windowtype') + 'Confidential',
+                    url: anonymousStatisticModule.confidentialURL,
+                    features: 'dialog,centerscreen,width=' + width + ',height=' + height
+                });
+            }
+        };
+
+        // win:
+        //   *     { shadow: true,     transparent: true  }
+        // lin
+        //   *     { shadow: false,    transparent: false }
+        // mac
+        //   *     { shadow: false,    transparent: true  }
+
+        let shadow = false;
+        let transparent = true;
+
+        if (osName == 'windows') {
+            shadow = true;
+        } else if (osName == 'linux') {
+            transparent = false;
+        }
+
+        document.documentElement.setAttribute('style', 'background: none !important'); // BAR-7526
+        document.documentElement.setAttribute('ex-shadow', shadow);
+        document.documentElement.setAttribute('ex-transparent', transparent);
+    ]]></script>
+</dialog>

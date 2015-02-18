@@ -1,0 +1,4 @@
+<!ENTITY package.counters.upd-interval.label "Інтэрвал абнаўлення">
+<!ENTITY package.counters.upd-interval.units "хв.">
+
+<!ENTITY package.logout.noprompt.label "Не патрабаваць пацвярджэнне пры выхадзе">

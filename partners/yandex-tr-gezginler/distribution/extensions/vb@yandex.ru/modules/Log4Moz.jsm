@@ -64,6 +64,9 @@ let Log4Moz = {
     get BasicFormatter() {
         return BasicFormatter;
     },
+    get ColorFormatter() {
+        return ColorFormatter;
+    },
     get XMLFormatter() {
         return XMLFormatter;
     },
@@ -145,7 +148,7 @@ Logger.prototype = {
     },
     _level: null,
     get level() {
-        if (this._level != null) {
+        if (this._level !== null) {
             return this._level;
         }
         if (this.parent) {
@@ -253,7 +256,7 @@ LoggerRepository.prototype = {
             this._loggers[name].parent = this._loggers[parent];
         }
         for (let logger in this._loggers) {
-            if (logger != name && logger.indexOf(name) == 0) {
+            if (logger != name && logger.indexOf(name) === 0) {
                 this._updateParents(logger);
             }
         }
@@ -301,6 +304,95 @@ BasicFormatter.prototype = {
         return dateStr + "	" + pad(message.loggerName) + " " + message.levelDesc + "	" + message.message + "\n";
     }
 };
+function ColorFormatter() {
+    BasicFormatter.apply(this, arguments);
+}
+ColorFormatter.prototype = {
+    __proto__: BasicFormatter,
+    get dateFormat() {
+        return this._dateFormat || (this._dateFormat = "%Y-%m-%d %H:%M:%S");
+    },
+    set dateFormat(format) {
+        this._dateFormat = format;
+    },
+    format: function () {
+        let codes = {
+            black: [
+                30,
+                39
+            ],
+            red: [
+                31,
+                39
+            ],
+            green: [
+                32,
+                39
+            ],
+            yellow: [
+                33,
+                39
+            ],
+            blue: [
+                34,
+                39
+            ],
+            magenta: [
+                35,
+                39
+            ],
+            cyan: [
+                36,
+                39
+            ],
+            white: [
+                37,
+                39
+            ],
+            gray: [
+                90,
+                39
+            ],
+            grey: [
+                90,
+                39
+            ]
+        };
+        let levelToColor = {
+            FATAL: "red",
+            ERROR: "red",
+            WARN: "yellow",
+            INFO: "green",
+            CONFIG: "blue"
+        };
+        let styles = {};
+        Object.keys(codes).forEach(function (key) {
+            let val = codes[key];
+            let style = styles[key] = {};
+            style.open = "[" + val[0] + "m";
+            style.close = "[" + val[1] + "m";
+        });
+        return function CF_format(message) {
+            let pad = function BF__pad(str, len, chr) {
+                return str + new Array(Math.max((len || 20) - str.length + 1, 0)).join(chr || " ");
+            };
+            let colorize = function colorize(text, color) {
+                color = color || levelToColor[Log4Moz.Level.Desc[message.level]];
+                if (color) {
+                    let colorObj = styles[color];
+                    if (colorObj) {
+                        return colorObj.open + text + colorObj.close;
+                    }
+                }
+                return text;
+            };
+            let messageDate = new Date(message.time);
+            let msec = messageDate.getMilliseconds();
+            let dateStr = messageDate.toLocaleFormat(this.dateFormat) + "." + (msec < 100 ? msec < 10 ? "00" + msec : "0" + msec : msec);
+            return colorize(dateStr, "grey") + "	" + pad(message.loggerName) + " " + colorize(message.levelDesc) + "	" + message.message + "\n";
+        };
+    }()
+};
 function XMLFormatter() {
 }
 XMLFormatter.prototype = {
@@ -322,8 +414,7 @@ XMLFormatter.prototype = {
         let escapedMessage = String(msg).replace(/[^ \u0021-\u003B\u003F-\u007A]/g, function (ch) {
             return "&#" + ch.charCodeAt(0) + ";";
         });
-        return;
-        "<log4j:event logger='" + message.loggerName + "' " + "level='" + message.levelDesc + "' thread='unknown' " + "timestamp='" + message.time + "'>" + "<log4j:message>" + escapedMessage + "</log4j:message>" + "<log4j:locationInfo class='" + message.loggerName + "' " + "method='" + method + "' " + "file='" + file + "' line='" + line + "'/>" + "</log4j:event>";
+        return "<log4j:event logger='" + message.loggerName + "' " + "level='" + message.levelDesc + "' thread='unknown' " + "timestamp='" + message.time + "'>" + "<log4j:message>" + escapedMessage + "</log4j:message>" + "<log4j:locationInfo class='" + message.loggerName + "' " + "method='" + method + "' " + "file='" + file + "' line='" + line + "'/>" + "</log4j:event>";
     }
 };
 function Appender(formatter) {
@@ -352,7 +443,7 @@ Appender.prototype = {
 };
 function DumpAppender(formatter) {
     this._name = "DumpAppender";
-    this._formatter = formatter ? formatter : new BasicFormatter();
+    this._formatter = formatter ? formatter : new ColorFormatter();
 }
 DumpAppender.prototype = {
     __proto__: Appender.prototype,
@@ -552,7 +643,7 @@ SocketAppender.prototype = {
         this.closeStream();
     },
     onTransportStatus: function SApp_onTransportStatus(aTransport, aStatus, aProgress, aProgressMax) {
-        if (aStatus == 2152398852) {
+        if (aStatus === 2152398852) {
             this._connected = true;
         }
     }
@@ -601,7 +692,7 @@ const ConsoleListener = {
         this._loggers = this._loggers.filter(function (logger) {
             return logger !== aLogger;
         });
-        if (this._loggers.length == 0) {
+        if (this._loggers.length === 0) {
             gConsoleService.unregisterListener(this);
         }
     },
@@ -649,8 +740,8 @@ const ConsoleListener = {
         });
     },
     _parseException: function ConsoleListener__parseException(aErrorMessage) {
-        if (/^(?:uncaught exception: )?\[Exception... "(?!<no message>)([\s\S]+)"  nsresult: "0x\S+ \((.+)\)"  location: "(?:(?:JS|native) frame :: (?!<unknown filename>)(.+) :: .+ :: line (\d+)|<unknown>)"  data: (?:yes|no)\]$/.test(aErrorMessage) || /^(?:uncaught exception: )?\[Exception... "(?!<no message>)([\s\S]+)"  code: "\d+" nsresult: "0x\S+ \((.+)\)"  location: "(?:(.+) Line: (\d+)|<unknown>)"\]$/.test(aErrorMessage)) {
-            return new ScriptError(RegExp.$1 + (RegExp.$1.indexOf(RegExp.$2) == -1 ? " = " + RegExp.$2 : ""), RegExp.$3, 0, RegExp.$4, 0, nsIScriptError.exceptionFlag, "component javascript");
+        if (/^(?:uncaught exception: )?\[Exception... '(?!<no message>)([\s\S]+)'  nsresult: '0x\S+ \((.+)\)'  location: '(?:(?:JS|native) frame :: (?!<unknown filename>)(.+) :: .+ :: line (\d+)|<unknown>)'  data: (?:yes|no)\]$/.test(aErrorMessage) || /^(?:uncaught exception: )?\[Exception... '(?!<no message>)([\s\S]+)'  code: '\d+' nsresult: '0x\S+ \((.+)\)'  location: '(?:(.+) Line: (\d+)|<unknown>)'\]$/.test(aErrorMessage)) {
+            return new ScriptError(RegExp.$1 + (RegExp.$1.indexOf(RegExp.$2) === -1 ? " = " + RegExp.$2 : ""), RegExp.$3, 0, RegExp.$4, 0, nsIScriptError.exceptionFlag, "component javascript");
         }
         return null;
     },

@@ -1,0 +1,2 @@
+@import url(../../styles/buttons.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarbutton{list-style-image:url(../icons/fotki.svg)!important}
+toolbaritem[cb-theme-color=dark] toolbarbutton{list-style-image:url(../icons/fotki-inverted.svg)!important}

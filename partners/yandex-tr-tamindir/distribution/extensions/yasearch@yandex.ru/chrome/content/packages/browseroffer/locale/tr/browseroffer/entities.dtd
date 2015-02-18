@@ -1,0 +1,24 @@
+<!ENTITY browseroffer.name "Yandex.Browser&#39;ın içerik önerilerini göster">
+
+<!ENTITY browseroffer.menu.openLink "Bağlantıyı Yandex.Browser&#39;da aç">
+
+<!ENTITY browseroffer.settings.openLink "&#171;Bağlantıyı Yandex.Browser&#39;da aç&#187; öğesini göster">
+
+<!ENTITY browseroffer.notification.button.noYaBrowser "Daha fazla bilgi">
+<!ENTITY browseroffer.notification.button.yaBrowser "Aç">
+<!ENTITY browseroffer.notification.text.noYaBrowser "Bu sayfadaki bazı öğeleri görüntülemek için Flash&browseroffer.notification.text.rmark; Player gerekiyor. Dahili oynatıcıya sahip olan Yandex.Browser&#39;ı indirin.">
+<!ENTITY browseroffer.notification.text.yaBrowser "Bu sayfadaki bazı öğeleri görüntülemek için Flash&browseroffer.notification.text.rmark; Player gerekiyor. Sayfayı, dahili oynatıcıya sahip olan Yandex.Browser&#39;da açın.">
+<!ENTITY browseroffer.notification.tooltip.close "Bildirimi kapat">
+<!ENTITY browseroffer.notification.text.rmark "&#60;html:sup&#62;&#174;&#60;/html:sup&#62;">
+<!ENTITY browseroffer.notification.button.add "Evet">
+<!ENTITY browseroffer.notification.wdgt-suggest.fb "Facebook">
+<!ENTITY browseroffer.notification.wdgt-suggest.ok "&#34;Odnoklasniki&#34;">
+<!ENTITY browseroffer.notification.wdgt-suggest.text "{button} sosyal ağındaki arkadaşlarınızdan gelen iletiler ile ilgili bildirimleri almak istiyor musunuz?">
+<!ENTITY browseroffer.notification.wdgt-suggest.vk "&#34;VK&#34;">
+<!ENTITY browseroffer.settings.showSuggest "Yandex Elements&#39;in içerik butonu önerilerini göster">
+<!ENTITY browseroffer.notification.button.deny "Hayır">
+<!ENTITY browseroffer.notification.button.no "Hayır">
+<!ENTITY pagetranslator.tutorial.button.noYaBrowser "Daha fazla bilgi">
+<!ENTITY pagetranslator.tutorial.button.yaBrowser "Aç">
+<!ENTITY pagetranslator.tutorial.text.noYaBrowser "Yandex.Browser&#39;da çeviri olanaklarını keşfedin.">
+<!ENTITY pagetranslator.tutorial.text.yaBrowser "Yandex.Browser&#39;da çeviri olanaklarını keşfedin.">

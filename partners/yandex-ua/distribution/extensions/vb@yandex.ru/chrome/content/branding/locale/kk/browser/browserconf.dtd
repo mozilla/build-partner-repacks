@@ -1,0 +1,2 @@
+<!ENTITY locationbar.search.url "http://yandex.kz/yandsearch?clid={clid9}&amp;text=">
+<!ENTITY yandex.qs.keywordsearch "http://yandex.kz/yandsearch?clid={clid9}&amp;text={searchTerms}">

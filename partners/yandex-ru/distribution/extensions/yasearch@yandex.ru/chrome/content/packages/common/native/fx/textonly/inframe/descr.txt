@@ -1,0 +1,3 @@
+rb.css http://lab.arc90.com/experiments/readability/css/readability.css
+rb-print.css http://lab.arc90.com/experiments/readability/css/readability-print.css
+rb.js http://lab.arc90.com/experiments/readability/js/readability.js

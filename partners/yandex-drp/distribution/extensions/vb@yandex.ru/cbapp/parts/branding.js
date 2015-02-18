@@ -16,8 +16,9 @@ const branding = {
         patterns.NotificationSource.objectMixIn(this);
         this._loadPackage();
         try {
-            if (this._application.addonManager.info.addonVersionChanged)
+            if (this._application.addonManager.info.addonVersionChanged) {
                 this._checkBPAndReplaceIfSame();
+            }
         } catch (e) {
             this._logger.error("Failed replacing the same BP with internal version. \n" + strutils.formatError(e));
             this._logger.debug(e.stack);
@@ -50,8 +51,9 @@ const branding = {
         return this._package;
     },
     get brandID() {
-        if (!this._productInfo)
+        if (!this._productInfo) {
             return null;
+        }
         return String(this.productInfo.BrandID);
     },
     get barless() {
@@ -67,35 +69,41 @@ const branding = {
     get brandTemplateMap() {
         return this._brandTemplateMap;
     },
-    getYandexFeatureState: new function () {
+    getYandexFeatureState: function () {
         let cache = Object.create(null);
         return function PartnerPack_getYandexFeatureState(aFeatureName) {
-            if (aFeatureName in cache)
+            if (aFeatureName in cache) {
                 return cache[aFeatureName];
-            return cache[aFeatureName] = strutils.xmlAttrToBool(this.productInfo.YandexFeatures[aFeatureName]);
+            }
+            cache[aFeatureName] = strutils.xmlAttrToBool(this.productInfo.YandexFeatures[aFeatureName]);
+            return cache[aFeatureName];
         };
     }(),
     expandBrandTemplatesEscape: function PartnerPack_expandBrandTemplatesEscape(aTemplateStr, aParams) {
         return this.expandBrandTemplates(aTemplateStr, aParams, true);
     },
     expandBrandTemplates: function PartnerPack_expandBrandTemplates(aTemplateString, aParams, aEncodeParams) {
-        let result = "" + aTemplateString;
-        if (!/\{/.test(result))
+        let result = String(aTemplateString);
+        if (!/\{/.test(result)) {
             return result;
+        }
         function encode(str) {
             return aEncodeParams ? encodeURIComponent(str) : str;
         }
         let self = this;
         function replacer(aMatch) {
             let match = aMatch.replace(/[{}]/g, "");
-            if (aParams && aParams.hasOwnProperty(match))
+            if (aParams && aParams.hasOwnProperty(match)) {
                 return encode(aParams[match]);
-            if (match == "brandID")
+            }
+            if (match == "brandID") {
                 return encode(self.productInfo.BrandID);
+            }
             if (/clid(.+)/.test(match)) {
                 let clidData = self._vendorData[match];
-                if (!(clidData && clidData.clidAndVid))
+                if (!(clidData && clidData.clidAndVid)) {
                     return "";
+                }
                 return encode(clidData.clidAndVid);
             }
             const namesRe = /^(product[12]|vendor)\.(\w+)$/;
@@ -197,8 +205,9 @@ const branding = {
         let productInfo;
         try {
             let currPkgDir = this._currPackageDir;
-            if (!currPkgDir.exists())
+            if (!currPkgDir.exists()) {
                 this._application.addonFS.copySource("$content/branding", this._application.directories.vendorDir, this._consts.PKG_DIR_NAME);
+            }
             [
                 package_,
                 productInfo
@@ -223,8 +232,9 @@ const branding = {
         let currentProductInfo = this._productInfo;
         let internalPkgDir = this._application.directories.vendorDir;
         internalPkgDir.append("tmp");
-        if (internalPkgDir.exists())
+        if (internalPkgDir.exists()) {
             internalPkgDir.remove(true);
+        }
         this._application.addonFS.copySource("$content/branding", this._application.directories.vendorDir, "tmp");
         let internalProductInfo;
         let internalTmpPkg = new this._application.FilePackage(internalPkgDir);
@@ -233,19 +243,21 @@ const branding = {
             this._validateProductInfo(internalProductInfo);
         } finally {
             internalTmpPkg.finalize();
-            if (!internalProductInfo)
+            if (!internalProductInfo) {
                 fileutils.removeFileSafe(internalPkgDir);
+            }
         }
         let canUpdatePackage = true;
         if (this._application.core.CONFIG.APP.TYPE === "barff") {
             let sameAddresses = String(currentProductInfo.BrandingURL) == String(internalProductInfo.BrandingURL);
-            if (sameAddresses)
+            if (sameAddresses) {
                 this._logger.debug("Package addresses are the same: " + currentProductInfo.BrandingURL);
-            else
+            } else {
                 this._logger.debug(strutils.formatString("Package addresses are: %1, %2", [
                     currentProductInfo.BrandingURL,
                     internalProductInfo.BrandingURL
                 ]));
+            }
             let currentIsBarless = strutils.xmlAttrToBool(currentProductInfo.Barless && currentProductInfo.Barless.enabled);
             let internalIsBarless = strutils.xmlAttrToBool(internalProductInfo.Barless && internalProductInfo.Barless.enabled);
             let viewModeChanged = currentIsBarless != internalIsBarless;
@@ -297,10 +309,12 @@ const branding = {
     },
     _validateProductInfo: function Branding__validateProductInfo(productInfo) {
         this._logger.debug("Validating product info...");
-        if (!productInfo.BrandID || productInfo.BrandID == "")
+        if (!productInfo.BrandID || productInfo.BrandID === "") {
             throw new Error("No brand ID");
-        if (!productInfo.ProductName1.nom)
+        }
+        if (!productInfo.ProductName1.nom) {
             throw new Error("No product name");
+        }
         try {
             let updateURL = productInfo.BrandingURL;
             netutils.newURI(updateURL, null, null);
@@ -324,8 +338,9 @@ const branding = {
         return this._vendorData = sysutils.copyObj(this._application.clids.vendorData);
     },
     get _brandTemplateMap() {
-        if (!this.__brandMap)
+        if (!this.__brandMap) {
             this.__brandMap = this._makeBrandTemplateMap(this._package);
+        }
         return this.__brandMap;
     },
     set _brandTemplateMap(val) {
@@ -333,7 +348,7 @@ const branding = {
     },
     _makeBrandTemplateMap: function PartnerPack__makeBrandTemplateMap(brandPackage) {
         let productInfo = this._getBPProductInfo(brandPackage || this._package);
-        let result = Object.create(null);
+        let result = {};
         result.brandID = productInfo.BrandID;
         for (let [
                     _,
@@ -346,14 +361,16 @@ const branding = {
         for (let [
                     clidName,
                     clidData
-                ] in Iterator(this._vendorData))
+                ] in Iterator(this._vendorData)) {
             result[clidName] = clidData ? clidData.clidAndVid : "";
+        }
         return result;
     },
     _getBPProductInfo: function Branding__getBPProductInfo(brandPackage) {
         let productInfo = xmlutils.dom2jsObj(brandPackage.getXMLDocument("/about/product.xml"));
-        if (!brandPackage.findFile("/fx/about/product.xml"))
+        if (!brandPackage.findFile("/fx/about/product.xml")) {
             return productInfo;
+        }
         try {
             let fxProductInfo = xmlutils.dom2jsObj(brandPackage.getXMLDocument("/fx/about/product.xml"));
             this._application.core.Lib.sysutils.copyProperties(fxProductInfo, productInfo);

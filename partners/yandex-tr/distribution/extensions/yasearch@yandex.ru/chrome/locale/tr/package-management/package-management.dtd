@@ -1,0 +1,89 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+
+<!ENTITY button.update "Güncelle">
+<!ENTITY button.postpone "Daha sonra">
+<!ENTITY button.cancel "İptal">
+<!ENTITY button.accept "Devam et">
+<!ENTITY button.install "Kur">
+<!ENTITY button.save "Kaydet">
+<!ENTITY button.repeat "Tekrar dene">
+<!ENTITY button.finish "Kapat">
+
+
+<!ENTITY placement.placement.label "Buton ekle:">
+
+
+<!ENTITY more.opened "gizle">
+<!ENTITY more.closed "ayarla">
+
+
+<!ENTITY error.more.opened "&more.opened;">
+<!ENTITY error.more.closed "daha fazlası">
+<!ENTITY error.head.title "Öf!">
+<!ENTITY error.head.description "Tanımlanamayan hata">
+<!ENTITY error.need.update "Mevcut güncellemeleri yapın">
+
+
+<!ENTITY component.save "kaydet">
+<!ENTITY component.update "güncelle">
+
+
+<!ENTITY install.dialog.title "Bileşenlerin kurulumu">
+<!ENTITY install.head.title "&install.dialog.title;">
+<!ENTITY disclaimer "Bileşenleri güvenli olmayan bir kaynaktan yüklüyorsunuz. Olası bir tehlikeye yol açabilir.">
+<!ENTITY install.download.label "Yükleniyor...">
+<!ENTITY install.conflict.head.title "Öf!">
+<!ENTITY install.conflict.head.description "Yükleme sırasında bazı bileşenler çalışmayı durdurdu. Kaydedilmesi gereken bileşenleri seçin.">
+<!ENTITY install.placement.head.title "Kurulum başarıyla tamamlandı">
+<!ENTITY install.placement.head.description "Yeni bileşenler kullanılabilir">
+
+
+<!ENTITY update.dialog.title "Bileşenlerin güncellenmesi">
+<!ENTITY update.select.head.title "Bileşenlerin güncellenmesi tamamlandı">
+<!ENTITY update.select.head.description "Devam etmek için &#34;Güncelle&#34; butonuna tıklayın">
+<!ENTITY update.select.list.description "Aşağıdaki bileşenler için güncellemeler hazır:">
+<!ENTITY update.download.head.title "Bileşenlerin güncellemesi devam ediyor">
+<!ENTITY update.download.head.description "Yükleniyor...">
+<!ENTITY update.conflict.head.title "Öf!">
+<!ENTITY update.conflict.head.description "Güncelleme sırasında bazı bileşenler çalışmayı durdurdu. Kaydedilmesi gereken bileşenleri seçin.">
+<!ENTITY update.placement.head.title "Güncelleme başarıyla tamamlandı">
+<!ENTITY update.placement.head.description "Güncelleme sırasında yeni bileşenler kullanılabilir hale geldi">
+<!ENTITY update.finish.head.title "Güncelleme başarıyla tamamlandı">
+<!ENTITY update.finish.head.description "Artık bileşenlerin yeni sürümünü kullanabilirsiniz">
+
+
+<!ENTITY notification.update.title "Güncellemeler hazır">
+<!ENTITY notification.update.message "Bileşenlerin yeni sürümü bulundu.">
+<!ENTITY notification.update.install "Kur">
+<!ENTITY notification.update.custom "Ayarla">
+
+
+<!ENTITY ban.notification.title "Uygulamada değişiklik &product1.loc;">
+<!ENTITY ban.notification.message "Bazı öğelerin yapısı değiştirildi">
+<!ENTITY ban.notification.show "Daha fazlası">
+<!ENTITY ban.notification.close "Kapat">
+<!ENTITY ban.dialog.title "Uygulamada değişiklik &product1.loc;">
+<!ENTITY ban.dialog.head.title "Bazı öğelerin yapısı değiştirildi:">
+<!ENTITY ban.dialog.praise "Güvenliğinize önem veriyoruz ve sürekli standart kontrol ve bileşenlerin doğru çalışıp çalışmadığını kontrol ediyoruz.">
+<!ENTITY ban.dialog.ok "Tamam">
+<!ENTITY ban.package.unban "Engellendi">
+
+
+<!ENTITY permissions.title "İzin gerektiren uygulama: "> 
+<!ENTITY permissions.title.preset "Yazılı bileşenler izin talebinde bulunuyor: "> 
+<!ENTITY permissions.title.package "Yazılı bileşenler izin talebinde bulunuyor: "> 
+<!ENTITY permission.private.one_domain "yazılı sitedeki kimlik bilgilerine erişim "> 
+<!ENTITY permission.private.many_domains "şu sitelerdeki kimlik bilgilerine erişim: "> 
+<!ENTITY permission.private.all_domains "rastgele sitelerdeki kimlik bilgilerine erişim">
+<!ENTITY permission.public.one_domain "yazılı siteden kimlik bilgisi alma "> 
+<!ENTITY permission.public.many_domains "yazılı sitelerden kimlik bilgisi alma: "> 
+<!ENTITY permission.public.all_domains "rastgele sitelerden kimlik bilgisi alma">
+<!ENTITY permission.navigate.one_domain "yazılı adresin sayfalarını görüntüleme "> 
+<!ENTITY permission.navigate.many_domains "yazılı adreslerin sayfalarını görüntüleme: "> 
+<!ENTITY permission.navigate.all_domains "rastgele adreslerin sayfalarını görüntüleme">
+<!ENTITY permission.pageInfo.one_domain "yazılı adreste açık olan sayfanın bilgilerine erişme "> 
+<!ENTITY permission.pageInfo.many_domains "yazılı adreslerde açık olan sayfanın bilgilerine erişme: "> 
+<!ENTITY permission.pageInfo.all_domains "herhangi bir adreste açık olan sayfadaki bilgilere erişme">
+<!ENTITY permission.clipboard "pano içeriğine erişme">

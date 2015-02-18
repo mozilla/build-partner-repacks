@@ -43,8 +43,9 @@ const sync = {
         Services.obs.addObserver(this, topics.SYNC_SERVICE_PINNED_ENABLED_STARTED, false);
         Services.obs.addObserver(this, topics.SYNC_SERVICE_PINNED_ENABLED_FINISHED, false);
         Services.obs.addObserver(this, topics.SYNC_SERVICE_PINNED_DISABLED, false);
-        if (this.svc)
+        if (this.svc) {
             this._application.syncPinned.engine.addListener("data", this);
+        }
     },
     finalize: function Fastdial_finalize(doCleanup, callback) {
         let topics = this._application.core.eventTopics;
@@ -59,8 +60,9 @@ const sync = {
         Services.obs.removeObserver(this, topics.SYNC_SERVICE_PINNED_ENABLED_STARTED);
         Services.obs.removeObserver(this, topics.SYNC_SERVICE_PINNED_ENABLED_FINISHED);
         Services.obs.removeObserver(this, topics.SYNC_SERVICE_PINNED_DISABLED);
-        if (this.svc)
+        if (this.svc) {
             this._application.syncPinned.engine.removeListener("data", this);
+        }
         this._application = null;
         this._logger = null;
     },
@@ -123,8 +125,9 @@ const sync = {
             this._application.fastdial.sendRequest("sync", this.state);
             break;
         case "data":
-            if (this._enabledStarted)
+            if (this._enabledStarted) {
                 return;
+            }
             this._logger.trace("Processing data event");
             try {
                 this._application.syncPinned.processData(aData, false);
@@ -136,13 +139,15 @@ const sync = {
         }
     },
     openWP: function Sync_openWP() {
-        if (!this.svc)
+        if (!this.svc) {
             return;
+        }
         misc.navigateBrowser({ url: this.svc.SYNC_PAGE_URL });
     },
     enableSyncVB: function Sync_enableSyncVB() {
-        if (!this.svc)
+        if (!this.svc) {
             return;
+        }
         this._application.syncPinned.engine.enabled = true;
         this._application.syncTopHistory.engine.enabled = true;
     },
@@ -184,19 +189,23 @@ const sync = {
             uri = netutils.newURI(url);
         } catch (ex) {
         }
-        if (!uri)
+        if (!uri) {
             return url;
+        }
         try {
             host = uri.host;
         } catch (ex) {
         }
-        if (!host)
+        if (!host) {
             return url;
-        if (host !== "clck.yandex.ru")
+        }
+        if (host !== "clck.yandex.ru") {
             return this._application.isYandexHost(host) ? this._cutFromParam(url) : url;
+        }
         let clickrMatches = uri.path.match(/.+?\*(.+)/);
-        if (clickrMatches)
+        if (clickrMatches) {
             return this._cutFromParam(clickrMatches[1]);
+        }
         let clckrItem = this._application.fastdial.brandingClckrDoc.querySelector("item[url='" + url + "']");
         return clckrItem ? "http://" + clckrItem.getAttribute("domain") : url;
     },
@@ -209,8 +218,9 @@ const sync = {
             }
         } catch (ex) {
         }
-        if (!uri)
+        if (!uri) {
             return url;
+        }
         try {
             uri.QueryInterface(Ci.nsIURL);
         } catch (ex) {
@@ -231,8 +241,9 @@ const sync = {
         return UUID_SVC.generateUUID().toString().substr(1, 8);
     },
     _onAnyEngineStartedLoading: function Sync__onAnyEngineStartedLoading() {
-        if (this._application.preferences.get("sync.enabled", false))
+        if (this._application.preferences.get("sync.enabled", false)) {
             return;
+        }
         this._application.preferences.set("sync.enabled", true);
         let evtData = this.state;
         evtData.offer = 0;

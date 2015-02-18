@@ -1,0 +1,38 @@
+html,body{padding:0;margin:0;border:0;overflow:hidden}
+body{-moz-user-select:none;-webkit-user-select:none;user-select:none;-ms-user-select:none}
+input::-ms-clear{display:none}
+.b-table{display:table;height:100%;width:100%;border:0}
+.b-table .b-table-cell{display:table-cell;vertical-align:middle}
+.b-table .b-table-cell .b-table-center-block{margin:0 auto;text-align:center}
+.b-spinner[data-state=loading],[data-state=loading] .b-spinner-child{background-image:url(common-ui/b-spinner/images/45.gif);background-position:50% 50%;background-repeat:no-repeat}
+.b-spinner-small[data-state=loading],[data-state=loading] .b-spinner-child-small{background-image:url(common-ui/b-spinner/images/20.gif);background-position:50% 50%;background-repeat:no-repeat}
+.b-spinner-small-dark[data-state=loading],[data-state=loading] .b-spinner-child-small-dark{background-image:url(common-ui/b-spinner/images/20-dark.gif);background-position:50% 50%;background-repeat:no-repeat}
+.b-dayparts{width:324px;overflow:hidden;clear:both;padding-top:10px}
+.b-dayparts[data-count="0"]{display:none}
+.b-daypart{width:80px;overflow:hidden;text-align:center;font:13px Arial;padding-bottom:14px;color:#000;float:left;background:transparent url(ui/dayparts/images/opacity08.png) 100% 0 repeat-y}
+.b-daypart[data-hasvalue=false]{display:none}
+.b-daypart__image{height:56px;background:transparent none 50% 16px no-repeat}
+.b-daypart__temp{font-size:25px}
+.b-daypart__deg{font-size:19px;vertical-align:top}
+.b-daypart__deghide{visibility:hidden}
+.b-dayparts[data-count="3"] .b-daypart{width:107px}
+.b-dayparts[data-count="2"] .b-daypart{width:160px}
+.b-dayparts[data-count="1"] .b-daypart{width:320px}
+.b-error-view{top:50%;position:absolute;width:100%;margin-top:-20px;text-align:center;font-size:18px;color:#888;display:none}
+.b-weather-widget[data-state=error]>.b-error-view{display:block}
+.b-footer{clear:both;padding:7px;text-align:center;font-size:13px}
+.b-footer__link{text-decoration:none;color:#0054a6;outline:0}
+.b-footer__link:hover{color:red}
+.b-dataview{display:none}
+.b-weather-widget{width:320px;overflow:hidden;min-height:240px;position:relative;font-family:Arial;margin:0}
+.b-weather-widget[data-state=loaded]{min-height:130px}
+.b-weather-widget[data-state=loaded]>.b-dataview{display:block}
+.b-now{padding-left:25px;color:#000;font:13px Arial}
+.b-title{font:18px Arial;line-height:22px;padding-top:18px;padding-bottom:7px}
+.b-fact{float:left;margin-right:20px;white-space:nowrap;height:26px;line-height:26px}
+.b-fact>:first-child{padding-right:4px}
+.b-wind__value{padding-left:14px;background:transparent url(ui/now/images/b-wind_arrow.png) 0 0 no-repeat}
+.b-description{font-size:13px;line-height:13px;display:table}
+.b-description>*{display:table-cell;vertical-align:middle}
+.b-description__text{white-space:normal}
+.b-description__image{height:26px;width:28px;background:transparent none 50% 50% no-repeat}

@@ -1,0 +1,39 @@
+<!ENTITY % brandNames SYSTEM "yafd://plus.branding/names.dtd">
+%brandNames;
+
+<!ENTITY aboutSupport.pageTitle "&product1.nom;">
+
+<!ENTITY aboutSupport.supportInfo.title "Information for support service">
+<!ENTITY aboutSupport.collectingInfo.label "loading">
+<!ENTITY aboutSupport.rebuildPack.label "Update">
+<!ENTITY aboutSupport.browserScreenshot.label "a snapshot of the browser window with the new tab ">
+<!ENTITY aboutSupport.snapshotData.label "extension and setting data">
+<!ENTITY aboutSupport.debugLog.label "debug log">
+<!ENTITY aboutSupport.fastdialData.label "Visual Bookmark info">
+<!ENTITY aboutSupport.openInNewTab.label "Open in new tab">
+<!ENTITY aboutSupport.savePack.label "Save as...">
+
+<!ENTITY aboutSupport.columnName "Name">
+<!ENTITY aboutSupport.columnVersion "Version">
+<!ENTITY aboutSupport.columnEnabled "Enabled">
+<!ENTITY aboutSupport.columnId "ID">
+<!ENTITY aboutSupport.columnURL "URL">
+<!ENTITY aboutSupport.columnValue "Value">
+<!ENTITY aboutSupport.columnType "Type">
+
+<!ENTITY aboutSupport.basicsVersion "Version">
+<!ENTITY aboutSupport.basicsDate "Release date">
+<!ENTITY aboutSupport.basicsOS "System">
+<!ENTITY aboutSupport.basicsBrowser "Browser">
+<!ENTITY aboutSupport.basicsUserAgent "User-Agent">
+<!ENTITY aboutSupport.basicsTheme "Theme">
+<!ENTITY aboutSupport.basicsLightTheme "Theme (light)">
+
+<!ENTITY aboutSupport.extensionsTitle "Browser extensions">
+<!ENTITY aboutSupport.componentsTitle "Components">
+<!ENTITY aboutSupport.extensionPreferencesTitle "Extension settings">
+<!ENTITY aboutSupport.browserPreferencesTitle "Browser settings">
+
+<!ENTITY aboutSupport.restore.button "Restore">
+<!ENTITY aboutSupport.restore.title "Restore from archive">
+<!ENTITY aboutSupport.restore.nothing "There is no saved data yet">

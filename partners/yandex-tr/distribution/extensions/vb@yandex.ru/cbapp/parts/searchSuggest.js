@@ -9,10 +9,7 @@ const {
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/PlacesUtils.jsm");
-if ("nsIPrivateBrowsingChannel" in Ci)
-    XPCOMUtils.defineLazyModuleGetter(this, "PrivateBrowsingUtils", "resource://gre/modules/PrivateBrowsingUtils.jsm");
-else
-    this.PrivateBrowsingUtils = null;
+XPCOMUtils.defineLazyModuleGetter(this, "PrivateBrowsingUtils", "resource://gre/modules/PrivateBrowsingUtils.jsm");
 const searchSuggest = {
     SUGGEST_TIMEOUT: 5000,
     init: function searchSuggest_init(application) {
@@ -41,51 +38,19 @@ const searchSuggest = {
         let listener = new searchRequestListener(request, timer, listenerCallback);
         if (PrivateBrowsingUtils && request.channel instanceof Ci.nsIPrivateBrowsingChannel) {
             let topBrowserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-            if (topBrowserWindow)
+            if (topBrowserWindow) {
                 request.channel.setPrivate(PrivateBrowsingUtils.isWindowPrivate(topBrowserWindow));
+            }
         }
         request.send(null);
-    },
-    searchLocalHistory: function searchSuggest_searchLocalHistory(searchQuery, callback) {
-        const MAX_RESULTS = 10;
-        const HIST_DAYS_CHECKED = 30;
-        let query = PlacesUtils.history.getNewQuery();
-        query.searchTerms = searchQuery;
-        query.beginTimeReference = query.TIME_RELATIVE_NOW;
-        query.beginTime = -HIST_DAYS_CHECKED * 24 * 60 * 60 * 1000000;
-        query.endTimeReference = query.TIME_RELATIVE_NOW;
-        query.endTime = 0;
-        let options = PlacesUtils.history.getNewQueryOptions();
-        options.resultType = options.RESULT_TYPE_URI;
-        options.maxResults = MAX_RESULTS * 5;
-        options.queryType = Ci.nsINavHistoryQueryOptions.QUERY_TYPE_HISTORY;
-        options.sortingMode = options.SORT_BY_DATE_DESCENDING;
-        let result = PlacesUtils.history.executeQuery(query, options);
-        result.root.containerOpen = true;
-        let output = [];
-        let i = 0;
-        while (i < result.root.childCount && output.length < MAX_RESULTS) {
-            let node = result.root.getChild(i);
-            if (/^(https?|ftp):\/\//.test(node.uri) && !this._isSerpUrl(node.uri)) {
-                output.push([
-                    node.uri,
-                    node.title || node.uri
-                ]);
-            }
-            i += 1;
-        }
-        result.root.containerOpen = false;
-        callback(searchQuery, output);
-    },
-    _isSerpUrl: function searchSuggest__isSerpUrl(uri) {
-        return /^https?:\/\/yandex\.(ru|com(\.tr)?|ua|by|kz)\/clck\/jsredir/.test(uri) || /^https?:\/\/yandex\.(ru|com(\.tr)?|ua|by|kz)\/yandsearch\?/.test(uri) || /^https?:\/\/(www\.)?google\.(ru|com(\.tr)?|ua|by|kz)\/search\?/.test(uri) || /^https?:\/\/(www\.)?google\.(ru|com(\.tr)?|ua|by|kz)\/url\?/.test(uri);
     },
     useExample: function searchSuggest_useExample(query) {
         let gURLBar = misc.getTopBrowserWindow().gURLBar;
         let currentPos = 0;
         let self = this;
-        if (this._useExampleTimer)
+        if (this._useExampleTimer) {
             this._useExampleTimer.cancel();
+        }
         gURLBar.focus();
         gURLBar.inputField.value = "";
         this._useExampleTimer = new sysutils.Timer(function () {
@@ -111,11 +76,12 @@ const searchSuggest = {
         ].indexOf(this._application.preferences.get("ftabs.searchStatus")) !== -1;
     },
     _makeURLForQuery: function searchSuggest__makeURLForQuery(queryString) {
-        return this._application.branding.expandBrandTemplatesEscape(this._brandingSuggestURL, { "searchTerms": queryString });
+        return this._application.branding.expandBrandTemplatesEscape(this._brandingSuggestURL, { searchTerms: queryString });
     },
     get _brandingSuggestURL() {
         delete this._brandingSuggestURL;
-        return this._brandingSuggestURL = this._application.fastdial.brandingXMLDoc.querySelector("search").getAttribute("suggest");
+        this._brandingSuggestURL = this._application.fastdial.brandingXMLDoc.querySelector("search").getAttribute("suggest");
+        return this._brandingSuggestURL;
     },
     _application: null,
     _logger: null,

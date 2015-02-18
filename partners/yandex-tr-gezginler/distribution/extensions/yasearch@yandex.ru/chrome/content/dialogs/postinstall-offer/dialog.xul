@@ -1,0 +1,151 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="../../../../skin/dialogs/postinstall-offer/dialog.css"?>
+
+<!DOCTYPE dialog [
+<!ENTITY % postinstallOfferDialogDTD SYSTEM "../../../../locale/dialogs/postinstall-offer/dialog.dtd">
+%postinstallOfferDialogDTD;
+<!ENTITY % appDTD SYSTEM "../../bar.dtd">
+%appDTD;
+]>
+
+<dialog xmlns:html="http://www.w3.org/1999/xhtml" id="&app.name;-postinstall-offer-dialog" ondialogaccept="return postinstallOffer.onDialogAccept();" windowtype="&app.name;:PostinstallOfferDialog" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <vbox>
+        <stack>
+            <html:img id="promo-image" onload="postinstallOffer.onPromoImageLoad();"/>
+            <deck class="hidden" id="frames-desk" selectedIndex="0">
+                <html:iframe id="license-frame"/>
+                <html:iframe id="confidential-frame"/>
+                <html:iframe id="apache-frame"/>
+            </deck>
+        </stack>
+        <vbox id="send-usage-stat-content">
+            <description class="header">&postinstall.offer.title;</description>
+            <grid>
+                <rows>
+                    <row flex="1"/>
+                </rows>
+                <columns>
+                    <column>
+                        <vbox pack="start">
+                            <checkbox checked="true" id="stat-send-checkbox" label=""/>
+                        </vbox>
+                    </column>
+                    <column flex="1">
+                        <vbox pack="start">
+                            <html:div id="checkbox-description" onclick="postinstallOffer.handleDescriptionClick(event);">
+                                &postinstall.offer.statsend.label;
+                            </html:div>
+                        </vbox>
+                    </column>
+                    <column>
+                        <vbox class="accept-button-box" pack="end">
+                            <html:a class="button" href="#" onclick="document.documentElement.acceptDialog(); return false;">
+                                <html:span>&postinstall.offer.continue.label;</html:span>
+                            </html:a>
+                        </vbox>
+                    </column>
+                </columns>
+            </grid>
+        </vbox>
+    </vbox>
+
+    <script type="application/x-javascript"><![CDATA[
+        let [promoFileURL, framesData, sendUsageStat] = window.arguments[0].wrappedJSObject;
+
+        let framesDesk = document.getElementById('frames-desk');
+        let statSendCheckbox = document.getElementById('stat-send-checkbox');
+
+        let promoImage = document.getElementById('promo-image');
+        promoImage.setAttribute('src', promoFileURL);
+
+        let frames = {
+            license: document.getElementById('license-frame'),
+            confidential: document.getElementById('confidential-frame'),
+            apache: document.getElementById('apache-frame')
+        };
+
+        // Фикс прокрутки к ссылке при загрузке ЛС.
+        function onFrameLoadScrollFix(event) {
+            event.currentTarget.removeEventListener('scroll', onFrameLoadScrollFix, true);
+            event.target.defaultView.scrollTo(0, 0);
+        }
+
+        for (let frameName in frames) {
+            let frame = frames[frameName];
+            frame.addEventListener('scroll', onFrameLoadScrollFix, true);
+            frame.setAttribute('src', framesData[frameName]);
+        }
+
+        const postinstallOffer = {
+            onDialogAccept: function postinstallOffer_onDialogAccept() {
+                sendUsageStat.checked = statSendCheckbox.checked;
+            },
+
+            handleDescriptionClick: function postinstallOffer_handleDescriptionClick(event) {
+                if (event.button !== 0) {
+                    return;
+                }
+
+                if (event.originalTarget === '') { // link clicked
+                    framesDesk.classList.toggle('hidden');
+                    framesDesk.selectedIndex = 0;
+                } else {
+                    statSendCheckbox.checked = !statSendCheckbox.checked;
+                }
+            },
+
+            onPromoImageLoad: function postinstallOffer_onPromoImageLoad() {
+                let {width, height} = promoImage;
+
+                let style =
+                    'width:' + width + 'px !important;' +
+                    'max-width: ' + width + 'px !important;' +
+                    'height:' + height + 'px !important;' +
+                    'max-height: ' + height + 'px !important;';
+
+                let setStyle = function setStyle(node, style) {
+                    node.setAttribute('style', (node.getAttribute('style') || '') + style);
+                };
+
+                setStyle(promoImage.parentNode, style);
+
+                for (let [, frame] in Iterator(frames)) {
+                    setStyle(frame, style);
+                }
+            },
+
+            addFrameStyles: function postinstallOffer_addFrameStyles(frame) {
+                let cssURL = 'chrome://' + window.location.hostname + '/skin/dialogs/postinstall-offer/frame.css';
+                let frameDocument = frame.contentDocument;
+                let style = frameDocument.createProcessingInstruction('xml-stylesheet', 'href=\'' + cssURL + '\' type=\'text/css\'');
+                frameDocument.insertBefore(style, frameDocument.firstChild);
+
+                frameDocument.addEventListener('click', function (event) {
+                    let url = String(event.target).split('#')[0];
+                    if (url === '') {
+                        return;
+                    }
+
+                    event.stopPropagation();
+                    event.preventDefault();
+
+                    let i = 0;
+                    for (let [, frame] in Iterator(frames)) {
+                        if (frame.src == url) {
+                            framesDesk.selectedIndex = i;
+                        }
+                        i++;
+                    }
+                }, false);
+            }
+        };
+
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                for (let [key, frame] in Iterator(frames)) {
+                    postinstallOffer.addFrameStyles(frame);
+                }
+            }, 100);
+        }, false);
+    ]]></script>
+</dialog>

@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<cookies>
-    <domain id=".planbmedia.com">
-        <set>
-            <cookie id="OFFER_INSTALL" max-age="259200">TRUE</cookie>
-        </set>
-    </domain>
-</cookies>

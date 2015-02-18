@@ -1,0 +1,9 @@
+<!ENTITY fotki.name "Фотолар">
+<!ENTITY fotki.tooltiptext "Яндекс.Фотоларда Сіздің жақсы көретін авторларыңыздың жаңа фотолары">
+<!ENTITY fotki.noauthtooltiptext "Яндекс.Фотоларда Сіздің жақсы көретін авторларыңыздың жаңа фотолары көрсетеді">
+<!ENTITY fotki.tooltiptext.notauth "Авторизациядан өтуіңізді сұраймыз">
+<!ENTITY fotki.reloadCounter.label "Мәліметті жаңарту">
+<!ENTITY fotki.link.favAuth.label "Менің жақсы көретін авторларым">
+<!ENTITY fotki.link.myPhotos.label "Менің фотоларым">
+<!ENTITY fotki.link.Comments.label "Мен үшін пікірлер">
+<!ENTITY fotki.link.UploadPhotos.label "Фотоларды жүктеу">

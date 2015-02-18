@@ -1,0 +1,8 @@
+<!ENTITY % brandNames SYSTEM "yafd://plus.branding/names.dtd">
+%brandNames;
+
+<!ENTITY refused.title "&product1.nom; kapalı">
+
+<!ENTITY refused.desc.1 "&product1.ins; ile çalışabilmek için Lisans Sözleşmesi&#39;nin koşullarını kabul etmeniz gerekiyor">
+<!ENTITY refused.desc.2 "Tarayıcının menüsünde eklentiyi tekrar çalıştırabilirsiniz: &#34;Araçlar -&#62; Eklentiler -&#62; Uzantılar&#34;">
+<!ENTITY refused.desc.3 "Bu durumda sözleşmenin koşullarını otomatik olarak kabul etmiş olacaksınız">

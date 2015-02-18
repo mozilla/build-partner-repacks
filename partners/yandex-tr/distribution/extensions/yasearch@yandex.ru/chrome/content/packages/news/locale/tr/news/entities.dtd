@@ -1,0 +1,6 @@
+<!ENTITY news.title "Haberler">
+<!ENTITY news.tooltip "Çevrimiçi haberler">
+<!ENTITY news.interval_prefix "Güncelleme aralığı">
+<!ENTITY news.interval_suffix "dk.">
+<!ENTITY news.error_message "Haberler yüklenemedi. İnternet bağlantınızı kontrol edin.">
+<!ENTITY news.absent_message "Seçili kategoride haber yok.">

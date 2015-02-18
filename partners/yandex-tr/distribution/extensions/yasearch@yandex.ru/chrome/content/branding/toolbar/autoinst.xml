@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<autoinstall version="1">
+    <groups>
+        <group id="mail" limit="1"/>
+        <group id="social" limit="3"/>
+        <group id="relax" limit="3"/>
+        <group id="other"/>
+    </groups>
+
+    <!-- ShowTabsBelowAddressBar = 0 => limit-short (табы на одном уровне с адресной строкой)-->
+
+    <!-- BAR-9028 -->
+    <resolutions>
+        <resolution h-from="0" h-to="799" limit="1" limit-short="0">
+            <groups>
+                <group id="mail" limit="1" limit-short="0"/>
+                <group id="social" limit="1" limit-short="0"/>
+                <group id="relax" limit="1" limit-short="0"/>
+                <group id="other" limit="1" limit-short="0"/>
+            </groups>
+        </resolution>
+
+        <resolution h-from="800" h-to="949" limit="1" limit-short="0">
+            <groups>
+                <group id="mail" limit="1" limit-short="0"/>
+                <group id="social" limit="1" limit-short="0"/>
+                <group id="relax" limit="1" limit-short="0"/>
+                <group id="other" limit="1" limit-short="0"/>
+            </groups>
+        </resolution>
+
+        <resolution h-from="950" h-to="1365" limit="3" limit-short="1">
+            <groups>
+                <group id="mail" limit="1" limit-short="1"/>
+                <group id="social" limit="1" limit-short="1"/>
+                <group id="relax" limit="2" limit-short="1"/>
+                <group id="other" limit="1" limit-short="0"/>
+            </groups>
+        </resolution>
+
+        <resolution h-from="1366" h-to="1599" limit="3" limit-short="2">
+            <groups>
+                <group id="mail" limit="1" limit-short="1"/>
+                <group id="social" limit="1" limit-short="1"/>
+                <group id="relax" limit="2" limit-short="2"/>
+                <group id="other" limit="1" limit-short="0"/>
+            </groups>
+        </resolution>
+
+        <resolution h-from="1600" h-to="10000" limit="4" limit-short="3">
+            <groups>
+                <group id="mail" limit="1" limit-short="1"/>
+                <group id="social" limit="2" limit-short="2"/>
+                <group id="relax" limit="2" limit-short="2"/>
+                <group id="other" limit="1" limit-short="0"/>
+            </groups>
+        </resolution>
+    </resolutions>
+
+    <components>
+        <component id="http://bar-widgets.yandex.ru/packages/approved/288/manifest.xml#yadisk" group-id="other" statistics-id="yadisk">
+            <cookies>
+                <cookie url="http://yandex.com.tr" name="Session_id"/>
+                <cookie url="https://yandex.com.tr" name="Session_id"/>
+            </cookies>
+            <history min-visits="1">
+                <url domain="disk.yandex.com.tr"/>
+                <url domain="yadi.sk"/>
+                <url domain="element.yandex.com.tr" path="/disk"/>
+                <url domain="elements.yandex.com.tr" path="/disk"/>
+            </history>
+        </component>
+
+        <component id="http://bar-widgets.yandex.ru/packages/approved/135/manifest.xml#gmail" group-id="mail" statistics-id="gmail">
+            <cookies>
+                <cookie url="https://mail.google.com/mail/" name="GMAIL_AT"/>
+                <cookie url="https://mail.google.com/mail/" name="GX"/>
+            </cookies>
+            <history min-visits="10">
+                <url domain="mail.google.com"/>
+            </history>
+        </component>
+
+        <component id="http://bar-widgets.yandex.ru/packages/approved/134/manifest.xml#hotmail" group-id="mail" statistics-id="hotmail">
+            <history min-visits="10">
+                <url domain="mail.live.com"/>
+            </history>
+        </component>
+
+        <component id="http://bar-widgets.yandex.ru/packages/approved/126/manifest.xml#yahoomail" group-id="mail" statistics-id="yahoo">
+            <history min-visits="10">
+                <url domain="tr.mail.yahoo.com"/>
+                <url domain="mail.yahoo.com"/>
+            </history>
+        </component>
+
+        <component id="http://bar-widgets.yandex.ru/packages/approved/131/manifest.xml#facebook" group-id="social" statistics-id="facebook">
+            <cookies>
+                <cookie url="http://facebook.com/" name="c_user"/>
+                <cookie url="https://facebook.com/" name="c_user"/>
+            </cookies>
+            <history min-visits="10">
+                <url domain="facebook.com"/>
+            </history>
+        </component>
+
+        <component id="http://bar-widgets.yandex.ru/packages/approved/136/manifest.xml#twitter" group-id="social" statistics-id="twitter">
+            <cookies>
+                <cookie url="https://twitter.com/" name="auth_token"/>
+            </cookies>
+            <history min-visits="10">
+                <url domain="twitter.com"/>
+            </history>
+        </component>
+
+        <component id="http://bar-widgets.yandex.ru/packages/approved/184/manifest.xml#sport" group-id="relax" statistics-id="sport">
+            <history min-visits="10">
+                <url domain="ajansspor.com"/>
+                <url domain="spor.mynet.com"/>
+                <url domain="htspor.com"/>
+                <url domain="fotospor.com"/>
+                <url domain="fotomac.com.tr"/>
+                <url domain="sporx.com"/>
+                <url domain="fanatik.com.tr"/>
+            </history>
+        </component>
+
+        <component id="http://bar-widgets.yandex.ru/packages/approved/128/manifest.xml#radio" group-id="relax" statistics-id="radio">
+            <history min-visits="10">
+                <url domain="showradyo.com.tr"/>
+                <url domain="capitalradio.com.tr"/>
+                <url domain="radyoviva.com.tr"/>
+                <url domain="acikradyo.com.tr"/>
+                <url domain="radyoodtu.com.tr"/>
+                <url domain="radyo5.com.tr"/>
+                <url domain="radyoalaturka.com.tr"/>
+                <url domain="virginradioturkiye.com"/>
+            </history>
+        </component>
+
+        <component id="http://bar-widgets.yandex.ru/packages/approved/130/manifest.xml#games" group-id="relax" statistics-id="games">
+            <history min-visits="10">
+                <url domain="kraloyun.com"/>
+                <url domain="oyunlar1.com"/>
+                <url domain="oyunskor.com"/>
+                <url domain="oyungemisi.com"/>
+                <url domain="oyunoyna.com"/>
+                <url domain="oyunmoyun.com"/>
+                <url domain="oyunlar9.com"/>
+                <url domain="roketoyun.com"/>
+                <url domain="oyunlar.gen.tr"/>
+                <url domain="oyun.kanald.com.tr"/>
+            </history>
+        </component>
+
+        <component id="http://bar-widgets.yandex.ru/packages/approved/127/manifest.xml#news" group-id="other" statistics-id="news">
+            <history min-visits="10">
+                <url domain="haber.yandex.com.tr"/>
+                <url domain="ensonhaber.com"/>
+                <url domain="haber7.com"/>
+                <url domain="samanyoluhaber.com"/>
+                <url domain="haberler.com"/>
+                <url domain="haber3.com"/>
+                <url domain="haber.mynet.com"/>
+                <url domain="haberturk.com"/>
+            </history>
+        </component>
+
+        <component id="http://bar.yandex.ru/packages/yandexbar#quote" group-id="other" statistics-id="quotation">
+            <history min-visits="10">
+                <url domain="doviz.com"/>
+                <url domain="dovizkurlari.com.tr"/>
+                <url domain="www.serbestdoviz.com"/>
+                <url domain="tr.rateq.com"/>
+                <url domain="dovizkuru.web.tr"/>
+            </history>
+        </component>
+
+    </components>
+</autoinstall>

@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="main.css"/>
+        </resources>
+        <content>
+            <xul:toolbarbutton anonid="mailru-button-auth" class="toolbarbutton-1 widget-button" item-command="auth" item-href="inbox" label="&mailru.main-button.text;" yb-native-not-authorized="true"/>
+            <xul:toolbarbutton anonid="mailru-button-main" class="toolbarbutton-1 widget-button" item-href="inbox" label="&mailru.main-button.text;" type="menu-button">
+                <xul:menupopup>
+                    <xul:menuitem class="menuitem-iconic menuitem-with-favicon" item-command="update" label="&mailru.main-button.menu.check_mail;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem anonid="mailbox" class="menuitem-iconic menuitem-with-favicon" disabled="true" label=""/>
+                    <xul:menuitem class="menuitem-iconic menuitem-with-favicon" item-href="compose" label="&mailru.main-button.menu.new_message;"/>
+                    <xul:menuitem class="menuitem-iconic menuitem-with-favicon" item-href="inbox" label="&mailru.main-button.menu.read_mail;"/>
+                    <xul:menuitem class="menuitem-iconic menuitem-with-favicon" item-href="addressbook" label="&mailru.main-button.menu.open_address_book;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem class="menuitem-iconic menuitem-with-favicon" item-command="settings" label="&mailru.main-button.menu.show_settings;"/>
+                    <xul:menuseparator/>
+                    <xul:menuitem class="menuitem-iconic menuitem-with-favicon" item-command="logout" label="&mailru.main-button.menu.logout;"/>
+                </xul:menupopup>
+            </xul:toolbarbutton>
+            <xul:toolbarbutton anonid="mailru-button-compose" class="toolbarbutton-1 widget-button" item-href="compose" label="&mailru.new-message.text;" tooltiptext="&mailru.new-message.tooltiptext.auth_ok;"/>
+        </content>
+        <implementation implements="nsISupports, nsIDOMEventListener">
+            <field name="authButton">document.getAnonymousElementByAttribute(this, "anonid", "mailru-button-auth")</field>
+            <field name="mainButton">document.getAnonymousElementByAttribute(this, "anonid", "mailru-button-main")</field>
+            <field name="composeButton">document.getAnonymousElementByAttribute(this, "anonid", "mailru-button-compose")</field>
+            <field name="mailboxMI">document.getAnonymousElementByAttribute(this, "anonid", "mailbox")</field>
+            <field name="observers"><![CDATA[    ({
+        "showitems": function () {
+            this.showItems();
+        },
+        "throbber": function (topic, data) {
+            this.mainButton.setAttribute("throbber", !!data);
+        },
+        "display": function (topic) {
+            this.updateView();
+        }
+    });]]></field>
+            <field name="commands"><![CDATA[    ({});]]></field>
+            <constructor><![CDATA[    this.log("constructor");
+    var ent = this.application.entities;
+    this.authButton.setAttribute("tooltiptext", ent.text("mailru.main-button.tooltiptext.auth_none"));
+    this.showItems();
+    this.updateView();]]></constructor>
+            <method name="showItems">
+                <body><![CDATA[    var shCButton = this.application.api.Settings.getValue("show-compose-button");
+    this.composeButton.setAttribute("hidden", !shCButton);]]></body>
+            </method>
+            <method name="updateView">
+                <body><![CDATA[    var data = this.application.getUserData();
+    this.setAttribute("auth", !!data);
+    if (data) {
+        this.mainButton.setAttribute("counter", data.count || "");
+        var tipText, ent = this.application.entities;
+        if (data.error) {
+            tipText = ent.text("mailru.main-button.tooltiptext.update_failed");
+        } else {
+            var tip = ent.text("mailru.main-button.tooltiptext.ok_template");
+            if (!data.mail) {
+                tip.replace("\n{$address}", "");
+            }
+            var pforms = ent.text("mailru.main-button.tooltiptext.ok_template.plural_forms");
+            var countStr = data.count > 0 ? this.common.strUtils.plural(data.count, pforms).replace("{N}", data.count) : ent.text("mailru.main-button.tooltiptext.ok_template.no_messages");
+            tipText = tip.replace("{$address}", data.mail).replace("{$new_msg_wordform}", countStr);
+        }
+        this.mainButton.setAttribute("tooltiptext", tipText);
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

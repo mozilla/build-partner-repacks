@@ -1,0 +1,185 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings SYSTEM "/native/fx/cy.dtd"><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="//toolkit/native/bindings/widget.xml#widget" id="widget">
+        <resources>
+            <stylesheet src="../styles/cy.css"/>
+        </resources>
+
+        <content>
+            <toolbarbutton anonid="cy-button" class="chromeclass-toolbar-additional toolbarbutton-1 label2" data-cy-rang="0" disabled="true" label="&cy.name;" tooltip="cy-tooltip" type="menu-button" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" yb-icon-overlay="false">
+                <menupopup anonid="cy-menupopup" onpopupshowing="_menuPopup();">
+                    <menuitem label="&cy.fullname;" oncommand="gotoIndex(event)"/>
+                    <menuseparator/>
+                    <menuitem label="&cy.pages.all.label;" oncommand="gotoAllPages(event)"/>
+                </menupopup>
+            </toolbarbutton>
+
+            <tooltip disabled="true" id="cy-tooltip" noautohide="true" orient="vertical" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"/>
+        </content>
+
+        <implementation>
+            <field name="API">this.module.API</field>
+
+            <field name="_button" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "cy-button");</field>
+            <field name="_menu" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "cy-menupopup");</field>
+
+            <field name="_currentCYData">null</field>
+            <field name="_disabled">true</field>
+
+            <property name="disabled" onget="return this._disabled" onset="this._disabled = val; this._setBtnDisabled(val);"/>
+
+            <constructor><![CDATA[    this.API.Settings.observeChanges(this);
+    this.module.sendBarNavigRequest(gBrowser.mCurrentBrowser, true);]]></constructor>
+
+            <method name="cyDestroy">
+                <body><![CDATA[    this.API.Settings.ignoreChanges(this);
+    this._currentCYData = null;]]></body>
+            </method>
+
+            <method name="setCY">
+                <parameter name="data"/>
+                <body><![CDATA[    this._currentCYData = data;
+    this.disabled = !(data.isGoodURL && data.state === data.STATES.RESPONSE);
+    this._setBtnCY(data);]]></body>
+            </method>
+
+            <method name="gotoIndex">
+                <parameter name="event"/>
+                <body><![CDATA[    this.module.gotoIndex(this._currentCYData.domain, event);]]></body>
+            </method>
+
+            <method name="gotoAllPages">
+                <parameter name="event"/>
+                <body><![CDATA[    this.module.gotoAllPages(this._currentCYData.domain, event);]]></body>
+            </method>
+
+            <method name="_setBtnDisabled">
+                <parameter name="val"/>
+                <body><![CDATA[    this._button.setAttribute("disabled", val);
+    this._button.setAttribute("yb-second-label-off", val || !this.API.Settings.getValue("showValue"));]]></body>
+            </method>
+
+            <method name="_refreshValue">
+                <body><![CDATA[    this._button.setAttribute("yb-second-label-off", !this.API.Settings.getValue("showValue"));]]></body>
+            </method>
+
+            <method name="_setBtnCY">
+                <parameter name="data"/>
+                <body><![CDATA[    this._button.setAttribute("data-cy-rang", data.rang);
+    this._button.setAttribute("yb-second-label", data.value);]]></body>
+            </method>
+
+            <method name="_menuPopup">
+                <body><![CDATA[    this.module.utils.statistics.logWidget("fx.yatic.menu");]]></body>
+            </method>
+
+            <method name="onSettingChange">
+                <parameter name="settingName"/>
+                <parameter name="newValue"/>
+                <body><![CDATA[    if (settingName == "showValue" && !this.disabled) {
+        this._refreshValue();
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="click"><![CDATA[    if (event.button === 2) {
+        return;
+    }
+    if (event.button !== 1 && event.originalTarget.localName == "menuitem") {
+        this.module.utils.statistics.logWidget("fx.yatic.menuclick");
+    }
+    if (event.originalTarget.localName == "toolbarbutton" && !event.originalTarget.open && !this.disabled) {
+        this.module.utils.statistics.logWidget("fx.yatic.button");
+        this.gotoIndex(event);
+    }]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/popup.xml#tooltip" id="cy-tooltip">
+        <content>
+            <children>
+                <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                    <description style="text-align:center; font-weight:bold" value="&cy.fullname;"/>
+                </vbox>
+                <vbox anonid="nodata" hidden="false" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                    <hbox>
+                        <grid flex="1">
+                            <columns><column flex="1"/></columns>
+                            <rows>
+                                <row align="center">
+                                    <description style="margin-right:0px; text-align:center" value="(...&cy.no-data.label;...)"/>
+                                </row>
+                            </rows>
+                        </grid>
+                    </hbox>
+                </vbox>
+                <vbox anonid="data" hidden="true" xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                    <hbox>
+                        <grid flex="1">
+                            <columns><column/><column flex="1"/></columns>
+                            <rows>
+                                <row>
+                                    <label style="text-align:right" value="&cy.data.theme.label;:"/>
+                                    <label xbl:inherits="value=yaCYtheme"/>
+                                </row>
+                                <row>
+                                    <label style="text-align:right" value="&cy.data.domain.label;:"/>
+                                    <label xbl:inherits="value=yaCYdomain"/>
+                                </row>
+                                <row>
+                                    <label style="text-align:right" value="&cy.data.region.label;:"/>
+                                    <label xbl:inherits="value=yaCYregion"/>
+                                </row>
+                                <row>
+                                    <label/>
+                                    <label value="&cy.data.yaca.label;"/>
+                                </row>
+                                <row>
+                                    <label style="text-align:right" value="&cy.data.value.label;:"/>
+                                    <label xbl:inherits="value=yaCYvalue"/>
+                                </row>
+                            </rows>
+                        </grid>
+                    </hbox>
+                </vbox>
+            </children>
+        </content>
+
+        <implementation>
+            <field name="_bundle" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "string-bundle-cy")</field>
+            <field name="_nodata" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "nodata")</field>
+            <field name="_data" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "data")</field>
+
+            <property name="disabled" onset="this._nodata.setAttribute('hidden', !val); this._data.setAttribute('hidden', val);"/>
+
+            <method name="setCY">
+                <parameter name="data"/>
+                <body><![CDATA[    let stringBundle = document.getBindingParent(this).module.stringBundle;
+    [
+        "theme",
+        "domain",
+        "region",
+        "value"
+    ].forEach(function (prop) {
+        let value = data && data[prop] || stringBundle.get("no" + prop);
+        this.setAttribute("yaCY" + prop, value);
+    }, this);
+    return true;]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="popupshowing"><![CDATA[    let parent = document.getBindingParent(event.target.triggerNode.parentNode);
+    if (!parent) {
+        return;
+    }
+    this.disabled = parent.disabled;
+    if (!this.disabled) {
+        this.setCY(parent._currentCYData);
+    }]]></handler>
+        </handlers>
+    </binding>
+
+</bindings>

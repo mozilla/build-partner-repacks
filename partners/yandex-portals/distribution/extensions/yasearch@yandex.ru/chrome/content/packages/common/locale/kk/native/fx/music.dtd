@@ -1,0 +1,10 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY music.name "Яндекс.Музыканың плееры">
+
+<!ENTITY music.action.pause "Кідірту">
+<!ENTITY music.action.play "Ойнау">
+<!ENTITY music.noflash "Виджеттің жұмыс істеуі үшін Adobe Flash плагинының соңғы нұсқасы қажет.">
+<!ENTITY music.noflash.link "Оны [a]мына жерден жүктей аласыз[/a].">
+<!ENTITY music.nointernet "Интернетке қосылыс жоқ">

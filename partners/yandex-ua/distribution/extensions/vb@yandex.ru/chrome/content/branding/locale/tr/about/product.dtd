@@ -1,0 +1,33 @@
+<!ENTITY product.name.nom "Görsel Favoriler">
+<!ENTITY product.name.gen "Görsel Favoriler&#39;in">
+<!ENTITY product.name.dat "Görsel Favoriler&#39;e">
+<!ENTITY product.name.acc "Görsel Favoriler">
+<!ENTITY product.name.ins "Görsel Favoriler&#39;iyle">
+<!ENTITY product.name.pre "Görsel Favoriler hakkında">
+<!ENTITY product.name.loc "Görsel Favoriler">
+
+<!ENTITY product.shortname.nom "GF">
+<!ENTITY product.shortname.gen "GF">
+<!ENTITY product.shortname.dat "GF">
+<!ENTITY product.shortname.acc "GF">
+<!ENTITY product.shortname.ins "GF">
+<!ENTITY product.shortname.pre "GF hakkında">
+<!ENTITY product.shortname.loc "Görsel Favoriler">
+
+<!ENTITY vendor.name.nom "Yandex">
+<!ENTITY vendor.name.gen "Yandex&#39;in">
+<!ENTITY vendor.name.dat "Yandex&#39;e">
+<!ENTITY vendor.name.acc "Yandex">
+<!ENTITY vendor.name.ins "Yandex ile">
+<!ENTITY vendor.name.pre "Yandex">
+<!ENTITY vendor.name.loc "Yandex&#39;te">
+
+<!ENTITY product.description "Görsel Favoriler&#39;de en sevdiğiniz siteleri bir araya getirin. Siteler arasında kolay geçiş için tek yapmanız gereken küçük görsele tıklamak. Sayfadaki görsel sayısını, yerini ya da arkaplan resmini istediğiniz gibi değiştirip kişiselleştirin. Ayrıca sayfada yer alan Yandex arama satırı ile internette kolayca arama yapın. ">
+<!ENTITY product.note.fx "Firefox için">
+<!ENTITY product.note.ie "Internet Explorer için">
+<!ENTITY product.homepage "http://visual.yandex.ua">
+<!ENTITY product.copyright "© 2012—2014 [Yandex](http://www.yandex.ua)">
+<!ENTITY product.copyright.ie "&product.copyright;">
+<!ENTITY product.copyright.fx "© 2012—2014 [Yandex](http://www.yandex.com.tr)">
+<!ENTITY product.license.url.ie "http://legal.yandex.com.tr/desktop_software_agreement/">
+<!ENTITY product.license.url.fx "http://legal.yandex.com.tr/desktop_software_agreement/">

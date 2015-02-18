@@ -1,0 +1,15 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY login.name "Авторизация">
+<!ENTITY login.enter.label "Войти">
+<!ENTITY login.hidden-login.label "Мой &product2.nom;">
+<!ENTITY login.tooltiptext "&login.name; на сервисах Яндекса">
+<!ENTITY login.switch.label "Другой логин">
+<!ENTITY login.logout.label "Выйти">
+<!ENTITY login.passport.label "Паспорт">
+<!ENTITY login.settings.label "Настройка &vendor.gen;">
+
+<!ENTITY login.showLogin.label "Показывать логин на панели">
+
+<!ENTITY noauth.label "Пожалуйста, авторизуйтесь">

@@ -1,0 +1,11 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);.ya-notification.no-flash{background:#fff5ae}
+[anonid=content-area]{-moz-box-pack:center}
+[anonid=notification-icon]{-moz-margin-end:1.333em}
+[anonid=notification-icon-image]{list-style-image:url(../icons/ya.png)}
+[anonid=message-container] button{-moz-margin-start:1.53846em}
+[anonid=message-container] button+button{-moz-margin-start:0}
+[anonid=content-area] label{margin:0!important;padding:0!important}
+[anonid=widget-container] image{display:inline-block;position:relative;top:3px;width:16px;height:16px;margin:0 .3333em}
+[data-ybtype=vk] image{list-style-image:url(../icons/suggests/vk.svg)}
+[data-ybtype=ok] image{list-style-image:url(../icons/suggests/ok.svg)}
+[data-ybtype=fb] image{list-style-image:url(../icons/suggests/fb.svg)}

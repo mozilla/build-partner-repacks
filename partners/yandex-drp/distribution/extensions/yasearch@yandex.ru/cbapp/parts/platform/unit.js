@@ -25,7 +25,7 @@ BarPlatform.Unit = function CBPUnit(fileName, package_, name) {
     this._package = package_;
     this._name = name;
     this._logger = BarPlatform._getLogger("Unit_" + name);
-    this._componentInfo;
+    let tmp = this._componentInfo;
 };
 BarPlatform.Unit.prototype = {
     constructor: BarPlatform.Unit,
@@ -233,10 +233,12 @@ BarPlatform.Unit.EUnitSyntax.prototype = {
     _name: "EUnitSyntax",
     __proto__: CustomErrors.ECustom.prototype,
     constructor: BarPlatform.Unit.EUnitSyntax,
-    get _details() [
-        this._elementName,
-        this._explanation
-    ],
+    get _details() {
+        return [
+            this._elementName,
+            this._explanation
+        ];
+    },
     _message: "Unit parse error",
     _elementName: undefined,
     _explanation: undefined
@@ -261,7 +263,6 @@ BarPlatform.Unit.EPluginSyntax.prototype = {
 };
 function UnitInfoParser() {
 }
-;
 UnitInfoParser.prototype = {
     constructor: UnitInfoParser,
     parseFromStream: function UnitInfoParser_parseFromStream(inputStream, baseURI) {

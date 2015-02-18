@@ -1,0 +1,6 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace orange url(http://bar.yandex.ru/ui/orange);orange|more{display:-moz-box;-moz-box-orient:vertical}
+orange|more:not([open])>.content{visibility:hidden;height:0;overflow:hidden}
+orange|more>button{-moz-binding:none;-moz-appearance:none;cursor:pointer;display:block;-moz-box-align:baseline;-moz-box-pack:end}
+orange|more:not([open])>button>.label-opened,orange|more[open]>button>.label-closed{display:none}
+orange|more>button>image{margin:0 3px;list-style-image:url(images/down.png)}
+orange|more[open]>button>image{list-style-image:url(images/up.png)}

@@ -15,8 +15,9 @@ const alarms = {
                     name,
                     alarm
                 ] in Iterator(createdAlarms)) {
-            if (alarm)
+            if (alarm) {
                 alarm.freeze();
+            }
         }
         this.application = null;
         this._logger = null;
@@ -81,10 +82,12 @@ const alarms = {
     }
 };
 function Alarm(name, params) {
-    if (createdAlarms[name])
+    if (createdAlarms[name]) {
         return createdAlarms[name];
-    if (!name || !params || params.expires === undefined)
+    }
+    if (!name || !params || params.expires === undefined) {
         throw new Error("Wrong arguments passed: " + JSON.stringify(arguments));
+    }
     this.name = name;
     this._nextInterval = params.nextInterval;
     this._condition = params.condition;
@@ -99,13 +102,15 @@ function Alarm(name, params) {
         this._timer = new sysutils.Timer(this._onTick.bind(this), expires * MINUTE);
         this._timerCreated = now;
     }
-    return createdAlarms[name] = this;
+    createdAlarms[name] = this;
+    return this;
 }
 Alarm.prototype = {
     constructor: Alarm,
     _onTick: function Alarm__onTick() {
-        if (this._timer && this._timer.isRunning)
+        if (this._timer && this._timer.isRunning) {
             this._timer.cancel();
+        }
         this._timer = null;
         if (this._nextInterval) {
             this._expires = this._nextInterval;
@@ -119,8 +124,9 @@ Alarm.prototype = {
         } else {
             alarms.application.preferences.reset(this.prefName);
         }
-        if (this._condition())
+        if (this._condition()) {
             this.trigger([false]);
+        }
     },
     freeze: function Alarm_freeze() {
         handlers[this.name] = [];

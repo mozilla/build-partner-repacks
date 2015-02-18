@@ -1,0 +1,4 @@
+@import url(../../styles/buttons.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarbutton[anonid=title-button]{list-style-image:none!important}
+toolbarbutton[anonid=weather-button]{list-style-image:url(/native/fx/town/town.svg)}
+toolbarbutton[anonid=traffic-button]{list-style-image:url(/native/fx/town/images/traffic/gray.svg)}
+toolbarbutton[anonid=traffic-button][yaTrafficLevel=""]{display:none}

@@ -1,0 +1,74 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY _gen.descr.text "Сондай-ақ:">
+
+<!ENTITY vendor.title "&vendor.nom;">
+
+<!ENTITY bar.title "&product1.nom;">
+<!ENTITY bar.descr.title "бұл құралдар панелі интернетте іздеу және &vendor.nom;тің жеке сервистеріне&#160;тез&#160;кіру үшін.">
+<!ENTITY bar.text.1 "Ыңғайлы іздестіру">
+<!ENTITY bar.text.2 "Жаңалықтар сервистерінен">
+<!ENTITY bar.text.3 "Ауа-райы туралы ақпарат">
+
+<!ENTITY mail.title "Яндекс.Пошта">
+<!ENTITY mail.descr.title "бұл спам және вирустан сенімді қорғауы бар шектелмеген пошта жәшігі.">
+<!ENTITY mail.text.1 "Хаттарды жедел жеткізу">
+<!ENTITY mail.text.2 "Ұялы версия">
+<!ENTITY mail.text.3 "5 Гб-қа дейінгі файлдарды жіберу">
+
+<!ENTITY pdd.title "Яндекс.Доменге арналған пошта">
+<!ENTITY pdd.descr.title "бұл доменіңіз не сайтыңыздың атымен пошта жәшіктерін жасауға мүмкіндік туғызатын сервис.">
+<!ENTITY pdd.text.1 "Шектеусіз пошта жәшігі">
+<!ENTITY pdd.text.2 "Спам және вирустан қорғау">
+<!ENTITY pdd.text.3 "Хаттарды жедел жеткізу">
+
+<!ENTITY narod.title "Народ">
+<!ENTITY narod.descr.title "">
+<!ENTITY narod.text.1 "Сайттар үшін ақысыз хостинг">
+<!ENTITY narod.text.2 "Вирустан қорғау">
+<!ENTITY narod.text.3 "файлдарды сақтау орны">
+<!ENTITY narod.text.4 "Файлдармен алмасу">
+
+<!ENTITY fotki.title "Яндекс.Фотолар">
+<!ENTITY fotki.descr.title "бұл Сіздің фотоларыңыз үшін шектелмеген орын және басқа авторлардың фотоларын көруге мүмкіндігіңіз.">
+<!ENTITY fotki.text.1 "Қарапайым жүктеу">
+<!ENTITY fotki.text.2 "Әдемі фотолар">
+<!ENTITY fotki.text.3 "Қызықты байқаулар">
+
+<!ENTITY yaru.title "Я.ру">
+<!ENTITY yaru.descr.title "бұл Сіздің интернеттегі жеке профиліңіз және достарыңыздың барлық жағдайларын білу әдісі.">
+<!ENTITY yaru.text.1 "Қызықтар бойынша клубтар">
+<!ENTITY yaru.text.2 "Тілектер тізімі">
+<!ENTITY yaru.text.3 "Достардың көңіл-күйлері">
+
+<!ENTITY moikrug.title "Мой Круг">
+<!ENTITY moikrug.descr.title "бұл Сіздің интернеттегі іскерлік профиліңіз және ұсыныстар бойынша қызметтерді табуға&#160;мүмкіндігіңіз.">
+<!ENTITY moikrug.text.1 "Жұмыс іздеу">
+<!ENTITY moikrug.text.2 "Қызметтер туралы жарнама">
+<!ENTITY moikrug.text.3 "Іскерлік қарым-қатынастары">
+
+<!ENTITY money.title "Яндекс.Ақша">
+<!ENTITY money.descr.title "бұл интернет арқылы тәулік бойы және комиссиялық алымсыз тауарлар және қызметтер үшін төлеуге арналған сенімді жүйе.">
+<!ENTITY money.descr.text "Яндекс.Деньгами арқылы мына үшін төлеуге болады:">
+<!ENTITY money.text.1 "Байланыс қызметтері, ойындар">
+<!ENTITY money.text.2 "Домендер, хостинг">
+<!ENTITY money.text.3 "Билеттер">
+
+<!ENTITY bookmarks.title "Яндекс.Бетбелгілер">
+<!ENTITY bookmarks.descr.title "бұл Сізге сілтемелерді сақтауға және оларды кез-келген компьютерде пайдалануға мүмкіндік беретін сервис.">
+<!ENTITY bookmarks.text.1 "Сілтемелерді сұрыптау">
+<!ENTITY bookmarks.text.2 "Бір басумен сақтау">
+<!ENTITY bookmarks.text.3 "Импорт&#160;және экспорт">
+
+<!ENTITY calendar.title "Яндекс.Күнтізбе">
+
+<!ENTITY lenta.title "Яндекс.Жазылымдар">
+<!ENTITY lenta.descr.title "бұл Сізге қызықты жаңалықтардың барлығын бір бетте оқуға мүмкіндік беретін сервис.">
+<!ENTITY lenta.text.1 "Блогтарды тарату">
+<!ENTITY lenta.text.2 "Жаналықтарды сұрыптау">
+<!ENTITY lenta.text.3 "Жаңалықтарға жазылу">
+
+<!ENTITY cards.title "Яндекс.Ашық хаттар">
+
+<!ENTITY play.title "Яндекс.Ойыншықтар">

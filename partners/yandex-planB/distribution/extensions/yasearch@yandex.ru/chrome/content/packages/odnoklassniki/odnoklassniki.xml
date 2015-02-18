@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "odnoklassniki/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="odnoklassniki/content/img/main-icon.png" icon-vector="odnoklassniki/content/img/main-icon.svg" name="&widget.name;" xmlns:ui="http://bar.yandex.ru/dev/gui" unique="true">
+
+    <f:setting default="false" name="login" scope="widget"/>
+    <f:setting default="false" name="show-messages" scope="widget">
+        <control label="&settings.show-messages;" type="checkbox"/>
+    </f:setting>
+    <f:setting default="false" name="show-notifications" scope="widget">
+        <control label="&settings.show-notifications;" type="checkbox"/>
+    </f:setting>
+    <f:setting default="false" name="show-guests" scope="widget">
+        <control label="&settings.show-guests;" type="checkbox"/>
+    </f:setting>
+    <f:setting default="false" name="show-marks" scope="widget">
+        <control label="&settings.show-marks;" type="checkbox"/>
+    </f:setting>
+    <f:setting default="false" name="show-bd" scope="widget">
+        <control label="&settings.show-bd;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="true" name="notifications" scope="widget">
+        <ui:control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+    <modules>
+        <module browser="firefox" file="odnoklassniki/core/widget.jsm"/>
+    </modules>
+</widget>

@@ -1,0 +1,15 @@
+<!ENTITY % branding SYSTEM "xb://branding/names.dtd">
+%branding;
+
+<!ENTITY login.name "Авторизация">
+<!ENTITY login.enter.label "Кіру">
+<!ENTITY login.hidden-login.label "Менің &product2.nom;ым">
+<!ENTITY login.tooltiptext "&vendor.gen; сервистерінде авторизациядан өту">
+<!ENTITY login.switch.label "Басқа логин">
+<!ENTITY login.logout.label "Шығу">
+
+<!ENTITY login.showLogin.label "Панелде пайдаланушының атын көрсету">
+
+<!ENTITY noauth.label "Авторизациядан өтуіңізді сұраймыз">
+<!ENTITY login.passport.label "Паспорт">
+<!ENTITY login.settings.label "&vendor.gen; Баптауы">

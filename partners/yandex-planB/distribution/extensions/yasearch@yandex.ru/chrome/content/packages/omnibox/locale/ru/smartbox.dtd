@@ -1,0 +1,33 @@
+<!ENTITY wgt.smartbox.name "Умная строка">
+<!ENTITY wgt.smartbox.changeSearchEngine "Поисковые системы">
+<!ENTITY wgt.smartbox.searchEngineSettings "Настройки поиска">
+<!ENTITY wgt.smartbox.nowUsedSearch "сейчас используется">
+
+<!ENTITY wgt.smartbox.action.switchToTab.label "перейти на вкладку">
+<!ENTITY wgt.smartbox.action.searchBy.label "Поискать в {providerName}">
+<!ENTITY wgt.smartbox.action.navigate.label "Перейти">
+
+<!ENTITY wgt.smartbox.popup.desc "Введите поисковый запрос, и в подсказках вы увидите популярные запросы, ссылки на посещенные ранее сайты и ваши закладки.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.desc "Расширение не работает в Вашем браузере. Обновить браузер.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.url "http://browser.yandex.ru">
+
+<!ENTITY wgt.smartbox.dropDownOptions.toggleExpandedState "Настройка поиска">
+<!ENTITY wgt.smartbox.dropDownOptions.disableSuggest "Отключить подсказки (не отправлять нажатия клавиш в {providerName})">
+<!ENTITY wgt.smartbox.dropDownOptions.enabledSuggest "Включить подсказки (отправлять нажатия клавиш в {providerName})">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.label "Добавить поставщика поиска">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.url "http://go.microsoft.com/fwlink/?LinkId=122812">
+
+<!ENTITY wgt.smartbox.qs.window.title "Поиск по умолчанию">
+<!ENTITY wgt.smartbox.qs.tree.col "Поиск">
+<!ENTITY wgt.smartbox.qs.add "Добавить">
+<!ENTITY wgt.smartbox.qs.button.ok "Готово">
+<!ENTITY wgt.smartbox.qs.addsearch "Добавить поиск">
+<!ENTITY wgt.smartbox.qs.searchsettings "Настроить поиск">
+<!ENTITY wgt.smartbox.qs.search "Искать">
+<!ENTITY wgt.smartbox.qs.searchYandex "Искать Яндексом">
+<!ENTITY wgt.smartbox.addressbarLabel "Введите запрос для поиска">
+<!ENTITY wgt.smartbox.searchSettings "Настройка поиска">
+<!ENTITY wgt.smartbox.restoreDefaultEngine "Сделать {providerName} поиском по умолчанию">
+
+<!ENTITY wgt.smartbox.searchSettings.menu.defaultEngine.label "Поиск по умолчанию">
+<!ENTITY wgt.smartbox.searchSettings.menu.settings.label "Настройки">

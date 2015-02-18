@@ -1,0 +1,81 @@
+<?xml version='1.0'?>
+
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="../dialog/dialog.xml#dialog" id="notification" inheritstyle="false">
+        <resources>
+            <stylesheet src="notification.css"/>
+        </resources>
+
+        <implementation>
+            <field name="nodeDraggable">null</field>
+
+            <field name="mAnimateWindowClose">true</field>
+            <field name="mAnimateWindowOpacity">true</field>
+
+            <method name="init">
+                <parameter name="aParameters"/>
+                <body><![CDATA[    if (aParameters) {
+        if ("animateWindowClose" in aParameters) {
+            this.mAnimateWindowClose = aParameters.animateWindowClose;
+        }
+        if ("animateWindowOpacity" in aParameters) {
+            this.mAnimateWindowOpacity = aParameters.animateWindowOpacity;
+        }
+    }
+    if (this._platformInfo.os.name == "linux") {
+        this.mAnimateWindowOpacity = false;
+    }]]></body>
+            </method>
+
+            <method name="close">
+                <body><![CDATA[    if (this.mAnimateWindowClose) {
+        this.move(-1);
+    } else {
+        window.close();
+    }]]></body>
+            </method>
+
+            <method name="transition">
+                <parameter name="stage"/>
+                <body><![CDATA[    let scr = screen;
+    window.moveTo(scr.availLeft + scr.availWidth - window.outerWidth, scr.availTop + scr.availHeight - stage * window.outerHeight);
+    if (this.mAnimateWindowOpacity) {
+        this.style.opacity = stage;
+    }]]></body>
+            </method>
+
+            <method name="move">
+                <parameter name="direction"/>
+                <body><![CDATA[    direction = direction === undefined ? 1 : direction;
+    var context = this;
+    var stage = direction > 0 ? 0 : 1;
+    var step = 0.1 * direction;
+    var delay = 10;
+    stage += step;
+    this.transition(stage);
+    var interval = setInterval(function (me) {
+        stage += step;
+        if (stage > 0.99) {
+            stage = 1;
+            clearInterval(interval);
+        } else if (stage < 0.01) {
+            stage = 0;
+            window.close();
+        }
+        me.transition(stage);
+    }, delay, this);]]></body>
+            </method>
+
+        </implementation>
+
+        <handlers>
+            <handler event="command"><![CDATA[    if (event.originalTarget.data) {
+        var data = event.originalTarget.data;
+        if (data.command) {
+            data.command.call(data.context || null);
+        }
+    }]]></handler>
+        </handlers>
+    </binding>
+</bindings>

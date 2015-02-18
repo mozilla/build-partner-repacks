@@ -1,0 +1,39 @@
+<!ENTITY wgt.town.widget.name "City">
+
+<!ENTITY wgt.town.setting.town "City">
+<!ENTITY wgt.town.setting.town.popular "Top cities">
+<!ENTITY wgt.town.setting.title "City label">
+<!ENTITY wgt.town.setting.show.name "Display city name">
+<!ENTITY wgt.town.setting.show.weather "Display weather">
+<!ENTITY wgt.town.setting.show.traffic "Display traffic jams">
+<!ENTITY wgt.town.setting.interval "Update interval">
+<!ENTITY wgt.town.settings.autodetect "Define automatically">
+<!ENTITY wgt.town.settings.min.label "min.">
+
+<!ENTITY wgt.town.setup "Set up informer">
+<!ENTITY wgt.town.refresh "Update data">
+<!ENTITY wgt.town.delete "Delete city">
+<!ENTITY wgt.town.add "Add city">
+
+<!ENTITY wgt.town.weather.nodata "No weather data available">
+<!ENTITY wgt.town.weather.label "Weather">
+<!ENTITY wgt.town.temperature.label "Temperature">
+<!ENTITY wgt.town.wind.label "Wind">
+<!ENTITY wgt.town.wind.ms "m/s">
+<!ENTITY wgt.town.pressure.label "Pressure">
+<!ENTITY wgt.town.pressure.mm.label "mmHg.">
+<!ENTITY wgt.town.dampness.label "Humidity">
+<!ENTITY wgt.town.night "Night">
+<!ENTITY wgt.town.tomorrow "Tomorrow">
+
+<!ENTITY wgt.town.traffic.points "Points">
+<!ENTITY wgt.town.traffic.description "Description">
+<!ENTITY wgt.town.traffic.length "Length">
+<!ENTITY wgt.town.traffic.length.km "km">
+
+<!ENTITY wgt.town.request.lang "en">
+
+<!ENTITY wgt.town.traffic.tooltip "Traffic">
+<!ENTITY wgt.town.weather.tooltip "Weather forecast">
+<!ENTITY wgt.town.setting.openPageOnClick.traffic "Click on the Traffic button to go to the service webpage">
+<!ENTITY wgt.town.setting.openPageOnClick.weather "Click on the Weather button to go to the service webpage">

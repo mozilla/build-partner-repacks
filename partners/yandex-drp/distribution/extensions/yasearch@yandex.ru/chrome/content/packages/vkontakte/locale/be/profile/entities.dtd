@@ -1,0 +1,105 @@
+<!ENTITY vk.name "Мая старонка ВК">
+<!ENTITY settings.show_name "Паказваць імя карыстальніка">
+<!ENTITY settings.hide_notifications "Адключыць паведамленні">
+<!ENTITY settings.msg_button "Мае паведамленні">
+<!ENTITY settings.friends_button "Мае сябры">
+<!ENTITY settings.events_button "Мае сустрэчы">
+<!ENTITY settings.groups_button "Мае групы">
+<!ENTITY settings.photo_button "Мае фатаграфіі">
+<!ENTITY settings.video_button "Мае відэазапісы">
+<!ENTITY settings.notes_button "Мае нататкі">
+<!ENTITY settings.update.label "Інтэрвал абнаўлення">
+<!ENTITY settings.update.after "хв.">
+<!ENTITY vk.menu.update "Абнавіць інфармацыю">
+<!ENTITY vk.menu.no_name "Без назвы">
+<!ENTITY vk.tooltip.need_auth "Калі ласка, аўтарызуйцеся">
+<!ENTITY vk.main.tooltip "Перайсці на маю старонку ВКонтакте">
+<!ENTITY vk.main.tooltip_auth "Дазваляе перайсці на вашу старонку ВКонтакте">
+<!ENTITY vk.main.menu.mypage "Мая старонка">
+<!ENTITY vk.main.menu.msg "Мае паведамленні">
+<!ENTITY vk.main.menu.friends "Мае сябры">
+<!ENTITY vk.main.menu.events "Мае сустрэчы">
+<!ENTITY vk.main.menu.groups "Мае групы">
+<!ENTITY vk.main.menu.photo "Мае фатаграфіі">
+<!ENTITY vk.main.menu.video "Мае відэазапісы">
+<!ENTITY vk.main.menu.notes "Мае нататкі">
+<!ENTITY vk.main.menu.audio "Мае аўдыязапісы">
+<!ENTITY vk.main.menu.feed "Мае навіны">
+<!ENTITY vk.main.menu.fave "Мае закладкі">
+<!ENTITY vk.main.menu.matches "Прапановы">
+<!ENTITY vk.main.menu.opinions "Думкі">
+<!ENTITY vk.main.menu.apps "Праграмы">
+<!ENTITY vk.main.menu.questions "Пытанні">
+<!ENTITY vk.main.menu.settings "Наладкі">
+<!ENTITY vk.main.menu.logout "Выхад">
+<!ENTITY vk.msg.tooltip_empty "Мае паведамленні ВКонтакте">
+<!ENTITY vk.msg.tooltip_auth "Паказвае вашы новыя паведамленні ВКонтакте">
+
+<!ENTITY vk.msg.tooltip "\d новае паведамленне;\d новыя паведамленні;\d новых паведамленняў">
+<!ENTITY vk.msg.menu.mymsg "Мае паведамленні">
+<!ENTITY vk.photo.tooltip_empty "Мае фатаграфіі ВКонтакте">
+<!ENTITY vk.photo.tooltip_auth "Паказвае вашы фатаграфіі ВКонтакте">
+<!ENTITY vk.video.tooltip_empty "Мае відэазапісы ВКонтакте">
+<!ENTITY vk.video.tooltip_auth "Паказвае вашы відэазапісы ВКонтакте">
+
+<!ENTITY vk.friend.tooltip "\d запыт на дадаванне ў сябры;\d запыты на дадаванне ў сябры;\d запытаў на дадаванне ў сябры">
+<!ENTITY vk.friend.tooltip_empty "Мае сябры ВКонтакте">
+<!ENTITY vk.friend.tooltip_auth "Паказвае вашых сяброў ВКонтакте">
+<!ENTITY vk.friend.menu.myfriends "Мае сябры">
+<!ENTITY vk.friend.menu.my_new_friends "Мае новыя сябры">
+<!ENTITY vk.event.tooltip "Мае сустрэчы ВКонтакте">
+<!ENTITY vk.event.tooltip_auth "Паказвае вашы новыя сустрэчы ВКонтакте">
+<!ENTITY vk.group.tooltip "Мае групы ВКонтакте">
+<!ENTITY vk.group.tooltip_auth "Паказвае вашы групы ВКонтакте">
+<!ENTITY vk.note.tooltip "Мае нататкі ВКонтакте">
+<!ENTITY vk.note.tooltip_auth "Паказвае вашы нататкі ВКонтакте">
+<!ENTITY vk.notify.settings "Наладкі">
+<!ENTITY vk.notify.close "Зачыніць">
+<!ENTITY error.connect "Калі ласка, праверце сеціўнае злучэнне">
+<!ENTITY error.auth "Не атрымалася аўтарызавацца">
+<!ENTITY error.auth.net "Не атрымалася падключыцца да сервера ВКонтакте для аўтарызацыі">
+
+<!ENTITY plural.rule "7">
+
+<!ENTITY vk.notify.follow "Просіць дадаць яго да сяброў">
+<!ENTITY vk.notify.wall "Дадаў запіс на вашу сцяну">
+<!ENTITY vk.notify.comment_post "Пракаментаваў вашу публікацыю">
+<!ENTITY vk.notify.comment_photo "Пракаментаваў ваш фотаздымак">
+<!ENTITY vk.notify.comment_video "Пракаментаваў ваша відэа">
+<!ENTITY vk.notify.reply_comment "Адказаў на ваш каментарый">
+<!ENTITY vk.notify.reply_topic "Адказаў на ваш каментарый">
+
+<!ENTITY vk.notify.follow_f "Просіць дадаць яе да сяброў">
+<!ENTITY vk.notify.wall_f "Дадала запіс на вашу сцяну">
+<!ENTITY vk.notify.comment_post_f "Пракаментавала вашу публікацыю">
+<!ENTITY vk.notify.comment_photo_f "Пракаментавала ваш фотаздымак">
+<!ENTITY vk.notify.comment_video_f "Пракаментавала ваша відэа">
+<!ENTITY vk.notify.reply_comment_f "Адказала на ваш каментарый">
+<!ENTITY vk.notify.reply_topic_f "Адказала на ваш каментарый">
+
+<!ENTITY vk.notify.g.message "{N} новае паведамленне;{N} новыя паведамленні;{N} новых паведамленняў">
+<!ENTITY vk.notify.g.wall "{N} новы запіс на сцяне;{N} новыя запісы на сцяне;{N} новых запісаў на сцяне">
+<!ENTITY vk.notify.g.comment "{N} новы каментарый;{N} новыя каментарыі;{N} новых каментарыяў">
+<!ENTITY vk.notify.g.reply_topic "{N} новы адказ у абмеркаванні;{N} новыя адказы ў абмеркаванні;{N} новых адказаў у абмеркаванні">
+<!ENTITY settings.show_notifications "Паказваць апавяшчэнні">
+<!ENTITY vk.notify.friend_request "просіць дадаць яго да сяброў">
+<!ENTITY vk.notify.friend_request_f "просіць дадаць яе ў сябры">
+<!ENTITY settings.show_comment_notifications "Паказваць выплыўныя апавяшчэнні пра каментарыі, абмеркаванні">
+<!ENTITY settings.show_friend_notifications "Паказваць усплывальныя апавяшчэнні аб запытах у сябры, аб падпісчыках">
+<!ENTITY settings.show_mention_notifications "Паказваць усплывальныя паведамленні аб згадках вас у публікацыях і каментарыях">
+<!ENTITY settings.show_message_notifications "Паказваць усплывальныя апавяшчэння аб паведамленнях">
+<!ENTITY vk.friend.tooltip_not_empty0 "\d запыт на дадаванне ў сябры">
+<!ENTITY vk.friend.tooltip_not_empty1 "\d запыты на дадаванне ў сябры">
+<!ENTITY vk.friend.tooltip_not_empty2 "\d запытаў на дадаванне ў сябры">
+<!ENTITY vk.msg.tooltip_not_empty0 "\d новае паведамленне">
+<!ENTITY vk.msg.tooltip_not_empty1 "\d новыя паведамленні">
+<!ENTITY vk.msg.tooltip_not_empty2 "\d новых паведамленняў">
+<!ENTITY vk.notify.g.mention "Вас адзначылі ў {N} публікацыі;Вас адзначылі ў {N} публікацыях;Вас адзначылі ў {N} публікацыях">
+<!ENTITY vk.notify.mention "Адзначыў вас у публікацыі">
+<!ENTITY vk.notify.mention_comment "Узгадаў вас у каментарыі">
+<!ENTITY vk.notify.mention_comment_f "Узгадала вас у каментарыі">
+<!ENTITY vk.notify.mention_f "Адзначыла вас у публікацыі">
+<!ENTITY vk.notify.messages_file "Адправіў вам паведамленне">
+<!ENTITY vk.notify.messages_file_f "Адправіла вам паведамленне">
+<!ENTITY vk.notify.g.follow "{N} запыт на дадаванне ў сябры; {N} запыты на дадаванне ў сябры; {N} запытаў на дадаванне ў сябры">
+<!ENTITY error.update "Інфармацыя не атрыманая">

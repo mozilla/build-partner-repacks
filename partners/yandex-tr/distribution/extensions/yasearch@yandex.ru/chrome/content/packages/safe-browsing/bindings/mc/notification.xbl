@@ -1,0 +1,344 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "/mc.dtd"><bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/notifications/notification.xbl#notification-base" id="notification">
+        <resources>
+            <stylesheet src="/styles/mc/notification.css"/>
+        </resources>
+
+        <content>
+            <hbox align="center" anonid="content-area" flex="1" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <hbox anonid="notification-icon">
+                    <hbox anonid="notification-icon-image-outer"><image anonid="notification-icon-image" class="clickable"/></hbox>
+                </hbox>
+                <deck anonid="suggestion-alternatives">
+                    <hbox align="baseline">
+                        <description>&mc.widget.suggestion.label;
+                            <label anonid="suggestion-label" class="text-link"/>
+                            <button anonid="go-button" label="&mc.widget.go.label;"/>
+                            <button anonid="cancel-button" label="&mc.widget.cancel.label;"/>
+                        </description>
+                    </hbox>
+                    <hbox align="baseline">
+                        <description>&mc.widget.changedFrom.label;
+                            <label anonid="changed-from-label" class="text-link"/>
+                            &mc.widget.changedTo.label;
+                            <label anonid="changed-to-label" class="text-link"/>
+                            <button anonid="remove-rule-button" label="&mc.widget.removeRule.label;"/>
+                        </description>
+                    </hbox>
+                </deck>
+            </hbox>
+
+            <xul:hbox anonid="close-button" class="hoverable"/>
+
+            <xul:hbox hidden="true">
+                <children/>
+            </xul:hbox>
+        </content>
+
+        <implementation implements="nsIDOMEventListener">
+            <field name="NOTIFICATION_NAME" readonly="true">this._moduleElement.NOTIFICATION_NAME</field>
+
+            <field name="api" readonly="true">this._moduleElement.api</field>
+            <field name="wListener" readonly="true">this._moduleElement.wListener</field>
+
+            <field name="_moduleElement" readonly="true">this._notification.mistypeCorrectorElement</field>
+            <field name="_faviconImage" readonly="true">this._getElementByAttr("anonid", "notification-icon-image");</field>
+            <field name="_notificationProperties" readonly="true">this._notification.notificationProperties</field>
+            <field name="_notificationType" readonly="true">"suggestionURL" in this._notificationProperties ? "suggest" : "redirect"</field>
+
+            <property name="_isCurrentNotification" readonly="true">
+                <getter><![CDATA[    return this._notification.control.currentNotification === this._notification;]]></getter>
+            </property>
+
+            <property name="_notificationTabData" readonly="true">
+                <getter><![CDATA[    return this.wListener.getTabData(this._browser, this.NOTIFICATION_NAME);]]></getter>
+            </property>
+
+            <property name="destinationURL" readonly="true">
+                <getter><![CDATA[    return this._notificationType === "suggest" ? this._notificationProperties.suggestionURL : this._notificationProperties.changedToURL;]]></getter>
+            </property>
+
+            <property name="screenGrabber" readonly="true">
+                <getter><![CDATA[    if (!this._screenGrabber) {
+        Components.utils.import(this.api.Package.resolvePath("modules/scrgrab.js"), this);
+        this._screenGrabber = new this.ScrGrabber(this.api, this);
+    }
+    return this._screenGrabber;]]></getter>
+            </property>
+
+            <property name="thumbnail">
+                <setter><![CDATA[    this._slice.notify({
+        topic: "set-image",
+        data: val || ""
+    });]]></setter>
+            </property>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    let notifProps = this._notificationProperties;
+    let deck = this._getElementByAttr("anonid", "suggestion-alternatives");
+    if (deck && !notifProps.suggestionURL) {
+        deck.selectedIndex = 1;
+    }
+    this._getElementByAttr("anonid", "suggestion-label").setAttribute("value", this._prepareLabelURL(notifProps.suggestionURL));
+    this._getElementByAttr("anonid", "changed-from-label").setAttribute("value", this._prepareLabelURL(notifProps.changedFromURL));
+    this._getElementByAttr("anonid", "changed-to-label").setAttribute("value", this._prepareLabelURL(notifProps.changedToURL));
+    this._notification.destinationURL = function destinationURL() {
+        return this.destinationURL;
+    }.bind(this);
+    this.close = this._notification.close = function mistypeCorrector_notification_close(originalClose) {
+        if (this._slice) {
+            this._slice.hide();
+        }
+        this._moduleElement.hideUrlbarImage();
+        this._removeTabData();
+        return originalClose.apply(this._notification);
+    }.bind(this, this._notification.close);
+    if (this._notificationType == "suggest") {
+        this._slice = this.api.Controls.createSlice({
+            url: this.api.Package.resolvePath("/slice/slice.html"),
+            disposable: false,
+            windowProperties: {
+                width: 281,
+                height: 214
+            },
+            system: false,
+            noautohide: true,
+            messageHandler: function Slice_messageHandler(message) {
+                if (message.topic !== "close")
+                    throw new Error("Unknown message topic");
+                let destinationURL = this.destinationURL;
+                let mce = this._moduleElement;
+                mce.hideUrlbarImage();
+                mce.sendStatistic("redir.agree.preview", mce.mistyped, destinationURL);
+                mce.module.appendRule(mce.mistyped, destinationURL);
+                this.close();
+                openUILink(destinationURL);
+            }.bind(this)
+        });
+        this.screenGrabber.getCanvasForURL(this.destinationURL);
+    }
+    let tabData = this._notificationTabData;
+    if (!tabData.notificationProperties.shown) {
+        tabData.notificationProperties.shown = true;
+        if (this._notificationType === "suggest") {
+            this._sendStatistic("redir.show");
+            this.api.Statistics.logShortAction(5300);
+        } else {
+            this._sendStatistic("del.show");
+        }
+    }
+    this._setFavicon();
+    gBrowser.tabContainer.addEventListener("TabSelect", this, false);
+    this._browser.addEventListener("click", this, false);
+    gBrowser.getNotificationBox().addEventListener("AlertActive", this, false);]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    gBrowser.tabContainer.removeEventListener("TabSelect", this, false);
+    this._browser.removeEventListener("click", this, false);
+    gBrowser.getNotificationBox(this._browser).removeEventListener("AlertActive", this, false);
+    if (this._slice) {
+        this._slice.hide();
+        this._slice = null;
+    }
+    if (this._screenGrabber) {
+        this._screenGrabber.destroy();
+        this._screenGrabber = null;
+    }]]></body>
+            </method>
+
+            <method name="onSShotCreated">
+                <parameter name="aPageData"/>
+                <body><![CDATA[    if (aPageData.url !== this.destinationURL)
+        return;
+    this.thumbnail = aPageData.img;
+    this.api.Async.nextTick(function () {
+        if (this._browser === gBrowser.mCurrentBrowser && this._isCurrentNotification && this._notificationType === "suggest") {
+            this.showSiteThumbnail();
+        }
+    }.bind(this));]]></body>
+            </method>
+
+            <method name="showSiteThumbnail">
+                <body><![CDATA[    setTimeout(function () {
+        this._slice && this._slice.show(this._faviconImage);
+    }.bind(this), 0);]]></body>
+            </method>
+
+            <method name="_switchSiteThumbnail">
+                <body><![CDATA[    if (!this._slice) {
+        return;
+    }
+    if (this._slice.isOpen) {
+        this._slice.hide();
+    } else {
+        this.showSiteThumbnail();
+    }]]></body>
+            </method>
+
+            <method name="_setFavicon">
+                <body><![CDATA[    let destinationURL = this.destinationURL;
+    let destinationDomain = this._moduleElement.extractDomain(destinationURL);
+    let mistyped = this._moduleElement.mistyped;
+    this._setFaviconImage("http://favicon.yandex.net/favicon/" + destinationDomain, function (exist) {
+        if (exist) {
+            return;
+        }
+        if (!("_setFaviconImage" in this)) {
+            return;
+        }
+        this._setFaviconImage("http://" + destinationDomain + "/favicon.ico", function (exist) {
+        });
+    }.bind(this));]]></body>
+            </method>
+
+            <method name="_setFaviconImage">
+                <parameter name="src"/>
+                <parameter name="callback"/>
+                <body><![CDATA[    let image = this._faviconImage;
+    image.src = src;
+    image.onload = function (e) {
+        callback(image.clientWidth > 15);
+    };
+    image.onerror = function (e) {
+        callback(false);
+    };]]></body>
+            </method>
+
+            <method name="_removeTabData">
+                <body><![CDATA[    this.wListener.removeTabData(this._browser, this.NOTIFICATION_NAME);]]></body>
+            </method>
+
+            <method name="_prepareLabelURL">
+                <parameter name="aURL"/>
+                <body><![CDATA[    if (!aURL) {
+        return "";
+    }
+    return aURL.replace(/^https?:\/\//, "");]]></body>
+            </method>
+
+            <method name="_sendStatistic">
+                <parameter name="aAction"/>
+                <body><![CDATA[    let mce = this._moduleElement;
+    if (mce) {
+        mce.sendStatistic(aAction, mce.mistyped, this.destinationURL);
+    }]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "click":
+    case "TabSelect":
+        if (this._slice) {
+            this._slice.hide();
+        }
+        break;
+    case "AlertActive":
+        if (!this._isCurrentNotification && this._slice) {
+            this._slice.hide();
+        }
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="click"><![CDATA[    let target = event.originalTarget;
+    let mButton = event.button;
+    if (!(mButton === 0 || mButton === 1)) {
+        return;
+    }
+    let anonid = target.getAttribute("anonid");
+    while (!anonid && target.parentNode) {
+        target = target.parentNode;
+        anonid = target.getAttribute("anonid");
+    }
+    if (mButton == 1 && !([
+            "suggestion-label",
+            "changed-from-label",
+            "changed-to-label"
+        ].indexOf(anonid) > -1)) {
+        return;
+    }
+    let destinationURL = this.destinationURL;
+    let mce = this._moduleElement;
+    let mistyped = mistypeCorrectorElement.mistyped;
+    switch (anonid) {
+    case "notification-icon":
+    case "notification-icon-image": {
+            this._switchSiteThumbnail();
+            return;
+        }
+    case "suggestion-label": {
+            mce.module.appendRule(mistyped, destinationURL);
+            this.api.Controls.navigateBrowser({
+                unsafeURL: destinationURL,
+                eventInfo: event,
+                target: "current tab"
+            });
+            this._sendStatistic("redir.agree.url");
+            break;
+        }
+    case "go-button": {
+            mce.module.appendRule(mistyped, destinationURL);
+            openUILink(destinationURL);
+            this._sendStatistic("redir.agree.button");
+            break;
+        }
+    case "changed-to-label":
+    case "changed-from-label": {
+            let link = target.getAttribute("value");
+            this.api.Controls.navigateBrowser({
+                unsafeURL: link,
+                eventInfo: event,
+                target: "current tab"
+            });
+            this._sendStatistic("del.url");
+            break;
+        }
+    case "remove-rule-button": {
+            mce.module.removeRule(mistyped);
+            this._sendStatistic("del.remove");
+            break;
+        }
+    case "cancel-button": {
+            mce.module.incrementWhitelist(mistyped, 2);
+            this._sendStatistic("redir.reject");
+            this.api.Statistics.logShortAction(5330);
+            break;
+        }
+    case "close-button": {
+            if (this._notificationType === "redirect") {
+                this._sendStatistic("del.close");
+            } else {
+                mce.module.incrementWhitelist(mistyped);
+                this._sendStatistic("redir.close");
+                this.api.Statistics.logShortAction(5330);
+            }
+            break;
+        }
+    default:
+        return;
+    }
+    this._removeTabData();
+    this.close();]]></handler>
+        </handlers>
+    </binding>
+</bindings>

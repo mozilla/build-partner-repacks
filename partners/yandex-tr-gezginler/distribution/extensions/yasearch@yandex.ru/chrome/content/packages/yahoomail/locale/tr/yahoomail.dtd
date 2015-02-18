@@ -1,0 +1,17 @@
+<!ENTITY widget.name "Yahoo! Mail">
+<!ENTITY widget.button.text "Yahoo! Mail">
+<!ENTITY widget.menu.check_mailbox "E-posta kutunu kontrol et">
+<!ENTITY widget.menu.compose "E-posta yaz">
+<!ENTITY widget.menu.read "E-posta oku">
+<!ENTITY widget.menu.contacts "Adres defterini aç">
+<!ENTITY widget.menu.logout "Çıkış">
+<!ENTITY widget.tooltip.title "Yahoo! Mail">
+<!ENTITY widget.tooltip.your_messages "E-posta kutusundaki iletileriniz">
+<!ENTITY widget.tooltip.offline_message "Maalesef e-postalarınızla ilgili bilgi alınamıyor">
+<!ENTITY widget.tooltip.new_messages "E-posta kutunuzda yeni ileti Yahoo! Mail">
+<!ENTITY widget.tooltip.ask_to_login "Lütfen oturum açın">
+<!ENTITY widget.tooltip.new_messages_prefix "Yeni: ">
+<!ENTITY widget.tooltip.total_messages_prefix "Tümü: ">
+<!ENTITY widget.settings.label "Güncelleme sıklığı:">
+<!ENTITY widget.settings.label_after "dk.">
+<!ENTITY widget.settings.checktext "Tuşun adını göster">

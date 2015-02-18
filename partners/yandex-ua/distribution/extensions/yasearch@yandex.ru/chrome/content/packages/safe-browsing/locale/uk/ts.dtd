@@ -1,0 +1,10 @@
+﻿<!ENTITY typosquatting.component.name "Захист від фішингу">
+
+<!ENTITY typosquatting.notification.actionbutton.leave.label "Піти з сайту">
+<!ENTITY typosquatting.notification.actionbutton.transfer.label "Перейти">
+<!ENTITY typosquatting.notification.closebutton.label "Закрити">
+<!ENTITY typosquatting.notification.closebutton.tooltip "Приховати повідомлення ">
+<!ENTITY typosquatting.notification.warning "Обережно! Сайт може бути пов&#39;язаний із шахрайством. Ви хочете перейти на справжній?">
+<!ENTITY typosquatting.notification.warningnouri "Обережно! Сайт може бути пов&#39;язаний із шахрайством.">
+<!ENTITY typosquatting.notification.warning.end "?">
+<!ENTITY typosquatting.notification.warning.start "Обережно! Сайт може бути пов&#39;язаний із шахрайством. Ви хочете перейти на справжній">

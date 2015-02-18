@@ -1,0 +1,9 @@
+<!ENTITY fotki.name "Fotki">
+<!ENTITY fotki.tooltiptext "New photos by your favourite authors at Yandex.Fotki">
+<!ENTITY fotki.noauthtooltiptext "Shows new photos by your favourite authors at Yandex.Fotki">
+<!ENTITY fotki.tooltiptext.notauth "Lütfen oturum açın">
+<!ENTITY fotki.reloadCounter.label "Refresh data">
+<!ENTITY fotki.link.favAuth.label "My favourite authors">
+<!ENTITY fotki.link.myPhotos.label "My photos">
+<!ENTITY fotki.link.Comments.label "Comments for me">
+<!ENTITY fotki.link.UploadPhotos.label "Upload photos">

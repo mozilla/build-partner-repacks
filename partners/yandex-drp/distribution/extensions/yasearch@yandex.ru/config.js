@@ -9,10 +9,10 @@ const CB_CONFIG = function () {
             COOKIE: "bar.ff"
         },
         BUILD: {
-            DATE: "Wed Nov 05 2014 09:47:26 GMT+0000",
-            REVISION: 9
+            DATE: 'Thu Feb 12 2015 15:11:49 GMT+0000',
+            REVISION: 5
         },
-        PLATFORM: { VERSION: 24 },
+        PLATFORM: { VERSION: 25 },
         CORE: {
             CONTRACT_ID: "@yandex.ru/custombarcore;" + APP_NAME,
             CLASS_ID: "{F25B83DE-5817-11DE-8EB3-C9A656D89593}"

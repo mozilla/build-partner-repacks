@@ -1,0 +1,12 @@
+<!ENTITY cy.name "ИЦ">
+<!ENTITY cy.fullname "Индекс цитирования">
+<!ENTITY cy.pages.all.label "Все страницы сайта">
+<!ENTITY cy.data.theme.label "Тема">
+<!ENTITY cy.data.domain.label "Домен">
+<!ENTITY cy.data.region.label "Регион">
+<!ENTITY cy.data.value.label "Значение">
+<!ENTITY cy.data.yaca.label "(по данным Яндекс.Каталога)">
+<!ENTITY cy.no-data.label "нет данных">
+
+
+<!ENTITY cy.showValue.label "Показывать значение Индекса цитирования">

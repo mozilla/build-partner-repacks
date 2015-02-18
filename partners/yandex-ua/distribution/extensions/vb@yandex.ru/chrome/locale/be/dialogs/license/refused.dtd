@@ -1,0 +1,8 @@
+<!ENTITY % brandNames SYSTEM "yafd://plus.branding/names.dtd">
+%brandNames;
+
+<!ENTITY refused.title "&product1.nom; адключаны">
+
+<!ENTITY refused.desc.1 "Для работы з &product1.ins; вы павінны прыняць умовы Ліцэнзійнага пагаднення">
+<!ENTITY refused.desc.2 "Аднавіць работу пашырэння можна праз меню праглядальніка: &#34;Прылады -&#62; Дадаткі -&#62; Пашырэнні&#34;">
+<!ENTITY refused.desc.3 "У апошнім выпадку вы аўтаматычна прымаеце ўмовы пагаднення">

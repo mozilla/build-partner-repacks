@@ -1,0 +1,191 @@
+<?xml version='1.0'?>
+<bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="widget-base">
+        <implementation>
+
+
+            <field name="wdgtIsPlatformWidget" readonly="true">true</field>
+            <field name="wdgtApplicationName" readonly="true">this.getAttribute("cb-app")</field>
+            <property name="wdgtPrototypeID" onget="return this.getAttribute('cb-proto-id');" readonly="true"/>
+            <property name="wdgtInstanceID" onget="return this._wdgtInstanceID;" readonly="true"/>
+            <property name="wdgtIsUnique" onget="return this._wdgtWidgetInfo.isUnique;" readonly="true"/>
+
+
+
+            <field name="_wdgtCore" readonly="true">
+                Components.classes["@yandex.ru/custombarcore;" + this.wdgtApplicationName].getService().wrappedJSObject
+            </field>
+            <field name="_wdgtApplication" readonly="true">this._wdgtCore.application</field>
+            <property name="_wdgtInstanceID" onget="return this.getAttribute('cb-inst-id');" onset="this.setAttribute('cb-inst-id', val || '0');"/>
+            <field name="_wdgtIsFromDefaultSet">false</field>
+
+            <field name="_wdgtOverlayController">window[this.wdgtApplicationName + "OverlayController"]</field>
+
+            <property name="_wdgtIsABlank" onget="return (this._wdgtInstanceID == '0')" readonly="true"/>
+
+            <property name="_wdgtWidgetInfo" onget="return this._wdgtApplication.widgetLibrary.getWidgetInfo(this.wdgtPrototypeID);" readonly="true"/>
+
+            <property name="_wdgtPrototype" onget="return this._wdgtApplication.widgetLibrary.getWidgetProto(this.wdgtPrototypeID);" readonly="true"/>
+
+            <property name="_wdgtConstructed" onget="return this.hasAttribute('xb-widget-constructed')" onset="!!val ? this.setAttribute('xb-widget-constructed', 'true') : this.removeAttribute('xb-widget-constructed')"/>
+
+            <property name="_wdgtKilled" onget="return this.hasAttribute('xb-widget-killed')" onset="!!val ? this.setAttribute('xb-widget-killed', 'true') : this.removeAttribute('xb-widget-killed')"/>
+
+            <constructor><![CDATA[    var info = this._wdgtApplication.overlayProvider.parseWidgetItemId(this.id, true);
+    this._wdgtInstanceID = info.instanceID;
+    this._wdgtIsFromDefaultSet = Boolean(info.isFromDefaultSet);
+    this._wdgtSettings = info.settings;
+    let overlayController = this._wdgtOverlayController;
+    if (!overlayController) {
+        return;
+    }
+    let browserThemeConsumer = overlayController.browserThemeConsumer;
+    if (!browserThemeConsumer) {
+        return;
+    }
+    this._setThemeColor = function _setThemeColor() {
+        let {backgroundColor, lightweightTheme} = browserThemeConsumer.info;
+        if (lightweightTheme !== false) {
+            let parent = this.parentNode;
+            while (parent && parent.localName !== "toolbar") {
+                parent = parent.parentNode;
+            }
+            if (!parent) {
+                backgroundColor = "";
+            }
+        }
+        this.setAttribute("cb-theme-color", backgroundColor);
+    }.bind(this);
+    this._mutationObserver = new MutationObserver(this._setThemeColor);
+    let mutationObserverOptions = {
+        attributes: true,
+        attributeFilter: ["cui-anchorid"]
+    };
+    this._mutationObserver.observe(this, mutationObserverOptions);
+    this.onBrowserThemeChanged = this._setThemeColor;
+    browserThemeConsumer.addListener(this);
+    this._setThemeColor();]]></constructor>
+
+            <method name="wdgtWidgetRemoved">
+                <parameter name="controller"/>
+                <parameter name="eraseSettingsIfNeeded"/>
+                <body><![CDATA[    this._wdgtDestroy(controller, eraseSettingsIfNeeded);
+    this._wdgtApplication.overlayProvider.widgetItemRemoved(this._wdgtInstanceID);]]></body>
+            </method>
+
+            <method name="_wdgtDestroy">
+                <parameter name="controller"/>
+                <parameter name="eraseSettingsIfNeeded"/>
+                <body><![CDATA[    var widgetHost = controller.widgetHost;
+    if (!widgetHost.hasWidget(this._wdgtInstanceID)) {
+        return;
+    }
+    widgetHost.destroyWidget(this._wdgtInstanceID, eraseSettingsIfNeeded);
+    while (this.firstChild) {
+        this.removeChild(this.firstChild);
+    }
+    this._wdgtConstructed = false;
+    if (this._wdgtOverlayController) {
+        this._wdgtOverlayController.browserThemeConsumer.removeListener(this);
+        this.onBrowserThemeChanged = null;
+        this._mutationObserver.disconnect();
+        this._mutationObserver = null;
+        this._setThemeColor = null;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+
+
+    <binding extends="#widget-base" id="widget">
+        <implementation>
+            <field name="_wdgtLogger" readonly="true">this._wdgtOverlayController._logger</field>
+
+            <constructor><![CDATA[    try {
+        this._wdgtConstructorEx();
+    } catch (e) {
+        this._wdgtLogger.error("Couldn't construct widget item. " + this._wdgtCore.Lib.strutils.formatError(e));
+        this._wdgtLogger.debug(e.stack);
+    }]]></constructor>
+
+            <destructor><![CDATA[    this._wdgtDestructorEx();]]></destructor>
+
+            <method name="_wdgtConstructorEx">
+                <body><![CDATA[    if (this._wdgtConstructed || this._wdgtKilled) {
+        return;
+    }
+    this._wdgtOverlayController.widgetHost.createWidget(this.wdgtPrototypeID, this._wdgtInstanceID, this._wdgtSettings, this);
+    this._wdgtConstructed = true;]]></body>
+            </method>
+
+            <method name="_wdgtDestructorEx">
+                <body><![CDATA[    setTimeout(function (me) {
+        if (!me.parentNode && "wdgtWidgetRemoved" in me) {
+            me.wdgtWidgetRemoved(me._wdgtOverlayController);
+        }
+    }, 0, this);]]></body>
+            </method>
+
+            <method name="wdgtSwitchOn">
+                <parameter name="on"/>
+                <body><![CDATA[    if (on) {
+        this._wdgtConstructorEx();
+    } else {
+        this._wdgtDestroy(this._wdgtOverlayController);
+    }]]></body>
+            </method>
+
+            <method name="wdgtKill">
+                <body><![CDATA[    this.wdgtWidgetRemoved(this._wdgtOverlayController, true);
+    this._wdgtKilled = true;]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+
+
+    <binding id="widget-customize">
+        <content>
+            <xul:toolbarbutton class="toolbarbutton-1" xbl:inherits="image,label=title" wrap="true"/>
+        </content>
+
+        <implementation>
+            <constructor><![CDATA[    let wdgtOverlayController = window[this.getAttribute("cb-app") + "OverlayController"];
+    if (!wdgtOverlayController) {
+        return;
+    }
+    let browserThemeConsumer = wdgtOverlayController.browserThemeConsumer;
+    if (browserThemeConsumer.info.lightweightTheme !== false) {
+        return;
+    }
+    let {widgetLibrary} = wdgtOverlayController.application;
+    let wdgtWidgetInfo = widgetLibrary.getWidgetInfo(this.getAttribute("cb-proto-id"));
+    let iconPath = wdgtWidgetInfo.iconPath;
+    if (!iconPath) {
+        return;
+    }
+    let paths = iconPath.split("#");
+    paths[0] = paths[0].replace(/(\.[^.]+)$/, "-inverted$1");
+    iconPath = paths.join("#");
+    if (wdgtWidgetInfo.package_.findFile(iconPath)) {
+        this.setAttribute("image", wdgtWidgetInfo.package_.resolvePath(iconPath));
+    }]]></constructor>
+        </implementation>
+    </binding>
+
+
+    <binding extends="#widget-base" id="widget-customize-old">
+        <content>
+            <xul:vbox pack="center">
+                <xul:hbox align="center" class="toolbarbutton-1" pack="center">
+                    <xul:image xbl:inherits="src=image"/>
+                </xul:hbox>
+                <xul:box hidden="true">
+                    <children/>
+                </xul:box>
+            </xul:vbox>
+        </content>
+    </binding>
+</bindings>

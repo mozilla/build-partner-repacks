@@ -1,0 +1,54 @@
+<!ENTITY widget.name "Одноклассники">
+<!ENTITY widget.window.title "Одноклассники">
+<!ENTITY widget.tooltip.messages "Одноклассники жүйесіндегі жаңа хабарламалар">
+<!ENTITY widget.tooltip.notifications "Одноклассники жүйесіндегі хабарландырулар">
+<!ENTITY widget.tooltip.guests "Одноклассники жүйесіндегі қонақтар">
+<!ENTITY widget.tooltip.marks "Одноклассники жүйесіндегі фотосуреттерді бағалау">
+<!ENTITY widget.tooltip.bd "Одноклассники жүйесіндегі достар">
+<!ENTITY widget.tooltip.bd-hd "Одноклассники жүйесіндегі достардың туған күндері">
+<!ENTITY widget.tooltip.no-auth1 "Одноклассники жүйесіндегі жаңа оқиғаларды көрсетеді">
+<!ENTITY widget.tooltip.no-auth2 "Авторизациядан өтуіңізді сұраймыз">
+<!ENTITY widget.menuitem.update "Ақпаратты жаңарту">
+<!ENTITY widget.menuitem.home "Одноклассники жүйесіне өту">
+<!ENTITY widget.menuitem.messages-follow "Хабарламаларға өту">
+<!ENTITY widget.menuitem.notifications-follow "Хабарландыруларға өту">
+<!ENTITY widget.menuitem.guests-follow "Қонақтарға өту">
+<!ENTITY widget.menuitem.marks-follow "Фотосуреттерді бағалауға өту">
+<!ENTITY widget.menuitem.messages "Хабарламалар">
+<!ENTITY widget.menuitem.notifications "Хабарландырулар">
+<!ENTITY widget.menuitem.guests "Қонақтар">
+<!ENTITY widget.menuitem.marks "Фотосуреттерді бағалау">
+<!ENTITY widget.menuitem.bd "Достар">
+<!ENTITY widget.menuitem.bd2 "Достардың туған күндері">
+<!ENTITY widget.menuitem.bd-hd "Достардың мерекелері">
+<!ENTITY widget.menuitem.bd-follow "Достарға өту">
+<!ENTITY widget.menuitem.bd-hd-follow "Достардың мерекелеріне өту">
+<!ENTITY widget.menuitem.settings "Баптаулар">
+<!ENTITY widget.menuitem.quit "Одноклассники жүйесінен шығу">
+<!ENTITY settings.update-interval-label "Жаңарту интервалы">
+<!ENTITY settings.update-interval-min "мин.">
+<!ENTITY settings.show-messages "«Хабарламалар» батырмасын көрсету">
+<!ENTITY settings.show-notifications "«Хабарландырулар» батырмасын көрсету">
+<!ENTITY settings.show-guests "«Қонақтар» батырмасын көрсету">
+<!ENTITY settings.show-marks "«Бағалау» батырмасын көрсету">
+<!ENTITY settings.show-bd "«Туған күндер» батырмасын көрсету">
+
+<!ENTITY widget.info.age "{N} жас">
+<!ENTITY widget.info.months "қаңтар,ақпан,наурыз,сәуiр,мамыр,маусым,шiлде,тамыз,қыркүйек,қазан,қараша,желтоқсан">
+<!ENTITY error.connect "Жүйелік қосылуды тексеруіңізді сұраймыз">
+<!ENTITY error.data "Одноклассники жүйесінен дерек алу мүмкін емес">
+<!ENTITY error.update "Деректерді жаңарту қатесі">
+<!ENTITY error.auth "Авторизациялау мүмкін болмады">
+<!ENTITY error.auth.net "Авторизациялау үшін Одноклассники серверіне қосылу мүмкін болмады">
+<!ENTITY settings.show-friends "«Достар» батырмасын көрсету">
+<!ENTITY settings.show_notifications "Хабарландыруларды көрсету">
+<!ENTITY widget.info.marks "1 балл,2 балл,3 балл,4 балл,5 балл">
+<!ENTITY widget.main_tooltip.marks "Бағалар">
+<!ENTITY widget.main_tooltip.new-messages "Жаңа хабарламалар">
+<!ENTITY widget.tooltip.noauth "Одноклассники жүйесінде жаңа оқиғаларды көрсетеді&#13;Авторизациядан өтуіңізді сұраймыз">
+<!ENTITY widget.tooltip.nodata "Одноклассники жүйесінен дерек алу мүмкін емес&#13;Жүйелік қосылуды тексеруіңізді сұраймыз">
+<!ENTITY widget.tooltip.update.fail "&#13;Мәліметтерді жаңарту қатесі">
+<!ENTITY notify.comments "{N} жаңа пікір;{N} жаңа пікір;{N} жаңа пікір">
+<!ENTITY notify.messages "{N} жаңа хабарлама;{N} жаңа хабарлама;{N} жаңа хабарлама">
+<!ENTITY notify.messages_file "Сізге хабарлама жіберді">
+<!ENTITY notify.messages_file_f "Сізге хабарлама жолдады">

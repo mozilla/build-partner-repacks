@@ -1,0 +1,174 @@
+html,
+body
+{
+    height: 100%;
+}
+
+.b-body
+{
+    font: 18px Arial;
+
+    width: 100%;
+    min-width: 1000px;
+    height: 100%;
+    margin: 0;
+}
+
+.b-bg
+{
+    position: fixed;
+    z-index: -1;
+
+    width: 100%;
+    height: 100%;
+
+    background: url("/welcome/fx/img/b-bg.jpg") center center no-repeat;
+    background-size: cover;
+
+    image-rendering: optimizequality;
+}
+
+.b-tabs
+{
+    position: absolute;
+    z-index: 997;
+
+    width: 100%;
+    height: 100%;
+    min-width: 1000px;
+
+    background: url('/welcome/fx/img/b-tabs.png') 45% 0 no-repeat;
+}
+
+.b-paranja
+{
+    position: absolute;
+    z-index: 998;
+
+    width: 100%;
+    height: 100%;
+    min-width: 1000px;
+    min-height: 650px;
+
+    background:-moz-radial-gradient(-moz-calc(45% - 340px) 230px, circle cover, transparent, rgba(0,0,0,.8) 90px), -moz-radial-gradient(97% 97% , circle cover, transparent, rgba(0,0,0,.8) 80px);
+    background-repeat: no-repeat, no-repeat;
+    background-position: 0 0, 50% 100%;
+    background-size: 100% 50%, 100% 50%;
+}
+
+
+.b-content
+{
+    position: relative;
+    z-index: 999;
+
+    width: 100%;
+    height: 100%;
+    min-height: 650px;
+    
+}
+
+.b-close
+{
+    font-size: 0.7em;
+
+    position: absolute;
+    top: 10px;
+    right: 1%;
+
+    padding-right: 45px;
+
+    cursor: pointer;
+    line-height: 3em;
+    text-decoration: underline;
+
+    color: #c2c2c2;
+    background: url('/welcome/fx/img/b-close.png') right center no-repeat;
+}
+
+.b-close:hover
+{
+    color: #ffea00;
+}
+
+.b-info
+{
+    position: absolute;
+}
+
+.b-info_type_adress
+{
+    top: 5px;
+    left: 200px;
+
+    width: 310px;
+    padding: 30px 0 0 44px;
+
+    background: url('/welcome/fx/img/b-info_type_adress.png') no-repeat;
+}
+
+.b-info_type_button
+{
+    top: 2px;
+    right: 120px;
+
+    width: 250px;
+    padding-top: 37px;
+
+    background: url('/welcome/fx/img/b-info_type_button.png') 100px 0 no-repeat;
+}
+
+.b-info_type_setting
+{
+    right: 10px;
+    bottom: 20px;
+
+    width: 180px;
+    padding-bottom: 62px;
+
+    background: url("img/b-info_type_setting.png") 53px bottom no-repeat;
+}
+
+.b-info_type_visual
+{
+    top: 298px;
+    left: 45%;
+
+    width: 23%;
+    margin-left: -340px;
+    padding-top: 51px;
+
+    background: url("/welcome/fx/img/b-info_type_visual.png") 29px 0 no-repeat;
+}
+
+.b-info__title
+{
+    font-size: 1em;
+    line-height: 1.2em ;
+
+    color: #fff;
+}
+
+.b-info__text
+{
+    font-size: 0.72em;
+    line-height: 1.25em;
+
+    margin-top: 0.3em;
+
+    color: #c2c2c2;
+}
+
+.b-informer
+{
+    font-size: 1.56em;
+    line-height: 1.26em;
+
+    position: absolute;
+    top: 190px;
+    left: 44%;
+
+    width: 40%;
+
+    color: #fff;
+}

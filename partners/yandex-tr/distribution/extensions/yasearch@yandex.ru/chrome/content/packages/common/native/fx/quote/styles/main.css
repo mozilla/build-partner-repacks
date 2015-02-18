@@ -1,0 +1,4 @@
+@import url(../../styles/buttons.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);toolbarbutton{list-style-image:url(../icons/quote_up.svg)!important}
+tooltip[anonid=quotes-tooltip]>label[anonid=tooltip-header]{font-weight:700;text-align:center}
+tooltip[anonid=quotes-tooltip].no-data>label[anonid=tooltip-header]{font-weight:400}
+toolbarbutton[yb-no-data=true] label.second-label-text{display:none}

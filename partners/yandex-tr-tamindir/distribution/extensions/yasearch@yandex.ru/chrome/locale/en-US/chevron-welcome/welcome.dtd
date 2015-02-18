@@ -1,0 +1,8 @@
+<!ENTITY welcome.newfeature "You can now hide/show all your browser button panels at once with a simple click.">
+<!ENTITY welcome.howitworks "Click {button} to find out more.">
+<!ENTITY welcome.closeallpanels "Hide all panels">
+<!ENTITY notification.thanks "Thank you">
+<!ENTITY notification.toolbar.installed "The new toolbar has arrived!">
+
+<!ENTITY welcome.close "close">
+<!ENTITY welcome.openpanels "Open panels">

@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<domainGroups>
+    <group name="yandex">
+        <domain>yandex.com</domain>
+        <domain>yandex.com.tr</domain>
+        <domain>yandex.ru</domain>
+        <domain>yandex.ua</domain>
+        <domain>yandex.by</domain>
+        <domain>yandex.kz</domain>
+
+        
+        <domain>bjkyandex.com</domain>
+        <domain>fbyandex.com.tr</domain>
+        <domain>gsyandex.com</domain>
+    </group>
+    <group name="mail">
+        <domain>mail.yandex.com</domain>
+        <domain>mail.yandex.com.tr</domain>
+        <domain>mail.yandex.ru</domain>
+        <domain>mail.yandex.ua</domain>
+        <domain>mail.yandex.by</domain>
+        <domain>mail.yandex.kz</domain>
+        <domain>mail.ya.ru</domain>
+    </group>
+    <group name="maps">
+        <domain>karti.yandex.ru</domain>
+        <domain>karty.yandex.ru</domain>
+        <domain>maps.yandex.com</domain>
+        <domain>maps.yandex.com.tr</domain>
+        <domain>maps.yandex.ru</domain>
+        <domain>maps.yandex.ua</domain>
+        <domain>harita.yandex.com.tr</domain>
+        <domain>maps.yandex.com.tr</domain>
+        <domain>maps.yandex.by</domain>
+        <domain>maps.yandex.kz</domain>
+        <domain>maps.ya.ru</domain>
+    </group>
+    <group name="soft">
+        <domain>soft.yandex.by</domain>
+        <domain>soft.yandex.com</domain>
+        <domain>soft.yandex.com.tr</domain>
+        <domain>soft.yandex.ru</domain>
+        <domain>soft.yandex.kz</domain>
+        <domain>soft.yandex.ua</domain>
+    </group>
+    <group name="music">
+        <domain>music.yandex.by</domain>
+        <domain>music.yandex.ru</domain>
+        <domain>music.yandex.kz</domain>
+        <domain>music.yandex.ua</domain>
+    </group>
+    <group name="market">
+        <domain>market.yandex.by</domain>
+        <domain>market.yandex.ru</domain>
+        <domain>market.yandex.kz</domain>
+        <domain>market.yandex.ua</domain>
+        <domain>market.yandex.com.tr</domain>
+        <domain>market.yandex.com</domain>
+    </group>
+</domainGroups>

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget [
+<!ENTITY % widget SYSTEM "/native/fx/moikrug.dtd">
+%widget;
+<!ENTITY % package SYSTEM "/native/fx/package.dtd">
+%package;
+]>
+
+<widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/native/fx/moikrug/icons/moikrug.svg" name="&moikrug.name;" unique="true">
+
+    <f:setting default="5" name="countersUpdateInterval" scope="package">
+        <control empty-default="5" label="&package.counters.upd-interval.label;" label-after="&package.counters.upd-interval.units;" max="999" min="0" spin="5" type="textedit" value-type="int"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="/native/fx/moikrug/moikrug.jsm"/>
+    </modules>
+</widget>

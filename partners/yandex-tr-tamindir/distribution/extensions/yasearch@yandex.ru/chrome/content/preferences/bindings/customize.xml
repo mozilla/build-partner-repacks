@@ -1,0 +1,514 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings><bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="chrome://global/content/bindings/button.xml#button" id="button-minimal" inheritstyle="false">
+        <resources>
+            <stylesheet src="button.css"/>
+        </resources>
+
+        <content align="center" pack="center">
+            <xul:image/>
+        </content>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/richlistbox.xml#richlistbox" id="richlistbox">
+        <implementation>
+            <field name="mDNDDataType">"application/x-xb-node"</field>
+            <field name="_draggable">true</field>
+
+            <method name="clear">
+                <body><![CDATA[    this.clearSelection();
+    while (this.firstChild) {
+        this.removeChild(this.firstChild);
+    }]]></body>
+            </method>
+
+            <method name="insertItem">
+                <parameter name="aIsUnique"/>
+                <parameter name="aIsRemovable"/>
+                <parameter name="aIsDisabled"/>
+                <parameter name="aId"/>
+                <parameter name="aLabel"/>
+                <parameter name="aIconURL"/>
+                <parameter name="aBeforeId"/>
+                <body><![CDATA[    const XULNS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+    let richlistitem = this.ownerDocument.createElementNS(XULNS, "richlistitem");
+    richlistitem.setAttribute("id", aId);
+    richlistitem.setAttribute("isUnique", aIsUnique);
+    richlistitem.setAttribute("isRemovable", aIsRemovable);
+    richlistitem.setAttribute("isEnabled", !aIsDisabled);
+    richlistitem.setAttribute("label", aLabel);
+    richlistitem.setAttribute("image", aIconURL);
+    let beforeElement = aBeforeId ? document.getElementById(aBeforeId) : null;
+    if (beforeElement && beforeElement.parentNode == this) {
+        this.insertBefore(richlistitem, beforeElement);
+    } else {
+        this.appendChild(richlistitem);
+    }
+    return richlistitem;]]></body>
+            </method>
+
+            <property name="selectedItemsSorted" reodonly="true">
+                <getter><![CDATA[    let selectedItems = Array.slice(this.selectedItems);
+    let len = selectedItems.length;
+    if (!len) {
+        return null;
+    }
+    let me = this;
+    selectedItems = selectedItems.sort(function (a, b) {
+        let indxA = me.getIndexOfItem(a);
+        let indxB = me.getIndexOfItem(b);
+        return indxA > indxB ? 1 : indxA < indxB ? -1 : 0;
+    });
+    return selectedItems;]]></getter>
+            </property>
+
+            <method name="_dragWithCustomImage">
+                <parameter name="aEvent"/>
+                <parameter name="aRect"/>
+                <body><![CDATA[    let doc = this.ownerDocument;
+    let canvas = doc.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+    canvas.width = aRect.right - aRect.left;
+    canvas.height = aRect.bottom - aRect.top;
+    let ctx = canvas.getContext("2d");
+    ctx.drawWindow(doc.defaultView, aRect.left, aRect.top, aRect.right, aRect.bottom, "rgb(255,255,255)");
+    let dt = aEvent.dataTransfer;
+    dt.effectAllowed = "move";
+    dt.setDragImage(canvas, 5, 5);]]></body>
+            </method>
+
+            <method name="_getListitemFromEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    return aEvent.dataTransfer.mozGetDataAt(this.mDNDDataType, 0);]]></body>
+            </method>
+
+
+            <method name="ensureElementIsVisible">
+                <parameter name="aElement"/>
+                <body><![CDATA[    if (!aElement) {
+        return;
+    }
+    let targetRect = aElement.getBoundingClientRect();
+    let scrollRect = this._scrollbox.getBoundingClientRect();
+    let offset = targetRect.top - scrollRect.top;
+    if (offset >= 0) {
+        let scrollRectBottom = scrollRect.top + this._scrollbox.clientHeight;
+        if (targetRect.bottom - scrollRectBottom <= 0) {
+            return;
+        }
+    }
+    this._scrollbox.scrollTop += offset;]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="dragstart"><![CDATA[    if (!this._draggable) {
+        return;
+    }
+    if (!(event.target && event.target.localName == "richlistitem")) {
+        return;
+    }
+    let originalTarget = event.originalTarget;
+    if (originalTarget && (originalTarget.localName == "menuitem" || originalTarget.localName == "thumb")) {
+        return;
+    }
+    if ("expandItem" in this) {
+        this.expandItem(null);
+    }
+    let selectedItems = this.selectedItemsSorted;
+    let len = selectedItems && selectedItems.length;
+    if (!len) {
+        return;
+    }
+    for (let i = 0; i < len; i++) {
+        event.dataTransfer.mozSetDataAt(this.mDNDDataType, selectedItems[i], i);
+    }
+    if (len == 1 && "collapsedSettings" in selectedItems[0]) {
+        selectedItems[0].collapsedSettings = true;
+    }
+    let listRect = this.getBoundingClientRect();
+    let firstRect = selectedItems[0].getBoundingClientRect();
+    let lastRect = selectedItems[len - 1].getBoundingClientRect();
+    let rect = {
+        left: firstRect.left,
+        right: firstRect.right,
+        top: firstRect.top > listRect.top ? firstRect.top : listRect.top,
+        bottom: lastRect.bottom < listRect.bottom ? lastRect.bottom : listRect.bottom
+    };
+    this._dragWithCustomImage(event, rect);]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="#richlistbox" id="richlistbox-registered">
+        <handlers>
+            <handler event="dragover"><![CDATA[    let listitem = this._getListitemFromEvent(event);
+    if (listitem && listitem.parentNode !== this) {
+        event.preventDefault();
+    }]]></handler>
+
+            <handler event="drop"><![CDATA[    if (this._getListitemFromEvent(event)) {
+        Preferences.doCommand("cmd_remove");
+    }]]></handler>
+
+            <handler event="focus" phase="capturing"><![CDATA[    if (event.target == this) {
+        Preferences.checkWidgetsControls();
+    }]]></handler>
+
+            <handler event="blur" phase="capturing"><![CDATA[    if (event.target == this) {
+        Preferences.checkWidgetsControls();
+    }]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="#richlistbox" id="richlistbox-active">
+        <implementation>
+            <field name="mDragOverAttrName">"xb-dragover-node"</field>
+            <field name="mLastDragOverId">null</field>
+
+            <method name="moveSelectedItems">
+                <parameter name="aDirection"/>
+                <parameter name="aBeforeElementId"/>
+                <body><![CDATA[    let selectedItems = this.selectedItemsSorted;
+    if (!selectedItems) {
+        return;
+    }
+    let len = selectedItems.length;
+    if (len == this.itemCount) {
+        return;
+    }
+    let beforeElement;
+    if (aBeforeElementId) {
+        beforeElement = document.getElementById(aBeforeElementId);
+    }
+    this.clearSelection();
+    if (len == 1 && !selectedItems[0].collapsedSettings) {
+        selectedItems[0].collapsedSettings = true;
+    }
+    let docFrag = this.ownerDocument.createDocumentFragment();
+    for (let i = 0; i < len; i++) {
+        docFrag.appendChild(this.removeChild(selectedItems[i]));
+    }
+    if (beforeElement) {
+        this.insertBefore(docFrag, beforeElement);
+    } else {
+        this.appendChild(docFrag);
+    }
+    this.selectItemRange(selectedItems[0], selectedItems[len - 1]);]]></body>
+            </method>
+
+            <method name="expandItem">
+                <parameter name="aItem"/>
+                <parameter name="aSwitchState"/>
+                <body><![CDATA[    let state = this.getAttribute("last-selected").split(" ");
+    if (state) {
+        state.forEach(function (aId) {
+            let item = aId ? document.getElementById(aId) : null;
+            if (item && item != aItem) {
+                item.collapsedSettings = true;
+            }
+        });
+    }
+    this._timedExpandItem(aItem, aSwitchState);]]></body>
+            </method>
+
+            <field name="_timedExpandItemTimer">null</field>
+
+            <method name="stopExpandItem">
+                <body><![CDATA[    if (this._timedExpandItemTimer) {
+        window.clearTimeout(this._timedExpandItemTimer);
+        this._timedExpandItemTimer = null;
+    }]]></body>
+            </method>
+
+            <method name="_timedExpandItem">
+                <parameter name="aItem"/>
+                <parameter name="aSwitchState"/>
+                <body><![CDATA[    this.stopExpandItem();
+    this._timedExpandItemTimer = window.setTimeout(function (item, switchState) {
+        if (item && "collapsedSettings" in item) {
+            if (!item.enabled) {
+                item.collapsedSettings = true;
+            } else {
+                item.collapsedSettings = typeof switchState == "undefined" ? false : !item.collapsedSettings;
+            }
+        }
+    }, 250, aItem, aSwitchState);]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler button="0" event="click"><![CDATA[    let target = event.target;
+    if (target.localName == "richlistitem" && this.selectedItems.length == 1 && target.isClickedOnCaption(event)) {
+        this.expandItem(target, true);
+    }]]></handler>
+
+            <handler event="DOMMenuItemActive"><![CDATA[    this.expandItem(this.selectedItems.length == 1 ? this.selectedItem : null);]]></handler>
+
+            <handler event="dragover"><![CDATA[    let listitem = this._getListitemFromEvent(event);
+    if (!listitem) {
+        return;
+    }
+    let target = event.target;
+    if (target && target == this.lastChild) {
+        let {
+            top: top,
+            bottom: bottom
+        } = target.getBoundingClientRect();
+        let halfPoint = top + parseInt((bottom - top) / 2, 10);
+        if (halfPoint < event.clientY) {
+            target.setAttribute(this.mDragOverAttrName, "after");
+            this.mLastDragOverId = null;
+        } else {
+            target.setAttribute(this.mDragOverAttrName, "before");
+            this.mLastDragOverId = target.id;
+        }
+    }
+    event.preventDefault();]]></handler>
+
+            <handler event="dragenter"><![CDATA[    let listitem = this._getListitemFromEvent(event);
+    if (!listitem) {
+        return;
+    }
+    let target = event.target;
+    if (target.localName != "richlistitem") {
+        return;
+    }
+    target.setAttribute(this.mDragOverAttrName, "before");
+    this.mLastDragOverId = target.id;
+    window.setTimeout(function (me, target) {
+        if (!(me && target && target.parentNode == me && "ensureElementIsVisible" in me)) {
+            return;
+        }
+        let listRect = me.getBoundingClientRect();
+        let prevSibling = target.previousSibling;
+        if (prevSibling) {
+            let {top: top} = prevSibling.getBoundingClientRect();
+            if (top < listRect.top) {
+                me.ensureElementIsVisible(prevSibling);
+                return;
+            }
+        }
+        let nextSibling = target.nextSibling;
+        if (nextSibling) {
+            let {bottom: bottom} = nextSibling.getBoundingClientRect();
+            if (bottom > listRect.bottom) {
+                me.ensureElementIsVisible(nextSibling);
+                return;
+            }
+        }
+        me.ensureElementIsVisible(target);
+    }, 150, this, target);
+    event.preventDefault();]]></handler>
+
+            <handler event="dragleave"><![CDATA[    let listitem = this._getListitemFromEvent(event);
+    if (listitem) {
+        let target = event.target;
+        if (target.localName == "richlistitem") {
+            target.removeAttribute(this.mDragOverAttrName);
+        } else if (target == this) {
+            this.mLastDragOverId = null;
+        }
+    }]]></handler>
+
+            <handler event="drop"><![CDATA[    let listitem = this._getListitemFromEvent(event);
+    if (listitem) {
+        let nodeBefore = this.mLastDragOverId ? document.getElementById(this.mLastDragOverId) : null;
+        let cmd = listitem.parentNode == this ? "cmd_moveWidgets" : "cmd_addWidgets";
+        Preferences.doCommand(cmd, nodeBefore);
+    }
+    this.mLastDragOverId = null;]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/richlistbox.xml#richlistitem" id="richlistitem-base">
+        <implementation>
+            <property name="isUnique" onget="return this.getAttribute('isUnique') == 'true';" readonly="true"/>
+            <property name="isRemovable" onget="return this.getAttribute('isRemovable') == 'true';" readonly="true"/>
+            <property name="enabled" onget="return true;" readonly="true"/>
+        </implementation>
+    </binding>
+
+    <binding extends="#richlistitem-base" id="registered-richlistitem">
+        <content>
+            <xul:hbox anonid="caption" flex="1" xbl:inherits="tooltiptext=label">
+                <xul:hbox class="xb-widget-icon-container">
+                    <xul:image class="xb-widget-icon" xbl:inherits="src=image"/>
+                </xul:hbox>
+                <xul:label crop="end" flex="1" xbl:inherits="value=label"/>
+            </xul:hbox>
+        </content>
+
+        <handlers>
+            <handler button="0" event="dblclick"><![CDATA[    if (event.target == this) {
+        Preferences.doCommand("cmd_addWidgets");
+    }]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="#richlistitem-base" id="active-richlistitem">
+        <content collapsedSettings="true">
+            <xul:vbox flex="1">
+                <xul:hbox anonid="caption" flex="1">
+                    <xul:hbox class="xb-widget-icon-container">
+                        <xul:image class="xb-widget-icon" xbl:inherits="src=image"/>
+                    </xul:hbox>
+                    <xul:label crop="end" flex="1" xbl:inherits="value=label"/>
+                </xul:hbox>
+                <xul:vbox anonid="settingsContainer" xbl:inherits="collapsed=collapsedSettings">
+                    <children/>
+                </xul:vbox>
+            </xul:vbox>
+        </content>
+
+        <implementation>
+            <field name="mListitemCaption">
+                document.getAnonymousElementByAttribute(this, "anonid", "caption")
+            </field>
+
+
+
+            <field name="widgetsController">ActiveWidgetsController</field>
+
+            <property name="collapsedSettings">
+                <getter><![CDATA[    return this.getAttribute("collapsedSettings") == "true";]]></getter>
+
+                <setter><![CDATA[    let collapsedBefore = this.collapsedSettings;
+    this.setAttribute("collapsedSettings", Boolean(val));
+    if (collapsedBefore == this.collapsedSettings) {
+        return;
+    }
+    if (collapsedBefore) {
+        this.widgetsController.initItemSettings(this);
+        if (this.hasAttribute("onSettingsShown")) {
+            try {
+                new Function(this.getAttribute("onSettingsShown"))();
+            } catch (ex) {
+            }
+        }
+        this.parentNode.ensureElementIsVisible(this);
+    } else {
+        let focusedElement = document.commandDispatcher.focusedElement;
+        if (focusedElement && focusedElement.ownerDocument == document && focusedElement.localName == "input") {
+            focusedElement.blur();
+        }
+        let child;
+        while (child = this.firstChild) {
+            if ("blur" in child) {
+                child.blur();
+            }
+            this.removeChild(child);
+        }
+        if (this.hasAttribute("onSettingsHidden")) {
+            try {
+                new Function(this.getAttribute("onSettingsHidden"))();
+            } catch (ex) {
+            }
+        }
+    }]]></setter>
+            </property>
+
+
+
+            <method name="isClickedOnCaption">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    if (aEvent.target == this) {
+        try {
+            return aEvent.originalTarget == this.mListitemCaption || Boolean(this.mListitemCaption.compareDocumentPosition(aEvent.originalTarget) & Node.DOCUMENT_POSITION_CONTAINED_BY);
+        } catch (e) {
+            Components.utils.reportError(e);
+        }
+    }
+    return false;]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding extends="#active-richlistitem" id="active-richlistitem-widgets">
+        <handlers>
+            <handler button="0" event="dblclick"><![CDATA[    if (this.isClickedOnCaption(event)) {
+        Preferences.doCommand("cmd_remove");
+    }]]></handler>
+        </handlers>
+    </binding>
+
+    <binding extends="#richlistbox-active" id="richlistbox-plugins">
+        <implementation>
+            <field name="_draggable">false</field>
+        </implementation>
+    </binding>
+
+    <binding extends="#active-richlistitem" id="active-richlistitem-plugins">
+        <content collapsedSettings="true">
+            <xul:vbox flex="1">
+                <xul:hbox align="center" anonid="caption" flex="1">
+                    <xul:hbox class="xb-widget-icon-container">
+                        <xul:image class="xb-widget-icon" xbl:inherits="src=image"/>
+                    </xul:hbox>
+                    <xul:label crop="end" flex="1" xbl:inherits="value=label"/>
+                    <xul:vbox anonid="switcher" xbl:inherits="isEnabled"/>
+                </xul:hbox>
+                <xul:vbox anonid="settingsContainer" xbl:inherits="collapsed=collapsedSettings">
+                    <children/>
+                </xul:vbox>
+            </xul:vbox>
+        </content>
+
+        <implementation>
+            <field name="widgetsController">RegisteredPluginsController</field>
+
+            <property name="enabled">
+                <getter><![CDATA[    return this.getAttribute("isEnabled") == "true";]]></getter>
+                <setter><![CDATA[    if (!val) {
+        this.collapsedSettings = true;
+    }
+    this.setAttribute("isEnabled", Boolean(val));]]></setter>
+            </property>
+
+            <property name="processing">
+                <getter><![CDATA[    return this.getAttribute("isProcessing") == "true";]]></getter>
+
+                <setter><![CDATA[    this.setAttribute("isProcessing", Boolean(val));]]></setter>
+            </property>
+        </implementation>
+    </binding>
+
+    <binding id="switcher">
+        <content>
+            <xul:checkbox xbl:inherits="checked=isEnabled" style="-moz-user-focus: ignore;"/>
+        </content>
+
+        <handlers>
+            <handler button="0" event="mousedown"><![CDATA[    event.stopPropagation();]]></handler>
+
+            <handler button="0" event="click"><![CDATA[    let pluginListItem = document.getBindingParent(this);
+    if (pluginListItem.processing) {
+        event.preventDefault();
+    }
+    if (!(pluginListItem.selected && pluginListItem.parentNode.selectedItems.length == 1)) {
+        event.stopPropagation();
+    }]]></handler>
+
+            <handler event="command"><![CDATA[    let pluginListItem = document.getBindingParent(this);
+    Preferences.doCommand("cmd_switchPluginState", pluginListItem.getAttribute("id"));]]></handler>
+        </handlers>
+    </binding>
+
+    <binding id="subwindow-opener">
+        <content>
+            <xul:hbox>
+                <xul:button xbl:inherits="label"/>
+            </xul:hbox>
+        </content>
+
+        <implementation>
+            <constructor><![CDATA[    if (!this.hasAttribute("label")) {
+        this.setAttribute("label", Preferences.getString("OpenSubWindowButtonLabel"));
+    }]]></constructor>
+        </implementation>
+
+        <handlers>
+            <handler event="command"><![CDATA[    Preferences.openSubDialog(this);]]></handler>
+        </handlers>
+    </binding>
+
+</bindings>

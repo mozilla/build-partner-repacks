@@ -1,0 +1,10 @@
+<!ENTITY moikrug.name "Мой Круг">
+<!ENTITY moikrug.tooltiptext "Нові повідомлення на «Моём Круге»">
+<!ENTITY moikrug.noauthtooltiptext "Показує нові повідомлення на «Моём Круге»">
+<!ENTITY moikrug.reloadCounter.label "Оновити дані про повідомлення">
+<!ENTITY moikrug.home.label "Відкрити «Мой Круг»">
+<!ENTITY moikrug.firstcircle.label "Моє 1-ше коло">
+<!ENTITY moikrug.profile.label "Мій профіль">
+<!ENTITY moikrug.search.label "Пошук людей">
+<!ENTITY moikrug.vacancies.label "Пошук роботи">
+<!ENTITY moikrug.services.label "Пошук послуг">

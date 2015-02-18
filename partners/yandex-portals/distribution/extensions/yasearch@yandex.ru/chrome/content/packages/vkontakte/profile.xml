@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "profile/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="profile/content/img/profile/normal.png" icon-vector="profile/content/img/profile/normal.svg" name="&vk.name;" xmlns:ui="http://bar.yandex.ru/dev/gui" unique="true">
+
+    <f:setting default="false" name="display-button-messages" scope="widget">
+        <control label="&settings.msg_button;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="false" name="display-button-friends" scope="widget">
+        <control label="&settings.friends_button;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="false" name="display-button-groups" scope="widget">
+        <control label="&settings.groups_button;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="false" name="display-button-photos" scope="widget">
+        <control label="&settings.photo_button;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="false" name="display-button-video" scope="widget">
+        <control label="&settings.video_button;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="false" name="display-button-notes" scope="widget">
+        <control label="&settings.notes_button;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="true" name="show-notifications" scope="widget">
+        <ui:control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <f:setting default="true" name="show-notif-message" scope="widget">
+        <ui:control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+    <f:setting default="true" name="show-notif-friend" scope="widget">
+        <ui:control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+    <f:setting default="true" name="show-notif-comment" scope="widget">
+        <ui:control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+    <f:setting default="true" name="show-notif-mention" scope="widget">
+        <ui:control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="profile/core/widget.jsm"/>
+    </modules>
+</widget>

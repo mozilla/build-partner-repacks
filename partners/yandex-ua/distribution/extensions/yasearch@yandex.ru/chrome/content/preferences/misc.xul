@@ -1,0 +1,60 @@
+<?xml version='1.0'?>
+<?xml-stylesheet href="preferences.css"?>
+
+<!DOCTYPE overlay [
+<!ENTITY % preferencesDTD SYSTEM "../../../locale/preferences/preferences.dtd">
+%preferencesDTD;
+<!ENTITY % barDTD SYSTEM "../bar.dtd">
+%barDTD;
+]>
+
+<overlay xmlns:html="http://www.w3.org/1999/xhtml" id="prefpane-misc-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <prefpane id="prefpane-misc">
+        <vbox class="prefWindow-dlgbuttons-hack"/>
+
+        <preferences>
+            <preference id="extensions.&addon.id;.openLinksInNewTab" name="extensions.&addon.id;.openLinksInNewTab" type="bool"/>
+            <preference id="extensions.&addon.id;.stat.usage.send" name="extensions.&addon.id;.stat.usage.send" type="bool"/>
+            <preference id="extensions.&addon.id;.defender.homepage.enabled" name="extensions.&addon.id;.defender.homepage.enabled" type="bool"/>
+        </preferences>
+
+        <vbox class="container" flex="1">
+            <groupbox>
+                <caption label="&yasearch.pref.misc.caption;"/>
+                <checkbox label="&yasearch.pref.links.target.label;" preference="extensions.&addon.id;.openLinksInNewTab"/>
+            </groupbox>
+
+            <groupbox id="homepage-group">
+                <caption label="&yasearch.pref.defence.homepage.caption;"/>
+
+                <vbox id="homepage-protection-box">
+                    <checkbox label="&yasearch.pref.defence.homepage.label;" preference="extensions.&addon.id;.defender.homepage.enabled"/>
+
+                    <vbox class="indent small-text">
+                        <description>&yasearch.pref.defence.homepage.description;</description>
+                    </vbox>
+
+                    <separator class="thin"/>
+                </vbox>
+
+                <hbox>
+                    <button hidden="true" id="homepage-button" oncommand="YaSearchPrefs.setBrowserHomepage();"/>
+                </hbox>
+            </groupbox>
+
+            <groupbox>
+                <caption label="&yasearch.pref.confidentiality.caption;"/>
+                <hbox align="center">
+                    <checkbox id="send-usage-stat-checkbox" preference="extensions.&addon.id;.stat.usage.send"/>
+                    <description class="plain" flex="1" onclick="return Preferences.onConfidentialBlockClick(event);">
+                        &yasearch.pref.stat.usage.send.label;
+                    </description>
+                </hbox>
+            </groupbox>
+
+        </vbox>
+
+    </prefpane>
+
+</overlay>

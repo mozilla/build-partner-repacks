@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preset format-version="2.2" version="8.8">
+    <url>http://bar.yandex.ru/presets/default.xml</url>
+    <author lang="ru">Яндекс</author>
+    <name lang="ru">Базовый</name>
+    <author lang="uk">Яндекс</author>
+    <name lang="uk">Базовый</name>
+    <author lang="en">Yandex</author>
+    <name lang="en">Basic</name>
+    <author lang="be">Яндекс</author>
+    <name lang="be">Базавы</name>
+    <author lang="kk">Яндекс</author>
+    <name lang="kk">Бастапқы</name>
+    <packages>
+        <package file="mail_2.zip" id="http://bar-widgets.yandex.ru/packages/100/manifest.xml" platform-min="3" version="2.0"/>
+        <package browser="firefox" file="yadirect.zip" id="http://bar-widgets.yandex.ru/packages/approved/17/manifest.xml" platform-min="13" version="3.1.1"/>
+        <package browser="firefox" file="rambler.zip" id="http://bar-widgets.yandex.ru/packages/approved/75/manifest.xml" platform-min="7" version="2.6.1"/>
+        <package browser="firefox" file="webmaster.zip" id="http://bar-widgets.yandex.ru/packages/approved/76/manifest.xml" platform-min="7" version="5.1.1"/>
+        <package browser="firefox" file="mailru.zip" id="http://bar-widgets.yandex.ru/packages/approved/82/manifest.xml" platform-min="7" version="4.2.3"/>
+        <package browser="firefox" file="vkontakte.zip" id="http://bar-widgets.yandex.ru/packages/approved/91/manifest.xml" platform-min="7" version="8.2.2"/>
+        <package browser="firefox" file="gmail.zip" id="http://bar-widgets.yandex.ru/packages/approved/97/manifest.xml" platform-min="7" version="5.2.1"/>
+        <package browser="firefox" file="facebook.zip" id="http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml" platform-min="7" version="4.3.1"/>
+        <package browser="firefox" file="radio.zip" id="http://bar-widgets.yandex.ru/packages/approved/118/manifest.xml" platform-min="7" version="3.1.1"/>
+        <package browser="firefox" file="odnoklassniki.zip" id="http://bar-widgets.yandex.ru/packages/approved/140/manifest.xml" platform-min="7" version="3.3.1"/>
+        <package browser="firefox" file="safe-browsing.zip" id="http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml" platform-min="22" version="3.1.0"/>
+        <package browser="firefox" file="twitter.zip" id="http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml" platform-min="10" version="4.1.1"/>
+        <package browser="firefox" file="browseroffer.zip" id="http://bar-widgets.yandex.ru/packages/approved/286/manifest.xml" platform-min="22" version="1.5.3"/>
+        <package browser="firefox" file="yadisk.zip" id="http://bar-widgets.yandex.ru/packages/approved/288/manifest.xml" platform-min="25" version="1.0.0"/>
+    </packages>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#logo" important="true" visible="true"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#mail" important="true" visible="true"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#town" important="true" visible="true">
+        <setting force="true" name="show-name">false</setting>
+    </widget>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/288/manifest.xml#yadisk" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/91/manifest.xml#profile" important="true" visible="true">
+        <setting force="true" name="display-button-messages">false</setting>
+        <setting force="true" name="display-button-friends">false</setting>
+        <setting force="true" name="display-button-groups">false</setting>
+        <setting force="true" name="display-button-photos">false</setting>
+        <setting force="true" name="display-button-video">false</setting>
+        <setting force="true" name="display-button-notes">false</setting>
+    </widget>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/140/manifest.xml#odnoklassniki" important="true" visible="auto">
+        <setting force="true" name="show-messages">false</setting>
+        <setting force="true" name="show-guests">false</setting>
+    </widget>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/97/manifest.xml#gmail" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/82/manifest.xml#mailru" visible="false">
+        <setting force="true" name="show-compose-button">false</setting>
+    </widget>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml#facebook" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/100/manifest.xml#mail" important="true" visible="auto"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#music" important="true" visible="auto"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#login" visible="false"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#moikrug" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/75/manifest.xml#rambler" important="true" visible="auto"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#money" important="true" visible="auto"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#quote" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/118/manifest.xml#radio" important="true" visible="auto">
+        <setting force="true" name="show_name">false</setting>
+    </widget>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml#twitter" visible="false"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#fotki" visible="false"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#lenta" visible="false"/>
+    <widget id="http://bar.yandex.ru/packages/yandexbar#cy" visible="false"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/76/manifest.xml#webmaster" visible="false"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/76/manifest.xml#site" visible="false"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/76/manifest.xml#metrika" visible="false"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/17/manifest.xml#direct" visible="false"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/17/manifest.xml#campaign" visible="false"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/284/manifest.xml#esync"/>
+    <plugin id="http://bar.yandex.ru/packages/yandexbar#translator"/>
+    <plugin id="http://bar.yandex.ru/packages/yandexbar#pagetranslator"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/283/manifest.xml#altsearch"/>
+    <plugin id="http://bar.yandex.ru/packages/yandexbar#textonly"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml#mc"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml#typosquatting"/>
+    <plugin id="http://bar-widgets.yandex.ru/packages/approved/286/manifest.xml#browseroffer"/>
+    <plugin id="http://bar.yandex.ru/packages/yandexbar#geolocation"/>
+</preset>

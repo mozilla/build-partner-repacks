@@ -1,0 +1,867 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+        <resources>
+            <stylesheet src="styles/main.css"/>
+        </resources>
+
+        <content>
+            <xul:toolbarbutton anonid="auth-button" class="toolbarbutton-1 widget-button" item-command="auth" tooltiptext="&widget.button.unauthorized;" type="button" yb-native-not-authorized="true"/>
+
+            <xul:toolbarbutton anonid="main-button" class="toolbarbutton-1 widget-button" item-command="openSlice" tooltiptext="&widget.button.authorized;" type="button"/>
+        </content>
+
+        <implementation implements="nsISupports, nsIDOMEventListener">
+            <field name="observers"><![CDATA[    ({
+        throbber: function yadisk_observers_throbber(topic, data) {
+        },
+        display: function yadisk_observers_display(topic, data) {
+            this.updateView(data && parseInt(data, 10));
+        },
+        suggest: function yadisk_observers_suggest(topic, data) {
+            this._switchPopupSuggest(data);
+        }
+    });]]></field>
+
+            <field name="_STATES" readonly="true">({
+                progress: 1,
+                success: 2,
+                error: 3
+            })</field>
+
+            <field name="_htmlTypes" readonly="true">([
+                'text/html'
+            ])</field>
+
+            <field name="_eventsArray" readonly="true">['mousemove', 'mouseout', 'scroll']</field>
+
+            <field name="_contextMenu" readonly="true">document.getElementById('contentAreaContextMenu')</field>
+            <field name="_content" readonly="true">gBrowser.mPanelContainer</field>
+            <field name="_button" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "main-button")</field>
+
+            <field name="_balloon">null</field>
+            <field name="_menuItem">null</field>
+            <field name="_urlbarButton">null</field>
+
+            <field name="_mouseEventSending">false</field>
+            <field name="_lastMouseMoveData">null</field>
+            <field name="_boundHideBalloonCb">null</field>
+
+            <field name="_pointerPosition">({x: -1, y: -1})</field>
+
+            <field name="windowListener" readonly="true">this.application.api.Browser.getWindowListener(window)</field>
+
+            <constructor><![CDATA[    this.wdgtxConstructor();]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    if (this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = true;
+    this.windowListener.addListener("WindowLocationChange", this);
+    this.listenToVisibilityChange(true);
+    this._switchSuggest(true);
+    if (!this.application.shouldSuggest()) {
+        this._switchPopupSuggest(false);
+    }
+    this.updateView();
+    this._makeUrlbarSuggest(gBrowser.mCurrentBrowser);]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    if (!this._wdgtxConstructed) {
+        return;
+    }
+    this._wdgtxConstructed = false;
+    this.windowListener.removeListener("WindowLocationChange", this);
+    this.listenToVisibilityChange();
+    this._switchSuggest(false);]]></body>
+            </method>
+
+            <method name="updateView">
+                <parameter name="aState"/>
+                <body>
+                    // TODO: При рефакторинге помнить, что одинарные кавычки внутри локализации сломают код.
+                    let progressLabel = "&widget.button.uploading;";
+                    let errorLabel = "&widget.button.upload-error;";
+                    let successLabel = "&widget.button.upload-complete;";
+                    let defaultLabel = "&widget.button.authorized;";
+
+                <![CDATA[    if (!this.application.isAuth()) {
+        this.setAttribute("auth", false);
+        return;
+    } else {
+        this.setAttribute("auth", true);
+    }
+    let tooltipTexts = {};
+    if (aState) {
+        tooltipTexts[this._STATES.progress] = progressLabel;
+        tooltipTexts[this._STATES.error] = errorLabel;
+        tooltipTexts[this._STATES.success] = successLabel;
+    }
+    if (!(aState && this.application.isSliceOpen())) {
+        let image = "ico";
+        let tooltipText;
+        Object.keys(this._STATES).some(function (state) {
+            if (aState === this._STATES[state]) {
+                image = state;
+                tooltipText = tooltipTexts[aState];
+                return true;
+            }
+            return false;
+        }, this);
+        this._button.setAttribute("image", this.common.resolvePath("content/icons/" + image + ".svg"));
+        this._button.setAttribute("tooltiptext", tooltipText || defaultLabel);
+    }]]></body>
+            </method>
+
+            <method name="clearDeactivateTimeout">
+                <body><![CDATA[    if (!this._deactivateTimeoutId) {
+        return;
+    }
+    clearTimeout(this._deactivateTimeoutId);
+    this._deactivateTimeoutId = null;]]></body>
+            </method>
+
+            <method name="downloadMedia">
+                <parameter name="aURL"/>
+                <parameter name="aMetaInfo"/>
+                <body><![CDATA[    if (!aURL) {
+        return false;
+    }
+    let metaInfo = aMetaInfo || {};
+    let currentBrowser = gBrowser.mCurrentBrowser;
+    let doc = currentBrowser.contentDocument;
+    if (!metaInfo.pageTitle) {
+        metaInfo.pageTitle = doc.title;
+    }
+    if (!metaInfo.pageURL) {
+        let pageURL;
+        let contentType = this._getDocumentContentType(gBrowser.mCurrentBrowser);
+        if (!contentType || this._htmlTypes.indexOf(contentType.toLowerCase()) > -1) {
+            pageURL = doc.location && doc.location.href;
+        } else {
+            pageURL = doc.referrer;
+        }
+        metaInfo.pageURL = pageURL;
+    }
+    this.application.tryDownloadMedia(aURL, metaInfo);]]></body>
+            </method>
+
+            <method name="saveDocument">
+                <body><![CDATA[    let metaInfo = {};
+    let currentBrowser = gBrowser.mCurrentBrowser;
+    if (currentBrowser.contentDocument) {
+        metaInfo.pageURL = currentBrowser.contentDocument.referrer;
+    }
+    this.downloadMedia(gBrowser.mCurrentBrowser.currentURI.spec, metaInfo);]]></body>
+            </method>
+
+            <method name="hideBalloon">
+                <body><![CDATA[    if (this._balloon && typeof this._balloon.hide === "function") {
+        this._balloon.hide();
+    }]]></body>
+            </method>
+
+            <method name="showBalloon">
+                <parameter name="aURL"/>
+                <parameter name="aElement"/>
+                <body><![CDATA[    if (this._balloon) {
+        this._balloon.clearHideTimeout();
+        this._balloon.show(aURL, aElement);
+        return true;
+    }
+    return false;]]></body>
+            </method>
+
+            <method name="listenToVisibilityChange">
+                <parameter name="enable"/>
+                <body><![CDATA[    if (this._boundHideBalloonCb === null) {
+        let timeout = this.application.api.Environment.os.name === "windows" ? 100 : 0;
+        this._boundHideBalloonCb = function _boundHideBalloonCb() {
+            this._clearTooltipTimer();
+            this._deactivateTimeoutId = window.setTimeout(function _timedDeactivate() {
+                if (typeof this.hideBalloon === "function") {
+                    this.hideBalloon();
+                }
+            }.bind(this), timeout);
+        }.bind(this);
+    }
+    [
+        "deactivate",
+        "visibilitychange"
+    ].forEach(function (eventType) {
+        if (enable) {
+            window.addEventListener(eventType, this._boundHideBalloonCb, false);
+        } else {
+            window.removeEventListener(eventType, this._boundHideBalloonCb, false);
+        }
+    }, this);
+    if (!enable) {
+        this._boundHideBalloonCb = null;
+    }]]></body>
+            </method>
+
+            <method name="_switchSuggest">
+                <parameter name="aState"/>
+                <body><![CDATA[    this._switchPopupSuggest(aState);
+    if (aState) {
+        this._doContextMenu();
+        this._doAddressBarButton();
+        this._balloon = this._createBalloon();
+    } else {
+        this._undoContextMenu();
+        this._undoAddressBarButton();
+        this.hideBalloon();
+        if (this._balloon) {
+            this._balloon.parentNode.removeChild(this._balloon);
+            this._balloon = null;
+        }
+    }]]></body>
+            </method>
+
+            <method name="_switchPopupSuggest">
+                <parameter name="aState"/>
+                <body><![CDATA[    this._eventsArray.forEach(function (aEvent) {
+        if (aState) {
+            this._content.addEventListener(aEvent, this);
+        } else {
+            this._content.removeEventListener(aEvent, this);
+        }
+    }, this);]]></body>
+            </method>
+
+            <method name="_doContextMenu">
+                <body><![CDATA[    this._buildMenuItems();
+    this._contextMenu.addEventListener("popupshowing", this);
+    this._contextMenu.addEventListener("popuphiding", this);]]></body>
+            </method>
+
+            <method name="_undoContextMenu">
+                <body><![CDATA[    this._contextMenu.removeEventListener("popupshowing", this);
+    this._contextMenu.removeEventListener("popuphiding", this);
+    this._destroyMenuItems();]]></body>
+            </method>
+
+            <method name="_buildMenuItems">
+                <body>
+                    let label = "&context-menu.upload-title;";
+
+                <![CDATA[    if (this._menuItem) {
+        return;
+    }
+    let menuitem = document.createElement("menuitem");
+    menuitem.setAttribute("id", this.application.api.Environment.barPlatform.name + "-context-menu-yadisk");
+    menuitem.setAttribute("class", "menuitem-iconic menuitem-with-favicon");
+    menuitem.setAttribute("image", this.common.resolvePath("content/icons/menu.png"));
+    menuitem.setAttribute("label", label);
+    menuitem.setAttribute("hidden", "true");
+    menuitem.addEventListener("command", this);
+    this._contextMenu.insertBefore(menuitem, this._contextMenu.querySelector("#context-viewimageinfo").nextElementSibling);
+    this._menuItem = menuitem;]]></body>
+            </method>
+
+            <method name="_destroyMenuItems">
+                <body><![CDATA[    if (!this._menuItem) {
+        return;
+    }
+    this._menuItem.removeEventListener("command", this);
+    this._contextMenu.removeChild(this._menuItem);
+    this._menuItem = null;]]></body>
+            </method>
+
+            <method name="_doAddressBarButton">
+                <body><![CDATA[    let urlbarIcons = document.getElementById("urlbar-icons");
+    let ybIcons = document.getElementById(this.application.api.Environment.barPlatform.name + "-urlbar-icons");
+    let container = ybIcons || urlbarIcons;
+    if (!container) {
+        this.application.log("Couldn't find urlbar icons container");
+        return;
+    }
+    let namespace = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+    if (urlbarIcons) {
+        namespace = urlbarIcons.namespaceURI;
+    }
+    let button = document.createElementNS(namespace, "hbox");
+    button.setAttribute("yb-native-widget-name", this.application.api.Package.id + "#yadisk-urlbar");
+    button.setAttribute("hidden", "true");
+    button.style.MozBinding = "url('" + this.common.resolvePath("content/widget.xbl") + "#urlbar-button')";
+    button.controller = this;
+    container.appendChild(button);
+    this._urlbarButton = button;]]></body>
+            </method>
+
+            <method name="_undoAddressBarButton">
+                <body><![CDATA[    if (!this._urlbarButton) {
+        return;
+    }
+    this._urlbarButton.parentNode.removeChild(this._urlbarButton);
+    this._urlbarButton = null;]]></body>
+            </method>
+
+            <method name="_createBalloon">
+                <body><![CDATA[    const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+    let tooltip = document.createElementNS(XUL_NS, "tooltip");
+    tooltip.style.MozBinding = "url('" + this.common.resolvePath("content/widget.xbl#balloon") + "')";
+    tooltip.tooltipController = this;
+    tooltip.noautohide = true;
+    document.getElementById("mainPopupSet").appendChild(tooltip);
+    return tooltip;]]></body>
+            </method>
+
+            <method name="_getComputedURL">
+                <parameter name="aElem"/>
+                <parameter name="aProp"/>
+                <body><![CDATA[    let url = aElem.ownerDocument.defaultView.getComputedStyle(aElem, "").getPropertyCSSValue(aProp);
+    if (url instanceof CSSValueList) {
+        if (url.length != 1) {
+            throw "found multiple URLs";
+        }
+        url = url[0];
+    }
+    return url.primitiveType == CSSPrimitiveValue.CSS_URI ? url.getStringValue() : null;]]></body>
+            </method>
+
+            <method name="_getDocumentContentType">
+                <parameter name="aBrowser"/>
+                <body><![CDATA[    let contentType = aBrowser.documentContentType;
+    if (!contentType && aBrowser.contentDocument) {
+        contentType = aBrowser.contentDocument.contentType;
+    }
+    return contentType;]]></body>
+            </method>
+
+            <method name="_shouldPopupSuggestOnElement">
+                <parameter name="aElement"/>
+                <body><![CDATA[    if ((aElement.localName || "").toLowerCase() !== "img") {
+        return false;
+    }
+    let imgBO = aElement.getBoundingClientRect();
+    if (imgBO.width < 160 || imgBO.height < 160) {
+        return false;
+    }
+    return true;]]></body>
+            </method>
+
+            <method name="_isYandexDiskURL">
+                <parameter name="aURL"/>
+                <body><![CDATA[    return /^https?:\/\/(yadi\.sk|([^/]*\.)?disk\.yandex\.[^/]+|[^/]+\.storage\.yandex\.net\/rdisk)\//i.test(aURL);]]></body>
+            </method>
+
+            <method name="_makePopupSuggest">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    let currentURL = gBrowser.mCurrentBrowser.currentURI.spec;
+    if (this._isYandexDiskURL(currentURL)) {
+        return false;
+    }
+    let targetNode = aEvent.target;
+    let mediaURL = targetNode.currentURI && targetNode.currentURI.spec;
+    if (!mediaURL) {
+        return false;
+    }
+    if (!(/^(https?|file):\/\//i.test(mediaURL) || this.application.dataImageRegexp.test(mediaURL))) {
+        return false;
+    }
+    if (this._isYandexDiskURL(mediaURL)) {
+        return false;
+    }
+    return this.showBalloon(mediaURL, targetNode);]]></body>
+            </method>
+
+            <method name="_makeUrlbarSuggest">
+                <parameter name="aBrowser"/>
+                <body><![CDATA[    let tabData = this.windowListener.getTabData(aBrowser, "yadisk");
+    let currentURL = aBrowser.currentURI.spec;
+    let showSuggest = function showSuggest() {
+        if (!this.application.shouldSuggest()) {
+            return false;
+        }
+        if (/^(chrome|about|yafd|bar)$/i.test(aBrowser.documentURI.scheme)) {
+            return false;
+        }
+        if (this._isYandexDiskURL(currentURL)) {
+            return false;
+        }
+        let contentType = aBrowser.documentContentType;
+        if (!contentType && aBrowser.contentDocument) {
+            contentType = aBrowser.contentDocument.contentType;
+        }
+        if (!contentType || this._htmlTypes.indexOf(contentType.toLowerCase()) > -1) {
+            return false;
+        }
+        return true;
+    }.bind(this)();
+    if (showSuggest) {
+        if (this._urlbarButton && typeof this._urlbarButton.show === "function") {
+            this._urlbarButton.show();
+        } else {
+            return;
+        }
+        if (tabData.showedURL !== currentURL) {
+            this.xbStatLog("viewpanel.show");
+        }
+        tabData.showedURL = currentURL;
+    } else {
+        if (this._urlbarButton && typeof this._urlbarButton.hide === "function") {
+            this._urlbarButton.hide();
+        }
+        tabData.showedURL = null;
+    }]]></body>
+            </method>
+
+            <method name="_onContextMenuPopupShowing">
+                <body><![CDATA[    if (!this.application.shouldSuggest()) {
+        return;
+    }
+    let mediaURL = null;
+    if (!gContextMenu.isContentSelected) {
+        if (gContextMenu.onImage && gContextMenu.mediaURL) {
+            mediaURL = gContextMenu.mediaURL;
+        } else if (gContextMenu.bgImageURL) {
+            let shouldShow = !(gContextMenu.onImage || gContextMenu.onCanvas || gContextMenu.onVideo || gContextMenu.onAudio || gContextMenu.onLink || gContextMenu.onTextInput);
+            if (shouldShow) {
+                mediaURL = gContextMenu.bgImageURL;
+            }
+        }
+    }
+    if (!(/^(https?|file):\/\//i.test(mediaURL) || this.application.dataImageRegexp.test(mediaURL))) {
+        mediaURL = null;
+    }
+    if (mediaURL) {
+        this._menuItem.hidden = false;
+        this._menuItem.setAttribute("yb-targetURL", true);
+    } else {
+        this._menuItem.hidden = true;
+        this._menuItem.removeAttribute("yb-targetURL");
+    }]]></body>
+            </method>
+
+            <method name="_onContextSuggestCommand">
+                <body><![CDATA[    if (!gContextMenu) {
+        return;
+    }
+    let metaInfo = {};
+    let mediaURL;
+    if (gContextMenu.onImage && gContextMenu.mediaURL) {
+        mediaURL = gContextMenu.mediaURL;
+        metaInfo.imageAlt = gContextMenu.target && gContextMenu.target.getAttribute("alt");
+    } else if (gContextMenu.bgImageURL) {
+        mediaURL = gContextMenu.bgImageURL;
+    }
+    if (!mediaURL) {
+        return;
+    }
+    this.downloadMedia(mediaURL, metaInfo);]]></body>
+            </method>
+
+            <method name="_onWindowLocationChange">
+                <parameter name="aData"/>
+                <body><![CDATA[    this.hideBalloon();
+    this._makeUrlbarSuggest(aData.tab);]]></body>
+            </method>
+
+            <method name="sendMouseEvent">
+                <body><![CDATA[    this._clearTooltipTimer();
+    let mouseData = this._lastMouseMoveData;
+    if (!mouseData) {
+        return;
+    }
+    let eventView = mouseData.weakWindow.get(mouseData);
+    if (!eventView) {
+        return;
+    }
+    this._sendMouseEvent(mouseData.x, mouseData.y, eventView);]]></body>
+            </method>
+
+            <method name="_sendMouseEvent">
+                <parameter name="aClientX"/>
+                <parameter name="aClientY"/>
+                <parameter name="aEventView"/>
+                <body><![CDATA[    if (!aEventView) {
+        return;
+    }
+    try {
+        let node = aEventView.document.elementFromPoint(aClientX, aClientY);
+        if (node && /\[object XrayWrapper \[object HTML(Object|Embed)Element\]\]/.test(String(node))) {
+            return;
+        }
+    } catch (e) {
+    }
+    this._mouseEventSending = true;
+    try {
+        let domWindowUtils = aEventView.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+        domWindowUtils.sendMouseEvent("mousemove", aClientX, aClientY, 0, 0, 0);
+    } catch (e) {
+    }
+    this._mouseEventSending = false;]]></body>
+            </method>
+
+            <method name="_clearTooltipTimer">
+                <body><![CDATA[    if (this._showTooltipTimer) {
+        clearTimeout(this._showTooltipTimer);
+        this._showTooltipTimer = null;
+    }]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    let target = aEvent.originalTarget;
+    switch (aEvent.type) {
+    case "mousemove":
+        if (this._mouseEventSending) {
+            aEvent.stopPropagation();
+            if (!this._makePopupSuggest(aEvent)) {
+                this.hideBalloon();
+            }
+            return;
+        }
+        let lastX = this._lastMouseMoveData && this._lastMouseMoveData.x;
+        let lastY = this._lastMouseMoveData && this._lastMouseMoveData.y;
+        let dX = lastX !== undefined ? Math.abs(aEvent.clientX - lastX) : 0;
+        let dY = lastY !== undefined ? Math.abs(aEvent.clientY - lastY) : 0;
+        if (dX < 3 && dY < 3) {
+            return;
+        }
+        this._clearTooltipTimer();
+        if (this._balloon.isOpen() && this._balloon.element === target) {
+            this._balloon.clearHideTimeout();
+            return;
+        }
+        this._lastMouseMoveData = {
+            x: aEvent.clientX,
+            y: aEvent.clientY,
+            weakWindow: new WeakMap()
+        };
+        this._lastMouseMoveData.weakWindow.set(this._lastMouseMoveData, aEvent.view);
+        let timeout = 100;
+        if (this._shouldPopupSuggestOnElement(target)) {
+            this._showTooltipTimer = setTimeout(this.sendMouseEvent.bind(this), timeout);
+        } else {
+            this._showTooltipTimer = setTimeout(function () {
+                this.hideBalloon();
+            }.bind(this), timeout);
+        }
+        break;
+    case "mouseout":
+        this._clearTooltipTimer();
+        this._lastMouseMoveData = null;
+        break;
+    case "scroll":
+        this._clearTooltipTimer();
+        this.hideBalloon();
+        break;
+    case "popupshowing":
+        this._onContextMenuPopupShowing();
+        break;
+    case "command":
+        if (target === this._menuItem) {
+            this._onContextSuggestCommand();
+        }
+        break;
+    default:
+        return;
+    }]]></body>
+            </method>
+
+            <method name="observe">
+                <parameter name="aSubject"/>
+                <parameter name="aTopic"/>
+                <parameter name="aData"/>
+                <body><![CDATA[    switch (aTopic) {
+    case "WindowLocationChange":
+        this._onWindowLocationChange(aData);
+        break;
+    default:
+        return;
+    }]]></body>
+            </method>
+        </implementation>
+    </binding>
+
+    <binding extends="chrome://global/content/bindings/popup.xml#tooltip" id="balloon">
+        <resources>
+            <stylesheet src="styles/balloon.css"/>
+        </resources>
+
+        <content>
+            <xul:image anonid="button" tooltiptext="&widget.save-button.title;"/>
+        </content>
+
+        <implementation>
+            <field name="mouseOver">false</field>
+            <field name="element">null</field>
+
+            <field name="_url">null</field>
+            <field name="_hide">false</field>
+            <field name="_hideEvents">['mouseout']</field>
+
+            <method name="isOpen">
+                <body><![CDATA[    return [
+        "open",
+        "showing"
+    ].indexOf(this.state || "") > -1;]]></body>
+            </method>
+
+            <method name="show">
+                <parameter name="aURL"/>
+                <parameter name="aElement"/>
+                <body><![CDATA[    if (!aElement) {
+        return;
+    }
+    if (this.isOpen()) {
+        this.hide();
+    }
+    this.element = aElement;
+    this._url = aURL;
+    this._hide = false;
+    this.openPopup(aElement);]]></body>
+            </method>
+
+            <method name="hide">
+                <body><![CDATA[    this.element = null;
+    this._url = null;
+    this._hide = true;
+    this.hidePopup();]]></body>
+            </method>
+
+            <method name="clearHideTimeout">
+                <body><![CDATA[    if (this._timeoutHideId) {
+        clearTimeout(this._timeoutHideId);
+        this._timeoutHideId = null;
+    }]]></body>
+            </method>
+
+            <method name="_setHideTimeout">
+                <parameter name="force"/>
+                <parameter name="delay"/>
+                <body><![CDATA[    delay = delay || 200;
+    if (this._timeoutHideId && !force) {
+        return;
+    }
+    if (force) {
+        this.clearHideTimeout();
+    }
+    if (!this._timeoutHideCallback) {
+        this._timeoutHideCallback = function () {
+            this._timeoutHideId = null;
+            if (this.isOpen() && !this.mouseOver) {
+                this.hide();
+            }
+        }.bind(this);
+    }
+    this._timeoutHideId = setTimeout(this._timeoutHideCallback, delay);]]></body>
+            </method>
+
+            <method name="_testElementInArea">
+                <parameter name="aTopX"/>
+                <parameter name="aTopY"/>
+                <parameter name="aWidth"/>
+                <parameter name="aHeight"/>
+                <parameter name="aElement"/>
+                <parameter name="aDoc"/>
+                <body><![CDATA[    let elemFromPoint;
+    elemFromPoint = aDoc.elementFromPoint(aTopX, aTopY);
+    if (elemFromPoint !== aElement) {
+        return false;
+    }
+    elemFromPoint = aDoc.elementFromPoint(aTopX, aTopY + aHeight - 1);
+    if (elemFromPoint !== aElement) {
+        return false;
+    }
+    elemFromPoint = aDoc.elementFromPoint(aTopX + aWidth - 1, aTopY);
+    if (elemFromPoint !== aElement) {
+        return false;
+    }
+    elemFromPoint = aDoc.elementFromPoint(aTopX + aWidth - 1, aTopY + aHeight - 1);
+    if (elemFromPoint !== aElement) {
+        return false;
+    }
+    elemFromPoint = aDoc.elementFromPoint(aTopX + Math.floor(aWidth / 2) - 1, aTopY + Math.floor(aHeight / 2) - 1);
+    if (elemFromPoint !== aElement) {
+        return false;
+    }
+    return true;]]></body>
+            </method>
+
+            <method name="handleEvent">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    switch (aEvent.type) {
+    case "mouseout":
+        this._setHideTimeout();
+        break;
+    default:
+        break;
+    }]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="mousedown"><![CDATA[    this.tooltipController.clearDeactivateTimeout();]]></handler>
+
+            <handler event="mouseenter"><![CDATA[    if (event.originalTarget !== this) {
+        return;
+    }
+    this.mouseOver = true;
+    this.clearHideTimeout();]]></handler>
+
+            <handler event="mouseleave"><![CDATA[    if (event.originalTarget !== this) {
+        return;
+    }
+    this.mouseOver = false;]]></handler>
+
+            <handler event="popupshowing"><![CDATA[    let bo = this.boxObject;
+    let elemBO = this.element.getBoundingClientRect();
+    let elemDoc = this.element.ownerDocument;
+    let winUtils = elemDoc.defaultView.QueryInterface(Components.interfaces.nsIInterfaceRequestor).getInterface(Components.interfaces.nsIDOMWindowUtils);
+    let sbWidth = {};
+    let sbHeight = {};
+    try {
+        winUtils.getScrollbarSize(false, sbWidth, sbHeight);
+    } catch (e) {
+        sbWidth.value = sbHeight.value = 0;
+    }
+    let currentBrowserBO = gBrowser.getBrowserForDocument(elemDoc).boxObject;
+    let elemStyle = elemDoc.defaultView.getComputedStyle(this.element);
+    let scale = winUtils.fullZoom;
+    let elem = {
+        left: elemBO.left,
+        right: elemBO.right,
+        top: elemBO.top,
+        bottom: elemBO.bottom
+    };
+    Object.keys(elem).forEach(function (prop) {
+        let coef = [
+            "right",
+            "bottom"
+        ].indexOf(prop) > -1 ? -1 : 1;
+        elem[prop] += coef * (parseInt(elemStyle.getPropertyValue("padding-" + prop) || 0, 10) + parseInt(elemStyle.getPropertyValue("border-" + prop + "-width") || 0, 10));
+    });
+    let buttonWidth = Math.ceil(bo.width / scale);
+    let buttonHeight = Math.ceil(bo.height / scale);
+    let areaLeftEdge = Math.max(0, elem.left);
+    let areaRightEdge = Math.min(window.innerWidth - sbWidth.value, elem.right);
+    if (areaRightEdge - areaLeftEdge < buttonWidth) {
+        this.hide();
+        return false;
+    }
+    let areaTopEdge = Math.max(0, elem.top);
+    let areaBottomEdge = Math.min(currentBrowserBO.height, elem.bottom);
+    if (areaBottomEdge - areaTopEdge < buttonHeight) {
+        this.hide();
+        return false;
+    }
+    let rightEdgeCoord = areaRightEdge - buttonWidth;
+    let buttonX = rightEdgeCoord;
+    let buttonY = areaTopEdge;
+    let isImage = this._testElementInArea(buttonX, buttonY, buttonWidth, buttonHeight, this.element, elemDoc);
+    for (let i = 1; i <= 3 && !isImage; i++) {
+        let currentX = buttonX - i * buttonWidth;
+        isImage = this._testElementInArea(currentX, buttonY, buttonWidth, buttonHeight, this.element, elemDoc);
+        if (isImage) {
+            buttonX = currentX;
+        }
+    }
+    if (!isImage) {
+        let leftEdgeCoord = areaLeftEdge;
+        rightEdgeCoord = areaRightEdge;
+        let testX = rightEdgeCoord;
+        let testY = areaTopEdge;
+        let topLimit = rightEdgeCoord;
+        let bottomLimit = leftEdgeCoord;
+        let eps = 2;
+        while (!isImage) {
+            if (topLimit - bottomLimit < eps) {
+                let leftEdgeFromBottomLimit = bottomLimit - buttonWidth;
+                if (leftEdgeFromBottomLimit >= leftEdgeCoord) {
+                    isImage = this._testElementInArea(leftEdgeFromBottomLimit, testY, buttonWidth, buttonHeight, this.element, elemDoc);
+                    if (isImage) {
+                        buttonX = leftEdgeFromBottomLimit;
+                        buttonY = testY;
+                        break;
+                    }
+                }
+                let stepY = Math.ceil(buttonHeight / 2);
+                if (areaBottomEdge - testY < buttonHeight + stepY) {
+                    break;
+                }
+                testY += stepY;
+                topLimit = rightEdgeCoord;
+                bottomLimit = leftEdgeCoord;
+                continue;
+            }
+            testX = Math.floor((topLimit + bottomLimit) / 2);
+            elemFromPoint = elemDoc.elementFromPoint(testX, testY);
+            if (elemFromPoint === this.element) {
+                bottomLimit = testX;
+            } else {
+                topLimit = testX;
+            }
+        }
+    }
+    let screenX = window.mozInnerScreenX + buttonX * scale;
+    let screenY = currentBrowserBO.screenY + buttonY * scale;
+    this.moveTo(screenX, screenY);
+    this.tooltipController.xbStatLog("imgbutton.show");]]></handler>
+
+            <handler event="popupshown"><![CDATA[    this._hideEvents.forEach(function (aEventName) {
+        window.addEventListener(aEventName, this, false);
+    }, this);]]></handler>
+
+            <handler event="popuphiding"><![CDATA[    if (!this._hide) {
+        return false;
+    }
+    this._hide = false;
+    this._hideEvents.forEach(function (aEventName) {
+        window.removeEventListener(aEventName, this, false);
+    }, this);]]></handler>
+
+            <handler event="click"><![CDATA[    let target = event.originalTarget;
+    if (!(event.button == 0 || event.button == 1)) {
+        return;
+    }
+    if (target.getAttribute("anonid") !== "button") {
+        return;
+    }
+    this.tooltipController.downloadMedia(this._url, { imageAlt: this.element.getAttribute("alt") });
+    this.tooltipController.xbStatLog("imgbutton.click");]]></handler>
+        </handlers>
+    </binding>
+
+    <binding id="urlbar-button">
+        <resources>
+            <stylesheet src="styles/urlbarButton.css"/>
+        </resources>
+
+        <content>
+            <hbox anonid="container" tooltiptext="&widget.pagebutton.tooltip;" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <label anonid="save">&widget.pagebutton.title;</label>
+                <hbox align="center" anonid="image-container">
+                    <image anonid="yadisk-image"/>
+                </hbox>
+            </hbox>
+        </content>
+
+        <implementation>
+            <method name="show">
+                <body><![CDATA[    this.hidden = false;]]></body>
+            </method>
+
+            <method name="hide">
+                <body><![CDATA[    this.hidden = true;]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler event="click"><![CDATA[    let target = event.originalTarget;
+    let mButton = event.button;
+    if (!(mButton === 0 || mButton === 1)) {
+        return;
+    }
+    this.controller.saveDocument();
+    this.controller.xbStatLog("viewpanel.savetodisk");]]></handler>
+        </handlers>
+    </binding>
+</bindings>

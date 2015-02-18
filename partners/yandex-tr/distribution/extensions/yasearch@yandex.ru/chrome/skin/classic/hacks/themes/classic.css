@@ -1,0 +1,3 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);#yasearch-prefwindow richlistitem vbox[anonid=settingsContainer]{color:#000!important;background-color:#fff!important}
+#yasearch-prefwindow #registered-plugins-list richlistitem caption,#yasearch-prefwindow #active-widgets-list richlistitem caption{background-color:#fff!important}
+#yasearch-prefwindow richlistitem hbox[anonid=caption]{padding:2px}

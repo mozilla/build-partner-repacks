@@ -6,7 +6,6 @@ function Database(storageFile, initStatements) {
         this.open(storageFile, initStatements);
     }
 }
-;
 Database.prototype = {
     constructor: Database,
     open: function Database_open(storageFile, initStatements) {
@@ -154,9 +153,15 @@ Database.prototype = {
         }
         this._connection.schemaVersion = version;
     },
-    get storageFile() this._connection && this._connection.databaseFile,
-    get connection() this._connection,
-    set connection(val) this._connection = val,
+    get storageFile() {
+        return this._connection && this._connection.databaseFile;
+    },
+    get connection() {
+        return this._connection;
+    },
+    set connection(val) {
+        this._connection = val;
+    },
     _connection: null,
     _connectAndInit: function Database__connectAndInit(storageFile, initStatements) {
         this._connection = storageSvc.openDatabase(storageFile);
@@ -259,7 +264,9 @@ Database.DatedValues = function DatedValues(storageFile) {
     this.eraseOldRecords();
 };
 Database.DatedValues.prototype = {
-    get storageFile() this._connection && this._connection.databaseFile,
+    get storageFile() {
+        return this._connection && this._connection.databaseFile;
+    },
     close: function DatedValues_close(callback) {
         this._database.close(function () {
             this._database = null;
@@ -271,33 +278,50 @@ Database.DatedValues.prototype = {
             value = JSON.stringify(value);
         }
         let storeTime = this._currentTimestampSecs;
-        return this._database.execQueryAsync(this._consts.INSERT_QUERY, {
-            id: key,
-            time: storeTime,
-            value: value.toString()
+        return this._database.executeQueryAsync({
+            query: this._consts.INSERT_QUERY,
+            parameters: {
+                id: key,
+                time: storeTime,
+                value: value.toString()
+            }
         });
     },
     startSearch: function DatedValues_startSearch(key, notOlderThan, callback) {
         let treshold = notOlderThan ? this._currentTimestampSecs - notOlderThan : 0;
         let dbCallback = this._onSearchComplete.bind(this, callback);
-        return this._database.execQueryAsync(this._consts.SEARCH_QUERY, {
-            id: key,
-            treshold: treshold
-        }, dbCallback);
+        return this._database.executeQueryAsync({
+            query: this._consts.SEARCH_QUERY,
+            columns: [
+                "time",
+                "value"
+            ],
+            parameters: {
+                id: key,
+                treshold: treshold
+            },
+            callback: dbCallback
+        });
     },
     eraseRecord: function DatedValues_eraseRecord(key) {
-        return this._database.execQueryAsync("DELETE FROM resources WHERE (id = :id)", { id: key });
+        return this._database.executeQueryAsync({
+            query: "DELETE FROM resources WHERE (id = :id)",
+            parameters: { id: key }
+        });
     },
     eraseOldRecords: function DatedValues_eraseOldRecords() {
-        return this._database.execQueryAsync("DELETE FROM resources WHERE (time < :time)", { time: this._currentTimestampSecs - 3600 * 24 * 90 });
+        return this._database.executeQueryAsync({
+            query: "DELETE FROM resources WHERE (time < :time)",
+            parameters: { time: this._currentTimestampSecs - 3600 * 24 * 90 }
+        });
     },
     flush: function DatedValues_flush() {
-        return this._database.execQueryAsync("DELETE FROM resources");
+        return this._database.executeQueryAsync({ query: "DELETE FROM resources" });
     },
     _consts: {
         INIT_TABLE_QUERY: "CREATE TABLE IF NOT EXISTS resources (id TEXT, time INTEGER, value BLOB, PRIMARY KEY(id))",
         INSERT_QUERY: "INSERT OR REPLACE INTO resources (id, time, value) VALUES (:id, :time, :value)",
-        SEARCH_QUERY: "SELECT * FROM resources WHERE id = :id AND time >= :treshold LIMIT 1"
+        SEARCH_QUERY: "SELECT time, value FROM resources WHERE id = :id AND time >= :treshold LIMIT 1"
     },
     _database: null,
     get _currentTimestampSecs() {

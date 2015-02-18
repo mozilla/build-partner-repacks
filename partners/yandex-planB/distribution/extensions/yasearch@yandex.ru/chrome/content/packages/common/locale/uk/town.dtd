@@ -1,0 +1,39 @@
+<!ENTITY wgt.town.widget.name "Місто">
+
+<!ENTITY wgt.town.setting.town "Місто">
+<!ENTITY wgt.town.setting.town.popular "Популярні міста">
+<!ENTITY wgt.town.setting.title "Ім&#39;я міста на панелі">
+<!ENTITY wgt.town.setting.show.name "Показувати назву міста">
+<!ENTITY wgt.town.setting.show.weather "Показувати погоду">
+<!ENTITY wgt.town.setting.show.traffic "Показувати затори">
+<!ENTITY wgt.town.setting.interval "Інтервал оновлення">
+<!ENTITY wgt.town.settings.autodetect "Визначати автоматично">
+<!ENTITY wgt.town.settings.min.label "хв.">
+
+<!ENTITY wgt.town.setup "Налаштувати інформер">
+<!ENTITY wgt.town.refresh "Оновити дані">
+<!ENTITY wgt.town.delete "Видалити місто">
+<!ENTITY wgt.town.add "Додати місто">
+
+<!ENTITY wgt.town.weather.nodata "Немає даних про погоду">
+<!ENTITY wgt.town.weather.label "Погода">
+<!ENTITY wgt.town.temperature.label "Температура">
+<!ENTITY wgt.town.wind.label "Вітер">
+<!ENTITY wgt.town.wind.ms "м/с">
+<!ENTITY wgt.town.pressure.label "Тиск">
+<!ENTITY wgt.town.pressure.mm.label "мм.рт.ст.">
+<!ENTITY wgt.town.dampness.label "Вологість">
+<!ENTITY wgt.town.night "Вночі">
+<!ENTITY wgt.town.tomorrow "Завтра">
+
+<!ENTITY wgt.town.traffic.points "Балiв">
+<!ENTITY wgt.town.traffic.description "Опис">
+<!ENTITY wgt.town.traffic.length "Протяжність">
+<!ENTITY wgt.town.traffic.length.km "км">
+
+<!ENTITY wgt.town.request.lang "uk">
+
+<!ENTITY wgt.town.traffic.tooltip "Затори в місті">
+<!ENTITY wgt.town.weather.tooltip "Прогноз погоди">
+<!ENTITY wgt.town.setting.openPageOnClick.traffic "Після натискання на кнопку Заторів відкривати сторінку сервісу">
+<!ENTITY wgt.town.setting.openPageOnClick.weather "Після натискання на кнопку Погоди відкривати сторінку сервісу">

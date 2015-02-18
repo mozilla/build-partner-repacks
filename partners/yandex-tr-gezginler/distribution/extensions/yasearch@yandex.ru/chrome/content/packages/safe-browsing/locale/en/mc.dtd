@@ -1,0 +1,10 @@
+﻿<!ENTITY mc.widget.name "Spot-on">
+
+<!ENTITY mc.widget.cancel.label "Close suggestion">
+<!ENTITY mc.widget.changedFrom.label "Autocorrected from">
+<!ENTITY mc.widget.changedTo.label "to">
+<!ENTITY mc.widget.changedTo2.label "">
+<!ENTITY mc.widget.close.label "Close">
+<!ENTITY mc.widget.go.label "Go">
+<!ENTITY mc.widget.removeRule.label "Remove filter">
+<!ENTITY mc.widget.suggestion.label "Did you mean to open">

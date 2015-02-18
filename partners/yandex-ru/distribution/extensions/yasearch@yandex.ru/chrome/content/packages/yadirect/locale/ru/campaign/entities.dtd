@@ -1,0 +1,23 @@
+﻿<!ENTITY camp.name "Кампания" >
+<!ENTITY camp.number "Номер кампании:" >
+<!ENTITY camp.currency "у.е." >
+<!ENTITY camp.setting.update_interval "Интервал обновления:" >
+<!ENTITY camp.setting.minutes "мин." >
+<!ENTITY camp.tooltip.notlogged.row1 "Показывает состояние вашей кампании в Яндекс.Директе" >
+<!ENTITY camp.tooltip.notlogged.row2 "Пожалуйста, авторизуйтесь" >
+<!ENTITY camp.tooltip.nocamapigns.row1 "Данные по вашему счету в Яндекс.Директе получить не удалось" >
+<!ENTITY camp.tooltip.nocamapigns.row2 "Пожалуйста, разместите рекламное объявление" >
+<!ENTITY camp.tooltip.invalid_num.row1 "Данные по вашей кампании в Яндекс.Директе получить не удалось" >
+<!ENTITY camp.tooltip.invalid_num.row2 "Пожалуйста, проверьте настройки" >
+<!ENTITY camp.tooltip.error.row1 "Данные по вашей кампании в Яндекс.Директе получить не удалось" >
+<!ENTITY camp.tooltip.error.row2 "Пожалуйста, проверьте соединение" >
+<!ENTITY camp.tooltip.number "Номер:" >
+<!ENTITY camp.tooltip.state "Статус:" >
+<!ENTITY camp.tooltip.balance "Остаток:" >
+<!ENTITY camp.tooltip.todayclicks "Кликов сегодня:" >
+<!ENTITY camp.updateinfo "Обновить информацию" >
+<!ENTITY camp.pay "Доплатить" >
+<!ENTITY camp.status.shows "Идут показы" >
+<!ENTITY camp.status.outofmoney "Нет средств" >
+<!ENTITY camp.status.disabled "Отключена" >
+<!ENTITY camp.status.stopped "Остановлена" >

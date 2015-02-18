@@ -1,0 +1,32 @@
+<!ENTITY wgt.smartbox.name "Розумний рядок">
+<!ENTITY wgt.smartbox.changeSearchEngine "Пошукові системи">
+<!ENTITY wgt.smartbox.searchEngineSettings "Налаштування пошуку">
+<!ENTITY wgt.smartbox.nowUsedSearch "зараз використовується">
+
+<!ENTITY wgt.smartbox.action.switchToTab.label "перейти на вкладку">
+<!ENTITY wgt.smartbox.action.searchBy.label "Пошукати в {{providerName}">
+<!ENTITY wgt.smartbox.action.navigate.label "Перейти">
+
+<!ENTITY wgt.smartbox.popup.desc "Введіть пошуковий запит, і в підказках ви побачите популярні запити, посилання на відвідані раніше сайти та закладки.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.desc "Розширення не працює у Вашому браузері. Оновити браузер.">
+<!ENTITY wgt.smartbox.settings.browserUnsupported.url "http://browser.yandex.ru">
+
+<!ENTITY wgt.smartbox.dropDownOptions.toggleExpandedState "Налаштування пошуку">
+<!ENTITY wgt.smartbox.dropDownOptions.disableSuggest "Вимкнути підказки (не відправляти натискання клавіш у {providerName})">
+<!ENTITY wgt.smartbox.dropDownOptions.enabledSuggest "Увімкнути підказки (відправляти натискання клавіш у {providerName})">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.label "Додати постачальника пошуку">
+<!ENTITY wgt.smartbox.dropDownOptions.addSearchProvider.url "http://go.microsoft.com/fwlink/?LinkId=122812">
+
+<!ENTITY wgt.smartbox.qs.window.title "Пошук за замовчуванням">
+<!ENTITY wgt.smartbox.qs.tree.col "Пошук">
+<!ENTITY wgt.smartbox.qs.add "Додати">
+<!ENTITY wgt.smartbox.qs.button.ok "Готово">
+<!ENTITY wgt.smartbox.qs.addsearch "Додати пошук">
+<!ENTITY wgt.smartbox.qs.searchsettings "Налаштувати пошук">
+<!ENTITY wgt.smartbox.qs.search "Шукати">
+<!ENTITY wgt.smartbox.qs.searchYandex "Шукати Яндексом">
+<!ENTITY wgt.smartbox.addressbarLabel "Введіть запит для пошуку">
+<!ENTITY wgt.smartbox.searchSettings "Налаштування пошуку">
+<!ENTITY wgt.smartbox.restoreDefaultEngine "Зробити {providerName} пошуком за замовчуванням">
+<!ENTITY wgt.smartbox.searchSettings.menu.defaultEngine.label "Пошук за замовчуванням">
+<!ENTITY wgt.smartbox.searchSettings.menu.settings.label "Налаштування">

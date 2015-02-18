@@ -1,0 +1,4 @@
+<!ENTITY package.counters.upd-interval.label "Жаңарту интервалы">
+<!ENTITY package.counters.upd-interval.units "мин.">
+
+<!ENTITY package.logout.noprompt.label "Шығу кезінде растауды сұрамау">

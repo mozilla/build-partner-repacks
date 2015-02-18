@@ -1,0 +1,53 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace yagui url(http://bar.yandex.ru/dev/native/gui);@namespace html url(http://www.w3.org/1999/xhtml);prefwindow{height:auto!important;width:auto!important;-moz-binding:url(bindings/preferences-hacks.xml#prefWindow)}
+prefwindow[animate=on],prefwindow[animated=true]{min-height:0!important}
+prefpane .container{padding-bottom:3px}
+.prefWindow-dlgbuttons-hack{-moz-binding:url(bindings/preferences-hacks.xml#prefWindow-dlgbuttons)}
+prefwindow:not([prefWindow-dlgbuttons-hack]) .prefWindow-dlgbuttons{visibility:hidden}
+prefwindow[lastSelected=prefpane-misc] button[dlgtype=extra2],prefwindow[lastSelected=prefpane-about] button[dlgtype=extra2],prefwindow:not([lastSelected=prefpane-plugins]) button[dlgtype=customDeletePlugins],prefwindow:not([lastSelected=prefpane-widgets]) button[dlgtype=customDeleteWidgets]{display:none}
+preference[yagui|preftype=custom]{-moz-binding:url(bindings/preferences-hacks.xml#preference)}
+richlistbox{-moz-binding:url(bindings/customize.xml#richlistbox)}
+#registered-widgets-list{-moz-binding:url(bindings/customize.xml#richlistbox-registered)}
+#active-widgets-list{-moz-binding:url(bindings/customize.xml#richlistbox-active)}
+#registered-widgets-list richlistitem{-moz-binding:url(bindings/customize.xml#registered-richlistitem)}
+#active-widgets-list richlistitem{-moz-binding:url(bindings/customize.xml#active-richlistitem-widgets)}
+#registered-plugins-list{-moz-binding:url(bindings/customize.xml#richlistbox-plugins)}
+#registered-plugins-list richlistitem{-moz-binding:url(bindings/customize.xml#active-richlistitem-plugins)}
+richlistitem[collapsedSettings=false]:not(:empty) vbox[anonid=settingsContainer]{padding-left:20px;padding:5px 10px 10px 21px}
+richlistitem hbox.xb-widget-icon-container{min-width:20px;-moz-box-align:center;-moz-box-pack:center}
+richlistitem image.xb-widget-icon{max-width:16px;max-height:16px;margin:1px 1px 1px 3px}
+richlistitem[isEnabled=false]{opacity:.5}
+vbox[anonid=switcher]{-moz-binding:url(bindings/customize.xml#switcher)}
+vbox.subwindow-opener{-moz-binding:url(bindings/customize.xml#subwindow-opener)!important}
+richlistitem image.xb-widget-icon[src=""]{list-style-image:url(../dialogs/package-management/components/images/widget.png)}
+richlistitem[xb-dragover-node=before]{border-top:2px dotted rgba(125,125,125,.7)}
+richlistitem[xb-dragover-node=after]{border-bottom:2px dotted rgba(125,125,125,.7)}
+.buttons-container{-moz-box-pack:center;padding:0 2px}
+button.minimal{-moz-binding:url(bindings/customize.xml#button-minimal)}
+button.arrow-right{list-style-image:url(chrome://global/skin/arrow/arrow-rit-sharp.gif)!important}
+button.arrow-left{list-style-image:url(chrome://global/skin/arrow/arrow-lft-sharp.gif)!important}
+button.arrow-up{list-style-image:url(chrome://global/skin/arrow/arrow-up-sharp.gif)!important}
+button.arrow-down{list-style-image:url(chrome://global/skin/arrow/arrow-dn-sharp.gif)!important}
+button.minimal[disabled=true]{opacity:.4}
+radio[pane]{min-width:64px}
+radio[pane=prefpane-widgets]{list-style-image:url(../../../skin/preferences/widgets.png)}
+radio[pane=prefpane-plugins]{list-style-image:url(../../../skin/preferences/plugins.png)}
+radio[pane=prefpane-misc]{list-style-image:url(../../../skin/preferences/misc.png)}
+radio[pane=prefpane-about]{list-style-image:url(yasearch://branding/about/logo-fx-small.png)}
+radio[pane=prefpane-software]{list-style-image:url(../../../skin/preferences/software.png)}
+prefwindow[prefpane-software-hidden=true] radio[pane=prefpane-software]{display:none}
+radio[pane] image{opacity:.7}
+radio[pane]:hover image,radio[pane][selected=true] image{opacity:1}
+.small-text{font-size:.9em}
+.links-block{-moz-box-align:center;padding:1px 6px;min-height:24px}
+html|a{color:-moz-hyperlinktext}
+html|a:hover,html|a:active{color:-moz-activehyperlinktext}
+#send-usage-stat-checkbox .checkbox-label-box{display:none}
+#bar-about-holder{min-height:470px;padding:0 5px 8px 0;color:#000!important;background-color:#fff!important;background-position:0 3px!important;background-repeat:no-repeat!important}
+#bar-about-box{font-size:13px;font-weight:400;font-family:Arial,'Lucida Grande',sans-serif;margin:10px 10px 10px 255px}
+#bar-about-box html|*{font-weight:400;margin:0;padding:0}
+#bar-about-box html|h2{font-size:2.1em}
+#bar-about-box html|h3{font-size:1em;color:gray}
+#bar-about-box html|p#bar-site{margin-top:1.4em}
+#bar-about-box html|a{color:#00f;text-decoration:underline;outline:0}
+#bar-about-box html|div#bar-copyright{color:gray}
+#bar-about-box html|div#bar-copyright html|img{display:block;margin:0 0 16px;padding:0}

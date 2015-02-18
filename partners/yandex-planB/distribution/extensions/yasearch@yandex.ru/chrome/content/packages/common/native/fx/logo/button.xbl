@@ -1,0 +1,65 @@
+<?xml version='1.0'?>
+<!DOCTYPE bindings [
+<!ENTITY % logo SYSTEM "/native/fx/logo.dtd">
+%logo;
+]>
+
+<bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <binding extends="//toolkit/native/bindings/widget.xml#widget" id="widget">
+        <resources>
+            <stylesheet src="button.css"/>
+        </resources>
+
+        <content>
+            <xul:toolbarbutton anonid="logo-button" class="chromeclass-toolbar-additional toolbarbutton-1" hidden="true" onclick="if (event.target == this &amp;&amp; event.button == 1) logoClicked(event);" oncommand="if (event.target == this) logoClicked(event);"/>
+        </content>
+
+        <implementation>
+            <field name="mButton" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "logo-button");]]></field>
+
+            <method name="wdgtxConstructor">
+                <body><![CDATA[    this.mButton.setAttribute("image", this.module.logoImagePath);
+    this.mButton.setAttribute("tooltiptext", this.module.logoTooltip);
+    this.mButton.setAttribute("label", this.module.vendorName);
+    this.mButton.removeAttribute("hidden");]]></body>
+            </method>
+
+            <method name="wdgtxDestructor">
+                <body><![CDATA[    this.mButton.setAttribute("hidden", true);
+    this.mButton.removeAttribute("tooltiptext");]]></body>
+            </method>
+
+            <constructor><![CDATA[    setTimeout(function (me) {
+        if (me && "wdgtxConstructor" in me) {
+            me.wdgtxConstructor();
+        }
+    }, 0, this);]]></constructor>
+
+            <destructor><![CDATA[    this.wdgtxDestructor();]]></destructor>
+
+            <method name="logoClicked">
+                <parameter name="aEvent"/>
+                <body><![CDATA[    this.module.navigateMainPage(aEvent);
+    let packageVersion = this.module.API.Package.info.version.replace(".", "-", "g");
+    this.module.API.Statistics.logClickStatistics({
+        cid: 72359,
+        path: "fx.yalogo." + packageVersion + ".button"
+    });]]></body>
+            </method>
+
+            <method name="openLink">
+                <parameter name="event"/>
+                <body><![CDATA[    this.module.handleEvent(event);]]></body>
+            </method>
+
+            <method name="reload">
+                <body><![CDATA[    this.wdgtxDestructor();
+    this.wdgtxConstructor();]]></body>
+            </method>
+        </implementation>
+
+        <handlers>
+            <handler action="openLink(event);" event="command"/>
+        </handlers>
+    </binding>
+</bindings>

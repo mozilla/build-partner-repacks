@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE widget SYSTEM "/town.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/native/fx/town/town.svg" name="&wgt.town.widget.name;" unique="false">
+
+    <f:setting name="id" scope="instance">
+        <control autocomplete="true" free-input="false" label="&wgt.town.setting.town;:" source="geobase.xml" template="geobase.xsl" type="combobox"/>
+    </f:setting>
+
+    <f:setting name="title" scope="instance">
+        <control label="&wgt.town.setting.title;:" type="textedit"/>
+    </f:setting>
+
+    <f:setting default="false" name="show-name" scope="instance">
+        <control label="&wgt.town.setting.show.name;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="true" name="show-weather" scope="instance">
+        <control label="&wgt.town.setting.show.weather;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="true" name="show-traffic" scope="instance">
+        <control label="&wgt.town.setting.show.traffic;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="false" name="openWeatherPageOnClick" scope="widget">
+        <control label="&wgt.town.setting.openPageOnClick.weather;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="false" name="openTrafficPageOnClick" scope="widget">
+        <control label="&wgt.town.setting.openPageOnClick.traffic;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="5" name="update-interval" scope="widget">
+        <control label="&wgt.town.setting.interval;:" label-after="&wgt.town.settings.min.label;" max="1000" min="0" spin="5" type="textedit" value-type="int"/>
+    </f:setting>
+
+    <f:setting name="old-balls" scope="instance">
+        <control type="custom"/>
+    </f:setting>
+
+    <f:setting name="route-home" scope="instance">
+        <control type="custom"/>
+    </f:setting>
+
+    <f:setting name="route-work" scope="instance">
+        <control type="custom"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="native/fx/town/town.js"/>
+    </modules>
+</widget>

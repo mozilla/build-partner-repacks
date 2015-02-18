@@ -1,0 +1,8 @@
+@import url(../orange.css);@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);window,dialog{font-weight:400;font-family:Arial,"Lucida Grande",sans-serif;color:#000;border:0;cursor:default;-moz-appearance:none!important;background:none!important}
+dialog>.body{border:1px rgba(192,192,192,.6) solid!important}
+[ex-transparent=true]{background-color:transparent!important}
+[ex-shadow=true] .body{margin:24px!important;box-shadow:0 8px 16px rgba(0,0,0,.5)}
+dialog>.body>.title{background:url(images/title-background.png);height:26px;max-height:26px;vertical-align:top}
+dialog>.body>.title>.title-text{-moz-box-flex:1;font-size:19px;line-height:19px;text-align:center;margin:0!important;padding:0!important;margin-right:-26px!important}
+dialog>.body>.title>.title-close{position:relative;width:14px;height:14px;background:url(images/close.png) no-repeat;margin:6px 11px 5px 0}
+dialog>.body>.content{background:#f3f3f3 no-repeat;background-position:0 -50px;background-size:100% auto;padding:21px}

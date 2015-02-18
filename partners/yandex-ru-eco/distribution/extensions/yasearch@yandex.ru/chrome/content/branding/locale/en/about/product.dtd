@@ -1,0 +1,36 @@
+<!ENTITY product.name.nom "Yandex Elements">
+<!ENTITY product.name.gen "Yandex Elements">
+<!ENTITY product.name.dat "Yandex Elements">
+<!ENTITY product.name.acc "Yandex Elements">
+<!ENTITY product.name.ins "Yandex Elements">
+<!ENTITY product.name.pre "Yandex Elements">
+<!ENTITY product.name.loc "Yandex Elements">
+
+<!ENTITY product.shortname.nom "Elements">
+<!ENTITY product.shortname.gen "Elements">
+<!ENTITY product.shortname.dat "Elements">
+<!ENTITY product.shortname.acc "Elements">
+<!ENTITY product.shortname.ins "Elements">
+<!ENTITY product.shortname.pre "Elements">
+<!ENTITY product.shortname.loc "Elements">
+
+<!ENTITY vendor.name.nom "Yandex">
+<!ENTITY vendor.name.gen "Yandex">
+<!ENTITY vendor.name.dat "Yandex">
+<!ENTITY vendor.name.acc "Yandex">
+<!ENTITY vendor.name.ins "Yandex">
+<!ENTITY vendor.name.pre "Yandex">
+<!ENTITY vendor.name.loc "Yandex">
+
+<!ENTITY product.description "Quick access to all Yandex features">
+<!ENTITY product.note.fx "for Firefox">
+<!ENTITY product.note.ie "for Internet Explorer">
+<!ENTITY product.homepage "https://element.yandex.ru">
+<!ENTITY product.copyright "© 2012—2014 YANDEX">
+<!ENTITY product.copyright.ie "&product.copyright;">
+<!ENTITY product.copyright.fx "© 2012—2014 YANDEX">
+<!ENTITY product.license.url.ie "http://legal.yandex.ru/desktop_software_agreement/?lang=en">
+<!ENTITY product.license.url.fx "http://legal.yandex.ru/desktop_software_agreement/?lang=en">
+<!ENTITY product.help.url.ie "http://help.yandex.com/element">
+
+<!ENTITY product.welcomepage "https://element.yandex.ru/welcome/">

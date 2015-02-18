@@ -1,0 +1,68 @@
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8" />
+    <title>  Başlıkları </title>
+    <link rel="stylesheet" type="text/css" href="css/news.imports.css" />
+    <script type="text/javascript" src="js/jquery-1.5.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.11.custom.min.js"></script>
+    
+    <script type="text/javascript" src="js/jquery.tmpl.js"></script>
+    <script type="text/javascript" src="js/jquery.timeago.js"></script>
+    <script type="text/javascript" src="js/news.js"></script>
+    <script type="text/javascript" src="timeago.locale.js"></script>
+    <script type="text/javascript" src="topics.js"></script>
+    <script type="text/javascript" src="barapi.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+</head>
+<body>
+
+    <script id="itemTemplate" type="text/x-jquery-tmpl">
+        <li class="b-news-list__item">
+            <a href="${link}" target="_blank" class="b-news-list__link item-link">
+                <h2 class="b-news-list__title">${title}</h2>
+                {{if image}}
+                    <img src="${image}" alt="" class="b-news-list__image"/>
+                {{/if}}
+                <p class="b-news-list__text">${description}</p>
+                <p class="b-news-list__time">${agoDate}</p>
+            </a>
+        </li>
+    </script>
+
+   <script id="sectionTemplate" type="text/x-jquery-tmpl">
+        <li class="b-news-menu__item sector"><b class="b-news-menu__text">
+            ${title}
+        </b></li>
+   </script>
+
+    <div class="b-news-slice" id="main-slice">
+        <div class="b-news-slice__inner">
+            <h1 class="b-news-title"><span class="b-news-title__link"></span></h1>
+
+            <div class="b-news-menu">
+                <div class="b-news-menu__top">
+                    <i class="b-news-menu__arrow-top"></i>
+                </div>
+                <ul class="b-news-menu__list" id="sections-list">
+
+                </ul>
+                <div class="b-news-menu__bottom">
+                    <i class="b-news-menu__arrow-bottom"></i>
+                </div>
+            </div>
+
+            <ul class="b-news-list" id="items-list">
+
+            </ul>
+
+            <div id="throbber" class="b-news-list">
+            </div>
+
+            <div id="error" class="b-news-list">
+            </div>
+
+
+        </div>
+    </div>
+</body>
+</html>

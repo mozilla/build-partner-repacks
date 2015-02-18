@@ -1,0 +1,4 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);@namespace html url(http://www.w3.org/1999/xhtml);window:not([chromehidden~=toolbar]) toolbar toolbaritem[cb-app=yasearch],#PanelUI-popup toolbaritem[cb-app=yasearch]{-moz-binding:url(../bindings/ui/widget.xbl#widget)}
+toolbaritem[cb-app=yasearch]>toolbarbutton,toolbaritem[cb-app=yasearch]>toolbarbutton>toolbarbutton{min-width:16px!important}
+#customization-container toolbaritem[cb-app=yasearch]{-moz-binding:url(../bindings/ui/widget.xbl#widget-customize)!important}
+#customization-container toolbaritem[cb-app=yasearch] image{width:32px;height:32px}

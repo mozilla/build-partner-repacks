@@ -1,0 +1,59 @@
+<!ENTITY % brandNames SYSTEM "xb://branding/names.dtd">
+%brandNames;
+
+<!ENTITY pref.window.title "Customize &product2.nom;">
+
+
+<!ENTITY prefpane.widgets.delete.button "Delete button">
+<!ENTITY prefpane.widgets.extra2.button "Restore defaults and item layout">
+
+<!ENTITY prefpane.widgets.label "Buttons">
+
+<!ENTITY registered.widgets.list.title "Available buttons">
+<!ENTITY active.widgets.list.title "Current buttons">
+
+<!ENTITY add.widgets.label "Add">
+<!ENTITY remove.widgets.label "Remove">
+
+<!ENTITY move.widgets.up.label "Move up">
+<!ENTITY move.widgets.down.label "Move down">
+
+<!ENTITY global.setting.tooltip.prefix "This setting applies to &#37;S buttons">
+
+<!ENTITY controls.combobox.creating.label "list loading">
+
+
+<!ENTITY prefpane.plugins.delete.button "Delete plugin">
+
+<!ENTITY prefpane.plugins.label "Plugins">
+
+<!ENTITY registered.plugins.list.title "Available plugins">
+
+<!ENTITY registered.plugins.enable.label "Enable">
+
+
+<!ENTITY prefpane.about.label "About">
+
+
+<!ENTITY updates.check.text "Check for updates">
+<!ENTITY updates.check.install "Install">
+<!ENTITY updates.check.setup "Options">
+
+
+<!ENTITY prefpane.misc.label "Behavior">
+
+<!ENTITY yasearch.pref.urlbar.caption "Address bar">
+
+<!ENTITY yasearch.pref.misc.caption "Miscellaneous">
+<!ENTITY yasearch.pref.links.target.label "Open all links from &product2.gen; in a new tab">
+<!ENTITY yasearch.pref.sounds.enable.label "Allow sounds">
+<!ENTITY yasearch.pref.silent.trusted.updates.label "Update components from &#171;Widget Library&#187; automatically">
+
+<!ENTITY yasearch.pref.defence.homepage.caption "Homepage">
+<!ENTITY yasearch.pref.defence.homepage.label "Enable homepage protection">
+<!ENTITY yasearch.pref.defence.homepage.description "&product1.nom; will warn you if third party software attempts to change your homepage">
+
+<!ENTITY yasearch.pref.confidentiality.caption "Confidentiality">
+<!ENTITY yasearch.pref.stat.usage.send.label "Help us improve Yandex services by sharing &#60;html:a href=&#34;http://legal.yandex.com/confidential/&#34;&#62;anonymous browser usage data&#60;/html:a&#62;">
+
+<!ENTITY prefpane.software.label "Other software">
