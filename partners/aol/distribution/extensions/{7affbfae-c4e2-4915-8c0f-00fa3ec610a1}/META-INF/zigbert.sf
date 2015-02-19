@@ -8,13 +8,13 @@ SHA1-Digest: jCy5+JoYHOK2bTDMyVwpC3zlf00=
 
 Name: bootstrap.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Ms6R5dw4wyCU0bGWc178AQ==
-SHA1-Digest: YOTg3Cb1EGBUl/j9Baa+PN81zoc=
+MD5-Digest: 5wIoU0UFYZoo1TXU8bW7lA==
+SHA1-Digest: grw2oCn+ZuNrLkJKJ+YcftMgAEQ=
 
 Name: chrome/aoltoolbar.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: upfiWbecAKTz7SveU6Yfvw==
-SHA1-Digest: UIV9hpFcQMoLKNJYZuLXq4Gk5h0=
+MD5-Digest: zV/AwjB059FLQfiFotWBVQ==
+SHA1-Digest: ndjbY60lYCMroQHvkN4AKsR/Jrc=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -23,8 +23,8 @@ SHA1-Digest: y0hWfzXar8oiaZEgYrr9eq/bTG8=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: CIYAVwnCAb2iLizUfm1o1A==
-SHA1-Digest: FXqAKRE75WmUo4rnGIGHeXLwJFc=
+MD5-Digest: uBvF2QrESIqvtrv0Pfoyhg==
+SHA1-Digest: qjHChlszebn9UwxdWs/KyA2u9Ds=
 
 Name: widgets/amazon.zip
 Digest-Algorithms: MD5 SHA1

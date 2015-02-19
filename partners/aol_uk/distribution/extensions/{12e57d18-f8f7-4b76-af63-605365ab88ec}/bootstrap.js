@@ -107,27 +107,44 @@ var WindowListener = {
 };
 
 function install() {
-	addon.userDisabled = false;		
+    AddonManager.getAddonByID(aol_GUID, function(addon) {  
+		addon.userDisabled = false;		
+    });
 }
  
 function uninstall(data,reason) {
-	aolukUninstall_metrics.uninstall();
-	aolukUninstaller.uninstall();			
+	if (reason == ADDON_UNINSTALL) {
+		aolukUninstall_metrics.uninstall();
+		aolukUninstaller.uninstall();	
+	}
 }
  
 function startup(data, reason) {
+	var service = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
+	var branch = service.getBranch(aoluk_BRANCHNAME);				
+	
+	if (typeof branch != undefined ){
+		if (reason == ADDON_UPGRADE){	
+			branch.setBoolPref("firsttime.showwindow", false);
+			branch.setBoolPref("bootstrap.upgrade" , true);
+		}
+		else if (reason == ADDON_INSTALL){
+			 branch.clearUserPref("firsttime.showwindow");
+			 branch.clearUserPref("upgrade.showwindow");
+		}
+	}
 
-  let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
-           getService(Ci.nsIWindowMediator);
-  // Get the list of browser windows already open
-  let windows = wm.getEnumerator("navigator:browser");
-  while (windows.hasMoreElements()) {
-    let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
-    WindowListener.setupBrowserUI(domWindow);
-  }
- 
-  // Wait for any new browser windows to open
-  wm.addListener(WindowListener); 
+	let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+		   getService(Ci.nsIWindowMediator);
+	// Get the list of browser windows already open
+	let windows = wm.getEnumerator("navigator:browser");
+	while (windows.hasMoreElements()) {
+		let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
+		WindowListener.setupBrowserUI(domWindow);
+	}
+
+	// Wait for any new browser windows to open
+	wm.addListener(WindowListener); 
 }
 
 function shutdown(data, reason) {
