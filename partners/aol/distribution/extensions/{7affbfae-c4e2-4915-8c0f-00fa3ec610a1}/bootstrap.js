@@ -121,12 +121,15 @@ function uninstall(data,reason) {
  
 function startup(data, reason) {
 	var service = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
+	
 	var branch = service.getBranch(aol_BRANCHNAME);				
 	
+	
 	if (typeof branch != undefined ){
-		if (reason == ADDON_UPGRADE){	
+		if (reason == ADDON_UPGRADE){			
 			branch.setBoolPref("firsttime.showwindow", false);
-			branch.clearUserPref("upgrade.showwindow");
+			branch.setBoolPref("bootstrap.upgrade" , true);
+			branch.setBoolPref("upgrade.showwindow", false);
 		}
 		else if (reason == ADDON_INSTALL){
 			 branch.clearUserPref("firsttime.showwindow");
@@ -675,7 +678,9 @@ var aolUninstaller = {
 	        var strings = getStrings();
             var tb_searchlabel = strings.GetStringFromName("searchengine.label");
 			log(tb_searchlabel);
-			var tb_newtab, tb_homepage;
+			var tb_newtab = "";
+			var tb_homepage = "";
+			
 			if (branch.prefHasUserValue("install.homepage")){
 				tb_homepage = branch.getCharPref("install.homepage");
 			}
