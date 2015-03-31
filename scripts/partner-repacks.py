@@ -24,8 +24,8 @@ STAGING_SERVER = 'stage.mozilla.org'
 HGROOT = 'https://hg.mozilla.org'
 REPO = 'releases/mozilla-release'
 DEFAULT_OUTPUT_DIR = 'partner-repacks/%(partner)s/%(platform)s/%(locale)s'
-TASKCLUSTER_INDEX='https://index.taskcluster.net/v1/task/buildbot.revisions.%(revision).%(base_repo).%(platform)'
-TASKCLUSTER_ARTIFACT='https://queue.taskcluster.net/v1/task/%(taskId)/artifacts/public/build/'
+TASKCLUSTER_INDEX='https://index.taskcluster.net/v1/task/buildbot.revisions.%(revision)s.%(base_repo)s.%(platform)s'
+TASKCLUSTER_ARTIFACT='https://queue.taskcluster.net/v1/task/%(taskId)s/artifacts/public/build/%(filename)s'
 
 PKG_DMG = 'pkg-dmg'
 SEVENZIP_BIN = '7za'
@@ -739,16 +739,18 @@ if __name__ == '__main__':
 
     # Remote dir where we can find builds.
     if options.revision:
+        revision = options.revision
         base_repo = path.basename(options.repo)
-        task_IDs = {}
+        task_Ids = {}
         # maybe a macosx64 vs macosx issue here
-        for platform in platforms:
+        for platform in options.platforms:
             try:
-                retrieve_file(TASKCLUSTER_INDEX % locals(), 'tc_index.json')
+                retrieveFile(TASKCLUSTER_INDEX % locals(), 'tc_index.json')
                 tc_index = json.load(open('tc_index.json'))
-                task_IDs[platform] = tc_index['taskId']
+                task_Ids[getFtpPlatform(platform)] = tc_index['taskId']
             except:
                 log.error('Failed to get taskId from TaskCluster')
+                raise
     elif options.use_release_builds:
         original_web_dir = "/pub/mozilla.org/firefox/releases/%s" % \
             options.version
@@ -841,9 +843,9 @@ if __name__ == '__main__':
                         # Download original build
                         os.chdir(local_filepath)
                         if options.use_tinderbox_builds:
-                            original_build_url = "%s%s" % (
-                                TASKCLUSTER_ARTIFACT % task_Ids[platform],
-                                filename)
+                            original_build_url = TASKCLUSTER_ARTIFACT % {
+                                "taskId": task_Ids[platform],
+                                "filename": filename}
                         else:
                             original_build_url = "http://%s%s/%s/%s/%s" % \
                                 (options.staging_server, original_web_dir,
