@@ -288,13 +288,16 @@ def getFilename(version, platform, file_ext, locale, pretty_names=True):
     return None
 
 
-def getFileExtension(platform):
+def getFileExtension(platform, pretty_names=True):
     if isLinux(platform):
         return "tar.bz2"
     if isMac(platform):
         return "dmg"
     if isWin(platform):
-        return "exe"
+        if pretty_names:
+            return "exe"
+        else:
+            return "installer.exe"
     return None
 
 
@@ -834,7 +837,8 @@ if __name__ == '__main__':
                     continue
                 ftp_platform = getFtpPlatform(platform)
 
-                file_ext = getFileExtension(ftp_platform)
+                file_ext = getFileExtension(ftp_platform,
+                                            pretty_names=not options.use_tinderbox_builds)
                 filename = getFilename(options.version, ftp_platform,
                                        file_ext, locale,
                                        pretty_names=not options.use_tinderbox_builds)
