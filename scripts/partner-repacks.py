@@ -714,6 +714,7 @@ if __name__ == '__main__':
             getSingleFileFromHg('browser/config/version.txt', options.revision)
             options.version = open('version.txt').readline().strip()
             log.info("Setting version to %s" % options.version)
+            options.tag = options.revision
     else:
         if not options.version:
             log.error("Error: you must specify a version number.")
