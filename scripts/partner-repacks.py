@@ -538,12 +538,12 @@ def repackSignedBuilds(repack_dir):
     os.chdir(script_directory)
 
     if not path.exists(SEVENZIP_APPTAG):
-        if not getSingleFileFromHg(SEVENZIP_APPTAG_PATH):
+        if not getSingleFileFromHg(SEVENZIP_APPTAG_PATH, options.tag):
             log.error("Error: Unable to retrieve %s" % SEVENZIP_APPTAG)
             sys.exit(1)
     if not path.exists(SEVENZIP_HEADER_COMPRESSED):
         if not path.exists(SEVENZIP_HEADER) and \
-           not getSingleFileFromHg(SEVENZIP_HEADER_PATH):
+           not getSingleFileFromHg(SEVENZIP_HEADER_PATH, options.tag):
             log.error("Error: Unable to retrieve %s" % SEVENZIP_HEADER)
             sys.exit(1)
         upx_cmd = '%s --best -o \"%s\" \"%s\"' % (UPX_BIN,
@@ -586,10 +586,10 @@ def retrieveFile(url, file_path):
     return success
 
 
-def getSingleFileFromHg(filename):
+def getSingleFileFromHg(filename, tag):
     file_path = path.basename(filename)
     url = path.join(options.hgroot, options.repo,
-                    'raw-file', options.tag, filename)
+                    'raw-file', tag, filename)
     return retrieveFile(url, file_path)
 
 
@@ -707,6 +707,10 @@ if __name__ == '__main__':
         if not options.revision:
             log.error("Error: you must specify a revision.")
             error = True
+        else:
+            getSingleFileFromHg('browser/config/version.txt', options.revision)
+            options.version = open('version.txt').readline().strip()
+            log.info("Setting version to %s" % options.version)
     else:
         if not options.version:
             log.error("Error: you must specify a version number.")
@@ -820,7 +824,7 @@ if __name__ == '__main__':
         for locale in repack_info['locales']:
             # don't have l10n for release promotion yet
             if options.use_tinderbox_builds and locale != 'en-US':
-                log.info('Skipping %s, not supported yet' % locale)
+                log.warning('Skipping %s, not supported yet' % locale)
                 continue
             for platform in repack_info['platforms']:
                 # ja-JP-mac only exists for Mac, so skip non-existent
