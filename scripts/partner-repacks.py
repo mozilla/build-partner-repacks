@@ -541,12 +541,12 @@ def repackSignedBuilds(repack_dir):
     os.chdir(script_directory)
 
     if not path.exists(SEVENZIP_APPTAG):
-        if not getSingleFileFromHg(SEVENZIP_APPTAG_PATH, options.tag):
+        if not getSingleFileFromHg(SEVENZIP_APPTAG_PATH):
             log.error("Error: Unable to retrieve %s" % SEVENZIP_APPTAG)
             sys.exit(1)
     if not path.exists(SEVENZIP_HEADER_COMPRESSED):
         if not path.exists(SEVENZIP_HEADER) and \
-           not getSingleFileFromHg(SEVENZIP_HEADER_PATH, options.tag):
+           not getSingleFileFromHg(SEVENZIP_HEADER_PATH):
             log.error("Error: Unable to retrieve %s" % SEVENZIP_HEADER)
             sys.exit(1)
         upx_cmd = '%s --best -o \"%s\" \"%s\"' % (UPX_BIN,
@@ -589,10 +589,10 @@ def retrieveFile(url, file_path):
     return success
 
 
-def getSingleFileFromHg(filename, tag):
+def getSingleFileFromHg(filename):
     file_path = path.basename(filename)
     url = path.join(options.hgroot, options.repo,
-                    'raw-file', tag, filename)
+                    'raw-file', options.tag, filename)
     return retrieveFile(url, file_path)
 
 
@@ -711,10 +711,12 @@ if __name__ == '__main__':
             log.error("Error: you must specify a revision.")
             error = True
         else:
-            getSingleFileFromHg('browser/config/version.txt', options.revision)
+            # fake out the tag using the revision, it's magic!
+            options.tag = options.revision
+            # look up the version in hg
+            getSingleFileFromHg('browser/config/version.txt')
             options.version = open('version.txt').readline().strip()
             log.info("Setting version to %s" % options.version)
-            options.tag = options.revision
     else:
         if not options.version:
             log.error("Error: you must specify a version number.")
