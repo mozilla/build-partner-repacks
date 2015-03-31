@@ -24,7 +24,7 @@ STAGING_SERVER = 'stage.mozilla.org'
 HGROOT = 'https://hg.mozilla.org'
 REPO = 'releases/mozilla-release'
 DEFAULT_OUTPUT_DIR = 'partner-repacks/%(partner)s/%(platform)s/%(locale)s'
-TASKCLUSTER_INDEX='https://index.taskcluster.net/v1/task/buildbot.revisions.%(revision)s.%(base_repo)s.%(platform)s'
+TASKCLUSTER_INDEX='https://index.taskcluster.net/v1/task/buildbot.revisions.%(revision)s.%(base_repo)s.%(tc_platform)s'
 TASKCLUSTER_ARTIFACT='https://queue.taskcluster.net/v1/task/%(taskId)s/artifacts/public/build/%(filename)s'
 
 PKG_DMG = 'pkg-dmg'
@@ -251,6 +251,25 @@ def getFtpPlatform(platform):
     if isWin(platform):
         return "win32"
     return None
+
+
+def getTaskClusterPlatform(platform):
+    if platform == 'mac':
+        return 'macosx64'
+    return platform
+
+
+def getTaskId(platform):
+    tc_platform = getTaskClusterPlatform(platform)
+    revision = options.revision
+    base_repo = path.basename(options.repo)
+    try:
+        retrieveFile(TASKCLUSTER_INDEX % locals(), 'tc_index.json')
+        tc_index = json.load(open('tc_index.json'))
+        return tc_index['taskId']
+    except:
+        log.error('Failed to get taskId from TaskCluster')
+        raise
 
 
 def getFilename(version, platform, file_ext, locale, pretty_names=True):
@@ -739,18 +758,10 @@ if __name__ == '__main__':
 
     # Remote dir where we can find builds.
     if options.revision:
-        revision = options.revision
-        base_repo = path.basename(options.repo)
         task_Ids = {}
         # maybe a macosx64 vs macosx issue here
         for platform in options.platforms:
-            try:
-                retrieveFile(TASKCLUSTER_INDEX % locals(), 'tc_index.json')
-                tc_index = json.load(open('tc_index.json'))
-                task_Ids[getFtpPlatform(platform)] = tc_index['taskId']
-            except:
-                log.error('Failed to get taskId from TaskCluster')
-                raise
+            task_Ids[getFtpPlatform(platform)] = getTaskId(platform)
     elif options.use_release_builds:
         original_web_dir = "/pub/mozilla.org/firefox/releases/%s" % \
             options.version
@@ -807,6 +818,10 @@ if __name__ == '__main__':
 
         # Figure out which base builds we need to repack.
         for locale in repack_info['locales']:
+            # don't have l10n for release promotion yet
+            if options.use_tinderbox_builds and locale != 'en-US':
+                log.info('Skipping %s, not supported yet' % locale)
+                continue
             for platform in repack_info['platforms']:
                 # ja-JP-mac only exists for Mac, so skip non-existent
                 # platform/locale combos.
