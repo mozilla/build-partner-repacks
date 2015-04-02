@@ -259,10 +259,9 @@ def getTaskClusterPlatform(platform):
     return platform
 
 
-def getTaskId(platform):
+def getTaskId(platform, repo, revision):
     tc_platform = getTaskClusterPlatform(platform)
-    revision = options.revision
-    base_repo = path.basename(options.repo)
+    base_repo = path.basename(repo)
     try:
         retrieveFile(TASKCLUSTER_INDEX % locals(), 'tc_index.json')
         tc_index = json.load(open('tc_index.json'))
@@ -680,9 +679,9 @@ if __name__ == '__main__':
         help="Use release builds rather than candidate builds"
     )
     parser.add_option(
-        "--use-tinderbox-builds", action="store_true", dest="use_tinderbox_builds",
+        "--use-ci-builds", action="store_true", dest="use_ci_builds",
         default=False,
-        help="Use tinderbox builds (ie release promotion)"
+        help="Use ci builds (aka dep builds, for release promotion)"
     )
     parser.add_option(
         "--verify-only", action="store_true", dest="verify_only",
@@ -706,7 +705,7 @@ if __name__ == '__main__':
     # Specify a repo & revision and we'll pull taskcluster artifacts
     # for tindbox-builds, otherwise we'll look on ftp in the candidates dir,
     # or in releases dir with -use-release-builds
-    if options.use_tinderbox_builds:
+    if options.use_ci_builds:
         if not options.revision:
             log.error("Error: you must specify a revision.")
             error = True
@@ -771,7 +770,9 @@ if __name__ == '__main__':
         task_Ids = {}
         # maybe a macosx64 vs macosx issue here
         for platform in options.platforms:
-            task_Ids[getFtpPlatform(platform)] = getTaskId(platform)
+            task_Ids[getFtpPlatform(platform)] = getTaskId(platform,
+                                                           options.repo,
+                                                           options.revision)
     elif options.use_release_builds:
         original_web_dir = "/pub/mozilla.org/firefox/releases/%s" % \
             options.version
@@ -829,7 +830,7 @@ if __name__ == '__main__':
         # Figure out which base builds we need to repack.
         for locale in repack_info['locales']:
             # don't have l10n for release promotion yet
-            if options.use_tinderbox_builds and locale != 'en-US':
+            if options.use_ci_builds and locale != 'en-US':
                 log.warning('Skipping %s, not supported yet' % locale)
                 continue
             for platform in repack_info['platforms']:
@@ -841,10 +842,10 @@ if __name__ == '__main__':
                 ftp_platform = getFtpPlatform(platform)
 
                 file_ext = getFileExtension(ftp_platform,
-                                            pretty_names=not options.use_tinderbox_builds)
+                                            pretty_names=not options.use_ci_builds)
                 filename = getFilename(options.version, ftp_platform,
                                        file_ext, locale,
-                                       pretty_names=not options.use_tinderbox_builds)
+                                       pretty_names=not options.use_ci_builds)
 
                 local_filepath = path.join(original_builds_dir, ftp_platform,
                                            locale)
@@ -868,7 +869,7 @@ if __name__ == '__main__':
                     else:
                         # Download original build
                         os.chdir(local_filepath)
-                        if options.use_tinderbox_builds:
+                        if options.use_ci_builds:
                             original_build_url = TASKCLUSTER_ARTIFACT % {
                                 "taskId": task_Ids[platform],
                                 "filename": filename}
