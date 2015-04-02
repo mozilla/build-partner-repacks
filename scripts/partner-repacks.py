@@ -10,7 +10,6 @@ from optparse import OptionParser
 from util.retry import retry
 import urllib
 import logging
-import json
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format="%(asctime)-15s - %(message)s")
@@ -24,8 +23,6 @@ STAGING_SERVER = 'stage.mozilla.org'
 HGROOT = 'https://hg.mozilla.org'
 REPO = 'releases/mozilla-release'
 DEFAULT_OUTPUT_DIR = 'partner-repacks/%(partner)s/%(platform)s/%(locale)s'
-TASKCLUSTER_INDEX='https://index.taskcluster.net/v1/task/buildbot.revisions.%(revision)s.%(base_repo)s.%(tc_platform)s'
-TASKCLUSTER_ARTIFACT='https://queue.taskcluster.net/v1/task/%(taskId)s/artifacts/public/build/%(filename)s'
 
 PKG_DMG = 'pkg-dmg'
 SEVENZIP_BIN = '7za'
@@ -253,50 +250,27 @@ def getFtpPlatform(platform):
     return None
 
 
-def getTaskClusterPlatform(platform):
-    if platform == 'mac':
-        return 'macosx64'
-    return platform
-
-
-def getTaskId(platform, repo, revision):
-    tc_platform = getTaskClusterPlatform(platform)
-    base_repo = path.basename(repo)
-    try:
-        retrieveFile(TASKCLUSTER_INDEX % locals(), 'tc_index.json')
-        tc_index = json.load(open('tc_index.json'))
-        return tc_index['taskId']
-    except:
-        log.error('Failed to get taskId from TaskCluster')
-        raise
-
-
-def getFilename(version, platform, file_ext, locale, pretty_names=True):
+def getFilename(version, platform, file_ext):
     '''Returns the properly formatted filename based on the version string.
        File location/nomenclature changed starting with 3.5.
     '''
-    if pretty_names:
-        if isLinux(platform):
-            return "firefox-%s.%s" % (version, file_ext)
-        if isMac(platform):
-            return "Firefox %s.%s" % (version, file_ext)
-        if isWin(platform):
-            return "Firefox Setup %s.%s" % (version, file_ext)
-    else:
-        return "firefox-%s.%s.%s.%s" % (version, locale, platform, file_ext)
+    if isLinux(platform):
+        return "firefox-%s.%s" % (version, file_ext)
+    if isMac(platform):
+        return "Firefox %s.%s" % (version, file_ext)
+    if isWin(platform):
+        return "Firefox Setup %s.%s" % (version, file_ext)
+
     return None
 
 
-def getFileExtension(platform, pretty_names=True):
+def getFileExtension(platform):
     if isLinux(platform):
         return "tar.bz2"
     if isMac(platform):
         return "dmg"
     if isWin(platform):
-        if pretty_names:
-            return "exe"
-        else:
-            return "installer.exe"
+        return "exe"
     return None
 
 
@@ -647,16 +621,10 @@ if __name__ == '__main__':
     )
     parser.add_option(
         "-r", "--repo", dest="repo", default=REPO,
-        help="Set the repo used for retrieving files from hg"
-    )
+        help="Set the release tag used for retrieving files from hg")
     parser.add_option(
         "-t", "--tag", dest="tag",
-        help="Set the release tag used for retrieving files from hg"
-    )
-    parser.add_option(
-        "-R", "--revision", dest="revision",
-        help="Set the (gecko) revision to use from tinderbox-builds"
-    )
+        help="Set the release tag used for retrieving files from hg")
     parser.add_option(
         "--pkg-dmg", dest="pkg_dmg", default=PKG_DMG,
         help="Set the path to the pkg-dmg for Mac packaging"
@@ -679,11 +647,6 @@ if __name__ == '__main__':
         help="Use release builds rather than candidate builds"
     )
     parser.add_option(
-        "--use-ci-builds", action="store_true", dest="use_ci_builds",
-        default=False,
-        help="Use ci builds (aka dep builds, for release promotion)"
-    )
-    parser.add_option(
         "--verify-only", action="store_true", dest="verify_only",
         default=False,
         help="Check for existing partner repacks"
@@ -693,39 +656,22 @@ if __name__ == '__main__':
         default=False,
         help="Suppress standard output from the packaging tools"
     )
-
     (options, args) = parser.parse_args()
 
     if not options.quiet:
         log.setLevel(logging.DEBUG)
     else:
         log.setLevel(logging.WARNING)
+    # Pre-flight checks
+    if not options.version:
+        log.error("Error: you must specify a version number.")
+        error = True
 
-    ## Pre-flight checks
-    # Specify a repo & revision and we'll pull taskcluster artifacts
-    # for tindbox-builds, otherwise we'll look on ftp in the candidates dir,
-    # or in releases dir with -use-release-builds
-    if options.use_ci_builds:
-        if not options.revision:
-            log.error("Error: you must specify a revision.")
-            error = True
-        else:
-            # fake out the tag using the revision, it's magic!
-            options.tag = options.revision
-            # look up the version in hg
-            getSingleFileFromHg('browser/config/version.txt')
-            options.version = open('version.txt').readline().strip()
-            log.info("Setting version to %s" % options.version)
-    else:
-        if not options.version:
-            log.error("Error: you must specify a version number.")
-            error = True
-
+    if not options.tag:
+        options.tag = createTagFromVersion(options.version)
         if not options.tag:
-            options.tag = createTagFromVersion(options.version)
-            if not options.tag:
-                log.error("Error: you must specify a release tag for hg.")
-                error = True
+            log.error("Error: you must specify a release tag for hg.")
+            error = True
 
     if not path.isdir(options.partners_dir):
         log.error("Error: partners dir %s is not a directory." %
@@ -766,19 +712,14 @@ if __name__ == '__main__':
     base_workdir = os.getcwd()
 
     # Remote dir where we can find builds.
-    if options.revision:
-        task_Ids = {}
-        # maybe a macosx64 vs macosx issue here
-        for platform in options.platforms:
-            task_Ids[getFtpPlatform(platform)] = getTaskId(platform,
-                                                           options.repo,
-                                                           options.revision)
-    elif options.use_release_builds:
-        original_web_dir = "/pub/mozilla.org/firefox/releases/%s" % \
+    if options.use_release_builds:
+        candidates_web_dir = "/pub/mozilla.org/firefox/releases/%s" % \
             options.version
+        win_candidates_web_dir = candidates_web_dir
     else:
-        original_web_dir = "/pub/mozilla.org/%s/%s-candidates/build%s" % \
+        candidates_web_dir = "/pub/mozilla.org/%s/%s-candidates/build%s" % \
             (options.nightly_dir, options.version, options.build_number)
+        win_candidates_web_dir = candidates_web_dir
 
     # Local directories for builds
     script_directory = os.getcwd()
@@ -829,10 +770,6 @@ if __name__ == '__main__':
 
         # Figure out which base builds we need to repack.
         for locale in repack_info['locales']:
-            # don't have l10n for release promotion yet
-            if options.use_ci_builds and locale != 'en-US':
-                log.warning('Skipping %s, not supported yet' % locale)
-                continue
             for platform in repack_info['platforms']:
                 # ja-JP-mac only exists for Mac, so skip non-existent
                 # platform/locale combos.
@@ -841,11 +778,9 @@ if __name__ == '__main__':
                     continue
                 ftp_platform = getFtpPlatform(platform)
 
-                file_ext = getFileExtension(ftp_platform,
-                                            pretty_names=not options.use_ci_builds)
+                file_ext = getFileExtension(ftp_platform)
                 filename = getFilename(options.version, ftp_platform,
-                                       file_ext, locale,
-                                       pretty_names=not options.use_ci_builds)
+                                       file_ext)
 
                 local_filepath = path.join(original_builds_dir, ftp_platform,
                                            locale)
@@ -867,16 +802,15 @@ if __name__ == '__main__':
                         log.info("Found %s on disk, not downloading" %
                                  local_filename)
                     else:
-                        # Download original build
+                        # Download original build from stage
                         os.chdir(local_filepath)
-                        if options.use_ci_builds:
-                            original_build_url = TASKCLUSTER_ARTIFACT % {
-                                "taskId": task_Ids[platform],
-                                "filename": filename}
+                        if isWin(platform):
+                            candidates_dir = win_candidates_web_dir
                         else:
-                            original_build_url = "http://%s%s/%s/%s/%s" % \
-                                (options.staging_server, original_web_dir,
-                                ftp_platform, locale, filename)
+                            candidates_dir = candidates_web_dir
+                        original_build_url = "http://%s%s/%s/%s/%s" % \
+                            (options.staging_server, candidates_dir,
+                             ftp_platform, locale, filename)
 
                         retrieveFile(original_build_url, filename)
                         if isWin(platform):
