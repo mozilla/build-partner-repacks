@@ -978,7 +978,7 @@ const installer = {
         let addonFS = this._application.addonFS;
         try {
             let dataStream = addonFS.getStream("defaults/personas-skin/data.json");
-            lwtData = JSON.parse(fileutils.readStringFromStream());
+            lwtData = JSON.parse(fileutils.readStringFromStream(dataStream));
         } catch (e) {
         }
         if (!(lwtData && lwtData.id)) {
