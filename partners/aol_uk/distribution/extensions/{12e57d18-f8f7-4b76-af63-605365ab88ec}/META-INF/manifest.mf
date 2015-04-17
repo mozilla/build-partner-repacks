@@ -10,8 +10,8 @@ SHA1-Digest: 7AGcJrXmatGAaiQ8csPKdiH2jLU=
 
 Name: chrome/aoluktoolbar.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: bEQynZN3IDGw6ZY3Oal4pg==
-SHA1-Digest: mBQjgQi+nubScaRrvx48uFKpDsw=
+MD5-Digest: Xl2Ipe1TAp1w/RMiq0k9Gw==
+SHA1-Digest: EkYzE3rm997D7tJEEh2uTtbErAk=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -20,8 +20,8 @@ SHA1-Digest: uIZ1qIKtQpuE3LbuwhGqrDUGgu8=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: sWZ/t+LCbunho3lMMfkD+A==
-SHA1-Digest: yB94b4agwT89vMAHZ0LuSNacTG8=
+MD5-Digest: jig/Qsbm+mpzpoebMtwnYg==
+SHA1-Digest: phwP10hqMIkp+PpZRnwLaJBHwUc=
 
 Name: widgets/amazon.zip
 Digest-Algorithms: MD5 SHA1
