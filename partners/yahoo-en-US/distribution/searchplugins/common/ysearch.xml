@@ -10,6 +10,7 @@
     <Param name="hspart" value="mozilla"/>
     <Param name="hsimp" value="yhs-002"/>
     <MozParam name="fr" condition="pref" pref="yahoo-fr" />
+    <MozParam name="type" condition="pref" pref="yahoo-type" />
   </Url>
   <SearchForm>https://search.yahoo.com</SearchForm>
 </SearchPlugin>

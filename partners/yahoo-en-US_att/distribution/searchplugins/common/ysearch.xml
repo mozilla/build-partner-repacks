@@ -16,8 +16,8 @@
   <Param name="ei"     value="UTF-8"/>
   <Param name="hspart" value="att" />
   <Param name="hsimp"  value="yhs-att_001" />
-  <Param name="fr"     value="attportal-yff33-yhs"/>
-  <Param name="type"   value="att_yff33"/>
+  <MozParam name="fr" condition="pref" pref="yahoo-fr" />
+  <MozParam name="type" condition="pref" pref="yahoo-type" />
 </Url>
 <Url type="text/html" method="GET" template="https://search.yahoo.com/yhs/" rel="searchform">
   <Param name="hspart" value="att" />
