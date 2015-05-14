@@ -364,7 +364,11 @@ class RepackBase(object):
     def externallySignBuild(self):
         signing_cmd = self.signing_command
         for f in self.external_signing_formats:
+            if f == 'gpg':
+                continue
             signing_cmd += ' --formats %s' % f
+        if 'gpg' in self.external_signing_formats:
+            signing_cmd += ' --formats gpg'
         signing_cmd += ' "%s"' % self.build
         shellCommand(signing_cmd)
 
