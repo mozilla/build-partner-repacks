@@ -665,14 +665,14 @@ define("slice/logic/player", [
             if (this._startPlay && this._lastCurrentAlias) {
                 var delta = Math.max(Math.floor((Date.now() - this._startPlay) / 60000), 0);
                 if (delta) {
-                    stat.logWidget("ipower.{version}.time." + this._lastCurrentAlias + "." + delta);
+                    stat.logWidget("time." + this._lastCurrentAlias + "." + delta);
                 }
             }
             this._startPlay = 0;
         },
         _play: function () {
             if (this._currentAlias && (this._playerInstance.isStopped() || this._currentAlias !== this._lastCurrentAlias)) {
-                stat.logWidget("ipower.{version}.slice.chanelplay." + this._currentAlias);
+                stat.logWidget("slice.chanelplay." + this._currentAlias);
                 this._startPlay = Date.now();
                 this._lastCurrentAlias = this._currentAlias;
             }

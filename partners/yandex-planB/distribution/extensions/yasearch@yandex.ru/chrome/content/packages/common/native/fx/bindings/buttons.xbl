@@ -155,16 +155,6 @@
             </xul:toolbarbutton>
             <xul:dropmarker class="toolbarbutton-menubutton-dropmarker" xbl:inherits="align,dir,pack,orient,disabled,toolbarmode,buttonstyle,label" type="menu-button"/>
         </content>
-
-        <implementation>
-            <method name="__noSuchMethod__">
-                <parameter name="methodName"/>
-                <parameter name="args"/>
-                <body><![CDATA[    this._button[methodName].apply(this._button, args);]]></body>
-            </method>
-
-            <field name="_button" readonly="true"><![CDATA[    document.getAnonymousElementByAttribute(this, "anonid", "button");]]></field>
-        </implementation>
     </binding>
 
 
@@ -197,7 +187,7 @@
             </property>
 
             <method name="watchAuth">
-                <body><![CDATA[    this._authorized = this._authModule.authorized;
+                <body><![CDATA[    this._authorized = this._authModule.isAuthorized();
     this._authModule.addListener(this._authModule.EVENTS.AUTH_STATE_CHANGED, this);
     this._watchingAuth = true;]]></body>
             </method>
@@ -220,7 +210,7 @@
     }
     switch (topic) {
     case this._authModule.EVENTS.AUTH_STATE_CHANGED:
-        this._authorized = this._authModule.authorized;
+        this._authorized = this._authModule.isAuthorized();
         break;
     }]]></body>
             </method>
@@ -231,9 +221,9 @@
 
     <binding extends="//toolkit/native/bindings/widget.xml#widget" id="ycounter-widget">
         <implementation>
-            <field name="yauth">this.module.authManager</field>
             <field name="counters">this.module.counters</field>
             <field name="API">this.module.API</field>
+            <field name="yauth">this.API.Passport</field>
 
             <field name="counterServiceID" readonly="true">this.module.counterServiceID</field>
             <field name="counterXpathExpr" readonly="true">this.module.counterXpathExpr</field>
@@ -270,7 +260,6 @@
         </implementation>
 
         <handlers>
-
             <handler event="command"><![CDATA[    if (event.originalTarget.localName == "toolbarbutton") {
         this.module.onButtonClick(event, this);
     } else {
@@ -284,7 +273,7 @@
         this.module.onButtonClick(event, this);
     }]]></handler>
 
-            <handler event="popupshowing"><![CDATA[    if (event.originalTarget == this._menu && !this.yauth.authorized) {
+            <handler event="popupshowing"><![CDATA[    if (event.originalTarget == this._menu && !this.yauth.isAuthorized()) {
         this.module.onButtonClick(event, this);
         return false;
     }

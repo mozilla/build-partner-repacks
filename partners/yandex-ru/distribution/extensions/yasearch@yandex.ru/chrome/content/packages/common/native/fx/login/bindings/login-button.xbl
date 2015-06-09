@@ -63,7 +63,7 @@
             <destructor><![CDATA[    this.ignoreAuth();]]></destructor>
 
             <method name="_changeState">
-                <body><![CDATA[    let authorized = this._authModule.authorized;
+                <body><![CDATA[    let authorized = this._authModule.isAuthorized();
     if (authorized) {
         this.style.setProperty("list-style-image", "none", "important");
     } else {
@@ -74,14 +74,14 @@
             </method>
 
             <method name="_setButtonLabel">
-                <body><![CDATA[    let userDisplayName = "";
-    let userAvatarURL;
-    if (this._authModule.authorized) {
-        let defaultUser = this._authModule.getTopUser();
-        userDisplayName = defaultUser.displayName;
-        userAvatarURL = this._ownerWidget.module.createAccountAvatarURL(defaultUser.uid);
+                <body><![CDATA[    let accountDisplayName = "";
+    let accountAvatarURL;
+    if (this._authModule.isAuthorized()) {
+        let defaultAccount = this._authModule.defaultAccount;
+        accountDisplayName = defaultAccount.displayName;
+        accountAvatarURL = this._ownerWidget.module.createAccountAvatarURL(defaultAccount.uid);
     }
-    this.ybSecondLabelNode.setText(userDisplayName, userAvatarURL);]]></body>
+    this.ybSecondLabelNode.setText(accountDisplayName, accountAvatarURL);]]></body>
             </method>
 
             <method name="observe">

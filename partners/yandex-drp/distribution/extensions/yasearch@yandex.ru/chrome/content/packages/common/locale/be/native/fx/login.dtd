@@ -13,3 +13,4 @@
 <!ENTITY noauth.label "Калі ласка, аўтарызуйцеся">
 <!ENTITY login.passport.label "Пашпарт">
 <!ENTITY login.settings.label "Наладка &vendor.gen;">
+<!ENTITY login.menu.other-account.label "Іншыя акаўнты">

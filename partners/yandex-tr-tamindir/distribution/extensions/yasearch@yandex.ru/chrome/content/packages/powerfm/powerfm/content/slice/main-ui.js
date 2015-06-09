@@ -4364,7 +4364,7 @@ define("slice/ui/channels/channels", [
             this._currentChannelId = "";
             this._error = false;
             $(parent).on("click", ".channels__channel", function (event) {
-                stat.logWidget("ipower.{version}.slice.chanelchoise." + this.getAttribute("data-channel-alias"));
+                stat.logWidget("slice.chanelchoise." + this.getAttribute("data-channel-alias"));
                 adapter.sendMessage("channels:cmd:set-current", {
                     id: this.getAttribute("data-channel-id"),
                     play: true
@@ -4472,11 +4472,11 @@ define("slice/ui/error/error", [
         observers: {
             "player:not-supported": function () {
                 this._parent.setAttribute("data-errortype", "unsupported");
-                stat.logWidget("ipower.{version}.slice.oldbrowser");
+                stat.logWidget("slice.oldbrowser");
             },
             "api:error": function (topic, data) {
                 this._parent.setAttribute("data-errortype", data.type);
-                stat.logWidget("ipower.{version}.slice.apiblackout");
+                stat.logWidget("slice.apiblackout");
             }
         }
     };
@@ -4492,7 +4492,7 @@ define("slice/ui/footer/footer", [
         init: function () {
             var link = document.querySelector(".footer__link");
             link.onclick = function (e) {
-                stat.logWidget("ipower.{version}.powerlink");
+                stat.logWidget("powerlink");
                 utils.navigate(this.href, e || window.event);
                 return false;
             };
@@ -4526,19 +4526,19 @@ define("slice/ui/player/volume", [
         this._elemValue = parentElem.querySelector(".player-volume__slider__value");
         this._elemSlide = parentElem.querySelector(".player-volume__slider__slide");
         this._btnMute.addEventListener("click", function () {
-            stat.logWidget("ipower.{version}.slice.mute");
+            stat.logWidget("slice.mute");
             var mute = this.getAttribute("data-muted") === "true";
             adapter.sendMessage("player:cmd:volume", { mute: !mute });
         }, false);
         this._elemSlider.addEventListener("click", function (event) {
-            stat.logWidget("ipower.{version}.slice.mute");
+            stat.logWidget("slice.mute");
             this._setVolumeOnMouseEvent(event.pageX);
         }.bind(this), false);
         dom.dragNDropCore({
             elems: this._elemSlide,
             ctx: this,
             onstart: function () {
-                stat.logWidget("ipower.{version}.slice.mute");
+                stat.logWidget("slice.mute");
             },
             onmove: function (data) {
                 this._setVolumeOnMouseEvent(data.pageX);
@@ -4595,15 +4595,15 @@ define("slice/ui/player/player", [
             this._btnNext = parent.querySelector(".player__button__next");
             this._btnPlay.onclick = function () {
                 var playing = this.getAttribute("data-stopped") !== "true";
-                stat.logWidget("ipower.{version}.slice." + (playing ? "pause" : "play"));
+                stat.logWidget("slice." + (playing ? "pause" : "play"));
                 adapter.sendMessage("player:cmd:playState", { play: !playing });
             };
             this._btnPrev.onclick = function () {
-                stat.logWidget("ipower.{version}.slice.back");
+                stat.logWidget("slice.back");
                 adapter.sendMessage("channels:cmd:set-prev");
             };
             this._btnNext.onclick = function () {
-                stat.logWidget("ipower.{version}.slice.next");
+                stat.logWidget("slice.next");
                 adapter.sendMessage("channels:cmd:set-next");
             };
             this._volume = new Volume(parent.querySelector(".player-volume"));
@@ -4867,7 +4867,7 @@ define("slice/ui/main/main", [
                 this._parent.setAttribute("data-state", "loaded");
             },
             "slice-event-show": function (topic, eventData) {
-                stat.logWidget("ipower.{version}.button");
+                stat.logWidget("button");
             }
         }
     };

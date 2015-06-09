@@ -30,7 +30,7 @@ var module = function (app, common) {
             var group = count > 1;
             var ret = {
                 titleColor: "429f1e",
-                icon: group ? this._icon : item._profile ? item._profile.pic50x50 : null,
+                icon: group ? this._icon : item._profile ? item._profile.pic128x128 : null,
                 template: group ? app.api.Notifications.TEMPLATE_GROUP : app.api.Notifications.TEMPLATE_MESSAGE
             };
             if (group) {

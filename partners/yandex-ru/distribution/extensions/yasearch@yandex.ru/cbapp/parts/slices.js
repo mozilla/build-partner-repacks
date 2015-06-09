@@ -26,10 +26,14 @@ function Slice({url, disposable, windowProperties, injectedProperties, system, n
         this.injectedProperties = injectedProperties || {};
         this._disposable = Boolean(disposable);
         this._noautohide = Boolean(noautohide);
-        this._browser = slices._hiddenSlicesDocument.getElementById(this._browserId) || this._createXULBrowser();
-        this.url = url;
         this._w = this._windowProperties.width || -1;
         this._h = this._windowProperties.height || -1;
+        this._createXULBrowser().then(browser => {
+            this._browser = browser;
+            if (!this._url) {
+                this.url = url;
+            }
+        });
     } catch (e) {
         delete slicesRegistry[this._id];
         this._logger.error(e);
@@ -48,7 +52,7 @@ Slice.prototype = {
             return;
         }
         this._url = newURL;
-        if (this._browser.getAttribute("src") !== newURL) {
+        if (this._browser && this._browser.getAttribute("src") !== newURL) {
             this._browser.setAttribute("src", newURL);
         }
     },
@@ -118,6 +122,9 @@ Slice.prototype = {
             delete slicesRegistry[this._id];
         }
     },
+    browserReadyPromise: function () {
+        return this._createXULBrowser();
+    },
     onHidden: function Slice_onHidden() {
         this._panelCtrl = null;
         try {
@@ -133,13 +140,25 @@ Slice.prototype = {
         }
     },
     _createXULBrowser: function Slice__createXULBrowser() {
-        let hiddenDoc = slices._hiddenSlicesDocument;
-        let browser = hiddenDoc.createElement("browser");
-        browser.setAttribute("id", this._browserId);
-        browser.setAttribute("type", "content");
-        browser.setAttribute("disablehistory", "true");
-        hiddenDoc.documentElement.appendChild(browser);
-        return browser;
+        let deferred = promise.defer();
+        slices.getHiddenSlicesDocumentPromise().then(frame => {
+            let hiddenSlicesDocument = frame.contentDocument.defaultView.document;
+            let existsBrowser = hiddenSlicesDocument.getElementById(this._browserId);
+            if (existsBrowser) {
+                deferred.resolve(existsBrowser);
+            } else {
+                const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+                let browser = hiddenSlicesDocument.createElementNS(XUL_NS, "browser");
+                browser.setAttribute("id", this._browserId);
+                browser.setAttribute("type", "content");
+                browser.setAttribute("disablehistory", "true");
+                hiddenSlicesDocument.documentElement.appendChild(browser);
+                deferred.resolve(browser);
+            }
+        }, error => {
+            deferred.reject(error);
+        });
+        return deferred.promise;
     }
 };
 const slices = {
@@ -173,6 +192,10 @@ const slices = {
     },
     findSliceByID: function Slices_findSliceByID(sliceID) {
         return slicesRegistry[sliceID] || null;
+    },
+    getHiddenSlicesDocumentPromise: function () {
+        let appName = this._application.name;
+        return misc.hiddenWindows.getFramePromise(appName + "-cb-slices-frame", "chrome://" + appName + "/content/overlay/hiddenwindow.xul");
     },
     observe: function Slices_observe(aSubject, aTopic, aData) {
         switch (aTopic) {
@@ -241,9 +264,5 @@ const slices = {
         win.resizeWindowTo = function win_resizeWindowTo(w, h) {
             slice.sizeTo(w, h);
         };
-    },
-    get _hiddenSlicesDocument() {
-        let appName = this._application.name;
-        return misc.hiddenWindows.getFrame(appName + "-cb-slices-frame", "chrome://" + appName + "/content/overlay/hiddenwindow.xul").contentDocument.defaultView.document;
     }
 };

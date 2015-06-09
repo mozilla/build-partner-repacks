@@ -6037,14 +6037,27 @@ define("main-ui", function () {
 });
 define("slice/ui/error/error", [
     "react",
-    "browser-adapter"
-], function (r, adapter) {
+    "browser-adapter",
+    "api/stat"
+], function (r, adapter, stat) {
     return r.createClass({
         displayName: "MailError",
+        handleRefreshClick: function () {
+            stat.logWidget("slice.refresh");
+            adapter.sendMessage("mail:ui:request");
+        },
         render: function () {
             return r.DOM.div({
                 className: "mail-error",
-                children: [adapter.getString("error.refresh")]
+                children: [
+                    adapter.getString("error.refresh"),
+                    r.DOM.br(null),
+                    r.DOM.div({
+                        className: "mail-error_refresh-button",
+                        onClick: this.handleRefreshClick,
+                        children: [adapter.getString("refresh")]
+                    })
+                ]
             });
         }
     });
@@ -6068,28 +6081,28 @@ define("slice/ui/messages/hover-menu", [
     return r.createClass({
         displayName: "MailHoverMenu",
         handleReadClick: function () {
-            stat.logWidget("yamail.{version}.slice.read");
+            stat.logWidget("slice.read");
             adapter.sendMessage("mail:messages:change", {
                 message: this.props.message,
                 action: "mark_read"
             });
         },
         handleSpamClick: function () {
-            stat.logWidget("yamail.{version}.slice.spam");
+            stat.logWidget("slice.spam");
             adapter.sendMessage("mail:messages:change", {
                 message: this.props.message,
                 action: "tospam"
             });
         },
         handleDeleteClick: function () {
-            stat.logWidget("yamail.{version}.slice.delete");
+            stat.logWidget("slice.delete");
             adapter.sendMessage("mail:messages:change", {
                 message: this.props.message,
                 action: "delete"
             });
         },
         handleReplyClick: function () {
-            stat.logWidget("yamail.{version}.slice.reply");
+            stat.logWidget("slice.reply");
             adapter.sendMessage("mail:messages:change", {
                 message: this.props.message,
                 action: "mark_read"
@@ -6098,9 +6111,12 @@ define("slice/ui/messages/hover-menu", [
             window.close();
         },
         handleMessageClick: function () {
-            stat.logWidget("yamail.{version}.slice.listlink");
+            stat.logWidget("slice.listlink");
             adapter.sendMessage("mail:open", { message: this.props.message });
             window.close();
+        },
+        onDragStart: function () {
+            return false;
         },
         render: function () {
             return r.DOM.div({
@@ -6116,7 +6132,8 @@ define("slice/ui/messages/hover-menu", [
                         children: [
                             r.DOM.img({
                                 className: "mail-hover-menu__img",
-                                src: "ui/messages/images/read.png"
+                                src: "ui/messages/images/read.png",
+                                onDragStart: this.onDragStart
                             }),
                             r.DOM.div({
                                 className: "mail-hover-menu__text",
@@ -6130,7 +6147,8 @@ define("slice/ui/messages/hover-menu", [
                         children: [
                             r.DOM.img({
                                 className: "mail-hover-menu__img",
-                                src: "ui/messages/images/reply.png"
+                                src: "ui/messages/images/reply.png",
+                                onDragStart: this.onDragStart
                             }),
                             r.DOM.div({
                                 className: "mail-hover-menu__text",
@@ -6144,7 +6162,8 @@ define("slice/ui/messages/hover-menu", [
                         children: [
                             r.DOM.img({
                                 className: "mail-hover-menu__img",
-                                src: "ui/messages/images/spam.png"
+                                src: "ui/messages/images/spam.png",
+                                onDragStart: this.onDragStart
                             }),
                             r.DOM.div({
                                 className: "mail-hover-menu__text",
@@ -6158,7 +6177,8 @@ define("slice/ui/messages/hover-menu", [
                         children: [
                             r.DOM.img({
                                 className: "mail-hover-menu__img",
-                                src: "ui/messages/images/delete.png"
+                                src: "ui/messages/images/delete.png",
+                                onDragStart: this.onDragStart
                             }),
                             r.DOM.div({
                                 className: "mail-hover-menu__text",
@@ -6199,6 +6219,13 @@ define("slice/ui/messages/message-item", [
     return r.createClass({
         displayName: "MailMessageItem",
         render: function () {
+            var attachIco = "";
+            if (this.props.message.attach > 0) {
+                attachIco = r.DOM.img({
+                    className: "mail-message-item__from-attach-ico",
+                    src: "ui/messages/images/attach-ico.png"
+                });
+            }
             return r.DOM.div({
                 className: "mail-message-item",
                 key: this.props.message.id,
@@ -6210,6 +6237,7 @@ define("slice/ui/messages/message-item", [
                                 className: "mail-message-item__from-text",
                                 children: [this.props.message.from]
                             }),
+                            attachIco,
                             r.DOM.span({
                                 className: "mail-message-item__from-date",
                                 children: [getDisplayDate(new Date(this.props.message.date))]
@@ -6240,7 +6268,7 @@ define("slice/ui/messages/messages", [
     return r.createClass({
         displayName: "MailMessages",
         handleContinueClick: function (type) {
-            stat.logWidget("yamail.{version}.slice." + type);
+            stat.logWidget("slice." + type);
             adapter.sendMessage("mail:open");
             window.close();
         },
@@ -6361,9 +6389,12 @@ define("slice/ui/header/header-create", [
     return r.createClass({
         displayName: "HeaderCreateButton",
         handleCreateClick: function () {
-            stat.logWidget("yamail.{version}.slice.write");
+            stat.logWidget("slice.write");
             adapter.sendMessage("mail:compose");
             window.close();
+        },
+        onDragStart: function () {
+            return false;
         },
         render: function () {
             return r.DOM.span({
@@ -6372,7 +6403,8 @@ define("slice/ui/header/header-create", [
                 children: [
                     r.DOM.img({
                         className: "mail-header__create-icon",
-                        src: "ui/header/images/mail-create.png"
+                        src: "ui/header/images/mail-create.png",
+                        onDragStart: this.onDragStart
                     }),
                     r.DOM.span({
                         className: "mail-header__create-text",
@@ -6391,8 +6423,11 @@ define("slice/ui/header/header-login", [
     return r.createClass({
         displayName: "HeaderLoginButton",
         handleClick: function () {
-            stat.logWidget("yamail.{version}.slice.loginmenu");
+            stat.logWidget("slice.loginmenu");
             this.props.handleMenuBtnClick();
+        },
+        onDragStart: function () {
+            return false;
         },
         render: function () {
             var buttonImageName = this.props.showCloseButton ? "close" : "open";
@@ -6404,7 +6439,8 @@ define("slice/ui/header/header-login", [
                 children: [this.props.email]
             }), r.DOM.img({
                 className: "mail-header__menu-button",
-                src: "ui/header/images/menu-" + buttonImageName + ".png"
+                src: "ui/header/images/menu-" + buttonImageName + ".png",
+                onDragStart: this.onDragStart
             }));
         }
     });
@@ -6416,23 +6452,41 @@ define("slice/ui/header/header-inbox", [
 ], function (r, adapter, stat) {
     return r.createClass({
         displayName: "MailHeaderInbox",
-        handleClick: function () {
+        handleInboxClick: function () {
             adapter.sendMessage("mail:open");
             window.close();
+        },
+        handleUpdateClick: function () {
+            stat.logWidget("slice.refresh");
+            adapter.sendMessage("mail:ui:request");
+        },
+        onDragStart: function () {
+            return false;
         },
         render: function () {
             var inboxMessage;
             if (this.props.showLogoInsteadCount) {
                 inboxMessage = adapter.getString("logo");
-            } else if (this.props.messagesCount > 0) {
-                inboxMessage = adapter.getString("inbox") + " " + this.props.messagesCount;
+            } else if (this.props.currentUserCount > 0) {
+                inboxMessage = adapter.getString("inbox") + " " + this.props.currentUserCount;
             } else {
                 inboxMessage = adapter.getString("nounread");
             }
             return r.DOM.span({
-                className: "mail-header__inbox",
-                onClick: this.handleClick,
-                children: [inboxMessage]
+                className: "mail-header__inbox-block",
+                children: [
+                    r.DOM.span({
+                        className: "mail-header__inbox",
+                        onClick: this.handleInboxClick,
+                        children: [inboxMessage]
+                    }),
+                    r.DOM.img({
+                        className: "mail-header__refresh",
+                        onClick: this.handleUpdateClick,
+                        src: "ui/header/images/mail-refresh.png",
+                        onDragStart: this.onDragStart
+                    })
+                ]
             });
         }
     });
@@ -6454,6 +6508,7 @@ define("slice/ui/header/header", [
                 className: "mail-header__inbox-container",
                 children: [HeaderInbox({
                         messagesCount: this.props.messagesCount,
+                        currentUserCount: this.props.currentUserCount,
                         showLogoInsteadCount: this.props.showLogoInsteadCount
                     })]
             }), r.DOM.div({
@@ -6475,7 +6530,6 @@ define("slice/ui/menu/menu-settings", [
     return r.createClass({
         displayName: "MenuSettings",
         handleOtherLoginClick: function () {
-            stat.logWidget("yamail.{version}.slice.write");
             adapter.sendOuterMessage("user:login", { uid: "" });
             window.close();
         },
@@ -6519,7 +6573,7 @@ define("slice/ui/menu/menu-account", [
         displayName: "MenuUser",
         handleLogInClick: function () {
             if (this.props.isCurrent) {
-                stat.logWidget("yamail.{version}.slice.login");
+                stat.logWidget("slice.login");
                 adapter.sendMessage("mail:open");
             } else {
                 adapter.sendOuterMessage("user:login", { uid: this.props.id });
@@ -6530,6 +6584,9 @@ define("slice/ui/menu/menu-account", [
             adapter.sendOuterMessage("user:logout", { uid: this.props.id });
             window.close();
         },
+        onDragStart: function () {
+            return false;
+        },
         render: function () {
             var nodes = [r.DOM.span({
                     onClick: this.handleLogInClick,
@@ -6537,10 +6594,15 @@ define("slice/ui/menu/menu-account", [
                     children: [this.props.email]
                 })];
             if (this.props.authorized) {
+                nodes.unshift(r.DOM.span({
+                    className: "mail-menu__account-item-count",
+                    children: [this.props.count]
+                }));
                 nodes.push(r.DOM.img({
                     onClick: this.handleLogOutClick,
                     className: "mail-menu__account-item-icon",
-                    src: "ui/menu/images/remove.png"
+                    src: "ui/menu/images/remove.png",
+                    onDragStart: this.onDragStart
                 }));
             }
             return r.DOM.div({
@@ -10669,7 +10731,12 @@ define("slice/ui/main/main", [
         componentDidMount: function () {
             adapter.addListener("mail:users", this.handleMailUsersEvent, this);
             adapter.addListener("mail:counter", this.handleMailCounterEvent, this);
+            adapter.addListener("mail:error", this.handleMailErrorEvent, this);
             adapter.addListener("slice-event-show", this.handleSliceShowEvent, this);
+            adapter.addListener("slice:close", this.handleSliceCloseEvent, this);
+        },
+        handleSliceCloseEvent: function () {
+            window.close();
         },
         handleMailUsersEvent: function (topic, data) {
             this.setState({ accounts: data });
@@ -10677,8 +10744,12 @@ define("slice/ui/main/main", [
         handleMailCounterEvent: function (topic, data) {
             this.setState({
                 messagesCount: data.count,
-                showLogoInsteadCount: data.counterError
+                currentUserCount: data.currentUserCount,
+                showLogoInsteadCount: false
             });
+        },
+        handleMailErrorEvent: function () {
+            this.setState({ showLogoInsteadCount: true });
         },
         handleSliceShowEvent: function () {
             this.setState({ isMenuOpen: false });
@@ -10699,6 +10770,7 @@ define("slice/ui/main/main", [
                 isMenuOpen: false,
                 accounts: [],
                 messagesCount: 0,
+                currentUserCount: 0,
                 showLogoInsteadCount: true
             };
         },
@@ -10708,6 +10780,7 @@ define("slice/ui/main/main", [
                 children: [HeaderView({
                         account: this.getCurrentAccount(this.state.accounts),
                         messagesCount: this.state.messagesCount,
+                        currentUserCount: this.state.currentUserCount,
                         showLogoInsteadCount: this.state.showLogoInsteadCount,
                         showCloseButton: this.state.isMenuOpen,
                         handleMenuBtnClick: this.handleMenuBtnClick.bind(this)

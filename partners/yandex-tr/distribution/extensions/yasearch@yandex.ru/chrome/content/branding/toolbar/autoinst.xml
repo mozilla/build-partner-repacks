@@ -94,25 +94,6 @@
             </history>
         </component>
 
-        <component id="http://bar-widgets.yandex.ru/packages/approved/131/manifest.xml#facebook" group-id="social" statistics-id="facebook">
-            <cookies>
-                <cookie url="http://facebook.com/" name="c_user"/>
-                <cookie url="https://facebook.com/" name="c_user"/>
-            </cookies>
-            <history min-visits="10">
-                <url domain="facebook.com"/>
-            </history>
-        </component>
-
-        <component id="http://bar-widgets.yandex.ru/packages/approved/136/manifest.xml#twitter" group-id="social" statistics-id="twitter">
-            <cookies>
-                <cookie url="https://twitter.com/" name="auth_token"/>
-            </cookies>
-            <history min-visits="10">
-                <url domain="twitter.com"/>
-            </history>
-        </component>
-
         <component id="http://bar-widgets.yandex.ru/packages/approved/184/manifest.xml#sport" group-id="relax" statistics-id="sport">
             <history min-visits="10">
                 <url domain="ajansspor.com"/>

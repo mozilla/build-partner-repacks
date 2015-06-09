@@ -73,9 +73,10 @@ const core = {
     },
     GET_FLASH_URL: "http://get.adobe.com/flashplayer/",
     getString: function GamesWidget_getString(key) {
-        if (!this._stringBundle)
-            this._stringBundle = Cc["@mozilla.org/intl/stringbundle;1"].getService(Ci.nsIStringBundleService).createBundle(this._api.Package.resolvePath("/games.properties"));
-        return this._stringBundle.GetStringFromName(key);
+        if (!this._stringBundle) {
+            this._stringBundle = this._api.Localization.createStringBundle("/games.properties");
+        }
+        return this._stringBundle.get(key);
     },
     getOption: function GamesWidget_getOption(option) {
         try {

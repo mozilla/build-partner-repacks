@@ -52,23 +52,23 @@ define("slice/ui/buttons/buttons", [
             this._routeTraffic = this._route.querySelector(".b-map-button_pic_ball");
             xmlHelper.setText(this._map, adapter.getString("link.map"));
             this._traffic.onclick = function () {
-                stat.logWidget("yamaps.{version}.slice.traffic");
+                stat.logWidget("slice.traffic");
                 adapter.sendMessage("slice:btn-traffic");
             };
             this._plus.onclick = function () {
-                stat.logWidget("yamaps.{version}.slice.zoom");
+                stat.logWidget("slice.zoom");
                 adapter.sendMessage("slice:btn-zoom", 1);
             };
             this._minus.onclick = function () {
-                stat.logWidget("yamaps.{version}.slice.zoom");
+                stat.logWidget("slice.zoom");
                 adapter.sendMessage("slice:btn-zoom", -1);
             };
             this._route.onclick = function () {
-                stat.logWidget("yamaps.{version}.slice.route");
+                stat.logWidget("slice.route");
                 adapter.sendMessage("slice:btn-route");
             };
             this._map.onclick = function () {
-                stat.logWidget("yamaps.{version}.slice.link");
+                stat.logWidget("slice.link");
                 adapter.sendMessage("slice:btn-map");
             };
         },
@@ -828,7 +828,7 @@ define("slice/ui/route-form/form", [
             this._btnDel.onclick = function () {
                 if (this.getAttribute("data-disabled") != "true") {
                     self._showError(false);
-                    stat.logWidget("yamaps.{version}.slice.delete");
+                    stat.logWidget("slice.delete");
                     adapter.sendMessage("slice:form:delete-route");
                 }
             };
@@ -871,9 +871,9 @@ define("slice/ui/route-form/form", [
             }
         },
         _updateFromSaved: function () {
-            this._inputHome.input.value = this._savedRoute ? this._savedRoute.home : "";
-            this._inputWork.input.value = this._savedRoute ? this._savedRoute.work : "";
-            this._btnDel.setAttribute("data-disabled", !this._savedRoute);
+            this._inputHome.input.value = this._savedRoute && this._savedRoute.home || "";
+            this._inputWork.input.value = this._savedRoute && this._savedRoute.work || "";
+            this._btnDel.setAttribute("data-disabled", !(this._inputHome.input.value || this._inputWork.input.value));
             this._showError(false);
         },
         _showError: function (bShow) {
@@ -883,7 +883,7 @@ define("slice/ui/route-form/form", [
             var home = this._inputHome.input.value.trim();
             var work = this._inputWork.input.value.trim();
             if (home && work) {
-                stat.logWidget("yamaps.{version}.slice.pave");
+                stat.logWidget("slice.pave");
                 adapter.sendMessage("slice:form:pave-route", {
                     home: home,
                     work: work
@@ -1086,7 +1086,7 @@ define("slice/ui/map/placemark", [
             }, this);
         },
         _onClick: function () {
-            stat.logWidget("yamaps.{version}.slice.imhere");
+            stat.logWidget("slice.imhere");
         }
     };
     return Placemark;
@@ -1526,7 +1526,7 @@ define("slice/ui/map/map", [
                     "dblClickZoom"
                 ],
                 controls: []
-            });
+            }, { mapAutoFocus: false });
             this._mapParent.addEventListener("click", function (e) {
                 if (e.target.tagName == "A") {
                     utils.navigate(e.target.href, e);

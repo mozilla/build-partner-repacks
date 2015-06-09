@@ -1,6 +1,6 @@
-<!ENTITY translate.name "Çevirmen">
+<!ENTITY translate.name "Çeviri">
 
-<!ENTITY translate.button.tooltip_before "Çevirmen">
+<!ENTITY translate.button.tooltip_before "Çeviri">
 <!ENTITY translate.button.tooltip_no_dir "Lütfen, tercüme yönünü seçin">
 <!ENTITY translate.menu.enable "Çevirmeni aç">
 <!ENTITY translate.menu.onmouse "İmlecin hareketiyle tercüme et">

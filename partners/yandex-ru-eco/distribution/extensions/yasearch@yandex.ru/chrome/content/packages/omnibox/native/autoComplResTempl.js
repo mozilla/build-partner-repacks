@@ -58,6 +58,9 @@ OmniBoxSearchAutoCompleteResult.prototype = {
     getValueAt: function SACR_getValueAt(aIndex) {
         return this.getLabelAt(aIndex);
     },
+    getFinalCompleteValueAt: function SACR_getFinalCompleteValueAt(aIndex) {
+        return this.getValueAt(aIndex);
+    },
     getLabelAt: function SACR_getLabelAt(aIndex) {
         this._checkIndexBounds(aIndex);
         return this._entries[aIndex].value;

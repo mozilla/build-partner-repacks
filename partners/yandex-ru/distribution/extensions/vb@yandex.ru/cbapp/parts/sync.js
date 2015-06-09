@@ -31,38 +31,8 @@ const sync = {
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         this._application = application;
         this._logger = application.getLogger("Sync");
-        let topics = this._application.core.eventTopics;
-        Services.obs.addObserver(this, topics.APP_TAB_SHOWN, false);
-        Services.obs.addObserver(this, topics.SYNC_AUTH_CHANGED, false);
-        Services.obs.addObserver(this, topics.SYNC_COMPONENT_ENABLED, false);
-        Services.obs.addObserver(this, topics.SYNC_COMPONENT_READY, false);
-        Services.obs.addObserver(this, topics.SYNC_COMPONENT_DISABLED, false);
-        Services.obs.addObserver(this, topics.SYNC_SERVICE_TOPHISTORY_ENABLED_STARTED, false);
-        Services.obs.addObserver(this, topics.SYNC_SERVICE_TOPHISTORY_ENABLED_FINISHED, false);
-        Services.obs.addObserver(this, topics.SYNC_SERVICE_TOPHISTORY_DISABLED, false);
-        Services.obs.addObserver(this, topics.SYNC_SERVICE_PINNED_ENABLED_STARTED, false);
-        Services.obs.addObserver(this, topics.SYNC_SERVICE_PINNED_ENABLED_FINISHED, false);
-        Services.obs.addObserver(this, topics.SYNC_SERVICE_PINNED_DISABLED, false);
-        if (this.svc) {
-            this._application.syncPinned.engine.addListener("data", this);
-        }
     },
     finalize: function Fastdial_finalize(doCleanup, callback) {
-        let topics = this._application.core.eventTopics;
-        Services.obs.removeObserver(this, topics.APP_TAB_SHOWN);
-        Services.obs.removeObserver(this, topics.SYNC_AUTH_CHANGED);
-        Services.obs.removeObserver(this, topics.SYNC_COMPONENT_ENABLED);
-        Services.obs.removeObserver(this, topics.SYNC_COMPONENT_READY);
-        Services.obs.removeObserver(this, topics.SYNC_COMPONENT_DISABLED);
-        Services.obs.removeObserver(this, topics.SYNC_SERVICE_TOPHISTORY_ENABLED_STARTED);
-        Services.obs.removeObserver(this, topics.SYNC_SERVICE_TOPHISTORY_ENABLED_FINISHED);
-        Services.obs.removeObserver(this, topics.SYNC_SERVICE_TOPHISTORY_DISABLED);
-        Services.obs.removeObserver(this, topics.SYNC_SERVICE_PINNED_ENABLED_STARTED);
-        Services.obs.removeObserver(this, topics.SYNC_SERVICE_PINNED_ENABLED_FINISHED);
-        Services.obs.removeObserver(this, topics.SYNC_SERVICE_PINNED_DISABLED);
-        if (this.svc) {
-            this._application.syncPinned.engine.removeListener("data", this);
-        }
         this._application = null;
         this._logger = null;
     },
@@ -153,10 +123,6 @@ const sync = {
     },
     get svc() {
         let syncSvc = null;
-        try {
-            syncSvc = Cc["@yandex.ru/esync;1"].getService().wrappedJSObject;
-        } catch (ex) {
-        }
         return syncSvc;
     },
     get state() {
@@ -251,7 +217,6 @@ const sync = {
     },
     _onAnyEngineFinishedLoading: function Sync__onAnyEngineFinishedLoading() {
         this._enabledStarted = false;
-        this._application.preferences.set("ftabs.emptyLastThumb", false);
         this._application.fastdial.sendRequest("sync", this.state);
     },
     _cutFromParam: function Sync__cutFromParam(url) {

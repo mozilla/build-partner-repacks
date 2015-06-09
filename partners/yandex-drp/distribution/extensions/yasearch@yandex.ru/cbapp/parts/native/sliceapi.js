@@ -142,6 +142,27 @@ PlatformEnvironment.prototype = {
     getLocalizedString: function PlatformEnvironment_getLocalizedString(aKey) {
         return this._api.Localization.getString(aKey);
     },
+    sendClickerStatistics: function (aStatData) {
+        if (!(aStatData && aStatData.param)) {
+            throw new Error("param is obligatory property.");
+        }
+        let cid = 72359;
+        if (typeof aStatData.cid !== "undefined") {
+            cid = parseInt(aStatData.cid, 10);
+        }
+        let param = aStatData.param;
+        delete aStatData.param;
+        let componentName = this._getComponentName();
+        if (aStatData.statisticsId) {
+            componentName = aStatData.statisticsId;
+            delete aStatData.statisticsId;
+        }
+        let packageVersion = this._getPackageVersion();
+        param = componentName + "." + packageVersion + "." + param;
+        aStatData.cid = cid;
+        aStatData.path = param;
+        return this._api.Statistics.logClickStatistics(aStatData);
+    },
     sendMessage: function PlatformEnvironment_sendMessage(aMessageObject, aCallback) {
         if (!this._messageHandler) {
             return;
@@ -191,6 +212,17 @@ PlatformEnvironment.prototype = {
     get Notifications() {
         return this._api.Notifications;
     },
+    _getComponentName: function () {
+        let compID = this._api.componentID;
+        return WIDGETS_MAP[compID] || compID.split("#")[1];
+    },
+    _getPackageVersion: function () {
+        let version = "0";
+        if (this._api.Package.info && this._api.Package.info.version) {
+            version = this._api.Package.info.version;
+        }
+        return version.replace(/\./g, "-");
+    },
     __exposedProps__: {
         logger: "r",
         sliceID: "r",
@@ -211,8 +243,37 @@ PlatformEnvironment.prototype = {
         navigate: "r",
         logCustomAction: "r",
         XMLHttpRequest: "r",
-        Notifications: "r"
+        Notifications: "r",
+        sendClickerStatistics: "r"
     }
+};
+const WIDGETS_MAP = {
+    "http://bar-widgets.yandex.ru/packages/approved/91/manifest.xml#profile": "vk",
+    "http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml#facebook": "facebook",
+    "http://bar-widgets.yandex.ru/packages/approved/140/manifest.xml#odnoklassniki": "odnoklassniki",
+    "http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml#twitter": "twitter",
+    "http://bar-widgets.yandex.ru/packages/approved/97/manifest.xml#gmail": "gmail",
+    "http://bar-widgets.yandex.ru/packages/approved/82/manifest.xml#mailru": "mailru",
+    "http://bar-widgets.yandex.ru/packages/approved/75/manifest.xml#rambler": "mailrambler",
+    "http://bar-widgets.yandex.ru/packages/approved/134/manifest.xml#hotmail": "hotmail",
+    "http://bar-widgets.yandex.ru/packages/approved/126/manifest.xml#yahoomail": "mailyahoo",
+    "http://bar-widgets.yandex.ru/packages/approved/127/manifest.xml#news": "newstr",
+    "http://bar-widgets.yandex.ru/packages/approved/130/manifest.xml#games": "gamestr",
+    "http://bar-widgets.yandex.ru/packages/approved/184/manifest.xml#sport": "sport",
+    "http://bar.yandex.ru/packages/yandexbar#logo": "yalogo",
+    "http://bar.yandex.ru/packages/yandexbar#login": "yalogin",
+    "http://bar.yandex.ru/packages/yandexbar#money": "yamoney",
+    "http://bar.yandex.ru/packages/yandexbar#yaru": "yaru",
+    "http://bar.yandex.ru/packages/yandexbar#fotki": "fotki",
+    "http://bar-widgets.yandex.ru/packages/approved/118/manifest.xml#radio": "radio",
+    "http://bar.yandex.ru/packages/yandexbar#quote": "quotation",
+    "http://bar.yandex.ru/packages/yandexbar#opinions": "reviews",
+    "http://bar.yandex.ru/packages/yandexbar#zakladki": "yabookmarks",
+    "http://bar.yandex.ru/packages/yandexbar#lenta": "yasubscription",
+    "http://bar.yandex.ru/packages/yandexbar#cy": "yatic",
+    "http://bar.yandex.ru/packages/yandexbar#mail": "yamail",
+    "http://bar.yandex.ru/packages/yandexbar#town": "yacity",
+    "http://bar.yandex.ru/packages/yandexbar#music": "yamusic"
 };
 function Messager(sliceEnv) {
     this._env = sliceEnv;

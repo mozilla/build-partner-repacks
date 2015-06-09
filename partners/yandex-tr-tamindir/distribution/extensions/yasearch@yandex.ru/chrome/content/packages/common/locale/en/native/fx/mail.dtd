@@ -29,3 +29,4 @@
 <!ENTITY mail.alert.sound.preview.label "Listen">
 
 <!ENTITY mail.openServiceOnClick.label "Click on button to go to service webpage">
+<!ENTITY mail.settings.allAccountsCounter.label "Показывать счетчик писем для всех авторизованных аккаунтов">

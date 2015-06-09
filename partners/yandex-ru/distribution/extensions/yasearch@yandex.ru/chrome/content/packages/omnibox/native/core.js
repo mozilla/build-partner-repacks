@@ -376,7 +376,7 @@ const core = {
         if (!this.api.Statistics.alwaysSendUsageStat) {
             return;
         }
-        let version = this.api.Package.info.version.replace(".", "-", "g");
+        let version = this.api.Package.info.version.replace(/\./g, "-");
         this.api.Statistics.logClickStatistics({
             cid: 72474,
             path: [
@@ -602,18 +602,14 @@ const core = {
             }
             return null;
         }.bind(this);
-        let engines = this._searchService.getVisibleEngines({});
         let brandingHost = _tryGetHost(this.brandingData.searchURL);
-        for (let i = 0, len = engines.length; i < len; i++) {
-            let engineHost = _tryGetHost(engines[i].searchForm);
-            if (!engineHost) {
-                continue;
-            }
+        let engines = this._searchService.getVisibleEngines({}).filter(function (engine) {
+            let engineHost = _tryGetHost(engine.searchForm);
             if (engineHost === brandingHost) {
-                engines.splice(i, 1);
-                break;
+                return false;
             }
-        }
+            return true;
+        });
         let wikipediaWeight = 20;
         let googleWeight = 10;
         let weightsByHosts = Object.create(null);

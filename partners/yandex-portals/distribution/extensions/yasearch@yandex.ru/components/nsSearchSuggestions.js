@@ -59,6 +59,9 @@ SuggestAutoCompleteResult.prototype = {
         }
         return result;
     },
+    getFinalCompleteValueAt: function (index) {
+        return this.getValueAt(index);
+    },
     getLabelAt: function (index) {
         return this.getValueAt(index);
     },

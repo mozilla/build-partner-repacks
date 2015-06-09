@@ -290,4 +290,10 @@
     }]]></handler>
         </handlers>
     </binding>
+
+    <binding extends="#toolbarbuttonbase" id="widget-unique">
+        <implementation>
+            <field name="WIID">this.application.WIID</field>
+        </implementation>
+    </binding>
 </bindings>

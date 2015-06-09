@@ -5,7 +5,7 @@
 <!ENTITY login.enter.label "Log in">
 <!ENTITY login.hidden-login.label "My &product2.nom;">
 <!ENTITY login.tooltiptext "&login.name; on Yandex">
-<!ENTITY login.switch.label "Switch user">
+<!ENTITY login.switch.label "Other username">
 <!ENTITY login.logout.label "Log out">
 
 <!ENTITY login.showLogin.label "Display login on bar">
@@ -13,3 +13,4 @@
 <!ENTITY noauth.label "Please, log in">
 <!ENTITY login.passport.label "Passport">
 <!ENTITY login.settings.label "&vendor.gen; settings">
+<!ENTITY login.menu.other-account.label "Другие аккаунты">

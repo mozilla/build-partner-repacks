@@ -7,8 +7,9 @@ const {
     results: Cr
 } = Components;
 const GLOBAL = this;
+Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/PlacesUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
 const MAX_SUGGESTED_NUM = 40;
 const THUMBS_PER_PAGE = 10;
 const RESULTS_LIMIT_NUMBER = 100;
@@ -21,41 +22,99 @@ const SOURCE_TYPES = {
     WEB: 3
 };
 Object.keys(SOURCE_TYPES).forEach(key => SOURCE_TYPES[SOURCE_TYPES[key]] = key);
-XPCOMUtils.defineLazyServiceGetter(this, "URI_FIXUP", "@mozilla.org/docshell/urifixup;1", "nsIURIFixup");
+const requestedURLs = Object.create(null);
+const urlToTitle = Object.create(null);
 const thumbsSuggest = {
     init: function thumbsSuggest_init(application) {
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         this._application = application;
         this._logger = application.getLogger("thumbsSuggest");
+        let dataproviders = this._application.dataproviders;
+        this.faviconsProvider = dataproviders.getProvider("favicons");
+        this.logosProvider = dataproviders.getProvider("logos");
+        this.faviconsProvider.addListener("change", this._onDataReceived.bind(this));
+        this.logosProvider.addListener("change", this._onDataReceived.bind(this));
     },
     finalize: function thumbsSuggest_finalize() {
         this._logger = null;
         this._application = null;
     },
     requestThumbData: function thumbsSuggest_requestThumbData(url) {
-        let cacheData = this._historyThumbs[url];
-        if (!cacheData) {
-            cacheData = this._application.internalStructure.convertDbRow({ url: url }, false);
-            this._historyThumbs[url] = cacheData;
+        let host = this._application.fastdial.getDecodedUrlHost(url);
+        if (!host) {
+            return url;
         }
-        if (!this._requestedThumbData[url]) {
-            this._application.thumbs.getMissingData(cacheData);
-            this._requestedThumbData[url] = true;
+        if (url in requestedURLs) {
+            this._updateThumb(url);
+            return url;
         }
-        this._application.fastdial.sendRequest("historyThumbChanged", this._application.frontendHelper.getDataForThumb(cacheData));
+        requestedURLs[url] = true;
+        this.faviconsProvider.requestData(url);
+        this.logosProvider.requestData(url, { requestSource: true });
+        return url;
+    },
+    _updateThumb: function thumbsSuggest__updateThumb(url) {
+        if (!(url in requestedURLs)) {
+            return;
+        }
+        let thumb = this.getThumbForUrl(url);
+        this._application.fastdial.sendRequest("historyThumbChanged", thumb);
+    },
+    getThumbForUrl: function thumbsSuggest_getThumbForUrl(url) {
+        let uri;
+        let host;
+        try {
+            uri = netutils.newURI(url);
+            host = uri.host;
+        } catch (err) {
+        }
+        if (!uri || !host) {
+            return { url: url };
+        }
+        let isIndexPage = true;
+        if (this._application.isYandexHost(uri.asciiHost)) {
+            try {
+                uri.QueryInterface(Ci.nsIURL);
+            } catch (err) {
+            }
+            isIndexPage = !uri.filePath || uri.filePath === "/";
+        } else {
+            isIndexPage = uri.path === "/";
+        }
+        let favicon = this.faviconsProvider.get("favicon", { host: uri.host }) || {};
+        let thumb = {
+            url: url,
+            title: urlToTitle[url] || "",
+            backgroundColor: favicon.color,
+            favicon: favicon.url,
+            isIndexPage: isIndexPage,
+            fontColor: favicon.color && this._application.colors.getFontColorByBackgroundColor(favicon.color) || null
+        };
+        let background = this.logosProvider.get("logo", { host: uri.host });
+        if (background && background.color && background.logoMain) {
+            thumb.fontColor = this._application.colors.getFontColorByBackgroundColor(background.color);
+            thumb.backgroundColor = background.color;
+            thumb.backgroundImage = isIndexPage ? background.logoMain : background.logoSub;
+        }
+        return thumb;
+    },
+    _onDataReceived: function thumbsSuggest__onDataReceived(eventName, target, data) {
+        this._updateThumb(target.spec);
     },
     requestTopSites: function thumbsSuggest_requestTopSites(offset, callback) {
         async.parallel({
             blacklist: callback => this._application.blacklist.getAll(callback),
             pickup: callback => this._requestPickupCache(callback),
             brandedThumbs: callback => this._requestBrandedThumbs(callback),
+            unsafe: callback => this._application.safebrowsing.listUnsafeDomains(callback),
             bookmarks: callback => this._application.bookmarks.requestList(MAX_SUGGESTED_NUM * 2, list => callback(null, list))
-        }, (err, {blacklist, brandedThumbs, pickup, bookmarks}) => {
+        }, (err, {blacklist, brandedThumbs, pickup, bookmarks, unsafe}) => {
             if (err) {
                 throw err;
             }
             let {pinned, unpinned} = pickup;
             blacklist.excludeDomains = pickup.domains;
+            unsafe.forEach(host => blacklist.excludeDomains[host] = true);
             bookmarks = bookmarks.map(bookmark => {
                 bookmark.visits = 6;
                 return bookmark;
@@ -69,11 +128,12 @@ const thumbsSuggest = {
             });
             let popuplarSites = pinned.concat(unpinned).reduce(this._generateReduceFn(blacklist), []);
             popuplarSites = this._sliceResultByOffset(offset, popuplarSites);
-            callback(popuplarSites.map(this._getCachedThumbData, this));
+            callback(popuplarSites.map(url => this.getThumbForUrl(url)));
+            popuplarSites.forEach(url => this.requestThumbData(url));
         });
     },
     _requestBrandedThumbs: function thumbsSuggest__requestBrandedThumbs(callback) {
-        callback(null, this._application.thumbs.getBrandedThumbs({}).map(thumb => {
+        callback(null, this._application.pickup.getBrandedThumbs({}).map(thumb => {
             return {
                 visits: thumb.boost || 0,
                 url: thumb.url,
@@ -94,7 +154,8 @@ const thumbsSuggest = {
             results.blacklist.excludeDomains = results.topSites.domains;
             let lastVisited = Array.concat(results.tabs, results.lastVisited).reduce(this._generateReduceFn(results.blacklist), []);
             lastVisited = this._sliceResultByOffset(offset, lastVisited);
-            callback(lastVisited.map(this._getCachedThumbData, this));
+            callback(lastVisited.map(url => this.getThumbForUrl(url)));
+            lastVisited.forEach(url => this.requestThumbData(url));
         });
     },
     searchLocalHistory: function searchSuggest_searchLocalHistory(searchQuery, callback) {
@@ -130,16 +191,9 @@ const thumbsSuggest = {
     __databaseWrapper: null,
     get _databaseWrapper() {
         if (!this.__databaseWrapper) {
-            let dbFile = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("ProfD", Ci.nsIFile);
-            dbFile.append("places.sqlite");
-            let database = new Database(dbFile);
             let dbConnection = PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase).DBConnection;
-            this.__databaseWrapper = database;
+            this.__databaseWrapper = new Database();
             this.__databaseWrapper.connection = dbConnection.clone(true);
-            let dbWriteInstance = new Database(dbFile);
-            dbWriteInstance.connection = dbConnection.clone(false);
-            dbWriteInstance.executeQueryAsync({ query: this._SQL_QUERY_INDEX });
-            dbWriteInstance.close();
         }
         return this.__databaseWrapper;
     },
@@ -157,7 +211,6 @@ const thumbsSuggest = {
         "ORDER BY frecency DESC",
         "LIMIT " + RESULTS_LIMIT_NUMBER
     ].join(" "),
-    _SQL_QUERY_INDEX: "CREATE INDEX IF NOT EXISTS moz_places_yandex_vb " + "ON moz_places (frecency, last_visit_date, url, title, visit_count, typed)",
     suggestURLs: function thumbsSuggest_suggestURLs(query, callback) {
         let queries = query.split(" ");
         queries = queries.filter(Boolean);
@@ -169,29 +222,7 @@ const thumbsSuggest = {
         } else {
             increasedIndex = -1;
         }
-        let webRequests = queries.map((word, index) => {
-            return this._requestNavSuggest(word, query).then(response => {
-                let pages = this._parseSuggest(response, increasedIndex === index, typedCount);
-                getFinalWeightAndSendResult(pages, SOURCE_TYPES.WEB, word);
-                return promise.resolve(pages);
-            }, Cu.reportError);
-        });
-        let localHistory = queries.map((query, index) => {
-            return this.searchLocalHistory(query).then(pages => {
-                return promise.resolve(this._mapHistoryPagesWithInitialWeight(pages, increasedIndex === index, typedCount));
-            });
-        });
-        let openedTabs = this._requestOpenedTabs().then(pages => {
-            return promise.resolve(queries.map((query, index) => {
-                return this._filterPagesByQuery(pages, query, increasedIndex === index, typedCount);
-            }));
-        });
-        let bookmarks = queries.map((query, index) => {
-            return this._application.bookmarks.findBookmarks(query).then(bookmarks => {
-                return promise.resolve(this._filterPagesByQuery(bookmarks, query, increasedIndex === index, typedCount));
-            }, Cu.reportError);
-        });
-        let queryStartTime = Date.now();
+        let logger = this._logger;
         let getFinalWeightAndSendResult = (pages, source, queryPart) => {
             let domains = Object.create(null);
             pages = pages.reduce((res, page) => {
@@ -262,7 +293,30 @@ const thumbsSuggest = {
             }, []);
             callback(query, source, pages);
         };
-        let allLocalHistory = promise.all(localHistory).promise;
+        let webRequests = queries.map((word, index) => {
+            return this._requestNavSuggest(word, query).then(response => {
+                let pages = this._parseSuggest(response, increasedIndex === index, typedCount);
+                getFinalWeightAndSendResult(pages, SOURCE_TYPES.WEB, word);
+                return promise.resolve(pages);
+            }, Cu.reportError);
+        });
+        let localHistory = queries.map((query, index) => {
+            return this.searchLocalHistory(query).then(pages => {
+                return promise.resolve(this._mapHistoryPagesWithInitialWeight(pages, increasedIndex === index, typedCount));
+            });
+        });
+        let openedTabs = this._requestOpenedTabs().then(pages => {
+            return promise.resolve(queries.map((query, index) => {
+                return this._filterPagesByQuery(pages, query, increasedIndex === index, typedCount);
+            }));
+        });
+        let bookmarks = queries.map((query, index) => {
+            return this._application.bookmarks.findBookmarks(query).then(bookmarks => {
+                return promise.resolve(this._filterPagesByQuery(bookmarks, query, increasedIndex === index, typedCount));
+            }, Cu.reportError);
+        });
+        let queryStartTime = Date.now();
+        let allLocalHistory = promise.all(localHistory);
         allLocalHistory.then(pages => {
             let mergedPages = this._concatResults(pages);
             mergedPages = this._filterPagesByHostname(mergedPages);
@@ -273,13 +327,13 @@ const thumbsSuggest = {
             mergedTabs = this._filterPagesByHostname(mergedTabs);
             getFinalWeightAndSendResult(mergedTabs, SOURCE_TYPES.TABS);
         }, Cu.reportError);
-        let allBookmarks = promise.all(bookmarks).promise;
+        let allBookmarks = promise.all(bookmarks);
         allBookmarks.then(bookmarks => {
             let mergedBookmarks = this._concatResults(bookmarks);
             mergedBookmarks = this._filterPagesByHostname(mergedBookmarks);
             getFinalWeightAndSendResult(mergedBookmarks, SOURCE_TYPES.BOOKMARKS);
         }, Cu.reportError);
-        let allWebRequests = promise.all(webRequests).promise;
+        let allWebRequests = promise.all(webRequests);
         allWebRequests.then(() => {
             delete this._queriesToXhrs[query];
         });
@@ -297,7 +351,7 @@ const thumbsSuggest = {
     },
     _filterPagesByQuery: function thumbsSuggest__filterPagesByQuery(pages, query, increasedWeight, typedCount) {
         return pages.reduce((res, page) => {
-            if (page.title.indexOf(query) !== -1 || page.url.indexOf(query) !== -1) {
+            if ((page.title || "").indexOf(query) !== -1 || page.url.indexOf(query) !== -1) {
                 res.push({
                     url: page.url,
                     title: page.title,
@@ -392,7 +446,9 @@ const thumbsSuggest = {
         request.QueryInterface(Ci.nsIDOMEventTarget);
         request.open("GET", url, true);
         request.responseType = "json";
+        let logger = this._logger;
         let errorListener = function BackgroundImages_sync_errorListener(e) {
+            logger.debug(e.type);
             deferred.reject(e);
         };
         request.addEventListener("abort", errorListener, false);
@@ -420,7 +476,8 @@ const thumbsSuggest = {
         } catch (err) {
         }
         if (!xmlDoc) {
-            return this._suggestURL = null;
+            this._suggestURL = null;
+            return this._suggestURL;
         }
         this._suggestURL = null;
         try {
@@ -438,14 +495,10 @@ const thumbsSuggest = {
         }
         return result;
     },
-    _getCachedThumbData: function thumbsSuggest__getCachedThumbData(url) {
-        let cacheData = this._historyThumbs[url] || this._application.internalStructure.convertDbRow({ url: url });
-        this._application.thumbs.getMissingData(cacheData);
-        return this._application.frontendHelper.getDataForThumb(cacheData);
-    },
     _generateReduceFn: function thumbsSuggest__generateReduceFn(blacklist) {
         return (result, page) => {
             let pageHost = this._application.fastdial.getDecodedUrlHost(page.url);
+            urlToTitle[page.url] = page.title;
             if (pageHost && (blacklist.domains.indexOf(pageHost) !== -1 || blacklist.excludeDomains[pageHost])) {
                 return result;
             }
@@ -460,19 +513,11 @@ const thumbsSuggest = {
                 blacklist.excludeDomains[pageHost] = 1;
                 this._application.getHostAliases(pageHost).forEach(alias => blacklist.excludeDomains[alias] = 1);
             }
-            if (!this._historyThumbs[page.url]) {
-                this._historyThumbs[page.url] = this._application.internalStructure.convertDbRow(page, false);
-            } else {
-                sysutils.copyProperties(page, this._historyThumbs[page.url].thumb);
-            }
             if (result.length < MAX_SUGGESTED_NUM) {
                 result.push(page.url);
             }
             return result;
         };
-    },
-    get _historyThumbs() {
-        return this._application.fastdial._historyThumbs;
     },
     _requestPickupCache: function thumbsSuggest__requestPickupCache(callback) {
         let output = {
@@ -480,38 +525,21 @@ const thumbsSuggest = {
             pinned: [],
             domains: {}
         };
-        let maxThumbIndex = this._application.layout.getThumbsNum();
-        let emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
-        if (emptyLastThumb) {
-            maxThumbIndex--;
-        }
-        this._application.internalStructure.iterate({ nonempty: true }, function (thumbData, i) {
-            if (i < maxThumbIndex) {
-                let host;
-                try {
-                    host = thumbData.location.asciiHost.replace(/^www\./, "");
-                } catch (ex) {
-                    return;
-                }
-                output.domains[host] = 1;
-                this._application.getHostAliases(host).forEach(function (alias) {
-                    output.domains[alias] = 1;
-                });
+        let maxThumbIndex = this._application.internalStructure.length;
+        this._application.internalStructure.iterate(thumb => {
+            output.domains[thumb.host] = true;
+            this._application.getHostAliases(thumb.host).forEach(alias => {
+                output.domains[alias] = true;
+            });
+        });
+        let pages = this._application.pickup.getCache();
+        pages.forEach(page => {
+            if (page.pinned) {
+                output.pinned.push(page);
             } else {
-                let pushData = {
-                    url: thumbData.source,
-                    visits: (thumbData.thumb || {}).visits || 0
-                };
-                if (thumbData.thumb.title) {
-                    pushData.title = thumbData.thumb.title;
-                }
-                if (thumbData.pinned) {
-                    output.pinned.push(pushData);
-                } else {
-                    output.unpinned.push(pushData);
-                }
+                output.unpinned.push(page);
             }
-        }, this);
+        });
         callback(null, output);
     },
     _requestLastVisited: function thumbsSuggest__requestLastVisited(callback) {
@@ -542,7 +570,7 @@ const thumbsSuggest = {
     },
     ascii2url: function Utils_ascii2url(asciiSpec) {
         try {
-            let uri = URI_FIXUP.createFixupURI(asciiSpec, URI_FIXUP.FIXUP_FLAG_NONE);
+            let uri = Services.uriFixup.createFixupURI(asciiSpec, Services.uriFixup.FIXUP_FLAG_NONE);
             return uri.spec;
         } catch (e) {
         }

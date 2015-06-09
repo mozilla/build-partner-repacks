@@ -22,7 +22,6 @@ const SCRIPT_LOADER = Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.
     "patterns.js",
     "ecustom.js",
     "netutils.js",
-    "dlqueue.js",
     "async.js",
     "promise.js",
     "task.js"

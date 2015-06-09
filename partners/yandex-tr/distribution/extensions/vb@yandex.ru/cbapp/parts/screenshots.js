@@ -8,74 +8,108 @@ const {
 } = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "PageThumbs", "resource://gre/modules/PageThumbs.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "PageThumbsStorage", "resource://gre/modules/PageThumbs.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "BackgroundPageThumbs", "resource://gre/modules/BackgroundPageThumbs.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
 const THUMB_STYLE = {
     LOGOS_AND_TITLES: 1,
     LOGOS_AND_SHOTS: 2,
     SHOTS: 3
 };
-const SCREENSHOTS_BASEPATH = "resource://vb-profile-data/shots/";
 let screenshotsUniqIds = Object.create(null);
-let screenshotsCache = Object.create(null);
+let screenshotsCache;
 function Screenshot(url) {
-    let name = misc.CryptoHash.getFromString(url, "SHA1") + ".png";
-    this.name = name;
-    this.file = screenshots.shotsDir;
-    this.file.append(name);
-    this._url = SCREENSHOTS_BASEPATH + name;
-    this.sourceUrl = url;
-    this.uri = {};
-    try {
-        this.uri = Services.io.newURI(this.sourceUrl, null, null);
-    } catch (e) {
-    }
+    this._sourceURL = url;
 }
 Screenshot.prototype = {
     get url() {
-        if (!screenshotsUniqIds[this.sourceUrl]) {
-            screenshotsUniqIds[this.sourceUrl] = 1;
+        if (!this._checkedMissing) {
+            this._checkedMissing = true;
+            this.captureIfMissing({ skipLastFailedCheck: false });
         }
-        return this._url + "?uniqid=" + screenshotsUniqIds[this.sourceUrl];
+        this._cache.lastUsage = Date.now();
+        screenshots.saveData();
+        return PageThumbs.getThumbnailURL(this._sourceURL) + "&uniqid=" + this._screenshotUniqId;
+    },
+    get sourceURL() {
+        return this._sourceURL;
+    },
+    get captureURL() {
+        delete this.captureURL;
+        let captureURL = this._sourceURL;
+        if (screenshots._application.isYandexURL(this._sourceURL)) {
+            let uri = Services.io.newURI(this._sourceURL, null, null);
+            uri.QueryInterface(Ci.nsIURL);
+            let parsedQuery = netutils.querystring.parse(uri.query || "");
+            parsedQuery.nugt = "vbff-" + screenshots._application.addonManager.addonVersion;
+            uri.query = netutils.querystring.stringify(parsedQuery);
+            captureURL = uri.spec;
+        }
+        this.__defineGetter__("captureURL", () => captureURL);
+        return this.captureURL;
+    },
+    captureIfMissing: function ({skipLastFailedCheck}) {
+        if (skipLastFailedCheck) {
+            this._cache.lastFailedCapture = 0;
+        }
+        if (this.captureURL !== this._sourceURL) {
+            PageThumbsStorage.fileExistsForURL(this._sourceURL).then(exists => {
+                if (exists) {
+                    PageThumbsStorage.copy(this._sourceURL, this.captureURL);
+                }
+            });
+        }
+        let provideData = () => {
+            this._screenshotUniqId++;
+            if (this.captureURL !== this._sourceURL) {
+                if (this._cache.lastFailedCapture) {
+                    PageThumbsStorage.remove(this._sourceURL);
+                } else {
+                    PageThumbsStorage.copy(this.captureURL, this._sourceURL);
+                }
+                new sysutils.Timer(() => {
+                    this._screenshotUniqId++;
+                    screenshots._screenshotsProvider.provideData("screenshot", this.captureURL, this);
+                }, 400);
+            }
+            screenshots._screenshotsProvider.provideData("screenshot", this._sourceURL, this);
+        };
+        let captureOptions = {
+            onDone: url => {
+                PageThumbsStorage.fileExistsForURL(this.captureURL).then(exists => {
+                    this._cache.lastFailedCapture = exists ? 0 : Date.now();
+                    screenshots.saveData();
+                    provideData();
+                });
+            }
+        };
+        const EXPIRED_TIME = 7 * 24 * 60 * 60 * 1000;
+        let notFailed = Math.abs((this._cache.lastFailedCapture || 0) - Date.now()) > EXPIRED_TIME;
+        if (notFailed) {
+            new sysutils.Timer(() => {
+                BackgroundPageThumbs.captureIfMissing(this.captureURL, captureOptions);
+            }, 1000);
+        } else {
+            provideData();
+        }
     },
     get fontColor() {
-        let cache = screenshotsCache[this.sourceUrl] || {};
+        let cache = this._cache;
         cache.fontColor = cache.fontColor || screenshots._application.colors.getFontColorByBackgroundColor(this.color);
-        screenshotsCache[this.sourceUrl] = cache;
         return cache.fontColor;
     },
     get color() {
-        return (screenshotsCache[this.sourceUrl] || {}).color || null;
+        return this._cache.color || null;
     },
     set color(val) {
         if (!val) {
             return;
         }
-        if (!screenshotsCache[this.sourceUrl]) {
-            screenshotsCache[this.sourceUrl] = {};
-        }
-        screenshotsCache[this.sourceUrl].color = val;
-        screenshotsCache[this.sourceUrl].fontColor = screenshots._application.colors.getFontColorByBackgroundColor(val);
-    },
-    get fileAvailable() {
-        return this.file.exists() && this.file.isFile() && this.file.isReadable();
-    },
-    get nonZeroFileAvailable() {
-        return this.fileAvailable && this.file.fileSize > 0;
-    },
-    shot: function Screenshot_shot() {
-        this.file.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, parseInt("0666", 8));
-        let url = this.sourceUrl;
-        try {
-            this.uri.QueryInterface(Ci.nsIURL);
-        } catch (err) {
-            return;
-        }
-        if (screenshots._application.isYandexURL(this.uri.spec)) {
-            let parsedQuery = netutils.querystring.parse(this.uri.query || "");
-            parsedQuery.nugt = "vbff-" + screenshots._application.addonManager.addonVersion;
-            this.uri.query = netutils.querystring.stringify(parsedQuery);
-            url = this.uri.spec;
-        }
-        screenshots.grabber.getScreenshot(url);
+        let cache = this._cache;
+        cache.color = val;
+        cache.fontColor = screenshots._application.colors.getFontColorByBackgroundColor(val);
+        screenshots.saveData();
     },
     getDataForThumb: function Screenshot_getDataForThumb() {
         return {
@@ -85,7 +119,49 @@ Screenshot.prototype = {
         };
     },
     remove: function Screenshot_remove() {
-        fileutils.removeFileSafe(this.file);
+        PageThumbsStorage.remove(this._sourceURL);
+        delete screenshotsCache[this._sourceURL];
+        screenshots.saveData();
+    },
+    toJSON: function Screenshot_toJSON() {
+        return this.toString();
+    },
+    toString: function Screenshot_toJSON() {
+        return "[Screenshot for " + this._sourceURL + "]";
+    },
+    canBeUsedWithThumb: function Screenshot_canBeUsed(thumbData) {
+        if (!/^https?:/.test(thumbData.url)) {
+            return false;
+        }
+        switch (screenshots._application.preferences.get("ftabs.thumbStyle", THUMB_STYLE.LOGOS_AND_TITLES)) {
+        case THUMB_STYLE.SHOTS:
+            return true;
+        case THUMB_STYLE.LOGOS_AND_SHOTS:
+            if (!thumbData.backgroundImage && !thumbData.background) {
+                return true;
+            }
+            break;
+        case THUMB_STYLE.LOGOS_AND_TITLES:
+        default:
+            return false;
+        }
+        return false;
+    },
+    onClearHistory: function () {
+        this._checkedMissing = false;
+    },
+    _checkedMissing: false,
+    get _screenshotUniqId() {
+        if (!screenshotsUniqIds[this._sourceURL]) {
+            screenshotsUniqIds[this._sourceURL] = 1;
+        }
+        return screenshotsUniqIds[this._sourceURL];
+    },
+    set _screenshotUniqId(val) {
+        screenshotsUniqIds[this._sourceURL] = val;
+    },
+    get _cache() {
+        return screenshotsCache[this._sourceURL] || (screenshotsCache[this._sourceURL] = {});
     }
 };
 const screenshots = {
@@ -93,12 +169,53 @@ const screenshots = {
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         this._application = application;
         this._logger = application.getLogger("Screenshots");
+        this._screenshotsProvider = application.dataproviders.getProvider("screenshots");
+        this._screenshotsProvider.addListener("request", this._onDataProviderRequest);
+        this._titlesProvider = application.dataproviders.getProvider("titles");
+        this.loadData();
+        this._delayInitTimer = new sysutils.Timer(() => {
+            PageThumbs.addExpirationFilter(this);
+            PlacesUtils.history.addObserver(historyObserver, false);
+        }, 5000);
     },
     finalize: function Screenshots_finalize() {
-        if (this._grabber) {
-            this._grabber.destroy();
-            this._grabber = null;
+        if (this._delayInitTimer.isRunning) {
+            this._delayInitTimer.cancel();
+        } else {
+            PlacesUtils.history.removeObserver(historyObserver);
         }
+        PageThumbs.removeExpirationFilter(this);
+        this._screenshotsProvider.removeListener("request", this._onDataProviderRequest);
+        this._screenshotsProvider = null;
+        this._titlesProvider = null;
+        screenshotsCache = null;
+    },
+    loadData: function Screenshots_loadData(urlToColors) {
+        screenshotsCache = urlToColors || {};
+    },
+    saveData: function Screenshots_saveData(save, options = {}) {
+        save(screenshotsCache, options);
+    },
+    getTitleFromDocument: function Screenshots_getTitleFromDocument(document, url) {
+        let title = "";
+        if ("title" in document) {
+            title = document.title;
+        } else if ("querySelector" in document) {
+            title = document.querySelector("html > head > title");
+            title = title && title.textContent;
+        } else {
+            this._logger.error("Unknown 'document' object, no 'title' and 'querySelector'");
+            return;
+        }
+        title = this._safeUnicode(title);
+        if (!title) {
+            return;
+        }
+        this._titlesProvider.provideData("title", { url: url }, title);
+        return title;
+    },
+    _onDataProviderRequest: function Screenshots__onDataProviderRequest(name, target) {
+        screenshots.createScreenshotInstance(target.spec);
     },
     handlePageShow: function Screenshots_handlePageShow(windowListenerData) {
         let document = windowListenerData.tab.contentDocument;
@@ -111,162 +228,96 @@ const screenshots = {
             originalURL = null;
         }
         let existURLs = Object.create(null);
-        this._application.cloudSource.getManifestFromDocument(document, originalURL || shownURL);
-        this._application.internalStructure.iterate({ nonempty: true }, function (thumbData, index) {
-            if (thumbData.source === originalURL) {
+        this._application.internalStructure.iterate(function (thumbData, index) {
+            if (thumbData.url === originalURL) {
                 existURLs[originalURL] = true;
             }
-            if (thumbData.source === shownURL) {
+            if (thumbData.url === shownURL) {
                 existURLs[shownURL] = true;
             }
         });
-        Object.keys(existURLs).forEach(function (thumbURL) {
-            let screenshot = this.createScreenshotInstance(thumbURL);
-            let result = {
-                url: thumbURL,
-                urlReal: shownURL,
-                faviconUrl: this.grabber.getDocumentFaviconURL(document)
-            };
-            this.grabber.waitCompleteAndRequestFrameCanvasData(windowListenerData.tab, null, function (imgDataURL, color) {
-                result.imgDataURL = imgDataURL;
-                result.color = color;
-                this.onScreenshotCreated(result);
-            }.bind(this));
-        }, this);
-    },
-    _grabber: null,
-    get grabber() {
-        if (!this._grabber) {
-            this._grabber = this._application.screenshotsGrabber.newInstance(this);
+        let urls = Object.keys(existURLs);
+        if (!urls.length) {
+            return;
         }
-        return this._grabber;
+        let faviconURL = this._application.favicons.getDocumentFaviconURL(document);
+        urls.forEach(pageURL => {
+            this.getTitleFromDocument(document, pageURL);
+            this._application.thumbsLogos.getManifestFromDocument(document, pageURL);
+            this._application.favicons.onPageShow({
+                url: pageURL,
+                urlReal: shownURL,
+                faviconURL: faviconURL
+            });
+        });
+        let captureAndStore = () => {
+            PageThumbs.captureAndStore(windowListenerData.tab, screenshotCaptured => {
+                if (screenshotCaptured) {
+                    for (let pageURL of urls) {
+                        let thumbURL = PageThumbs.getThumbnailURL(pageURL);
+                        this._application.colors.requestImageDominantColor(thumbURL, (err, color) => {
+                            let screenshot = this.createScreenshotInstance(pageURL);
+                            screenshot.captureIfMissing({ skipLastFailedCheck: true });
+                            screenshot.color = color;
+                        });
+                    }
+                }
+            });
+        };
+        if ("shouldStoreThumbnail" in PageThumbs) {
+            PageThumbs.shouldStoreThumbnail(windowListenerData.tab, doStore => {
+                if (doStore) {
+                    captureAndStore();
+                }
+            });
+        } else {
+            captureAndStore();
+        }
     },
     createScreenshotInstance: function Screenshots_createScreenshotInstanceMaker() {
         let cache = Object.create(null);
         return function Screenshots_createScreenshotsInstance(url) {
-            cache[url] = cache[url] || new Screenshot(url);
+            if (!cache[url]) {
+                cache[url] = new Screenshot(url);
+                screenshots._screenshotsProvider.provideData("screenshot", url, cache[url]);
+            }
             return cache[url];
         };
     }(),
-    saveStream: function Screenshots_saveStream(streamData, file) {
-        fileutils.writeStreamToFile(streamData, file);
-        screenshots._logger.trace("file saved " + file.leafName);
+    filterForThumbnailExpiration: function (callback) {
+        let dontExpireURLs = this._screenshotsProvider.getAll("screenshot").map(screenshot => screenshot.sourceURL);
+        callback(dontExpireURLs);
     },
-    onScreenshotCreated: function Screenshots_onSShotCreated(aData) {
-        if (!Boolean(aData.imgDataURL)) {
-            return;
-        }
-        let isYandexURL = this._application.isYandexURL(aData.url);
-        let uri;
-        try {
-            uri = Services.io.newURI(aData.url, null, null);
-            uri.QueryInterface(Ci.nsIURL);
-            let parsedQuery = netutils.querystring.parse(uri.query || "");
-            delete parsedQuery.nugt;
-            uri.query = netutils.querystring.stringify(parsedQuery);
-        } catch (err) {
-            return;
-        }
-        let urlWithoutNugtParam = uri.spec;
-        let dataStructure = {};
-        let toBeSaved = [];
-        if (screenshotsUniqIds[aData.url]) {
-            screenshotsUniqIds[aData.url]++;
-        }
-        this._application.internalStructure.iterate({ nonempty: true }, function (data, index) {
-            if (urlWithoutNugtParam !== aData.url && isYandexURL && urlWithoutNugtParam === data.source) {
-                toBeSaved.push({
-                    url: urlWithoutNugtParam,
-                    index: index,
-                    thumbData: data
-                });
-            }
-            if (aData.url === data.source) {
-                toBeSaved.push({
-                    url: aData.url,
-                    index: index,
-                    thumbData: data
-                });
-            }
-        });
-        if (toBeSaved.length === 0) {
-            return;
-        }
-        let screenshotData = toBeSaved.shift();
-        let screenshot = this.createScreenshotInstance(screenshotData.url);
-        screenshot.color = aData.color;
-        screenshotData.thumbData.screenshot = screenshot.getDataForThumb();
-        screenshotData.thumbData.thumb.title = screenshotData.thumbData.thumb.title || aData.title || null;
-        dataStructure[screenshotData.index] = screenshotData.thumbData;
-        let channel = Services.io.newChannelFromURI(Services.io.newURI(aData.imgDataURL, null, null));
-        let imgBinaryStream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
-        imgBinaryStream.setInputStream(channel.open());
-        this.saveStream(imgBinaryStream, screenshot.file);
-        toBeSaved.forEach(function (almostSaved) {
-            let nugtScreenshot = this.createScreenshotInstance(almostSaved.url);
-            let nugtThumbData = almostSaved.thumbData;
-            if (screenshot.nonZeroFileAvailable && screenshot.name !== nugtScreenshot.name) {
-                screenshot.file.copyTo(nugtScreenshot.parent, nugtScreenshot.name);
-            }
-            nugtScreenshot.color = aData.color;
-            nugtThumbData.screenshot = screenshot.getDataForThumb();
-            nugtThumbData.thumb.title = nugtThumbData.thumb.title || aData.title || null;
-            dataStructure[almostSaved.index] = nugtThumbData;
-        }.bind(this));
-        let historyThumb = this._application.fastdial.cachedHistoryThumbs[screenshotData.url];
-        if (historyThumb && this.useScreenshot(historyThumb)) {
-            historyThumb.screenshot = screenshot.getDataForThumb();
-            this._application.fastdial.sendRequest("historyThumbChanged", this._application.frontendHelper.getDataForThumb(historyThumb));
-        }
-        this._application.internalStructure.setItem(dataStructure);
-        let onFaviconReady = function onFaviconReady(favicon, color) {
-            if (favicon) {
-                for (let index in dataStructure) {
-                    let thumbData = this._application.internalStructure.getItem(index);
-                    dataStructure[index] = thumbData;
-                    thumbData.favicon = {
-                        url: favicon,
-                        color: null
-                    };
-                    if (color) {
-                        thumbData.favicon.color = color;
-                    }
-                    this._application.internalStructure.setItem(index, thumbData);
-                }
-            }
-            for (let [
-                        ,
-                        thumbData
-                    ] in Iterator(dataStructure)) {
-                this._application.thumbs.getMissingData(thumbData);
-            }
-            this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
-        }.bind(this);
-        if (aData.faviconUrl) {
-            this._application.colors.requestImageDominantColor(aData.faviconUrl, function (err, color) {
-                onFaviconReady(aData.faviconUrl, color);
-            });
-        } else {
-            this._application.favicons.requestFaviconForURL(aData.urlReal, onFaviconReady);
-        }
+    _safeUnicode: function Screenshots__safeUnicode(str) {
+        return /[^\r\n\x9\xA\xD\x20-\uD7FF\uE000-\uFFFD\u10000-\u10FFFF]/.test(str) ? str.replace(/[^\r\n\x9\xA\xD\x20-\uD7FF\uE000-\uFFFD\u10000-\u10FFFF]/g, "") : str;
     },
-    useScreenshot: function Screenshots_useScreenshot(thumbData) {
-        switch (this._application.preferences.get("ftabs.thumbStyle", 1)) {
-        case THUMB_STYLE.SHOTS:
-            return true;
-        case THUMB_STYLE.LOGOS_AND_SHOTS:
-            if (!thumbData.background || !thumbData.background.url) {
-                return true;
+    _delayInitTimer: null
+};
+const historyObserver = {
+    onDeleteURI: function (uri) {
+        new sysutils.Timer(() => {
+            let screenshot = screenshots._screenshotsProvider.get("screenshot", { url: uri.spec });
+            if (screenshot) {
+                screenshot.onClearHistory();
             }
-        case THUMB_STYLE.LOGOS_AND_TITLES:
-        default:
-            return false;
-        }
+        }, 200);
     },
-    get shotsDir() {
-        let shotsDir = this._application.core.rootDir;
-        shotsDir.append("shots");
-        fileutils.forceDirectories(shotsDir);
-        return shotsDir;
-    }
+    onClearHistory: function () {
+        new sysutils.Timer(() => {
+            screenshots._screenshotsProvider.getAll("screenshot").forEach(screenshot => screenshot.onClearHistory());
+        }, 200);
+    },
+    onTitleChanged: function () {
+    },
+    onBeginUpdateBatch: function () {
+    },
+    onEndUpdateBatch: function () {
+    },
+    onVisit: function () {
+    },
+    onPageChanged: function () {
+    },
+    onDeleteVisits: function () {
+    },
+    QueryInterface: XPCOMUtils.generateQI([Ci.nsINavHistoryObserver])
 };

@@ -2,4 +2,5 @@
 <Passport>
     <PassportHostName>passport.yandex.ru</PassportHostName>
     <AccountsHostName>pass.yandex.ru</AccountsHostName>
+    <DefaultRetPath>http://yandex.ua</DefaultRetPath>
 </Passport>

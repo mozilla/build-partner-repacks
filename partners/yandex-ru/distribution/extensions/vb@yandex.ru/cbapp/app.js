@@ -13,6 +13,7 @@ const application = {
         core.Lib.sysutils.copyProperties(core.Lib, GLOBAL);
         this._logger = Log4Moz.repository.getLogger(core.appName + ".App");
         this._dirs._barApp = this;
+        this._migrateOldPreferences();
         this._init();
         this.addonManager.saveBuildDataToPreferences();
     },
@@ -37,7 +38,7 @@ const application = {
         return this._barCore.appName;
     },
     get preferencesBranch() {
-        let appPrefsBranch = "extensions." + this.addonManager.addonId + ".";
+        let appPrefsBranch = this.core.extensionPrefsPath;
         delete this.preferencesBranch;
         this.__defineGetter__("preferencesBranch", () => appPrefsBranch);
         return appPrefsBranch;
@@ -258,18 +259,6 @@ const application = {
             this._forceDir(vendorDir);
             return vendorDir;
         },
-        get vbDataDir() {
-            let vbDataDir = this.appRootDir;
-            vbDataDir.append("ftab-data");
-            this._forceDir(vbDataDir);
-            return vbDataDir;
-        },
-        get vbShotsDir() {
-            let shotsDir = this.vbDataDir;
-            shotsDir.append("shots");
-            this._forceDir(shotsDir);
-            return shotsDir;
-        },
         get userDir() {
             let isWindowsOS = sysutils.platformInfo.os.name == "windows";
             let userDir = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get(isWindowsOS ? "AppData" : "Home", Ci.nsIFile);
@@ -291,16 +280,17 @@ const application = {
     },
     _finalCleanup: function VBApp__finalCleanup(aAddonId) {
         this._logger.debug("Cleanup...");
-        [
+        let prefBranches = [
             this.preferencesBranch,
             "yandex-vb."
-        ].forEach(function (prefBranch) {
+        ];
+        for (let prefBranch of prefBranches) {
             try {
                 Preferences.resetBranch(prefBranch);
             } catch (e) {
                 this._logger.error("Final cleanup: can't reset branch '" + prefBranch + "'. " + strutils.formatError(e));
             }
-        }, this);
+        }
         this._logger.debug("Removing all files");
         this._barCore.cleanup();
         fileutils.removeFileSafe(this.directories.appRootDir);
@@ -321,21 +311,6 @@ const application = {
         let resource = netutils.ioService.getProtocolHandler("resource").QueryInterface(Ci.nsIResProtocolHandler);
         let alias = netutils.ioService.newFileURI(this.core.rootDir);
         resource.setSubstitution("vb-profile-data", alias);
-        let disableBarnavigIfYBarIsActive = function (aBarAddon) {
-            if (!aBarAddon || !aBarAddon.isActive) {
-                return;
-            }
-            try {
-                let barAppBarNavig = Cc["@yandex.ru/custombarcore;yasearch"].getService().wrappedJSObject.application.barnavig;
-                if (barAppBarNavig.alwaysSendUsageStat === false) {
-                    return;
-                }
-            } catch (e) {
-            }
-            this._logger.config("Yandex.Bar is active. Will turn off barnavig events (page load, downloads, etc.) listening...");
-            this.barnavig.listenStatEventsEnabled = false;
-        }.bind(this);
-        AddonManager.gre_AddonManager.getAddonByID("yasearch@yandex.ru", disableBarnavigIfYBarIsActive);
         this.addonStatus.onApplicationInitialized();
         this._logger.config("Init done in " + (Date.now() - startTime) + "ms");
     },
@@ -347,17 +322,18 @@ const application = {
             let partPath = partsDirPath + partDescr.file;
             let loadPartStart = Date.now();
             Cu.import(partPath, this._parts);
-            this._logger.debug("Loading " + partName + " part from " + partPath + " (" + (Date.now() - loadPartStart) + " ms)");
             let part = this._parts[partName];
             if (!part) {
                 throw new Error("Part " + partName + " not loaded!");
             }
+            if (this._parts.backup) {
+                this._parts.backup.decorate(partName, part);
+            }
             sysutils.defineLazyGetter(this, partName, () => part);
             if (typeof part.init == "function") {
-                this._logger.trace("Part " + partName + " start init...");
                 part.init(this);
-                this._logger.trace("Part " + partName + " inited!");
             }
+            this._logger.debug("Loading " + partName + " part from " + partPath + " (" + (Date.now() - loadPartStart) + " ms)");
         }
     },
     _finalizeParts: function VBApp__finalizeParts(doCleanup, partsFinalizedCallback) {
@@ -395,6 +371,22 @@ const application = {
         }, this);
         finalizeInProgress = false;
         callback();
+    },
+    _migrateOldPreferences: function () {
+        try {
+            let oldPrefBranchPath = this.name + ".";
+            let newPrefBranchPath = this.preferencesBranch;
+            Services.prefs.getBranch(oldPrefBranchPath).getChildList("", {}).forEach(function (key) {
+                let prefValue = Preferences.get(oldPrefBranchPath + key, null);
+                if (prefValue !== null) {
+                    Preferences.set(newPrefBranchPath + key, prefValue);
+                }
+            });
+            Preferences.resetBranch(oldPrefBranchPath);
+        } catch (e) {
+            this._logger.error("Failed migrating old preferences branch.");
+            this._logger.debug(e);
+        }
     },
     _openWindow: function VBApp__openWindow(navigatorWindow, path, windowClass, focusIfOpened, resizeable, modal, windowArgs) {
         let baseNameMatch = path.match(/(\w+)\.x[um]l$/i);
@@ -447,12 +439,16 @@ const application = {
             file: "alarms.js"
         },
         {
-            name: "frontendHelper",
-            file: "frontendHelper.js"
+            name: "dataproviders",
+            file: "dataproviders.js"
         },
         {
-            name: "internalStructure",
-            file: "internalStructure.js"
+            name: "layout",
+            file: "layout.js"
+        },
+        {
+            name: "frontendHelper",
+            file: "frontendHelper.js"
         },
         {
             name: "clids",
@@ -471,12 +467,12 @@ const application = {
             file: "addonStatus.js"
         },
         {
-            name: "installer",
-            file: "installer.js"
-        },
-        {
             name: "statistics",
             file: "statistics.js"
+        },
+        {
+            name: "installer",
+            file: "installer.js"
         },
         {
             name: "yCookie",
@@ -495,8 +491,8 @@ const application = {
             file: "barnavig.js"
         },
         {
-            name: "metrika",
-            file: "metrika.js"
+            name: "backup",
+            file: "backup.js"
         },
         {
             name: "databaseMigration",
@@ -507,8 +503,8 @@ const application = {
             file: "migration.js"
         },
         {
-            name: "authAdapter",
-            file: "authAdapter.js"
+            name: "passport",
+            file: "passport.js"
         },
         {
             name: "auth",
@@ -527,6 +523,10 @@ const application = {
             file: "common-advertisement.js"
         },
         {
+            name: "searchOffer",
+            file: "searchOffer.js"
+        },
+        {
             name: "advertisement",
             file: "advertisement.js"
         },
@@ -535,16 +535,8 @@ const application = {
             file: "blacklist.js"
         },
         {
-            name: "usageHistory",
-            file: "usageHistory.js"
-        },
-        {
             name: "protocolSupport",
             file: "protocolSupport.js"
-        },
-        {
-            name: "layout",
-            file: "layout.js"
         },
         {
             name: "syncTopHistory",
@@ -571,8 +563,8 @@ const application = {
             file: "bookmarks.js"
         },
         {
-            name: "cloudSource",
-            file: "cloudsource.js"
+            name: "thumbsLogos",
+            file: "thumbsLogos.js"
         },
         {
             name: "favicons",
@@ -587,10 +579,6 @@ const application = {
             file: "screenshots.js"
         },
         {
-            name: "screenshotsGrabber",
-            file: "screenshotsGrabber.js"
-        },
-        {
             name: "thumbsSuggest",
             file: "thumbsSuggest.js"
         },
@@ -599,16 +587,24 @@ const application = {
             file: "fastdial.js"
         },
         {
-            name: "thumbs",
-            file: "thumbs.js"
-        },
-        {
             name: "searchExample",
             file: "searchExample.js"
         },
         {
-            name: "backup",
-            file: "backup.js"
+            name: "thumbs",
+            file: "thumbs.js"
+        },
+        {
+            name: "cookieBackup",
+            file: "cookieBackup.js"
+        },
+        {
+            name: "internalStructure",
+            file: "internalStructure.js"
+        },
+        {
+            name: "pickup",
+            file: "pickup.js"
         },
         {
             name: "dayuse",

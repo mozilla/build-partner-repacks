@@ -20,7 +20,7 @@ const migrator = {
             try {
                 application.widgetLibrary.getPlugin(geolocationPluginId).enabled = geolocationEnabled;
             } catch (e) {
-                this._logger.config("Couldn't change Geolocation plugin state. " + strutils.formatError(e));
+                this._migrationModule.logger.config("Couldn't change Geolocation plugin state. " + strutils.formatError(e));
             }
             Preferences.reset(oldGeolocationPrefName);
         }

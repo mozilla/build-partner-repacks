@@ -20,6 +20,6 @@
     <f:setting default="1" name="translate_on_hover_option" scope="plugin"/>
 
     <modules>
-        <module browser="firefox" file="native/fx/translator/scripts/translate.js"/>
+        <module browser="firefox" file="native/fx/translator/translate.js"/>
     </modules>
 </plugin>

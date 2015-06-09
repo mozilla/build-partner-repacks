@@ -161,8 +161,9 @@ const NativeComponents = {
         const xbDirPath = this._application.partsURL + "native/";
         const SCRIPT_LOADER = Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader);
         this._modules.forEach(function BarPlatform_loadModule(moduleFileName) {
-            this._logger.debug("  Loading module " + moduleFileName);
+            let startTime = Date.now();
             SCRIPT_LOADER.loadSubScript(xbDirPath + moduleFileName);
+            this._logger.debug("  Loading module " + moduleFileName + " (" + (Date.now() - startTime) + " ms)");
         }, this);
     },
     _getLogger: function NativeComponents__getLogger(name) {

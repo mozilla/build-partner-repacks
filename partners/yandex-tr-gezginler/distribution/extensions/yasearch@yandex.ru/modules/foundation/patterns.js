@@ -69,11 +69,16 @@ patterns.NotificationSource.prototype = {
 };
 patterns.NotificationSource.objectMixIn = function NotificationSource_objectMixIn(object) {
     let notificationSourceInstance = new this();
-    for (let prop in notificationSourceInstance) {
-        if (prop === "constructor") {
-            continue;
-        }
-        object[prop] = notificationSourceInstance[prop];
+    copy(Object.getPrototypeOf(notificationSourceInstance), object);
+    copy(notificationSourceInstance, object);
+    function copy(source, target) {
+        Object.keys(source).forEach(function (aProp) {
+            if (aProp === "constructor") {
+                return;
+            }
+            let descriptor = Object.getOwnPropertyDescriptor(source, aProp);
+            Object.defineProperty(target, aProp, descriptor);
+        });
     }
 };
 patterns.AsyncTaskQueue = function AsyncTaskQueue(watcher, chainTasks) {

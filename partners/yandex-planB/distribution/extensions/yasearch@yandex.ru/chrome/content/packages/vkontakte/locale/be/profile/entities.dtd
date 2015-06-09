@@ -62,7 +62,7 @@
 <!ENTITY plural.rule "7">
 
 <!ENTITY vk.notify.follow "Просіць дадаць яго да сяброў">
-<!ENTITY vk.notify.wall "Дадаў запіс на вашу сцяну">
+<!ENTITY vk.notify.wall "Дадаў допіс на вашу сцяну">
 <!ENTITY vk.notify.comment_post "Пракаментаваў вашу публікацыю">
 <!ENTITY vk.notify.comment_photo "Пракаментаваў ваш фотаздымак">
 <!ENTITY vk.notify.comment_video "Пракаментаваў ваша відэа">
@@ -70,7 +70,7 @@
 <!ENTITY vk.notify.reply_topic "Адказаў на ваш каментарый">
 
 <!ENTITY vk.notify.follow_f "Просіць дадаць яе да сяброў">
-<!ENTITY vk.notify.wall_f "Дадала запіс на вашу сцяну">
+<!ENTITY vk.notify.wall_f "Дадала допіс на вашу сцяну">
 <!ENTITY vk.notify.comment_post_f "Пракаментавала вашу публікацыю">
 <!ENTITY vk.notify.comment_photo_f "Пракаментавала ваш фотаздымак">
 <!ENTITY vk.notify.comment_video_f "Пракаментавала ваша відэа">
@@ -78,7 +78,7 @@
 <!ENTITY vk.notify.reply_topic_f "Адказала на ваш каментарый">
 
 <!ENTITY vk.notify.g.message "{N} новае паведамленне;{N} новыя паведамленні;{N} новых паведамленняў">
-<!ENTITY vk.notify.g.wall "{N} новы запіс на сцяне;{N} новыя запісы на сцяне;{N} новых запісаў на сцяне">
+<!ENTITY vk.notify.g.wall "{N} новы допіс на сцяне;{N} новыя допісы на сцяне;{N} новых допісаў на сцяне">
 <!ENTITY vk.notify.g.comment "{N} новы каментарый;{N} новыя каментарыі;{N} новых каментарыяў">
 <!ENTITY vk.notify.g.reply_topic "{N} новы адказ у абмеркаванні;{N} новыя адказы ў абмеркаванні;{N} новых адказаў у абмеркаванні">
 <!ENTITY settings.show_notifications "Паказваць апавяшчэнні">

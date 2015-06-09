@@ -5,3 +5,5 @@
 <!ENTITY notification.toolbar.installed "Новий тулбар тут, разом з іншими.">
 <!ENTITY welcome.close "закрити">
 <!ENTITY welcome.openpanels "Відкрити панелі">
+
+<!ENTITY welcome.tutorial.confirm-button.short "Добре">

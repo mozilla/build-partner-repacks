@@ -46,7 +46,7 @@ const core = {
         if (this.api.Package.info && this.api.Package.info.version) {
             version = this.api.Package.info.version;
         }
-        this._packageVersion = version.replace(".", "-", "g");
+        this._packageVersion = version.replace(/\./g, "-");
         this.translator.init();
         this.Prefs.observeChanges(this.translator, this.api.componentID);
     },
@@ -104,12 +104,12 @@ const core = {
         }
         return true;
     },
-    checkTutorConditions: function PluginTranslator_checkTutorConditions() {
-        return !parseInt(this.Prefs.getValue("show-tooltip"), 10);
-    },
     checkIsYandexService: function PluginTranslator_checkIsYandexService(aStrHost) {
         let hostName = aStrHost.toLowerCase();
-        if (/(?:^|\.)(ya|kinopoisk)\.ru$/.test(hostName)) {
+        if (/(?:^|\.)(?:ya|kinopoisk|auto)\.ru$/.test(hostName)) {
+            return true;
+        }
+        if (/(?:^|\.)yadi\.sk$/.test(hostName)) {
             return true;
         }
         let baseHostName;
@@ -194,10 +194,7 @@ URLBarItem.prototype = {
 };
 const TranslatorService = {
     init: function TranslatorService_init() {
-        let require = {};
-        Cu.import(core.api.Package.resolvePath("/native/fx/modules/lang-detector.jsm"), require);
-        this._langDetector = require.langDetector;
-        this._langDetector.init(core.api);
+        this._langDetector = Cu.import(core.api.Package.resolvePath("/native/fx/modules/lang-detector.jsm"), {}).langDetector;
         core.globalMessageManager.addMessageListener(this.GET_PROP_MESSAGE_NAME, this);
     },
     finalize: function TranslatorService_finalize() {
@@ -269,13 +266,13 @@ const TranslatorService = {
         "it-ru": "it-ru",
         "es-ru": "es-ru",
         "pl-ru": "pl-ru",
-        "en-uk": "en-ru",
-        "tr-uk": "tr-ru",
-        "de-uk": "de-ru",
-        "fr-uk": "fr-ru",
-        "it-uk": "it-ru",
-        "es-uk": "es-ru",
-        "pl-uk": "pl-ru",
+        "en-uk": "en-uk",
+        "tr-uk": "tr-uk",
+        "de-uk": "de-uk",
+        "fr-uk": "fr-uk",
+        "it-uk": "it-uk",
+        "es-uk": "es-uk",
+        "pl-uk": "pl-uk",
         "en-tr": "en-tr",
         "uk-tr": "uk-tr"
     },
@@ -291,7 +288,7 @@ const TranslatorService = {
     _languagePattern: /^([a-z]{2})/,
     _langDetector: null,
     EVENT_MESSAGE_NAME: "yasearch@yandex.ru:pagetranslator:event",
-    GET_PROP_MESSAGE_NAME: "yasearch@yandex.ru:pagetranslator:getprop",
+    GET_PROP_MESSAGE_NAME: "yasearch@yandex.ru:pagetranslator:getdata",
     receiveMessage: function TranslatorService_receiveMessage({data}) {
         let result;
         switch (data.type) {
@@ -301,6 +298,16 @@ const TranslatorService = {
         case "getLanguage":
             result = this.language;
             break;
+        case "getScriptsText": {
+                let readFile = function (fileName) {
+                    return core.api.Package.readTextFile("/native/fx/pagetranslator/contentScripts/" + fileName);
+                };
+                result = {
+                    "lib.js": readFile("lib.js"),
+                    "tr-url.js": readFile("tr-url.js")
+                };
+                break;
+            }
         default:
             break;
         }

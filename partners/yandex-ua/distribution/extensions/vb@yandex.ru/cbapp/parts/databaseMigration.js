@@ -5,6 +5,7 @@ const {
     interfaces: Ci,
     utils: Cu
 } = Components;
+Cu.import("resource://gre/modules/Services.jsm");
 const GLOBAL = this;
 const databaseMigration = {
     init: function migration_init(aApplication) {
@@ -24,6 +25,12 @@ const databaseMigration = {
     },
     _migrate: function migration__migrate() {
         let installInfo = this._application.addonManager.info;
+        if (installInfo.isFreshAddonInstall || !installInfo.addonVersionChanged) {
+            return;
+        }
+        if (Services.vc.compare(installInfo.addonLastVersion, "2.19.0") !== -1) {
+            return;
+        }
         for (let name in schema) {
             let dbFile;
             try {
@@ -70,7 +77,6 @@ const databaseMigration = {
         let path;
         switch (dbName) {
         case "fastdial":
-        case "usageHistory":
             path = dbName.toLowerCase() + ".sqlite";
             break;
         default:
@@ -137,11 +143,6 @@ const schema = {
                 fileutils.jsonToFile(domainToURL, thumbLogosFile);
             } catch (err) {
             }
-        }
-    },
-    usageHistory: {
-        1: function schema_usageHistory_1(database) {
-            database.execQuery("CREATE TABLE IF NOT EXISTS usagehistory (date INTEGER, action TEXT, info TEXT)");
         }
     }
 };

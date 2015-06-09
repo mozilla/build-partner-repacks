@@ -21,67 +21,96 @@ var module = function (app, common) {
             go: "http://webmaster.yandex.ru/site/?host={PARAM}"
         }
     };
-    app.init = function webmaster_init() {
+    app.init = function () {
         this.module = this.importModule("api");
         this.module.init({
             api: this.api,
             onUpdate: this.onUpdate.bind(this)
         });
-        let yauthTimer = null;
-        yauthMgr = app.commonModule("yauth");
-        yauthMgr.init(function yauthMgr_init(login) {
-            if (yauthTimer) {
-                yauthTimer.cancel();
-                yauthTimer = null;
-            }
-            if (login && !yauthMgr.userLogin) {
-                yauthTimer = common.timers.setTimeout(yauthMgr_init.bind(this, login), 50);
-                return;
-            }
-            if (login) {
-                this.onLogin();
-            }
-            this.updateData();
-        }, this);
+        this._authManager = this.api.Passport;
+        this._authManager.addListener(this._authManager.EVENTS.AUTH_STATE_CHANGED, this);
         if (this.isAuth()) {
-            this.module.configure("user", yauthMgr.userLogin);
+            this.module.configure("user", this._authManager.defaultAccount.uid);
         }
     };
-    app.finalize = function webmaster_finalize() {
-        yauthMgr = null;
+    app.finalize = function () {
         this._cancelUpdateTimer();
+        this._authManager.removeListener(this._authManager.EVENTS.AUTH_STATE_CHANGED, this);
     };
     app.dayuseStatProvider = {
-        isAuthorized: function dayuseStatProvider_isAuthorized() {
-            return app.isAuth();
+        isAuthorized: function () {
+            return app._authManager.isAuthorized();
         },
-        hasSavedLogins: function dayuseStatProvider_hasSavedLogins() {
-            return common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.ru" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.ua" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.com.tr" });
+        hasSavedLogins: function () {
+            return app._authManager.hasSavedLogins();
         }
     };
     app.instancePrototype = {
-        init: function webmaster_instancePrototype_init() {
+        init: function () {
             app.updateData(this.WIID);
         }
     };
     app.uiCommands = {
-        update: function webmaster_uiCommands_update(command, eventInfo) {
+        update: function (command, eventInfo) {
             this.updateData(this.WIID, true);
         }
     };
-    app.onSettingChange = function webmaster_onSettingChange(key, value, instanceId) {
+    app.onSettingChange = function (key, value, instanceId) {
         switch (key) {
         case "update-interval":
             let updateInterval = this.module.getUpdateInterval(this.WIID, true) * 1000;
             let lastUpdate = this.module.getLastUpdateTime(this.WIID);
             let delay = updateInterval - (Date.now() - lastUpdate);
             delay = Math.max(delay, MINIMUM_DELAY_MS);
-            this.cleanData(this.WIID);
+            this._cleanData(this.WIID);
             this._setUpdateTimer(this.WIID, delay);
             break;
         }
     };
-    app._cancelUpdateTimer = function webmaster_cancelTimer(aWIID) {
+    app.updateData = function (aWIID, manual, force) {
+        this._cancelUpdateTimer(aWIID);
+        if (!this.isAuth()) {
+            this._onLogout();
+            return;
+        }
+        if (manual) {
+            force = true;
+            common.observerService.notify("throbber", aWIID ? JSON.stringify({
+                wiid: aWIID,
+                value: true
+            }) : null);
+        }
+        if (!aWIID) {
+            let widgets = this.api.Controls.getAllWidgetItems();
+            widgets.forEach(function update_updater(item) {
+                this.module.update(item.WIID || this.WIID, force);
+            }.bind(this));
+        } else {
+            this.module.update(aWIID, force);
+        }
+    };
+    app.isAuth = function () {
+        return this._authManager.isAuthorized();
+    };
+    app.getUserData = function (aWIID, aAction) {
+        return this.module.getUserData(aWIID, aAction);
+    };
+    app.onUpdate = function (aWIID) {
+        let notificationObject = aWIID ? JSON.stringify({ wiid: aWIID }) : null;
+        common.observerService.notify("throbber", notificationObject);
+        common.observerService.notify("display", notificationObject);
+    };
+    app._cleanData = function (aWIID) {
+        this.module.cleanData(aWIID);
+    };
+    app._setUpdateTimer = function (aWIID, aDelay) {
+        this._cancelUpdateTimer(aWIID);
+        if (typeof aDelay == "undefined") {
+            aDelay = MINIMUM_DELAY_MS;
+        }
+        timers[aWIID] = this.api.SysUtils.Timer(this.updateData.bind(this, aWIID, false, true), aDelay);
+    };
+    app._cancelUpdateTimer = function (aWIID) {
         function cancelTimer(aWIID) {
             let timer = timers[aWIID];
             if (timer) {
@@ -97,54 +126,24 @@ var module = function (app, common) {
             cancelTimer(wiid);
         }
     };
-    app._setUpdateTimer = function webmaster__setUpdateTimer(aWIID, aDelay) {
-        this._cancelUpdateTimer(aWIID);
-        if (typeof aDelay == "undefined") {
-            aDelay = MINIMUM_DELAY_MS;
-        }
-        timers[aWIID] = new this.api.SysUtils.Timer(this.updateData.bind(this, aWIID, false, true), aDelay);
+    app._onLogin = function (aDefaultAccountUid) {
+        this.module.configure("user", aDefaultAccountUid);
+        this.updateData();
     };
-    app.updateData = function webmaster_updateData(aWIID, manual, force) {
-        this._cancelUpdateTimer(aWIID);
-        if (!this.isAuth()) {
-            this.onLogout();
-            this.onUpdate();
+    app._onLogout = function () {
+        this._cleanData();
+        this.onUpdate();
+    };
+    app._onAuthStateChanged = function (aData) {
+        if (!aData.accounts.length) {
+            this._onLogout();
             return;
         }
-        if (manual) {
-            force = true;
-            common.observerService.notify("throbber", aWIID ? JSON.stringify({
-                wiid: aWIID,
-                value: true
-            }) : null);
+        this._onLogin(aData.defaultAccount.uid);
+    };
+    app.observe = function (aSubject, aTopic, aData) {
+        if (aTopic === this._authManager.EVENTS.AUTH_STATE_CHANGED) {
+            this._onAuthStateChanged(aData);
         }
-        if (!aWIID) {
-            let widgets = this.api.Controls.getAllWidgetItems();
-            widgets.forEach(function update_updater(item) {
-                this.module.update(item.WIID, force);
-            }.bind(this));
-        } else {
-            this.module.update(aWIID, force);
-        }
-    };
-    app.isAuth = function webmaster_isAuth() {
-        return yauthMgr.isAuth();
-    };
-    app.getUserData = function webmaster_getUserData(aWIID, aAction) {
-        return this.module.getUserData(aWIID, aAction);
-    };
-    app.cleanData = function webmaster_cleanData(aWIID) {
-        this.module.cleanData(aWIID);
-    };
-    app.onLogin = function webmaster_onLogin() {
-        this.module.configure("user", yauthMgr.userLogin);
-    };
-    app.onLogout = function webmaster_onLogout() {
-        this.cleanData();
-    };
-    app.onUpdate = function webmaster_onUpdate(aWIID) {
-        let notificationObject = aWIID ? JSON.stringify({ wiid: aWIID }) : null;
-        common.observerService.notify("throbber", notificationObject);
-        common.observerService.notify("display", notificationObject);
     };
 };

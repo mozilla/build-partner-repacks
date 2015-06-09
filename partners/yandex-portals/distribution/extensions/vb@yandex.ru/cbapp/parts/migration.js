@@ -216,6 +216,14 @@ const migration = {
         {
             name: "l-2.16",
             file: "l-2_16.js"
+        },
+        {
+            name: "l-2.18",
+            file: "l-2_18.js"
+        },
+        {
+            name: "l-2.19",
+            file: "l-2_19.js"
         }
     ],
     _migrationConfig: {

@@ -53,8 +53,7 @@ XBProtocolHandler.prototype = {
         return false;
     },
     newURI: function XBProtocolHandler_newURI(aSpec, aOriginalCharset, aBaseURI) {
-        let uri = new XBProtocolHandler.XBURI(aSpec, aOriginalCharset, aBaseURI);
-        return uri;
+        return new XBProtocolHandler.XBURI(aSpec, aOriginalCharset, aBaseURI);
     },
     newChannel: function XBProtocolHandler_newChannel(aURI) {
         let uri = aURI.wrappedJSObject;

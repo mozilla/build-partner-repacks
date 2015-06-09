@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE bindings SYSTEM "../entities.dtd"><bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-    <binding extends="/-common/content/basewidget.xbl#toolbarbuttonbase" id="toolbarbutton">
+    <binding extends="/-common/content/basewidget.xbl#widget-unique" id="toolbarbutton">
         <resources>
             <stylesheet src="styles/main.css"/>
         </resources>
@@ -101,8 +101,6 @@
         </content>
 
         <implementation>
-            <field name="WIID" readonly="true">this.application.WIID</field>
-
             <field name="BUTTON_TEXT" readonly="true">"&direct.button.label;"</field>
 
             <field name="_authButton">document.getAnonymousElementByAttribute(this, "anonid", "button-auth")</field>
@@ -145,7 +143,7 @@
                 if (delay < 0) {
                     delay = 0;
                 }
-                this._throbberTimer = new this.application.api.SysUtils.Timer(function () {
+                this._throbberTimer = this.application.api.SysUtils.Timer(function () {
                     this._throbberTimer = null;
                     this._lastThrobberTime = null;
                     this._button.setAttribute("throbber", false);

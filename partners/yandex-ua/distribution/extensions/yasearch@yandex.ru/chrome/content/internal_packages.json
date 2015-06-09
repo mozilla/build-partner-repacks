@@ -44,13 +44,13 @@
   "http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml": {
     "dirName": "safe-browsing"
   },
-  "http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml": {
-    "dirName": "twitter"
-  },
   "http://bar-widgets.yandex.ru/packages/approved/286/manifest.xml": {
     "dirName": "browseroffer"
   },
   "http://bar-widgets.yandex.ru/packages/approved/288/manifest.xml": {
     "dirName": "yadisk"
+  },
+  "http://bar-widgets.yandex.ru/packages/approved/289/manifest.xml": {
+    "dirName": "sovetnik"
   }
 }

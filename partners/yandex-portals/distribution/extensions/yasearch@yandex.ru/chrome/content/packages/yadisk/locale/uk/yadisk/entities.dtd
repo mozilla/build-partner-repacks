@@ -1,7 +1,9 @@
+<!ENTITY title "Яндекс.Диск">
+<!ENTITY widget.name "Яндекс.Диск">
+<!ENTITY widget.description "Яндекс.Диск">
 
 <!ENTITY context-menu.upload-image "Завантажити зображення">
 <!ENTITY context-menu.upload-title "Зберегти зображення на Яндекс.Диск">
-<!ENTITY error.limit "Закінчилося вільне місце на  Я.Диску">
 <!ENTITY slice.link-copied "Посилання скопійовано">
 <!ENTITY slice.link-copied-buffer "Посилання скопійовано в буфер обміну">
 <!ENTITY slice.links "Посилання">
@@ -21,36 +23,69 @@
 <!ENTITY slice.month.short.9 "{D} вер">
 <!ENTITY slice.notif.errors "{N} файл завантажено;{N} файли не завантажено;{N} файлів не завантажено">
 <!ENTITY slice.notif.saved "Файл збережено">
-<!ENTITY slice.notif.saved-chrome "Файл збережено у Яндекс.Диск">
+<!ENTITY slice.notif.saved-chrome "Файл збережено на Яндекс.Диск">
 <!ENTITY slice.notif.saves "{N} файл збережено;{N} файли збережено;{N} файлів збережено">
 <!ENTITY slice.tooltip.cancel "Перервати завантаження файлу на Яндекс.Диск">
 <!ENTITY slice.tooltip.download "Завантажити файл">
 <!ENTITY slice.tooltip.homelink "Перейти на Яндекс.Диск">
 <!ENTITY slice.tooltip.retry "Повторити завантаження файлу на Яндекс.Диск">
 <!ENTITY slice.tooltip.share "Отримати публічне посилання на файл">
-<!ENTITY title "Яндекс.Диск">
+<!ENTITY slice.empty-list "Список завантажених файлів на Яндекс.Диск порожній.">
+<!ENTITY slice.empty-list-2 "Як завантажити файл">
+<!ENTITY slice.waiting-upload-url "Триває запит...">
+<!ENTITY slice.error.file-not-loaded "Файл не завантажено">
+<!ENTITY slice.error.filename-not-loaded "{filename} не завантажено">
+<!ENTITY slice.error.limit-comp "Недостатньо вільного місця на комп&#39;ютері для збереження файлу">
+<!ENTITY slice.error.limit-disk "Недостатньо вільного місця на Я.Диску для збереження файлу">
+<!ENTITY slice.tooltip.error-cancel "Скасувати завантаження файлу на Яндекс.Диск">
+
 <!ENTITY widget.button.authorized "Список останніх збережених файлів на Яндекс.Диск">
 <!ENTITY widget.button.unauthorized "Будь ласка, авторизуйтеся на Яндексі">
 <!ENTITY widget.button.upload-complete "Файл успішно збережено на Яндекс.Диск">
 <!ENTITY widget.button.upload-error "Не вдалося зберегти файл на Яндекс.Диск">
 <!ENTITY widget.button.uploading "Триває збереження файлу на Яндекс.Диск">
-<!ENTITY widget.description "Яндекс.Диск">
 <!ENTITY widget.menu.save "Зберегти на Яндекс.Диск">
-<!ENTITY widget.name "Яндекс.Диск">
-<!ENTITY widget.options.save-checkbox.title "Показувати іконку збереження за наведенням">
 <!ENTITY widget.pagebutton.title "Зберегти">
 <!ENTITY widget.pagebutton.tooltip "Зберегти файл на Яндекс.Диск">
 <!ENTITY widget.save-button.title "Зберегти зображення на Яндекс.Диск">
 <!ENTITY widget.save-file-button.title "Зберегти файл на Яндекс.Диск ">
-<!ENTITY error.cmd.try-again "Спробуйте *знову*">
-<!ENTITY error.network "Помилка з&#39;єднання.">
-<!ENTITY slice.empty-list "Список завантажених файлів на Яндекс.Диск порожній.">
-<!ENTITY slice.empty-list-2 "Як завантажити файл">
 <!ENTITY widget.chrome-name "Елементи Яндекса: Диск">
-<!ENTITY slice.waiting-upload-url "Триває запит...">
 <!ENTITY widget.chrome-description "Зберігайте файли і зображення з інтернету на Яндекс.Диск одним кліком">
 <!ENTITY widget.chrome-full-description "Розширення дозволить вам зберігати файли та зображення з інтернету у хмарі Яндекс.Диска і відкривати їх із будь-якого пристрою. Щоб воно запрацювало, потрібно ввести свій логін і пароль на Яндексі.">
 <!ENTITY widget.opera.forbidden "Для роботи розширення Диск потрібна Opera версії 26 і вище.">
+
+<!ENTITY error.cmd.try-again "Спробуйте *знову*">
+<!ENTITY error.limit "Закінчилося вільне місце на  Я.Диску">
+<!ENTITY error.network "Помилка з&#39;єднання.">
 <!ENTITY error.cmd-auth "Будь ласка, *авторизуйтеся*">
-<!ENTITY slice.error.file-not-loaded "Файл не завантажено">
-<!ENTITY slice.error.filename-not-loaded "{filename} не завантажено">
+
+<!ENTITY widget.settings.showPopupSuggest "Показувати спливаючу кнопку &context-menu.upload-title;">
+<!ENTITY widget.settings.save-document.title "Показувати кнопку Диска поверх відкритих документів у браузері">
+
+<!ENTITY file-dialog.all-files "Усі файли">
+<!ENTITY file-dialog.title "Вибір файлу для завантаження">
+
+<!ENTITY slice.help "Довідка">
+<!ENTITY slice.settings "Налаштування">
+<!ENTITY slice.upload "Завантажити">
+<!ENTITY widget.options.save-checkbox.title "Показувати кнопку поверх зображень на сайтах">
+<!ENTITY widget.options.save-document-checkbox.title "Показувати кнопку поверх відкритих документів у браузері">
+<!ENTITY slice.download "Завантажити">
+<!ENTITY slice.public "Поділитися">
+<!ENTITY slice.size.b "байт">
+<!ENTITY slice.size.gb "ГБ">
+<!ENTITY slice.size.kb "КБ">
+<!ENTITY slice.size.mb "МБ">
+<!ENTITY widget.options.show-notifications.title "Показувати сповіщення">
+<!ENTITY slice.notif.saved-new "Файл збережено на ваш Яндекс.Диск у папку Завантаження">
+<!ENTITY widget.options.notifications-enable.title "Показувати сповіщення про завантаження файлів ">
+<!ENTITY slice.notif.yabrowser-save "Файл збережено{new_line}на ваш Яндекс.Диск у папку &#34;Завантаження&#34;">
+<!ENTITY file-dialog.error.empty-file "Неможливо завантажити файл розміром 0 байт">
+<!ENTITY widget.save-button.tutorial.confirmButton "Добре, дякую">
+<!ENTITY widget.save-button.tutorial.moreInfo "Довідка">
+<!ENTITY widget.save-button.tutorial.settings "Налаштування">
+<!ENTITY widget.save-button.tutorial.text "Натисніть на значок, щоб зберегти вподобане зображення собі на Яндекс.Диск. Збирайте усе цікаве на Яндекс.Диску.">
+<!ENTITY widget.save.tutorial.text "Натисніть на значок, щоб побачити останні збережені зображення. Ви можете завантажити ці файли на комп&#39;ютер, швидко поділитися ними із друзями або перейти у Диск для перегляду файлів і роботи з ними.">
+<!ENTITY slice.uploading "Триває завантаження">
+<!ENTITY widget.save.tutorial.header "Яндекс.Диск у браузері">
+<!ENTITY widget.save-button.tutorial.confirmButton.short "Добре">

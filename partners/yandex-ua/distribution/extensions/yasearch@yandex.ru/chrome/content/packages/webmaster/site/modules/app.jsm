@@ -4,7 +4,6 @@ var module = function (app, common) {
     const MINIMUM_DELAY_MS = 5000;
     const MAX_UPDATE_ERROR_MS = 3600000;
     let timers = Object.create(null);
-    let yauthMgr = null;
     function metrikaURL(url) {
         function leadingZero(value) {
             return ("0" + value).substr(-2, 2);
@@ -29,55 +28,41 @@ var module = function (app, common) {
             metrika: metrikaURL("http://metrika.yandex.ru/stat/traffic/summary/?goal_id=&reverse=&per_page=500&table_mode=&filter=&date1={date1}&date2={date2}&group=day&{PARAMS}")
         }
     };
-    app.init = function site_init() {
+    app.init = function () {
         this.module = this.importModule("api");
         this.module.init({
             api: this.api,
             onUpdate: this.onUpdate.bind(this)
         });
-        let yauthTimer = null;
-        yauthMgr = app.commonModule("yauth");
-        yauthMgr.init(function yauthMgr_init(login) {
-            if (yauthTimer) {
-                yauthTimer.cancel();
-                yauthTimer = null;
-            }
-            if (login && !yauthMgr.userLogin) {
-                yauthTimer = common.timers.setTimeout(yauthMgr_init.bind(this, login), 50);
-                return;
-            }
-            if (login) {
-                this.onLogin();
-            }
-            this.updateData();
-        }, this);
+        this._authManager = this.api.Passport;
+        this._authManager.addListener(this._authManager.EVENTS.AUTH_STATE_CHANGED, this);
         if (this.isAuth()) {
-            this.module.configure("user", yauthMgr.userLogin);
+            this.module.configure("user", this._authManager.defaultAccount.uid);
         }
     };
-    app.finalize = function site_finalize() {
-        yauthMgr = null;
+    app.finalize = function () {
         this._cancelUpdateTimer();
+        this._authManager.removeListener(this._authManager.EVENTS.AUTH_STATE_CHANGED, this);
     };
     app.dayuseStatProvider = {
-        isAuthorized: function dayuseStatProvider_isAuthorized() {
-            return app.isAuth();
+        isAuthorized: function () {
+            return app._authManager.isAuthorized();
         },
-        hasSavedLogins: function dayuseStatProvider_hasSavedLogins() {
-            return common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.ru" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.ua" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.com.tr" });
+        hasSavedLogins: function () {
+            return app._authManager.hasSavedLogins();
         }
     };
     app.instancePrototype = {
-        init: function site_instancePrototype_init() {
+        init: function () {
             app.updateData(this.WIID);
         },
-        finalize: function site_instansePrototype_finalize() {
-            app.cleanData(this.WIID);
+        finalize: function () {
+            app._cleanData(this.WIID);
         },
-        _notifySettingsChanges: function site__notifySettingsChanges(action, instanceId) {
+        _notifySettingsChanges: function (action, instanceId) {
             common.observerService.notify(action, JSON.stringify({ wiid: instanceId }));
         },
-        onSettingChange: function site_onSettingChange(key, value, instanceId) {
+        onSettingChange: function (key, value, instanceId) {
             switch (key) {
             case "show-sitename":
             case "customSitename":
@@ -87,7 +72,7 @@ var module = function (app, common) {
                 this._notifySettingsChanges("tooltipwarns", instanceId);
                 break;
             case "selectedSitenameSetting":
-                app.cleanData(instanceId);
+                app._cleanData(instanceId);
                 app.updateData(instanceId, true);
                 break;
             case "updateInterval":
@@ -95,14 +80,14 @@ var module = function (app, common) {
                 let lastUpdate = app.module.getLastUpdateTime(this.WIID);
                 let delay = updateInterval - (Date.now() - lastUpdate);
                 delay = Math.max(delay, MINIMUM_DELAY_MS);
-                app.cleanData(this.WIID);
+                app._cleanData(this.WIID);
                 app._setUpdateTimer(this.WIID, delay);
                 break;
             }
         }
     };
     app.uiCommands = {
-        auth: function site_uiCommands_auth(command, eventInfo) {
+        auth: function (command, eventInfo) {
             let url = "http://passport.yandex.ru/passport?retpath=";
             let wiid = eventInfo.widget && eventInfo.widget.WIID;
             let str = "http://metrika.yandex.ru/";
@@ -117,12 +102,12 @@ var module = function (app, common) {
                 eventInfo: eventInfo.event
             });
         },
-        update: function site_uiCommands_update(command, eventInfo) {
+        update: function (command, eventInfo) {
             let widget = eventInfo.widget;
             widget._setIcon();
             this.updateData(widget.WIID, true);
         },
-        go: function site_uiCommands_go(command, eventInfo) {
+        go: function (command, eventInfo) {
             let wiid = eventInfo.widget && eventInfo.widget.WIID;
             if (!wiid) {
                 return;
@@ -143,34 +128,10 @@ var module = function (app, common) {
             });
         }
     };
-    app._cancelUpdateTimer = function site_cancelTimer(aWIID) {
-        function cancelTimer(aWIID) {
-            let timer = timers[aWIID];
-            if (timer) {
-                timer.cancel();
-                timers[aWIID] = null;
-            }
-        }
-        if (aWIID) {
-            cancelTimer(aWIID);
-            return;
-        }
-        for (let wiid in timers) {
-            cancelTimer(wiid);
-        }
-    };
-    app._setUpdateTimer = function site__setUpdateTimer(aWIID, aDelay) {
-        this._cancelUpdateTimer(aWIID);
-        if (typeof aDelay == "undefined") {
-            aDelay = MINIMUM_DELAY_MS;
-        }
-        timers[aWIID] = new this.api.SysUtils.Timer(this.updateData.bind(this, aWIID, false, true), aDelay);
-    };
-    app.updateData = function site_updateData(aWIID, manual, force) {
+    app.updateData = function (aWIID, manual, force) {
         this._cancelUpdateTimer(aWIID);
         if (!this.isAuth()) {
-            this.onLogout();
-            this.onUpdate();
+            this._onLogout();
             return;
         }
         if (manual) {
@@ -189,24 +150,61 @@ var module = function (app, common) {
             this.module.update(aWIID, force);
         }
     };
-    app.isAuth = function site_isAuth() {
-        return yauthMgr.isAuth();
+    app.isAuth = function () {
+        return this._authManager.isAuthorized();
     };
-    app.getUserData = function site_getUserData(aWIID, aAction) {
+    app.getUserData = function (aWIID, aAction) {
         return this.module.getUserData(aWIID, aAction);
     };
-    app.cleanData = function site_cleanData(aWIID) {
-        this.module.cleanData(aWIID);
-    };
-    app.onLogin = function site_onLogin() {
-        this.module.configure("user", yauthMgr.userLogin);
-    };
-    app.onLogout = function site_onLogout() {
-        this.cleanData();
-    };
-    app.onUpdate = function site_onUpdate(aWIID) {
+    app.onUpdate = function (aWIID) {
         let notificationObject = aWIID ? JSON.stringify({ wiid: aWIID }) : null;
         common.observerService.notify("throbber", notificationObject);
         common.observerService.notify("display", notificationObject);
+    };
+    app._cleanData = function (aWIID) {
+        this.module.cleanData(aWIID);
+    };
+    app._setUpdateTimer = function (aWIID, aDelay) {
+        this._cancelUpdateTimer(aWIID);
+        if (typeof aDelay == "undefined") {
+            aDelay = MINIMUM_DELAY_MS;
+        }
+        timers[aWIID] = this.api.SysUtils.Timer(this.updateData.bind(this, aWIID, false, true), aDelay);
+    };
+    app._cancelUpdateTimer = function (aWIID) {
+        function cancelTimer(aWIID) {
+            let timer = timers[aWIID];
+            if (timer) {
+                timer.cancel();
+                timers[aWIID] = null;
+            }
+        }
+        if (aWIID) {
+            cancelTimer(aWIID);
+            return;
+        }
+        for (let wiid in timers) {
+            cancelTimer(wiid);
+        }
+    };
+    app._onLogin = function (aDefaultAccountUid) {
+        this.module.configure("user", aDefaultAccountUid);
+        this.updateData();
+    };
+    app._onLogout = function () {
+        this._cleanData();
+        this.onUpdate();
+    };
+    app._onAuthStateChanged = function (aData) {
+        if (!aData.accounts.length) {
+            this._onLogout();
+            return;
+        }
+        this._onLogin(aData.defaultAccount.uid);
+    };
+    app.observe = function (aSubject, aTopic, aData) {
+        if (aTopic === this._authManager.EVENTS.AUTH_STATE_CHANGED) {
+            this._onAuthStateChanged(aData);
+        }
     };
 };

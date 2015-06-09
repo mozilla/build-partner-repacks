@@ -80,5 +80,6 @@ const migrator = {
                 statParam: statParam
             });
         });
+        database.close();
     }
 };

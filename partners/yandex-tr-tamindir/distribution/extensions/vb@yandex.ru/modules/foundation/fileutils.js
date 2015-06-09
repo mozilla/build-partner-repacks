@@ -86,7 +86,7 @@ const fileutils = {
     },
     xmlDocFromFile: function FileUtils_xmlDocFromFile(file, withSystemPrincipal) {
         let inStream = this.openFile(file);
-        let fileURI = netutils.ioService.newFileURI(file);
+        let fileURI = Services.io.newFileURI(file);
         return this.xmlDocFromStream(inStream, fileURI, fileURI, withSystemPrincipal);
     },
     xmlDocFromStream: function FileUtils_xmlDocFromStream(docStream, docURI, baseURI, withSystemPrincipal, charset) {

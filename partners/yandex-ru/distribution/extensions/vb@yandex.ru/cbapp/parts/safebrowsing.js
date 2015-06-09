@@ -6,9 +6,8 @@ const {
     utils: Cu
 } = Components;
 const GLOBAL = this;
-const SBA_API_URL = "http://sba.yandex.net/cp?pver=4.0&client=yaffbookmarks&json=1&url=";
+const SBA_API_URL = "https://sba.yandex.net/cp?pver=4.0&client=yaffbookmarks&json=1&url=";
 const OLDEST_SBA_TIME_SECONDS = 86400 * 7;
-const DB_FILENAME = "fastdial.sqlite";
 const IDLE_DAILY_EVENT = "idle-daily";
 Cu.import("resource://gre/modules/Services.jsm");
 const safebrowsing = {
@@ -16,60 +15,42 @@ const safebrowsing = {
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         this._application = application;
         this._logger = application.getLogger("Safebrowsing");
+        this._unsafe = [];
         Services.obs.addObserver(this, IDLE_DAILY_EVENT, false);
-        this._initDatabase();
+        this.loadData();
+    },
+    loadData: function Safebrowsing_loadData(unsafe) {
+        this._unsafe = unsafe || [];
+    },
+    saveData: function Safebrowsing_saveData(save, options = {}) {
+        save(this._unsafe, options);
     },
     finalize: function Safebrowsing_finalize(doCleanup, callback) {
         Services.obs.removeObserver(this, IDLE_DAILY_EVENT);
-        let dbClosedCallback = function Backup_finalize_dbClosedCallback() {
-            this._database = null;
-            this._application = null;
-            this._logger = null;
-            callback();
-        }.bind(this);
-        if (this._database) {
-            this._database.close(dbClosedCallback);
-            return true;
-        }
-        dbClosedCallback();
+        this._application = null;
+        this._logger = null;
     },
     observe: function Safebrowsing_observe(aSubject, aTopic, aData) {
         switch (aTopic) {
         case IDLE_DAILY_EVENT:
-            this._maintenanceDatabaseOnIdle();
+            this._removeOldEntries();
             break;
         }
     },
     listUnsafeDomains: function Safebrowsing_listUnsafeDomains(callback) {
-        this._database.executeQueryAsync({
-            query: "SELECT domain FROM unsafe_domains",
-            columns: ["domain"],
-            callback: function (rowsData, storageError) {
-                if (storageError) {
-                    return callback(storageError);
-                }
-                callback(null, rowsData.map(row => row.domain));
-            }
-        });
+        callback(null, this._unsafe.map(site => site.host));
     },
     checkUnpinnedDomains: function Safebrowsing_checkUnpinnedDomains(pickupNum, topHistory) {
         let self = this;
-        let domains = {};
-        let totalThumbsNum = this._application.layout.getThumbsNum();
-        this._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
-            if (thumbData.pinned) {
-                return;
-            }
-            let host = this._application.fastdial.getDecodedUrlHost(thumbData.source);
-            if (host) {
-                domains[host] = 1;
-            }
+        let hosts = Object.create(null);
+        let totalThumbsNum = this._application.internalStructure.length;
+        this._application.internalStructure.iterate({ pinned: false }, function (thumb) {
+            hosts[thumb.host] = true;
         }, this);
-        this._checkDomains(Object.keys(domains), function Fastdial__checkUnsafeDomains_onFinished(unsafeDomainsList) {
+        this._checkDomains(Object.keys(hosts), function Fastdial__checkUnsafeDomains_onFinished(unsafeDomainsList) {
             if (unsafeDomainsList.length) {
-                self._application.thumbs.pickupThumbs({ num: ++pickupNum });
+                self._application.pickup.run({ num: ++pickupNum });
             } else {
-                self._application.frontendHelper.mute = false;
                 self._application.fastdial.sendRequest("thumbChanged", self._application.frontendHelper.fullStructure);
                 self._application.syncTopHistory.saveCurrentState(topHistory);
             }
@@ -83,63 +64,48 @@ const safebrowsing = {
         let sbaURL = SBA_API_URL + domains.map(domain => encodeURIComponent(domain)).join(",");
         xhr.open("GET", sbaURL, true);
         xhr.responseType = "json";
-        let onFinished = function Safebrowsing_checkDomains_onFinished() {
-            callback([]);
+        let onFinished = function Safebrowsing_checkDomains_onFinished(hosts = []) {
+            callback(hosts);
         };
         let timer = new sysutils.Timer(function () {
             xhr.abort();
         }, 3000);
-        xhr.addEventListener("load", function () {
+        xhr.addEventListener("load", () => {
             timer.cancel();
             if (!xhr.response) {
-                return onFinished();
+                onFinished();
+                return;
             }
             let domains = [];
-            let unionParts = [];
-            let i = 0;
-            let placeholders = {};
             let now = Math.round(Date.now() / 1000);
-            for (let domain in xhr.response) {
-                if (xhr.response[domain] === "adult") {
-                    unionParts.push("SELECT :domain" + i + " AS domain, :ts" + i + " AS insertTimestamp");
-                    placeholders["domain" + i] = domain;
-                    placeholders["ts" + i] = now;
-                    domains.push(domain);
-                    i += 1;
+            let unsafeHosts = [];
+            for (let host in xhr.response) {
+                if (xhr.response[host] !== "adult") {
+                    continue;
+                }
+                unsafeHosts.push(host);
+                let alreadySaved = this._unsafe.some(site => site.host === host);
+                if (!alreadySaved) {
+                    this._unsafe.push({
+                        host: host,
+                        insertTimestamp: now
+                    });
                 }
             }
-            if (!unionParts.length) {
-                self._logger.trace("No unsafe domains found!");
-                return onFinished();
+            onFinished(unsafeHosts);
+            if (unsafeHosts.length > 0) {
+                this.saveData();
             }
-            self._logger.trace("Unsafe domains found: " + JSON.stringify(xhr.response));
-            self._database.executeQueryAsync({
-                query: "INSERT OR REPLACE INTO unsafe_domains (domain, insertTimestamp) " + unionParts.join(" UNION "),
-                parameters: placeholders,
-                callback: function Safebrowsing_checkDomains_updateDatabase(rowsData, storageError) {
-                    if (storageError) {
-                        throw new Error(storageError);
-                    }
-                    callback(domains);
-                }
-            });
         });
         xhr.addEventListener("error", onFinished, false);
         xhr.addEventListener("abort", onFinished, false);
         xhr.send();
     },
-    _maintenanceDatabaseOnIdle: function Safebrowsing__maintenanceDatabaseOnIdle() {
-        this._database.executeQueryAsync({
-            query: "DELETE FROM unsafe_domains WHERE insertTimestamp < :oldestTime",
-            parameters: { oldestTime: Math.round(Date.now() / 1000) - OLDEST_SBA_TIME_SECONDS }
-        });
+    _removeOldEntries: function Safebrowsing__removeOldEntries() {
+        let oldestTime = Math.round(Date.now() / 1000) - OLDEST_SBA_TIME_SECONDS;
+        this._unsafe = this._unsafe.filter(site => site.insertTimestamp >= oldestTime);
+        this.saveData();
     },
-    _initDatabase: function Fastdial__initDatabase() {
-        let dbFile = this._application.core.rootDir;
-        dbFile.append(DB_FILENAME);
-        this._database = new Database(dbFile);
-    },
-    _database: null,
     _application: null,
     _logger: null
 };

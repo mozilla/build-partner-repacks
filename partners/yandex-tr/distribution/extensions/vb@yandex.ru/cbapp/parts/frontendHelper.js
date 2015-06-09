@@ -32,75 +32,24 @@ const frontendHelper = {
         ]);
         this._logger[level](msg);
     },
-    get mute() {
-        return this._muteMessages;
-    },
-    set mute(value) {
-        this._muteMessages = value;
-    },
     getDataForThumb: function InternalStructure_getFrontendDataForThumb(thumbData) {
-        if (this._muteMessages) {
-            return {};
-        }
-        let output = { pinned: thumbData.pinned || false };
-        if (!thumbData.location) {
-            return output;
-        }
-        output.url = thumbData.source;
-        output.title = thumbData.thumb && thumbData.thumb.title || "";
-        output.isIndexPage = true;
-        try {
-            if (this._application.isYandexHost(thumbData.location.asciiHost)) {
-                thumbData.location.QueryInterface(Ci.nsIURL);
-                output.isIndexPage = thumbData.location.filePath === "/";
-            } else {
-                output.isIndexPage = thumbData.location.path === "/";
-            }
-        } catch (ex) {
-        }
-        if (thumbData.favicon) {
-            let favicon = thumbData.favicon;
-            output.favicon = favicon.url;
-            if (favicon.color) {
-                output.backgroundColor = favicon.color;
-                output.fontColor = this._application.colors.getFontColorByBackgroundColor(favicon.color);
-            }
-        }
-        if (thumbData.background && thumbData.background.url) {
-            output.fontColor = this._application.colors.getFontColorByBackgroundColor(thumbData.background.color);
-            output.backgroundColor = thumbData.background.color;
-            output.backgroundImage = thumbData.background.url;
-        }
-        if (thumbData.screenshot && this._application.screenshots.useScreenshot(thumbData)) {
-            output.screenshot = this._application.screenshots.createScreenshotInstance(thumbData.source).getDataForThumb();
-        }
-        output.statParam = thumbData.thumb.statParam;
-        return output;
+        return thumbData.frontendState;
     },
-    getDataForIndex: function FrontendHelper_getFrontendDataForIndex(index) {
-        let currentThumbsNum = this._application.layout.getThumbsNum();
-        let emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
-        if (this._muteMessages) {
-            return {};
-        }
-        if (emptyLastThumb && index == currentThumbsNum - 1) {
-            return { pinned: true };
-        }
+    _getDatForIndex: function FrontendHelper__getFrontendDataForIndex(index) {
         let thumbData = this._application.internalStructure.getItem(index);
         if (!thumbData) {
-            return {};
+            return null;
         }
         return this.getDataForThumb(thumbData);
     },
     get fullStructure() {
-        let currentThumbsNum = this._application.layout.getThumbsNum();
+        let currentThumbsNum = this._application.internalStructure.length;
         let output = {};
         for (let i = 0; i < currentThumbsNum; i++) {
-            output[i] = this.getDataForIndex(i);
+            output[i] = this._getDatForIndex(i);
         }
         return output;
     },
     _application: null,
-    _logger: null,
-    _muteMessages: true
+    _logger: null
 };

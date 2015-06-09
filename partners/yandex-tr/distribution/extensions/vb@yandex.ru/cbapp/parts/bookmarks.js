@@ -9,17 +9,23 @@ const {
 const GLOBAL = this;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/PlacesUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
 XPCOMUtils.defineLazyServiceGetter(GLOBAL, "LIVEMARKS_SVC", "@mozilla.org/browser/livemark-service;2", "mozIAsyncLivemarks");
 const bookmarks = {
     init: function Bookmarks_init(application) {
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
-        PlacesUtils.bookmarks.addObserver(this._changesObserver, false);
         this._application = application;
         this._logger = application.getLogger("Bookmarks");
+        this._delayInitTimer = new sysutils.Timer(() => {
+            PlacesUtils.bookmarks.addObserver(this._changesObserver, false);
+        }, 5000);
     },
     finalize: function Bookmarks_finalize(doCleanup, callback) {
-        PlacesUtils.bookmarks.removeObserver(this._changesObserver);
+        if (this._delayInitTimer.isRunning) {
+            this._delayInitTimer.cancel();
+        } else {
+            PlacesUtils.bookmarks.removeObserver(this._changesObserver);
+        }
         if (this._bookmarksStateTimer) {
             this._bookmarksStateTimer.cancel();
         }
@@ -353,14 +359,14 @@ const bookmarks = {
         if (this._bookmarksStateTimer) {
             this._bookmarksStateTimer.cancel();
         }
-        let self = this;
         let showBookmarks = this._application.preferences.get("ftabs.showBookmarks");
-        this._bookmarksStateTimer = new sysutils.Timer(function () {
-            if (showBookmarks) {
-                self.requestBranch("", function (bookmarks) {
-                    self._application.fastdial.sendRequest("bookmarksStateChanged", bookmarks);
-                });
-            }
+        if (!showBookmarks) {
+            return;
+        }
+        this._bookmarksStateTimer = new sysutils.Timer(() => {
+            this.requestBranch("", bookmarks => {
+                this._application.fastdial.sendRequest("bookmarksStateChanged", bookmarks);
+            });
         }, 50);
     },
     _changesObserver: {
@@ -438,5 +444,6 @@ const bookmarks = {
     },
     _application: null,
     _logger: null,
-    _bookmarksStateTimer: null
+    _bookmarksStateTimer: null,
+    _delayInitTimer: null
 };

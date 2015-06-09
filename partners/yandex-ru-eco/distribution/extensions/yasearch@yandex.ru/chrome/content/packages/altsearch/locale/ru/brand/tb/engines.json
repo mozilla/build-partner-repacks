@@ -3,25 +3,25 @@
         {
             "id": "google",
             "name": "Google",
-            "query": "http://www.google.com.tr/search?hl=tr&q={searchTerms}",
+            "query": "http://www.google.com.tr/search/?hl=tr&q={searchTerms}",
             "action": 2
         },
         {
             "id": "yandex",
             "name": "Яндекс",
-            "query": "http://yandex.com.tr/yandsearch?clid=1953187-1001&text={searchTerms}",
+            "query": "http://yandex.com.tr/search/?clid=1953187-1001&text={searchTerms}",
             "action": 1
         },
         {
             "id": "bing",
             "name": "Bing",
-            "query": "http://www.bing.com/search?q={searchTerms}",
+            "query": "http://www.bing.com/search/?q={searchTerms}",
             "action": 6
         },
         {
             "id": "yahoo",
             "name": "Yahoo",
-            "query": "http://tr.search.yahoo.com/search?p={searchTerms}&ei=UTF-8",
+            "query": "http://tr.search.yahoo.com/search/?p={searchTerms}&ei=UTF-8",
             "action": 5
         }
     ]

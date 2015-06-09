@@ -11,19 +11,21 @@ const ADDON_INSTALLED_VERSION_PREF_NAME = "mailruStat.sversion";
 const UTILITY_INSTALLED_VERSION_PREF_NAME = "mailruStat.gversion";
 const mailruStat = {
     _application: null,
-    _logger: null,
+    _delayedParseTimer: null,
     _sputnik: { version: null },
     _guard: { version: null },
     init: function mailruStat_init(aApplication) {
         this._application = aApplication;
         aApplication.core.Lib.sysutils.copyProperties(aApplication.core.Lib, GLOBAL);
-        this._logger = aApplication.getLogger("mailruStat");
-        AddonManager.gre_AddonManager.getAddonByID("{37964A3C-4EE8-47b1-8321-34DE2C39BA4D}", this._parseAddon.bind(this));
-        this._parseGuard();
+        this._delayedParseTimer = new sysutils.Timer(() => {
+            AddonManager.gre_AddonManager.getAddonByID("{37964A3C-4EE8-47b1-8321-34DE2C39BA4D}", this._parseAddon.bind(this));
+            this._parseGuard();
+        }, 20000);
     },
     finalize: function mailruStat_finalize() {
+        this._delayedParseTimer.cancel();
+        this._delayedParseTimer = null;
         this._application = null;
-        this._logger = null;
     },
     _parseAddon: function mailruStat__parseAddon(aAddon) {
         if (!aAddon) {
@@ -33,6 +35,9 @@ const mailruStat = {
         this._sputnik.version = aAddon.version;
     },
     _parseGuard: function mailruStat__parseGuard() {
+        if (sysutils.platformInfo.os.name !== "windows") {
+            return;
+        }
         const WinReg = Cu.import("resource://" + this._application.name + "-mod/WinReg.jsm", {}).WinReg;
         let path = "\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Guard.Mail.ru";
         let guardVersion = WinReg.read("HKLM", "Software" + path, "DisplayVersion") || WinReg.read("HKLM", "Software\\Wow6432Node" + path, "DisplayVersion");

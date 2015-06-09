@@ -1,5 +1,6 @@
 "use strict";
 EXPORTED_SYMBOLS.push("misc");
+Cu.import("resource://gre/modules/Services.jsm");
 const misc = {
     getBrowserWindows: function misc_getBrowserWindows() {
         let windows = [];
@@ -30,41 +31,35 @@ const misc = {
             delete this.appWindow;
             return this.appWindow = hiddenWindow;
         },
-        getFrame: function misc_getFrame(aFrameId, aFrameURL) {
+        getFramePromise: function misc_getFramePromise(aFrameId, aFrameURL) {
+            let deferred = promise.defer();
             if (!aFrameURL || typeof aFrameURL != "string") {
-                throw new TypeError("aFrameURL must be a string.");
+                deferred.reject(new TypeError("aFrameURL must be a string."));
+                return deferred.promise;
             }
             let hiddenWindow = this.appWindow;
             if (!hiddenWindow) {
-                return null;
+                deferred.reject();
+                return deferred.promise;
             }
             let hiddenDoc = hiddenWindow.document;
             if (!hiddenDoc) {
-                return null;
+                deferred.reject();
+                return deferred.promise;
             }
-            let url = aFrameURL;
-            let id = aFrameId || btoa(url);
+            let id = aFrameId || btoa(aFrameURL);
             let frameLoader = hiddenDoc.getElementById(id);
             if (!frameLoader) {
                 frameLoader = hiddenDoc.createElement("iframe");
                 frameLoader.setAttribute("id", id);
-                frameLoader.setAttribute("src", url);
+                frameLoader.setAttribute("src", aFrameURL);
                 hiddenDoc.documentElement.appendChild(frameLoader);
-                let contentWindow = frameLoader.contentWindow;
-                if (contentWindow.location != url) {
-                    sysutils.sleep(10000, function _checkLocation() {
-                        return contentWindow.location != url;
-                    });
-                }
-                if (contentWindow.location != url) {
-                    Cu.reportError("Can't get hidden window for \"" + aFrameURL + "\"");
-                    return null;
-                }
-                sysutils.sleep(1000, function _checkReadyState() {
-                    return contentWindow.document.readyState === "complete";
-                });
             }
-            return frameLoader;
+            let contentWindow = frameLoader.contentWindow;
+            sysutils.promiseSleep(10000, () => String(contentWindow.location) === aFrameURL).then(() => {
+                sysutils.promiseSleep(100, () => contentWindow.document.readyState === "complete").then(() => deferred.resolve(frameLoader), () => deferred.reject(new Error("Can't get hidden window for \"" + aFrameURL + "\"")));
+            });
+            return deferred.promise;
         },
         removeFrame: function misc_removeFrame(aFrameId, aFrameURL) {
             if (!aFrameId && !aFrameURL) {
@@ -145,35 +140,98 @@ const misc = {
             throw new CustomErrors.EArgRange("url", "URL", url);
         }
         url = uri.spec;
-        let postData = "postData" in aNavigateData ? aNavigateData.postData : null;
-        let referrer = "referrer" in aNavigateData ? aNavigateData.referrer : null;
-        let loadInBackground = "loadInBackground" in aNavigateData ? aNavigateData.loadInBackground : false;
-        if (typeof loadInBackground !== "boolean") {
-            throw new CustomErrors.EArgRange("loadInBackground", "Boolean", loadInBackground);
-        }
-        if (typeof referrer == "string") {
+        let postData = "postData" in aNavigateData && aNavigateData.postData || null;
+        let referrer = "referrer" in aNavigateData && aNavigateData.referrer || null;
+        if (typeof referrer === "string") {
             try {
-                referrer = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService).newURI(referrer, null, null);
+                referrer = Services.io.newURI(referrer, null, null);
             } catch (e) {
                 referrer = null;
             }
         }
+        let loadInBackground = "loadInBackground" in aNavigateData ? aNavigateData.loadInBackground : false;
+        if (typeof loadInBackground !== "boolean") {
+            throw new CustomErrors.EArgRange("loadInBackground", "Boolean", loadInBackground);
+        }
         let sourceWindow = aNavigateData.sourceWindow || misc.getTopBrowserWindow();
         if (!sourceWindow) {
-            return this.openNewBrowser(url, referrer, postData);
+            return {
+                tab: null,
+                window: this.openNewBrowser(url, referrer, null)
+            };
         }
-        switch (aNavigateData.target) {
-        case "new tab":
-            sourceWindow.gBrowser.loadOneTab(url, referrer, null, postData, loadInBackground);
-            break;
-        case "new window":
-            sourceWindow.openNewWindowWith(url, null, postData, false, referrer);
-            break;
-        default:
-            sourceWindow.gBrowser.loadURI(url, referrer, postData, false);
-            break;
+        if (postData instanceof Ci.nsIMIMEInputStream) {
+            let postDataString = "";
+            try {
+                let size = postData.available();
+                let cvstream = Cc["@mozilla.org/intl/converter-input-stream;1"].createInstance(Ci.nsIConverterInputStream);
+                cvstream.init(postData, "UTF-8", size, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
+                let data = {};
+                cvstream.readString(size, data);
+                postDataString = data.value;
+                cvstream.close();
+            } catch (ex) {
+                Cu.reportError(ex);
+            }
+            postData = postDataString.split("\r\n").pop();
         }
-        return sourceWindow;
+        let tab = null;
+        let window = sourceWindow;
+        if (postData) {
+            switch (aNavigateData.target) {
+            case "new tab":
+            case "new window":
+                tab = sourceWindow.gBrowser.loadOneTab(null, null, null, null, loadInBackground);
+                break;
+            default:
+                tab = sourceWindow.gBrowser.selectedTab;
+                break;
+            }
+            let frameScript = function (url, referrer, postData) {
+                referrer = referrer || null;
+                if (referrer) {
+                    try {
+                        referrer = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService).newURI(referrer, null, null);
+                    } catch (e) {
+                        referrer = null;
+                    }
+                }
+                let stringStream = Components.classes["@mozilla.org/io/string-input-stream;1"].createInstance(Components.interfaces.nsIStringInputStream);
+                stringStream.data = postData;
+                let postStream = Components.classes["@mozilla.org/network/mime-input-stream;1"].createInstance(Components.interfaces.nsIMIMEInputStream);
+                postStream.addHeader("Content-Type", "application/x-www-form-urlencoded");
+                postStream.addContentLength = true;
+                postStream.setData(stringStream);
+                let webNavigation = docShell.QueryInterface(Components.interfaces.nsIWebNavigation);
+                webNavigation.loadURI(url, null, referrer, postStream, null);
+            };
+            let escapeSingleQuotes = str => {
+                return ("'" + (str || "").replace(/'/g, "\\'") + "'").replace(/''/g, "") || "''";
+            };
+            let frameScriptURL = "data:application/javascript;charset=utf-8," + encodeURIComponent("(" + frameScript.toSource() + ")(" + [
+                url,
+                referrer && referrer.spec,
+                postData
+            ].map(escapeSingleQuotes) + ")");
+            tab.linkedBrowser.messageManager.loadFrameScript(frameScriptURL, false);
+        } else {
+            switch (aNavigateData.target) {
+            case "new tab":
+                tab = sourceWindow.gBrowser.loadOneTab(url, referrer, null, null, loadInBackground);
+                break;
+            case "new window":
+                window = sourceWindow.openNewWindowWith(url, null, null, false, referrer);
+                break;
+            default:
+                sourceWindow.gBrowser.loadURI(url, referrer, null, false);
+                tab = sourceWindow.gBrowser.selectedTab;
+                break;
+            }
+        }
+        return {
+            tab: tab,
+            window: window
+        };
     },
     openNewBrowser: function misc_openNewBrowser(url, referrer, postData) {
         let sa = Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
@@ -196,6 +254,9 @@ const misc = {
         } catch (e) {
             return null;
         }
+    },
+    get mostRecentBrowserWindow() {
+        return Services.wm.getMostRecentWindow("navigator:browser");
     },
     mapKeysToArray: function misc_mapKeysToArray(map, filter) {
         let arr = Object.keys(map);
@@ -242,39 +303,75 @@ const misc = {
             falseList
         ];
     },
-    get CryptoHash() {
-        let CryptoHash = {
-            getFromString: function CryptoHash_getFromString(aString, aAlgorithm) {
-                return this._binaryToHex(this.getBinaryFromString(aString, aAlgorithm));
+    crypto: function () {
+        const UTF8_CONV = Cc["@mozilla.org/intl/scriptableunicodeconverter"].createInstance(Ci.nsIScriptableUnicodeConverter);
+        UTF8_CONV.charset = "UTF-8";
+        const DIGEST_TYPE_MAP = {
+            hex: function (hash) {
+                return Hash.binaryToHex(this.binary(hash));
             },
-            getBinaryFromString: function CryptoHash_getBinaryFromString(aString, aAlgorithm) {
-                let hash = this._createHash(aAlgorithm);
-                let stream = strutils.utf8Converter.convertToInputStream(aString);
-                this._updateHashFromStream(hash, stream);
+            binary: function (hash) {
                 return hash.finish(false);
             },
-            _createHash: function CryptoHash__createHash(aAlgorithm) {
-                let hash = Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash);
-                hash.initWithString(aAlgorithm);
-                return hash;
-            },
-            _binaryToHex: function CryptoHash__binaryToHex(aInput) {
-                let hex = [];
-                for (let i in aInput) {
-                    hex.push(("0" + aInput.charCodeAt(i).toString(16)).slice(-2));
-                }
-                return hex.join("");
-            },
-            _updateHashFromStream: function CryptoHash__updateHashFromStream(aHash, aStream) {
-                let streamSize = aStream.available();
-                if (streamSize) {
-                    aHash.updateFromStream(aStream, streamSize);
-                }
+            base64: function (hash) {
+                return hash.finish(true);
             }
         };
-        delete this.CryptoHash;
-        return this.CryptoHash = CryptoHash;
-    },
+        function Hash(algorithm) {
+            this._hash = Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash);
+            this._hash.initWithString(algorithm.toUpperCase());
+        }
+        Hash.prototype.updateFromBuffer = function (data, size) {
+            size = size || data.byteLength;
+            if (size) {
+                this._hash.update(data, size);
+            }
+            return this;
+        };
+        Hash.prototype.updateFromStream = function (stream, size) {
+            size = size || stream.available();
+            if (size) {
+                this._hash.updateFromStream(stream, size);
+            }
+            return this;
+        };
+        Hash.prototype.update = function (data, encoding) {
+            if (encoding === "binary") {
+                let buf = Hash.binaryToBuffer(data);
+                return this.updateFromBuffer(buf);
+            }
+            let stream = UTF8_CONV.convertToInputStream(data);
+            return this.updateFromStream(stream);
+        };
+        Hash.prototype.digest = function (type) {
+            return DIGEST_TYPE_MAP[type.toLowerCase()](this._hash);
+        };
+        Hash.binaryToBuffer = function (binStr) {
+            let i = binStr.length;
+            let uint = new Uint8Array(i);
+            while (i--) {
+                uint[i] = binStr.charCodeAt(i);
+            }
+            return uint.buffer;
+        };
+        Hash.binaryToHex = function (binStr) {
+            let hexStr = "";
+            let code;
+            for (var i = 0, ln = binStr.length; i < ln; i++) {
+                code = binStr.charCodeAt(i);
+                if (code < 16) {
+                    hexStr += "0";
+                }
+                hexStr += code.toString(16);
+            }
+            return hexStr;
+        };
+        return {
+            createHash: function (algorithm) {
+                return new Hash(algorithm);
+            }
+        };
+    }(),
     parseLocale: function misc_parseLocale(localeString) {
         let components = localeString.match(this._localePattern);
         if (components) {

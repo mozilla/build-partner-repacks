@@ -28,6 +28,11 @@
         <control type="custom"/>
     </f:setting>
 
+    <f:setting default="true" name="allAccountsCounter" scope="widget">
+        <control fx-value-type="boolean" type="custom"/>
+        
+    </f:setting>
+
     <modules>
         <module browser="firefox" file="/native/fx/mail/module.jsm"/>
     </modules>

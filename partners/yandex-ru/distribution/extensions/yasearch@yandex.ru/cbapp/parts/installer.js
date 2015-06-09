@@ -19,21 +19,16 @@ const installer = {
         this._application = barApp = application;
         this._preferences = application.preferences;
         this._logger = application.getLogger("Installer");
-        this._brandPrefs = new Preferences(application.preferencesBranch + "branding.");
         branding = application.branding;
         if (!this.checkLicenseAccepted()) {
             throw new Error("License agreement rejected");
         }
-        this._loadDefaultBrowserPreferences();
         Services.obs.addObserver(this, "sessionstore-windows-restored", false);
         let addonManagerInfo = barApp.addonManager.info;
         if (!this._application.preferences.get("general.install.time")) {
             this._application.preferences.set("general.install.time", Math.round(Date.now() / 1000));
         }
         if (addonManagerInfo.addonVersionChanged && addonManagerInfo.addonUpgraded) {
-            if (this.isYandexURL(Preferences.get("keyword.URL", ""))) {
-                Preferences.reset("keyword.URL");
-            }
             if (!addonManagerInfo.isFreshAddonInstall) {
                 this._onAddonUpdated();
             }
@@ -99,42 +94,24 @@ const installer = {
         }
         return aDefault;
     },
-    _brandPrefs: null,
     checkLicenseAccepted: function Installer_checkLicenseAccepted() {
         if (barApp.addonManager.isAddonUninstalling) {
             return false;
         }
-        const acceptedPrefName = barApp.name + ".license.accepted";
-        if (!Preferences.get(acceptedPrefName, false)) {
-            let sendUsageStat = this._showOfferWindow();
-            if (sendUsageStat !== null) {
-                this._setStatUsageSend(sendUsageStat);
-            } else if (!this.setupData.hiddenWizard) {
+        if (!this._application.preferences.get("license.accepted", false)) {
+            if (!this.setupData.hiddenWizard) {
                 try {
                     let accepted = this._showLicenseWindow();
                     if (!accepted) {
-                        this._uninstallAddonOnLicenseRefuse();
                         return false;
                     }
                 } catch (e) {
                     Cu.reportError(e);
                 }
             }
-            Preferences.set(acceptedPrefName, true);
-            try {
-                Services.prefs.savePrefFile(null);
-            } catch (e) {
-                this._logger.error("Could not write prefs file. " + e);
-            }
+            this._application.preferences.set("license.accepted", true);
             this._onAddonInstall();
         }
-        new sysutils.Timer(function () {
-            let selectedEngineName = this._getLocalizedPref("browser.search.selectedEngine", null);
-            let defaultEngineName = this._getLocalizedPref("browser.search.defaultenginename", null);
-            if ((!selectedEngineName || /^chrome:/.test(selectedEngineName)) && defaultEngineName) {
-                Preferences.set("browser.search.selectedEngine", defaultEngineName);
-            }
-        }.bind(this), 2 * 60 * 1000);
         if (this._application.core.CONFIG.APP.TYPE === "barff") {
             this._removePromoFile();
         }
@@ -329,7 +306,7 @@ const installer = {
     },
     _showWelcomePageOnStartup: function Installer__showWelcomePageOnStartup() {
         this._setupWelcomePageObjectProvider();
-        let wpPrefs = new Preferences(barApp.name + ".welcomepage.");
+        let wpPrefs = new Preferences(this._application.preferencesBranch + "welcomepage.");
         if (wpPrefs.get("dontshow", true)) {
             wpPrefs.reset("dontshow");
             return;
@@ -444,9 +421,6 @@ const installer = {
             this._setBrowserHomePage(setupData.HomePage.url);
         }
         if (setupData.DefaultSearch.checked) {
-            Preferences.reset("keyword.URL");
-        }
-        if (setupData.DefaultSearch.checked) {
             this._writeQuickSearches();
         }
         let dataForDistribution = this._getDataForDistribution();
@@ -458,16 +432,7 @@ const installer = {
             if (!setupData.hiddenWizard && setupData.UsageStat.display) {
                 this._setBarNavigRequests("common", { statsend: usageStatChecked ? 1 : 0 });
             }
-            if (!usageStatChecked && setupData.hiddenWizard && this._application.core.CONFIG.APP.TYPE == "vbff") {
-                usageStatChecked = Preferences.get("extensions.yasearch@yandex.ru.stat.usage.send", false);
-            }
-            this._application.preferences.set("stat.usage.send", usageStatChecked);
-        }
-        if (setupData.UsageStat.multipack && this._application.core.CONFIG.APP.TYPE == "barff") {
-            let vbPrefName = "extensions.vb@yandex.ru.stat.usage.send";
-            if (!Preferences.has(vbPrefName)) {
-                Preferences.set(vbPrefName, setupData.UsageStat.checked);
-            }
+            this._application.statistics.sendUsageStat = usageStatChecked;
         }
         this._setPersonasTheme();
     },
@@ -696,7 +661,7 @@ const installer = {
                     continue;
                 }
                 const smartboxProtoID = "http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox";
-                let smartboxPrefName = "yasearch.native_comps." + smartboxProtoID + ".all.settings.searchName";
+                let smartboxPrefName = "extensions.yasearch@yandex.ru.native_comps." + smartboxProtoID + ".all.settings.searchName";
                 if (Preferences.has(smartboxPrefName)) {
                     Preferences.set(smartboxPrefName, shortName);
                 }
@@ -879,65 +844,6 @@ const installer = {
         }
         this._application.addonStatus.logAddonEvents(flags);
     },
-    _uninstallAddonOnLicenseRefuse: function Installer__uninstallAddonOnLicenseRefuse() {
-        let addonsToUninstall = [barApp.addonManager.addonId];
-        if (this.setupData.UsageStat.multipack && this._application.core.CONFIG.APP.TYPE == "barff") {
-            addonsToUninstall.push("vb@yandex.ru");
-        }
-        AddonManager.uninstallAddonsByIDs(addonsToUninstall, true);
-    },
-    _showOfferWindow: function Installer__showOfferWindow() {
-        if (this._application.core.CONFIG.APP.TYPE !== "barff") {
-            return null;
-        }
-        let statUsageSend = this._application.preferences.get("stat.usage.send", false);
-        if (statUsageSend) {
-            return null;
-        }
-        let promoFile = this._promoFile;
-        if (!promoFile) {
-            return null;
-        }
-        let promoFileURI = Services.io.newFileURI(promoFile);
-        let windowURL = "chrome://" + barApp.name + "/content/dialogs/postinstall-offer/dialog.xul";
-        let sendUsageStat = { checked: false };
-        let framesData = {
-            license: branding.brandPackage.resolvePath("/license/fx/license.xhtml"),
-            confidential: branding.brandPackage.resolvePath("/license/fx/confidential.xhtml"),
-            apache: branding.brandPackage.resolvePath("/license/fx/sublicenses/apache.xhtml")
-        };
-        let args = [
-            promoFileURI.spec,
-            framesData,
-            sendUsageStat
-        ];
-        args.wrappedJSObject = args;
-        let result = null;
-        try {
-            let setupWin = Services.ww.openWindow(null, windowURL, null, "centerscreen,modal", args);
-            result = sendUsageStat.checked;
-        } catch (e) {
-            Cu.reportError(e);
-        }
-        this._setBarNavigRequests("common", { statsend: result ? 1 : 0 });
-        const WinReg = Cu.import("resource://" + this._application.name + "-mod/WinReg.jsm", {}).WinReg;
-        let allowSYSKeyValue = WinReg.read("HKCU", "Software\\AppDataLow\\Software\\Yandex\\Toolbar", "AllowSYS") || WinReg.read("HKCU", "Software\\Yandex\\Toolbar", "AllowSYS");
-        if (allowSYSKeyValue === 1) {
-            this.setupData.DefaultSearch.checked = true;
-        }
-        let allowSYHKeyValue = WinReg.read("HKCU", "Software\\AppDataLow\\Software\\Yandex\\Toolbar", "AllowSYH") || WinReg.read("HKCU", "Software\\Yandex\\Toolbar", "AllowSYH");
-        if (allowSYHKeyValue === 1) {
-            this.setupData.HomePage.checked = true;
-        }
-        return result;
-    },
-    _setStatUsageSend: function Installer__setStatUsageSend(aEnable) {
-        this._application.preferences.set("stat.usage.send", aEnable);
-        this._application.preferences.set("distr.statChosen", true);
-        if (this._application.installer.setupData.UsageStat.multipack && this._application.core.CONFIG.APP.TYPE == "barff") {
-            this._application.core.Lib.Preferences.set("extensions.vb@yandex.ru.stat.usage.send", aEnable);
-        }
-    },
     _setBarNavigRequests: function Installer__setBarNavigRequests(aType, aData) {
         let requests = this._application.preferences.get("stat.usage.requests", "{}");
         try {
@@ -978,7 +884,7 @@ const installer = {
         let addonFS = this._application.addonFS;
         try {
             let dataStream = addonFS.getStream("defaults/personas-skin/data.json");
-            lwtData = JSON.parse(fileutils.readStringFromStream());
+            lwtData = JSON.parse(fileutils.readStringFromStream(dataStream));
         } catch (e) {
         }
         if (!(lwtData && lwtData.id)) {
@@ -1019,28 +925,6 @@ const installer = {
         let lwtManager = tempScope.LightweightThemeManager;
         let currentTheme = lwtManager.currentTheme;
         lwtManager.setLocalTheme(lwtData);
-    },
-    _loadDefaultBrowserPreferences: function Installer__loadDefaultBrowserPreferences() {
-        if (!branding.getYandexFeatureState("safe-browsing")) {
-            return;
-        }
-        let loadPrefs = function loadPrefs(path) {
-            let prefsString;
-            try {
-                prefsString = fileutils.readStringFromStream(this._application.addonFS.getStream("defaults/dynamic-preferences/" + path));
-            } catch (e) {
-            }
-            if (prefsString) {
-                this._application.preferences.loadFromString(prefsString);
-            }
-        }.bind(this);
-        loadPrefs("safebrowsing.js");
-        loadPrefs("locale/" + this._application.locale.language + "/safebrowsing.js");
-        loadPrefs("brand/" + branding.brandID + "/safebrowsing.js");
-        const sbPrefsPrefix = this._application.preferencesBranch + "safebrowsing.";
-        Preferences.reset(sbPrefsPrefix + "installed");
-        Preferences.reset(sbPrefsPrefix + "installed2");
-        Preferences.reset(sbPrefsPrefix + "installed.version");
     },
     _revertChangedPreferencesOnDisabling: function Installer__revertChangedPreferencesOnDisabling() {
         this._revertChangedPreferences();

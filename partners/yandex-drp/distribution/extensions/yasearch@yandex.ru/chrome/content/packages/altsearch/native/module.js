@@ -43,10 +43,8 @@ const URIHelper = {
 const core = {
     init: function AltSearch_init(api) {
         this._api = api;
-        branding.init();
     },
     finalize: function AltSearch_finalize() {
-        branding.finalize();
         this._api = null;
     },
     initURLBarItem: function AltSearch_initURLBarItem(itemElement, itemClass) {
@@ -65,7 +63,7 @@ const core = {
         return searchExtractor.getFromURI(aURI);
     },
     get searchEnginesInfo() {
-        return this._searchEnginesInfo || (this._searchEnginesInfo = branding.brandingData.engines);
+        return this._brandingData.engines;
     },
     getPageInputName: function AltSearch_getPageInputName(aURI) {
         let [
@@ -86,11 +84,22 @@ const core = {
     getEngineData: function AltSearch_getEngineData(aEngineId, aSearchString) {
         let engineData = this.searchEnginesInfo.filter(engine => engine.id == aEngineId)[0];
         let terms = URIHelper.convertQueryForURI(aSearchString || "", "utf-8");
-        engineData.prepearedQuery = branding.expandBrandTemplates(engineData.query, { searchTerms: terms });
+        engineData.prepearedQuery = this._api.Environment.branding.expandBrandTemplates(engineData.query, { searchTerms: terms });
         return engineData;
     },
     _api: null,
-    _searchEnginesInfo: null
+    get _brandingData() {
+        delete this._brandingData;
+        let brandingData;
+        try {
+            brandingData = JSON.parse(this._api.Package.readTextFile("/engines.json"));
+        } catch (e) {
+            this._api.logger.error(e);
+            brandingData = { engines: [] };
+        }
+        this._brandingData = { engines: brandingData.engines };
+        return this._brandingData;
+    }
 };
 function AltSearchUBItem(aItemElement, aItemClass, aModule) {
     this._itemElement = aItemElement;
@@ -104,54 +113,6 @@ AltSearchUBItem.prototype = {
         this._itemElement.module = null;
         this._itemElement = null;
     }
-};
-const PARTNER_PACK_COMPID = "ru.yandex.custombar.branding";
-const PARTNER_PACK_SVCNAME = "package";
-const branding = {
-    get API() {
-        return core.API;
-    },
-    init: function Branding_init() {
-        this._brandingService = this.API.Services.obtainService(PARTNER_PACK_COMPID, PARTNER_PACK_SVCNAME, this);
-    },
-    finalize: function Branding_finalize() {
-        this.API.Services.releaseService(PARTNER_PACK_COMPID, PARTNER_PACK_SVCNAME, this);
-        this._brandingService = null;
-    },
-    observeServiceEvent: function Branding_observeServiceEvent(aProviderID, aServiceName, aTopic, aData) {
-        if (aProviderID != PARTNER_PACK_COMPID || aServiceName != PARTNER_PACK_SVCNAME) {
-            return;
-        }
-        switch (aTopic) {
-        case "registered":
-            this._brandingService = aData;
-            break;
-        case "package updated":
-            this._brandingData = null;
-            this.API.logger.debug("Package updated");
-            break;
-        default:
-            break;
-        }
-    },
-    get brandingData() {
-        if (this._brandingData === null) {
-            const IOService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
-            let uri = IOService.newURI(this.API.Package.resolvePath("/engines.json"), null, null);
-            let channel = IOService.newChannelFromURI(uri);
-            let endigesData = JSON.parse(this.API.StrUtils.readStringFromStream(channel.open()));
-            this._brandingData = { engines: endigesData.engines };
-        }
-        return this._brandingData;
-    },
-    expandBrandTemplates: function Branding_expandBrandTemplates(aString, aParams) {
-        return this._brandingService.expandBrandTemplates(aString, aParams);
-    },
-    expandBrandTemplatesEscape: function Branding_expandBrandTemplatesEscape(aString, aParams) {
-        return this._brandingService.expandBrandTemplatesEscape(aString, aParams);
-    },
-    _brandingService: null,
-    _brandingData: null
 };
 const searchExtractor = {
     getFromURI: function searchExtractor_getFromURI(aURI) {

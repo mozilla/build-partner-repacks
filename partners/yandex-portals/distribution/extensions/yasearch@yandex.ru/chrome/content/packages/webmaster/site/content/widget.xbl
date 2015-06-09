@@ -186,7 +186,7 @@
                 if (delay < 0) {
                     delay = 0;
                 }
-                this._throbberTimer = new this.application.api.SysUtils.Timer(function () {
+                this._throbberTimer = this.application.api.SysUtils.Timer(function () {
                     this._throbberTimer = null;
                     this._lastThrobberTime = null;
                     this._button.setAttribute("throbber", false);

@@ -11,7 +11,6 @@
             <stylesheet src="/native/fx/translator/css/balloon.css"/>
         </resources>
 
-
         <content>
             <xul:vbox anonid="outer-container"><xul:hbox class="helper top"/><html:div class="scroll-box"><html:div class="scroll-box_box"><html:div anonid="inner-container" class="scroll-box_content"><html:div class="border"><html:div class="slovari-icon"><html:a href="#">&translate.linklabel;</html:a><html:div/></html:div><html:table cellspacing="0"><html:tr><html:td class="translations"/></html:tr></html:table></html:div><html:div class="scroll-box_bar"><html:div class="scroll-box_bardrag"><html:div class="scroll-box_bardragtop"/><html:div class="scroll-box_bardragbottom"/></html:div></html:div></html:div></html:div></html:div><html:div anonid="user-action-panel" class="user-action-panel"><html:div class="helper"/><html:div class="clearfix"><html:div class="langs"/><html:div class="settings"/></html:div></html:div><xul:hbox class="helper bottom"/></xul:vbox></content>
 
@@ -25,22 +24,22 @@
             <field name="_mouseOver">false</field>
             <field name="_scrollBarMouseDowned">false</field>
 
-            <field name="_hideEvents">["mouseout"]</field>
+            <field name="_hideEvents">['mouseout']</field>
 
-            <field name="_translations">document.getAnonymousElementByAttribute(this, "class", "translations")</field>
-            <field name="_border">document.getAnonymousElementByAttribute(this, "class", "border")</field>
-            <field name="_langs">document.getAnonymousElementByAttribute(this, "class", "langs")</field>
-            <field name="_settingsIcon">document.getAnonymousElementByAttribute(this, "class", "settings")</field>
-            <field name="_slovari">document.getAnonymousElementByAttribute(this, "class", "slovari-icon")</field>
+            <field name="_translations">document.getAnonymousElementByAttribute(this, 'class', 'translations')</field>
+            <field name="_border">document.getAnonymousElementByAttribute(this, 'class', 'border')</field>
+            <field name="_langs">document.getAnonymousElementByAttribute(this, 'class', 'langs')</field>
+            <field name="_settingsIcon">document.getAnonymousElementByAttribute(this, 'class', 'settings')</field>
+            <field name="_slovari">document.getAnonymousElementByAttribute(this, 'class', 'slovari-icon')</field>
 
-            <field name="_box">document.getAnonymousElementByAttribute(this, "class", "scroll-box_box")</field>
-            <field name="_boxParent">document.getAnonymousElementByAttribute(this, "class", "scroll-box")</field>
-            <field name="_scrollbar">document.getAnonymousElementByAttribute(this, "class", "scroll-box_bar")</field>
-            <field name="_scrollbardrag">document.getAnonymousElementByAttribute(this, "class", "scroll-box_bardrag")</field>
+            <field name="_box">document.getAnonymousElementByAttribute(this, 'class', 'scroll-box_box')</field>
+            <field name="_boxParent">document.getAnonymousElementByAttribute(this, 'class', 'scroll-box')</field>
+            <field name="_scrollbar">document.getAnonymousElementByAttribute(this, 'class', 'scroll-box_bar')</field>
+            <field name="_scrollbardrag">document.getAnonymousElementByAttribute(this, 'class', 'scroll-box_bardrag')</field>
 
-            <field name="_translateContainer">document.getAnonymousElementByAttribute(this, "anonid", "inner-container")</field>
-            <field name="_translateOuterContainer">document.getAnonymousElementByAttribute(this, "anonid", "outer-container")</field>
-            <field name="_userPanel">document.getAnonymousElementByAttribute(this, "anonid", "user-action-panel")</field>
+            <field name="_translateContainer">document.getAnonymousElementByAttribute(this, 'anonid', 'inner-container')</field>
+            <field name="_translateOuterContainer">document.getAnonymousElementByAttribute(this, 'anonid', 'outer-container')</field>
+            <field name="_userPanel">document.getAnonymousElementByAttribute(this, 'anonid', 'user-action-panel')</field>
 
             <field name="_translationData">{}</field>
             <field name="_logger">this.tooltipController.module.API.logger</field>
@@ -48,7 +47,6 @@
             <field name="_wasShowed">false</field>
 
             <property name="tooltipController" onget="return this._tooltipController;" onset="this._tooltipController = val;"/>
-
 
             <property name="langs">
                 <setter><![CDATA[    const kHTMLNS = "http://www.w3.org/1999/xhtml";
@@ -72,10 +70,7 @@
             </property>
 
             <property name="pageZoom">
-                <setter><![CDATA[    if (val < 1) {
-        val = 1;
-    }
-    this.style.fontSize = val * 100 + "%";]]></setter>
+                <setter><![CDATA[    this.style.fontSize = Math.max(1, val) * 100 + "%";]]></setter>
             </property>
 
             <property name="_screenMargin" readonly="true">
@@ -83,31 +78,24 @@
             </property>
 
             <property name="_contentWidth" readonly="true">
-                <getter><![CDATA[    let isInt = Number.isInteger ? Number.isInteger : this._isInteger;
-    let st = window.getComputedStyle(this._translateContainer, null);
-    let stWidth = st.getPropertyValue("width");
+                <getter><![CDATA[    let containerStyle = window.getComputedStyle(this._translateContainer, null);
+    let stWidth = containerStyle.getPropertyValue("width");
     let width = this._translateContainer.offsetWidth;
-    if (!isInt(stWidth)) {
+    if (!Number.isInteger(stWidth)) {
         width++;
     }
     return width;]]></getter>
             </property>
 
             <property name="_contentHeight" readonly="true">
-                <getter><![CDATA[    let isInt = Number.isInteger ? Number.isInteger : this._isInteger;
-    let st = window.getComputedStyle(this._translateContainer, null);
-    let stHeight = st.getPropertyValue("height");
+                <getter><![CDATA[    let containerStyle = window.getComputedStyle(this._translateContainer, null);
+    let stHeight = containerStyle.getPropertyValue("height");
     let height = this._translateContainer.offsetHeight;
-    if (!isInt(stHeight)) {
+    if (!Number.isInteger(stHeight)) {
         height++;
     }
     return height;]]></getter>
             </property>
-
-            <method name="_isInteger">
-                <parameter name="nVal"/>
-                <body><![CDATA[    return typeof nVal === "number" && isFinite(nVal) && nVal > -9007199254740992 && nVal < 9007199254740992 && Math.floor(nVal) === nVal;]]></body>
-            </method>
 
             <method name="_updateScrollBar">
                 <body><![CDATA[    let viewPortHeight = this._boxParent.offsetHeight;
@@ -120,50 +108,44 @@
         let scrollTop = this._box.scrollTop;
         this._scrollbar.style.height = scrollBarHeight + "px";
         this._scrollbar.style.top = scrollTop + scrollMarginTop + "px";
-        var hDrag = Math.floor(scrollBarHeight * scrollBarHeight / contentHeight);
-        var tDrag = Math.floor(scrollTop * (scrollBarHeight - hDrag) / (contentHeight - viewPortHeight));
+        let hDrag = Math.floor(scrollBarHeight * scrollBarHeight / contentHeight);
+        let tDrag = Math.floor(scrollTop * (scrollBarHeight - hDrag) / (contentHeight - viewPortHeight));
         this._scrollbardrag.style.height = Math.round(hDrag) + "px";
         this._scrollbardrag.style.top = Math.round(tDrag) + "px";
         this._scrollbar.style.display = "block";
     } else {
         this._scrollbar.style.display = "none";
     }
-    if (typeof this._onUpdateScrollBar == "function") {
+    if (typeof this._onUpdateScrollBar === "function") {
         this._onUpdateScrollBar(this._scrollBarVisible);
     }]]></body>
             </method>
 
             <method name="_onUpdateScrollBar">
                 <parameter name="aIsScrlVisible"/>
-                <parameter name="aScrldFraction"/>
                 <body><![CDATA[    let className = "scrollable";
-    if (!aIsScrlVisible) {
-        this._box.classList.remove(className);
-    } else {
+    if (aIsScrlVisible) {
         this._box.classList.add(className);
+    } else {
+        this._box.classList.remove(className);
     }]]></body>
             </method>
 
             <method name="_fixSize">
-                <body><![CDATA[    let bo = this.boxObject;
-    let openAtY = this.openAtY;
-    let screenHeight = window.screen.height;
+                <body><![CDATA[    let screenHeight = window.screen.height;
     let contentWidth = this._contentWidth;
     let contentHeight = this._contentHeight;
     let boxStyle = window.getComputedStyle(this._translateOuterContainer, null);
     let containerHeightWithoutPadding = parseFloat(boxStyle.getPropertyValue("height"), 10);
     let containerPadding = Math.ceil(Math.abs(this._translateOuterContainer.boxObject.height - containerHeightWithoutPadding));
     let exceptContentSpace = containerPadding + this._langs.offsetHeight;
+    let openAtY = this.openAtY;
     let availSpace = Math.max(openAtY, screenHeight - openAtY);
     if (this._lastBottom > this.openAtY) {
         availSpace = this._lastBottom;
     }
     availSpace -= this._screenMargin + exceptContentSpace;
-    if (contentHeight > availSpace) {
-        this._boxParent.style.height = availSpace + "px";
-    } else {
-        this._boxParent.style.height = contentHeight + "px";
-    }
+    this._boxParent.style.height = Math.min(availSpace, contentHeight) + "px";
     this._translateContainer.style.width = contentWidth + "px";
     this._boxParent.style.width = contentWidth + "px";
     this._box.style.width = contentWidth * 1.3 + "px";
@@ -186,11 +168,7 @@
         return;
     }
     let newY = bo.screenY - (currentBottom - this._lastBottom);
-    if (newY > 0) {
-        this.moveTo(bo.screenX, newY);
-    } else {
-        this.moveTo(bo.screenX, 0);
-    }]]></body>
+    this.moveTo(bo.screenX, Math.max(0, newY));]]></body>
             </method>
 
             <method name="showTranslationData">
@@ -206,11 +184,11 @@
         translatedWord.appendChild(sourceWord);
         translation.parts.forEach(function (partName) {
             let destinationWords = document.createElementNS(kHTMLNS, "li");
-            let destinationType = document.createElementNS(kHTMLNS, "span");
             destinationWords.textContent = translation.part[partName].join(", ");
+            translatedWord.appendChild(destinationWords);
+            let destinationType = document.createElementNS(kHTMLNS, "span");
             destinationType.textContent = partName;
             destinationWords.appendChild(destinationType);
-            translatedWord.appendChild(destinationWords);
         });
         translationItem.appendChild(translatedWord);
         translationsContainer.appendChild(translationItem);
@@ -253,17 +231,8 @@
                 <body><![CDATA[    this.tooltipController.hideBalloon();
     this.tooltipController.module.API.Controls.navigateBrowser({
         url: moreURL,
-        target: "new tab",
-        action: 630
+        target: "new tab"
     });]]></body>
-            </method>
-
-            <method name="_checkForNewNode">
-                <parameter name="self"/>
-                <parameter name="aRangeParent"/>
-                <parameter name="aRangeOffset"/>
-                <body><![CDATA[    self._clearNodeCheckTimeout();
-    self.tooltipController.checkForNewNode(aRangeParent, aRangeOffset);]]></body>
             </method>
 
             <method name="handleEvent">
@@ -361,7 +330,6 @@
             this._placeBalloon();
             this._updateScrollBar();
             this.triggerRedraw();
-            return;
         }
         return;
     }
@@ -370,11 +338,11 @@
             return;
         }
         let yd = event.screenY;
-        let w = this.ownerDocument.defaultView;
+        let win = this.ownerDocument.defaultView;
         let bo = this._scrollbardrag.getBoundingClientRect();
-        let scrolld = this._box.scrollTop;
-        let dragTop = bo.top + w.mozInnerScreenY;
+        let dragTop = bo.top + win.mozInnerScreenY;
         let hDrag = bo.height;
+        let scrolld = this._box.scrollTop;
         if (yd < dragTop) {
             this._box.scrollTop = scrolld - 300;
         } else if (yd > dragTop + hDrag) {

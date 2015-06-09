@@ -1,114 +1,336 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<verdict><langs>
-    <dir>
-        <from>ru</from>
-        <to>en</to>
-    </dir>
-    <dir>
-        <from>ru</from>
-        <to>fr</to>
-    </dir>
-    <dir>
-        <from>ru</from>
-        <to>de</to>
-    </dir>
-    <dir>
-        <from>ru</from>
-        <to>es</to>
-    </dir>
-    <dir>
-        <from>ru</from>
-        <to>tr</to>
-    </dir>
-    <dir>
-        <from>en</from>
-        <to>ru</to>
-    </dir>
-    <dir>
-        <from>fr</from>
-        <to>ru</to>
-    </dir>
-    <dir>
-        <from>de</from>
-        <to>ru</to>
-    </dir>
-    <dir>
-        <from>es</from>
-        <to>ru</to>
-    </dir>
-    <dir>
-        <from>it</from>
-        <to>ru</to>
-    </dir>
-    <dir>
-        <from>tr</from>
-        <to>ru</to>
-    </dir>
-    <dir>
-        <from>en</from>
-        <to>tr</to>
-    </dir>
-    <dir>
-        <from>de</from>
-        <to>tr</to>
-    </dir>
-    <dir>
-        <from>tr</from>
-        <to>en</to>
-    </dir>
-    <dir>
-        <from>tr</from>
-        <to>de</to>
-    </dir>
-</langs><langtranslate><to id="ru"><lang id="cs"><short>(Чеш.)</short><full>Чешский</full></lang><lang id="de"><short>(Нем.)</short><full>Немецкий</full></lang><lang id="en"><short>(Англ.)</short><full>Английский</full></lang><lang id="es"><short>(Исп.)</short><full>Испанский</full></lang><lang id="fr"><short>(Фр.)</short><full>Французский</full></lang><lang id="it"><short>(Ит.)</short><full>Итальянский</full></lang><lang id="pl"><short>(Пол.)</short><full>Польский</full></lang><lang id="ru"><short>(Рус.)</short><full>Русский</full></lang><lang id="tr"><short>(Тур.)</short><full>Турецкий</full></lang></to><to id="en"><lang id="cs"><short>(Cze.)</short><full>Czech</full></lang><lang id="de"><short>(Ger.)</short><full>German</full></lang><lang id="en"><short>(Eng.)</short><full>English</full></lang><lang id="es"><short>(Spa.)</short><full>Spanish</full></lang><lang id="fr"><short>(Fre.)</short><full>French</full></lang><lang id="it"><short>(Ita.)</short><full>Italian</full></lang><lang id="pl"><short>(Pol.)</short><full>Polish</full></lang><lang id="ru"><short>(Rus.)</short><full>Russian</full></lang><lang id="tr"><short>(Tur.)</short><full>Turkish</full></lang></to><to id="be"><lang id="cs"><short>(Чэш.)</short><full>Чэшская</full></lang><lang id="de"><short>(Ням.)</short><full>Нямецкая</full></lang><lang id="en"><short>(Англ.)</short><full>Англійская</full></lang><lang id="es"><short>(Ісп.)</short><full>Іспанская</full></lang><lang id="fr"><short>(Фр.)</short><full>Французская</full></lang><lang id="it"><short>(Ит.)</short><full>Італьянская</full></lang><lang id="pl"><short>(Пол.)</short><full>Польская</full></lang><lang id="ru"><short>(Рус.)</short><full>Руская</full></lang><lang id="tr"><short>(Тур.)</short><full>Турэцкая</full></lang></to><to id="kk"><lang id="cs"><short>(Чех)</short><full>Чех</full></lang><lang id="de"><short>(Нем.)</short><full>Неміс</full></lang><lang id="en"><short>(Ағыл.)</short><full>Ағылшын</full></lang><lang id="es"><short>(Исп.)</short><full>Испан</full></lang><lang id="fr"><short>(Фр.)</short><full>Француз</full></lang><lang id="it"><short>(Ит.)</short><full>Итальян</full></lang><lang id="pl"><short>(Пол.)</short><full>Поляк</full></lang><lang id="ru"><short>(Орыс.)</short><full>Орыс</full></lang><lang id="tr"><short>(Түр.)</short><full>Түрік</full></lang></to><to id="tr"><lang id="cs"><short>(Çek.)</short><full>Çekçe</full></lang><lang id="de"><short>(Alm.)</short><full>Almanca</full></lang><lang id="en"><short>(İng.)</short><full>İngilizce</full></lang><lang id="es"><short>(İsp.)</short><full>İspanyolca</full></lang><lang id="fr"><short>(Fr.)</short><full>Fransızca</full></lang><lang id="it"><short>(İt.)</short><full>İtalyanca</full></lang><lang id="pl"><short>(Leh.)</short><full>Lehçe</full></lang><lang id="ru"><short>(Rus.)</short><full>Rusça</full></lang><lang id="tr"><short>(Tr.)</short><full>Türkçe</full></lang></to><to id="uk"><lang id="cs"><short>(Чес.)</short><full>Чеська</full></lang><lang id="de"><short>(Нім.)</short><full>Німецька</full></lang><lang id="en"><short>(Англ.)</short><full>Англійська</full></lang><lang id="es"><short>(Ісп.)</short><full>Іспанська</full></lang><lang id="fr"><short>(Фр.)</short><full>Французька</full></lang><lang id="it"><short>(Іт.)</short><full>Італійська</full></lang><lang id="pl"><short>(Пол.)</short><full>Польська</full></lang><lang id="ru"><short>(Рос.)</short><full>Російська</full></lang><lang id="tr"><short>(Тур.)</short><full>Турецька</full></lang></to><to id="cs"><lang id="cs"><short>(Čes.)</short><full>Český</full></lang><lang id="de"><short>(Něm.)</short><full>Německý</full></lang><lang id="en"><short>(Angl.)</short><full>Anglický</full></lang><lang id="es"><short>(Šp.)</short><full>Španělský</full></lang><lang id="fr"><short>(Fr.)</short><full>Francouzský</full></lang><lang id="it"><short>(It.)</short><full>Italský</full></lang><lang id="pl"><short>(Pol.)</short><full>Polský</full></lang><lang id="ru"><short>(Rus.)</short><full>Ruský</full></lang><lang id="tr"><short>(Tur.)</short><full>Turecký</full></lang></to></langtranslate><seznam>
-      <langs>
+<verdict>
+    <langs>
         <dir>
-          <from>cs</from>
-          <to>en</to>
+            <from>ru</from>
+            <to>en</to>
         </dir>
         <dir>
-          <from>en</from>
-          <to>cs</to>
+            <from>ru</from>
+            <to>fr</to>
         </dir>
         <dir>
-          <from>cs</from>
-          <to>de</to>
+            <from>ru</from>
+            <to>de</to>
         </dir>
         <dir>
-          <from>de</from>
-          <to>cs</to>
+            <from>ru</from>
+            <to>es</to>
         </dir>
         <dir>
-          <from>cs</from>
-          <to>fr</to>
+            <from>ru</from>
+            <to>tr</to>
         </dir>
         <dir>
-          <from>fr</from>
-          <to>cs</to>
+            <from>en</from>
+            <to>ru</to>
         </dir>
         <dir>
-          <from>cs</from>
-          <to>it</to>
+            <from>fr</from>
+            <to>ru</to>
         </dir>
         <dir>
-          <from>it</from>
-          <to>cs</to>
+            <from>de</from>
+            <to>ru</to>
         </dir>
         <dir>
-          <from>cs</from>
-          <to>es</to>
+            <from>es</from>
+            <to>ru</to>
         </dir>
         <dir>
-          <from>es</from>
-          <to>cs</to>
+            <from>it</from>
+            <to>ru</to>
         </dir>
         <dir>
-          <from>cs</from>
-          <to>ru</to>
+            <from>tr</from>
+            <to>ru</to>
         </dir>
         <dir>
-          <from>ru</from>
-          <to>cs</to>
+            <from>en</from>
+            <to>tr</to>
         </dir>
-      </langs>
-    </seznam><deflang>ru</deflang></verdict>
+        <dir>
+            <from>de</from>
+            <to>tr</to>
+        </dir>
+        <dir>
+            <from>tr</from>
+            <to>en</to>
+        </dir>
+        <dir>
+            <from>tr</from>
+            <to>de</to>
+        </dir>
+    </langs>
+
+    <langtranslate>
+        <to id="ru">
+            <lang id="cs">
+                <short>(Чеш.)</short>
+                <full>Чешский</full>
+            </lang>
+            <lang id="de">
+                <short>(Нем.)</short>
+                <full>Немецкий</full>
+            </lang>
+            <lang id="en">
+                <short>(Англ.)</short>
+                <full>Английский</full>
+            </lang>
+            <lang id="es">
+                <short>(Исп.)</short>
+                <full>Испанский</full>
+            </lang>
+            <lang id="fr">
+                <short>(Фр.)</short>
+                <full>Французский</full>
+            </lang>
+            <lang id="it">
+                <short>(Ит.)</short>
+                <full>Итальянский</full>
+            </lang>
+            <lang id="pl">
+                <short>(Пол.)</short>
+                <full>Польский</full>
+            </lang>
+            <lang id="ru">
+                <short>(Рус.)</short>
+                <full>Русский</full>
+            </lang>
+            <lang id="tr">
+                <short>(Тур.)</short>
+                <full>Турецкий</full>
+            </lang>
+        </to>
+        <to id="en">
+            <lang id="cs">
+                <short>(Cze.)</short>
+                <full>Czech</full>
+            </lang>
+            <lang id="de">
+                <short>(Ger.)</short>
+                <full>German</full>
+            </lang>
+            <lang id="en">
+                <short>(Eng.)</short>
+                <full>English</full>
+            </lang>
+            <lang id="es">
+                <short>(Spa.)</short>
+                <full>Spanish</full>
+            </lang>
+            <lang id="fr">
+                <short>(Fre.)</short>
+                <full>French</full>
+            </lang>
+            <lang id="it">
+                <short>(Ita.)</short>
+                <full>Italian</full>
+            </lang>
+            <lang id="pl">
+                <short>(Pol.)</short>
+                <full>Polish</full>
+            </lang>
+            <lang id="ru">
+                <short>(Rus.)</short>
+                <full>Russian</full>
+            </lang>
+            <lang id="tr">
+                <short>(Tur.)</short>
+                <full>Turkish</full>
+            </lang>
+        </to>
+        <to id="be">
+            <lang id="cs">
+                <short>(Чэш.)</short>
+                <full>Чэшская</full>
+            </lang>
+            <lang id="de">
+                <short>(Ням.)</short>
+                <full>Нямецкая</full>
+            </lang>
+            <lang id="en">
+                <short>(Англ.)</short>
+                <full>Англійская</full>
+            </lang>
+            <lang id="es">
+                <short>(Ісп.)</short>
+                <full>Іспанская</full>
+            </lang>
+            <lang id="fr">
+                <short>(Фр.)</short>
+                <full>Французская</full>
+            </lang>
+            <lang id="it">
+                <short>(Ит.)</short>
+                <full>Італьянская</full>
+            </lang>
+            <lang id="pl">
+                <short>(Пол.)</short>
+                <full>Польская</full>
+            </lang>
+            <lang id="ru">
+                <short>(Рус.)</short>
+                <full>Руская</full>
+            </lang>
+            <lang id="tr">
+                <short>(Тур.)</short>
+                <full>Турэцкая</full>
+            </lang>
+        </to>
+        <to id="kk">
+            <lang id="cs">
+                <short>(Чех)</short>
+                <full>Чех</full>
+            </lang>
+            <lang id="de">
+                <short>(Нем.)</short>
+                <full>Неміс</full>
+            </lang>
+            <lang id="en">
+                <short>(Ағыл.)</short>
+                <full>Ағылшын</full>
+            </lang>
+            <lang id="es">
+                <short>(Исп.)</short>
+                <full>Испан</full>
+            </lang>
+            <lang id="fr">
+                <short>(Фр.)</short>
+                <full>Француз</full>
+            </lang>
+            <lang id="it">
+                <short>(Ит.)</short>
+                <full>Итальян</full>
+            </lang>
+            <lang id="pl">
+                <short>(Пол.)</short>
+                <full>Поляк</full>
+            </lang>
+            <lang id="ru">
+                <short>(Орыс.)</short>
+                <full>Орыс</full>
+            </lang>
+            <lang id="tr">
+                <short>(Түр.)</short>
+                <full>Түрік</full>
+            </lang>
+        </to>
+        <to id="tr">
+            <lang id="cs">
+                <short>(Çek.)</short>
+                <full>Çekçe</full>
+            </lang>
+            <lang id="de">
+                <short>(Alm.)</short>
+                <full>Almanca</full>
+            </lang>
+            <lang id="en">
+                <short>(İng.)</short>
+                <full>İngilizce</full>
+            </lang>
+            <lang id="es">
+                <short>(İsp.)</short>
+                <full>İspanyolca</full>
+            </lang>
+            <lang id="fr">
+                <short>(Fr.)</short>
+                <full>Fransızca</full>
+            </lang>
+            <lang id="it">
+                <short>(İt.)</short>
+                <full>İtalyanca</full>
+            </lang>
+            <lang id="pl">
+                <short>(Leh.)</short>
+                <full>Lehçe</full>
+            </lang>
+            <lang id="ru">
+                <short>(Rus.)</short>
+                <full>Rusça</full>
+            </lang>
+            <lang id="tr">
+                <short>(Tr.)</short>
+                <full>Türkçe</full>
+            </lang>
+        </to>
+        <to id="uk">
+            <lang id="cs">
+                <short>(Чес.)</short>
+                <full>Чеська</full>
+            </lang>
+            <lang id="de">
+                <short>(Нім.)</short>
+                <full>Німецька</full>
+            </lang>
+            <lang id="en">
+                <short>(Англ.)</short>
+                <full>Англійська</full>
+            </lang>
+            <lang id="es">
+                <short>(Ісп.)</short>
+                <full>Іспанська</full>
+            </lang>
+            <lang id="fr">
+                <short>(Фр.)</short>
+                <full>Французька</full>
+            </lang>
+            <lang id="it">
+                <short>(Іт.)</short>
+                <full>Італійська</full>
+            </lang>
+            <lang id="pl">
+                <short>(Пол.)</short>
+                <full>Польська</full>
+            </lang>
+            <lang id="ru">
+                <short>(Рос.)</short>
+                <full>Російська</full>
+            </lang>
+            <lang id="tr">
+                <short>(Тур.)</short>
+                <full>Турецька</full>
+            </lang>
+        </to>
+        <to id="cs">
+            <lang id="cs">
+                <short>(Čes.)</short>
+                <full>Český</full>
+            </lang>
+            <lang id="de">
+                <short>(Něm.)</short>
+                <full>Německý</full>
+            </lang>
+            <lang id="en">
+                <short>(Angl.)</short>
+                <full>Anglický</full>
+            </lang>
+            <lang id="es">
+                <short>(Šp.)</short>
+                <full>Španělský</full>
+            </lang>
+            <lang id="fr">
+                <short>(Fr.)</short>
+                <full>Francouzský</full>
+            </lang>
+            <lang id="it">
+                <short>(It.)</short>
+                <full>Italský</full>
+            </lang>
+            <lang id="pl">
+                <short>(Pol.)</short>
+                <full>Polský</full>
+            </lang>
+            <lang id="ru">
+                <short>(Rus.)</short>
+                <full>Ruský</full>
+            </lang>
+            <lang id="tr">
+                <short>(Tur.)</short>
+                <full>Turecký</full>
+            </lang>
+        </to>
+    </langtranslate>
+
+    <deflang>ru</deflang>
+</verdict>

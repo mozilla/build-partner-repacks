@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<bindings xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <binding id="plugin-base">
+        <implementation>
+            <field name="api" readonly="true">this.common.api</field>
+
+            <field name="__addedObservers">null</field>
+
+            <constructor><![CDATA[    if (!this.__YAXBID__) {
+        this.__YAXBID__ = "xb_" + Math.random();
+        if (typeof this.ybwInit == "function") {
+            this.ybwInit();
+        }
+        this.__addObservers();
+    }]]></constructor>
+
+            <method name="log">
+                <parameter name="text"/>
+                <parameter name="method"/>
+                <body><![CDATA[    this.application.log("[*XB*]: " + text, method);]]></body>
+            </method>
+
+            <method name="openSettingsDialog">
+                <body><![CDATA[    this.api.Controls.openSettingsDialog(window, this.api.componentID);]]></body>
+            </method>
+
+            <method name="__addObservers">
+                <body><![CDATA[    if (!this.observers || this.__addedObservers || !this.common.observerService) {
+        return;
+    }
+    this.log("addObservers");
+    this.__addedObservers = [];
+    Object.keys(this.observers).forEach(aObserverTopic => {
+        let handler = this.observers[aObserverTopic];
+        let obj = this.common.observerService.addAppObserver(aObserverTopic, handler, this);
+        if (obj) {
+            this.__addedObservers.push(obj);
+        }
+    });]]></body>
+            </method>
+
+            <method name="__removeObservers">
+                <body><![CDATA[    if (!this.__addedObservers || !this.common.observerService) {
+        return;
+    }
+    this.log("removeObservers. " + this.__addedObservers.length + " observers.");
+    this.__addedObservers.forEach(aObserver => this.common.observerService.removeObserver(aObserver));
+    this.__addedObservers = null;]]></body>
+            </method>
+        </implementation>
+    </binding>
+</bindings>

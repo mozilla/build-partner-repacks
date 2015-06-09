@@ -13,7 +13,6 @@ const packageManager = {
         barApplication.core.Lib.sysutils.copyProperties(barApplication.core.Lib, GLOBAL);
         this._packagesInfo = Object.create(null);
         this._cachedPackages = Object.create(null);
-        this._constDomains = this._barApp.preferences.get("pacman.const_pkg_domains", true);
         this.rescanPackages();
     },
     get packageIDs() {
@@ -106,7 +105,7 @@ const packageManager = {
             return pkg;
         }
         let packageInfo = this.getPackageInfo(packageID);
-        let packageDomain = this._constDomains ? packageInfo.installDir.leafName.replace(/[^\w\-]/g, "") : undefined;
+        let packageDomain = packageInfo.installDir.leafName.replace(/[^\w\-]/g, "");
         let package_ = new this._barApp.BarPlatform.ComponentPackage(packageInfo.installDir, packageID, packageDomain);
         this._cachedPackages[packageID] = package_;
         return package_;
@@ -223,6 +222,5 @@ const packageManager = {
     _barApp: null,
     _logger: null,
     _packagesInfo: null,
-    _cachedPackages: null,
-    _constDomains: true
+    _cachedPackages: null
 };

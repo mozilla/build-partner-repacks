@@ -186,7 +186,7 @@ var module = function (app, common) {
             if (keys.length) {
                 log("_getProfiles: load " + keys.length + " profile(s)");
                 this._ajax("users.getInfo", {
-                    fields: "uid,name,first_name,last_name,gender,url_profile,pic50x50",
+                    fields: "uid,name,first_name,last_name,gender,url_profile,pic128x128",
                     uids: keys.join(",")
                 }, function (arr) {
                     logObj(arr, "users.getInfo: ");

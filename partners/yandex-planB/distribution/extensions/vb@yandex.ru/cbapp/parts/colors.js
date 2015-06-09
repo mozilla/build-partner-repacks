@@ -134,7 +134,9 @@ const colors = {
             }
         }
         if (options.url) {
-            this._logger.trace("Most frequent color for " + options.url + " is " + (maxValueKey || "undefined"));
+            if (this._application) {
+                this._logger.trace("Most frequent color for " + options.url + " is " + (maxValueKey || "undefined"));
+            }
         }
         return maxValueKey;
     },

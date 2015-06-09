@@ -1,7 +1,9 @@
+<!ENTITY title "Яндекс.Диск">
+<!ENTITY widget.name "Яндекс.Диск">
+<!ENTITY widget.description "Яндекс.Диск">
 
 <!ENTITY context-menu.upload-image "Суретті жүктеу">
 <!ENTITY context-menu.upload-title "Суретті Яндекс.Дискке жүктеу">
-<!ENTITY error.limit "Я.Дисктегі бос орын бітті">
 <!ENTITY slice.link-copied "Сілтеме көшірілді">
 <!ENTITY slice.link-copied-buffer "Сілтеме аралық сақтағышқа көшірілді">
 <!ENTITY slice.links "Сілтемелер">
@@ -28,29 +30,62 @@
 <!ENTITY slice.tooltip.homelink "Яндекс.Дискке өту">
 <!ENTITY slice.tooltip.retry "Яндекс.Дискке файл жүктеуді қайталау">
 <!ENTITY slice.tooltip.share "Файлдың сілтемесін алу">
-<!ENTITY title "Яндекс.Диск">
+<!ENTITY slice.empty-list "Яндекс.Дискке жүктелген файлдар тізімі бос.">
+<!ENTITY slice.empty-list-2 "Файлды қалай жүктеймін">
+<!ENTITY slice.waiting-upload-url "Сұраным жіберілуде...">
+<!ENTITY slice.error.file-not-loaded "Файл жүктелген жоқ">
+<!ENTITY slice.error.filename-not-loaded "{filename} жүктелген жоқ">
+<!ENTITY slice.error.limit-comp "Файлды сақтау үшін компьютердегі бос орын жеткіліксіз">
+<!ENTITY slice.error.limit-disk "Файлды сақтау үшін Я.Дисктегі бос орын жеткіліксіз">
+<!ENTITY slice.tooltip.error-cancel "Яндекс.Дискке файл жүктеуді болдырмау">
+
 <!ENTITY widget.button.authorized "Яндекс.Дискке соңғы сақталған файлдар тізімі">
 <!ENTITY widget.button.unauthorized "Яндекстен авторизацияланыңыз">
 <!ENTITY widget.button.upload-complete "Файл Яндекс.Дискке сақталды">
 <!ENTITY widget.button.upload-error "Файлды Яндекс.Дискке сақтау мүмкін болмады">
 <!ENTITY widget.button.uploading "Файлды Яндекс.Дискке жүктеу жүруде">
-<!ENTITY widget.description "Яндекс.Диск">
 <!ENTITY widget.menu.save "Яндекс.Дискке сақтау">
-<!ENTITY widget.name "Яндекс.Диск">
-<!ENTITY widget.options.save-checkbox.title "Дәлдеу арқылы сақтау белгішесін көрсету">
 <!ENTITY widget.pagebutton.title "Сақтау">
 <!ENTITY widget.pagebutton.tooltip "Яндекс.Дискке файл жүктеу">
 <!ENTITY widget.save-button.title "Суретті Яндекс.Дискке жүктеу">
 <!ENTITY widget.save-file-button.title "Файлды Яндекс.Дискке сақтау">
-<!ENTITY error.cmd.try-again "*Қайта* байқап көріңіз">
-<!ENTITY error.network "Қосылу қатесі">
-<!ENTITY slice.empty-list "Яндекс.Дискке жүктелген файлдар тізімі бос.">
-<!ENTITY slice.empty-list-2 "Файлды қалай жүктеймін">
 <!ENTITY widget.chrome-name "Яндекс элементтері: Диск">
-<!ENTITY slice.waiting-upload-url "Сұраным жіберілуде...">
 <!ENTITY widget.chrome-description "Интернеттегі файлдар мен суреттерді Яндекс.Дискке бір нұқу арқылы сақтаңыз">
 <!ENTITY widget.chrome-full-description "Кеңейтім интернеттегі файлдар мен суреттерді Яндекс.Диск аймағынан сақтауға және оларды кез келген құрылғыдан ашуға мүмкіндік береді. Оның жұмыс істеуі үшін Яндекстегі логин мен құпиясөзіңізді енгізу қажет.">
 <!ENTITY widget.opera.forbidden "Диск кеңейтімінің жұмысы үшін 26-шы нұсқадағы Opera және одан кейінгісі қажет.">
+
+<!ENTITY error.cmd.try-again "*Қайта* байқап көріңіз">
+<!ENTITY error.limit "Я.Дисктегі бос орын бітті">
+<!ENTITY error.network "Қосылу қатесі">
 <!ENTITY error.cmd-auth "*Авторизациядан* өтіңіз">
-<!ENTITY slice.error.file-not-loaded "Файл жүктелген жоқ">
-<!ENTITY slice.error.filename-not-loaded "{filename} жүктелген жоқ">
+
+<!ENTITY widget.settings.showPopupSuggest "Қалқымалы &context-menu.upload-title; батырмасын көрсету">
+<!ENTITY widget.settings.save-document.title "Диск батырмасын браузердегі ашық құжаттардың үстінен көрсету">
+
+<!ENTITY file-dialog.all-files "Барлық файлдар">
+<!ENTITY file-dialog.title "Жүктеу үшін файлды таңдау">
+
+<!ENTITY slice.help "Анықтама">
+<!ENTITY slice.settings "Баптаулар">
+<!ENTITY slice.upload "Жүктеу">
+<!ENTITY widget.options.save-checkbox.title "Батырманы сайттардағы суреттер үстінен көрсету">
+<!ENTITY widget.options.save-document-checkbox.title "Батырманы браузердегі ашық құжаттардың үстінен көрсету">
+<!ENTITY slice.download "Көшіру">
+<!ENTITY slice.public "Бөлісу">
+<!ENTITY slice.size.b "байт">
+<!ENTITY slice.size.gb "ГБ">
+<!ENTITY slice.size.kb "КБ">
+<!ENTITY slice.size.mb "МБ">
+<!ENTITY widget.options.show-notifications.title "Хабарландыруларды көрсету">
+<!ENTITY slice.notif.saved-new "Файл Яндекс.Дискіңіздегі &#34;Жүктеулер&#34; қалтасында сақталған">
+<!ENTITY widget.options.notifications-enable.title "Файл жүктеу туралы хабарландыруларды көрсету">
+<!ENTITY slice.notif.yabrowser-save "Файл {new_line}Яндекс.Дисктегі &#34;Жүктеулер&#34; қалтасына сақталды">
+<!ENTITY file-dialog.error.empty-file "0 байт өлшеміндегі файлды жүктеу мүмкін емес">
+<!ENTITY widget.save-button.tutorial.confirmButton "Жақсы, рақмет">
+<!ENTITY widget.save-button.tutorial.moreInfo "Анықтама">
+<!ENTITY widget.save-button.tutorial.settings "Баптаулар">
+<!ENTITY widget.save-button.tutorial.text "Ұнаған суретті Яндекс.Дискке жүктеу үшін белгішені басыңыз. Қызықтың барлығын Яндекс.Дискке жинаңыз.">
+<!ENTITY widget.save.tutorial.text "Соңғы сақталған суреттерді көру үшін белгішені басыңыз. Сол файлдарды компьютерге жүктеп, достармен тез бөлісе аласыз немесе файлдарды қарау және олармен жұмыс істеу үшін Дискке өтуіңізге болады.">
+<!ENTITY slice.uploading "Жүктеу жүруде">
+<!ENTITY widget.save.tutorial.header "Браузердегі Яндекс.Диск">
+<!ENTITY widget.save-button.tutorial.confirmButton.short "Жақсы">

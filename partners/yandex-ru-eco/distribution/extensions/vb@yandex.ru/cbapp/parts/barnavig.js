@@ -22,21 +22,7 @@ this.__defineGetter__("isContentWindowPrivate", function isContentWindowPrivate(
     return this.isContentWindowPrivate;
 });
 XPCOMUtils.defineLazyGetter(this, "mozWorker", function () {
-    let mozWorker = new Worker("resource://" + barnavig._application.name + "-app/parts/workers/barnavig.js");
-    mozWorker.postMessage({
-        type: "setModulesPath",
-        data: "resource://" + barnavig._application.name + "-mod/"
-    });
-    let dictionary = null;
-    try {
-        dictionary = fileutils.readTextFile(barnavig._application.branding.brandPackage.findFile("/search/dictionary.txt"));
-    } catch (e) {
-    }
-    mozWorker.postMessage({
-        type: "setSearchDictionary",
-        data: dictionary
-    });
-    return mozWorker;
+    return new Worker("resource://" + barnavig._application.name + "-app/parts/workers/barnavig.js");
 });
 XPCOMUtils.defineLazyServiceGetter(this, "UUID_GENERATOR", "@mozilla.org/uuid-generator;1", "nsIUUIDGenerator");
 function isErrorRequest(aReq) {
@@ -90,8 +76,11 @@ const barnavig = {
         } catch (e) {
             this._logger.debug(e);
         }
+        this._disableVBStatIfBarEnabled();
+        this._application.preferences.observe("stat.usage.send", this);
     },
     finalize: function BarNavig_finalize(aDoCleanup) {
+        this._application.preferences.ignore("stat.usage.send", this);
         this.listenStatEventsEnabled = false;
         this.transmissionEnabled = false;
         if (aDoCleanup) {
@@ -138,6 +127,33 @@ const barnavig = {
             downloadsStat.finalize();
             tabsInfoListener.finalize();
             windowMediatorListener.disable();
+        }
+    },
+    _disableVBStatIfBarEnabled: function BarNavig__disableVBStatIfBarEnabled() {
+        if (this._application.core.CONFIG.APP.TYPE !== "vbff") {
+            return;
+        }
+        let disableBarnavigIfYBarIsActive = barAddon => {
+            let enabled = true;
+            if (barAddon && barAddon.isActive) {
+                try {
+                    let barAppBarNavig = Cc["@yandex.ru/custombarcore;yasearch"].getService().wrappedJSObject.application.barnavig;
+                    if (barAppBarNavig.alwaysSendUsageStat !== false) {
+                        enabled = false;
+                    }
+                } catch (e) {
+                }
+            }
+            this._logger.config("Turn " + (enabled ? "on" : "off") + " barnavig events (page load, downloads, etc.) listening...");
+            this.listenStatEventsEnabled = enabled;
+        };
+        AddonManager.gre_AddonManager.getAddonByID("yasearch@yandex.ru", disableBarnavigIfYBarIsActive);
+    },
+    observe: function BarNavig_observe(aSubject, aTopic, aData) {
+        if (aTopic === "nsPref:changed") {
+            if (aData === "extensions.vb@yandex.ru.stat.usage.send") {
+                new sysutils.Timer(() => this._disableVBStatIfBarEnabled(), 0);
+            }
         }
     },
     _barAppDataProvider: {
@@ -224,9 +240,12 @@ const barnavig = {
         this._barnavigR1String = null;
     },
     get alwaysSendUsageStat() {
-        return this._application.preferences.get("stat.usage.send", null);
+        return this._application.statistics.alwaysSendUsageStat;
     },
     _sendWaitingRequests: function BarNavig__sendWaitingRequests() {
+        if (!this._application) {
+            return;
+        }
         let requests = this._application.preferences.get("stat.usage.requests", null);
         if (!requests) {
             return;
@@ -475,7 +494,6 @@ const barnavig = {
             if (onPageLoad) {
                 pageStat.appendTimesData(aParams);
                 yield pageStat.appendCheckSumData(aParams);
-                yield searchPersonalization.appendBarNavigParam(aParams);
             }
             params.hip = (yield DNSInfo.getHIPString(aParams.url)) || null;
             defer.resolve();
@@ -668,10 +686,45 @@ const windowMediatorListener = {
         }
     }
 };
+const LINK_CLICK_FRAME_SCRIPT = function () {
+    addEventListener("click", function clickContentListener(event) {
+        if (!event.isTrusted) {
+            return;
+        }
+        let protocol = event.view.location.protocol;
+        let target = event.originalTarget;
+        let isContextMenu = protocol === "chrome:" && target.localName === "menuitem" && target.parentNode && target.parentNode.id === "contentAreaContextMenu";
+        let linkText = null;
+        let linkURL = null;
+        if (/^https?:/.test(protocol)) {
+            let linkTarget = target;
+            while (linkTarget && linkTarget.localName !== "a") {
+                linkTarget = linkTarget.parentNode;
+            }
+            if (linkTarget) {
+                linkURL = linkTarget.href;
+                if (protocol === "http:") {
+                    linkText = linkTarget.textContent.trim().substr(0, 500) || null;
+                }
+            }
+        }
+        let view = event.view;
+        if (isContextMenu && target.parentNode.triggerNode) {
+            view = target.parentNode.triggerNode.ownerDocument.defaultView;
+        }
+        let viewLocation = /^https?:$/.test(view.location.protocol) ? view.location.toString() : null;
+        let messageData = {
+            isContextMenu: isContextMenu,
+            linkText: linkText,
+            linkURL: linkURL,
+            viewLocation: viewLocation
+        };
+        sendAsyncMessage("{{PREFIX}}click", messageData);
+    }, false);
+};
 const linkClickListener = {
     addContentClickListener: function linkClickListener_addContentClickListener(chromeWindow) {
-        let frameScriptSource = " " + "function () {" + "    addEventListener('click', function clickContentListener(event) {" + "        if (!event.isTrusted) {" + "            return;" + "        }" + "        let protocol = event.view.location.protocol;" + "        let target = event.originalTarget;" + "        let isContextMenu = protocol === 'chrome:'" + "            && target.localName === 'menuitem'" + "            && target.parentNode" + "            && target.parentNode.id === 'contentAreaContextMenu';" + "        let linkText = null;" + "        let linkURL = null;" + "        if (/^https?:/.test(protocol)) {" + "            let linkTarget = target;" + "            while (linkTarget && linkTarget.localName !== 'a') {" + "                linkTarget = linkTarget.parentNode;" + "            }" + "            if (linkTarget) {" + "                linkURL = linkTarget.href;" + "                if (protocol === 'http:') {" + "                    linkText = linkTarget.textContent.trim().substr(0, 500) || null;" + "                }" + "            }" + "        }" + "        let view = event.view;" + "        if (isContextMenu && target.parentNode.triggerNode) {" + "            view = target.parentNode.triggerNode.ownerDocument.defaultView;" + "        }" + "        let viewLocation = /^https?:$/.test(view.location.protocol)" + "            ? view.location.toString()" + "            : null;" + "        let messageData = {" + "            isContextMenu: isContextMenu," + "            linkText: linkText," + "            linkURL: linkURL," + "            viewLocation: viewLocation" + "        };" + "        sendAsyncMessage('{{PREFIX}}click', messageData);" + "    }, false);" + "}";
-        let frameScriptURL = "data:application/javascript;charset=utf-8," + encodeURIComponent("(" + frameScriptSource.replace(/\{\{PREFIX\}\}/g, this.FRAME_MESSAGES_PREFIX) + ")()");
+        let frameScriptURL = "data:application/javascript;charset=utf-8," + encodeURIComponent("(" + LINK_CLICK_FRAME_SCRIPT.toSource().replace(/\{\{PREFIX\}\}/g, this.FRAME_MESSAGES_PREFIX) + ")()");
         let messageManager = chromeWindow.messageManager;
         messageManager.loadFrameScript(frameScriptURL, true);
         this._MESSAGES_NAMES.forEach(function (eventType) {
@@ -1021,8 +1074,8 @@ const pageStat = {
                 return;
             }
             mozWorker.removeEventListener("message", listener, false);
-            let apiCrypto = barnavig.application.core.Lib.misc.CryptoHash;
-            let hash = data && pageStat._fnv1a_32(apiCrypto.getBinaryFromString(data, "MD5"));
+            let misc = barnavig.application.core.Lib.misc;
+            let hash = data && pageStat._fnv1a_32(misc.crypto.createHash("md5").update(String(data)).digest("binary"));
             if (hash) {
                 aParams.barNavigParams.psu = hash;
             }
@@ -1106,23 +1159,13 @@ const pageStat = {
 };
 const downloadsStat = {
     init: function DlStat_init() {
-        Services.obs.addObserver(this, "final-ui-startup", true);
+        Services.obs.addObserver(this, "sessionstore-windows-restored", false);
     },
     finalize: function DlStat_finalize() {
         try {
             let {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
-            if (!("getList" in Downloads)) {
-                throw new Error("Old 'Downloads' module");
-            }
-            let that = this;
-            Downloads.getList(Downloads.PUBLIC).then(list => list.removeView(that));
-        } catch (ex1) {
-            try {
-                const DownloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
-                DownloadManager.removeListener(this);
-            } catch (ex2) {
-                barnavig._logger.error(ex1 + "\n" + ex2);
-            }
+            Downloads.getList(Downloads.PUBLIC).then(list => list.removeView(this));
+        } catch (e) {
         }
         this._activeDownloads = Object.create(null);
         this._downloadsData = [];
@@ -1329,27 +1372,16 @@ const downloadsStat = {
     },
     QueryInterface: XPCOMUtils.generateQI([
         Ci.nsIDownloadProgressListener,
-        Ci.nsIObserver,
-        Ci.nsISupportsWeakReference
+        Ci.nsIObserver
     ]),
     observe: function DlStat_observe(aSubject, aTopic, aData) {
         switch (aTopic) {
-        case "final-ui-startup":
-            Services.obs.removeObserver(this, "final-ui-startup", true);
+        case "sessionstore-windows-restored":
+            Services.obs.removeObserver(this, "sessionstore-windows-restored", false);
             try {
                 let {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
-                if (!("getList" in Downloads)) {
-                    throw new Error("Old 'Downloads' module");
-                }
-                let that = this;
-                Downloads.getList(Downloads.PUBLIC).then(list => list.addView(that));
-            } catch (ex1) {
-                try {
-                    const DownloadManager = Cc["@mozilla.org/download-manager;1"].getService(Ci.nsIDownloadManager);
-                    DownloadManager.addListener(this);
-                } catch (ex2) {
-                    barnavig._logger.error(ex1 + "\n" + ex2);
-                }
+                Downloads.getList(Downloads.PUBLIC).then(list => list.addView(this));
+            } catch (ex) {
             }
             break;
         }
@@ -1434,64 +1466,6 @@ const downloadsStat = {
     onStateChange: function DlStat_onStateChange(aWebProgress, aRequest, aState, aStatus, aDownload) {
     },
     onSecurityChange: function DlStat_onSecurityChange(aWebProgress, aRequest, aState, aDownload) {
-    }
-};
-const searchPersonalization = {
-    appendBarNavigParam: function searchPersonalization_appendBarNavigParam(aParams) {
-        let defer = promise.defer();
-        function resolvedPromise() {
-            defer.resolve();
-            return defer.promise;
-        }
-        if (!aParams.browser) {
-            return resolvedPromise();
-        }
-        let contentDocument = aParams.browser.contentDocument;
-        if (!contentDocument) {
-            return resolvedPromise();
-        }
-        if (!/^http:\/\//.test(contentDocument.location)) {
-            return resolvedPromise();
-        }
-        if (!contentDocument.documentElement) {
-            return resolvedPromise();
-        }
-        let documentInnerHTML;
-        try {
-            documentInnerHTML = contentDocument.documentElement.innerHTML;
-        } catch (e) {
-            barnavig._logger.debug("searchPersonalization.appendBarNavigParam, innerHTML error: " + e);
-        }
-        if (!documentInnerHTML) {
-            return resolvedPromise();
-        }
-        let workerTaskType = "calculateSearchPersonalization";
-        let workerTaskId = [
-            workerTaskType,
-            Date.now(),
-            Math.random() * 10000
-        ].join(":");
-        let listener = function listener(event) {
-            let {type, data, taskId} = event.data;
-            if (type !== workerTaskType) {
-                return;
-            }
-            if (taskId !== workerTaskId) {
-                return;
-            }
-            mozWorker.removeEventListener("message", listener, false);
-            if (data) {
-                aParams.barNavigParams.body = data;
-            }
-            defer.resolve();
-        };
-        mozWorker.addEventListener("message", listener, false);
-        mozWorker.postMessage({
-            type: workerTaskType,
-            data: documentInnerHTML,
-            taskId: workerTaskId
-        });
-        return defer.promise;
     }
 };
 const tabsInfoListener = {

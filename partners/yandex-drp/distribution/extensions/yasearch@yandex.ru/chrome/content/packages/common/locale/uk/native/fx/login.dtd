@@ -13,3 +13,4 @@
 <!ENTITY noauth.label "Будь ласка, авторизуйтеся">
 <!ENTITY login.passport.label "Паспорт">
 <!ENTITY login.settings.label "Налаштування &vendor.gen;">
+<!ENTITY login.menu.other-account.label "Інші акаунти">

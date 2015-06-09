@@ -1,6 +1,6 @@
 <!ENTITY browseroffer.name "Yandex.Browser&#39;ın içerik önerilerini göster">
 
-<!ENTITY browseroffer.menu.openLink "Bağlantıyı Yandex.Browser&#39;da aç">
+<!ENTITY browseroffer.menu.openLink "Bağlantıyı Yandex.Browser’da aç">
 
 <!ENTITY browseroffer.settings.openLink "&#171;Bağlantıyı Yandex.Browser&#39;da aç&#187; öğesini göster">
 
@@ -22,3 +22,7 @@
 <!ENTITY pagetranslator.tutorial.button.yaBrowser "Aç">
 <!ENTITY pagetranslator.tutorial.text.noYaBrowser "Yandex.Browser&#39;da çeviri olanaklarını keşfedin.">
 <!ENTITY pagetranslator.tutorial.text.yaBrowser "Yandex.Browser&#39;da çeviri olanaklarını keşfedin.">
+<!ENTITY browseroffer.video.button.noYaBrowser "Yandex.Browser&#39;ı kur">
+<!ENTITY browseroffer.video.button.yaBrowser "Aç">
+<!ENTITY browseroffer.video.text.noYaBrowser "Yandex.Browser&#39;ın turbo modu, yavaş internet bağlantısı durumlarında {domain} adresinden videoların yüklenmesini hızlandırır.">
+<!ENTITY browseroffer.video.text.yaBrowser "{domain} adresine Yandex.Browser&#39;dan geçiş yapın. Turbo modu, yavaş internet bağlantısı durumlarında videoların yüklenmesini hızlandırır.">

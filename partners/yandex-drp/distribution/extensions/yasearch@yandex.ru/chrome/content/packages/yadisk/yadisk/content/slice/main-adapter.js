@@ -182,6 +182,15 @@ define("browser-adapter", ["api/dispatcher"], function (Dispatcher) {
         getNotificationManager: function () {
             return getPlatform().Notifications;
         },
+        sendClickerStatistics: function (options) {
+            var platform = getPlatform();
+            if ("sendClickerStatistics" in platform) {
+                platform.sendClickerStatistics(options);
+                return true;
+            } else {
+                return false;
+            }
+        },
         getSlicePath: function () {
             return location.href.replace(/index\.html$/, "");
         },
@@ -419,40 +428,154 @@ define("api/branding", ["browser-adapter"], function (adapter) {
     };
     return brandingModule;
 });
+define("api/stat", ["browser-adapter"], function (adapter) {
+    function log(str) {
+        adapter.log("[api/stat]: " + str);
+    }
+    var stat = {
+        _statName: null,
+        log: function (params) {
+            if (adapter.sendClickerStatistics({
+                    cid: params.cid,
+                    param: params.param,
+                    statisticsId: this._statName
+                })) {
+                return;
+            }
+            var dtype = params.dtype;
+            var pid = params.pid;
+            var cid = params.cid;
+            var param = params.param;
+            if (typeof dtype === "undefined") {
+                dtype = "stred";
+            }
+            if (typeof pid === "undefined") {
+                pid = 12;
+            }
+            if (typeof dtype === "string") {
+                if (!dtype) {
+                    throw new RangeError("dtype is empty string");
+                }
+            } else {
+                throw new TypeError("Invalid dtype type ('" + typeof dtype + "')");
+            }
+            if (typeof pid === "number") {
+                if (pid < 0) {
+                    throw new RangeError("Invalid pid value (" + pid + ")");
+                }
+            } else {
+                throw new TypeError("Wrong pid type ('" + typeof pid + "'). Number required.");
+            }
+            if (typeof cid === "number") {
+                if (cid <= 0) {
+                    throw new RangeError("Invalid cid value (" + cid + ")");
+                }
+            } else {
+                throw new TypeError("Wrong cid type ('" + typeof cid + "'). Number required.");
+            }
+            var prodInfo = adapter.getProductInfo();
+            param = adapter.browser + "." + this._statName + "." + (prodInfo ? prodInfo.version.replace(/\./g, "-") + "." : "") + param;
+            var url = "https://clck.yandex.ru/click" + "/dtype=" + encodeURIComponent(dtype) + "/pid=" + pid + "/cid=" + cid + "/path=" + encodeURIComponent(param);
+            var extraString = "";
+            var processedKeys = [
+                "dtype",
+                "pid",
+                "cid",
+                "param"
+            ];
+            for (var key in params) {
+                if (!params.hasOwnProperty(key)) {
+                    continue;
+                }
+                if (processedKeys.indexOf(key) !== -1) {
+                    continue;
+                }
+                var value = params[key];
+                if (key === "*") {
+                    extraString = value;
+                    continue;
+                }
+                url += "/" + key + "=" + encodeURIComponent(value);
+            }
+            url += "/*" + extraString;
+            log("stat log " + url);
+            var xhr = adapter.createXHR();
+            xhr.open("GET", url, true);
+            xhr.send();
+        },
+        logWidget: function (path) {
+            this.log({
+                cid: 72359,
+                param: path
+            });
+        },
+        logNotification: function (path) {
+            this.log({
+                cid: 72358,
+                param: path
+            });
+        },
+        setStatName: function (name) {
+            this._statName = name || null;
+        }
+    };
+    return stat;
+});
 define("slice/locale", [], function () {
     return {};
 });
 define("slice/logic/config", {
-    HOME_URL: "https://disk.yandex.{tld-kubr}",
-    PATH_URL: "https://disk.yandex.{tld-kubr}/client/disk",
+    statName: "yadisk",
+    HOME_URL: "https://disk.yandex.{tld}",
+    PATH_URL: "https://disk.yandex.{tld}/client/disk",
     HOST: ".yandex.ru",
     OAUTH_URL: "https://oauth.yandex.ru/token",
     API_URL: "https://cloud-api.yandex.net/v1/disk",
     BEGIN_URL: "https://disk.yandex.ru/auth?referer=elements",
-    FILE_ICON_URL: "https://disk.yandex.net/icon?ext={ext}&mediatype={mediatype}",
-    NOTIF_PREVIEW_SIZE: 50,
+    LIST_PREVIEW_SIZE: 120,
+    NOTIF_PREVIEW_SIZE: 80,
+    NOTIF_MAX_LENGTH: 20,
+    NOTIF_DESCRIPTION_KEY: "slice.notif.saved",
+    HELP_URL: "https://help.yandex.{tld}/disk/features/extension.xml",
     AUTH1: "8ba9bcaf30dd47ea976c6973201f1410",
     AUTH2: "a2b938fc1b92415bb411e8c8a7f1c087",
     branding: {
         tb: {
             HOST: ".yandex.com.tr",
             OAUTH_URL: "https://oauth.yandex.com.tr/token",
-            BEGIN_URL: "https://disk.yandex.com.tr/auth?referer=elements"
+            BEGIN_URL: "https://disk.yandex.com.tr/auth?referer=elements",
+            HELP_URL: "https://yardim.yandex.com.tr/disk/features/extension.xml"
         }
     },
-    adapter: { chrome: { NOTIF_PREVIEW_SIZE: 80 } },
+    REQUEST_UPLOADS_IN_LOGIC: false,
+    adapter: {
+        chrome: {
+            NOTIF_DESCRIPTION_KEY: "slice.notif.saved-new",
+            REQUEST_UPLOADS_IN_LOGIC: true,
+            NOTIF_MAX_LENGTH: 29
+        }
+    },
     browser: {
         fx: {
             AUTH1: "d53a117f9ee247ab93ada3b87fe5e952",
-            AUTH2: "6d90c3f070274816a1f67371195735e0"
+            AUTH2: "6d90c3f070274816a1f67371195735e0",
+            NOTIF_MAX_LENGTH: 20
         },
         ie: {
             AUTH1: "1ea19c944e414c65b0711bd01accba48",
-            AUTH2: "0e952c67ce8944a197461777448f7267"
+            AUTH2: "0e952c67ce8944a197461777448f7267",
+            NOTIF_MAX_LENGTH: 27
         },
         yabrowser: {
             AUTH1: "f0f349c380134434a7daa5693111b462",
-            AUTH2: "68793f3580064f11bb9408ed717a9de3"
+            AUTH2: "68793f3580064f11bb9408ed717a9de3",
+            getNotificationBlank: function (adapter, filename) {
+                var arr = adapter.getString("slice.notif.yabrowser-save").split("{new_line}");
+                return {
+                    title: arr[0],
+                    mainText: arr[1] + "\n" + filename
+                };
+            }
         }
     }
 });
@@ -460,11 +583,13 @@ define("slice/adapter/main", [
     "browser-adapter",
     "api/manager",
     "api/branding",
+    "api/stat",
     "slice/locale",
     "slice/logic/config"
-], function (adapter, manager, branding, localesMap, config) {
+], function (adapter, manager, branding, stat, localesMap, config) {
     manager.onReady(function () {
         branding.brandingObject(config);
+        stat.setStatName(config.statName);
         if (localesMap && localesMap.ru !== undefined) {
             var locales = localesMap[adapter.getLang()] || localesMap.ru;
             adapter.getString = function (key, params) {
@@ -487,6 +612,151 @@ define("slice/adapter/main", [
         }
     });
 });
+define("api/dom", [], function () {
+    function escapeStringForRegexp(str) {
+        return String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
+    }
+    function createRx(className) {
+        return new RegExp("(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$)");
+    }
+    function getEventData(e, self) {
+        var node = e.target || e.srcElement;
+        var data = {
+            self: self,
+            target: node,
+            event: e
+        };
+        while (node) {
+            if (!data.parent && node.getAttribute("data-cmd-parent")) {
+                data.parent = node;
+            }
+            data.param = data.param || node.getAttribute("data-cmd-param") || "";
+            data.command = data.command || node.getAttribute("data-command") || "";
+            if (node == self) {
+                break;
+            }
+            node = node.parentNode;
+        }
+        return data;
+    }
+    return {
+        getClickHandler: function (self) {
+            return function (e) {
+                e = e || window.event;
+                var eventInfo = getEventData(e, this);
+                if (!self.commands || !eventInfo.command || !self.commands[eventInfo.command]) {
+                    return;
+                }
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                } else {
+                    e.cancelBubble = true;
+                }
+                return self.commands[eventInfo.command].call(self, eventInfo);
+            };
+        },
+        addClass: function (elem, className) {
+            if (!elem || !className) {
+                return;
+            }
+            if (elem.classList) {
+                elem.classList.add(className);
+                return;
+            }
+            var rx = new RegExp("^(?!.*(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$))");
+            elem.className = elem.className.replace(rx, className + " ").trim();
+        },
+        removeClass: function (elem, className) {
+            if (!elem || !className) {
+                return;
+            }
+            if (elem.classList) {
+                elem.classList.remove(className);
+                return;
+            }
+            var rx = createRx(className);
+            elem.className = elem.className.replace(rx, " ").trim();
+        },
+        toggleClass: function (elem, className) {
+            if (!elem || !className) {
+                return false;
+            }
+            if (elem.classList) {
+                return elem.classList.toggle(className);
+            }
+            if (this.hasClass(elem, className)) {
+                this.removeClass(elem, className);
+            } else {
+                this.addClass(elem, className);
+            }
+        },
+        hasClass: function (elem, className) {
+            if (!elem || !className) {
+                return false;
+            }
+            if (elem.classList) {
+                return elem.classList.contains(className);
+            }
+            var rx = createRx(className);
+            return rx.test(elem.className);
+        },
+        dragNDropCore: function (prm) {
+            var dragInfo = null;
+            function onMM(e) {
+                if (!dragInfo) {
+                    return;
+                }
+                dragInfo.oldX = dragInfo.pageX;
+                dragInfo.oldY = dragInfo.pageY;
+                dragInfo.pageX = e.pageX;
+                dragInfo.pageY = e.pageY;
+                prm.onmove.call(prm.ctx, dragInfo, e);
+                return false;
+            }
+            function onMU(e) {
+                if (!dragInfo) {
+                    return;
+                }
+                document.removeEventListener("mousemove", onMM, false);
+                document.removeEventListener("mouseup", onMU, false);
+                if (prm.onstop) {
+                    prm.onstop.call(prm.ctx, dragInfo, e);
+                }
+                dragInfo = null;
+                return false;
+            }
+            function onMD(e) {
+                onMU();
+                dragInfo = {
+                    elem: this,
+                    target: e.target,
+                    startX: e.pageX,
+                    startY: e.pageY,
+                    pageX: e.pageX,
+                    pageY: e.pageY
+                };
+                if (prm.start) {
+                    if (prm.start.call(prm.ctx, dragInfo, e) === false) {
+                        dragInfo = null;
+                        return;
+                    }
+                }
+                document.addEventListener("mousemove", onMM, false);
+                document.addEventListener("mouseup", onMU, false);
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            }
+            if (prm.elems.tagName) {
+                prm.elems.addEventListener("mousedown", onMD, false);
+            } else {
+                for (var i = 0; i < prm.elems.length; ++i) {
+                    prm.elems[i].addEventListener("mousedown", onMD, false);
+                }
+            }
+        }
+    };
+});
 define("api/utils", ["browser-adapter"], function (adapter) {
     var utils = {
         copy: function (src, dest) {
@@ -503,6 +773,9 @@ define("api/utils", ["browser-adapter"], function (adapter) {
         emptyFunc: function () {
         },
         navigate: function (url, event) {
+            if (!url) {
+                return;
+            }
             var target = event && event.shiftKey ? "new window" : "new tab";
             if (event) {
                 if (event.preventDefault) {
@@ -575,26 +848,24 @@ define("api/http", [
         return buffer.join("&");
     }
     function createRequest(obj) {
-        var txt = null;
         var xhr = adapter.createXHR();
         var mpBoundary = obj.multipart ? "-----8a7gadg1ahSDCV" + Date.now() : null;
         var url = obj.url;
-        var params = obj.params;
-        if (params) {
-            if (typeof params === "object") {
-                params = makeParamStr(params, mpBoundary ? "--" + mpBoundary : null);
-            }
-            if (obj.method !== "POST" && params) {
-                url += (url.indexOf("?") === -1 ? "?" : "&") + params;
-            } else {
-                txt = params;
-            }
-        }
+        var txt = null;
+        var query = makeParamStr(obj.query);
+        var params = makeParamStr(obj.params, mpBoundary ? "--" + mpBoundary : null);
         if (obj.data) {
-            if (txt) {
-                url += (url.indexOf("?") === -1 ? "?" : "&") + txt;
-            }
-            txt = obj.data;
+            query = query || params;
+            params = "";
+        }
+        if (obj.method === "POST") {
+            txt = obj.data || params || "";
+        } else {
+            txt = obj.data || null;
+            query = query || params;
+        }
+        if (query) {
+            url += (url.indexOf("?") === -1 ? "?" : "&") + query;
         }
         xhr.open(obj.method, url, !obj.sync);
         if (obj.overrideMimeType && xhr.overrideMimeType) {
@@ -725,11 +996,16 @@ define("api/http", [
         GET: function (obj) {
             obj.method = "GET";
             if (obj.noCache) {
-                obj.params = obj.params || {};
-                if (typeof obj.params == "string") {
-                    obj.params = obj.params + "&_randomparameter=" + Date.now();
+                var query = obj.query || obj.params || {};
+                if (typeof query == "string") {
+                    query = query + "&_randomparameter=" + Date.now();
                 } else {
-                    obj.params._randomparameter = Date.now();
+                    query._randomparameter = Date.now();
+                }
+                if (obj.params) {
+                    obj.params = query;
+                } else {
+                    obj.query = query;
                 }
             }
             return ajax(obj);
@@ -745,205 +1021,6 @@ define("api/http", [
         PUT: function (obj) {
             obj.method = "PUT";
             return ajax(obj);
-        }
-    };
-});
-define("api/stat", ["browser-adapter"], function (adapter) {
-    function log(str) {
-        adapter.log("[api/stat]: " + str);
-    }
-    var stat = {
-        log: function (params) {
-            var dtype = params.dtype;
-            var pid = params.pid;
-            var cid = params.cid;
-            var path = params.path;
-            if (typeof dtype === "undefined") {
-                dtype = "stred";
-            }
-            if (typeof pid === "undefined") {
-                pid = 12;
-            }
-            if (typeof dtype === "string") {
-                if (!dtype) {
-                    throw new RangeError("dtype is empty string");
-                }
-            } else {
-                throw new TypeError("Invalid dtype type ('" + typeof dtype + "')");
-            }
-            if (typeof pid === "number") {
-                if (pid < 0) {
-                    throw new RangeError("Invalid pid value (" + pid + ")");
-                }
-            } else {
-                throw new TypeError("Wrong pid type ('" + typeof pid + "'). Number required.");
-            }
-            if (typeof cid === "number") {
-                if (cid <= 0) {
-                    throw new RangeError("Invalid cid value (" + cid + ")");
-                }
-            } else {
-                throw new TypeError("Wrong cid type ('" + typeof cid + "'). Number required.");
-            }
-            var browserPathPrefix = adapter.browser + ".";
-            if (path.indexOf(browserPathPrefix) !== 0) {
-                path = browserPathPrefix + path;
-            }
-            var prodInfo = adapter.getProductInfo();
-            if (prodInfo && prodInfo.version) {
-                path = path.replace("{version}", prodInfo.version.replace(/\./g, "-"));
-            } else {
-                path = path.replace(/\.{version}\.*/, ".");
-            }
-            var url = "http://clck.yandex.ru/click" + "/dtype=" + encodeURIComponent(dtype) + "/pid=" + pid + "/cid=" + cid + "/path=" + encodeURIComponent(path);
-            var extraString = "";
-            var processedKeys = [
-                "dtype",
-                "pid",
-                "cid",
-                "path"
-            ];
-            for (var key in params) {
-                if (!params.hasOwnProperty(key)) {
-                    continue;
-                }
-                if (processedKeys.indexOf(key) !== -1) {
-                    continue;
-                }
-                var value = params[key];
-                if (key === "*") {
-                    extraString = value;
-                    continue;
-                }
-                url += "/" + key + "=" + encodeURIComponent(value);
-            }
-            url += "/*" + extraString;
-            var xhr = adapter.createXHR();
-            xhr.open("GET", url, true);
-            xhr.send();
-        },
-        logWidget: function (path) {
-            this.log({
-                cid: 72359,
-                path: path
-            });
-        },
-        logNotification: function (path) {
-            this.log({
-                cid: 72358,
-                path: path
-            });
-        }
-    };
-    return stat;
-});
-define("api/dom", [], function () {
-    function escapeStringForRegexp(str) {
-        return String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
-    }
-    function createRx(className) {
-        return new RegExp("(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$)");
-    }
-    return {
-        addClass: function (elem, className) {
-            if (!elem || !className) {
-                return;
-            }
-            if (elem.classList) {
-                elem.classList.add(className);
-                return;
-            }
-            var rx = new RegExp("^(?!.*(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$))");
-            elem.className = elem.className.replace(rx, className + " ").trim();
-        },
-        removeClass: function (elem, className) {
-            if (!elem || !className) {
-                return;
-            }
-            if (elem.classList) {
-                elem.classList.remove(className);
-                return;
-            }
-            var rx = createRx(className);
-            elem.className = elem.className.replace(rx, " ").trim();
-        },
-        toggleClass: function (elem, className) {
-            if (!elem || !className) {
-                return false;
-            }
-            if (elem.classList) {
-                return elem.classList.toggle(className);
-            }
-            if (this.hasClass(elem, className)) {
-                this.removeClass(elem, className);
-            } else {
-                this.addClass(elem, className);
-            }
-        },
-        hasClass: function (elem, className) {
-            if (!elem || !className) {
-                return false;
-            }
-            if (elem.classList) {
-                return elem.classList.contains(className);
-            }
-            var rx = createRx(className);
-            return rx.test(elem.className);
-        },
-        dragNDropCore: function (prm) {
-            var dragInfo = null;
-            function onMM(e) {
-                if (!dragInfo) {
-                    return;
-                }
-                dragInfo.oldX = dragInfo.pageX;
-                dragInfo.oldY = dragInfo.pageY;
-                dragInfo.pageX = e.pageX;
-                dragInfo.pageY = e.pageY;
-                prm.onmove.call(prm.ctx, dragInfo, e);
-                return false;
-            }
-            function onMU(e) {
-                if (!dragInfo) {
-                    return;
-                }
-                document.removeEventListener("mousemove", onMM, false);
-                document.removeEventListener("mouseup", onMU, false);
-                if (prm.onstop) {
-                    prm.onstop.call(prm.ctx, dragInfo, e);
-                }
-                dragInfo = null;
-                return false;
-            }
-            function onMD(e) {
-                onMU();
-                dragInfo = {
-                    elem: this,
-                    target: e.target,
-                    startX: e.pageX,
-                    startY: e.pageY,
-                    pageX: e.pageX,
-                    pageY: e.pageY
-                };
-                if (prm.start) {
-                    if (prm.start.call(prm.ctx, dragInfo, e) === false) {
-                        dragInfo = null;
-                        return;
-                    }
-                }
-                document.addEventListener("mousemove", onMM, false);
-                document.addEventListener("mouseup", onMU, false);
-                e.stopPropagation();
-                e.preventDefault();
-                return false;
-            }
-            if (prm.elems.tagName) {
-                prm.elems.addEventListener("mousedown", onMD, false);
-            } else {
-                for (var i = 0; i < prm.elems.length; ++i) {
-                    prm.elems[i].addEventListener("mousedown", onMD, false);
-                }
-            }
         }
     };
 });

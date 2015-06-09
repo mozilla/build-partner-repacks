@@ -78,7 +78,7 @@ Log.getLogLevelHandler = function Log_getLogLevelHandler(appender) {
         appender.level = level;
     };
 };
-Log.getPrefName = function (name) {
+Log.getPrefName = function Log_getPrefName(name) {
     return [
         "extensions",
         VB_CONFIG.APP.ID,
@@ -184,6 +184,9 @@ VBCore.prototype = {
     get buidRevision() {
         return VB_CONFIG.BUILD.REVISION;
     },
+    get extensionPrefsPath() {
+        return "extensions." + VB_CONFIG.APP.ID + ".";
+    },
     get application() {
         return this._appObj;
     },
@@ -246,7 +249,10 @@ VBCore.prototype = {
     _appObj: null,
     _globalEvents: {
         CLOUD_DATA_RECEIVED_EVENT: APP_NAME + "-cloud-data-received",
+        PICKUP_DONE: APP_NAME + "-pickup-done",
+        THUMBS_LOADED: APP_NAME + "-thumbs-loaded",
         THUMBS_STRUCTURE_READY_EVENT: APP_NAME + "-internal-thumbs-ready",
+        LAYOUT_CHANGED: APP_NAME + "-layout-changed",
         APP_TAB_SHOWN: APP_NAME + "-tab-shown",
         BACKGROUNDS_SYNCED: APP_NAME + "-bgs-synced",
         SYNC_COMPONENT_ENABLED: "ybar:esync:plugin:enable",

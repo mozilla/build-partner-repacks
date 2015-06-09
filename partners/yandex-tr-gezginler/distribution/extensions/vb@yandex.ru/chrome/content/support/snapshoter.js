@@ -216,17 +216,31 @@
             if (appCore.appName !== "yandex-vb") {
                 return null;
             }
-            const DB_FILENAME = "fastdial.sqlite";
-            let dbFile = appCore.rootDir;
-            dbFile.append(DB_FILENAME);
-            let database = new appCore.Lib.Database(dbFile);
-            let res = {
-                blacklist: database.execQuery("SELECT domain FROM blacklist").map(row => row.domain),
-                thumbs: database.execQuery("SELECT rowid, url, title, backgroundImage, backgroundColor, favicon" + " FROM thumbs ORDER BY rowid"),
-                thumbs_shown: database.execQuery("SELECT thumb_id, position, fixed" + " FROM thumbs_shown ORDER BY thumb_id")
+            let app = appCore.application;
+            let blacklist;
+            let thumbs;
+            let pickupCache;
+            try {
+                blacklist = app.blacklist.getBlacklist();
+            } catch (err) {
+                blacklist = "Error:" + err.message + " " + err.stack;
+            }
+            try {
+                thumbs = app.internalStructure.fullDebugStructure;
+                delete thumbs.internalState;
+            } catch (err) {
+                thumbs = "Error:" + err.message + " " + err.stack;
+            }
+            try {
+                pickupCache = app.pickup.getCache();
+            } catch (err) {
+                pickupCache = "Error:" + err.message + " " + err.stack;
+            }
+            return {
+                blacklist: blacklist,
+                thumbs: thumbs,
+                pickupCache: pickupCache
             };
-            database.close();
-            return res;
         },
         restoreBackup: function Snapshoter_restoreBackup(leafName) {
             if (appCore.appName !== "yandex-vb") {

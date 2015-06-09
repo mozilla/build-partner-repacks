@@ -98,7 +98,7 @@
 <!ENTITY settings.editTitle "Рэдагаваць апісанне">
 <!ENTITY settings.lastVisited "Нядаўна наведаныя">
 <!ENTITY settings.popularSites "Папулярныя">
-<!ENTITY newyear.18.12.2014.button "Посмотреть">
+<!ENTITY newyear.18.12.2014.button "">
 <!ENTITY newyear.18.12.2014.text "Текст про новый год">
 <!ENTITY newyear.19.12.2014.button "Показать">
 <!ENTITY newyear.19.12.2014.text "Текст про новый год. Второй день.">
@@ -122,10 +122,10 @@
 <!ENTITY newyear.28.12.2014.text "Текст про новый год. Одиннадцатый день.">
 <!ENTITY newyear.29.12.2014.button "Посмотреть">
 <!ENTITY newyear.29.12.2014.text "Текст про новый год. Двенадцатый день.">
-<!ENTITY newyear.30.12.2014.button "Посмотреть">
-<!ENTITY newyear.30.12.2014.text "Текст про новый год. Тринадцатый день.">
-<!ENTITY newyear.31.12.2014.button "Посмотреть">
-<!ENTITY newyear.31.12.2014.text "Текст про новый год. Четырнадцатый день.">
+<!ENTITY newyear.30.12.2014.button "Абраць">
+<!ENTITY newyear.30.12.2014.text "">
+<!ENTITY newyear.31.12.2014.button "">
+<!ENTITY newyear.31.12.2014.text "">
 <!ENTITY newyear.18.12.2014.header "До Нового года осталось 14 дней">
 <!ENTITY newyear.19.12.2014.header "До Нового года осталось 13 дней">
 <!ENTITY newyear.20.12.2014.header "До Нового года осталось 12 дней">
@@ -138,5 +138,15 @@
 <!ENTITY newyear.27.12.2014.header "До Нового года осталось 5 дней">
 <!ENTITY newyear.28.12.2014.header "До Нового года осталось 4 дня">
 <!ENTITY newyear.29.12.2014.header "До Нового года осталось 3 дня">
-<!ENTITY newyear.30.12.2014.header "До Нового года осталось 2 дня">
-<!ENTITY newyear.31.12.2014.header "До Нового года остался 1 день">
+<!ENTITY newyear.30.12.2014.header "">
+<!ENTITY newyear.31.12.2014.header "">
+<!ENTITY advertisement.homepage.done "Яндекс усталяваны пачатковай старонкай">
+<!ENTITY advertisement.homepage.setDefault "Зрабіць Яндекс [пачатковай старонкай]">
+<!ENTITY advertisement.search.done "Яндекс усталяваны перадвызначаным пошукам">
+<!ENTITY advertisement.search.setDefault "Зрабіць Яндекс [перадвызначаным пошукам]">
+<!ENTITY footer.addThumb "Дадаць закладку">
+<!ENTITY advertisement.addThumb.text "Каб дадаць новую закладку, націсніце сюды">
+<!ENTITY advertisement.backgrounds.done "Гатова">
+<!ENTITY restorepopup.button "Скасаваць">
+<!ENTITY restorepopup.tumb "Закладка выдалена">
+<!ENTITY restorepopup.tumbs "{N} закладка выдалена;{N} закладкі выдалены;{N} закладак выдалена">

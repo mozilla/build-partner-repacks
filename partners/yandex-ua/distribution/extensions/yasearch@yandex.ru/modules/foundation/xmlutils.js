@@ -99,13 +99,7 @@ const xmlutils = {
     getDOMParser: function xmlutils_getDOMParser(docURI, baseURI, withSystemPrincipal) {
         let domParser = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
         if (docURI || baseURI) {
-            let systemPrincipal = null;
-            try {
-                if (withSystemPrincipal) {
-                    systemPrincipal = sysutils.scriptSecurityManager.getSystemPrincipal();
-                }
-            } catch (ex) {
-            }
+            let systemPrincipal = withSystemPrincipal ? Services.scriptSecurityManager.getSystemPrincipal() : null;
             domParser.init(systemPrincipal, docURI, baseURI);
         } else {
             domParser.init();

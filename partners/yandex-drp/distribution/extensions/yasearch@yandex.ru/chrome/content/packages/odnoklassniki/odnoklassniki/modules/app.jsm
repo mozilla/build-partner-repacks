@@ -36,7 +36,7 @@ var module = function (app, common) {
             return app.isAuth();
         },
         hasSavedLogins: function dayuseStatProvider_hasSavedLogins() {
-            return common.loginManager.hasSavedLogins({ formSubmitURL: "https://www.ok.ru" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://www.odnoklassniki.ru" });
+            return common.loginManager.hasSavedLogins({ formSubmitURL: "https://www.ok.ru" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://www.odnoklassniki.ru" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "http://connect.ok.ru" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://connect.ok.ru" });
         },
         isNotificationsEnabled: function dayuseStatProvider_isNotificationsEnabled() {
             return app.canShowNotifications() && app.api.Settings.getValue("notifications") === true;

@@ -3,7 +3,6 @@ toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#searc
 toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#settings"]{-moz-binding:url(settings/settings.xbl)!important}
 toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#money"]{-moz-binding:url(money/bindings/money.xbl)!important}
 toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#fotki"]{-moz-binding:url(fotki/bindings/fotki.xbl)!important}
-toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#lenta"]{-moz-binding:url(lenta/bindings/lenta.xbl)!important}
 toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#mail"]{-moz-binding:url(mail/bindings/mail-widget.xbl#widget)!important}
 toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#login"]{-moz-binding:url(login/bindings/login-widget.xbl)!important}
 toolbaritem[yb-native-widget-name="http://bar.yandex.ru/packages/yandexbar#spam"]{-moz-binding:url(spam/spam.xbl)!important}

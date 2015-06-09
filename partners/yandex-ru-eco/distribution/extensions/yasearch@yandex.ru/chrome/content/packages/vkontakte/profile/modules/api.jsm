@@ -210,12 +210,12 @@ var module = function (app, common) {
                 user.first_name,
                 user.last_name
             ].join(" ");
-            user.photo50 = user.photo_50 || user.photo;
+            user.photo100 = user.photo_100 || user.photo;
             user.url = app.getAppUrl("user", user.id);
             return user;
         },
         _handleGroup: function (group) {
-            group.photo50 = group.photo_50 || group.photo;
+            group.photo100 = group.photo_100 || group.photo;
             group.url = app.getAppUrl("club", group.id);
             return group;
         },
@@ -234,7 +234,7 @@ var module = function (app, common) {
             if (keys.length) {
                 log("_getProfiles: load " + keys.length + " profile(s)");
                 this._ajax("users.get", {
-                    fields: "online,photo_50,sex",
+                    fields: "online,photo_100,sex",
                     user_ids: keys.join(",")
                 }, function (data) {
                     userCache.apply(data, "id");

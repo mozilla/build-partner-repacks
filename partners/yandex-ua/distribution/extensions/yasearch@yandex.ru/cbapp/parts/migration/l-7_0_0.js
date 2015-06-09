@@ -206,7 +206,7 @@ const migrator = {
         }
     },
     _migrateTown: function migrator__migrateTown() {
-        this._migrationModule.movePrefBranch("yasearch.xbwidgets.http://bar.yandex.ru/packages/yandexbar#town.", "yasearch.native_comps.http://bar.yandex.ru/packages/yandexbar#town.");
+        this._migrationModule.movePrefBranch("yasearch.xbwidgets.http://bar.yandex.ru/packages/yandexbar#town.", "extensions.yasearch@yandex.ru.native_comps.http://bar.yandex.ru/packages/yandexbar#town.");
     },
     _migrateRDF: function migrator__migrateRDF() {
         let allResources = this._localStoreRDF.GetAllResources();

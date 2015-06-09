@@ -104,8 +104,6 @@ const bookmarksStat = {
     },
     onItemVisited: function bookmarksStat_onItemVisited() {
     },
-    onBeforeItemRemoved: function bookmarksStat_onBeforeItemRemoved() {
-    },
     QueryInterface: XPCOMUtils.generateQI([
         Ci.nsINavBookmarkObserver,
         Ci.nsISupportsWeakReference

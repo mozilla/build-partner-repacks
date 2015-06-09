@@ -8,6 +8,7 @@ const {
 } = Components;
 const GLOBAL = this;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 const aboutSupport = {
     init: function AboutSupport_init(aApplication) {
         aApplication.core.Lib.sysutils.copyProperties(aApplication.core.Lib, GLOBAL);
@@ -70,7 +71,7 @@ const aboutSupport = {
         let channel = Cc["@mozilla.org/network/input-stream-channel;1"].createInstance(Ci.nsIInputStreamChannel).QueryInterface(Ci.nsIChannel);
         channel.setURI(aURI);
         channel.originalURI = aURI;
-        channel.owner = sysutils.scriptSecurityManager.getSystemPrincipal();
+        channel.owner = Services.scriptSecurityManager.getSystemPrincipal();
         channel.contentStream = inputStream;
         return channel;
     }

@@ -10,61 +10,61 @@ var module = function (app, common) {
         get app() {
             return this._app;
         },
-        init: function webmaster_webmaster_init(application) {
+        init: function (application) {
             this._app = application;
             exportMgr = app.commonModule("export");
             exportMgr.init(_handlers);
         },
-        finalize: function webmaster_webmaster_finalize() {
+        finalize: function () {
             this._app = null;
             exportMgr = null;
         },
-        _onSuccess: function webmaster_webmaster__onSuccess(aWIID, action, data) {
+        _onSuccess: function (aWIID, action, data) {
             this.app.onUpdate(aWIID);
         },
-        _onFail: function webmaster_webmaster__onFail(aWIID, action, data) {
+        _onFail: function (aWIID, action, data) {
             this.app.onUpdate(aWIID);
         },
-        configure: function webmaster_webmaster_configure(aName, aValue, aAction) {
+        configure: function (aName, aValue, aAction) {
             let configActionName = aAction || "_defaults";
             if (!this._config[configActionName]) {
                 this._config[configActionName] = Object.create(null);
             }
             this._config[configActionName][aName] = aValue;
         },
-        getConfigValue: function webmaster_webmaster_getConfigValue(aName, aValue, aAction) {
+        getConfigValue: function (aName, aValue, aAction) {
             let configActionName = aAction || "_defaults";
             return this._config[configActionName] && this._config[configActionName][aName];
         },
-        cleanData: function webmaster_webmaster_cleanData(aWIID) {
+        cleanData: function (aWIID) {
             exportMgr.cleanData(aWIID);
         },
-        getUpdateInterval: function webmaster_webmaster_getUpdateInterval(aWIID, force) {
+        getUpdateInterval: function (aWIID, force) {
             if (!this._updateIntervals[aWIID] || force) {
-                this._updateIntervals[aWIID] = parseInt(this.app.api.Settings.getValue("update-interval"), 10) * 60;
+                this._updateIntervals[aWIID] = parseInt(this.app.api.Settings.getValue("update-interval"), 10) * 3600;
             }
             return this._updateIntervals[aWIID];
         },
-        getLastUpdateTime: function webmaster_webmaster_getLastUpdateTime(aWIID) {
+        getLastUpdateTime: function (aWIID) {
             return exportMgr.getLastUpdateTime(aWIID);
         },
-        getError: function webmaster_webmaster_getError(aWIID) {
+        getError: function (aWIID) {
             return exportMgr.getError(aWIID);
         },
-        getUserData: function webmaster_webmaster_getUserData(aWIID, aAction) {
+        getUserData: function (aWIID, aAction) {
             return exportMgr.getServerData(aWIID, aAction);
         },
-        update: function webmaster_webmaster_update(aWIID, force) {
+        update: function (aWIID, force) {
             exportMgr.update(aWIID, force);
         }
     };
     let _handlers = Object.create(null);
     _handlers._defaults = {
-        updateInterval: function webmaster_webmaster__handlers_main_updateInterval(aWIID) {
+        updateInterval: function (aWIID) {
             return res.getUpdateInterval(aWIID);
         },
         expiryInterval: EXPIRY_TIME,
-        errback: function webmaster_webmaster__handlers_main_errback(aXhr) {
+        errback: function (aXhr) {
             return { _error: true };
         },
         onSuccess: res._onSuccess.bind(res),
@@ -72,10 +72,10 @@ var module = function (app, common) {
     };
     _handlers.main = [{
             url: "http://webmaster.yandex.ru/bar-export.xml?version=2&format=xml",
-            cacheKeys: function webmaster_webmaster__handlers_main_cacheKeys() {
+            cacheKeys: function () {
                 return { login: res.getConfigValue("user") };
             },
-            callback: function webmaster_webmaster__handlers_main_callback(aXhr) {
+            callback: function (aXhr) {
                 let result = { _error: false };
                 let xhrData;
                 try {

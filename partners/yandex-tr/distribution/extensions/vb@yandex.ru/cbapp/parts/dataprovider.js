@@ -7,17 +7,14 @@ const {
 } = Components;
 const EXPORTED_SYMBOLS = ["brandingPlus"];
 const GLOBAL = this;
-const PKG_UPD_TOPIC = "package updated";
 const brandingPlus = {
     init: function brandingPlus_init(application) {
         this._application = application;
         this._logger = this._application.getLogger("Package");
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         this._application.core.protocol.addDataProvider(this);
-        this._application.branding.addListener(PKG_UPD_TOPIC, this);
     },
     finalize: function brandingPlus_finalize() {
-        this._application.branding.removeListener(PKG_UPD_TOPIC, this);
         this._application.core.protocol.removeDataProvider(this);
         this._application = null;
         this._logger = null;
@@ -41,11 +38,6 @@ const brandingPlus = {
         channel.originalURI = aURI;
         channel.contentStream = stream;
         return channel;
-    },
-    observe: function brandingPlus_observe(aSubject, aTopic, aData) {
-        if (aTopic == PKG_UPD_TOPIC) {
-            this._namesStr = undefined;
-        }
     },
     get _namesDTDContent() {
         if (!this._namesStr) {

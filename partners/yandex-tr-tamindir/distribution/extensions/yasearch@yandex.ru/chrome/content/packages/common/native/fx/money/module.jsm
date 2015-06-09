@@ -15,79 +15,77 @@ const core = {
     counterServiceID: 45,
     counterXpathExpr: "number(/s/c/money/@v)",
     get authManager() {
-        return this.authAdapter.authManager;
+        return this.API.Passport;
     },
     get API() {
         return this._api;
     },
-    init: function MoneyWidget_init(api) {
+    init: function (api) {
         this._api = api;
         this._logger = api.logger;
         this._loadModules();
     },
-    finalize: function MoneyWidget_finalize() {
+    finalize: function () {
         delete this.utils;
         delete this._api;
         delete this._logger;
         delete this.__stringBundle;
     },
-    buildWidget: function MoneyWidget_buildWidget(WIID, item) {
+    buildWidget: function (WIID, item) {
         item.setAttribute("yb-native-widget-name", WIDGET_NAME);
         item.setAttribute("yb-native-widget-wiid", WIID);
         item.module = this;
     },
-    destroyWidget: function MoneyWidget_destroyWidget(WIID, item, context) {
+    destroyWidget: function (WIID, item, context) {
         item.removeAttribute("yb-native-widget-name");
         item.removeAttribute("yb-native-widget-wiid");
     },
     dayuseStatProvider: {
-        isAuthorized: function dayuseStatProvider_isAuthorized() {
-            return core.authManager.authorized;
+        isAuthorized: function () {
+            return core.authManager.isAuthorized();
         },
-        hasSavedLogins: function dayuseStatProvider_hasSavedLogins() {
-            return core.authManager.pwdmng.hasSavedAccounts;
+        hasSavedLogins: function () {
+            return core.authManager.hasSavedLogins();
         }
     },
-    onButtonClick: function MoneyWidget_onButtonClick(event, widget) {
-        if (this.authManager.authorized) {
+    onButtonClick: function (event, widget) {
+        if (this.authManager.isAuthorized()) {
             this.gotoHome(event);
-        } else {
-            let dialogParams = { retpath: this._getMoneyURL() };
-            this.authManager.openAuthDialog(dialogParams);
+            return;
         }
+        this.authManager.openAuthDialog({ retpath: this._getMoneyURL() });
     },
-    refreshData: function MoneyWidget_refreshData(event, callback) {
+    refreshData: function (event, callback) {
         this.counters.forceUpdate(this.counterServiceID, callback);
     },
-    gotoHome: function MoneyWidget_gotoHome(event) {
+    gotoHome: function (event) {
         this._navToMoneyPage("", event);
     },
-    gotoShop: function MoneyWidget_gotoShop(event) {
+    gotoShop: function (event) {
         this._navToMoneyPage("shops.xml", event);
     },
-    gotoPrepay: function MoneyWidget_gotoPrepay(event) {
+    gotoPrepay: function (event) {
         this._navToMoneyPage("prepaid.xml", event);
     },
     __stringBundle: null,
     get _stringBundle() {
         return this.__stringBundle || (this.__stringBundle = this._api.Localization.createStringBundle("/native/fx/money.properties"));
     },
-    _getMoneyURL: function MoneyWidget__getMoneyURL() {
+    _getMoneyURL: function () {
         return this.utils.tryCreateFixupURI(this._stringBundle.get("MoneyHost")).spec;
     },
-    _navToMoneyPage: function MoneyWidget__navToMoneyPage(page, origEvent) {
-        let moneyURL = this._getMoneyURL() + (page ? "/" + page : "");
+    _navToMoneyPage: function (page, origEvent) {
+        let moneyURL = this._getMoneyURL() + (page || "");
         this.API.Controls.navigateBrowser({
             url: moneyURL,
             eventInfo: origEvent
         });
     },
     _MODULES: {
-        utils: "common-auth/utils.jsm",
-        counters: "counters.jsm",
-        authAdapter: "yauth.jsm"
+        utils: "utils.jsm",
+        counters: "counters.jsm"
     },
-    _loadModules: function MoneyWidget__loadModules() {
+    _loadModules: function () {
         let shAPI = this._api.shareableAPI;
         for (let [
                     moduleName,

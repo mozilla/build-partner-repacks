@@ -74,11 +74,6 @@ const urlRewrite = {
             let channel = subject;
             try {
                 channel.QueryInterface(Ci.nsIHttpChannel);
-                if (!("redirectTo" in channel)) {
-                    if (!(channel.loadFlags & Ci.nsIChannel.LOAD_INITIAL_DOCUMENT_URI)) {
-                        return;
-                    }
-                }
                 let currentSpec = channel.URI.spec;
                 let newSpec;
                 let currentSpecPrefix = currentSpec.replace(/^[a-z]+:\/\//, "");
@@ -108,16 +103,7 @@ const urlRewrite = {
                     return;
                 }
                 let uri = Services.io.newURI(newSpec, null, null);
-                if ("redirectTo" in channel) {
-                    channel.redirectTo(uri);
-                } else {
-                    let window = this._getDOMWindowForChannel(channel);
-                    if (!window) {
-                        return;
-                    }
-                    window.location = uri.spec;
-                    channel.cancel(Cr.NS_BINDING_REDIRECTED);
-                }
+                channel.redirectTo(uri);
                 this._logger.debug("Redirect '" + currentSpec.substring(0, 100) + "' to '" + uri.spec.substring(0, 100) + "'");
             } catch (e) {
                 this._logger.error("Error observing 'http-on-modify-request':\n" + e);
@@ -131,13 +117,6 @@ const urlRewrite = {
         default:
             break;
         }
-    },
-    _getDOMWindowForChannel: function urlRewrite__getDOMWindowForChannel(channel) {
-        try {
-            return channel.loadGroup.groupObserver.QueryInterface(Ci.nsIWebProgress).DOMWindow;
-        } catch (e) {
-        }
-        return null;
     },
     __httpCacheSession: null,
     get _httpCacheSession() {

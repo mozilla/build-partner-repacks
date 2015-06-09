@@ -6,7 +6,6 @@ const {
     utils: Cu
 } = Components;
 const EXT_ID = "yasearch@yandex.ru";
-const CHROME_CONTENT = "chrome://yasearch/content/";
 const PERMS_FILE = parseInt("0644", 8);
 const PERMS_DIRECTORY = parseInt("0755", 8);
 Cu.import("resource://gre/modules/Services.jsm");
@@ -16,20 +15,117 @@ this.__defineGetter__("AddonManager", function addonManagerGetter() {
     Cu.import("resource://yasearch-mod/AddonManager.jsm", this);
     return this.AddonManager;
 });
-var gSubscriptsForInit = [];
-[
-    "ya_installer",
-    "ya_overlay"
-].forEach(function (aScriptName) {
-    this.loadSubScript(CHROME_CONTENT + "sub-scripts/" + aScriptName + ".js");
-}, Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader));
+var gYaInstaller = {
+    __installed: true,
+    APP_ACTION_QUIT_TOPIC: "quit-application",
+    startup: function YaInstaller_startup() {
+        Services.obs.addObserver(this, this.APP_ACTION_QUIT_TOPIC, false);
+        AddonManager.addAddonListener(this);
+    },
+    shutdown: function YaInstaller_shutdown() {
+        AddonManager.removeAddonListener(this);
+        Services.obs.removeObserver(this, this.APP_ACTION_QUIT_TOPIC);
+        if (this.__installed === false) {
+            this._proccessUninstall();
+        }
+    },
+    onAddonEvent: function YaInstaller_onAddonEvent(aEventType, aAddon, aPendingRestart) {
+        if (aAddon.id === EXT_ID) {
+            this.__installed = aEventType !== "onUninstalling";
+        }
+    },
+    observe: function YaInstaller_observe(aSubject, aTopic, aData) {
+        switch (aTopic) {
+        case this.APP_ACTION_QUIT_TOPIC:
+            this.shutdown();
+            break;
+        default:
+            break;
+        }
+    },
+    _proccessUninstall: function YaInstaller__proccessUninstall() {
+        function resetPref(aPrefName) {
+            try {
+                Services.prefs.clearUserPref(aPrefName);
+            } catch (e) {
+            }
+        }
+        function removeFile(aFile) {
+            if (!(aFile instanceof Ci.nsIFile)) {
+                throw new Error("nsYaSearch.removeFile: not nsIFile.");
+            }
+            if (!aFile.exists()) {
+                return true;
+            }
+            if (!aFile.isFile() && !aFile.isDirectory()) {
+                throw new Error("nsYaSearch.removeFile: not a file or directory.");
+            }
+            try {
+                aFile.remove(true);
+                return true;
+            } catch (e) {
+            }
+            let tmpDir = Services.dirsvc.get("TmpD", Ci.nsIFile);
+            let tmpFile = tmpDir.clone();
+            tmpFile.append(aFile.leafName);
+            if (aFile.isFile()) {
+                tmpFile.createUnique(tmpFile.NORMAL_FILE_TYPE, PERMS_FILE);
+            } else {
+                tmpFile.createUnique(tmpFile.DIRECTORY_TYPE, PERMS_DIRECTORY);
+            }
+            aFile.moveTo(tmpDir, tmpFile.leafName);
+            return true;
+        }
+        resetPref("yasearch.general.lastVersion");
+        resetPref("yasearch.license.accepted");
+        resetPref("yasearch.welcomepage.version.introduced");
+        resetPref("yasearch.guid.clids.creationDate");
+        resetPref("yasearch.general.stt");
+        resetPref("yasearch.general.app.bar.type");
+        let asyncModule = gYaSearchService.customBarApp.core.Lib.async;
+        let yandexDir = Services.dirsvc.get("ProfD", Ci.nsIFile);
+        yandexDir.append("yandex");
+        if (yandexDir.exists()) {
+            [
+                "cities.data.xml",
+                "regions.data.xml",
+                "services.mybar.xml",
+                "maps.data.xml",
+                "services.data.xml",
+                "ftab.data.xml",
+                "yasearch-storage.sqlite",
+                "bar-logo.ico",
+                "ftab-data",
+                "users.sqlite"
+            ].forEach(function (aFileOrDirectoryName) {
+                let fileToRemove = yandexDir.clone();
+                fileToRemove.append(aFileOrDirectoryName);
+                try {
+                    asyncModule.nextTick(function () {
+                        removeFile(fileToRemove);
+                    });
+                } catch (e) {
+                    Cu.reportError(e);
+                }
+            });
+            asyncModule.nextTick(function () {
+                if (!yandexDir.directoryEntries.hasMoreElements()) {
+                    try {
+                        removeFile(yandexDir);
+                    } catch (e) {
+                        Cu.reportError(e);
+                    }
+                }
+            });
+        }
+    }
+};
 function nsIYaSearch() {
-    this.version = "201401150600";
+    this.version = "201502040600";
     this.wrappedJSObject = this;
     this._inited = false;
 }
 nsIYaSearch.prototype = {
-    globalScope: this,
     log: function (msg) {
     },
     get customBarApp() {
@@ -40,14 +136,6 @@ nsIYaSearch.prototype = {
     },
     set barnavigR1String(aR1String) {
         this.customBarApp.barnavig.barnavigR1String = aR1String || "";
-    },
-    isFirstDOMWinStuffDone: false,
-    onBrowserUIStartupComplete: function () {
-        if (!this.initialized || this.isFirstDOMWinStuffDone) {
-            return;
-        }
-        this.stringBundle = null;
-        this.isFirstDOMWinStuffDone = true;
     },
     get initialized() {
         return this._inited;
@@ -60,23 +148,13 @@ nsIYaSearch.prototype = {
             Services.obs.addObserver(this, "yasearch-state-changed", false);
             return;
         }
-        const branding = this.customBarApp.branding;
-        Services.obs.addObserver(this, "browser-ui-startup-complete", true);
         Services.obs.addObserver(this, "profile-before-change", true);
-        ["http-on-modify-request"].forEach(function YS_init_addObservers(aTopicName) {
-            Services.obs.addObserver(this, aTopicName, true);
-        }, this);
-        gSubscriptsForInit.forEach(function (aObject) {
-            if (typeof aObject === "object" && "startup" in aObject) {
-                try {
-                    aObject.startup();
-                } catch (e) {
-                    Cu.reportError(e);
-                    Cu.reportError("Error running sub-script startup (" + aObject + ")");
-                }
-            }
-        });
-        gSubscriptsForInit = null;
+        try {
+            gYaInstaller.startup();
+        } catch (e) {
+            Cu.reportError(e);
+            Cu.reportError("Error running gYaInstaller startup");
+        }
         this._inited = true;
         Services.obs.notifyObservers(null, "yasearch-state-changed", "initialized");
     },
@@ -86,57 +164,10 @@ nsIYaSearch.prototype = {
         }
         this._inited = false;
         Services.obs.notifyObservers(null, "yasearch-state-changed", "before-finalized");
-        ["http-on-modify-request"].forEach(function YS_uninit_removeObservers(aTopicName) {
-            Services.obs.removeObserver(this, aTopicName, true);
-        }, this);
         Services.obs.notifyObservers(null, "yasearch-state-changed", "finalized");
-    },
-    get yaOverlay() {
-        return this.globalScope.gYaOverlay || null;
-    },
-    getExtensionURI: function YS_getExtensionURI() {
-        let extDir = Services.io.newURI(__URI__, null, null);
-        return Services.io.newURI(extDir.resolve(".."), null, null);
-    },
-    get barPref() {
-        if (!this._barPref) {
-            this._barPref = " YB/" + this.barExtensionVersionWithLocale;
-        }
-        return this._barPref;
-    },
-    get barPrefReg() {
-        if (!this._barPrefReg) {
-            this._barPrefReg = new RegExp(this.barPref.replace(/(\.|\-)/g, "\\$1"));
-        }
-        return this._barPrefReg;
-    },
-    __localeLang: null,
-    get localeLang() {
-        if (!this.__localeLang) {
-            this.__localeLang = this.getString("locale.lang");
-        }
-        return this.__localeLang;
     },
     observe: function (aSubject, aTopic, aData) {
         switch (aTopic) {
-        case "http-on-modify-request":
-            aSubject.QueryInterface(Ci.nsIHttpChannel);
-            switch (aSubject.URI.host) {
-            case "bar.yandex.ru":
-                if (!/bar\.yandex\.ru\/library/.test(aSubject.URI.spec)) {
-                    return;
-                }
-            case "bar-widgets.yandex.ru":
-                try {
-                    var ua = aSubject.getRequestHeader("User-Agent");
-                    if (!this.barPrefReg.test(ua)) {
-                        aSubject.setRequestHeader("User-Agent", ua + this.barPref, false);
-                    }
-                } catch (e) {
-                }
-                break;
-            }
-            break;
         case "yasearch-state-changed":
             switch (aData) {
             case "custombar-initialized":
@@ -153,229 +184,7 @@ nsIYaSearch.prototype = {
         case "app-startup":
             Services.obs.addObserver(this, "profile-after-change", true);
             break;
-        case "browser-ui-startup-complete":
-            this.onBrowserUIStartupComplete();
-            break;
         }
-    },
-    getStringBundle: function (aLocaleFilePath) {
-        let strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].createInstance(Ci.nsIStringBundleService);
-        if (aLocaleFilePath) {
-            return strBundleService.createBundle("chrome://yasearch/locale/" + aLocaleFilePath);
-        }
-        if (!this.stringBundle) {
-            this.stringBundle = strBundleService.createBundle("chrome://yasearch/locale/yasearch.properties");
-        }
-        return this.stringBundle;
-    },
-    getString: function (aName) {
-        return this.getStringBundle().GetStringFromName(aName);
-    },
-    _getBytesFromStream: function (aInputStream) {
-        let byteArray = null;
-        try {
-            let binaryStream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
-            binaryStream.setInputStream(aInputStream);
-            byteArray = binaryStream.readByteArray(binaryStream.available());
-            binaryStream.close();
-        } catch (ex) {
-            Cu.reportError(ex);
-        }
-        return byteArray;
-    },
-    _getStringFromStream: function (aInputStream) {
-        let content = "";
-        try {
-            let fileSize = aInputStream.available();
-            let cvstream = Cc["@mozilla.org/intl/converter-input-stream;1"].createInstance(Ci.nsIConverterInputStream);
-            cvstream.init(aInputStream, "UTF-8", fileSize, Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
-            let data = {};
-            cvstream.readString(fileSize, data);
-            content = data.value;
-            cvstream.close();
-        } catch (ex) {
-            Cu.reportError(ex);
-        }
-        return content;
-    },
-    readFile: function (aSource, aBinaryMode) {
-        if (!aSource) {
-            return null;
-        }
-        let inputStream;
-        let content = "";
-        if (typeof aSource == "string") {
-            const CHROME_APP_PATH = "chrome://yasearch/";
-            aSource = aSource.replace(/^\$(content|locale|skin)\//, CHROME_APP_PATH + "$1/").replace(/^\$chrome\//, CHROME_APP_PATH);
-            let chromeReg = Cc["@mozilla.org/chrome/chrome-registry;1"].getService(Ci.nsIChromeRegistry);
-            let chromeURI;
-            try {
-                chromeURI = chromeReg.convertChromeURL(Services.io.newURI(aSource, null, null));
-            } catch (ex) {
-            }
-            if (chromeURI) {
-                switch (chromeURI.scheme) {
-                case "jar":
-                    chromeURI.QueryInterface(Ci.nsIJARURI);
-                    let fileURI = chromeURI.JARFile;
-                    fileURI.QueryInterface(Ci.nsIFileURL);
-                    let chromeFile = fileURI.file;
-                    let jarEntry = chromeURI.JAREntry;
-                    let zipreader = Cc["@mozilla.org/libjar/zip-reader;1"].createInstance(Ci.nsIZipReader);
-                    zipreader.open(chromeFile);
-                    if (zipreader.hasEntry(jarEntry)) {
-                        inputStream = zipreader.getInputStream(jarEntry);
-                    }
-                    zipreader.close();
-                    break;
-                case "file":
-                    let protocolHandler = Cc["@mozilla.org/network/protocol;1?name=file"].createInstance(Ci.nsIFileProtocolHandler);
-                    aSource = protocolHandler.getFileFromURLSpec(chromeURI.spec);
-                    break;
-                default:
-                    throw new Error("'" + chromeURI.scheme + "' not yet impl");
-                }
-            }
-        }
-        if (!inputStream && aSource instanceof Ci.nsIFile) {
-            inputStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
-            inputStream.init(aSource, 1, 0, inputStream.CLOSE_ON_EOF);
-        }
-        if (inputStream) {
-            content = aBinaryMode ? this._getBytesFromStream(inputStream) : this._getStringFromStream(inputStream);
-            inputStream.close();
-        }
-        return content;
-    },
-    removeFile: function (aFile) {
-        if (!(aFile instanceof Ci.nsIFile)) {
-            throw new Error("nsYaSearch.removeFile: not nsIFile.");
-        }
-        if (!aFile.exists()) {
-            return true;
-        }
-        if (!aFile.isFile() && !aFile.isDirectory()) {
-            throw new Error("nsYaSearch.removeFile: not a file or directory.");
-        }
-        try {
-            aFile.remove(true);
-            return true;
-        } catch (e) {
-        }
-        let tmpDir = Services.dirsvc.get("TmpD", Ci.nsIFile);
-        let tmpFile = tmpDir.clone();
-        tmpFile.append(aFile.leafName);
-        if (aFile.isFile()) {
-            tmpFile.createUnique(tmpFile.NORMAL_FILE_TYPE, PERMS_FILE);
-        } else {
-            tmpFile.createUnique(tmpFile.DIRECTORY_TYPE, PERMS_DIRECTORY);
-        }
-        aFile.moveTo(tmpDir, tmpFile.leafName);
-        return true;
-    },
-    setBoolPref: function (aName, aValue) {
-        Services.prefs.setBoolPref(aName, aValue);
-    },
-    getBoolPref: function (aName) {
-        let rv = null;
-        try {
-            rv = Services.prefs.getBoolPref(aName);
-        } catch (e) {
-        }
-        return rv;
-    },
-    setIntPref: function (aName, aValue) {
-        Services.prefs.setIntPref(aName, aValue);
-    },
-    getIntPref: function (aName) {
-        let rv = null;
-        try {
-            rv = Services.prefs.getIntPref(aName);
-            if (rv < 0) {
-                rv = 0;
-            }
-        } catch (e) {
-        }
-        return rv;
-    },
-    setCharPref: function (aName, aValue) {
-        Services.prefs.setCharPref(aName, aValue);
-    },
-    getCharPref: function (aName) {
-        let rv = null;
-        try {
-            rv = Services.prefs.getCharPref(aName);
-        } catch (e) {
-        }
-        return rv;
-    },
-    getComplexValue: function (aName) {
-        let rv = null;
-        try {
-            rv = Services.prefs.getComplexValue(aName, Ci.nsIPrefLocalizedString).data;
-        } catch (e) {
-        }
-        return rv;
-    },
-    setComplexValue: function (aName, aValue) {
-        try {
-            let str = Cc["@mozilla.org/supports-string;1"].createInstance(Ci.nsISupportsString);
-            str.data = aValue;
-            Services.prefs.setComplexValue(aName, Ci.nsISupportsString, str);
-        } catch (e) {
-        }
-    },
-    resetPref: function (aPrefName) {
-        try {
-            Services.prefs.clearUserPref(aPrefName);
-        } catch (e) {
-        }
-    },
-    get barExtensionVersion() {
-        if (!this._barExtensionVersion) {
-            this._barExtensionVersion = this.barExtensionMajorVersion;
-        }
-        return this._barExtensionVersion;
-    },
-    get barExtensionMajorVersion() {
-        if (!this._barExtensionMajorVersion) {
-            let extDir = Services.io.newURI(__URI__, null, null);
-            let extURI = Services.io.newURI(extDir.resolve(".."), null, null);
-            this._barExtensionMajorVersion = AddonManager.getAddonVersion(extURI);
-        }
-        return this._barExtensionMajorVersion;
-    },
-    get barExtensionVersionWithLocale() {
-        if (!this._barExtensionVersionWithLocale) {
-            this._barExtensionVersionWithLocale = this.barExtensionVersion + this.versionLocaleAppend;
-        }
-        return this._barExtensionVersionWithLocale;
-    },
-    get versionLocaleAppend() {
-        let verLocaleAppend = this.localeLang;
-        return verLocaleAppend && verLocaleAppend != "ru" ? "-" + verLocaleAppend : "";
-    },
-    get isYandexFirefoxDistribution() {
-        let isYandexDistrib = gYaSearchService.getCharPref("app.distributor") == "yandex";
-        if (!isYandexDistrib) {
-            let curProcDir;
-            try {
-                curProcDir = Services.dirsvc.get("CurProcD", Ci.nsIFile);
-            } catch (e) {
-            }
-            if (curProcDir) {
-                [
-                    "distribution",
-                    "extensions",
-                    "yasearch@yandex.ru"
-                ].forEach(aPath => curProcDir.append(aPath));
-                isYandexDistrib = curProcDir.exists();
-            }
-        }
-        this.__defineGetter__("isYandexFirefoxDistribution", function () {
-            return isYandexDistrib;
-        });
-        return this.isYandexFirefoxDistribution;
     },
     classDescription: "nsYaSearch JS component",
     contractID: "@yandex.ru/yasearch;1",

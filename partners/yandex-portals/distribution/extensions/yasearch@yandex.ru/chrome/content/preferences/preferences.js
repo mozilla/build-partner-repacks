@@ -292,10 +292,10 @@ WidgetInstProxy.prototype = {
         if (!(typeof settingsTemplate == "string" && settingsTemplate)) {
             return null;
         }
-        let cryptoHash = Preferences.barCore.Lib.misc.CryptoHash;
-        let packageIdHash = cryptoHash.getFromString(this.packageId, "MD5");
-        let protoIdHash = cryptoHash.getFromString(this.protoId, "MD5");
-        let instanceIdHash = cryptoHash.getFromString(this.instanceID, "MD5");
+        let crypto = Preferences.barCore.Lib.misc.crypto;
+        let packageIdHash = crypto.createHash("md5").update(this.packageId).digest("hex");
+        let protoIdHash = crypto.createHash("md5").update(this.protoId).digest("hex");
+        let instanceIdHash = crypto.createHash("md5").update(this.instanceID).digest("hex");
         let jsNativeModuleObjectPrefix = "_wgtNativeModule_" + protoIdHash;
         let jsNativeModuleDefinedObjectPrefix = "_defined_" + jsNativeModuleObjectPrefix;
         if (!(jsNativeModuleObjectPrefix in WidgetsJS)) {
@@ -449,12 +449,6 @@ var WidgetsBase = {
         }
         return null;
     },
-    __iterator__: function WidgetsBase_iterator() {
-        let widgets = this._widgets;
-        for (let i = 0, len = widgets.length; i < len; i++) {
-            yield widgets[i];
-        }
-    },
     onSettingsRestore: function WidgetsBase_onSettingsRestore() {
         this._widgets.forEach(widget => widget.onSettingsRestore());
     }
@@ -514,9 +508,6 @@ var RegisteredPlugins = {
     }
 };
 var ProductBranding = {
-    shutdown: function ProductBranding_shutdown() {
-        this.partnerPackSvc = null;
-    },
     get softwareLink() {
         let linkElement = this._productData.productXML.querySelector("SoftURL");
         let softwareLink = linkElement && this._replaceURLTemplates(linkElement.textContent) || null;
@@ -555,29 +546,13 @@ var ProductBranding = {
     setBrowserHomePage: function ProductBranding_setBrowserHomePage() {
         Preferences.barCore.application.installer.setBrowserHomePage();
     },
-    PARTNER_PACK_COMPID: "ru.yandex.custombar.branding",
-    PARTNER_PACK_SVCNAME: "package",
-    _partnerPackSvc: null,
-    get partnerPackSvc() {
-        if (this._partnerPackSvc === null) {
-            let nativeComps = Preferences.barCore.application.NativeComponents;
-            let service = nativeComps.obtainService(this.PARTNER_PACK_COMPID, this.PARTNER_PACK_SVCNAME, this, "ru.yandex.bar.preferences");
-            this._partnerPackSvc = service;
-        }
-        return this._partnerPackSvc;
-    },
-    set partnerPackSvc(aValue) {
-        if (this._partnerPackSvc) {
-            let nativeComps = Preferences.barCore.application.NativeComponents;
-            nativeComps.releaseService(this.PARTNER_PACK_COMPID, this.PARTNER_PACK_SVCNAME, this);
-        }
-        this._partnerPackSvc = aValue;
-    },
-    observeServiceEvent: function ProductBranding_observeServiceEvent() {
+    getYandexFeatureState: function ProductBranding_getYandexFeatureState(aFeatureName) {
+        return Preferences.barCore.application.branding.getYandexFeatureState(aFeatureName);
     },
     get _productData() {
-        let productXML = this.partnerPackSvc.getXMLDocument("/about/product.xml");
-        let browserXML = this.partnerPackSvc.getXMLDocument("/browser/browserconf.xml");
+        let branding = Preferences.barCore.application.branding;
+        let productXML = branding.brandPackage.getXMLDocument("/about/product.xml");
+        let browserXML = branding.brandPackage.getXMLDocument("/browser/browserconf.xml");
         delete this._productData;
         this._productData = {
             productXML: productXML,
@@ -586,7 +561,7 @@ var ProductBranding = {
         return this._productData;
     },
     _replaceURLTemplates: function ProductBranding__replaceURLTemplates(aURL) {
-        return this.partnerPackSvc.expandBrandTemplatesEscape(aURL);
+        return Preferences.barCore.application.branding.expandBrandTemplatesEscape(aURL);
     }
 };
 var Preferences = {
@@ -598,11 +573,7 @@ var Preferences = {
         return this._logger = this.barCore.application.getLogger("Preferences");
     },
     get _addonVersion() {
-        let version = this.barCore.Lib.AddonManager.getAddonVersion(this.barCore.extensionURI);
-        this.__defineGetter__("_addonVersion", function Preferences_addonVersion() {
-            return version;
-        });
-        return this._addonVersion;
+        return this.barCore.application.addonManager.addonVersion;
     },
     _restoreInfo: { collapsed: null },
     _panesInfo: {
@@ -794,17 +765,24 @@ var Preferences = {
             this._logger.debug("Checking package " + packageID);
             if (!barApp.widgetLibrary.getComponentsInfo(packageID).length) {
                 barApp.packageManager.uninstallPackage(packageID, true);
-                barApp.widgetLibrary.cleanPackageParserCache(packageID);
             }
         }
     },
     _initWidgetsPane: function Preferences__initWidgetsPane() {
         this._fillWidgetsLists();
-        this.gDocument.addEventListener("DOMNodeInserted", WidgetNodesMutationListener, false);
-        this.gDocument.addEventListener("DOMNodeRemoved", WidgetNodesMutationListener, false);
-        let palette = this.setupWndCtrl._toolbox.palette;
-        palette.addEventListener("DOMNodeInserted", WidgetNodesMutationListener, false);
-        palette.addEventListener("DOMNodeRemoved", WidgetNodesMutationListener, false);
+        let navToolbox = this.gDocument.getElementById("navigator-toolbox");
+        if (navToolbox) {
+            this._toolboxMutationObserver = new MutationObserver(WidgetNodesMutationListener.handleToolboxMutations.bind(WidgetNodesMutationListener));
+            this._toolboxMutationObserver.observe(navToolbox, {
+                childList: true,
+                subtree: true
+            });
+        }
+        this._toolboxPaletteMutationObserver = new MutationObserver(WidgetNodesMutationListener.handlePaletteMutations.bind(WidgetNodesMutationListener));
+        this._toolboxPaletteMutationObserver.observe(this.setupWndCtrl._toolbox.palette, {
+            childList: true,
+            subtree: true
+        });
     },
     selectComponent: function Preferences_selectComponent(aInstanceID, aPaneType) {
         if (typeof aPaneType == "string") {
@@ -862,13 +840,6 @@ var Preferences = {
         RegisteredWidgetsController.init();
         ActiveWidgetsController.init();
         function addToRegisteredWidgets(aProtoID) {
-            if ([
-                    "http://bar.yandex.ru/packages/yandexbar#separator",
-                    "http://bar.yandex.ru/packages/yandexbar#spring",
-                    "http://bar.yandex.ru/packages/yandexbar#spacer"
-                ].indexOf(aProtoID) != -1) {
-                return;
-            }
             try {
                 RegisteredWidgets.push(aProtoID);
             } catch (e) {
@@ -905,7 +876,6 @@ var Preferences = {
         this._logger = null;
     },
     onUnload: function Preferences_onUnload() {
-        ProductBranding.shutdown();
         try {
             if (this._gBrowser) {
                 this._gBrowser.removeEventListener("unload", this, false);
@@ -913,14 +883,11 @@ var Preferences = {
         } catch (ex) {
         }
         if (this._panesInfo.isPaneStarted("widgets")) {
-            try {
-                this.gDocument.removeEventListener("DOMNodeInserted", WidgetNodesMutationListener, false);
-                this.gDocument.removeEventListener("DOMNodeRemoved", WidgetNodesMutationListener, false);
-                let palette = this.setupWndCtrl._toolbox.palette;
-                palette.removeEventListener("DOMNodeInserted", WidgetNodesMutationListener, false);
-                palette.removeEventListener("DOMNodeRemoved", WidgetNodesMutationListener, false);
-            } catch (e) {
-                this._logger.error("Failed in Preferences_onUnload. " + this.barCore.Lib.strutils.formatError(e));
+            if (this._toolboxMutationObserver) {
+                this._toolboxMutationObserver.disconnect();
+            }
+            if (this._toolboxPaletteMutationObserver) {
+                this._toolboxPaletteMutationObserver.disconnect();
             }
         }
         if (!this._panesInfo.isPaneStarted("widgets") && !this._panesInfo.isPaneStarted("plugins")) {
@@ -1249,7 +1216,7 @@ var Preferences = {
                 break;
             }
         }
-        this.sendStatistic("add." + widget.protoId.split("#")[1].replace(".", "-", "g"));
+        this.sendStatistic("add." + widget.protoId.split("#")[1].replace(/\./g, "-"));
         return ActiveWidgets.push(toolbaritem.id, relativeElementIdForList);
     },
     removeWidgets: function Preferences_removeWidgets(aListItems, aRemovePermanently) {
@@ -1277,7 +1244,7 @@ var Preferences = {
         }
         ActiveWidgetsController.removeItem(aListItem);
         let widget = ActiveWidgets.remove(toolbaritemId);
-        this.sendStatistic("del." + widget.protoId.split("#")[1].replace(".", "-", "g"));
+        this.sendStatistic("del." + widget.protoId.split("#")[1].replace(/\./g, "-"));
         RegisteredWidgetsController.setWidgetVisibility(widget.protoId, "visible");
     },
     moveWidgets: function Preferences_moveWidgets(aDirection, aRelativeElement) {
@@ -1410,7 +1377,6 @@ var Preferences = {
             this._logger.debug("Checking package " + packageID);
             if (!barApp.widgetLibrary.getComponentsInfo(packageID).length) {
                 barApp.packageManager.uninstallPackage(packageID, true);
-                barApp.widgetLibrary.cleanPackageParserCache(packageID);
             }
         }
     },
@@ -1527,7 +1493,7 @@ var Preferences = {
         return null;
     },
     transformSourceXMLData: function Preferences_transformSourceXMLData(aInstanceID, aType, aXMLData, aXSLData) {
-        let widget = ActiveWidgets.get(aInstanceID);
+        let widget = ActiveWidgets.get(aInstanceID) || RegisteredPlugins.get(aInstanceID);
         if (!widget) {
             return null;
         }
@@ -1730,11 +1696,14 @@ var Preferences = {
         document.getElementById("send-usage-stat-checkbox").click();
         return false;
     },
+    onStatisticsCheckboxCommand: function Preferences_onStatisticsCheckboxCommand(aEvent) {
+        this.barCore.application.statistics.sendUsageStat = aEvent.target.checked;
+    },
     sendStatistic: function Preferences_sendStatistic(aAction) {
         if (!aAction) {
             return;
         }
-        let version = this._addonVersion.replace(".", "-", "g");
+        let version = this._addonVersion.replace(/\./g, "-");
         this.barCore.application.statistics.logClickStatistics({
             cid: 72359,
             path: "fx.elmtset." + version + "." + aAction
@@ -1816,7 +1785,7 @@ var RegisteredPluginsController = {
         pluginListItem.processing = true;
         let enabled = plugin.disabled;
         plugin.disabled = !plugin.disabled;
-        Preferences.sendStatistic((enabled ? "on" : "off") + "." + aPluginId.split("#")[1].replace(".", "-", "g"));
+        Preferences.sendStatistic((enabled ? "on" : "off") + "." + aPluginId.split("#")[1].replace(/\./g, "-"));
         pluginListItem.enabled = enabled;
         pluginListItem.processing = false;
     },
@@ -1995,70 +1964,82 @@ var ActiveWidgetsController = {
     }
 };
 var WidgetNodesMutationListener = {
-    handleEvent: function WNML_handleEvent(aEvent) {
-        if (aEvent.target.localName !== "toolbaritem" || aEvent.target.getAttribute("cb-app") != XB_APP_NAME) {
-            return;
-        }
-        let relatedNode = aEvent.relatedNode;
-        if (!relatedNode) {
-            return;
-        }
-        switch (relatedNode.localName) {
-        case "toolbar":
-            setTimeout(function (aSelf, aEvent) {
-                aSelf._onToolbarMutation(aEvent);
-            }, 0, this, aEvent);
-            break;
-        case "toolbarpalette":
-            setTimeout(function (aSelf, aEvent) {
-                aSelf._onPaletteMutation(aEvent);
-            }, 0, this, aEvent);
-            break;
-        }
+    handlePaletteMutations: function WNML_handlePaletteMutations(mutations) {
+        setTimeout(() => {
+            this._onPaletteMutations(mutations);
+        }, 0);
     },
-    _onPaletteMutation: function WNML_onPaletteMutation(aEvent) {
-        let protoID = aEvent.target.getAttribute("cb-proto-id");
-        if (!protoID) {
-            return;
-        }
-        let paletteItemID = Preferences.barCore.application.overlayProvider.compileWidgetItemId(protoID, 0);
-        let paletteItemExists = aEvent.relatedNode.getElementsByAttribute("id", paletteItemID).length > 0;
-        switch (aEvent.type) {
-        case "DOMNodeInserted":
+    handleToolboxMutations: function WNML_handleToolboxMutations(mutations) {
+        setTimeout(() => {
+            this._onDocumentMutations(mutations);
+        }, 0);
+    },
+    _onPaletteMutations: function WNML_onPaletteMutation(mutations) {
+        let paletteItemExists = protoID => {
+            let palette = Preferences.setupWndCtrl._toolbox.palette;
+            let paletteItemID = Preferences.barCore.application.overlayProvider.compileWidgetItemId(protoID, 0);
+            return Boolean(palette.getElementsByAttribute("id", paletteItemID).length);
+        };
+        let {addedNodes, removedNodes} = this._getMuttationsNodes(mutations);
+        for (let addedNode of addedNodes) {
+            let protoID = addedNode.getAttribute("cb-proto-id");
+            if (!protoID) {
+                continue;
+            }
             try {
-                if (paletteItemExists && !RegisteredWidgets.get(protoID)) {
+                if (paletteItemExists(protoID) && !RegisteredWidgets.get(protoID)) {
                     RegisteredWidgets.push(protoID);
                 }
             } catch (e) {
                 Preferences._logger.error("Can't add widget to registered widgets. " + Preferences.barCore.Lib.strutils.formatError(e));
                 Preferences._logger.debug(e.stack);
             }
-            break;
-        case "DOMNodeRemoved":
-            if (!paletteItemExists) {
+        }
+        for (let removedNode of removedNodes) {
+            let protoID = removedNode.getAttribute("cb-proto-id");
+            if (protoID && !paletteItemExists(protoID)) {
                 RegisteredWidgetsController.setWidgetVisibility(protoID, "hidden");
             }
-            break;
         }
     },
-    _onToolbarMutation: function WNML_onToolbarMutation(aEvent) {
-        let target = aEvent.target;
-        let toolbaritemId = target.id;
-        let activeWidget = ActiveWidgets.get(toolbaritemId);
-        switch (aEvent.type) {
-        case "DOMNodeInserted":
+    _onDocumentMutations: function WNML_onDocumentMutations(mutations) {
+        let {addedNodes, removedNodes} = this._getMuttationsNodes(mutations);
+        for (let addedNode of addedNodes) {
+            let toolbaritemId = addedNode.id;
+            let activeWidget = ActiveWidgets.get(toolbaritemId);
             if (activeWidget) {
                 RegisteredWidgetsController.setWidgetVisibility(activeWidget.protoId, "hidden");
             }
-            break;
-        case "DOMNodeRemoved":
-            if (activeWidget && !target.parentNode) {
+        }
+        for (let removedNode of removedNodes) {
+            let toolbaritemId = removedNode.id;
+            let activeWidget = ActiveWidgets.get(toolbaritemId);
+            if (activeWidget && !removedNode.parentNode) {
                 ActiveWidgetsController.removeItem(toolbaritemId);
                 let widget = ActiveWidgets.remove(toolbaritemId);
                 RegisteredWidgetsController.setWidgetVisibility(widget.protoId, "visible");
             }
-            break;
         }
+    },
+    _getMuttationsNodes: function (mutations) {
+        let addedNodes = [];
+        let removedNodes = [];
+        for (let mutation of mutations) {
+            for (let node of Array.slice(mutation.addedNodes)) {
+                if (node.localName === "toolbaritem" && node.getAttribute("cb-app") === XB_APP_NAME) {
+                    addedNodes.push(node);
+                }
+            }
+            for (let node of Array.slice(mutation.removedNodes)) {
+                if (node.localName === "toolbaritem" && node.getAttribute("cb-app") === XB_APP_NAME) {
+                    removedNodes.push(node);
+                }
+            }
+        }
+        return {
+            addedNodes: addedNodes,
+            removedNodes: removedNodes
+        };
     }
 };
 window.__defineSetter__("JSInstObject", function () {

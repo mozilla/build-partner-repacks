@@ -1,6 +1,5 @@
 "use strict";
 const EXPORTED_SYMBOLS = ["downloads"];
-const GLOBAL = this;
 const {
     classes: Cc,
     interfaces: Ci,
@@ -11,23 +10,15 @@ Cu.import("resource://gre/modules/Services.jsm");
 const downloads = {
     init: function downloads_init(application) {
         this._application = application;
-        application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         this._logger = application.getLogger("StatisticsDownloads");
-        Services.obs.addObserver(this, "final-ui-startup", false);
+        Services.obs.addObserver(this, "sessionstore-windows-restored", false);
         Services.ww.registerNotification(this);
     },
     finalize: function downloads_finalize(doCleanup, callback) {
         Services.ww.unregisterNotification(this);
         try {
             let {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
-            try {
-                if ("getList" in Downloads) {
-                    let that = this;
-                    Downloads.getList(Downloads.PUBLIC).then(list => list.removeView(that));
-                }
-            } catch (e) {
-                this._logger.error(e);
-            }
+            Downloads.getList(Downloads.PUBLIC).then(list => list.removeView(this));
         } catch (ex) {
         }
     },
@@ -39,18 +30,11 @@ const downloads = {
         case "domwindowclosed":
             subject.removeEventListener("load", this, false);
             break;
-        case "final-ui-startup":
-            Services.obs.removeObserver(this, "final-ui-startup", false);
+        case "sessionstore-windows-restored":
+            Services.obs.removeObserver(this, "sessionstore-windows-restored", false);
             try {
                 let {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
-                try {
-                    if ("getList" in Downloads) {
-                        let that = this;
-                        Downloads.getList(Downloads.PUBLIC).then(list => list.addView(that));
-                    }
-                } catch (e) {
-                    this._logger.error(e);
-                }
+                Downloads.getList(Downloads.PUBLIC).then(list => list.addView(this));
             } catch (ex) {
             }
             break;
@@ -61,7 +45,7 @@ const downloads = {
             return;
         }
         let fileName = download.target.path || download.source.url;
-        let fileExtension = fileName && fileName.match(/\.([a-z0-9]{1,20})+$/i);
+        let fileExtension = fileName && fileName.match(/\.([a-z0-9]{1,20})$/i);
         if (fileExtension) {
             this._logClickStatistics("download.dialog.open." + fileExtension[1]);
         }

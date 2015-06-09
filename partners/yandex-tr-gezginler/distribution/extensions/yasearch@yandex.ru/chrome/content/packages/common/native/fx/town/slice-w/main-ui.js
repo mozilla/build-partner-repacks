@@ -62,7 +62,7 @@ define("slice/ui/footer/footer", [
             var link = this._link = document.querySelector(".b-footer__link");
             xml.setText(this._link, adapter.getString("url.title"));
             this._link.onclick = function (e) {
-                stat.logWidget("yapogoda.{version}.slice.link");
+                stat.logWidget("slice.link");
                 utils.navigate(link.href, e || window.event);
                 return false;
             };

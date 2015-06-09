@@ -11,30 +11,27 @@ const {
 } = Components;
 const resources = { browser: { styles: ["/native/fx/bindings.css"] } };
 const WIDGET_NAME = "http://bar.yandex.ru/packages/yandexbar#login";
-const AVATAR_SRC = "https://yapic.yandex.ru/get/{user_uid}/islands-middle";
+const AVATAR_SRC = "https://yapic.yandex.ru/get/{account_uid}/islands-middle";
 const core = {
-    get authManager() {
-        return this.authAdapter.authManager;
-    },
     get API() {
         return this._api;
     },
-    init: function LoginWidget_init(api) {
+    init: function (api) {
         this._api = api;
         this._logger = api.logger;
         this._loadModules();
     },
-    finalize: function LoginWidget_finalize() {
+    finalize: function () {
         delete this.utils;
         delete this._api;
         delete this._logger;
     },
-    buildWidget: function LoginWidget_buildWidget(WIID, item) {
+    buildWidget: function (WIID, item) {
         item.setAttribute("yb-native-widget-name", WIDGET_NAME);
         item.setAttribute("yb-native-widget-wiid", WIID);
         item.module = this;
     },
-    destroyWidget: function LoginWidget_destroyWidget(WIID, item, context) {
+    destroyWidget: function (WIID, item, context) {
         try {
             if (typeof item.destroy == "function") {
                 item.destroy();
@@ -45,77 +42,75 @@ const core = {
         }
     },
     dayuseStatProvider: {
-        isAuthorized: function dayuseStatProvider_isAuthorized() {
-            return core.authManager.authorized;
+        isAuthorized: function () {
+            return core.API.Passport.isAuthorized();
         },
-        hasSavedLogins: function dayuseStatProvider_hasSavedLogins() {
-            return core.authManager.pwdmng.hasSavedAccounts;
+        hasSavedLogins: function () {
+            return core.API.Passport.hasSavedLogins();
         }
     },
-    getPref: function LoginWidget_getPref(strPrefName, defaultValue) {
+    getPref: function (strPrefName, defaultValue) {
         let prefFullName = this.API.Settings.getPackageBranchPath() + strPrefName;
         let prefsModule = this.API.Settings.PrefsModule;
         return prefsModule.get(prefFullName, defaultValue);
     },
-    setPref: function LoginWidget_setPref(strPrefName, strPrefValue) {
+    setPref: function (strPrefName, strPrefValue) {
         let prefFullName = this.API.Settings.getPackageBranchPath() + strPrefName;
         let prefsModule = this.API.Settings.PrefsModule;
         return prefsModule.set(prefFullName, strPrefValue);
     },
-    onButtonClick: function LoginWidget_onButtonClick(event, widget) {
+    onButtonClick: function (event, widget) {
         this.sendStatistics("button.authoff");
-        let dialogParams = { retpath: "http://" + this.authManager.authdefs.DOMAINS.MAIN_DOMAIN };
-        this.authManager.openAuthDialog(dialogParams);
+        let dialogParams = { retpath: "http://" + this.API.Passport.authdefs.DOMAINS.MAIN_DOMAIN };
+        this.API.Passport.openAuthDialog(dialogParams);
     },
-    switchUser: function LoginWidget_switchUser(aStrUsername) {
-        return this.authManager.switchUser(aStrUsername);
+    switchAccount: function (aAccountId) {
+        return this.API.Passport.switchAccount(aAccountId);
     },
-    logoutUser: function LoginWidget_logoutUser(aUser) {
-        return this.authManager.initLogoutProcess(aUser);
+    logoutDefaultAccount: function () {
+        return this.logoutAccount(this.API.Passport.defaultAccount);
     },
-    logoutAll: function LoginWidget_logoutAll() {
-        this.authManager.initLogoutAll();
+    logoutAccount: function (aAccount) {
+        return this.API.Passport.logoutAccount(aAccount);
     },
-    buildMenu: function LoginWidget_buildMenu() {
-        let users = this.authManager.allUsers;
-        return this._buildMenuItems(users);
+    logoutAll: function () {
+        return this.API.Passport.logoutAllAccounts();
     },
-    createAccountAvatarURL: function LoginWidget_createAccountAvatarURL(aUid) {
+    buildMenu: function () {
+        let accounts = this.API.Passport.allAccounts;
+        return this._buildMenuItems(accounts);
+    },
+    createAccountAvatarURL: function (aUid) {
         aUid = aUid || 0;
-        return AVATAR_SRC.replace("{user_uid}", aUid);
+        return AVATAR_SRC.replace("{account_uid}", aUid);
     },
-    sendStatistics: function LoginWidget_sendStatistics(aAction) {
+    sendStatistics: function (aAction) {
         this.API.Statistics.logClickStatistics({
             cid: 72359,
             path: "fx.yalogin." + aAction
         });
     },
-    _MODULES: {
-        utils: "common-auth/utils.jsm",
-        dlgman: "dlgman.jsm",
-        authAdapter: "yauth.jsm"
-    },
-    _buildMenuItems: function LoginWidget__buildMenuItems(users) {
+    _buildMenuItems: function (aAccounts) {
         let menuItems = [];
         let document = this.utils.mostRecentBrowserWindow.document;
-        let defaultUser = this.authManager.getTopUser();
+        let defaultAccount = this.API.Passport.defaultAccount;
         for (let [
                     ,
-                    user
-                ] in Iterator(users)) {
+                    account
+                ] in Iterator(aAccounts)) {
             let menuitem = document.createElement("menuitem");
             menuitem.setAttribute("crop", "end");
             menuitem.setAttribute("class", "menuitem-iconic avatar-item");
-            menuitem.setAttribute("image", this.createAccountAvatarURL(user.uid));
-            menuitem.setAttribute("yb-user", user.login || user.uid);
-            menuitem.setAttribute("yb-user-uid", user.uid);
-            menuitem.setAttribute("yb-user-no-auth", !user.authorized);
-            let label = user.displayName;
-            if (user === defaultUser) {
+            menuitem.setAttribute("image", this.createAccountAvatarURL(account.uid));
+            menuitem.setAttribute("yb-user", account.login || account.uid);
+            menuitem.setAttribute("yb-user-uid", account.uid);
+            menuitem.setAttribute("yb-user-no-auth", !account.authorized);
+            let label = account.displayName;
+            if (account === defaultAccount) {
                 menuitem.setAttribute("yb-default-user", true);
             }
             menuitem.setAttribute("label", label);
-            if (user === defaultUser) {
+            if (account === defaultAccount) {
                 menuItems.splice(0, 0, menuitem);
             } else {
                 menuItems.push(menuitem);
@@ -123,7 +118,8 @@ const core = {
         }
         return menuItems;
     },
-    _loadModules: function LoginWidget__loadModules() {
+    _MODULES: { utils: "utils.jsm" },
+    _loadModules: function () {
         let shAPI = this.API.shareableAPI;
         for (let [
                     moduleName,

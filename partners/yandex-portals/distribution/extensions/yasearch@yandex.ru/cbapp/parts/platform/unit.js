@@ -25,7 +25,6 @@ BarPlatform.Unit = function CBPUnit(fileName, package_, name) {
     this._package = package_;
     this._name = name;
     this._logger = BarPlatform._getLogger("Unit_" + name);
-    let tmp = this._componentInfo;
 };
 BarPlatform.Unit.prototype = {
     constructor: BarPlatform.Unit,
@@ -38,39 +37,14 @@ BarPlatform.Unit.prototype = {
     get componentInfo() {
         return sysutils.copyObj(this._componentInfo);
     },
-    getComponent: function CBPUnit_getComponent(cacheFile) {
+    getComponent: function CBPUnit_getComponent() {
         if (!(this._component || this._parseError)) {
-            this._load(cacheFile);
+            this._load();
         }
         if (!this._component) {
             throw this._parseError;
         }
         return this._component;
-    },
-    tryCacheComponent: function CBPUnit_tryCacheComponent(toFile) {
-        if (!(toFile instanceof Ci.nsIFile)) {
-            throw new CustomErrors.EArgType("toFile", "nsIFile", toFile);
-        }
-        let compParser = BarPlatform._getParser(this._componentInfo.barAPI, this._componentInfo.type);
-        if (typeof compParser.serializeComponent == "function") {
-            let cacheLoadStartTime = Date.now();
-            try {
-                fileutils.forceDirectories(toFile.parent);
-                compParser.serializeComponent(this._component, toFile);
-                this._logger.debug("Cached component in " + (Date.now() - cacheLoadStartTime) + "ms");
-            } catch (e) {
-                this._logger.error("Could not save preparsed widget state. " + e);
-                this._logger.debug(e.stack);
-            }
-        }
-    },
-    checkSecurity: function CBPUnit_checkSecurity() {
-        if (this._componentInfo.barAPI == "native") {
-            let thisPackageID = this._package.id;
-            if (!barApp.isPrivilegedPackageURL(thisPackageID)) {
-                throw new CustomErrors.ESecurityViolation("Creating native component", thisPackageID);
-            }
-        }
     },
     finalize: function CBPUnit_finalize() {
         if (this._component) {
@@ -84,46 +58,38 @@ BarPlatform.Unit.prototype = {
     },
     get _componentInfo() {
         let result;
-        let channel = this._package.newChannelFromPath(this._fileName);
-        try {
-            let infoParser = new UnitInfoParser();
-            result = infoParser.parseFromStream(channel.contentStream, channel.originalURI);
-            result.id = this._package.id + "#" + this._name;
-            if (result.iconPath) {
-                result.iconURL = this._package.resolvePath(result.iconPath);
+        let cachedFile = this._package.cache.getFile(this._fileName + ".json");
+        if (cachedFile.exists()) {
+            try {
+                result = fileutils.jsonFromFile(cachedFile);
+            } catch (e) {
+                this._logger.error(e);
             }
-            result.package_ = this._package;
-        } finally {
-            channel.contentStream.close();
         }
+        if (!result) {
+            let channel = this._package.newChannelFromPath(this._fileName);
+            try {
+                let infoParser = new UnitInfoParser();
+                result = infoParser.parseFromStream(channel.contentStream, channel.originalURI);
+                fileutils.jsonToFile(result, cachedFile);
+            } finally {
+                channel.contentStream.close();
+            }
+        }
+        result.id = this._package.id + "#" + this._name;
+        if (result.iconPath) {
+            result.iconURL = this._package.resolvePath(result.iconPath);
+        }
+        result.package_ = this._package;
         delete this._componentInfo;
-        this.__defineGetter__("_componentInfo", function () {
-            return result;
-        });
+        this.__defineGetter__("_componentInfo", () => result);
         return this._componentInfo;
     },
-    _load: function CBPUnit__load(cacheFile) {
+    _load: function CBPUnit__load() {
         try {
-            let compLoaded;
-            let component;
-            let thisCompInfo = this._componentInfo;
-            let componentType = thisCompInfo.type;
-            let compParser = BarPlatform._getParser(thisCompInfo.barAPI, componentType);
-            if (cacheFile && typeof compParser.deserializeComponent == "function") {
-                try {
-                    let serialStartTime = Date.now();
-                    component = compParser.deserializeComponent(this, cacheFile);
-                    this._logger.debug("Component loaded from cache in " + (Date.now() - serialStartTime) + "ms");
-                    compLoaded = true;
-                } catch (e) {
-                    this._logger.warn("Could not load cached component. " + e);
-                    this._logger.debug(e.stack);
-                }
-            }
-            if (!compLoaded) {
-                component = this._parseComponent(compParser);
-            }
-            this._component = component;
+            let {barAPI, type} = this._componentInfo;
+            let compParser = BarPlatform._getParser(barAPI, type);
+            this._component = this._parseComponent(compParser);
         } catch (e) {
             this._parseError = e;
             this._logger.error(this._consts.ERR_PARSING_COMPONENT + ". " + strutils.formatError(e));
@@ -323,7 +289,7 @@ BarPlatform.WidgetPrototypeBase = Base.extend({
         return this._unit.unitPackage;
     },
     get spawnedIDs() {
-        return misc.mapKeysToArray(this._spawns);
+        return Object.keys(this._spawns);
     },
     getAllWidgetItems: function WidgetPrototypeBase_getAllWidgetItems() {
         let result = [];

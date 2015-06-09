@@ -57,24 +57,6 @@ const syncTopHistory = {
         this._logger.trace("Full snapshot: " + JSON.stringify(records));
         this.engine.set(records);
     },
-    saveLocalClidState: function SyncTopHistory_saveLocalClidState(url, localHistory) {
-        let uri = netutils.newURI(url);
-        if (!this._application.isYandexHost(uri.host)) {
-            return url;
-        }
-        try {
-            uri.QueryInterface(Ci.nsIURL);
-        } catch (ex) {
-            return url;
-        }
-        let parsedQuery = netutils.querystring.parse(uri.query);
-        if (!parsedQuery.clid) {
-            return url;
-        }
-        delete parsedQuery.clid;
-        uri.query = netutils.querystring.stringify(parsedQuery);
-        return localHistory.indexOf(uri.spec) !== -1 ? uri.spec : url;
-    },
     get engine() {
         if (!this._application.sync.svc) {
             return null;

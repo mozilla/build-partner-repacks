@@ -6,3 +6,5 @@
 
 <!ENTITY welcome.close "close">
 <!ENTITY welcome.openpanels "Open panels">
+
+<!ENTITY welcome.tutorial.confirm-button.short "Okay">

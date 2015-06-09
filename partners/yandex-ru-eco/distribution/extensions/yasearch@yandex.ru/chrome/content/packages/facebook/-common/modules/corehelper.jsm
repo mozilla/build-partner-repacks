@@ -263,26 +263,31 @@ var core_helper = function (barapi, appObj, widgetPath, commonPath) {
             if (typeof toolbarItem.ybwFinalize == "function") {
                 toolbarItem.ybwFinalize();
             }
+            toolbarItem.WIID = null;
+            toolbarItem.style.MozBinding = "";
+            toolbarItem.removeAttribute("ybar-native-widget-name");
             toolbarItem.application = null;
             toolbarItem.common = null;
             toolbarItem.appinst = null;
             toolbarItem.__XBID__ = null;
-            toolbarItem.WIID = null;
-            toolbarItem.style.MozBinding = "";
-            toolbarItem.removeAttribute("ybar-native-widget-name");
         },
         initURLBarItem: function CoreHelper_initURLBarItem(itemElement, itemClass) {
             itemElement.application = app;
             itemElement.common = common;
-            itemElement.style.MozBinding = "url(\"" + common.resolvePath("content/plugin.xbl#toolbarbutton") + "\")";
+            itemElement.style.MozBinding = "url('" + common.resolvePath("content/plugin.xbl#toolbarbutton") + "')";
             itemElement.setAttribute("yb-native-plugin-name", app.config.name);
             return {
-                finalize: function CoreHelper_URLBarItem_finalize() {
-                    if (typeof itemElement.ybwFinalize == "function") {
+                finalize: function () {
+                    if (typeof itemElement.__removeObservers === "function") {
+                        itemElement.__removeObservers();
+                    }
+                    if (typeof itemElement.ybwFinalize === "function") {
                         itemElement.ybwFinalize();
                     }
                     itemElement.application = null;
                     itemElement.common = null;
+                    itemElement.__YAXBID__ = null;
+                    itemElement.style.mozBinding = "none";
                 }
             };
         },

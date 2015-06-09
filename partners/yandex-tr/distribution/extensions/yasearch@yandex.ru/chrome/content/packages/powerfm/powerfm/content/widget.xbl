@@ -7,7 +7,7 @@
         </resources>
 
         <content>
-            <xul:toolbarbutton anonid="powerfm-button-main" class="toolbarbutton-1 widget-button" item-command="show" item-href="home" tooltiptext="&powerfm.widget.name;" type="button"/>
+            <xul:toolbarbutton anonid="powerfm-button-main" class="toolbarbutton-1 widget-button" item-command="show" item-href="home" label="&powerfm.widget.name;" tooltiptext="&powerfm.widget.name;" type="button"/>
         </content>
 
         <implementation>

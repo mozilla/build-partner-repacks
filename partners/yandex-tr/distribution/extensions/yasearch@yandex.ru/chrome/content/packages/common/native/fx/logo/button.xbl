@@ -40,7 +40,7 @@
             <method name="logoClicked">
                 <parameter name="aEvent"/>
                 <body><![CDATA[    this.module.navigateMainPage(aEvent);
-    let packageVersion = this.module.API.Package.info.version.replace(".", "-", "g");
+    let packageVersion = this.module.API.Package.info.version.replace(/\./g, "-");
     this.module.API.Statistics.logClickStatistics({
         cid: 72359,
         path: "fx.yalogo." + packageVersion + ".button"

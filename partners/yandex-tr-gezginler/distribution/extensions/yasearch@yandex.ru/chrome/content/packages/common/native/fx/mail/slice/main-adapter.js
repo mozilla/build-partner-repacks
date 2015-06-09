@@ -182,6 +182,15 @@ define("browser-adapter", ["api/dispatcher"], function (Dispatcher) {
         getNotificationManager: function () {
             return getPlatform().Notifications;
         },
+        sendClickerStatistics: function (options) {
+            var platform = getPlatform();
+            if ("sendClickerStatistics" in platform) {
+                platform.sendClickerStatistics(options);
+                return true;
+            } else {
+                return false;
+            }
+        },
         getSlicePath: function () {
             return location.href.replace(/index\.html$/, "");
         },
@@ -419,142 +428,145 @@ define("api/branding", ["browser-adapter"], function (adapter) {
     };
     return brandingModule;
 });
+define("api/stat", ["browser-adapter"], function (adapter) {
+    function log(str) {
+        adapter.log("[api/stat]: " + str);
+    }
+    var stat = {
+        _statName: null,
+        log: function (params) {
+            if (adapter.sendClickerStatistics({
+                    cid: params.cid,
+                    param: params.param,
+                    statisticsId: this._statName
+                })) {
+                return;
+            }
+            var dtype = params.dtype;
+            var pid = params.pid;
+            var cid = params.cid;
+            var param = params.param;
+            if (typeof dtype === "undefined") {
+                dtype = "stred";
+            }
+            if (typeof pid === "undefined") {
+                pid = 12;
+            }
+            if (typeof dtype === "string") {
+                if (!dtype) {
+                    throw new RangeError("dtype is empty string");
+                }
+            } else {
+                throw new TypeError("Invalid dtype type ('" + typeof dtype + "')");
+            }
+            if (typeof pid === "number") {
+                if (pid < 0) {
+                    throw new RangeError("Invalid pid value (" + pid + ")");
+                }
+            } else {
+                throw new TypeError("Wrong pid type ('" + typeof pid + "'). Number required.");
+            }
+            if (typeof cid === "number") {
+                if (cid <= 0) {
+                    throw new RangeError("Invalid cid value (" + cid + ")");
+                }
+            } else {
+                throw new TypeError("Wrong cid type ('" + typeof cid + "'). Number required.");
+            }
+            var prodInfo = adapter.getProductInfo();
+            param = adapter.browser + "." + this._statName + "." + (prodInfo ? prodInfo.version.replace(/\./g, "-") + "." : "") + param;
+            var url = "https://clck.yandex.ru/click" + "/dtype=" + encodeURIComponent(dtype) + "/pid=" + pid + "/cid=" + cid + "/path=" + encodeURIComponent(param);
+            var extraString = "";
+            var processedKeys = [
+                "dtype",
+                "pid",
+                "cid",
+                "param"
+            ];
+            for (var key in params) {
+                if (!params.hasOwnProperty(key)) {
+                    continue;
+                }
+                if (processedKeys.indexOf(key) !== -1) {
+                    continue;
+                }
+                var value = params[key];
+                if (key === "*") {
+                    extraString = value;
+                    continue;
+                }
+                url += "/" + key + "=" + encodeURIComponent(value);
+            }
+            url += "/*" + extraString;
+            log("stat log " + url);
+            var xhr = adapter.createXHR();
+            xhr.open("GET", url, true);
+            xhr.send();
+        },
+        logWidget: function (path) {
+            this.log({
+                cid: 72359,
+                param: path
+            });
+        },
+        logNotification: function (path) {
+            this.log({
+                cid: 72358,
+                param: path
+            });
+        },
+        setStatName: function (name) {
+            this._statName = name || null;
+        }
+    };
+    return stat;
+});
 define("slice/locale", [], function () {
     return {
-        "ru": {
-            "addmail": "Подключить другой ящик",
-            "addmail.desc": "вы всегда сможете в настройках почты",
-            "attach": "С вложением",
-            "continuewm": "Продолжить работу с почтой",
-            "create": "Написать",
-            "delete": "Удалить",
-            "reply": "Ответить",
-            "error.net": "Нет подключения к интернету",
-            "error.refresh": "При обновлении произошла ошибка",
-            "ft.unread": "Непрочитанные",
-            "login_other": "Войти в другой почтовый ящик",
-            "logo": "Яндекс Почта",
-            "logout": "Выход",
-            "logout_all": "Выйти из всех ящиков",
-            "mail.wait": "Секундочку...",
-            "mails": "Подключенные почтовые ящики",
-            "month.g1": "Января",
-            "month.g10": "Октября",
-            "month.g11": "Ноября",
-            "month.g12": "Декабря",
-            "month.g2": "Февраля",
-            "month.g3": "Марта",
-            "month.g4": "Апреля",
-            "month.g5": "Мая",
-            "month.g6": "Июня",
-            "month.g7": "Июля",
-            "month.g8": "Августа",
-            "month.g9": "Сентября",
-            "nounread": "Новых писем нет",
-            "refresh": "Обновить",
-            "retry": "Попробуйте еще раз",
-            "setreaded": "Отметить как прочитанное",
-            "markasread": "Прочитано",
-            "settings": "Настройки виджета",
-            "spam": "Отметить как спам",
-            "markasspam": "Это спам!",
-            "total": "всего <i18n:param>count</i18n:param>",
-            "tt.create": "Написать новое письмо",
-            "tt.logo": "Перейти в Я.Почту",
-            "tt.refresh": "Обновить список писем",
-            "wait": "Секундочку...",
-            "inbox": "Входящие",
-            "new-messages-plural": "{N} новое сообщение;{N} новых сообщения;{N} новых сообщений"
-        },
-        "kk": {
-            "addmail": "Басқа жәшікті қосу",
-            "addmail.desc": "сіз әрдайым пошта баптауларынан таба аласыз",
-            "attach": "Тіркемелері бар",
-            "continuewm": "Поштамен жұмысты жалғастыру",
-            "create": "Жазу",
-            "delete": "Жою",
-            "error.net": "Интернетке қосылыс жоқ",
-            "error.refresh": "Жаңарту барысында қате кетті",
-            "ft.unread": "Оқылмағандар",
-            "login_other": "Басқа пошта жәшігіне кіру",
-            "logo": "Яндекс Пошта",
-            "logout": "Шығу",
-            "logout_all": "Барлық жәшіктен шығу",
-            "mail.wait": "Бір сәт күтіңіз...",
-            "mails": "Кірістірілген пошта жәшіктері",
-            "month.g1": "Қаңтар",
-            "month.g10": "Қазан",
-            "month.g11": "Қараша",
-            "month.g12": "Желтоқсан",
-            "month.g2": "Ақпан",
-            "month.g3": "Наурыз",
-            "month.g4": "Сәуір",
-            "month.g5": "Мамыр",
-            "month.g6": "Маусым",
-            "month.g7": "Шілде",
-            "month.g8": "Тамыз",
-            "month.g9": "Қыркүйек",
-            "nounread": "Сізде оқылмаған хат жоқ",
-            "refresh": "Жаңарту",
-            "retry": "Тағы сынап көріңіз",
-            "setreaded": "Оқылған деп белгілеу",
-            "settings": "Виджеттің баптаулары",
-            "spam": "Спам деп белгілеу",
-            "total": "барлығы <i18n:param>count</i18n:param>",
-            "tt.create": "Жаңа хат жазу",
-            "tt.logo": "Я.Поштаға өту",
-            "tt.refresh": "Хаттар тізімін жаңарту",
-            "wait": "Бір сәт күтіңіз...",
-            "inbox": "Кіріс",
-            "markasread": "Оқылған",
-            "markasspam": "Бұл спам!",
-            "reply": "Жауап беру",
-            "new-messages-plural": "{N} новое сообщение;{N} новых сообщения;{N} новых сообщений"
-        },
-        "tr": {
-            "addmail": "Başka e-posta hesabı bağla",
-            "addmail.desc": "mail ayarlarından her zaman yapılabilir",
-            "attach": "Ekli ",
-            "continuewm": "Mail'i kullanmaya devam et",
-            "create": "E-posta yaz ",
-            "delete": "Sil ",
-            "error.net": "İnternet bağlantısı yok",
-            "error.refresh": "Güncelleme sırasında hata oluştu",
-            "ft.unread": "Okunmamış ",
-            "login_other": "Diğer hesaba giriş yap",
-            "logo": "Yandex Mail",
-            "logout": "Çıkış ",
-            "logout_all": "Tüm hesaplardan çıkış yap",
-            "mail.wait": "Bekleyin...",
-            "mails": "Bağlı e-posta hesapları",
-            "month.g1": "Ocak",
-            "month.g10": "Ekim",
-            "month.g11": "Kasım",
-            "month.g12": "Aralık",
-            "month.g2": "Şubat",
-            "month.g3": "Mart",
-            "month.g4": "Nisan",
-            "month.g5": "Mayıs",
-            "month.g6": "Haziran",
-            "month.g7": "Temmuz",
-            "month.g8": "Ağustos",
-            "month.g9": "Eylül",
-            "nounread": "Okunmamış e-postanız yok",
-            "refresh": "Güncelle ",
-            "retry": "Tekrar deneyin",
-            "setreaded": "Okundu olarak işaretle",
-            "settings": "Widget ayarları ",
-            "spam": "Spam olarak işaretle",
-            "total": "toplam <i18n:param>count</i18n:param>",
-            "tt.create": "E-posta yaz",
-            "tt.logo": "Yandex.Mail'e git",
-            "tt.refresh": "Mesaj listesini güncelle",
-            "wait": "Lütfen bekleyin... ",
-            "inbox": "Gelen kutusu",
-            "markasread": "Okunmuş",
-            "markasspam": "Spam!",
-            "reply": "Yanıtla",
-            "new-messages-plural": "{N} новое сообщение;{N} новых сообщения;{N} новых сообщений"
+        "be": {
+            "addmail": "Далучыць іншую скрыню",
+            "addmail.desc": "вы заўсёды зможаце ў наладах пошты",
+            "attach": "З укладаннем",
+            "continuewm": "Працягваць работу з поштай",
+            "create": "Напісаць",
+            "delete": "Выдаліць",
+            "error.net": "Няма далучэння да інтэрнета",
+            "error.refresh": "Падчас абнаўлення адбылася памылка",
+            "ft.unread": "Непрачытаныя",
+            "login_other": "Увайсці ў іншую паштовую скрыню",
+            "logo": "Яндекс.Пошта",
+            "logout": "Выхад",
+            "logout_all": "Выйсці з усіх скрыняў",
+            "mail.wait": "Секундачку...",
+            "mails": "Далучаныя паштовыя скрыні",
+            "month.g1": "студзеня",
+            "month.g10": "кастрычніка",
+            "month.g11": "лістапада",
+            "month.g12": "снежня",
+            "month.g2": "лютага",
+            "month.g3": "сакавіка",
+            "month.g4": "красавіка",
+            "month.g5": "траўня",
+            "month.g6": "чэрвеня",
+            "month.g7": "ліпеня",
+            "month.g8": "жніўня",
+            "month.g9": "верасня",
+            "nounread": "Новых лістоў няма",
+            "refresh": "Абнавіць",
+            "retry": "Паспрабуйце яшчэ раз",
+            "setreaded": "Пазначыць як прачытанае",
+            "settings": "Наладкі віджэта",
+            "spam": "Пазначыць як спам",
+            "total": "усяго <i18n:param>count</i18n:param>",
+            "tt.create": "Напісаць новы ліст",
+            "tt.logo": "Перайсці ў Я.Пошту",
+            "tt.refresh": "Абнавіць спіс лістоў",
+            "wait": "Секундачку...",
+            "inbox": "Уваходныя",
+            "markasread": "Прачытана",
+            "markasspam": "Гэта спам!",
+            "reply": "Адказаць",
+            "new-messages-plural": "{N} новае паведамленне;{N} новыя паведамленні;{N} новых паведамленняў"
         },
         "en": {
             "addmail": "You can always add another mailbox",
@@ -567,7 +579,7 @@ define("slice/locale", [], function () {
             "error.refresh": "An error occurred while updating",
             "ft.unread": "Unread",
             "login_other": "Log in to another account",
-            "logo": "Yandex Mail",
+            "logo": "Yandex.Mail",
             "logout": "Log out",
             "logout_all": "Log out of all mail accounts",
             "mail.wait": "Just a sec...",
@@ -601,50 +613,140 @@ define("slice/locale", [], function () {
             "reply": "Reply",
             "new-messages-plural": "{N} new message;{N} new messages;{N} new messages"
         },
-        "be": {
-            "addmail": "Далучыць іншую скрыню",
-            "addmail.desc": "вы заўсёды зможаце ў наладах пошты",
-            "attach": "З укладаннем",
-            "continuewm": "Працягваць работу з поштай",
-            "create": "Напісаць",
-            "delete": "Выдаліць",
-            "error.net": "Няма далучэння да інтэрнета",
-            "error.refresh": "Падчас абнаўлення адбылася памылка",
-            "ft.unread": "Непрачытаныя",
-            "login_other": "Увайсці ў іншую паштовую скрыню",
-            "logo": "Яндекс Пошта",
-            "logout": "Выхад",
-            "logout_all": "Выйсці з усіх скрыняў",
-            "mail.wait": "Секундачку...",
-            "mails": "Далучаныя паштовыя скрыні",
-            "month.g1": "Студзеня",
-            "month.g10": "Кастрычніка",
-            "month.g11": "Лістапада",
-            "month.g12": "Снежня",
-            "month.g2": "Лютага",
-            "month.g3": "Сакавіка",
-            "month.g4": "Красавіка",
-            "month.g5": "Траўня",
-            "month.g6": "Чэрвеня",
-            "month.g7": "Ліпеня",
-            "month.g8": "Жніўня",
-            "month.g9": "Верасня",
-            "nounread": "Новых лістоў няма",
-            "refresh": "Абнавіць",
-            "retry": "Паспрабуйце яшчэ раз",
-            "setreaded": "Пазначыць як прачытанае",
-            "settings": "Наладкі віджэта",
-            "spam": "Пазначыць як спам",
-            "total": "усяго <i18n:param>count</i18n:param>",
-            "tt.create": "Напісаць новы ліст",
-            "tt.logo": "Перайсці ў Я.Пошту",
-            "tt.refresh": "Абнавіць спіс лістоў",
-            "wait": "Секундачку...",
-            "inbox": "Уваходныя",
-            "markasread": "Прачытана",
-            "markasspam": "Гэта спам!",
-            "reply": "Адказаць",
-            "new-messages-plural": "{N} новае паведамленне;{N} новыя паведамленні;{N} новых паведамленняў"
+        "kk": {
+            "addmail": "Басқа жәшікті қосу",
+            "addmail.desc": "сіз әрдайым пошта баптауларынан таба аласыз",
+            "attach": "Тіркемелері бар",
+            "continuewm": "Поштамен жұмысты жалғастыру",
+            "create": "Жазу",
+            "delete": "Жою",
+            "error.net": "Интернетке қосылыс жоқ",
+            "error.refresh": "Жаңарту барысында қате кетті",
+            "ft.unread": "Оқылмағандар",
+            "login_other": "Басқа пошта жәшігіне кіру",
+            "logo": "Яндекс.Пошта",
+            "logout": "Шығу",
+            "logout_all": "Барлық жәшіктен шығу",
+            "mail.wait": "Бір сәт күтіңіз...",
+            "mails": "Кірістірілген пошта жәшіктері",
+            "month.g1": "қаңтар",
+            "month.g10": "қазан",
+            "month.g11": "қараша",
+            "month.g12": "желтоқсан",
+            "month.g2": "ақпан",
+            "month.g3": "наурыз",
+            "month.g4": "сәуір",
+            "month.g5": "мамыр",
+            "month.g6": "маусым",
+            "month.g7": "шілде",
+            "month.g8": "тамыз",
+            "month.g9": "қыркүйек",
+            "nounread": "Жаңа хат жоқ",
+            "refresh": "Жаңарту",
+            "retry": "Тағы сынап көріңіз",
+            "setreaded": "Оқылған деп белгілеу",
+            "settings": "Виджеттің баптаулары",
+            "spam": "Спам деп белгілеу",
+            "total": "барлығы <i18n:param>count</i18n:param>",
+            "tt.create": "Жаңа хат жазу",
+            "tt.logo": "Я.Поштаға өту",
+            "tt.refresh": "Хаттар тізімін жаңарту",
+            "wait": "Бір сәт күтіңіз...",
+            "inbox": "Кіріс",
+            "markasread": "Оқылған",
+            "markasspam": "Бұл спам!",
+            "reply": "Жауап беру",
+            "new-messages-plural": "{N} жаңа хабарлама;{N} жаңа хабарлама;{N} жаңа хабарлама"
+        },
+        "ru": {
+            "addmail": "Подключить другой ящик",
+            "addmail.desc": "вы всегда сможете в настройках почты",
+            "attach": "С вложением",
+            "continuewm": "Продолжить работу с почтой",
+            "create": "Написать",
+            "delete": "Удалить",
+            "reply": "Ответить",
+            "error.net": "Нет подключения к интернету",
+            "error.refresh": "При обновлении произошла ошибка",
+            "ft.unread": "Непрочитанные",
+            "login_other": "Войти в другой почтовый ящик",
+            "logo": "Яндекс.Почта",
+            "logout": "Выход",
+            "logout_all": "Выйти из всех ящиков",
+            "mail.wait": "Секундочку...",
+            "mails": "Подключенные почтовые ящики",
+            "month.g1": "января",
+            "month.g10": "октября",
+            "month.g11": "ноября",
+            "month.g12": "декабря",
+            "month.g2": "февраля",
+            "month.g3": "марта",
+            "month.g4": "апреля",
+            "month.g5": "мая",
+            "month.g6": "июня",
+            "month.g7": "июля",
+            "month.g8": "августа",
+            "month.g9": "сентября",
+            "nounread": "Новых писем нет",
+            "refresh": "Обновить",
+            "retry": "Попробуйте еще раз",
+            "setreaded": "Отметить как прочитанное",
+            "markasread": "Прочитано",
+            "settings": "Настройки виджета",
+            "spam": "Отметить как спам",
+            "markasspam": "Это спам!",
+            "total": "всего <i18n:param>count</i18n:param>",
+            "tt.create": "Написать новое письмо",
+            "tt.logo": "Перейти в Я.Почту",
+            "tt.refresh": "Обновить список писем",
+            "wait": "Секундочку...",
+            "inbox": "Входящие",
+            "new-messages-plural": "{N} новое сообщение;{N} новых сообщения;{N} новых сообщений"
+        },
+        "tr": {
+            "addmail": "Başka e-posta hesabı bağla",
+            "addmail.desc": "mail ayarlarından her zaman yapılabilir",
+            "attach": "Ekli ",
+            "continuewm": "Mail'i kullanmaya devam et",
+            "create": "E-posta yaz ",
+            "delete": "Sil ",
+            "error.net": "İnternet bağlantısı yok",
+            "error.refresh": "Güncelleme sırasında hata oluştu",
+            "ft.unread": "Okunmamış ",
+            "login_other": "Diğer hesaba giriş yap",
+            "logo": "Yandex.Mail",
+            "logout": "Çıkış ",
+            "logout_all": "Tüm hesaplardan çıkış yap",
+            "mail.wait": "Bekleyin...",
+            "mails": "Bağlı e-posta hesapları",
+            "month.g1": "Ocak",
+            "month.g10": "Ekim",
+            "month.g11": "Kasım",
+            "month.g12": "Aralık",
+            "month.g2": "Şubat",
+            "month.g3": "Mart",
+            "month.g4": "Nisan",
+            "month.g5": "Mayıs",
+            "month.g6": "Haziran",
+            "month.g7": "Temmuz",
+            "month.g8": "Ağustos",
+            "month.g9": "Eylül",
+            "nounread": "Yeni e-posta yok",
+            "refresh": "Güncelle ",
+            "retry": "Tekrar deneyin",
+            "setreaded": "Okundu olarak işaretle",
+            "settings": "Widget ayarları ",
+            "spam": "Spam olarak işaretle",
+            "total": "toplam <i18n:param>count</i18n:param>",
+            "tt.create": "E-posta yaz",
+            "tt.logo": "Yandex.Mail'e git",
+            "tt.refresh": "Mesaj listesini güncelle",
+            "wait": "Lütfen bekleyin... ",
+            "inbox": "Gelen Kutusu",
+            "markasread": "Okunmuş",
+            "markasspam": "Spam!",
+            "reply": "Yanıtla",
+            "new-messages-plural": "{N} yeni mesaj;{N} yeni mesaj;{N} yeni mesaj"
         },
         "uk": {
             "addmail": "Підключити іншу скриньку",
@@ -657,23 +759,23 @@ define("slice/locale", [], function () {
             "error.refresh": "Під час оновлення сталася помилка",
             "ft.unread": "Непрочитані",
             "login_other": "Увійти в іншу поштову скриньку",
-            "logo": "Яндекс Пошта",
+            "logo": "Яндекс.Пошта",
             "logout": "Вихід",
             "logout_all": "Вийти з усіх скриньок",
             "mail.wait": "Секундочку...",
             "mails": "Підключені поштові скриньки",
-            "month.g1": "Cічня",
-            "month.g10": "Жовтня",
-            "month.g11": "Листопада",
-            "month.g12": "Грудня",
-            "month.g2": "Лютого",
-            "month.g3": "Березня",
-            "month.g4": "Квітня",
-            "month.g5": "Травня",
-            "month.g6": "Червня",
-            "month.g7": "Липня",
-            "month.g8": "Серпня",
-            "month.g9": "Вересня",
+            "month.g1": "cічня",
+            "month.g10": "жовтня",
+            "month.g11": "листопада",
+            "month.g12": "грудня",
+            "month.g2": "лютого",
+            "month.g3": "березня",
+            "month.g4": "квітня",
+            "month.g5": "травня",
+            "month.g6": "червня",
+            "month.g7": "липня",
+            "month.g8": "серпня",
+            "month.g9": "вересня",
             "nounread": "Нових листів немає",
             "refresh": "Оновити",
             "retry": "Спробуйте ще раз",
@@ -694,9 +796,10 @@ define("slice/locale", [], function () {
     };
 });
 define("slice/logic/config", {
-    URL_WEB: "https://mail.{passport}/",
+    statName: "yamail",
+    URL_WEB: "https://mail.yandex.{tld-kubr}/",
     URL_COUNTER: "https://export.{passport}/for/counters.xml",
-    URL_API: "https://mail.{passport}/api/",
+    URL_API: "https://mail.yandex.ru/api/",
     URL_COUNTERS_ALL: "https://mail.yandex.ru/api/v2/bar/counters?silent&multi",
     XIVA_CREDENTIALS_URL: "https://mail.{passport}/neo2/handlers/xiva_sub.jsx",
     UPDATE_TIME_MS: 300000,
@@ -716,17 +819,19 @@ define("slice/logic/config", {
     LOGO_LANG: "ru",
     locale: {
         "en": { LOGO_LANG: "en" },
-        "tr": "en",
+        "tr": { LOGO_LANG: "en" },
         "uk": { LOGO_LANG: "uk" },
-        "be": "uk",
-        "kk": "uk"
+        "be": { LOGO_LANG: "uk" },
+        "kk": { LOGO_LANG: "uk" }
     },
     branding: {
         tb: {
             LOGO_LANG: "en",
-            URL_COUNTER: "http://export.{passport}/for/counters.xml"
+            URL_WEB: "https://mail.yandex.com.tr/",
+            URL_COUNTERS_ALL: "https://mail.yandex.com.tr/api/v2/bar/counters?silent&multi",
+            URL_API: "https://mail.yandex.com.tr/api/"
         },
-        ua: { URL_COUNTER: "http://export.{passport}/for/counters.xml" }
+        ua: { URL_WEB: "https://mail.yandex.ua/" }
     },
     adapter: { chrome: { linkParam: "from=elmt_mailchrome" } }
 });
@@ -734,11 +839,13 @@ define("slice/adapter/main", [
     "browser-adapter",
     "api/manager",
     "api/branding",
+    "api/stat",
     "slice/locale",
     "slice/logic/config"
-], function (adapter, manager, branding, localesMap, config) {
+], function (adapter, manager, branding, stat, localesMap, config) {
     manager.onReady(function () {
         branding.brandingObject(config);
+        stat.setStatName(config.statName);
         if (localesMap && localesMap.ru !== undefined) {
             var locales = localesMap[adapter.getLang()] || localesMap.ru;
             adapter.getString = function (key, params) {
@@ -761,6 +868,151 @@ define("slice/adapter/main", [
         }
     });
 });
+define("api/dom", [], function () {
+    function escapeStringForRegexp(str) {
+        return String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
+    }
+    function createRx(className) {
+        return new RegExp("(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$)");
+    }
+    function getEventData(e, self) {
+        var node = e.target || e.srcElement;
+        var data = {
+            self: self,
+            target: node,
+            event: e
+        };
+        while (node) {
+            if (!data.parent && node.getAttribute("data-cmd-parent")) {
+                data.parent = node;
+            }
+            data.param = data.param || node.getAttribute("data-cmd-param") || "";
+            data.command = data.command || node.getAttribute("data-command") || "";
+            if (node == self) {
+                break;
+            }
+            node = node.parentNode;
+        }
+        return data;
+    }
+    return {
+        getClickHandler: function (self) {
+            return function (e) {
+                e = e || window.event;
+                var eventInfo = getEventData(e, this);
+                if (!self.commands || !eventInfo.command || !self.commands[eventInfo.command]) {
+                    return;
+                }
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                } else {
+                    e.cancelBubble = true;
+                }
+                return self.commands[eventInfo.command].call(self, eventInfo);
+            };
+        },
+        addClass: function (elem, className) {
+            if (!elem || !className) {
+                return;
+            }
+            if (elem.classList) {
+                elem.classList.add(className);
+                return;
+            }
+            var rx = new RegExp("^(?!.*(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$))");
+            elem.className = elem.className.replace(rx, className + " ").trim();
+        },
+        removeClass: function (elem, className) {
+            if (!elem || !className) {
+                return;
+            }
+            if (elem.classList) {
+                elem.classList.remove(className);
+                return;
+            }
+            var rx = createRx(className);
+            elem.className = elem.className.replace(rx, " ").trim();
+        },
+        toggleClass: function (elem, className) {
+            if (!elem || !className) {
+                return false;
+            }
+            if (elem.classList) {
+                return elem.classList.toggle(className);
+            }
+            if (this.hasClass(elem, className)) {
+                this.removeClass(elem, className);
+            } else {
+                this.addClass(elem, className);
+            }
+        },
+        hasClass: function (elem, className) {
+            if (!elem || !className) {
+                return false;
+            }
+            if (elem.classList) {
+                return elem.classList.contains(className);
+            }
+            var rx = createRx(className);
+            return rx.test(elem.className);
+        },
+        dragNDropCore: function (prm) {
+            var dragInfo = null;
+            function onMM(e) {
+                if (!dragInfo) {
+                    return;
+                }
+                dragInfo.oldX = dragInfo.pageX;
+                dragInfo.oldY = dragInfo.pageY;
+                dragInfo.pageX = e.pageX;
+                dragInfo.pageY = e.pageY;
+                prm.onmove.call(prm.ctx, dragInfo, e);
+                return false;
+            }
+            function onMU(e) {
+                if (!dragInfo) {
+                    return;
+                }
+                document.removeEventListener("mousemove", onMM, false);
+                document.removeEventListener("mouseup", onMU, false);
+                if (prm.onstop) {
+                    prm.onstop.call(prm.ctx, dragInfo, e);
+                }
+                dragInfo = null;
+                return false;
+            }
+            function onMD(e) {
+                onMU();
+                dragInfo = {
+                    elem: this,
+                    target: e.target,
+                    startX: e.pageX,
+                    startY: e.pageY,
+                    pageX: e.pageX,
+                    pageY: e.pageY
+                };
+                if (prm.start) {
+                    if (prm.start.call(prm.ctx, dragInfo, e) === false) {
+                        dragInfo = null;
+                        return;
+                    }
+                }
+                document.addEventListener("mousemove", onMM, false);
+                document.addEventListener("mouseup", onMU, false);
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            }
+            if (prm.elems.tagName) {
+                prm.elems.addEventListener("mousedown", onMD, false);
+            } else {
+                for (var i = 0; i < prm.elems.length; ++i) {
+                    prm.elems[i].addEventListener("mousedown", onMD, false);
+                }
+            }
+        }
+    };
+});
 define("api/utils", ["browser-adapter"], function (adapter) {
     var utils = {
         copy: function (src, dest) {
@@ -777,6 +1029,9 @@ define("api/utils", ["browser-adapter"], function (adapter) {
         emptyFunc: function () {
         },
         navigate: function (url, event) {
+            if (!url) {
+                return;
+            }
             var target = event && event.shiftKey ? "new window" : "new tab";
             if (event) {
                 if (event.preventDefault) {
@@ -849,26 +1104,24 @@ define("api/http", [
         return buffer.join("&");
     }
     function createRequest(obj) {
-        var txt = null;
         var xhr = adapter.createXHR();
         var mpBoundary = obj.multipart ? "-----8a7gadg1ahSDCV" + Date.now() : null;
         var url = obj.url;
-        var params = obj.params;
-        if (params) {
-            if (typeof params === "object") {
-                params = makeParamStr(params, mpBoundary ? "--" + mpBoundary : null);
-            }
-            if (obj.method !== "POST" && params) {
-                url += (url.indexOf("?") === -1 ? "?" : "&") + params;
-            } else {
-                txt = params;
-            }
-        }
+        var txt = null;
+        var query = makeParamStr(obj.query);
+        var params = makeParamStr(obj.params, mpBoundary ? "--" + mpBoundary : null);
         if (obj.data) {
-            if (txt) {
-                url += (url.indexOf("?") === -1 ? "?" : "&") + txt;
-            }
-            txt = obj.data;
+            query = query || params;
+            params = "";
+        }
+        if (obj.method === "POST") {
+            txt = obj.data || params || "";
+        } else {
+            txt = obj.data || null;
+            query = query || params;
+        }
+        if (query) {
+            url += (url.indexOf("?") === -1 ? "?" : "&") + query;
         }
         xhr.open(obj.method, url, !obj.sync);
         if (obj.overrideMimeType && xhr.overrideMimeType) {
@@ -999,11 +1252,16 @@ define("api/http", [
         GET: function (obj) {
             obj.method = "GET";
             if (obj.noCache) {
-                obj.params = obj.params || {};
-                if (typeof obj.params == "string") {
-                    obj.params = obj.params + "&_randomparameter=" + Date.now();
+                var query = obj.query || obj.params || {};
+                if (typeof query == "string") {
+                    query = query + "&_randomparameter=" + Date.now();
                 } else {
-                    obj.params._randomparameter = Date.now();
+                    query._randomparameter = Date.now();
+                }
+                if (obj.params) {
+                    obj.params = query;
+                } else {
+                    obj.query = query;
                 }
             }
             return ajax(obj);
@@ -1019,205 +1277,6 @@ define("api/http", [
         PUT: function (obj) {
             obj.method = "PUT";
             return ajax(obj);
-        }
-    };
-});
-define("api/stat", ["browser-adapter"], function (adapter) {
-    function log(str) {
-        adapter.log("[api/stat]: " + str);
-    }
-    var stat = {
-        log: function (params) {
-            var dtype = params.dtype;
-            var pid = params.pid;
-            var cid = params.cid;
-            var path = params.path;
-            if (typeof dtype === "undefined") {
-                dtype = "stred";
-            }
-            if (typeof pid === "undefined") {
-                pid = 12;
-            }
-            if (typeof dtype === "string") {
-                if (!dtype) {
-                    throw new RangeError("dtype is empty string");
-                }
-            } else {
-                throw new TypeError("Invalid dtype type ('" + typeof dtype + "')");
-            }
-            if (typeof pid === "number") {
-                if (pid < 0) {
-                    throw new RangeError("Invalid pid value (" + pid + ")");
-                }
-            } else {
-                throw new TypeError("Wrong pid type ('" + typeof pid + "'). Number required.");
-            }
-            if (typeof cid === "number") {
-                if (cid <= 0) {
-                    throw new RangeError("Invalid cid value (" + cid + ")");
-                }
-            } else {
-                throw new TypeError("Wrong cid type ('" + typeof cid + "'). Number required.");
-            }
-            var browserPathPrefix = adapter.browser + ".";
-            if (path.indexOf(browserPathPrefix) !== 0) {
-                path = browserPathPrefix + path;
-            }
-            var prodInfo = adapter.getProductInfo();
-            if (prodInfo && prodInfo.version) {
-                path = path.replace("{version}", prodInfo.version.replace(/\./g, "-"));
-            } else {
-                path = path.replace(/\.{version}\.*/, ".");
-            }
-            var url = "http://clck.yandex.ru/click" + "/dtype=" + encodeURIComponent(dtype) + "/pid=" + pid + "/cid=" + cid + "/path=" + encodeURIComponent(path);
-            var extraString = "";
-            var processedKeys = [
-                "dtype",
-                "pid",
-                "cid",
-                "path"
-            ];
-            for (var key in params) {
-                if (!params.hasOwnProperty(key)) {
-                    continue;
-                }
-                if (processedKeys.indexOf(key) !== -1) {
-                    continue;
-                }
-                var value = params[key];
-                if (key === "*") {
-                    extraString = value;
-                    continue;
-                }
-                url += "/" + key + "=" + encodeURIComponent(value);
-            }
-            url += "/*" + extraString;
-            var xhr = adapter.createXHR();
-            xhr.open("GET", url, true);
-            xhr.send();
-        },
-        logWidget: function (path) {
-            this.log({
-                cid: 72359,
-                path: path
-            });
-        },
-        logNotification: function (path) {
-            this.log({
-                cid: 72358,
-                path: path
-            });
-        }
-    };
-    return stat;
-});
-define("api/dom", [], function () {
-    function escapeStringForRegexp(str) {
-        return String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
-    }
-    function createRx(className) {
-        return new RegExp("(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$)");
-    }
-    return {
-        addClass: function (elem, className) {
-            if (!elem || !className) {
-                return;
-            }
-            if (elem.classList) {
-                elem.classList.add(className);
-                return;
-            }
-            var rx = new RegExp("^(?!.*(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$))");
-            elem.className = elem.className.replace(rx, className + " ").trim();
-        },
-        removeClass: function (elem, className) {
-            if (!elem || !className) {
-                return;
-            }
-            if (elem.classList) {
-                elem.classList.remove(className);
-                return;
-            }
-            var rx = createRx(className);
-            elem.className = elem.className.replace(rx, " ").trim();
-        },
-        toggleClass: function (elem, className) {
-            if (!elem || !className) {
-                return false;
-            }
-            if (elem.classList) {
-                return elem.classList.toggle(className);
-            }
-            if (this.hasClass(elem, className)) {
-                this.removeClass(elem, className);
-            } else {
-                this.addClass(elem, className);
-            }
-        },
-        hasClass: function (elem, className) {
-            if (!elem || !className) {
-                return false;
-            }
-            if (elem.classList) {
-                return elem.classList.contains(className);
-            }
-            var rx = createRx(className);
-            return rx.test(elem.className);
-        },
-        dragNDropCore: function (prm) {
-            var dragInfo = null;
-            function onMM(e) {
-                if (!dragInfo) {
-                    return;
-                }
-                dragInfo.oldX = dragInfo.pageX;
-                dragInfo.oldY = dragInfo.pageY;
-                dragInfo.pageX = e.pageX;
-                dragInfo.pageY = e.pageY;
-                prm.onmove.call(prm.ctx, dragInfo, e);
-                return false;
-            }
-            function onMU(e) {
-                if (!dragInfo) {
-                    return;
-                }
-                document.removeEventListener("mousemove", onMM, false);
-                document.removeEventListener("mouseup", onMU, false);
-                if (prm.onstop) {
-                    prm.onstop.call(prm.ctx, dragInfo, e);
-                }
-                dragInfo = null;
-                return false;
-            }
-            function onMD(e) {
-                onMU();
-                dragInfo = {
-                    elem: this,
-                    target: e.target,
-                    startX: e.pageX,
-                    startY: e.pageY,
-                    pageX: e.pageX,
-                    pageY: e.pageY
-                };
-                if (prm.start) {
-                    if (prm.start.call(prm.ctx, dragInfo, e) === false) {
-                        dragInfo = null;
-                        return;
-                    }
-                }
-                document.addEventListener("mousemove", onMM, false);
-                document.addEventListener("mouseup", onMU, false);
-                e.stopPropagation();
-                e.preventDefault();
-                return false;
-            }
-            if (prm.elems.tagName) {
-                prm.elems.addEventListener("mousedown", onMD, false);
-            } else {
-                for (var i = 0; i < prm.elems.length; ++i) {
-                    prm.elems[i].addEventListener("mousedown", onMD, false);
-                }
-            }
         }
     };
 });

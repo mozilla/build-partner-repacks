@@ -20,7 +20,6 @@
         <package browser="firefox" file="facebook.zip" id="http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml" platform-min="7" version="4.1.0"/>
         <package browser="firefox" file="odnoklassniki.zip" id="http://bar-widgets.yandex.ru/packages/approved/140/manifest.xml" platform-min="7" version="3.0.0"/>
         <package browser="firefox" file="safe-browsing.zip" id="http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml" platform-min="13" version="3.0.0"/>
-        <package browser="firefox" file="twitter.zip" id="http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml" platform-min="10" version="4.0.0"/>
     </packages>
     <widget id="http://bar.yandex.ru/packages/yandexbar#logo" important="true" visible="true"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#mail" important="true" visible="true"/>
@@ -45,10 +44,9 @@
         <setting force="true" name="show-messages">false</setting>
         <setting force="true" name="show-guests">false</setting>
     </widget>
-    <widget id="http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml#facebook" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml#facebook" visible="false"/>
     <widget id="http://bar-widgets.yandex.ru/packages/approved/75/manifest.xml#rambler" important="true" visible="auto"/>
     <widget id="http://bar-widgets.yandex.ru/packages/approved/97/manifest.xml#gmail" important="true" visible="auto"/>
-    <widget id="http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml#twitter" important="true" visible="auto"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#music" important="true" visible="auto"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#login" visible="false"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#yaru" important="true" visible="auto"/>
@@ -60,7 +58,6 @@
     </widget>
     <widget id="http://bar.yandex.ru/packages/yandexbar#quote" important="true" visible="auto"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#zakladki" visible="false"/>
-    <widget id="http://bar.yandex.ru/packages/yandexbar#lenta" visible="false"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#cy" visible="false"/>
     <plugin id="http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox"/>
     <plugin id="http://bar-widgets.yandex.ru/packages/approved/284/manifest.xml#esync"/>

@@ -22,3 +22,7 @@
 <!ENTITY pagetranslator.tutorial.button.yaBrowser "Ашу">
 <!ENTITY pagetranslator.tutorial.text.noYaBrowser "Яндекс.Браузердегі аударманың барлық мүмкіндіктерін байқап көріңіз.">
 <!ENTITY pagetranslator.tutorial.text.yaBrowser "Яндекс.Браузердегі аударманың барлық мүмкіндіктерін байқап көріңіз.">
+<!ENTITY browseroffer.video.button.noYaBrowser "Яндекс.Браузерді орнату">
+<!ENTITY browseroffer.video.button.yaBrowser "Ашу">
+<!ENTITY browseroffer.video.text.noYaBrowser "Турбо режимі баяу интернетпен {domain} роликтерінің жүктелімін жеделдетеді.">
+<!ENTITY browseroffer.video.text.yaBrowser "{domain} сайтын Яндекс.Браузерден ашыңыз. Турбо режимі баяу интернетпен роликтер жүктелімін жеделдетеді.">

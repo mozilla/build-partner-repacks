@@ -3,19 +3,19 @@
         {
             "id": "google",
             "name": "Google",
-            "query": "http://www.google.com.ua/search?hl=uk&q={searchTerms}",
+            "query": "http://www.google.com.ua/search/?hl=uk&q={searchTerms}",
             "action": 2
         },
         {
             "id": "yandex",
             "name": "Яндекс",
-            "query": "http://yandex.ua/yandsearch?clid=2014032-1001&text={searchTerms}",
+            "query": "http://yandex.ua/search/?clid=2014032-1001&text={searchTerms}",
             "action": 1
         },
         {
             "id": "bing",
             "name": "Bing",
-            "query": "http://www.bing.com/search?q={searchTerms}",
+            "query": "http://www.bing.com/search/?q={searchTerms}",
             "action": 6
         }
     ]

@@ -10,6 +10,7 @@
             <property name="wdgtPrototypeID" onget="return this.getAttribute('cb-proto-id');" readonly="true"/>
             <property name="wdgtInstanceID" onget="return this._wdgtInstanceID;" readonly="true"/>
             <property name="wdgtIsUnique" onget="return this._wdgtWidgetInfo.isUnique;" readonly="true"/>
+            <property name="wdgtConstructed" onget="return this._wdgtConstructed;" readonly="true"/>
 
 
 

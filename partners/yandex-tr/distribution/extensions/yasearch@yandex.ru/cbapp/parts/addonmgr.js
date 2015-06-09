@@ -61,31 +61,17 @@ const addonManager = {
         });
         return defer.promise;
     },
-    disableAddon: function AddonManager_disableAddon() {
-        AddonManager.disableAddonByID(this.addonId, function AddonManager__disableAddon() {
-            let timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-            timer.initWithCallback({
-                notify: function AddonManager__disableAddonTimed() {
-                    const nsIAppStartup = Ci.nsIAppStartup;
-                    Services.startup.quit(nsIAppStartup.eForceQuit | nsIAppStartup.eRestart);
-                }
-            }, 50, timer.TYPE_ONE_SHOT);
-        });
-    },
-    removeAddon: function AddonManager_removeAddon() {
-        AddonManager.uninstallAddonsByIDs([this.addonId], true);
-    },
     get _addonLastInstalledVersion() {
-        return Preferences.get(this._application.name + ".versions.lastAddon", null) || Preferences.get(this._application.name + ".general.lastVersion", "0");
+        return this._application.preferences.get("versions.lastAddon", null) || Preferences.get(this._application.name + ".versions.lastAddon", null) || Preferences.get(this._application.name + ".general.lastVersion", "0");
     },
     set _addonLastInstalledVersion(aValue) {
-        Preferences.set(this._application.name + ".versions.lastAddon", aValue);
+        this._application.preferences.set("versions.lastAddon", aValue);
     },
     get _lastRunBuildNumber() {
-        return Preferences.get(this._application.name + ".versions.lastBuild", 0);
+        return this._application.preferences.get("versions.lastBuild", null) || Preferences.get(this._application.name + ".versions.lastBuild", 0);
     },
     set _lastRunBuildNumber(aValue) {
-        Preferences.set(this._application.name + ".versions.lastBuild", aValue);
+        this._application.preferences.set("versions.lastBuild", aValue);
     },
     _checkVersions: function AddonManager__checkVersions() {
         let currentVersion = this.addonVersion;

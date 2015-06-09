@@ -10,6 +10,7 @@
         "devtools-sidebar-toolbar": 1,
         "inspector-toolbar": 1
     };
+    Object.freeze(KNOWN_BROWSER_TOOLBAR_IDS);
     let {
         classes: Cc,
         interfaces: Ci
@@ -18,7 +19,6 @@
     const XULNS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
     function OverlayController() {
         this._barCore = Cc["@yandex.ru/custombarcore;" + this._appName].getService().wrappedJSObject;
-        this._barCore.Lib.sysutils.freezeObj(KNOWN_BROWSER_TOOLBAR_IDS);
         this._application = this._barCore.application;
         this._logger = this._application.getLogger("OverlayController");
         this._urlBarItems = Object.create(null);
@@ -60,16 +60,12 @@
                 browserCustomizableUI = Cu.import("resource:///modules/CustomizableUI.jsm", {}).CustomizableUI;
             } catch (e) {
             }
-            this.__defineGetter__("browserCustomizableUI", function () {
-                return browserCustomizableUI;
-            });
+            this.__defineGetter__("browserCustomizableUI", () => browserCustomizableUI);
             return this.browserCustomizableUI;
         },
         get australisUI() {
             let australisUI = Boolean(this.browserCustomizableUI);
-            this.__defineGetter__("australisUI", function () {
-                return australisUI;
-            });
+            this.__defineGetter__("australisUI", () => australisUI);
             return this.australisUI;
         },
         applyPreset: function WndCtrl_applyPreset(preset, applyMode, forceSettings, ignoreWidgetErrors) {
@@ -112,19 +108,10 @@
             let sourceToolbars = Object.create(null);
             sourceToolbars[thisToolbar.id] = thisToolbar;
             let lastPlacedElement;
-            let pivotElement = isAddMode ? applyMode == "addleft" ? this.getToolbarSpring() : null : thisToolbar.firstChild;
+            let pivotElement = isAddMode ? null : thisToolbar.firstChild;
             const controller = this;
-            const separators = {
-                "http://bar.yandex.ru/packages/yandexbar#separator": "toolbarseparator",
-                "http://bar.yandex.ru/packages/yandexbar#spring": "toolbarspring",
-                "http://bar.yandex.ru/packages/yandexbar#spacer": "toolbarspacer"
-            };
             let reuseLists = Object.create(null);
             function findReusableItems(widgetID) {
-                let sepElemName = separators[widgetID];
-                if (sepElemName) {
-                    return reuseLists[widgetID] || (reuseLists[widgetID] = Array.slice(controller._appToolbar.querySelectorAll(sepElemName)));
-                }
                 return reuseLists[widgetID] || (reuseLists[widgetID] = controller.getWidgetItems(widgetID));
             }
             for (let [
@@ -146,7 +133,7 @@
                     } else {
                         let widgetInfo = widgetLibrary.isKnownWidget(widgetID) && widgetLibrary.getWidgetInfo(widgetID);
                         let reusedItems;
-                        if (widgetInfo && !widgetInfo.isUnique || widgetID in separators) {
+                        if (widgetInfo && !widgetInfo.isUnique) {
                             reusedItems = findReusableItems(widgetID);
                         }
                         [
@@ -349,25 +336,37 @@
             return this._putElement(DOMElement, destToolbar, putBeforeElement);
         },
         checkNeedSetBarlessMode: function WndCtrl_checkNeedSetBarlessMode() {
-            if (!this.application.barless || this._toolbox.hasAttribute("cb-barless")) {
+            if (this._toolbox.hasAttribute("cb-barless")) {
                 return;
             }
-            this._toolbox.setAttribute("cb-barless", "true");
-            this._logger.debug("Activating barless mode...");
-            try {
-                this._moveToNavBar();
-                this._moveLogoWidget();
-                this._removeObsoleteElements();
-                this._cleanToolbarSeparators(this._appToolbar);
-                this._persistToolbarSet(this.navToolbar);
-                if (!this._appToolbar.collapsed && !this._appToolbar.hasChildNodes()) {
-                    this._appToolbar.collapsed = true;
-                    document.persist(this._appToolbar.id, "collapsed");
+            let checker = () => {
+                if (checker.timeout < 3 * 60 * 1000) {
+                    for (let widgetItem of this.getAllWidgetItems()) {
+                        if (!Boolean(widgetItem.wdgtConstructed)) {
+                            checker.timeout += checker.timeout;
+                            setTimeout(checker, checker.timeout);
+                            return;
+                        }
+                    }
                 }
-            } catch (e) {
-                this._logger.error("Could not activate barless mode. " + e);
-                this._logger.debug(e.stack);
-            }
+                this._toolbox.setAttribute("cb-barless", "true");
+                this._logger.debug("Activating barless mode...");
+                try {
+                    this._moveToNavBar();
+                    this._moveLogoWidget();
+                    this._removeObsoleteElements();
+                    this._persistToolbarSet(this.navToolbar);
+                    if (!this._appToolbar.collapsed && !this._appToolbar.hasChildNodes()) {
+                        this._appToolbar.collapsed = true;
+                        document.persist(this._appToolbar.id, "collapsed");
+                    }
+                } catch (e) {
+                    this._logger.error("Could not activate barless mode. " + e);
+                    this._logger.debug(e.stack);
+                }
+            };
+            checker.timeout = 500;
+            checker();
         },
         callToolbarElementDestructor: function WndCtrl_callToolbarElementDestructor(widgetIID) {
             let element = this._widgetHost.hasWidget(widgetIID) && this._widgetHost.getToolbarElement(widgetIID);
@@ -377,8 +376,7 @@
         },
         _moveToNavBar: function WndCtrl__moveToNavBar() {
             this._logger.config("Moving items to nav-bar");
-            let allItems = this.getAllWidgetItems(true);
-            this._logger.debug("My toolbar contents: " + allItems.map(item => item.getAttribute("id")));
+            this._logger.debug("My toolbar contents: " + this.getAllWidgetItems().map(item => item.getAttribute("id")));
             let urlBarContainer = document.getElementById("urlbar-container");
             let relativeElement = urlBarContainer;
             if (urlBarContainer) {
@@ -546,21 +544,12 @@
                 }
             }
         },
-        getToolbarSpring: function WndCtrl_getToolbarSpring() {
-            return this._appToolbar.querySelector("toolbarspring") || (this.application.barless ? null : this._appToolbar.insertItem("spring"));
-        },
         getWidgetItems: function WndCtrl_getWidgetItems(protoID, fromToolbarID) {
             let selector = (fromToolbarID ? "#" + fromToolbarID + " " : "*:not(toolbarpalette) ") + "toolbaritem[cb-app=\"" + this._appName + "\"]" + (protoID ? "[cb-proto-id=\"" + protoID + "\"]" : "");
             return Array.slice(document.querySelectorAll(selector));
         },
-        getAllWidgetItems: function WndCtrl_getAllWidgetItems(withSeparators) {
-            let toolbarID = this._toolbarID;
-            let selectors = ["toolbaritem[cb-app='" + this._appName + "']"];
-            if (withSeparators) {
-                selectors.push("toolbar[id='" + toolbarID + "'] toolbarseparator", "toolbar[id='" + toolbarID + "'] toolbarspring", "toolbar[id='" + toolbarID + "'] toolbarspacer");
-            }
-            let widgetItems = Array.slice(document.querySelectorAll(selectors.join(", ")));
-            return widgetItems;
+        getAllWidgetItems: function WndCtrl_getAllWidgetItems() {
+            return Array.slice(document.querySelectorAll("toolbaritem[cb-app='" + this._appName + "']"));
         },
         getWidgetItemsByPackage: function WndCtrl_getWidgetItemsByPackage(packageID) {
             let windowItems = this.getWidgetItems();
@@ -625,10 +614,10 @@
                 this._onContentReady(event);
                 break;
             case "load":
-                this._onOverlayLoaded(event);
+                this._onOverlayLoaded();
                 break;
             case "unload":
-                this._onOverlayUnload(event);
+                this._onOverlayUnload();
                 break;
             }
         },
@@ -667,40 +656,19 @@
                     return true;
                 }
             }
-            let nodeLocalName = node.localName;
-            if ([
-                    "toolbarseparator",
-                    "toolbarspacer",
-                    "toolbarspring"
-                ].indexOf(nodeLocalName) != -1) {
-                let previousSiblingLocalName = node.previousSibling ? node.previousSibling.localName : null;
-                if (nodeLocalName != previousSiblingLocalName) {
-                    return true;
-                }
-            }
             return false;
         },
-        _onContentReady: function WndCtrl__onContentReady(domReadyEvent) {
-            domReadyEvent.currentTarget.removeEventListener("DOMContentLoaded", this, false);
-            let chromehiddenAttrVal = document.documentElement.getAttribute("chromehidden");
-            if (chromehiddenAttrVal.match(/\btoolbar\b/i)) {
-                return;
-            }
-            this._init();
+        _boundDelayedStartup: null,
+        _cancelDelayedStartup: function WndCtrl__cancelDelayedStartup() {
+            window.removeEventListener("MozAfterPaint", this._boundDelayedStartup);
+            this._boundDelayedStartup = null;
         },
-        _init: function WndCtrl__init() {
+        _delayedStartup: function WndCtrl__delayedStartup() {
+            this._cancelDelayedStartup();
             this._nativeStylesElement = document.createElementNS("http://www.w3.org/1999/xhtml", "style");
             this._nativeStylesElement.setAttribute("id", this._appName + "-native-stylesheets");
             document.documentElement.appendChild(this._nativeStylesElement);
-            this._windowListener = new this._barCore.Lib.WindowListener(window, this._appName, this._application.getLogger("WindowListener"));
-            this._widgetHost = new WidgetHost(this);
             this._browserThemeConsumer = this._application.browserTheme.createConsumer(window);
-            window.addEventListener("load", this, false);
-        },
-        _onOverlayLoaded: function WndCtrl__onOverlayLoaded(loadEvent) {
-            this._logger.config("Overlay loaded");
-            loadEvent.currentTarget.removeEventListener("load", this, false);
-            loadEvent.currentTarget.addEventListener("unload", this, false);
             let urlBarIcons = document.getElementById("urlbar-icons");
             if (urlBarIcons) {
                 this._urlBarContainer = document.createElementNS(urlBarIcons.namespaceURI, "hbox");
@@ -714,14 +682,39 @@
                 this._logger.debug("Try apply plugin resources: " + activePlugins[i].id);
                 this._tryApplyPluginResources(activePlugins[i]);
             }
-            this.checkNeedSetBarlessMode();
             Services.obs.addObserver(this, this._barCore.eventTopics.EVT_PLUGIN_ENABLED, false);
             Services.obs.addObserver(this, this._barCore.eventTopics.EVT_PLUGIN_BEFORE_DISABLED, false);
-            this._application.onNewBrowserReady(this);
+            setTimeout(() => {
+                document.documentElement.setAttribute("cb-window-initialized", "true");
+                this._application.onNewBrowserReady(this);
+                this.checkNeedSetBarlessMode();
+            }, 100);
         },
-        _onOverlayUnload: function WndCtrl__onOverlayUnload(unloadEvent) {
+        _onContentReady: function WndCtrl__onContentReady() {
+            window.removeEventListener("DOMContentLoaded", this, false);
+            let chromehiddenAttrVal = document.documentElement.getAttribute("chromehidden");
+            if (chromehiddenAttrVal.match(/\btoolbar\b/i)) {
+                return;
+            }
+            this._windowListener = new this._barCore.Lib.WindowListener(window, this._appName, this._application.getLogger("WindowListener"));
+            this._widgetHost = new WidgetHost(this);
+            window.addEventListener("load", this, false);
+        },
+        _onOverlayLoaded: function WndCtrl__onOverlayLoaded(loadEvent) {
+            this._logger.config("Overlay loaded");
+            window.removeEventListener("load", this, false);
+            window.addEventListener("unload", this, false);
+            this._boundDelayedStartup = this._delayedStartup.bind(this);
+            window.addEventListener("MozAfterPaint", this._boundDelayedStartup);
+        },
+        _onOverlayUnload: function WndCtrl__onOverlayUnload() {
             this._logger.info("Overlay unloads");
-            unloadEvent.currentTarget.removeEventListener("unload", this, false);
+            window.removeEventListener("unload", this, false);
+            this._widgetHost.clear();
+            if (this._boundDelayedStartup) {
+                this._cancelDelayedStartup();
+                return;
+            }
             Services.obs.removeObserver(this, this._barCore.eventTopics.EVT_PLUGIN_ENABLED);
             Services.obs.removeObserver(this, this._barCore.eventTopics.EVT_PLUGIN_BEFORE_DISABLED);
             let activePlugins = this._application.widgetLibrary.getPlugins(undefined, true);
@@ -729,7 +722,6 @@
                 this._logger.trace("Try revert plugin resources: " + activePlugins[i].id);
                 this._tryRevertPluginResources(activePlugins[i]);
             }
-            this._widgetHost.clear();
             window.document.documentElement.removeChild(this._nativeStylesElement);
             this._loadedStylesheets = Object.create(null);
             this._windowDataIsland = Object.create(null);
@@ -835,16 +827,6 @@
         },
         get _appToolbar() {
             return document.getElementById(this._toolbarID);
-        },
-        _cleanToolbarSeparators: function WndCtrl__cleanToolbarSeparators(toolbar) {
-            [
-                "toolbarseparator + toolbarseparator, toolbarseparator:first-child",
-                "toolbarseparator:last-child",
-                "toolbarspring:last-child"
-            ].forEach(function (query) {
-                Array.slice(toolbar.querySelectorAll(query)).forEach(separator => this.removeItem(separator, true), this);
-            }, this);
-            this._persistToolbarSet(toolbar);
         },
         _determineItemDestination: function WndCtrl__determineItemDestination(relativeTo, placeAfter) {
             let pivotElement;

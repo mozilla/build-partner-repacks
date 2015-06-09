@@ -130,14 +130,13 @@
             </method>
 
             <method name="generateInfo">
-                <body><![CDATA[    let bundlePath = this.api.Package.resolvePath("/native/fx/pagetranslator.properties");
-    let bundle = this.mStringBundleService.createBundle(bundlePath);
-    let xulString = bundle.GetStringFromName("pagetranslator.notification.info");
-    let xulNS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+                <body><![CDATA[    let xulNS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
     let menuListContainer = document.createElementNS(xulNS, "hbox");
     menuListContainer.setAttribute("anonid", "menulist-langs-container");
     menuListContainer.mNotification = this;
     this.mMenuListContainer = menuListContainer;
+    let bundle = this.api.Localization.createStringBundle("/native/fx/pagetranslator.properties");
+    let xulString = bundle.get("pagetranslator.notification.info");
     let that = this;
     xulString.replace(/([\s\S]*?)%lang([\s\S]*)/g, function (str, p1, p2) {
         let prefix = p1.trim();
@@ -313,63 +312,6 @@
         </implementation>
     </binding>
 
-    <binding extends="/native/fx/bindings/common/notification.xbl#notification-base" id="tooltip">
-        <resources>
-            <stylesheet src="../styles/tooltip.css"/>
-        </resources>
-
-        <content>
-            <hbox anonid="content-area" flex="1" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-                <hbox anonid="notification-icon">
-                    <image anonid="notification-icon-image"/>
-                </hbox>
-                <hbox>
-                    <description anonid="text-container" yb-label="&pagetranslator.notification.tooltip;"><label/><label anonid="button-example">&pagetranslator.translate;</label><label/></description>
-                </hbox>
-            </hbox>
-
-            <xul:hbox anonid="close-button" class="hoverable"/>
-
-            <xul:hbox hidden="true">
-                <children/>
-            </xul:hbox>
-        </content>
-
-        <implementation>
-            <constructor><![CDATA[    let buttonExample = this._getElementByAttr("anonid", "button-example");
-    let textContainer = this._getElementByAttr("anonid", "text-container");
-    let panelText = textContainer.getAttribute("yb-label");
-    if (panelText) {
-        let textChunks = panelText.split("{button}");
-        let labels = textContainer.querySelectorAll("label");
-        for (let i = 0; i < labels.length; i++) {
-            let label = labels[i];
-            if (label === buttonExample) {
-                continue;
-            }
-            let text = (textChunks.shift() || "").trim();
-            if (text === "") {
-                label.hidden = true;
-            } else {
-                label.setAttribute("value", text);
-            }
-        }
-    }]]></constructor>
-
-            <method name="remove">
-                <body><![CDATA[    this._notification.close();]]></body>
-            </method>
-        </implementation>
-
-        <handlers>
-            <handler button="0" event="click"><![CDATA[    let target = event.originalTarget;
-    let anonid = this.getSelfOrAncestorAnonid(target);
-    if (anonid === "close-button") {
-        this.remove();
-    }]]></handler>
-        </handlers>
-    </binding>
-
     <binding extends="/native/fx/bindings/common/notification.xbl#notification-base" id="suggest">
         <resources>
             <stylesheet src="../styles/suggest.css"/>
@@ -429,6 +371,10 @@
             <method name="wdgtxDestructor">
                 <body><![CDATA[    if (!this._wdgtxConstructed) {
         return;
+    }
+    if (this._checkShowedTimeout) {
+        clearTimeout(this._checkShowedTimeout);
+        this._checkShowedTimeout = null;
     }
     this._wdgtxConstructed = false;]]></body>
             </method>

@@ -1,2 +1,10 @@
-<!ENTITY locationbar.search.url "http://yandex.ru/yandsearch?clid={clid9}&amp;text=">
-<!ENTITY yandex.qs.keywordsearch "http://yandex.ru/yandsearch?clid={clid9}&amp;text={searchTerms}">
+<!ENTITY locationbar.search.url "http://yandex.ru/search/?clid={clid9}&amp;text=">
+
+<!ENTITY yandex.label "Yandex">
+<!ENTITY yandex.url "http://www.yandex.ru">
+<!ENTITY yandex.search.tooltip "Search on Yandex">
+<!ENTITY yandex.search.url "http://yandex.ru/search/?text={searchTerms}">
+<!ENTITY yandex.search.site-url "&yandex.search.url;&amp;surl_manually=true&amp;surl={searchSite}">
+<!ENTITY yandex.qs.url "http://yandex.ru/search/?clid={clid6}&amp;text={searchTerms}">
+<!ENTITY yandex.qs.suggestions "http://suggest.yandex.ru/suggest-ff.cgi?uil=en&amp;part={searchTerms}">
+<!ENTITY yandex.qs.keywordsearch "http://yandex.ru/search/?clid={clid9}&amp;text={searchTerms}">

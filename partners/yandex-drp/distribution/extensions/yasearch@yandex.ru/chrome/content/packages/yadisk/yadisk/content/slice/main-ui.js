@@ -180,7 +180,7 @@ define("slice/templates", ["jade"], function (jade) {
         with (locals || {}) {
             var cmdTryAgainParts = jade.i18n("error.cmd.try-again").split("*");
             var cmdAuth = jade.i18n("error.cmd-auth").split("*");
-            buf.push("<div data-type=\"current\" class=\"b-content__list\"><div class=\"b-content__list__list\"></div></div><div data-type=\"loaded\" class=\"b-content__list b-spinner-small\"><div class=\"b-content__list__list\"></div><div class=\"b-content__list__error b-content__list__vcenter\">" + (null == (jade.interp = jade.i18n("error.network")) ? "" : jade.interp) + "<br/>" + (null == (jade.interp = cmdTryAgainParts[0]) ? "" : jade.interp) + "<span class=\"error__cmd-refresh\">" + (null == (jade.interp = cmdTryAgainParts[1]) ? "" : jade.interp) + "</span>" + (null == (jade.interp = cmdTryAgainParts[2]) ? "" : jade.interp) + "</div><div class=\"b-content__list__no-auth b-content__list__vcenter\">" + (null == (jade.interp = cmdAuth[0]) ? "" : jade.interp) + "<span class=\"error__cmd-auth\">" + (null == (jade.interp = cmdAuth[1]) ? "" : jade.interp) + "</span>" + (null == (jade.interp = cmdAuth[2]) ? "" : jade.interp) + "</div><div class=\"b-content__list__empty b-content__list__vcenter\">" + (null == (jade.interp = jade.i18n("slice.empty-list")) ? "" : jade.interp) + "<br/><span class=\"empty__cmd-beginlink\">" + (null == (jade.interp = jade.i18n("slice.empty-list-2")) ? "" : jade.interp) + "</span></div></div>");
+            buf.push("<div data-type=\"current\" class=\"b-content__list\"><div class=\"b-content__list__list\"></div></div><div data-type=\"loaded\" class=\"b-content__list b-spinner\"><div class=\"b-content__list__list\"></div><div class=\"b-content__list__error b-content__list__vcenter\">" + (null == (jade.interp = jade.i18n("error.network")) ? "" : jade.interp) + "<br/>" + (null == (jade.interp = cmdTryAgainParts[0]) ? "" : jade.interp) + "<span data-command=\"refresh\" class=\"error__refresh\">" + (null == (jade.interp = cmdTryAgainParts[1]) ? "" : jade.interp) + "</span>" + (null == (jade.interp = cmdTryAgainParts[2]) ? "" : jade.interp) + "</div><div class=\"b-content__list__no-auth b-content__list__vcenter\">" + (null == (jade.interp = cmdAuth[0]) ? "" : jade.interp) + "<span data-command=\"authlink\" class=\"error__authlink\">" + (null == (jade.interp = cmdAuth[1]) ? "" : jade.interp) + "</span>" + (null == (jade.interp = cmdAuth[2]) ? "" : jade.interp) + "</div><div class=\"b-content__list__empty b-content__list__vcenter\">" + (null == (jade.interp = jade.i18n("slice.empty-list")) ? "" : jade.interp) + "<br/><span data-command=\"beginlink\" class=\"empty__beginlink\">" + (null == (jade.interp = jade.i18n("slice.empty-list-2")) ? "" : jade.interp) + "</span></div></div>");
         }
         return buf.join("");
     };
@@ -190,17 +190,20 @@ define("slice/templates", ["jade"], function (jade) {
             buf.push("<div" + jade.attrs({
                 "id": "ci_" + id + "",
                 "data-uid": "" + uid + "",
+                "data-cmd-parent": "true",
                 "class": "b-content__item" + " " + "b-content__item_current"
             }, {
                 "id": true,
-                "data-uid": true
-            }) + "><div class=\"item__percent\"></div><div" + jade.attrs({
+                "data-uid": true,
+                "data-cmd-parent": true
+            }) + "><div class=\"item__icon\"><div class=\"item-c__percent\"></div><div" + jade.attrs({
+                "data-command": "retry",
                 "title": jade.i18n("slice.tooltip.retry"),
-                "class": "item__retry"
-            }, { "title": true }) + "></div><div" + jade.attrs({
-                "title": jade.i18n("slice.tooltip.cancel"),
-                "class": "item__cancel"
-            }, { "title": true }) + "></div><div class=\"item__text\"></div></div>");
+                "class": "item-c__retry"
+            }, {
+                "data-command": true,
+                "title": true
+            }) + "></div></div><div class=\"item__content\"><div class=\"item__text\"></div><div class=\"item__info\"></div></div><div data-command=\"cancel\" class=\"item-c__cancel\"></div></div>");
         }
         return buf.join("");
     };
@@ -209,31 +212,40 @@ define("slice/templates", ["jade"], function (jade) {
         with (locals || {}) {
             buf.push("<div" + jade.attrs({
                 "id": "" + id + "",
+                "data-cmd-parent": "true",
                 "class": "b-content__item" + " " + "b-content__item_loaded"
-            }, { "id": true }) + "><div class=\"item__icon\"><span><img src=\"images/b-icon-empty.gif\" class=\"item__web-link\"/></span><div class=\"item__public item__web-link\"></div></div><div" + jade.attrs({
-                "title": jade.i18n("slice.tooltip.download"),
-                "class": "item__download" + " " + "b-button" + " " + "b-img-button"
-            }, { "title": true }) + "></div><div" + jade.attrs({
-                "title": jade.i18n("slice.tooltip.share"),
-                "class": "item__copy" + " " + "b-button" + " " + "b-img-button"
-            }, { "title": true }) + "></div><div class=\"item__date\"></div><div class=\"item__text item__web-link\"></div></div>");
+            }, {
+                "id": true,
+                "data-cmd-parent": true
+            }) + "><div data-command=\"link\" class=\"item__icon\"></div><div class=\"item__content\"><div data-command=\"public\" class=\"item-l__copy\">" + (null == (jade.interp = jade.i18n("slice.public")) ? "" : jade.interp) + "</div><div data-command=\"download\" class=\"item-l__download\">" + (null == (jade.interp = jade.i18n("slice.download")) ? "" : jade.interp) + "</div><div data-command=\"link\" class=\"item__text\"></div><div class=\"item__info\"></div></div><div class=\"item-l__public-info\"><div class=\"item-l__public-info__title\">" + (null == (jade.interp = jade.i18n("slice.link-copied-buffer")) ? "" : jade.interp) + "</div><span data-command=\"publiclink\" class=\"item-l__public-info__link\"></span><div data-command=\"publicclose\" class=\"item-l__public-info__close\"></div></div></div>");
         }
         return buf.join("");
     };
     this["JTEMPLATES"]["footer"] = function anonymous(locals) {
         var buf = [];
         with (locals || {}) {
-            buf.push("<div" + jade.attrs({
-                "title": jade.i18n("slice.tooltip.homelink"),
-                "class": "b-footer__link"
-            }, { "title": true }) + ">" + (null == (jade.interp = jade.i18n("title")) ? "" : jade.interp) + "</div><div class=\"b-footer__info\"><div class=\"b-footer__info__title\">" + (null == (jade.interp = jade.i18n("slice.link-copied-buffer")) ? "" : jade.interp) + "</div><a href=\"#\" class=\"b-footer__info__link\"></a></div>");
+            buf.push("<div class=\"b-footer__throbber b-spinner-small\"></div><div" + jade.attrs({
+                "data-command": "settings",
+                "title": jade.i18n("slice.settings"),
+                "class": "b-footer__settings"
+            }, {
+                "data-command": true,
+                "title": true
+            }) + "></div><div data-command=\"help\" class=\"b-footer__help\">" + (null == (jade.interp = jade.i18n("slice.help")) ? "" : jade.interp) + "</div>");
         }
         return buf.join("");
     };
     this["JTEMPLATES"]["header"] = function anonymous(locals) {
         var buf = [];
         with (locals || {}) {
-            buf.push("<div data-type=\"action\" class=\"b-button b-img-button b-header__upload\">" + (null == (jade.interp = jade.i18n("slice.load-file")) ? "" : jade.interp) + "</div>");
+            buf.push("<div" + jade.attrs({
+                "data-command": "homelink",
+                "title": jade.i18n("slice.tooltip.homelink"),
+                "class": "b-header__link"
+            }, {
+                "data-command": true,
+                "title": true
+            }) + ">" + (null == (jade.interp = jade.i18n("title")) ? "" : jade.interp) + "</div><div data-command=\"upload\" data-type=\"action\" class=\"b-header__upload b-button b-img-button\">" + (null == (jade.interp = jade.i18n("slice.upload")) ? "" : jade.interp) + "</div>");
         }
         return buf.join("");
     };
@@ -243,20 +255,28 @@ define("slice/ui/header/header", [
     "browser-adapter",
     "api/manager",
     "api/stat",
-    "slice/templates"
-], function (adapter, manager, stat, templates) {
+    "api/dom",
+    "api/utils",
+    "slice/templates",
+    "slice/logic/config"
+], function (adapter, manager, stat, domHelper, utils, templates, config) {
     var view = {
         init: function () {
             this._parent = document.querySelector(".b-header");
             this._parent.innerHTML = templates.header();
-            this._uploadButton = this._parent.querySelector(".b-header__upload");
-            this._uploadButton.onclick = function () {
-                stat.logWidget("yadisk.{version}.uploadbutton");
+            this._parent.onclick = domHelper.getClickHandler(this);
+        },
+        commands: {
+            "homelink": function (event) {
+                stat.logWidget("act.slice.notiflinkdisk");
+                utils.navigate(config.HOME_URL, event.event);
+            },
+            "upload": function (event) {
+                stat.logWidget("act.slice.uploadbutton");
                 adapter.sendOuterMessage("yadisk:slice:file-upload");
                 window.close();
-            };
-        },
-        observers: {}
+            }
+        }
     };
     manager.onReady(view);
     return view;
@@ -4302,18 +4322,21 @@ define("slice/ui/content/content", [
     function logObj(obj, str) {
         adapter.logObj(obj, "[ui/content]: " + (str || ""));
     }
-    function imgError() {
-        this.src = "images/def-file-icon.png";
-    }
     var IMG_PERCENT_PARTS = 8;
     var CURR_ID_PREFIX = "ci_";
-    var LIST_ITEM_HEIGHT = 40;
-    var VIS_ITEMS_COUNT = 10;
-    function getItemElemByChild(node) {
-        while (node && !domHelper.hasClass(node, "b-content__item")) {
-            node = node.parentNode;
-        }
-        return node;
+    var LIST_ITEM_HEIGHT = 60;
+    var VISIBLE_ITEMS_COUNT = 7;
+    function imgLoad() {
+        this.parentNode.setAttribute("data-img-loaded", "true");
+        setTimeout(function () {
+            var w = this.width;
+            var h = this.height;
+            this.style.left = Math.max(0, Math.round((LIST_ITEM_HEIGHT - w) / 2)) + "px";
+            this.style.top = Math.max(0, Math.round((LIST_ITEM_HEIGHT - h) / 2)) + "px";
+        }.bind(this), 120);
+    }
+    function imgError() {
+        this.parentNode.setAttribute("data-img-loaded", "false");
     }
     var view = {
         init: function () {
@@ -4327,75 +4350,12 @@ define("slice/ui/content/content", [
                 current: this._lists.current.querySelector(".b-content__list__list"),
                 loaded: this._lists.loaded.querySelector(".b-content__list__list")
             };
-            var self = this;
-            this._lists.content.current.addEventListener("click", function (e) {
-                e = e || window.event;
-                if (e.target.className == "item__cancel") {
-                    stat.logWidget("yadisk.{version}.uploadcancel");
-                    adapter.sendOuterMessage("yadisk:slice:upload-cancel", e.target.parentNode.id.substr(CURR_ID_PREFIX.length));
-                    return;
-                }
-                if (e.target.className == "item__retry") {
-                    stat.logWidget("yadisk.{version}.uploadcresume");
-                    adapter.sendOuterMessage("yadisk:slice:upload-retry", e.target.parentNode.id.substr(CURR_ID_PREFIX.length));
-                    return;
-                }
-                if (e.target.className == "item__text") {
-                    var parentNode = getItemElemByChild(e.target);
-                    if (parentNode.getAttribute("data-error") == "true" && /^https?:/.test(parentNode.__srcUrl)) {
-                        stat.logWidget("yadisk.{version}.linksource." + self._getElemIndex(parentNode));
-                        utils.navigate(parentNode.__srcUrl, e);
-                    }
-                    return;
-                }
-            }, false);
-            this._lists.content.loaded.addEventListener("click", function (e) {
-                e = e || window.event;
-                var path;
-                var parentNode = getItemElemByChild(e.target);
-                if (domHelper.hasClass(e.target, "item__download")) {
-                    log("item__download");
-                    stat.logWidget("yadisk.{version}.download." + self._getElemIndex(parentNode));
-                    path = parentNode.getAttribute("data-path");
-                    adapter.sendMessage("slice:download", path);
-                    return;
-                }
-                if (domHelper.hasClass(e.target, "item__copy")) {
-                    log("item__copy");
-                    stat.logWidget("yadisk.{version}.sharelink." + self._getElemIndex(parentNode));
-                    path = parentNode.getAttribute("data-path");
-                    var publicUrl = parentNode.getAttribute("data-public");
-                    adapter.sendMessage("slice:publish-copy", {
-                        path: path,
-                        publicUrl: publicUrl || ""
-                    });
-                    return;
-                }
-                if (domHelper.hasClass(e.target, "item__web-link")) {
-                    log("item__web-link");
-                    stat.logWidget("yadisk.{version}.link." + self._getElemIndex(parentNode));
-                    if (domHelper.hasClass(e.target, "item__public")) {
-                        utils.navigate(parentNode.getAttribute("data-public"), e);
-                    } else {
-                        utils.navigate(parentNode._fileUrl, e);
-                    }
-                    return;
-                }
-            }, false);
-            this._parent.querySelector(".error__cmd-refresh").onclick = function () {
-                adapter.sendMessage("slice:ui:cmd-list-refresh");
-            };
-            this._parent.querySelector(".empty__cmd-beginlink").onclick = function (e) {
-                e = e || window.event;
-                utils.navigate(config.BEGIN_URL, e);
-            };
-            this._parent.querySelector(".error__cmd-auth").onclick = function (e) {
-                e = e || window.event;
-                utils.navigate(config.BEGIN_URL, e);
-            };
+            this._parent.onclick = domHelper.getClickHandler(this);
             this._tempDiv = document.createElement("div");
             this._uid = "";
             this._loadedUID = "";
+            this._listHash = "";
+            this._miniThrobberTimer = null;
             this._jqParent = $(this._parent);
             this._jqParent.customScrollbar({
                 preventDefaultScroll: true,
@@ -4411,22 +4371,40 @@ define("slice/ui/content/content", [
                 this._updateCurrentItem(null, item);
                 this._updateLayout();
             },
+            "slice-event-show": function () {
+                var oldOpen = this._lists.content.loaded.querySelector(".b-content__item_loaded[data-showinfo=\"true\"]");
+                if (oldOpen) {
+                    oldOpen.setAttribute("data-showinfo", "false");
+                }
+            },
             "slice:loaded-list": function (topic, data) {
-                this._fillList("loaded", data.list, this._updateLoadedItem);
+                var hash = this._getListHash(data.list);
+                if (hash != this._listHash) {
+                    log("fill list");
+                    this._fillList("loaded", data.list, this._updateLoadedItem);
+                    this._listHash = hash;
+                    this._updateLayout();
+                }
+                adapter.sendMessage("slice:loaded-list:loading-not-empty", { show: false });
                 this._loadedUID = data.uid;
-                this._updateLayout();
             },
             "slice:loaded-list:loading": function (topic) {
-                this._lists.loaded.setAttribute("data-state", "loading");
-                this._lists.loaded.setAttribute("data-empty", "true");
-                this._updateLayout();
+                if (this._isEmpty()) {
+                    this._lists.loaded.setAttribute("data-state", "loading");
+                    this._lists.loaded.setAttribute("data-empty", "true");
+                    this._updateLayout();
+                } else {
+                    adapter.sendMessage("slice:loaded-list:loading-not-empty", { show: true });
+                }
             },
             "slice:loaded-list:error": function (topic, data) {
                 this._lists.loaded.setAttribute("data-state", data.error == "noauth" ? "noauth" : "error");
+                adapter.sendMessage("slice:loaded-list:loading-not-empty", { show: false });
                 this._lists.loaded.setAttribute("data-empty", "true");
                 this._updateLayout();
             },
             "slice:update-loaded": function (topic, data) {
+                this._listHash = "changed";
                 this._updateLoadedItem(null, data.item, data.notAddNew);
                 this._updateLayout();
             },
@@ -4437,18 +4415,81 @@ define("slice/ui/content/content", [
             "slice:user": function (topic, data) {
                 this._changeUID(data.uid);
                 this._updateLayout();
+            },
+            "slice:set-copied-link": function (topic, data) {
+                var parent = document.getElementById(data.id);
+                if (parent) {
+                    var oldOpen = this._lists.content.loaded.querySelector(".b-content__item_loaded[data-showinfo=\"true\"]");
+                    if (oldOpen) {
+                        oldOpen.setAttribute("data-showinfo", "false");
+                    }
+                    parent.setAttribute("data-public", data.url);
+                    var info = parent.querySelector(".item-l__public-info__link");
+                    xmlHelper.setText(info, data.url);
+                    parent.setAttribute("data-showinfo", "true");
+                }
+            }
+        },
+        commands: {
+            "refresh": function (event) {
+                adapter.sendMessage("slice:ui:cmd-list-refresh");
+            },
+            "beginlink": function (event) {
+                utils.navigate(config.BEGIN_URL, event.event);
+            },
+            "authlink": function (event) {
+                utils.navigate(config.BEGIN_URL, event.event);
+            },
+            "cancel": function (event) {
+                stat.logWidget("act.slice.uploadcancel");
+                adapter.sendOuterMessage("yadisk:slice:upload-cancel", event.parent.id.substr(CURR_ID_PREFIX.length));
+            },
+            "retry": function (event) {
+                stat.logWidget("act.slice.uploadcresume");
+                adapter.sendOuterMessage("yadisk:slice:upload-retry", event.parent.id.substr(CURR_ID_PREFIX.length));
+            },
+            "linksource": function (event) {
+                stat.logWidget("act.slice.linksource." + this._getElemIndex(event.parent));
+                utils.navigate(event.parent.getAttribute("data-href"), event.event);
+            },
+            "download": function (event) {
+                stat.logWidget("act.slice.download." + this._getElemIndex(event.parent));
+                adapter.sendMessage("slice:download", event.parent.getAttribute("data-path"));
+            },
+            "public": function (event) {
+                stat.logWidget("act.slice.sharelink." + this._getElemIndex(event.parent));
+                adapter.sendMessage("slice:publish-copy", {
+                    path: event.parent.getAttribute("data-path"),
+                    id: event.parent.id,
+                    publicUrl: event.parent.getAttribute("data-public") || ""
+                });
+            },
+            "link": function (event) {
+                stat.logWidget("act.slice.link." + this._getElemIndex(event.parent));
+                utils.navigate(event.parent.getAttribute("data-href"), event.event);
+            },
+            "publiclink": function (event) {
+                stat.logWidget("act.slice.notifsharelink");
+                utils.navigate(event.parent.getAttribute("data-public"), event.event);
+            },
+            "publicclose": function (event) {
+                event.parent.setAttribute("data-showinfo", "false");
             }
         },
         _updateLayout: function () {
             var count = 0;
             var emptyList = this._lists.loaded.getAttribute("data-empty") === "true";
             if (emptyList) {
-                var currentLoadsCount = this._lists.current.querySelectorAll(".b-content__item").length;
-                count = Math.max(VIS_ITEMS_COUNT - currentLoadsCount, 1);
+                var currentLoadsCount = 0;
+                var currItems = this._lists.current.querySelectorAll(".b-content__item");
+                for (var i = 0; i < currItems.length; i++) {
+                    currentLoadsCount += currItems[i].style.display == "none" ? 0 : 1;
+                }
+                count = Math.max(VISIBLE_ITEMS_COUNT - currentLoadsCount, 1);
             }
-            this._lists.loaded.style.minHeight = LIST_ITEM_HEIGHT * count + "px";
-            this._lists.loaded.style.lineHeight = count ? LIST_ITEM_HEIGHT * count + "px" : "";
-            this._jqParent.customScrollbar();
+            this._lists.loaded.style.minHeight = LIST_ITEM_HEIGHT * count - 1 + "px";
+            this._lists.loaded.style.lineHeight = count ? LIST_ITEM_HEIGHT * count - 1 + "px" : "";
+            this._jqParent.customScrollbar("resize", true);
         },
         _getElemIndex: function (elem) {
             var parents = [
@@ -4462,7 +4503,7 @@ define("slice/ui/content/content", [
                     if (nodes[i] == elem) {
                         return index;
                     }
-                    if (nodes[i].nodeType == Node.ELEMENT_NODE) {
+                    if (nodes[i].nodeType == Node.ELEMENT_NODE && (j || nodes[i].style.display != "none")) {
                         index++;
                     }
                 }
@@ -4470,11 +4511,11 @@ define("slice/ui/content/content", [
             return -1;
         },
         _fillList: function (type, list, func) {
-            var html = Array.prototype.map.call(list, templates[type + "-item"]).join("");
+            var html = list ? Array.prototype.map.call(list, templates[type + "-item"]).join("") : "";
             this._lists.content[type].innerHTML = html;
             this._lists[type].setAttribute("data-empty", !html);
             this._lists[type].setAttribute("data-state", "loaded");
-            if (func) {
+            if (func && list) {
                 var items = this._lists[type].querySelectorAll(".b-content__item");
                 Array.prototype.forEach.call(items, function (node, i) {
                     func.call(this, node, list[i], i);
@@ -4507,20 +4548,34 @@ define("slice/ui/content/content", [
                 elem = this._addItem("current", item, true);
             }
             elem.style.display = elem.getAttribute("data-uid") == this._uid ? "" : "none";
+            var itemTextElem = elem.querySelector(".item__text");
             var itemText = (item.name || "").replace(/^.*[\\\/](?=[^\\\/]+$)/, "");
             if (itemText) {
-                itemText = item.error ? adapter.getString("slice.error.filename-not-loaded").replace("{filename}", itemText) : itemText;
+                itemTextElem.title = itemText;
             } else {
-                itemText = adapter.getString(item.error ? "slice.error.file-not-loaded" : "slice.waiting-upload-url") || "...";
+                itemTextElem.title = "";
+                itemText = "...";
             }
-            xmlHelper.setText(elem.querySelector(".item__text"), itemText);
-            elem.__srcUrl = item.srcURL;
+            xmlHelper.setText(itemTextElem, itemText);
+            elem.setAttribute("data-href", item.srcURL || "");
+            if (item.srcURL) {
+                itemTextElem.setAttribute("data-command", "linksource");
+            }
             elem.setAttribute("data-error", item.error);
+            elem.querySelector(".item-c__cancel").title = adapter.getString(item.error ? "slice.tooltip.error-cancel" : "slice.tooltip.cancel");
+            var infoElem = elem.querySelector(".item__info");
             if (!item.error) {
-                var percentDiv = elem.querySelector(".item__percent");
-                var percentPx = -Math.round(item.percent * IMG_PERCENT_PARTS / 100) * 24;
-                percentDiv.style.backgroundPosition = "0px " + percentPx + "px";
-                percentDiv.innerHTML = Math.round(item.percent);
+                var percentDiv = elem.querySelector(".item-c__percent");
+                percentDiv.setAttribute("data-nopercent", !item.percent);
+                if (item.percent) {
+                    infoElem.innerHTML = Math.round(item.percent) + "%";
+                    var percentPx = -Math.round(item.percent * IMG_PERCENT_PARTS / 100) * 24;
+                    percentDiv.style.backgroundPosition = "0px " + percentPx + "px";
+                } else {
+                    infoElem.innerHTML = adapter.getString("slice.uploading");
+                }
+            } else {
+                infoElem.innerHTML = adapter.getString("slice.error.file-not-loaded");
             }
         },
         _updateLoadedItem: function (elem, item, notAddNew) {
@@ -4538,17 +4593,46 @@ define("slice/ui/content/content", [
                 elem = this._addItem("loaded", item, true);
             }
             elem.setAttribute("data-path", item.path);
-            elem._fileUrl = item._fileUrl;
+            elem.setAttribute("data-href", item._fileUrl);
             if (item.public_url) {
                 elem.setAttribute("data-public", item.public_url);
             } else {
                 elem.removeAttribute("data-public");
             }
-            xmlHelper.setText(elem.querySelector(".item__text"), item.name);
-            xmlHelper.setText(elem.querySelector(".item__date"), this._formatDate(item.created));
-            var elemIcon = elem.querySelector(".item__icon img");
-            elemIcon.onerror = imgError;
-            elemIcon.src = item._imgPreview || item._iconUrl;
+            var itemTextElem = elem.querySelector(".item__text");
+            xmlHelper.setText(itemTextElem, item.name);
+            itemTextElem.title = item.name;
+            xmlHelper.setText(elem.querySelector(".item__info"), this._formatSize(item.size) + ", " + this._formatDate(item.created));
+            var elemIconParent = elem.querySelector(".item__icon");
+            elemIconParent.style.backgroundImage = "url(" + item._iconUrl + ")";
+            if (item._imgPreview) {
+                var elemIcon = elemIconParent.querySelector("img");
+                if (!elemIcon) {
+                    elemIcon = new Image();
+                    elemIcon.onerror = imgError;
+                    elemIcon.onload = imgLoad;
+                    elemIconParent.appendChild(elemIcon);
+                }
+                if (elemIcon._srcImg != item._imgPreview) {
+                    elemIcon.src = elemIcon._srcImg = item._imgPreview;
+                }
+                if (elemIcon.complete) {
+                    imgLoad.call(elemIcon);
+                }
+            }
+        },
+        _getListHash: function (list) {
+            if (!list) {
+                return "";
+            }
+            var arr = [];
+            list.forEach(function (item) {
+                arr.push(item.size + "|" + item.created + "|" + (item.public_url || "") + "|" + item.path);
+            });
+            return arr.join("\n");
+        },
+        _isEmpty: function () {
+            return !this._lists.content.loaded.querySelector(".b-content__item");
         },
         _changeUID: function (uid) {
             if (uid != this._uid) {
@@ -4571,6 +4655,20 @@ define("slice/ui/content/content", [
             } else {
                 return adapter.getString("slice.month.short." + (date.getMonth() + 1)).replace("{D}", date.getDate());
             }
+        },
+        _formatSize: function (size) {
+            var arr = [
+                "b",
+                "kb",
+                "mb",
+                "gb"
+            ];
+            var p = 0;
+            while (size > 1024 && p < arr.length - 1) {
+                size = size / 1024;
+                p++;
+            }
+            return Math.round(size) + " " + adapter.getString("slice.size." + arr[p]);
         }
     };
     manager.onReady(view);
@@ -4580,56 +4678,30 @@ define("slice/ui/footer/footer", [
     "browser-adapter",
     "api/manager",
     "api/stat",
-    "api/xml",
     "api/utils",
+    "api/dom",
     "slice/templates",
     "slice/logic/config"
-], function (adapter, manager, stat, xmlHelper, utils, templates, config) {
-    var SHOW_LINK_TIMEOUT = 15000;
+], function (adapter, manager, stat, utils, domHelper, templates, config) {
     var view = {
         init: function () {
             this._parent = document.querySelector(".b-footer");
             this._parent.innerHTML = templates.footer();
-            this._link = this._parent.querySelector(".b-footer__link");
-            this._fileLink = this._parent.querySelector(".b-footer__info__link");
-            this._link.onclick = function (e) {
-                e = e || window.event;
-                stat.logWidget("yadisk.{version}.notiflinkdisk");
-                utils.navigate(config.HOME_URL, e);
-                return false;
-            };
-            this._fileLink.onclick = function (e) {
-                e = e || window.event;
-                stat.logWidget("yadisk.{version}.notifsharelink");
-                utils.navigate(this.href, e);
-                return false;
-            };
-            this._timer = null;
-            this._timerFunc = this._timerFunc.bind(this);
-        },
-        finalize: function () {
-            this._clearTimer();
+            this._parent.onclick = domHelper.getClickHandler(this);
+            this._throbber = this._parent.querySelector(".b-footer__throbber");
         },
         observers: {
-            "slice:set-copied-link": function (topic, link) {
-                this._setCopiedLink(link);
+            "slice:loaded-list:loading-not-empty": function (topic, data) {
+                this._throbber.setAttribute("data-state", data.show ? "loading" : "");
             }
         },
-        _clearTimer: function () {
-            if (this._timer) {
-                clearTimeout(this._timer);
-                this._timer = null;
+        commands: {
+            "help": function (event) {
+                utils.navigate(config.HELP_URL, event.event);
+            },
+            "settings": function (event) {
+                adapter.openSettings();
             }
-        },
-        _timerFunc: function () {
-            this._parent.removeAttribute("data-state");
-        },
-        _setCopiedLink: function (url) {
-            this._clearTimer();
-            this._fileLink.href = url;
-            xmlHelper.setText(this._fileLink, url);
-            this._parent.setAttribute("data-state", "link");
-            this._timer = setTimeout(this._timerFunc, SHOW_LINK_TIMEOUT);
         }
     };
     manager.onReady(view);
@@ -4645,7 +4717,7 @@ define("slice/ui/main/main", [
     var widget = {
         init: function () {
             this._parent = document.querySelector(".b-yadisk-widget");
-            adapter.resizeWindowTo(350, 460);
+            adapter.resizeWindowTo(310, 512);
             setTimeout(function () {
                 adapter.sendOuterMessage("yadisk:slice:get-uploads");
             }, 10);

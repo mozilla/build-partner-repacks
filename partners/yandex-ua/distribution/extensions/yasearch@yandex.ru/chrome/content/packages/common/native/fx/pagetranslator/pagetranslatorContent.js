@@ -1,7 +1,7 @@
 "use strict";
 const SCRIPT_URL_PREFIX = "//translate.yandex.net/v1.87/js/";
 const EVENT_MESSAGE_NAME = "yasearch@yandex.ru:pagetranslator:event";
-const GET_PROP_MESSAGE_NAME = "yasearch@yandex.ru:pagetranslator:getprop";
+const GET_PROP_MESSAGE_NAME = "yasearch@yandex.ru:pagetranslator:getdata";
 const TIMEOUT_LOAD = 5000;
 const translator = {
     translate: function translator_translate(lang) {
@@ -20,31 +20,10 @@ const translator = {
         this._createScriptNode({ scriptText: "if (yandexBarTranslator) { " + command + " }" });
     },
     _injectScripts: function translator__injectScripts(lang) {
-        const urls = [
-            SCRIPT_URL_PREFIX + "lib.js",
-            SCRIPT_URL_PREFIX + "tr-url.js"
-        ];
-        let scriptList = [];
-        let contentDocument = content.document;
-        let timeoutLoad = contentDocument.defaultView.setTimeout(function () {
-            sendAsyncMessage(EVENT_MESSAGE_NAME, { type: "error" });
-        }, TIMEOUT_LOAD);
-        let onload = function onload(url) {
-            let index = scriptList.indexOf(url);
-            if (index !== -1) {
-                scriptList.splice(index, 1);
-            }
-            if (!scriptList.length) {
-                contentDocument.defaultView.clearTimeout(timeoutLoad);
-                this._translateStart(lang);
-            }
-        }.bind(this);
-        urls.forEach(function (url) {
-            scriptList.push(url);
-            this._createScriptNode({ url: url }).addEventListener("load", function translator__injectScriptsOnLOad() {
-                onload(url);
-            }, false);
-        }, this);
+        let scriptsText = this.scriptsText;
+        this._createScriptNode({ scriptText: scriptsText["lib.js"] });
+        this._createScriptNode({ scriptText: scriptsText["tr-url.js"] });
+        this._translateStart(lang);
     },
     _createScriptNode: function translator__createScriptNode({id, url, scriptText}) {
         let script = content.document.createElement("script");
@@ -88,6 +67,10 @@ const translator = {
     },
     get language() {
         let results = sendSyncMessage(GET_PROP_MESSAGE_NAME, { type: "getLanguage" });
+        return results.filter(Boolean)[0];
+    },
+    get scriptsText() {
+        let results = sendSyncMessage(GET_PROP_MESSAGE_NAME, { type: "getScriptsText" });
         return results.filter(Boolean)[0];
     }
 };

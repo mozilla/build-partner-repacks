@@ -6,33 +6,24 @@
 
 <bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-    <binding display="xul:toolbarbutton" id="button" inheritstyle="false">
+    <binding display="xul:toolbarbutton" id="toggle-barless-button" inheritstyle="false">
         <resources>
             <stylesheet src="button.css"/>
         </resources>
 
         <content>
-            <xul:box class="top"/>
-            <xul:box class="middle">
+            <xul:box>
                 <xul:image/>
             </xul:box>
-            <xul:box class="bottom"/>
         </content>
 
-        <handlers>
-            <handler action="this.onClick();" button="0" event="click"/>
-        </handlers>
-    </binding>
-
-    <binding extends="#button" id="toggle-barless-button">
-        <implementation implements="nsIDOMEventListener">
+        <implementation>
             <property name="mAppToolbar" onget="return document.getElementById('&app.name;-bar')" readonly="true"/>
 
             <property name="mNavToolbar" onget="return document.getElementById('nav-bar')" readonly="true"/>
 
             <property name="toolbarsCollapsed" onget="return (this.getAttribute('cb-collapsed-state') == 'true');" onset="this.setAttribute('cb-collapsed-state', Boolean(val));"/>
 
-            <field name="BLINK_DURATION" readonly="true">2000</field>
             <field name="_appName">this.mAppToolbar.getAttribute("cb-app")</field>
             <field name="_barCore">Components.classes["@yandex.ru/custombarcore;" + this._appName].getService().wrappedJSObject</field>
             <field name="_barApp">this._barCore.application</field>
@@ -64,7 +55,6 @@
             }
             toolbar.collapsed = this.toolbarsCollapsed;
         }, this);
-        window.addEventListener("DOMContentLoaded", this, false);
         let toolbox = window.document.querySelector("toolbox");
         this._mutationObservers.toolboxAttrMutationObserver = new MutationObserver(function (mutations) {
             let knownBrowserToolbarIDs = this._wndCtrl.knownBrowserToolbarIDs;
@@ -109,16 +99,13 @@
             <destructor><![CDATA[    Object.keys(this._mutationObservers).forEach(function (observerName) {
         this[observerName].disconnect();
         this[observerName] = null;
-    }, this._mutationObservers);
-    window.removeEventListener("DOMContentLoaded", this, false);]]></destructor>
+    }, this._mutationObservers);]]></destructor>
 
             <method name="onClick">
                 <body><![CDATA[    this.toggleToolbar();
     this.sendStatistic("shevron." + (this.toolbarsCollapsed ? "buttonclose" : "buttonopen"));
-    const CHEVRON_STATE_PREF = "chevronState";
-    this._barApp.preferences.set(CHEVRON_STATE_PREF, 1);]]></body>
+    this.setNoMoreTutorialState();]]></body>
             </method>
-
 
             <method name="onToolbarCollapsedChange">
                 <body><![CDATA[    if (window.document.querySelector("toolbox").getAttribute("data-toggling") == "true") {
@@ -139,17 +126,6 @@
     this.mAppToolbar.setAttribute("data-collapsed", collapsedState);
     this.toolbarsCollapsed = collapsedState;]]></body>
             </method>
-
-            <method name="blink">
-                <body><![CDATA[    if (this.hasAttribute("animated")) {
-        return;
-    }
-    this.setAttribute("animated", "true");
-    setTimeout(function (me) {
-        me.removeAttribute("animated");
-    }, this.BLINK_DURATION, this);]]></body>
-            </method>
-
 
             <method name="checkToolbarsInteraction">
                 <body><![CDATA[    const PREV_INSTALLED_TOOLBARS_PREF = "existingToolbars";
@@ -283,6 +259,10 @@
     }]]></body>
             </method>
 
+            <method name="setNoMoreTutorialState">
+                <body><![CDATA[    this._barApp.preferences.set("chevronState", 1);]]></body>
+            </method>
+
             <method name="sendStatistic">
                 <parameter name="param"/>
                 <body><![CDATA[    this._barApp.statistics.logClickStatistics({
@@ -290,41 +270,10 @@
         path: "fx." + param
     });]]></body>
             </method>
-
-            <method name="handleEvent">
-                <parameter name="aEvent"/>
-                <body><![CDATA[    if (aEvent.type !== "DOMContentLoaded") {
-        return;
-    }
-    if (this.mNavToolbar.hasAttribute("customizing")) {
-        return;
-    }
-    this._mutationObservers.toolbarChildrenMutationObserver = new MutationObserver(function (mutations) {
-        if (!this.mAppToolbar.collapsed) {
-            return;
-        }
-        let isSomeNodeInserted = mutations.some(function ({addedNodes}) {
-            return Boolean(addedNodes.length);
-        });
-        if (!isSomeNodeInserted) {
-            return;
-        }
-        this.blink();
-    }.bind(this));
-    this._mutationObservers.toolbarChildrenMutationObserver.observe(this.mAppToolbar, {
-        childList: true,
-        subtree: false
-    });]]></body>
-            </method>
         </implementation>
-    </binding>
 
-
-    <binding extends="#button" id="toggle-multiline-button">
-        <implementation>
-            <method name="onClick">
-                <body><![CDATA[    document.getBindingParent(this).toggleMultiline();]]></body>
-            </method>
-        </implementation>
+        <handlers>
+            <handler action="this.onClick();" button="0" event="click"/>
+        </handlers>
     </binding>
 </bindings>

@@ -78,7 +78,7 @@ var module = function (app, common) {
                 return null;
             }
             var ret = {
-                icon: group ? this._icon : item._profile ? item._profile.photo50 : null,
+                icon: group ? this._icon : item._profile ? item._profile.photo100 : null,
                 template: group ? app.api.Notifications.TEMPLATE_GROUP : app.api.Notifications.TEMPLATE_MESSAGE
             };
             if (group) {
@@ -116,7 +116,7 @@ var module = function (app, common) {
                 conf.context = app.getAppUrl("thread", item._tid);
                 conf.title = item.message._profile.name;
                 conf.text = app.getMsgText(item.message);
-                conf.icon = item.message._profile.photo50;
+                conf.icon = item.message._profile.photo100;
             },
             follow: function (item, conf) {
                 conf.context = "friends_new";

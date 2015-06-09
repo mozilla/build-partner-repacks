@@ -1,0 +1,5 @@
+<!ENTITY sovetnik.name "Sovetnik">
+<!ENTITY sovetnik.options.town.label "City">
+<!ENTITY sovetnik.options.town.autodetect "Define automatically">
+<!ENTITY sovetnik.options.showOtherRegionsSuggest "Show best deals from the other regions">
+<!ENTITY sovetnik.options.showShopListOnHover "Show offers list on mouse over">

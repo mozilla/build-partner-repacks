@@ -102,9 +102,10 @@ YandexBrowser.prototype = {
         case "mac":
             execFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
             execFile.initWithPath("/bin/bash");
+            let escapedShURL = aURL ? ("'" + aURL.replace(/'/g, "'\"'\"'") + "'").replace(/''/g, "") : "";
             args = [
                 "-c",
-                "open -a '" + browserExecutable.path + "'; " + "sleep 1; " + "open -a '" + browserExecutable.path + "' " + JSON.stringify(decodeURI(aURL))
+                "open -a '" + browserExecutable.path + "'; " + "sleep 1; " + "open -a '" + browserExecutable.path + "' " + escapedShURL
             ];
             break;
         }

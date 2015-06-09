@@ -54,7 +54,7 @@ var commonThumbsSuggest = function () {
                 items = items.filter(function (item) {
                     return Object.keys(item.foundInUrl).length || Object.keys(item.foundInTitle).length;
                 }).filter(function (item) {
-                    return !!item.uri.hostname();
+                    return Boolean(item.uri.hostname());
                 });
             }
             items = items.map(function (item) {
@@ -122,7 +122,7 @@ var commonThumbsSuggest = function () {
             items = Object.keys(hostnames).map(function (hostname) {
                 var item = hostnames[hostname];
                 var resItem = {
-                    url: item.url,
+                    url: item.uri.toString(),
                     title: item.sourceTitle,
                     domain: hostname,
                     weight: item.weight

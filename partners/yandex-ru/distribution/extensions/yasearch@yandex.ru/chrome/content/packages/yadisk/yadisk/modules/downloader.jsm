@@ -6,31 +6,46 @@ const {
     results: Cr,
     utils: Cu
 } = Components;
-Components.utils.import("resource://gre/modules/FileUtils.jsm");
-Components.utils.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/FileUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 const DOWNLOADS_SETTING_NAME = "downloads";
+const ERRORS = {
+    DOWNLOAD: {
+        HTTP: "download-http",
+        FILE_IO: "download-file-io"
+    },
+    UPLOAD: {
+        HTTP: "upload-http",
+        FILE_IO: "upload-file-io"
+    },
+    SYSTEM: {
+        NO_CONNECTION: "system-no-connection",
+        UNKNOWN: "system-unknown"
+    },
+    SERVICE: { INVALID_URL: "service-invalid-url" }
+};
 var module = function (app, common) {
+    function logger(msg) {
+        app.log(msg);
+    }
     let downloads = {};
     let yadiskDownloader = {
         get app() {
             return this._app;
         },
         get dataImageRegexp() {
-            if (!this._dataImageRegexp) {
-                this._dataImageRegexp = /^data:image\/((x\-ms\-)?bmp|gif|jpeg|jpg|png|tiff|svg\+xml|x\-icon);base64,/i;
-            }
-            return this._dataImageRegexp;
+            return DataImageResource.dataImageRegexp;
         },
         STATES: {
             progress: 1,
             success: 2,
             failed: 3
         },
-        init: function yadisk_downloader_init(application) {
+        init: function (application) {
             this._app = application;
             this._restoreAllDownloadsFromCache();
         },
-        finalize: function yadisk_downloader_finalize() {
+        finalize: function () {
             this._saveAllDownloads();
             Object.keys(downloads).forEach(function (aAccountId) {
                 Object.keys(downloads[aAccountId]).forEach(function (aTransferKey) {
@@ -39,93 +54,49 @@ var module = function (app, common) {
             }, this);
             this._app = null;
         },
-        tryDownloadMedia: function yadisk_downloader_tryDownloadMedia(aURL, aMetaInfo) {
-            if (!aURL) {
-                this.app.log("Downloading of a resource failed. No URL.");
+        tryDownloadMedia: function (aResource, aMetaInfo = {}) {
+            if (!aResource) {
+                this.app.log("Downloading of a resource failed. No resource.");
                 return false;
             }
-            if (!aMetaInfo) {
-                this.app.log("Downloading of a resource failed. No meta information.");
+            let resource = this._getResource(aResource, aMetaInfo);
+            if (!resource) {
+                this.app.log("Downloading of a resource failed. Couldn't create instance of Resource.");
                 return false;
             }
-            let url;
-            let locator;
-            if (this.dataImageRegexp.test(aURL)) {
-                let match = this.dataImageRegexp.exec(aURL);
-                let filename = common.strUtils.md5(aURL);
-                let ext = "";
-                if (match[1]) {
-                    ext = "." + match[1];
-                }
-                let tmpFile = FileUtils.getFile("TmpD", [filename + ext]);
-                try {
-                    this._saveDataURLToFile(tmpFile, aURL);
-                } catch (e) {
-                    this.app.log("Couldn't save data url to file. Msg: " + e.message);
-                    return false;
-                }
-                url = Services.io.newFileURI(tmpFile);
-                locator = tmpFile;
-            } else {
-                url = aURL;
-            }
-            if (this._downloadingURLs.indexOf(url) > -1) {
-                let accountTransfers = this._getAccountTransfers();
-                if (!accountTransfers) {
-                    this.app.log("The requested url is in the downloadingURLs list, but no current account.");
-                    return false;
-                }
-                let transfer;
-                Object.keys(accountTransfers).some(function (aTransferKey) {
-                    let currentTransfer = accountTransfers[aTransferKey];
-                    if ((currentTransfer.sourceURL || currentTransfer.fileURL) === url) {
-                        transfer = currentTransfer;
-                        return true;
-                    }
-                });
+            if (this._isDownloadingURL(resource.url)) {
+                let transfer = this._getTransferByURL(resource.url);
                 if (transfer) {
                     return this.retryTransfer(transfer.id);
                 }
                 this.app.log("The requested url is in the downloadingURLs list, but no transfer corresponding to it.");
-                this._releaseDownloadingURL(url);
+                this._releaseDownloadingURL(resource.url);
             }
-            if (/^file:\/\/\//i.test(aURL)) {
-                let pHandler = Services.io.getProtocolHandler("file").QueryInterface(Components.interfaces.nsIFileProtocolHandler);
-                try {
-                    locator = pHandler.getFileFromURLSpec(aURL);
-                } catch (e) {
-                    this.app.log("Downloading of a resource failed. file:/// url is not valid. aURL: " + aURL);
-                    return false;
-                }
+            return this._startDownloadingProcess(resource);
+        },
+        isResourceDownloading: function (aResource) {
+            let resource = this._getResource(aResource);
+            if (!resource) {
+                return false;
             }
-            if (!locator) {
-                locator = aURL;
-            }
+            return this._isDownloadingURL(resource.url);
+        },
+        downloadMedia: function (aData) {
             let transfer;
             try {
-                transfer = this._createTransfer(locator, aMetaInfo);
+                transfer = this._getAccountTransferById(aData.id);
             } catch (e) {
-                this.app.log("Downloading of a resource failed. msg:" + e.message);
+                this.app.log("Getting transfer failed. Msg:" + e.message);
                 return false;
             }
-            this._downloadingURLs.push(aURL);
-            this._getUploadURL(transfer);
-            this._progressCounter++;
-            return true;
-        },
-        downloadMedia: function yadisk_downloader_downloadMedia(aData) {
-            let [
-                accountId,
-                downloadId
-            ] = aData.id.split("#");
-            if (!(accountId && downloadId)) {
-                this.app.log("Download media failed. Transfer id is not valid. id: " + aData.id);
-                return false;
-            }
-            let transfer = this._getAccountTransferByAccountAndId(accountId, downloadId);
             if (!transfer) {
+                this.app.log("There is no transfer with such id: " + aData.id);
                 return false;
             }
+            if (transfer.sourceURL) {
+                transfer.remoteDownloadFailed = true;
+            }
+            transfer.operationURL = "";
             let error = aData.error;
             let targetURL;
             if (!error) {
@@ -138,15 +109,16 @@ var module = function (app, common) {
             if (error) {
                 this.app.log("Error while parsing data from slice. Msg:" + error);
                 transfer.urlRequest = false;
+                transfer.error = true;
+                transfer._errorDescription = aData.error || ERRORS.SERVICE.INVALID_URL;
                 this._onTransferFail(transfer);
                 return false;
             }
-            transfer.filename = aData.name;
             transfer.targetURL = targetURL;
             this._downloadMedia(transfer);
             return true;
         },
-        restoreAccountDownloads: function yadisk_downloader_restoreAccountDownloads(aAccountId) {
+        restoreAccountDownloads: function (aAccountId) {
             let accountDownloads = this._getAccountTransfers(aAccountId);
             if (!accountDownloads) {
                 return;
@@ -165,7 +137,7 @@ var module = function (app, common) {
                 this.retryTransfer(transfer.id);
             }, this);
         },
-        cancelTransfer: function yadisk_downloader_cancelTransfer(aTransferId) {
+        cancelTransfer: function (aTransferId) {
             if (!aTransferId) {
                 return false;
             }
@@ -189,20 +161,14 @@ var module = function (app, common) {
             }
             return true;
         },
-        retryTransfer: function yadisk_downloader_retryTransfer(aTransferId) {
-            if (!aTransferId) {
-                this.app.log("Transfer retry failed. Empty transfer id.");
-                return false;
-            }
-            let [
-                accountId,
-                accountTransferKey
-            ] = aTransferId.split("#");
-            if (!(accountId && accountTransferKey)) {
+        retryTransfer: function (aTransferId) {
+            let transfer;
+            try {
+                transfer = this._getAccountTransferById(aTransferId);
+            } catch (e) {
                 this.app.log("Transfer retry failed. Invalid transfer id. aTransferId=" + aTransferId);
                 return false;
             }
-            let transfer = this._getAccountTransferByAccountAndId(accountId, accountTransferKey);
             if (!transfer) {
                 let canceledTransfer = {
                     id: aTransferId,
@@ -223,7 +189,22 @@ var module = function (app, common) {
             this._progressCounter++;
             return true;
         },
-        notifySliceAboutAllTransfers: function yadisk_downloader_notifySliceAboutAllTransfers() {
+        setTransferFileName: function (aData) {
+            if (!aData.name) {
+                return;
+            }
+            let transfer;
+            try {
+                transfer = this._getAccountTransferById(aData.id);
+            } catch (e) {
+                this.app.log("Getting transfer failed. Msg:" + e.message);
+                return;
+            }
+            if (transfer) {
+                transfer.filename = aData.name;
+            }
+        },
+        notifySliceAboutAllTransfers: function () {
             if (!this.app) {
                 return;
             }
@@ -239,7 +220,47 @@ var module = function (app, common) {
                 data: downloadsList
             });
         },
-        resetCompleteStatus: function yadisk_downloader_resetCompleteStatus() {
+        onRemoteDownloadingStarted: function (aData) {
+            let transfer;
+            try {
+                transfer = this._getAccountTransferById(aData.id);
+            } catch (e) {
+                this.app.log("Getting transfer failed. Msg:" + e.message);
+                return;
+            }
+            if (transfer) {
+                if (aData.operationURL) {
+                    transfer.operationURL = aData.operationURL;
+                }
+            }
+        },
+        onRemoteDownloadingCompleted: function (aData) {
+            let transfer;
+            try {
+                transfer = this._getAccountTransferById(aData.id);
+            } catch (e) {
+                this.app.log("Getting transfer failed. Msg:" + e.message);
+                return;
+            }
+            if (transfer) {
+                transfer.success = true;
+                this._onTransferSuccess(transfer);
+            }
+        },
+        onRemoteDownloadingFailed: function (aData) {
+            let transfer;
+            try {
+                transfer = this._getAccountTransferById(aData.id);
+            } catch (e) {
+                this.app.log("Getting transfer failed. Msg:" + e.message);
+                return;
+            }
+            if (transfer) {
+                transfer.operationURL = "";
+                transfer.remoteDownloadFailed = true;
+            }
+        },
+        resetCompleteStatus: function () {
             this._successState = false;
             this.__error = 0;
             this._notifyWidgetAboutState();
@@ -270,12 +291,46 @@ var module = function (app, common) {
             }
             this.__error = val;
         },
-        _resetCounters: function yadisk_downloader__resetCounters() {
+        _resetCounters: function () {
             this._successState = false;
             this.__error = 0;
             this.__progress = 0;
         },
-        _getUploadURL: function yadisk_downloader__getUploadURL(aTransfer) {
+        _getResource: function (aResource, aMetaInfo) {
+            try {
+                return resourceFactory.getResource(aResource, aMetaInfo);
+            } catch (e) {
+                this.app.log(e.message);
+                return null;
+            }
+        },
+        _getTransfer: function (aLocator, aMeta) {
+            try {
+                return this._createTransfer(aLocator, aMeta);
+            } catch (e) {
+                this.app.log(e.message);
+                return null;
+            }
+        },
+        _startDownloadingProcess: function (aResource) {
+            let meta = aResource.metaInfo;
+            if (aResource.isDataImage) {
+                meta.removeOnComplete = true;
+            }
+            let transfer = this._getTransfer(aResource.locator, meta);
+            if (!transfer) {
+                this.app.log("Starting downloading process failed.");
+                return false;
+            }
+            this._downloadingURLs.push(aResource.url);
+            this._getUploadURL(transfer);
+            this._progressCounter++;
+            return true;
+        },
+        _isDownloadingURL: function (aURL) {
+            return this._downloadingURLs.indexOf(aURL) > -1;
+        },
+        _getUploadURL: function (aTransfer) {
             aTransfer.urlRequest = true;
             this.app.notifySlices({
                 message: "yadisk:get-upload-info",
@@ -286,14 +341,7 @@ var module = function (app, common) {
                 }
             });
         },
-        _getFileNameFromURL: function yadisk_downloader__getFileNameFromURL(aURL) {
-            return aURL.substring(aURL.lastIndexOf("/") + 1);
-        },
-        _saveDataURLToFile: function yadisk_downloader__saveDataURLToFile(aFile, aData) {
-            let channel = Services.io.newChannelFromURI(Services.io.newURI(aData, null, null));
-            this.app.api.Files.writeStreamToFile(channel.open(), aFile);
-        },
-        _getAccountTransferById: function yadisk_downloader__getAccountTransferById(aId) {
+        _getAccountTransferById: function (aId) {
             let [
                 accountId,
                 accountTransferKey
@@ -303,10 +351,10 @@ var module = function (app, common) {
             }
             return this._getAccountTransferByAccountAndId(accountId, accountTransferKey);
         },
-        _getAccountTransferByAccountAndId: function yadisk_downloader__getAccountTransferByAccountAndId(aAccountId, aAccountTransferKey) {
+        _getAccountTransferByAccountAndId: function (aAccountId, aAccountTransferKey) {
             return this._getAccountTransfers(aAccountId)[aAccountTransferKey];
         },
-        _getAccountTransfers: function yadisk_downloader__getAccountTransfers(aAccountId) {
+        _getAccountTransfers: function (aAccountId) {
             let accountId = aAccountId || this.app.getCurrentAccountId();
             if (!accountId) {
                 return null;
@@ -316,7 +364,23 @@ var module = function (app, common) {
             }
             return downloads[accountId];
         },
-        _removeAccountTransfer: function yadisk_downloader__removeAccountTransfer(aAccountId, aTransferId) {
+        _getTransferByURL: function (aURL) {
+            let accountTransfers = this._getAccountTransfers();
+            if (!accountTransfers) {
+                this.app.log("The requested url is in the downloadingURLs list, but no current account.");
+                return null;
+            }
+            let transfer = null;
+            Object.keys(accountTransfers).some(function (aTransferKey) {
+                let currentTransfer = accountTransfers[aTransferKey];
+                if ((currentTransfer.sourceURL || currentTransfer.fileURL) === aURL) {
+                    transfer = currentTransfer;
+                    return true;
+                }
+            });
+            return transfer;
+        },
+        _removeAccountTransfer: function (aAccountId, aTransferId) {
             let accountTransfers = this._getAccountTransfers(aAccountId);
             let accountTransferKey = aTransferId.split("#")[1];
             delete accountTransfers[accountTransferKey];
@@ -324,7 +388,7 @@ var module = function (app, common) {
                 delete downloads[aAccountId];
             }
         },
-        _restoreAllDownloadsFromCache: function yadisk_downloader__restoreAllDownloadsFromCache() {
+        _restoreAllDownloadsFromCache: function () {
             try {
                 let downloadsFromCache = JSON.parse(this.app.getPref(DOWNLOADS_SETTING_NAME, undefined));
                 if (typeof downloadsFromCache === "object" && !Array.isArray(downloadsFromCache)) {
@@ -350,7 +414,7 @@ var module = function (app, common) {
                 this.app.log("Restoring downloads list from cache failed. Msg: " + e.message);
             }
         },
-        _saveAllDownloads: function yadisk_downloader__saveAllDownloads() {
+        _saveAllDownloads: function () {
             let currentDownloads = {};
             try {
                 currentDownloads = JSON.stringify(downloads);
@@ -363,7 +427,7 @@ var module = function (app, common) {
                 this.app.log("Saving downloads list failed. msg:" + e.message);
             }
         },
-        _createTransfer: function yadisk_downloader__createTransfer(aResourceLoc, aMetaInfo, aUid, aTransferId, aAddToList = true) {
+        _createTransfer: function (aResourceLoc, aMetaInfo, aUid, aTransferId, aAddToList = true) {
             let id;
             let uid;
             let accountTransferKey;
@@ -396,14 +460,24 @@ var module = function (app, common) {
             }
             return result;
         },
-        _prepareSliceTransferInfo: function yadisk_downloader__prepareSliceTransferInfo(aTransfer) {
+        _prepareSliceTransferInfo: function (aTransfer) {
             let result = {};
             result.id = aTransfer.id;
             result.uid = aTransfer.uid;
             result.name = aTransfer.filename;
             result.srcURL = aTransfer.sourceURL;
+            result.operationURL = aTransfer.operationURL;
             result.error = aTransfer.error;
-            result.percent = aTransfer.success ? 100 : aTransfer.progress.percent;
+            result.zaberunFailed = aTransfer.remoteDownloadFailed;
+            if (aTransfer.error) {
+                result.errorDescription = aTransfer.errorDescription;
+            }
+            result.percent = aTransfer.progress.percent;
+            if (aTransfer.success) {
+                result.percent = 100;
+            } else if (result.percent >= 100) {
+                result.percent = 99;
+            }
             if (aTransfer.success) {
                 result.pageURL = aTransfer.metaInfo.pageURL;
                 result.pageTitle = aTransfer.metaInfo.pageTitle;
@@ -416,7 +490,7 @@ var module = function (app, common) {
             }
             return result;
         },
-        _notifyWidgetAboutState: function yadisk_downloader__notifyWidgetAboutState() {
+        _notifyWidgetAboutState: function () {
             let state;
             if (this._progressCounter) {
                 state = this.STATES.progress;
@@ -431,7 +505,10 @@ var module = function (app, common) {
             }
             this.app.onState(state);
         },
-        _notifySliceAboutTransfer: function yadisk_downloader__notifySliceAboutTransfer(aTransfer) {
+        _notifyWidgetAboutTransferComplete: function (aStatus) {
+            this.app.onTransferComplete(aStatus);
+        },
+        _notifySliceAboutTransfer: function (aTransfer) {
             if (!this.app) {
                 return;
             }
@@ -440,20 +517,20 @@ var module = function (app, common) {
                 data: this._prepareSliceTransferInfo(aTransfer)
             });
         },
-        _downloadMedia: function yadisk_downloader__downloadMedia(aTransfer) {
+        _downloadMedia: function (aTransfer) {
             try {
                 aTransfer.start({
-                    onStart: function Transfer_callback_onStart(aTransfer) {
+                    onStart: function (aTransfer) {
                         this._onTransferStart(aTransfer);
                     }.bind(this),
-                    onComplete: function Transfer_callback_onComplete(aSuccess, aTransfer) {
+                    onComplete: function (aSuccess, aTransfer) {
                         if (aSuccess) {
                             this._onTransferSuccess(aTransfer);
                         } else {
                             this._onTransferFail(aTransfer);
                         }
                     }.bind(this),
-                    onProgress: function Transfer_callback_onProgress(aProgress, aTransfer) {
+                    onProgress: function (aProgress, aTransfer) {
                         this._notifySliceAboutTransfer(aTransfer);
                     }.bind(this)
                 });
@@ -462,17 +539,18 @@ var module = function (app, common) {
                 this._onTransferFail(aTransfer);
             }
         },
-        _releaseDownloadingURL: function yadisk_downloader__releaseDownloadingURL(aURL) {
+        _releaseDownloadingURL: function (aURL) {
             let index = this._downloadingURLs.indexOf(aURL);
             if (index > -1) {
                 this._downloadingURLs.splice(index, 1);
             }
         },
-        _onTransferStart: function yadisk_downloader__onTransferStart(aTransfer) {
+        _onTransferStart: function (aTransfer) {
             this._notifySliceAboutTransfer(aTransfer);
         },
-        _onTransferSuccess: function yadsik_downloader__onTransferSuccess(aTransfer) {
+        _onTransferSuccess: function (aTransfer) {
             this._notifySliceAboutTransfer(aTransfer);
+            this._notifyWidgetAboutTransferComplete("success");
             if (this.app) {
                 let currentUid = this.app.getCurrentAccountId();
                 if (currentUid == aTransfer.uid) {
@@ -483,13 +561,13 @@ var module = function (app, common) {
             this._releaseDownloadingURL(aTransfer.sourceURL || aTransfer.fileURL);
             this._removeAccountTransfer(aTransfer.uid, aTransfer.id);
         },
-        _onTransferFail: function yadisk_downloader__onTransferFail(aTransfer) {
+        _onTransferFail: function (aTransfer) {
             if (this._canceledTransfers[aTransfer.id]) {
                 this._onTransferCancel(aTransfer);
                 return;
             }
-            aTransfer.error = true;
             this._notifySliceAboutTransfer(aTransfer);
+            this._notifyWidgetAboutTransferComplete("fail");
             if (this.app) {
                 let currentUid = this.app.getCurrentAccountId();
                 if (currentUid == aTransfer.uid) {
@@ -498,7 +576,7 @@ var module = function (app, common) {
                 }
             }
         },
-        _onTransferCancel: function yadisk_downloader__onTransferCancel(aTransfer, aWasInProgress = true) {
+        _onTransferCancel: function (aTransfer, aWasInProgress = true) {
             this._notifySliceAboutTransfer(aTransfer);
             this._releaseDownloadingURL(aTransfer.sourceURL || aTransfer.fileURL);
             this._removeAccountTransfer(aTransfer.uid, aTransfer.id);
@@ -521,11 +599,16 @@ var module = function (app, common) {
         this._id = aId;
         this._uid = aUid;
         this._filename = "";
+        this._operationURL = "";
+        this._errorDescription = "";
         this._file = null;
         this._sourceURL = null;
         this._targetURL = null;
+        this._started = false;
+        this._urlRequest = false;
         this._sending = false;
         this._success = false;
+        this.error = false;
         if (aResource instanceof Ci.nsIFile) {
             if (!aResource.exists()) {
                 throw new Error("Specified resource doesn't exist. Path: " + aResource.path);
@@ -543,8 +626,14 @@ var module = function (app, common) {
         if (aMetaInfo.filename) {
             this._filename = aMetaInfo.filename;
         }
-        this.urlRequest = false;
-        this.error = false;
+        if (aMetaInfo.removeOnComplete) {
+            this._removeOnComplete = true;
+        }
+        if (aMetaInfo.operationURL) {
+            this._operationURL = aMetaInfo.operationURL;
+            this.urlRequest = true;
+        }
+        this.remoteDownloadFailed = Boolean(aMetaInfo.remoteDownloadFailed);
     }
     Object.defineProperty(Transfer.prototype, "id", {
         enumberable: true,
@@ -576,16 +665,43 @@ var module = function (app, common) {
             return this._metaInfo;
         }
     });
+    Object.defineProperty(Transfer.prototype, "errorDescription", {
+        enumberable: true,
+        get: function () {
+            return this._errorDescription;
+        }
+    });
+    Object.defineProperty(Transfer.prototype, "urlRequest", {
+        enumberable: true,
+        get: function () {
+            return this._urlRequest;
+        },
+        set: function (val) {
+            if (val) {
+                this._started = true;
+            }
+            this._urlRequest = val;
+        }
+    });
     Object.defineProperty(Transfer.prototype, "success", {
         enumberable: true,
         get: function () {
             return this._success;
+        },
+        set: function (val) {
+            this._success = val;
         }
     });
     Object.defineProperty(Transfer.prototype, "inProgress", {
         enumberable: true,
         get: function () {
             return this.urlRequest || this._sending;
+        }
+    });
+    Object.defineProperty(Transfer.prototype, "completed", {
+        enumberable: true,
+        get: function () {
+            return this.started && !this.inProgress;
         }
     });
     Object.defineProperty(Transfer.prototype, "filename", {
@@ -609,6 +725,15 @@ var module = function (app, common) {
                 throw new Error("Wrong type, should be nsIURI. Type; " + typeof val);
             }
             this._targetURL = val;
+        }
+    });
+    Object.defineProperty(Transfer.prototype, "operationURL", {
+        enumberable: true,
+        get: function () {
+            return this._operationURL;
+        },
+        set: function (val) {
+            this._operationURL = val;
         }
     });
     Object.defineProperty(Transfer.prototype, "progress", {
@@ -636,24 +761,81 @@ var module = function (app, common) {
             return this._progress;
         }
     });
-    Transfer.prototype.start = function Transfer_start(aCallbacks) {
+    Transfer.prototype.start = function (aCallbacks) {
         if (this._sending) {
             return;
         }
-        this.urlRequest = false;
+        this._started = true;
+        this._urlRequest = false;
         this._sending = true;
         this._success = false;
+        try {
+            this._start(aCallbacks);
+        } catch (e) {
+            this._sending = false;
+            this.error = true;
+            this._errorDescription = e.message;
+            throw e;
+        }
+    };
+    Transfer.prototype.cancel = function () {
+        if (this.inProgress) {
+            if (this.urlRequest) {
+                this._urlRequest = false;
+                return;
+            }
+            this._abort();
+        }
+    };
+    Transfer.prototype.toJSON = function () {
+        return {
+            id: this._id,
+            uid: this._uid,
+            sourceURL: this.sourceURL,
+            file: this._file && this._file.path,
+            meta: {
+                pageURL: this._metaInfo.pageURL,
+                pageTitle: this._metaInfo.pageTitle,
+                imageAlt: this._metaInfo.imageAlt,
+                filename: this.filename,
+                operationURL: this.operationURL,
+                remoteDownloadFailed: this.remoteDownloadFailed,
+                removeOnComplete: this._removeOnComplete
+            }
+        };
+    };
+    Transfer.prototype._abort = function () {
+        if (this._downloader) {
+            this._downloader.abort();
+            this._downloader = null;
+        }
+        if (this._uploader) {
+            this._uploader.abort();
+            this._uploader = null;
+        }
+    };
+    Transfer.prototype._start = function (aCallbacks) {
         let fis = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
         let tmpFile;
         let needDownloading = true;
         if (this._file) {
             needDownloading = false;
-            fis.init(this._file, 1, parseInt("0644", 8), false);
+            try {
+                fis.init(this._file, 1, parseInt("0644", 8), false);
+            } catch (e) {
+                logger("fileInputStream failed. Msg: " + e.message);
+                throw new Error(ERRORS.UPLOAD.FILE_IO);
+            }
         } else {
             tmpFile = FileUtils.getFile("TmpD", [this._getTmpFilename(this.sourceURL)]);
             if (tmpFile.exists()) {
                 needDownloading = false;
-                fis.init(tmpFile, 1 | 8, parseInt("0644", 8), false);
+                try {
+                    fis.init(tmpFile, 1 | 8, parseInt("0644", 8), false);
+                } catch (e) {
+                    logger("Locally downloaded file exists. But fileInputStream failed. Msg: " + e.message);
+                    throw new Error(ERRORS.UPLOAD.FILE_IO);
+                }
             }
         }
         var initUploadProcess = function (aTriggerOnStart) {
@@ -668,15 +850,32 @@ var module = function (app, common) {
                         success = true;
                     }
                     if (success) {
-                        if (tmpFile) {
+                        if (this._removeOnComplete || tmpFile) {
                             try {
-                                tmpFile.remove(false);
+                                let file = tmpFile || this._file;
+                                if (file) {
+                                    file.remove(false);
+                                }
                             } catch (e) {
                             }
                         }
                         this._success = true;
                     }
                     this._sending = false;
+                    if (!(success || aStatus === Cr.NS_BINDING_ABORTED)) {
+                        this.error = true;
+                        let desc = "";
+                        if (aStatus) {
+                            if (aStatus === Cr.NS_ERROR_CONNECTION_REFUSED) {
+                                desc = ERRORS.SYSTEM.NO_CONNECTION;
+                            } else {
+                                desc = ERRORS.SYSTEM.UNKNOWN + "-" + aStatus;
+                            }
+                        } else {
+                            desc = ERRORS.UPLOAD.HTTP + "-" + aRequest.responseStatus;
+                        }
+                        this._errorDescription = desc;
+                    }
                     aCallbacks.onComplete(success, this);
                 }.bind(this),
                 onProgress: function (aProgress) {
@@ -691,9 +890,17 @@ var module = function (app, common) {
         }.bind(this);
         if (needDownloading) {
             tmpFile.leafName = tmpFile.leafName + ".part";
-            this._downloader = new Downloader(tmpFile, this._sourceURL);
+            let fileOutputStream = Cc["@mozilla.org/network/file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);
+            let modeFlags = 2 | 8 | 32;
+            try {
+                fileOutputStream.init(tmpFile, modeFlags, parseInt("0644", 8), 0);
+            } catch (e) {
+                logger("download fileOutputStream failed. Msg: " + e.message);
+                throw new Error(ERRORS.DOWNLOAD.FILE_IO);
+            }
+            this._downloader = new Downloader(fileOutputStream, this._sourceURL);
             this._downloader.addListener({
-                onStart: function Transfer_Downloader_callback_onStart(aRequest) {
+                onStart: function (aRequest) {
                     aCallbacks.onStart(this);
                     if (!Components.isSuccessCode(aRequest.status)) {
                         return;
@@ -702,19 +909,32 @@ var module = function (app, common) {
                         aRequest.QueryInterface(Ci.nsIHttpChannel);
                     } catch (e) {
                     }
-                    if (aRequest.responseStatus < 200 || aRequest.responseStatus > 399) {
-                        this.cancel();
-                        return;
-                    }
                     let contentLength = aRequest.contentLength;
-                    if (contentLength) {
+                    if (contentLength > 0) {
                         this.progress.max = contentLength;
                     }
                 }.bind(this),
-                onStop: function Transfer_Downloader_callback_onStop(aStatus) {
+                onStop: function (aStatus, aResponseStatus) {
                     let success = Components.isSuccessCode(aStatus);
                     if (!success) {
+                        if (aStatus !== Cr.NS_BINDING_ABORTED) {
+                            let errorDesc;
+                            if (aStatus === Cr.NS_ERROR_CONNECTION_REFUSED) {
+                                errorDesc = ERRORS.SYSTEM.NO_CONNECTION;
+                            } else {
+                                errorDesc = ERRORS.SYSTEM.UNKNOWN + "-" + aStatus;
+                            }
+                            this._errorDescription = errorDesc;
+                        }
+                    } else if (aResponseStatus < 200 || aResponseStatus > 399) {
+                        this._errorDescription = ERRORS.DOWNLOAD.HTTP + "-" + aResponseStatus;
+                        success = false;
+                    }
+                    if (!success) {
                         this._sending = false;
+                        if (aStatus !== Cr.NS_BINDING_ABORTED) {
+                            this.error = true;
+                        }
                         aCallbacks.onComplete(false, this);
                         return;
                     }
@@ -726,7 +946,16 @@ var module = function (app, common) {
                         tmpFile.moveTo(null, fileName);
                     } catch (e) {
                     }
-                    fis.init(tmpFile, 1, parseInt("0644", 8), false);
+                    try {
+                        fis.init(tmpFile, 1, parseInt("0644", 8), false);
+                    } catch (e) {
+                        logger("Couldn't initalize fileInputStream after downloading. Msg: " + e.message);
+                        this._sending = false;
+                        this.error = true;
+                        this._errorDescription = ERRORS.SYSTEM.FILE_IO;
+                        aCallbacks.onComplete(false, this);
+                        return;
+                    }
                     initUploadProcess();
                 }.bind(this),
                 onProgress: function (aProgress) {
@@ -735,48 +964,67 @@ var module = function (app, common) {
                 }.bind(this)
             });
             this._downloader.start();
-            return;
         } else {
             this.progress.downloaded = -1;
             this.progress.max = (this._file || tmpFile).fileSize;
-        }
-        initUploadProcess(true);
-    };
-    Transfer.prototype.cancel = function Transfer_cancel() {
-        if (this.inProgress) {
-            this.urlRequest = false;
-            this._abort();
+            initUploadProcess(true);
         }
     };
-    Transfer.prototype.toJSON = function Transfer_toJSON() {
-        return {
-            id: this._id,
-            uid: this._uid,
-            sourceURL: this.sourceURL,
-            file: this._file && this._file.path,
-            meta: {
-                pageURL: this._metaInfo.pageURL,
-                pageTitle: this._metaInfo.pageTitle,
-                imageAlt: this._metaInfo.imageAlt,
-                filename: this.filename
-            }
-        };
-    };
-    Transfer.prototype._abort = function Transfer__abort() {
-        if (this._downloader) {
-            this._downloader.abort();
-            this._downloader = null;
-        }
-        if (this._uploader) {
-            this._uploader.abort();
-            this._uploader = null;
-        }
-    };
-    Transfer.prototype._getTmpFilename = function Transfer__getTmpFilename(aLocator) {
+    Transfer.prototype._getTmpFilename = function (aLocator) {
         return common.strUtils.md5(aLocator);
     };
-    function Downloader(aFile, aSourceURL) {
-        this._file = aFile;
+    function Transmitter() {
+    }
+    Transmitter.prototype.addListener = function (aHandlers) {
+        this._handlers = aHandlers;
+    };
+    Transmitter.prototype.getProgress = function () {
+        return this._progress;
+    };
+    Transmitter.prototype.abort = function () {
+        if (this._channel) {
+            this._channel.cancel(Cr.NS_BINDING_ABORTED);
+        }
+    };
+    Transmitter.prototype.onChannelRedirect = function (aOldChannel, aNewChannel, aFlags) {
+        this._channel = aNewChannel;
+    };
+    Transmitter.prototype.asyncOnChannelRedirect = function (aOldChannel, aNewChannel, aFlags, aCallback) {
+        this._channel = aNewChannel;
+        aCallback.onRedirectVerifyCallback(Cr.NS_OK);
+    };
+    Transmitter.prototype.onStatus = function (aRequest, aContext, aStatus, aStatusArg) {
+    };
+    Transmitter.prototype.onRedirect = function (aHttpChannel, aNewChannel) {
+    };
+    Transmitter.prototype.getInterface = function (aIID) {
+        try {
+            return this.QueryInterface(aIID);
+        } catch (e) {
+            throw Cr.NS_NOINTERFACE;
+        }
+    };
+    Transmitter.prototype.QueryInterface = function (aIID) {
+        if (aIID.equals(Ci.nsISupports) || aIID.equals(Ci.nsIInterfaceRequestor) || aIID.equals(Ci.nsIChannelEventSink) || aIID.equals(Ci.nsIProgressEventSink) || aIID.equals(Ci.nsIHttpEventSink) || aIID.equals(Ci.nsIStreamListener)) {
+            return this;
+        }
+        throw Cr.NS_NOINTERFACE;
+    };
+    Transmitter.prototype._setupChannel = function () {
+        if (this._channel) {
+            this._channel = null;
+        }
+        this._channel = Services.io.newChannelFromURI(this._url);
+        this._channel.notificationCallbacks = this;
+    };
+    Transmitter.prototype._emit = function (aEventName) {
+        if (this._handlers && typeof this._handlers[aEventName] === "function") {
+            let args = Array.prototype.slice.call(arguments, 1);
+            this._handlers[aEventName].apply(null, args);
+        }
+    };
+    function Downloader(aOutputSteam, aSourceURL) {
+        this._stream = aOutputSteam;
         this._url = aSourceURL;
         this._data = "";
         this._handlers = {};
@@ -786,37 +1034,23 @@ var module = function (app, common) {
         };
         this._setupChannel();
     }
-    Downloader.prototype.addListener = function Downloader_addListener(aHandlers) {
-        this._handlers = aHandlers;
-    };
-    Downloader.prototype.getProgress = function Downloader_getProgress() {
-        return this._progress;
-    };
-    Downloader.prototype.abort = function Downloader_abort() {
-        if (this._channel) {
-            this._channel.cancel(Cr.NS_BINDING_ABORTED);
-        }
-    };
-    Downloader.prototype.start = function Downloader_start() {
+    Downloader.prototype = Object.create(Transmitter.prototype);
+    Downloader.prototype.constructor = Downloader;
+    Downloader.prototype.start = function () {
         if (this._channel) {
             this._channel.asyncOpen(this, null);
         }
     };
-    Downloader.prototype.onStartRequest = function Downloader_onStartRequest(aRequest, aContext) {
-        let fileOutputStream = Cc["@mozilla.org/network/file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);
-        let accessRights = parseInt("0644", 8);
-        let modeFlags = 2 | 8 | 32;
-        fileOutputStream.init(this._file, modeFlags, accessRights, 0);
-        this._fileOutputStream = fileOutputStream;
+    Downloader.prototype.onStartRequest = function (aRequest, aContext) {
         this._emit("onStart", aRequest);
     };
-    Downloader.prototype.onStopRequest = function Downloader_onStopRequest(aRequest, aContext, aStatus) {
+    Downloader.prototype.onStopRequest = function (aRequest, aContext, aStatus) {
         this._flush();
-        this._fileOutputStream.close();
-        this._fileOutputStream = null;
-        this._emit("onStop", aStatus);
+        this._stream.close();
+        this._stream = null;
+        this._emit("onStop", aStatus, aRequest.responseStatus);
     };
-    Downloader.prototype.onDataAvailable = function Downloader_onDataAvailable(aRequest, aContext, aInputStream, aOffset, aCount) {
+    Downloader.prototype.onDataAvailable = function (aRequest, aContext, aInputStream, aOffset, aCount) {
         let bis = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
         bis.setInputStream(aInputStream);
         let bytes = bis.readBytes(aCount);
@@ -826,52 +1060,15 @@ var module = function (app, common) {
         }
         this._emit("onData");
     };
-    Downloader.prototype.onChannelRedirect = function Downloader_onChannelRedirect(aOldChannel, aNewChannel, aFlags) {
-        this._channel = aNewChannel;
-    };
-    Downloader.prototype.asyncOnChannelRedirect = function Downloader_asyncOnChannelRedirect(aOldChannel, aNewChannel, aFlags, aCallback) {
-        this._channel = aNewChannel;
-        aCallback.onRedirectVerifyCallback(Cr.NS_OK);
-    };
-    Downloader.prototype.onProgress = function Downloader_onProgress(aRequest, aContext, aCurrentProgress, aMaxProgress) {
+    Downloader.prototype.onProgress = function (aRequest, aContext, aCurrentProgress, aMaxProgress) {
         this._progress.current = aCurrentProgress;
         this._progress.max = aMaxProgress;
         this._emit("onProgress", this._progress);
     };
-    Downloader.prototype.onStatus = function Downloader_onStatus(aRequest, aContext, aStatus, aStatusArg) {
-    };
-    Downloader.prototype.onRedirect = function Downloader_onRedirect(aHttpChannel, aNewChannel) {
-    };
-    Downloader.prototype.getInterface = function Downloader_getInterface(aIID) {
-        try {
-            return this.QueryInterface(aIID);
-        } catch (e) {
-            throw Components.results.NS_NOINTERFACE;
-        }
-    };
-    Downloader.prototype.QueryInterface = function Downloader_QueryInterface(aIID) {
-        if (aIID.equals(Ci.nsISupports) || aIID.equals(Ci.nsIInterfaceRequestor) || aIID.equals(Ci.nsIChannelEventSink) || aIID.equals(Ci.nsIProgressEventSink) || aIID.equals(Ci.nsIHttpEventSink) || aIID.equals(Ci.nsIStreamListener)) {
-            return this;
-        }
-        throw Components.results.NS_NOINTERFACE;
-    };
-    Downloader.prototype._setupChannel = function Downloader__setupChannel() {
-        if (this._channel) {
-            this._channel = null;
-        }
-        this._channel = Services.io.newChannelFromURI(this._url);
-        this._channel.notificationCallbacks = this;
-    };
-    Downloader.prototype._flush = function Downloader__flush() {
+    Downloader.prototype._flush = function () {
         if (this._data) {
-            this._fileOutputStream.write(this._data, this._data.length);
+            this._stream.write(this._data, this._data.length);
             this._data = "";
-        }
-    };
-    Downloader.prototype._emit = function Downloader__emit(aEventName) {
-        if (typeof this._handlers[aEventName] === "function") {
-            let args = Array.prototype.slice.call(arguments, 1);
-            this._handlers[aEventName].apply(null, args);
         }
     };
     function Uploader(aInputStream, aTargetURL, aChunked) {
@@ -883,62 +1080,29 @@ var module = function (app, common) {
         };
         this._setupChannel(aChunked);
     }
-    Uploader.prototype.addListener = function Uploader_addListener(aHandlers) {
-        this._handlers = aHandlers;
-    };
-    Uploader.prototype.getProgress = function Uploader_getProgress() {
-        return this._progress;
-    };
-    Uploader.prototype.abort = function Uploader_abort() {
-        if (this._channel) {
-            this._channel.cancel(Cr.NS_BINDING_ABORTED);
-        }
-    };
-    Uploader.prototype.start = function Uploader_start() {
+    Uploader.prototype = Object.create(Transmitter.prototype);
+    Uploader.prototype.constructor = Uploader;
+    Uploader.prototype.start = function () {
         if (this._channel) {
             this._channel.asyncOpen(this, null);
         }
     };
-    Uploader.prototype.onStartRequest = function Uploader_onStartRequest(aRequest, aContext) {
+    Uploader.prototype.onStartRequest = function (aRequest, aContext) {
         this._emit("onStart", aRequest);
     };
-    Uploader.prototype.onStopRequest = function Uploader_onStopRequest(aRequest, aContext, aStatus) {
+    Uploader.prototype.onStopRequest = function (aRequest, aContext, aStatus) {
         this._stream.close();
         this._emit("onStop", aRequest, aStatus);
     };
-    Uploader.prototype.onDataAvailable = function Uploader_onDataAvailable(aRequest, aContext, aInputStream, aOffset, aCount) {
+    Uploader.prototype.onDataAvailable = function (aRequest, aContext, aInputStream, aOffset, aCount) {
         this._emit("onData");
     };
-    Uploader.prototype.onChannelRedirect = function Uploader_onChannelRedirect(aOldChannel, aNewChannel, aFlags) {
-        this._channel = aNewChannel;
-    };
-    Uploader.prototype.asyncOnChannelRedirect = function Uploader_asyncOnChannelRedirect(aOldChannel, aNewChannel, aFlags, aCallback) {
-        this._channel = aNewChannel;
-        aCallback.onRedirectVerifyCallback(Cr.NS_OK);
-    };
-    Uploader.prototype.onProgress = function Uploader_onProgress(aRequest, aContext, aCurrentProgress, aMaxProgress) {
+    Uploader.prototype.onProgress = function (aRequest, aContext, aCurrentProgress, aMaxProgress) {
         this._progress.current = aCurrentProgress;
         this._progress.max = aMaxProgress;
         this._emit("onProgress", this._progress);
     };
-    Uploader.prototype.onStatus = function Uploader_onStatus() {
-    };
-    Uploader.prototype.onRedirect = function Uploader_onRedirect() {
-    };
-    Uploader.prototype.getInterface = function Uploader_getInterface(aIID) {
-        try {
-            return this.QueryInterface(aIID);
-        } catch (e) {
-            throw Components.results.NS_NOINTERFACE;
-        }
-    };
-    Uploader.prototype.QueryInterface = function Uploader_QueryInterface(aIID) {
-        if (aIID.equals(Ci.nsISupports) || aIID.equals(Ci.nsIInterfaceRequestor) || aIID.equals(Ci.nsIChannelEventSink) || aIID.equals(Ci.nsIProgressEventSink) || aIID.equals(Ci.nsIHttpEventSink) || aIID.equals(Ci.nsIStreamListener)) {
-            return this;
-        }
-        throw Components.results.NS_NOINTERFACE;
-    };
-    Uploader.prototype._setupChannel = function Uploader__setupChannel(aChunked) {
+    Uploader.prototype._setupChannel = function (aChunked) {
         if (this._channel) {
             this._channel = null;
         }
@@ -948,11 +1112,136 @@ var module = function (app, common) {
         this._channel.notificationCallbacks = this;
         this._channel.setUploadStream(this._stream, "text/plain", -1);
     };
-    Uploader.prototype._emit = function Uploader__emit(aEventName) {
-        if (typeof this._handlers[aEventName] === "function") {
-            let args = Array.prototype.slice.call(arguments, 1);
-            this._handlers[aEventName].apply(null, args);
+    let resourceFactory = {
+        getResource: function (aResource, aMetaInfo = {}) {
+            if (!aResource) {
+                throw new Error("Resource is missing.");
+            }
+            if (this._isLocalFileURL(aResource)) {
+                aResource = this._getFileFromFileURL(aResource);
+            }
+            if (aResource instanceof Ci.nsIFile) {
+                return new FileResource(aResource, aMetaInfo);
+            }
+            if (this._isDataImageURL(aResource)) {
+                return new DataImageResource(aResource, aMetaInfo);
+            }
+            if (this._isRemoteURL(aResource)) {
+                return new RemoteResource(aResource, aMetaInfo);
+            }
+            throw new Error("Not valid resource.");
+        },
+        _isDataImageURL: function (aURL) {
+            return DataImageResource.dataImageRegexp.test(aURL);
+        },
+        _isLocalFileURL: function (aURL) {
+            return /^file:\/\/\//i.test(aURL);
+        },
+        _isRemoteURL: function (aURL) {
+            return /^(https?|file):\/\//i.test(aURL);
+        },
+        _getFileFromFileURL: function (aURL) {
+            let pHandler = Services.io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
+            return pHandler.getFileFromURLSpec(aURL);
         }
+    };
+    function Resource() {
+    }
+    Object.defineProperty(Resource.prototype, "url", {
+        enumberable: true,
+        get: function () {
+            return this._url;
+        }
+    });
+    Object.defineProperty(Resource.prototype, "locator", {
+        enumberable: true,
+        get: function () {
+            return this._locator;
+        }
+    });
+    Object.defineProperty(Resource.prototype, "isDataImage", {
+        enumberable: true,
+        get: function () {
+            return false;
+        }
+    });
+    Object.defineProperty(Resource.prototype, "metaInfo", {
+        enumberable: true,
+        get: function () {
+            return this._meta;
+        }
+    });
+    Resource.prototype._getFileURLFromFile = function (aFile) {
+        return Services.io.newFileURI(aFile).spec;
+    };
+    function RemoteResource(aResource, aMetaInfo) {
+        this._url = aResource;
+        this._locator = aResource;
+        this._meta = aMetaInfo;
+    }
+    RemoteResource.prototype = Object.create(Resource.prototype);
+    RemoteResource.prototype.constructor = RemoteResource;
+    function FileResource(aFile, aMetaInfo) {
+        this._locator = aFile;
+        this._meta = aMetaInfo;
+        this._setupURL();
+    }
+    FileResource.prototype = Object.create(Resource.prototype);
+    FileResource.prototype.constructor = FileResource;
+    FileResource.prototype._setupURL = function () {
+        this._url = this._getFileURLFromFile(this._locator);
+    };
+    function DataImageResource(aDataImage, aMetaInfo) {
+        this._locator = null;
+        this._meta = aMetaInfo;
+        this._dataImage = aDataImage;
+        this._setupURL();
+    }
+    DataImageResource.prototype = Object.create(Resource.prototype);
+    DataImageResource.prototype.constructor = DataImageResource;
+    DataImageResource.dataImageRegexp = /^data:image\/((?:x\-ms\-)?bmp|gif|jpeg|jpg|png|tiff|svg\+xml|x\-icon);base64,/i;
+    Object.defineProperty(DataImageResource.prototype, "isDataImage", {
+        enumberable: true,
+        get: function () {
+            return true;
+        }
+    });
+    Object.defineProperty(DataImageResource.prototype, "locator", {
+        enumberable: true,
+        get: function () {
+            if (!this._locator) {
+                this._setupLocator();
+            }
+            return this._locator;
+        }
+    });
+    DataImageResource.prototype._setupURL = function () {
+        let tmpFile = this._getTmpFile();
+        this._url = this._getFileURLFromFile(tmpFile);
+    };
+    DataImageResource.prototype._setupLocator = function () {
+        this._locator = this._createImageFile(this._dataImage);
+    };
+    DataImageResource.prototype._createImageFile = function (aData) {
+        let file = this._getTmpFile();
+        let channel = Services.io.newChannelFromURI(Services.io.newURI(aData, null, null));
+        try {
+            yadiskDownloader.app.api.Files.writeStreamToFile(channel.open(), file);
+        } catch (e) {
+            return null;
+        }
+        return file;
+    };
+    DataImageResource.prototype._getTmpFile = function () {
+        return FileUtils.getFile("TmpD", [this._getTmpFileName()]);
+    };
+    DataImageResource.prototype._getTmpFileName = function () {
+        let match = DataImageResource.dataImageRegexp.exec(this._dataImage);
+        let filename = common.strUtils.md5(this._dataImage);
+        if (match[1]) {
+            filename += "." + match[1];
+        }
+        return filename;
     };
     return yadiskDownloader;
 };

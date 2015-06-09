@@ -47,7 +47,7 @@
             var retVal = !!qualifier.call(elem, i, elem);
             return retVal === keep;
         });
-        if (qualifier.nodeType) return jQuery.grep(elements, function(elem) {
+        if (qualifier.nodeType) return jQuery.grep(elements, function(elem, i) {
             return elem === qualifier === keep;
         });
         if ("string" == typeof qualifier) {
@@ -57,7 +57,7 @@
             if (isSimple.test(qualifier)) return jQuery.filter(qualifier, filtered, !keep);
             qualifier = jQuery.filter(qualifier, filtered);
         }
-        return jQuery.grep(elements, function(elem) {
+        return jQuery.grep(elements, function(elem, i) {
             return jQuery.inArray(elem, qualifier) >= 0 === keep;
         });
     }
@@ -257,7 +257,7 @@
             startTime: fxNow || createFxNow(),
             duration: options.duration,
             tweens: [],
-            createTween: function(prop, end) {
+            createTween: function(prop, end, easing) {
                 var tween = jQuery.Tween(elem, animation.opts, prop, end, animation.opts.specialEasing[prop] || animation.opts.easing);
                 return animation.tweens.push(tween), tween;
             },
@@ -511,7 +511,7 @@
             } else for (;length > i && callback.call(obj[i], i, obj[i++]) !== !1; ) ;
             return obj;
         },
-        trim: core_trim && !core_trim.call(" ") ? function(text) {
+        trim: core_trim && !core_trim.call("\ufeff ") ? function(text) {
             return null == text ? "" : core_trim.call(text);
         } : function(text) {
             return null == text ? "" : (text + "").replace(rtrim, "");
@@ -1817,7 +1817,7 @@
                     });
                 },
                 ATTR: function(name, operator, check) {
-                    return function(elem) {
+                    return function(elem, context) {
                         var result = Sizzle.attr(elem, name);
                         return null == result ? "!=" === operator : operator ? (result += "", "=" === operator ? result === check : "!=" === operator ? result !== check : "^=" === operator ? check && 0 === result.indexOf(check) : "*=" === operator ? check && result.indexOf(check) > -1 : "$=" === operator ? check && result.substr(result.length - check.length) === check : "~=" === operator ? (" " + result + " ").indexOf(check) > -1 : "|=" === operator ? result === check || result.substr(0, check.length + 1) === check + "-" : !1) : !0;
                     };
@@ -2535,7 +2535,7 @@
                 return this.name && !this.disabled && (this.checked || rselectTextarea.test(this.nodeName) || rinput.test(this.type));
             }).map(function(i, elem) {
                 var val = jQuery(this).val();
-                return null == val ? null : jQuery.isArray(val) ? jQuery.map(val, function(val) {
+                return null == val ? null : jQuery.isArray(val) ? jQuery.map(val, function(val, i) {
                     return {
                         name: elem.name,
                         value: val.replace(rCRLF, "\r\n")
@@ -2875,7 +2875,7 @@
         },
         run: function(percent) {
             var eased, hooks = Tween.propHooks[this.prop];
-            return this.pos = eased = this.options.duration ? jQuery.easing[this.easing](percent, this.options.duration * percent, 0, 1, this.options.duration) : percent, 
+            return this.options.duration ? this.pos = eased = jQuery.easing[this.easing](percent, this.options.duration * percent, 0, 1, this.options.duration) : this.pos = eased = percent, 
             this.now = (this.end - this.start) * eased + this.start, this.options.step && this.options.step.call(this.elem, this.now, this), 
             hooks && hooks.set ? hooks.set(this) : Tween.propHooks._default.set(this), this;
         }
@@ -3104,9 +3104,10 @@ var BEMHTML = function() {
                 };
                 if (0 == !!__$ctx.elem && "button" === __$ctx.block && "attrs" === __$ctx._mode && 0 == !(__$ctx.__$anflg5 !== !0) && 0 == !__$ctx.ctx.url) {
                     var _$25ctx = __$ctx.ctx, _$25p = __$ctx._localLog ? (__$ctx._localLog.push([ [ "__$anflg5" ], !0 ]), 
-                    __r0 = __$ctx.__$anflg5, __$ctx.__$anflg5 = !0, __r1 = applyc(__$ctx), __$ctx.__$anflg5 = __r0, 
-                    __bv43 = __r1, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv43) : (__r2 = __$ctx.__$anflg5, 
-                    __$ctx.__$anflg5 = !0, __r3 = applyc(__$ctx), __$ctx.__$anflg5 = __r2, __r3), _$25a = {
+                    __bv43 = (__r0 = __$ctx.__$anflg5, __$ctx.__$anflg5 = !0, __r1 = applyc(__$ctx), 
+                    __$ctx.__$anflg5 = __r0, __r1), __$ctx._localLog = __$ctx._localLog.slice(0, -1), 
+                    __bv43) : (__r2 = __$ctx.__$anflg5, __$ctx.__$anflg5 = !0, __r3 = applyc(__$ctx), 
+                    __$ctx.__$anflg5 = __r2, __r3), _$25a = {
                         href: _$25ctx.url
                     };
                     return _$25ctx.target && (_$25a.target = _$25ctx.target), __$ctx.mods.disabled && (_$25a["aria-disabled"] = !0), 
@@ -3114,9 +3115,10 @@ var BEMHTML = function() {
                 }
                 if (0 == !!__$ctx.elem && "button" === __$ctx.block && "attrs" === __$ctx._mode && 0 == !(__$ctx.__$anflg4 !== !0) && 0 == !!__$ctx.ctx.url) {
                     for (var _$24i, _$24ctx = __$ctx.ctx, _$24p = __$ctx._localLog ? (__$ctx._localLog.push([ [ "__$anflg4" ], !0 ]), 
-                    __r0 = __$ctx.__$anflg4, __$ctx.__$anflg4 = !0, __r1 = applyc(__$ctx), __$ctx.__$anflg4 = __r0, 
-                    __bv42 = __r1, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv42) : (__r2 = __$ctx.__$anflg4, 
-                    __$ctx.__$anflg4 = !0, __r3 = applyc(__$ctx), __$ctx.__$anflg4 = __r2, __r3), _$24a = {
+                    __bv42 = (__r0 = __$ctx.__$anflg4, __$ctx.__$anflg4 = !0, __r1 = applyc(__$ctx), 
+                    __$ctx.__$anflg4 = __r0, __r1), __$ctx._localLog = __$ctx._localLog.slice(0, -1), 
+                    __bv42) : (__r2 = __$ctx.__$anflg4, __$ctx.__$anflg4 = !0, __r3 = applyc(__$ctx), 
+                    __$ctx.__$anflg4 = __r2, __r3), _$24a = {
                         type: _$24ctx.type ? _$24ctx.type : "button"
                     }, _$24props = [ "name", "value" ]; _$24i = _$24props.shift(); ) _$24ctx[_$24i] && (_$24a[_$24i] = _$24ctx[_$24i]);
                     return __$ctx.mods.disabled && (_$24a.disabled = "disabled"), __$ctx._.extend(_$24p, _$24a);
@@ -3146,28 +3148,28 @@ var BEMHTML = function() {
                             block: "spin",
                             elem: "icon"
                         } ]
-                    }, __$ctx._localLog ? (__$ctx._localLog.push([ [ "__$anflg3" ], !0 ]), __r0 = __$ctx.__$anflg3, 
+                    }, __$ctx._localLog ? (__$ctx._localLog.push([ [ "__$anflg3" ], !0 ]), __bv41 = (__r0 = __$ctx.__$anflg3, 
                     __$ctx.__$anflg3 = !0, __r7 = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "" ]), 
-                    __r1 = __$ctx.ctx, __$ctx.ctx = __$ctx.ctx, __r2 = __$ctx._mode, __$ctx._mode = "", 
-                    __r3 = applyc(__$ctx), __$ctx.ctx = __r1, __$ctx._mode = __r2, __bv40 = __r3, __$ctx._localLog = __$ctx._localLog.slice(0, -1), 
+                    __bv40 = (__r1 = __$ctx.ctx, __$ctx.ctx = __$ctx.ctx, __r2 = __$ctx._mode, __$ctx._mode = "", 
+                    __r3 = applyc(__$ctx), __$ctx.ctx = __r1, __$ctx._mode = __r2, __r3), __$ctx._localLog = __$ctx._localLog.slice(0, -1), 
                     __bv40) : (__r4 = __$ctx.ctx, __$ctx.ctx = __$ctx.ctx, __r5 = __$ctx._mode, __$ctx._mode = "", 
                     __r6 = applyc(__$ctx), __$ctx.ctx = __r4, __$ctx._mode = __r5, __r6), __$ctx.__$anflg3 = __r0, 
-                    __bv41 = __r7, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv41) : (__r8 = __$ctx.__$anflg3, 
+                    __r7), __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv41) : (__r8 = __$ctx.__$anflg3, 
                     __$ctx.__$anflg3 = !0, __r15 = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "" ]), 
-                    __r9 = __$ctx.ctx, __$ctx.ctx = __$ctx.ctx, __r10 = __$ctx._mode, __$ctx._mode = "", 
-                    __r11 = applyc(__$ctx), __$ctx.ctx = __r9, __$ctx._mode = __r10, __bv40 = __r11, 
-                    __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv40) : (__r12 = __$ctx.ctx, 
-                    __$ctx.ctx = __$ctx.ctx, __r13 = __$ctx._mode, __$ctx._mode = "", __r14 = applyc(__$ctx), 
-                    __$ctx.ctx = __r12, __$ctx._mode = __r13, __r14), __$ctx.__$anflg3 = __r8, __r15);
+                    __bv40 = (__r9 = __$ctx.ctx, __$ctx.ctx = __$ctx.ctx, __r10 = __$ctx._mode, __$ctx._mode = "", 
+                    __r11 = applyc(__$ctx), __$ctx.ctx = __r9, __$ctx._mode = __r10, __r11), __$ctx._localLog = __$ctx._localLog.slice(0, -1), 
+                    __bv40) : (__r12 = __$ctx.ctx, __$ctx.ctx = __$ctx.ctx, __r13 = __$ctx._mode, __$ctx._mode = "", 
+                    __r14 = applyc(__$ctx), __$ctx.ctx = __r12, __$ctx._mode = __r13, __r14), __$ctx.__$anflg3 = __r8, 
+                    __r15);
                 }
                 if (0 == !!__$ctx.elem && "link" === __$ctx.block && "tag" === __$ctx._mode) return __$ctx.ctx.tag ? __$ctx.ctx.tag : "a";
                 if ("link" === __$ctx.block && "inner" === __$ctx.elem && "tag" === __$ctx._mode) return "span";
                 if (0 == !!__$ctx.elem && "link" === __$ctx.block && "attrs" === __$ctx._mode) {
                     var _$1sctx = __$ctx.ctx, _$1sa = {
                         href: __$ctx._.isSimple(_$1sctx.url) ? _$1sctx.url : (p = [], __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "" ], [ [ "_buf" ], p ]), 
-                        __r0 = __$ctx._mode, __$ctx._mode = "", __r1 = __$ctx._buf, __$ctx._buf = p, __r2 = __$ctx.ctx, 
-                        __$ctx.ctx = _$1sctx.url, __r3 = applyc(__$ctx), __$ctx._mode = __r0, __$ctx._buf = __r1, 
-                        __$ctx.ctx = __r2, __bv39 = __r3, __$ctx._localLog = __$ctx._localLog.slice(0, -2), 
+                        __bv39 = (__r0 = __$ctx._mode, __$ctx._mode = "", __r1 = __$ctx._buf, __$ctx._buf = p, 
+                        __r2 = __$ctx.ctx, __$ctx.ctx = _$1sctx.url, __r3 = applyc(__$ctx), __$ctx._mode = __r0, 
+                        __$ctx._buf = __r1, __$ctx.ctx = __r2, __r3), __$ctx._localLog = __$ctx._localLog.slice(0, -2), 
                         __bv39) : (__r4 = __$ctx._mode, __$ctx._mode = "", __r5 = __$ctx._buf, __$ctx._buf = p, 
                         __r6 = __$ctx.ctx, __$ctx.ctx = _$1sctx.url, __r7 = applyc(__$ctx), __$ctx._mode = __r4, 
                         __$ctx._buf = __r5, __$ctx.ctx = __r6, __r7), p.join(""))
@@ -3194,8 +3196,8 @@ var BEMHTML = function() {
                         var _$1imix = __$ctx._localLog ? (__r0 = __$ctx.ctx, __r1 = __r0._iGlobal, __r0._iGlobal = !0, 
                         __r2 = applyc(__$ctx), __r0._iGlobal = __r1, __r2) : (__r3 = __$ctx.ctx, __r4 = __r3._iGlobal, 
                         __r3._iGlobal = !0, __r5 = applyc(__$ctx), __r3._iGlobal = __r4, __r5), _$1ijsParams = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "js-params" ]), 
-                        __r6 = __$ctx._mode, __$ctx._mode = "js-params", __r7 = applyc(__$ctx), __$ctx._mode = __r6, 
-                        __bv35 = __r7, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv35) : (__r8 = __$ctx._mode, 
+                        __bv35 = (__r6 = __$ctx._mode, __$ctx._mode = "js-params", __r7 = applyc(__$ctx), 
+                        __$ctx._mode = __r6, __r7), __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv35) : (__r8 = __$ctx._mode, 
                         __$ctx._mode = "js-params", __r9 = applyc(__$ctx), __$ctx._mode = __r8, __r9);
                         return _$1imix ? _$1imix.push(_$1ijsParams) : _$1imix = [ _$1ijsParams ], _$1imix;
                     }
@@ -3238,9 +3240,9 @@ var BEMHTML = function() {
                             if (_$zctx.content) {
                                 var _$zcnt;
                                 _$zparams.content = (_$zcnt = [], __$ctx._localLog ? (__$ctx._localLog.push([ [ "_buf" ], _$zcnt ], [ [ "_mode" ], "" ]), 
-                                __r0 = __$ctx._buf, __$ctx._buf = _$zcnt, __r1 = __$ctx._mode, __$ctx._mode = "", 
+                                __bv30 = (__r0 = __$ctx._buf, __$ctx._buf = _$zcnt, __r1 = __$ctx._mode, __$ctx._mode = "", 
                                 __r2 = __$ctx.ctx, __$ctx.ctx = _$zctx.content, __r3 = applyc(__$ctx), __$ctx._buf = __r0, 
-                                __$ctx._mode = __r1, __$ctx.ctx = __r2, __bv30 = __r3, __$ctx._localLog = __$ctx._localLog.slice(0, -2), 
+                                __$ctx._mode = __r1, __$ctx.ctx = __r2, __r3), __$ctx._localLog = __$ctx._localLog.slice(0, -2), 
                                 __bv30) : (__r4 = __$ctx._buf, __$ctx._buf = _$zcnt, __r5 = __$ctx._mode, __$ctx._mode = "", 
                                 __r6 = __$ctx.ctx, __$ctx.ctx = _$zctx.content, __r7 = applyc(__$ctx), __$ctx._buf = __r4, 
                                 __$ctx._mode = __r5, __$ctx.ctx = __r6, __r7), _$zcnt.join(""));
@@ -3248,22 +3250,21 @@ var BEMHTML = function() {
                             return void __$ctx._buf.push(BEM.I18N(_$zkeyset, _$zkey, _$zparams));
                         }
                         if ("i-jquery" === __$ctx.block && "core" === __$ctx.elem && "default" === __$ctx._mode) return __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "" ]), 
-                        __r0 = __$ctx._mode, __$ctx._mode = "", __r1 = __$ctx.ctx, __$ctx.ctx = {
+                        __bv29 = (__r0 = __$ctx._mode, __$ctx._mode = "", __r1 = __$ctx.ctx, __$ctx.ctx = {
                             block: "b-page",
                             elem: "js",
                             url: "//yandex.st/jquery/1.7.2/jquery.min.js"
-                        }, __r2 = applyc(__$ctx), __$ctx._mode = __r0, __$ctx.ctx = __r1, __bv29 = __r2, 
-                        __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv29) : (__r3 = __$ctx._mode, 
-                        __$ctx._mode = "", __r4 = __$ctx.ctx, __$ctx.ctx = {
+                        }, __r2 = applyc(__$ctx), __$ctx._mode = __r0, __$ctx.ctx = __r1, __r2), __$ctx._localLog = __$ctx._localLog.slice(0, -1), 
+                        __bv29) : (__r3 = __$ctx._mode, __$ctx._mode = "", __r4 = __$ctx.ctx, __$ctx.ctx = {
                             block: "b-page",
                             elem: "js",
                             url: "//yandex.st/jquery/1.7.2/jquery.min.js"
                         }, __r5 = applyc(__$ctx), __$ctx._mode = __r3, __$ctx.ctx = __r4, __r5);
                         if (0 == !!__$ctx.elem && "i-ua" === __$ctx.block && 0 == !(__$ctx.__$anflg1 !== !0) && "content" === __$ctx._mode) {
-                            var _$xc = __$ctx._localLog ? (__$ctx._localLog.push([ [ "__$anflg1" ], !0 ]), __r0 = __$ctx.__$anflg1, 
-                            __$ctx.__$anflg1 = !0, __r1 = applyc(__$ctx), __$ctx.__$anflg1 = __r0, __bv28 = __r1, 
-                            __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv28) : (__r2 = __$ctx.__$anflg1, 
-                            __$ctx.__$anflg1 = !0, __r3 = applyc(__$ctx), __$ctx.__$anflg1 = __r2, __r3);
+                            var _$xc = __$ctx._localLog ? (__$ctx._localLog.push([ [ "__$anflg1" ], !0 ]), __bv28 = (__r0 = __$ctx.__$anflg1, 
+                            __$ctx.__$anflg1 = !0, __r1 = applyc(__$ctx), __$ctx.__$anflg1 = __r0, __r1), __$ctx._localLog = __$ctx._localLog.slice(0, -1), 
+                            __bv28) : (__r2 = __$ctx.__$anflg1, __$ctx.__$anflg1 = !0, __r3 = applyc(__$ctx), 
+                            __$ctx.__$anflg1 = __r2, __r3);
                             return _$xc += [ ";(function(d,e,c,r,n,w,v,f){", "e=d.documentElement;", 'c="className";', 'r="replace";', 'n="createElementNS";', 'f="firstChild";', 'w="http://www.w3.org/2000/svg";', 'e[c]+=" i-ua_svg_"+(!!d[n]&&!!d[n](w,"svg").createSVGRect?"yes":"no");', 'v=d.createElement("div");', 'v.innerHTML="<svg/>";', 'e[c]+=" i-ua_inlinesvg_"+((v[f]&&v[f].namespaceURI)==w?"yes":"no");', "})(document);" ].join("");
                         }
                         if (0 == !!__$ctx.elem && "i-ua" === __$ctx.block && "content" === __$ctx._mode) return [ ";(function(d,e,c,r){", "e=d.documentElement;", 'c="className";', 'r="replace";', 'e[c]=e[c][r]("i-ua_js_no","i-ua_js_yes");', 'if(d.compatMode!="CSS1Compat")', 'e[c]=e[c][r]("i-ua_css_standart","i-ua_css_quirks")', "})(document);" ].join("");
@@ -3281,8 +3282,8 @@ var BEMHTML = function() {
                                 var __r1 = __$ctx.block;
                                 __$ctx.block = "i-global";
                                 for (_$te in _$t_this) _$t_this.hasOwnProperty(_$te) && (__$ctx._localLog ? (__$ctx._localLog.push([ [ "elem" ], _$te ]), 
-                                __r2 = __$ctx.elem, __$ctx.elem = _$te, __r3 = applyc(__$ctx), __$ctx.elem = __r2, 
-                                __bv26 = __r3, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv26) : (__r4 = __$ctx.elem, 
+                                __bv26 = (__r2 = __$ctx.elem, __$ctx.elem = _$te, __r3 = applyc(__$ctx), __$ctx.elem = __r2, 
+                                __r3), __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv26) : (__r4 = __$ctx.elem, 
                                 __$ctx.elem = _$te, __r5 = applyc(__$ctx), __$ctx.elem = __r4, __r5)) && (_$tjs[_$te] = _$t_this[_$te]);
                                 __$ctx._mode = __r0, __$ctx.block = __r1, __$ctx._localLog = __$ctx._localLog.slice(0, -2);
                             } else {
@@ -3291,8 +3292,8 @@ var BEMHTML = function() {
                                 var __r7 = __$ctx.block;
                                 __$ctx.block = "i-global";
                                 for (_$te in _$t_this) _$t_this.hasOwnProperty(_$te) && (__$ctx._localLog ? (__$ctx._localLog.push([ [ "elem" ], _$te ]), 
-                                __r8 = __$ctx.elem, __$ctx.elem = _$te, __r9 = applyc(__$ctx), __$ctx.elem = __r8, 
-                                __bv26 = __r9, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv26) : (__r10 = __$ctx.elem, 
+                                __bv26 = (__r8 = __$ctx.elem, __$ctx.elem = _$te, __r9 = applyc(__$ctx), __$ctx.elem = __r8, 
+                                __r9), __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv26) : (__r10 = __$ctx.elem, 
                                 __$ctx.elem = _$te, __r11 = applyc(__$ctx), __$ctx.elem = __r10, __r11)) && (_$tjs[_$te] = _$t_this[_$te]);
                                 __$ctx._mode = __r6, __$ctx.block = __r7;
                             }
@@ -3366,11 +3367,10 @@ var BEMHTML = function() {
                                     __$ctx._mode = __r4, __$ctx.block = __r5;
                                 }
                                 return __$ctx["i-global"] = __$ctx._.extend(_$fps, __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "env" ], [ [ "block" ], "i-global" ]), 
-                                __r8 = __$ctx._mode, __$ctx._mode = "env", __r9 = __$ctx.block, __$ctx.block = "i-global", 
-                                __r10 = applyc(__$ctx), __$ctx._mode = __r8, __$ctx.block = __r9, __bv25 = __r10, 
-                                __$ctx._localLog = __$ctx._localLog.slice(0, -2), __bv25) : (__r11 = __$ctx._mode, 
-                                __$ctx._mode = "env", __r12 = __$ctx.block, __$ctx.block = "i-global", __r13 = applyc(__$ctx), 
-                                __$ctx._mode = __r11, __$ctx.block = __r12, __r13)), void applyc(__$ctx);
+                                __bv25 = (__r8 = __$ctx._mode, __$ctx._mode = "env", __r9 = __$ctx.block, __$ctx.block = "i-global", 
+                                __r10 = applyc(__$ctx), __$ctx._mode = __r8, __$ctx.block = __r9, __r10), __$ctx._localLog = __$ctx._localLog.slice(0, -2), 
+                                __bv25) : (__r11 = __$ctx._mode, __$ctx._mode = "env", __r12 = __$ctx.block, __$ctx.block = "i-global", 
+                                __r13 = applyc(__$ctx), __$ctx._mode = __r11, __$ctx.block = __r12, __r13)), void applyc(__$ctx);
                             }
                             if ("content" === __$ctx._mode) return __$ctx.ctx.content;
                             if ("mix" === __$ctx._mode) return void 0;
@@ -3525,25 +3525,25 @@ var BEMHTML = function() {
                             } else {
                                 var _$4tag, _$4_this = __$ctx, _$4BEM_ = _$4_this.BEM, _$4v = __$ctx.ctx, _$4buf = __$ctx._buf;
                                 if (_$4tag = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "tag" ]), 
-                                __r0 = __$ctx._mode, __$ctx._mode = "tag", __r1 = applyc(__$ctx), __$ctx._mode = __r0, 
-                                __bv6 = __r1, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv6) : (__r2 = __$ctx._mode, 
+                                __bv6 = (__r0 = __$ctx._mode, __$ctx._mode = "tag", __r1 = applyc(__$ctx), __$ctx._mode = __r0, 
+                                __r1), __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv6) : (__r2 = __$ctx._mode, 
                                 __$ctx._mode = "tag", __r3 = applyc(__$ctx), __$ctx._mode = __r2, __r3), "undefined" != typeof _$4tag || (_$4tag = _$4v.tag), 
                                 "undefined" != typeof _$4tag || (_$4tag = "div"), _$4tag) {
                                     var _$4jsParams, _$4js;
                                     __$ctx.block && _$4v.js !== !1 && (_$4js = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "js" ]), 
-                                    __r8 = __$ctx._mode, __$ctx._mode = "js", __r9 = applyc(__$ctx), __$ctx._mode = __r8, 
-                                    __bv8 = __r9, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv8) : (__r10 = __$ctx._mode, 
+                                    __bv8 = (__r8 = __$ctx._mode, __$ctx._mode = "js", __r9 = applyc(__$ctx), __$ctx._mode = __r8, 
+                                    __r9), __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv8) : (__r10 = __$ctx._mode, 
                                     __$ctx._mode = "js", __r11 = applyc(__$ctx), __$ctx._mode = __r10, __r11), _$4js = _$4js ? __$ctx._.extend(_$4v.js, _$4js === !0 ? {} : _$4js) : _$4v.js === !0 ? {} : _$4v.js, 
                                     _$4js && ((_$4jsParams = {})[_$4BEM_.INTERNAL.buildClass(__$ctx.block, _$4v.elem)] = _$4js)), 
                                     _$4buf.push("<", _$4tag);
                                     var _$4isBEM = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "bem" ]), 
-                                    __r12 = __$ctx._mode, __$ctx._mode = "bem", __r13 = applyc(__$ctx), __$ctx._mode = __r12, 
-                                    __bv9 = __r13, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv9) : (__r14 = __$ctx._mode, 
+                                    __bv9 = (__r12 = __$ctx._mode, __$ctx._mode = "bem", __r13 = applyc(__$ctx), __$ctx._mode = __r12, 
+                                    __r13), __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv9) : (__r14 = __$ctx._mode, 
                                     __$ctx._mode = "bem", __r15 = applyc(__$ctx), __$ctx._mode = __r14, __r15);
                                     "undefined" != typeof _$4isBEM || (_$4isBEM = "undefined" != typeof _$4v.bem ? _$4v.bem : _$4v.block || _$4v.elem);
                                     var _$4cls = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "cls" ]), 
-                                    __r16 = __$ctx._mode, __$ctx._mode = "cls", __r17 = applyc(__$ctx), __$ctx._mode = __r16, 
-                                    __bv10 = __r17, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv10) : (__r18 = __$ctx._mode, 
+                                    __bv10 = (__r16 = __$ctx._mode, __$ctx._mode = "cls", __r17 = applyc(__$ctx), __$ctx._mode = __r16, 
+                                    __r17), __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv10) : (__r18 = __$ctx._mode, 
                                     __$ctx._mode = "cls", __r19 = applyc(__$ctx), __$ctx._mode = __r18, __r19);
                                     _$4cls || (_$4cls = _$4v.cls);
                                     var _$4addJSInitClass = _$4v.block && _$4jsParams;
@@ -3551,8 +3551,8 @@ var BEMHTML = function() {
                                         if (_$4buf.push(' class="'), _$4isBEM) {
                                             _$4BEM_.INTERNAL.buildClasses(__$ctx.block, _$4v.elem, _$4v.elemMods || _$4v.mods, _$4buf);
                                             var _$4mix = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "mix" ]), 
-                                            __r20 = __$ctx._mode, __$ctx._mode = "mix", __r21 = applyc(__$ctx), __$ctx._mode = __r20, 
-                                            __bv11 = __r21, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv11) : (__r22 = __$ctx._mode, 
+                                            __bv11 = (__r20 = __$ctx._mode, __$ctx._mode = "mix", __r21 = applyc(__$ctx), __$ctx._mode = __r20, 
+                                            __r21), __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv11) : (__r22 = __$ctx._mode, 
                                             __$ctx._mode = "mix", __r23 = applyc(__$ctx), __$ctx._mode = __r22, __r23);
                                             if (_$4v.mix && (_$4mix = _$4mix ? _$4mix.concat(_$4v.mix) : _$4v.mix), _$4mix) {
                                                 var _$4visited = {};
@@ -3566,9 +3566,9 @@ var BEMHTML = function() {
                                                         _$4addJSInitClass || (_$4addJSInitClass = _$4block && !_$4mixItem.elem)), _$4hasItem && !_$4visited[_$4visitedKey(_$4block, _$4elem)]) {
                                                             _$4visited[_$4visitedKey(_$4block, _$4elem)] = !0;
                                                             var _$4nestedMix = __$ctx._localLog ? (__$ctx._localLog.push([ [ "block" ], _$4block ], [ [ "elem" ], _$4elem ], [ [ "_mode" ], "mix" ]), 
-                                                            __r24 = __$ctx.block, __$ctx.block = _$4block, __r25 = __$ctx.elem, __$ctx.elem = _$4elem, 
+                                                            __bv12 = (__r24 = __$ctx.block, __$ctx.block = _$4block, __r25 = __$ctx.elem, __$ctx.elem = _$4elem, 
                                                             __r26 = __$ctx._mode, __$ctx._mode = "mix", __r27 = applyc(__$ctx), __$ctx.block = __r24, 
-                                                            __$ctx.elem = __r25, __$ctx._mode = __r26, __bv12 = __r27, __$ctx._localLog = __$ctx._localLog.slice(0, -3), 
+                                                            __$ctx.elem = __r25, __$ctx._mode = __r26, __r27), __$ctx._localLog = __$ctx._localLog.slice(0, -3), 
                                                             __bv12) : (__r28 = __$ctx.block, __$ctx.block = _$4block, __r29 = __$ctx.elem, __$ctx.elem = _$4elem, 
                                                             __r30 = __$ctx._mode, __$ctx._mode = "mix", __r31 = applyc(__$ctx), __$ctx.block = __r28, 
                                                             __$ctx.elem = __r29, __$ctx._mode = __r30, __r31);
@@ -3587,15 +3587,17 @@ var BEMHTML = function() {
                                     }
                                     if (_$4jsParams) {
                                         var _$4jsAttr = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "jsAttr" ]), 
-                                        __r36 = __$ctx._mode, __$ctx._mode = "jsAttr", __r37 = applyc(__$ctx), __$ctx._mode = __r36, 
-                                        __bv14 = __r37, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv14) : (__r38 = __$ctx._mode, 
-                                        __$ctx._mode = "jsAttr", __r39 = applyc(__$ctx), __$ctx._mode = __r38, __r39);
+                                        __bv14 = (__r36 = __$ctx._mode, __$ctx._mode = "jsAttr", __r37 = applyc(__$ctx), 
+                                        __$ctx._mode = __r36, __r37), __$ctx._localLog = __$ctx._localLog.slice(0, -1), 
+                                        __bv14) : (__r38 = __$ctx._mode, __$ctx._mode = "jsAttr", __r39 = applyc(__$ctx), 
+                                        __$ctx._mode = __r38, __r39);
                                         _$4buf.push(" ", _$4jsAttr || "onclick", '="return ', __$ctx._.attrEscape(JSON.stringify(_$4jsParams)), '"');
                                     }
                                     var _$4attrs = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "attrs" ]), 
-                                    __r40 = __$ctx._mode, __$ctx._mode = "attrs", __r41 = applyc(__$ctx), __$ctx._mode = __r40, 
-                                    __bv15 = __r41, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv15) : (__r42 = __$ctx._mode, 
-                                    __$ctx._mode = "attrs", __r43 = applyc(__$ctx), __$ctx._mode = __r42, __r43);
+                                    __bv15 = (__r40 = __$ctx._mode, __$ctx._mode = "attrs", __r41 = applyc(__$ctx), 
+                                    __$ctx._mode = __r40, __r41), __$ctx._localLog = __$ctx._localLog.slice(0, -1), 
+                                    __bv15) : (__r42 = __$ctx._mode, __$ctx._mode = "attrs", __r43 = applyc(__$ctx), 
+                                    __$ctx._mode = __r42, __r43);
                                     if (_$4attrs = __$ctx._.extend(_$4attrs, _$4v.attrs)) {
                                         var _$4name;
                                         for (_$4name in _$4attrs) void 0 !== _$4attrs[_$4name] && _$4buf.push(" ", _$4name, '="', __$ctx._.attrEscape(_$4attrs[_$4name]), '"');
@@ -3604,9 +3606,10 @@ var BEMHTML = function() {
                                 if (__$ctx._.isShortTag(_$4tag)) _$4buf.push("/>"); else {
                                     _$4tag && _$4buf.push(">");
                                     var _$4content = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "content" ]), 
-                                    __r44 = __$ctx._mode, __$ctx._mode = "content", __r45 = applyc(__$ctx), __$ctx._mode = __r44, 
-                                    __bv16 = __r45, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv16) : (__r46 = __$ctx._mode, 
-                                    __$ctx._mode = "content", __r47 = applyc(__$ctx), __$ctx._mode = __r46, __r47);
+                                    __bv16 = (__r44 = __$ctx._mode, __$ctx._mode = "content", __r45 = applyc(__$ctx), 
+                                    __$ctx._mode = __r44, __r45), __$ctx._localLog = __$ctx._localLog.slice(0, -1), 
+                                    __bv16) : (__r46 = __$ctx._mode, __$ctx._mode = "content", __r47 = applyc(__$ctx), 
+                                    __$ctx._mode = __r46, __r47);
                                     if (_$4content || 0 === _$4content) {
                                         var _$4isBEM = __$ctx.block || __$ctx.elem;
                                         if (__$ctx._localLog) {
@@ -3651,11 +3654,11 @@ var BEMHTML = function() {
                         }
                     } else {
                         var _$12ctx = __$ctx.ctx, _$12dtype = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "doctype" ]), 
-                        __r0 = __$ctx._mode, __$ctx._mode = "doctype", __r1 = applyc(__$ctx), __$ctx._mode = __r0, 
-                        __bv31 = __r1, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv31) : (__r2 = __$ctx._mode, 
+                        __bv31 = (__r0 = __$ctx._mode, __$ctx._mode = "doctype", __r1 = applyc(__$ctx), 
+                        __$ctx._mode = __r0, __r1), __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv31) : (__r2 = __$ctx._mode, 
                         __$ctx._mode = "doctype", __r3 = applyc(__$ctx), __$ctx._mode = __r2, __r3), _$12xUA = __$ctx._localLog ? (__$ctx._localLog.push([ [ "_mode" ], "xUACompatible" ]), 
-                        __r4 = __$ctx._mode, __$ctx._mode = "xUACompatible", __r5 = applyc(__$ctx), __$ctx._mode = __r4, 
-                        __bv32 = __r5, __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv32) : (__r6 = __$ctx._mode, 
+                        __bv32 = (__r4 = __$ctx._mode, __$ctx._mode = "xUACompatible", __r5 = applyc(__$ctx), 
+                        __$ctx._mode = __r4, __r5), __$ctx._localLog = __$ctx._localLog.slice(0, -1), __bv32) : (__r6 = __$ctx._mode, 
                         __$ctx._mode = "xUACompatible", __r7 = applyc(__$ctx), __$ctx._mode = __r6, __r7), _$12buf = [ _$12dtype, {
                             elem: "root",
                             content: [ {
@@ -3938,7 +3941,9 @@ var BEMHTML = function() {
             } else result[name] = prop;
         });
     }
-    var hasIntrospection = function() {}.toString().indexOf("_") > -1, emptyBase = function() {}, objCreate = Object.create || function(ptp) {
+    var hasIntrospection = function() {
+        _;
+    }.toString().indexOf("_") > -1, emptyBase = function() {}, objCreate = Object.create || function(ptp) {
         var inheritance = function() {};
         return inheritance.prototype = ptp, new inheritance();
     }, needCheckProps = !0, testPropObj = {
@@ -4156,7 +4161,7 @@ var BEMHTML = function() {
             }
             return _this;
         },
-        _afterSetMod: function() {},
+        _afterSetMod: function(modName, modVal, oldModVal, elem, elemName) {},
         toggleMod: function(elem, modName, modVal1, modVal2, condition) {
             "string" == typeof elem && (condition = modVal2, modVal2 = modVal1, modVal1 = modName, 
             modName = elem, elem = undefined), "undefined" == typeof modVal2 ? modVal2 = "" : "boolean" == typeof modVal2 && (condition = modVal2, 
@@ -4172,10 +4177,10 @@ var BEMHTML = function() {
             var modFnName = buildModFnName(elemName, modName, modVal);
             return this[modFnName] ? this[modFnName].apply(this, modFnParams) : undefined;
         },
-        _extractModVal: function() {
+        _extractModVal: function(modName, elem) {
             return "";
         },
-        _extractMods: function() {
+        _extractMods: function(modNames, elem) {
             return {};
         },
         channel: function(id, drop) {
@@ -4225,7 +4230,7 @@ var BEMHTML = function() {
             return decl.block == baseBlock._name ? (block = $.inheritSelf(baseBlock, props, staticProps))._processLive(!0) : (block = blocks[decl.block] = $.inherit(baseBlock, props, staticProps))._name = decl.block, 
             block;
         },
-        _processLive: function() {
+        _processLive: function(heedLive) {
             return !1;
         },
         create: function(block, params) {
@@ -4236,7 +4241,7 @@ var BEMHTML = function() {
         getName: function() {
             return this._name;
         },
-        _extractElemNameFrom: function() {},
+        _extractElemNameFrom: function(elem) {},
         afterCurrentEvent: function(fn, ctx) {
             1 == afterCurrentEventFns.push({
                 fn: fn,
@@ -4580,7 +4585,7 @@ var BEMHTML = function() {
             },
             mix: function(val, force) {
                 var _this = this, params = _this._params;
-                return "undefined" == typeof val ? params.mix : (params.mix = !force && "mix" in params ? params.mix.concat(val) : val, 
+                return "undefined" == typeof val ? params.mix : (!force && "mix" in params ? params.mix = params.mix.concat(val) : params.mix = val, 
                 _this);
             },
             js: function(val) {
@@ -5399,10 +5404,8 @@ var BEMHTML = function() {
                                 elem: "desc-item",
                                 content: [ {
                                     block: "spin",
-                                    js: !0,
                                     mods: {
-                                        progress: "yes",
-                                        theme: "gray-48"
+                                        theme: "yellow-27"
                                     }
                                 }, {
                                     block: "special-message",
@@ -5707,7 +5710,7 @@ var BEMHTML = function() {
         hovered: function(modName, modVal) {
             return this.isDisabled() ? !1 : void ("" === modVal && this.delMod("pressed"));
         },
-        pressed: function() {
+        pressed: function(modName, modVal) {
             return this.isDisabled() || this.setMod("focused", "yes"), this.__base.apply(this, arguments);
         }
     },
@@ -5797,7 +5800,7 @@ var BEMHTML = function() {
     }, {
         _onClick: onPromoClick
     });
-}(), function(global_, bem_) {
+}(), function(global_, bem_, undefined) {
     function bemName(decl) {
         return "string" == typeof decl && (decl = {
             block: decl
@@ -5840,7 +5843,7 @@ var BEMHTML = function() {
         decl: function(v) {
             var bemitem = bemParse(this._keyset), prj = "i-tanker" === bemitem.block ? "tanker" : this._prj, keyset = bemitem.elem || this._keyset, key = this._key;
             prj = i18n[prj] || (i18n[prj] = {}), keyset = prj[keyset] || (prj[keyset] = {}), 
-            keyset[key] = "function" == typeof v ? v : function() {
+            keyset[key] = "function" == typeof v ? v : function(p) {
                 return v;
             };
             var l = cache[this._lang] || (cache[this._lang] = {}), k = l[this._keyset] || (l[this._keyset] = {});

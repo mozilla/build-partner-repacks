@@ -38,6 +38,12 @@
     }
     return anonid;]]></body>
             </method>
+
+            <method name="close">
+                <body><![CDATA[    if (this._notification && typeof this._notification.close === "function") {
+        this._notification.close();
+    }]]></body>
+            </method>
         </implementation>
 
     </binding>

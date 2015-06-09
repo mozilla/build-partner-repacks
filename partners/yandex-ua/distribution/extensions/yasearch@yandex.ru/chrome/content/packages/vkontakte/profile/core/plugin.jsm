@@ -6,7 +6,8 @@ const EXPORTED_SYMBOLS = [
 var core = function () {
     var coreHelper = null;
     function loadHelper(api, appObj, widgetPath, commonPath) {
-        var modulePath = api.Package.resolvePath("-common/modules/corehelper.jsm"), scopeObj = {};
+        var scopeObj = {};
+        var modulePath = api.Package.resolvePath("-common/modules/corehelper.jsm");
         Components.utils.import(modulePath, scopeObj);
         coreHelper = scopeObj.core_helper(api, appObj, widgetPath, commonPath);
     }
@@ -21,7 +22,7 @@ var core = function () {
             coreHelper.finalize();
             coreHelper = null;
         },
-        initURLBarItem: function Plugin_initURLBarItem(itemElement, itemClass) {
+        initURLBarItem: function (itemElement, itemClass) {
             return coreHelper.initURLBarItem(itemElement, itemClass);
         }
     };

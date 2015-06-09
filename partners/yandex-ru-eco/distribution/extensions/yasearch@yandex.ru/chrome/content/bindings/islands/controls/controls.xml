@@ -51,6 +51,12 @@
     }]]></setter>
             </property>
 
+            <property name="hidden">
+                <getter><![CDATA[    return this.getAttribute("hidden") === "true";]]></getter>
+
+                <setter><![CDATA[    this.setAttribute("hidden", val);]]></setter>
+            </property>
+
             <method name="focus">
                 <body><![CDATA[    this.mButtonLabel.focus();]]></body>
             </method>

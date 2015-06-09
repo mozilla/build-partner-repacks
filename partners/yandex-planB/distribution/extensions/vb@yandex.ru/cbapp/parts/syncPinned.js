@@ -23,14 +23,11 @@ const syncPinned = {
             return;
         }
         let records = {};
-        this._application.internalStructure.iterate({
-            pinned: true,
-            nonempty: true
-        }, function (thumbData, index) {
+        this._application.internalStructure.iterate({ pinned: true }, function (thumbData, index) {
             let syncId = thumbData.sync.id || this._application.sync.generateId();
             records[PREFIX + syncId] = JSON.stringify({
                 id: thumbData.sync.internalId || this._application.sync.generateId(),
-                url: this._application.sync.prepareUrlForServer(thumbData.source),
+                url: this._application.sync.prepareUrlForServer(thumbData.url),
                 index: parseInt(index, 10),
                 timestamp: thumbData.sync.timestamp || Math.round(Date.now() / 1000),
                 instance: thumbData.sync.instance || this._application.name
@@ -57,14 +54,11 @@ const syncPinned = {
         }
         let records = this.engine.get(null);
         let minTimestamp = Math.round(Date.now() / 1000);
-        let currentThumbsNum = this._application.layout.getThumbsNum();
+        let currentThumbsNum = this._application.internalStructure.length;
         let localThumbs = {};
-        this._application.internalStructure.iterate({
-            pinned: true,
-            nonempty: true
-        }, function (thumbData, index) {
+        this._application.internalStructure.iterate({ pinned: true }, function (thumbData, index) {
             localThumbs[index] = {
-                url: thumbData.source,
+                url: thumbData.url,
                 syncId: thumbData.sync.id,
                 syncInstance: thumbData.sync.instance,
                 syncTimestamp: thumbData.sync.timestamp,
@@ -123,14 +117,11 @@ const syncPinned = {
         this._logger.trace("Engine initialized. Processing data");
         this._logger.trace("Process data: " + JSON.stringify(records));
         let localPinnedThumbs = {};
-        this._application.internalStructure.iterate({
-            nonempty: true,
-            pinned: true
-        }, function (thumbData, index) {
+        this._application.internalStructure.iterate({ pinned: true }, function (thumbData, index) {
             localPinnedThumbs[index] = thumbData;
         }, this);
         let fastPickupSet = {};
-        this._application.internalStructure.iterate({ nonempty: true }, function (thumbData, index) {
+        this._application.internalStructure.iterate(function (thumbData, index) {
             if (thumbData.pinned) {
                 return;
             }
@@ -177,8 +168,8 @@ const syncPinned = {
                 wereChangesMade = true;
             } else {
                 this._logger.trace("This temporary resolved position is empty. Check thumbs for equality");
-                if (localPinnedThumbs[currentIndex] && localPinnedThumbs[currentIndex].source && this._isEqualURL(serverThumb.url, localPinnedThumbs[currentIndex].source)) {
-                    serverThumb.title = localPinnedThumbs[currentIndex].thumb.title || "";
+                if (localPinnedThumbs[currentIndex] && localPinnedThumbs[currentIndex].url && this._isEqualURL(serverThumb.url, localPinnedThumbs[currentIndex].url)) {
+                    serverThumb.title = localPinnedThumbs[currentIndex].title || "";
                 }
                 if (this._wereChangesMade(localPinnedThumbs, serverThumb)) {
                     this._logger.trace("Thumbs differ");
@@ -190,10 +181,7 @@ const syncPinned = {
         let removePositions = [];
         let saveData = {};
         let saveEngineData = {};
-        this._application.internalStructure.iterate({
-            nonempty: true,
-            pinned: true
-        }, function (thumbData, index) {
+        this._application.internalStructure.iterate({ pinned: true }, function (thumbData, index) {
             removePositions.push(index);
             if (resolvedPinnedThumbs[index]) {
                 if (this._wereChangesMade(localPinnedThumbs, resolvedPinnedThumbs[index])) {
@@ -285,7 +273,7 @@ const syncPinned = {
         if (!thumb) {
             return true;
         }
-        let urlsAreEqual = this._isEqualURL(serverThumb.url, thumb.source);
+        let urlsAreEqual = this._isEqualURL(serverThumb.url, thumb.url);
         let entriesKeysAreEqual = serverThumb.key === thumb.sync.id;
         let instancesAreEqual = serverThumb.instance === thumb.sync.instance;
         let timestampsAreEqual = serverThumb.timestamp === thumb.sync.timestamp;

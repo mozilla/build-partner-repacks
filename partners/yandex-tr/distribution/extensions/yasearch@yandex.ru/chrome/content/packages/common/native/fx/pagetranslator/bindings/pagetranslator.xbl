@@ -11,9 +11,7 @@
         </content>
 
         <implementation implements="nsIObserver, nsIDOMEventListener">
-            <field name="MAX_SHOW_TOOLTIP" readonly="true">5</field>
             <field name="NOTIFICATION_NAME" readonly="true">"pagetranslator-notification"</field>
-            <field name="NOTIFICATION_TOOLTIP_NAME" readonly="true">"pagetranslator-tooltip"</field>
             <field name="NOTIFICATION_SUGGEST_NAME" readonly="true">"pagetranslator-suggest"</field>
 
             <field name="api" readonly="true">this.module.api</field>
@@ -40,6 +38,7 @@
     this._wdgtxConstructed = true;
     this.wListener.addListener("PageShow", this);
     this.wListener.addListener("PageStateStart", this);
+    this.wListener.addListener("PageLocationChange", this);
     gBrowser.tabContainer.addEventListener("TabSelect", this, false);
     this._checkState();]]></body>
             </method>
@@ -51,12 +50,14 @@
     this._wdgtxConstructed = false;
     this.wListener.removeListener("PageShow", this);
     this.wListener.removeListener("PageStateStart", this);
+    this.wListener.removeListener("PageLocationChange", this);
     gBrowser.tabContainer.removeEventListener("TabSelect", this, false);
     for (let i = 0, length = gBrowser.browsers.length; i < length; i++) {
         let browser = gBrowser.browsers[i];
-        this._removeNotification();
-        this._removeNotification(this.NOTIFICATION_TOOLTIP_NAME, browser);
-        this._removeNotification(this.NOTIFICATION_SUGGEST_NAME, browser);
+        this._removeNotification([
+            this.NOTIFICATION_NAME,
+            this.NOTIFICATION_SUGGEST_NAME
+        ], browser);
     }]]></body>
             </method>
 
@@ -130,9 +131,6 @@
             }
             if (this.module.checkSuggestConditions()) {
                 this._createNotification("suggest");
-            } else if (this.module.checkTutorConditions()) {
-                this._createNotification("tooltip");
-                this.module.Prefs.setValue("show-tooltip", 1);
             }
         }
     }]]></body>
@@ -164,8 +162,7 @@
             <method name="hide">
                 <body><![CDATA[    this.style.setProperty("display", "none", "");
     this.isShowing = false;
-    this._removeNotification(this.NOTIFICATION_TOOLTIP_NAME);
-    this._removeNotification(this.NOTIFICATION_SUGGEST_NAME);]]></body>
+    this._removeNotification([this.NOTIFICATION_SUGGEST_NAME]);]]></body>
             </method>
 
             <method name="revert">
@@ -181,7 +178,7 @@
                 <body><![CDATA[    switch (aTarget) {
     case "suggest":
         this.module.pauseSuggest();
-        this._removeAllTooltips();
+        this._removeAllSuggests();
         break;
     default:
         return;
@@ -203,7 +200,17 @@
     aNotificationName = aNotificationName || this.NOTIFICATION_NAME;
     let tabbrowser = aBrowser.ownerDocument.defaultView.gBrowser;
     let notificationBox = tabbrowser.getNotificationBox(aBrowser);
-    return notificationBox.getNotificationWithValue(aNotificationName);]]></body>
+    if (!Array.isArray(aNotificationName)) {
+        aNotificationName = [aNotificationName];
+    }
+    let result = [];
+    aNotificationName.forEach(function (aName) {
+        let notification = notificationBox.getNotificationWithValue(aName);
+        if (notification) {
+            result.push(notification);
+        }
+    });
+    return result;]]></body>
             </method>
 
             <method name="_createNotification">
@@ -218,10 +225,6 @@
         notificationName = this.NOTIFICATION_NAME;
         notificationPriority = notificationBox.PRIORITY_CRITICAL_HIGH;
         break;
-    case "tooltip":
-        notificationName = this.NOTIFICATION_TOOLTIP_NAME;
-        notificationPriority = notificationBox.PRIORITY_INFO_HIGH;
-        break;
     case "suggest":
         notificationName = this.NOTIFICATION_SUGGEST_NAME;
         notificationPriority = notificationBox.PRIORITY_INFO_HIGH;
@@ -229,7 +232,7 @@
     default:
         return;
     }
-    let notification = this._getNotification(notificationName, aBrowser);
+    let notification = this._getNotification(notificationName, aBrowser)[0];
     if (notification) {
         notificationBox._showNotification(notification, true);
         return;
@@ -246,13 +249,12 @@
             <method name="_removeNotification">
                 <parameter name="aNotificationName"/>
                 <parameter name="aBrowser"/>
-                <body><![CDATA[    let notification = this._getNotification(aNotificationName, aBrowser);
-    if (notification) {
-        notification.remove(true);
-    }]]></body>
+                <body><![CDATA[    this._getNotification(aNotificationName, aBrowser).forEach(function (aNotification) {
+        aNotification.remove(true);
+    });]]></body>
             </method>
 
-            <method name="_removeAllTooltips">
+            <method name="_removeAllSuggests">
                 <body><![CDATA[    let windowsEnum = this.module.windowMediator.getEnumerator("navigator:browser");
     while (windowsEnum.hasMoreElements()) {
         let tabbrowser = windowsEnum.getNext().gBrowser;
@@ -290,6 +292,7 @@
     }
     if ([
             "PageShow",
+            "PageLocationChange",
             "PageStateStart"
         ].indexOf(aTopic) > -1) {
         this.removePageTranslatorData(aData.tab);
@@ -300,6 +303,11 @@
     switch (aTopic) {
     case "PageShow":
         this._checkState();
+        break;
+    case "PageLocationChange":
+        if (aData.sameDocument) {
+            this._checkState();
+        }
         break;
     case "PageStateStart":
         this.hide();
@@ -320,7 +328,7 @@
         this.translate();
         this.api.Statistics.logCustomAction(1);
         this.sendStatistic("pagetranslator", "clickon");
-        this._removeAllTooltips();
+        this._removeAllSuggests();
     }]]></handler>
         </handlers>
     </binding>

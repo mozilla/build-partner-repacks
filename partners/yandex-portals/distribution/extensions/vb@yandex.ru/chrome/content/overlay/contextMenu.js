@@ -3,6 +3,11 @@
     const Cc = Components.classes;
     const Ci = Components.interfaces;
     const Cu = Components.utils;
+    const UI_STATES = {
+        DEFAULT: 0,
+        SETTINGS_OPENED: 1,
+        THUMBS_SUGGEST_OPENED: 2
+    };
     const contextMenu = {
         init: function contextMenu_init() {
             let core = Cc["@yandex.ru/vb-core;1"].getService().wrappedJSObject;
@@ -31,7 +36,7 @@
             switch (event.type) {
             case "popupshowing":
                 if (event.target === this._pageContextMenu) {
-                    this._onContextMenuPopupShowing(event.target.triggerNode);
+                    this._onContextMenuPopupShowing();
                 }
                 break;
             case "popuphidden":
@@ -44,44 +49,48 @@
                 break;
             }
         },
-        _onContextMenuPopupShowing: function contextMenu__onContextMenuPopupShowing(triggerNode) {
-            if (triggerNode.ownerDocument.location.toString() !== this._application.protocolSupport.url) {
+        _onContextMenuPopupShowing: function contextMenu__onContextMenuPopupShowing() {
+            if (gBrowser.currentURI.spec !== this._application.protocolSupport.url) {
                 return;
             }
             let thumbIndex = this._application.thumbs.hoveredThumbIndex;
+            let uiState = this._application.thumbs.uiState;
             this._sendStat("contextmenu.cmshow");
             if (thumbIndex === -1) {
-                this._menuitems.filter(function (item) {
-                    return item.getAttribute("data-vbCommand") === "change-background";
-                })[0].hidden = false;
+                this._menuitems.forEach(item => {
+                    let attr = item.getAttribute("data-vbCommand");
+                    if (attr === "change-background" && uiState !== UI_STATES.SETTINGS_OPENED) {
+                        item.hidden = false;
+                    }
+                    if (attr === "add" && uiState !== UI_STATES.THUMBS_SUGGEST_OPENED && this._application.layout.hasEmptySpace) {
+                        item.hidden = false;
+                    }
+                });
             } else {
                 let thumbData = this._application.internalStructure.getItem(thumbIndex);
                 this._menuitems.forEach(function (menuitem) {
                     let hidden = true;
                     switch (menuitem.getAttribute("data-vbCommand")) {
-                    case "add":
-                        if (!thumbData || !thumbData.source) {
-                            hidden = false;
-                        }
-                        break;
                     case "pin":
-                        if (thumbData && !thumbData.pinned && thumbData.source) {
+                        if (thumbData && !thumbData.pinned) {
                             hidden = false;
                         }
                         break;
                     case "unpin":
-                        if (thumbData && thumbData.pinned && thumbData.source) {
+                        if (thumbData && thumbData.pinned) {
                             hidden = false;
                         }
                         break;
                     case "delete":
                     case "settings":
-                        if (thumbData && thumbData.source) {
+                        if (thumbData) {
                             hidden = false;
                         }
                         break;
                     case "change-background":
-                        hidden = false;
+                        if (uiState !== UI_STATES.SETTINGS_OPENED) {
+                            hidden = false;
+                        }
                         break;
                     }
                     menuitem.hidden = hidden;
@@ -108,7 +117,7 @@
                 this._sendStat("contextmenu.addthumbclick");
                 this._sendAction({
                     type: "editThumb",
-                    thumb: thumbIndex
+                    thumb: this._application.internalStructure.length
                 });
                 break;
             case "delete":
@@ -120,11 +129,11 @@
                 break;
             case "pin":
                 this._sendStat("contextmenu.pinthumbclick");
-                this._application.thumbs.changePinnedState(thumbIndex, true);
+                this._application.thumbs.changePinState(thumbIndex, true);
                 break;
             case "unpin":
                 this._sendStat("contextmenu.pinoffthumbclick");
-                this._application.thumbs.changePinnedState(thumbIndex, false);
+                this._application.thumbs.changePinState(thumbIndex, false);
                 break;
             case "settings":
                 this._sendStat("contextmenu.setthumb");

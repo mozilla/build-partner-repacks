@@ -124,135 +124,165 @@ const contentEnvironment = {
                 });
             };
         });
-        let wrappedWindowObject = window.wrappedJSObject || new XPCNativeWrapper(window).wrappedJSObject;
-        wrappedWindowObject.__defineGetter__("elementsPlatform", function () {
-            let elementsPlatformObject = Cu.createObjectIn(window);
-            function genPropDesc(value) {
+        let wrapObject = function (obj, context) {
+            if (!obj || typeof obj !== "object") {
+                return obj;
+            }
+            let objectAdapter = Cu.createObjectIn(context);
+            let genPropDesc = function (key) {
+                let value;
+                if (typeof obj[key] === "function") {
+                    value = obj[key].bind(obj);
+                } else {
+                    value = obj[key];
+                }
                 return {
                     enumerable: true,
                     configurable: false,
                     writable: false,
                     value: value
                 };
-            }
-            let propList = {
-                language: genPropDesc(contentEnvironment._application.locale.language),
-                brandID: genPropDesc(contentEnvironment._application.branding.brandID),
-                navigate: genPropDesc(function (url, target) {
-                    if (url === "about:tabs") {
-                        url = "yafd:tabs";
-                        Cu.import("resource://gre/modules/AddonManager.jsm", {}).AddonManager.getAddonByID("vb@yandex.ru", function (aAddon) {
-                            if (!aAddon || !aAddon.isActive) {
-                                switch (contentEnvironment._application.branding.brandID) {
-                                case "ua":
-                                    url = "http://visual.yandex.ua/";
-                                    break;
-                                case "tb":
-                                    url = "http://visual.yandex.com.tr/";
-                                    break;
-                                default:
-                                    url = "http://visual.yandex.ru/";
-                                    break;
-                                }
-                            }
-                            this.navigate(url, target);
-                        }.bind(elementsPlatformObject));
-                        return;
-                    }
-                    switch (target) {
-                    case "new tab":
-                    case "new window":
-                        contentEnvironment._application.core.Lib.misc.navigateBrowser({
-                            url: url,
-                            target: target
-                        });
-                        break;
-                    case "current tab":
-                    default:
-                        window.location = url;
-                        break;
-                    }
-                }),
-                sendMessage: genPropDesc(function (name, data) {
-                    let hasAnyAnswer = false;
-                    let providersForPage = getProviders();
-                    for (let i = 0, len = providersForPage.length; i < len; i++) {
-                        let provider = providersForPage[i];
-                        if (typeof provider.onPageMessage !== "function") {
-                            continue;
-                        }
-                        try {
-                            let result = provider.onPageMessage(name, data);
-                            if (typeof result === "boolean") {
-                                hasAnyAnswer = true;
-                                if (result) {
-                                    return true;
-                                }
-                            }
-                        } catch (e) {
-                            Cu.reportError(e);
-                        }
-                    }
-                    return hasAnyAnswer;
-                }),
-                addListener: genPropDesc(function (listener) {
-                    let messageListeners = getMessageListeners();
-                    if (messageListeners.indexOf(listener) === -1) {
-                        messageListeners.push(listener);
-                    }
-                }),
-                removeListener: genPropDesc(function (listener) {
-                    let pageMessageListeners = getMessageListeners();
-                    pageMessageListeners = pageMessageListeners.filter(l => l !== listener);
-                }),
-                queryObject: genPropDesc(function (name) {
-                    let providersForPage = getProviders();
-                    for (let i = 0, len = providersForPage.length; i < len; i++) {
-                        let provider = providersForPage[i];
-                        if (typeof provider.onQueryObject !== "function") {
-                            continue;
-                        }
-                        try {
-                            let obj = provider.onQueryObject(name);
-                            if (obj && typeof obj === "object") {
-                                return copyObj(obj);
-                            }
-                        } catch (e) {
-                            Cu.reportError(e);
-                        }
-                    }
-                    return null;
-                }),
-                __exposedProps__: genPropDesc({
-                    language: "r",
-                    brandID: "r",
-                    navigate: "r",
-                    sendMessage: "r",
-                    addListener: "r",
-                    removeListener: "r",
-                    queryObject: "r"
-                })
             };
-            Object.defineProperties(elementsPlatformObject, propList);
-            Cu.makeObjectPropsNormal(elementsPlatformObject);
-            delete this.elementsPlatform;
-            return this.elementsPlatform = elementsPlatformObject;
-        });
-        window.addEventListener("unload", function unloadHandler(event) {
-            event.currentTarget.removeEventListener("unload", unloadHandler, false);
-            getProviders().forEach(function (provider) {
-                if (typeof provider.onDestroy !== "function") {
+            let properties = {};
+            Object.keys(obj).forEach(key => {
+                properties[key] = genPropDesc(key);
+            });
+            Object.defineProperties(objectAdapter, properties);
+            Cu.makeObjectPropsNormal(objectAdapter);
+            return Object.freeze(objectAdapter);
+        };
+        let elementsPlatformPageObject = {
+            language: contentEnvironment._application.locale.language,
+            brandID: contentEnvironment._application.branding.brandID,
+            navigate: function (url, target) {
+                if (url === "about:tabs") {
+                    url = "yafd:tabs";
+                    Cu.import("resource://gre/modules/AddonManager.jsm", {}).AddonManager.getAddonByID("vb@yandex.ru", aAddon => {
+                        if (!aAddon || !aAddon.isActive) {
+                            switch (contentEnvironment._application.branding.brandID) {
+                            case "ua":
+                                url = "http://visual.yandex.ua/";
+                                break;
+                            case "tb":
+                                url = "http://visual.yandex.com.tr/";
+                                break;
+                            default:
+                                url = "http://visual.yandex.ru/";
+                                break;
+                            }
+                        }
+                        elementsPlatformPageObject.navigate(url, target);
+                    });
                     return;
                 }
-                try {
-                    provider.onDestroy();
-                } catch (e) {
-                    Cu.reportError(e);
+                switch (target) {
+                case "new tab":
+                case "new window":
+                    contentEnvironment._application.core.Lib.misc.navigateBrowser({
+                        url: url,
+                        target: target
+                    });
+                    break;
+                case "current tab":
+                default:
+                    window.location = url;
+                    break;
                 }
-            });
-            delete wrappedWindowObject.elementsPlatform;
-            windowProvidersMap.delete(window);
-        }, false);
+            },
+            sendMessage: function (name, data) {
+                let hasAnyAnswer = false;
+                let providersForPage = getProviders();
+                for (let i = 0, len = providersForPage.length; i < len; i++) {
+                    let provider = providersForPage[i];
+                    if (typeof provider.onPageMessage !== "function") {
+                        continue;
+                    }
+                    try {
+                        let result = provider.onPageMessage(name, data);
+                        if (typeof result === "boolean") {
+                            hasAnyAnswer = true;
+                            if (result) {
+                                return true;
+                            }
+                        }
+                    } catch (e) {
+                        Cu.reportError(e);
+                    }
+                }
+                return hasAnyAnswer;
+            },
+            addListener: function (listener) {
+                let messageListeners = getMessageListeners();
+                if (messageListeners.indexOf(listener) === -1) {
+                    messageListeners.push(listener);
+                }
+            },
+            removeListener: function (listener) {
+                let pageMessageListeners = getMessageListeners();
+                pageMessageListeners = pageMessageListeners.filter(l => l !== listener);
+            },
+            queryObject: function (name) {
+                let providersForPage = getProviders();
+                for (let i = 0, len = providersForPage.length; i < len; i++) {
+                    let provider = providersForPage[i];
+                    if (typeof provider.onQueryObject !== "function") {
+                        continue;
+                    }
+                    try {
+                        let obj = provider.onQueryObject(name);
+                        if (obj && typeof obj === "object") {
+                            return copyObj(obj);
+                        }
+                    } catch (e) {
+                        Cu.reportError(e);
+                    }
+                }
+                return null;
+            }
+        };
+        let setupPageObject = () => {
+            let win = window;
+            if ("exportFunction" in Cu) {
+                let objectAdapter = Cu.createObjectIn(win, { defineAs: "elementsPlatform" });
+                Object.keys(elementsPlatformPageObject).forEach(key => {
+                    let prop = elementsPlatformPageObject[key];
+                    if (typeof prop === "function") {
+                        Cu.exportFunction(prop, objectAdapter, { defineAs: key });
+                    } else {
+                        Object.defineProperty(objectAdapter, key, { value: prop });
+                    }
+                });
+                Cu.makeObjectPropsNormal(objectAdapter);
+            } else {
+                if (!win.wrappedJSObject) {
+                    win = new XPCNativeWrapper(win);
+                }
+                win = win.wrappedJSObject;
+                let elementsPlatformWrapped = wrapObject(elementsPlatformPageObject, win);
+                Object.defineProperty(win, "elementsPlatform", {
+                    enumerable: true,
+                    configurable: false,
+                    writable: false,
+                    value: elementsPlatformWrapped
+                });
+            }
+            window.addEventListener("unload", function unloadHandler(event) {
+                event.currentTarget.removeEventListener("unload", unloadHandler, false);
+                getProviders().forEach(function (provider) {
+                    if (typeof provider.onDestroy !== "function") {
+                        return;
+                    }
+                    try {
+                        provider.onDestroy();
+                    } catch (e) {
+                        Cu.reportError(e);
+                    }
+                });
+                delete win.elementsPlatform;
+                windowProvidersMap.delete(window);
+            }, false);
+        };
+        setupPageObject();
     },
     _platformObjectProviders: null
 };

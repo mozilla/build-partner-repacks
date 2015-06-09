@@ -1,2 +1,27 @@
-<!ENTITY locationbar.search.url "http://yandex.com.tr/yandsearch?clid={clid9}&amp;text=">
-<!ENTITY yandex.qs.keywordsearch "http://yandex.com.tr/yandsearch?clid={clid9}&amp;text={searchTerms}">
+<!ENTITY locationbar.search.url "http://yandex.com.tr/search/?clid={clid9}&amp;text=">
+
+<!ENTITY yandex.label "Yandex">
+<!ENTITY yandex.url "http://www.yandex.com.tr/">
+<!ENTITY yandex.search.tooltip "Yandex&#39;te bul">
+<!ENTITY yandex.search.url "http://yandex.com.tr/search/?text={searchTerms}">
+<!ENTITY yandex.search.site-url "http://yandex.com.tr/search/?text={searchTerms}&amp;surl_manually=true&amp;surl={searchSite}">
+<!ENTITY yandex.suggestions.url "http://suggest.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=tr">
+<!ENTITY yandex.qs.keywordsearch "http://yandex.com.tr/search/?clid={clid9}&amp;text={searchTerms}">
+
+<!ENTITY yagorsel.label "Yandex.Görsel">
+<!ENTITY yagorsel.url "http://www.gorsel.yandex.com.tr/">
+<!ENTITY yagorsel.search.tooltip "Yandex.Görsel&#39;de bul">
+<!ENTITY yagorsel.search.url "http://gorsel.yandex.com.tr/yandsearch?text={searchTerms}">
+<!ENTITY yagorsel.search.site-url "http://gorsel.yandex.com.tr/yandsearch?text={searchTerms}&amp;surl_manually=true&amp;site={searchSite}">
+<!ENTITY yagorsel.suggestions.url "http://suggest-images.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=tr">
+
+<!ENTITY yavideo.label "Yandex.Video">
+<!ENTITY yavideo.url "http://www.video.yandex.com.tr/">
+<!ENTITY yavideo.search.tooltip "Yandex.Video&#39;da bul">
+<!ENTITY yavideo.search.url "http://video.yandex.com.tr/#search?text={searchTerms}">
+<!ENTITY yavideo.suggestions.url "http://suggest-video.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=tr">
+
+<!ENTITY yahaber.label "Yandex.Haberler">
+<!ENTITY yahaber.url "http://haber.yandex.com.tr/">
+<!ENTITY yahaber.search.tooltip "Yandex.Haberler&#39;de bul">
+<!ENTITY yahaber.search.url "http://haber.yandex.com.tr/yandsearch?text={searchTerms}&amp;rpt=nnews2&amp;grhow=clutop">

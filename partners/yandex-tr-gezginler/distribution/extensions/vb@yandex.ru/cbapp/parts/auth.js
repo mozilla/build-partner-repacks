@@ -7,10 +7,8 @@ const {
     utils: Cu,
     manager: Cm
 } = Components;
-const SCRIPT_LOADER = Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader);
 Cu.import("resource://gre/modules/Services.jsm");
 const AVATARS_URL = "https://yapic.yandex.ru/get/%a/islands-middle";
-let misc;
 let USER_STATES = {
     UNAUTHORIZED: 0,
     AUTHORIZED: 1,
@@ -25,7 +23,6 @@ const auth = {
     },
     init: function auth_init(app) {
         this._application = app;
-        misc = app.core.Lib.misc;
         this._authManager.addListener(this._authManager.EVENTS.AUTH_STATE_CHANGED, this);
     },
     finalize: function auth_finalize() {
@@ -43,9 +40,9 @@ const auth = {
     },
     login: function auth_login(aUserId) {
         if (aUserId) {
-            let user = this._authManager.getUser(aUserId);
+            let user = this._authManager.getAuthorizedAccount(aUserId);
             if (user) {
-                let defaultUser = this._authManager.getTopUser();
+                let defaultUser = this._authManager.getDefaultAccount();
                 if (user === defaultUser) {
                     this._openInitialPageForUser(defaultUser);
                     return;
@@ -53,10 +50,10 @@ const auth = {
                 this._switchedUserInfo = user.uid;
             }
         }
-        return this._authManager.switchUser(aUserId);
+        return this._authManager.switchAccount(aUserId);
     },
     logout: function auth_logout() {
-        return this._authManager.initLogoutProcess(this._authManager.getTopUser());
+        return this._authManager.initLogoutProcess(this._authManager.getDefaultAccount());
     },
     _switchedUserInfo: null,
     get _brandingXMLDoc() {
@@ -64,15 +61,15 @@ const auth = {
         return this._brandingXMLDoc = this.application.branding.brandPackage.getXMLDocument("fastdial/config.xml");
     },
     get _authManager() {
-        return this.application.authAdapter.authManager;
+        return this.application.passport.authManager;
     },
     _createFrontendStateObject: function auth__createFrontendStateObject() {
         let result = { users: [] };
         if (!this._authManager.authorized) {
             return result;
         }
-        let defaultUser = this._authManager.getTopUser();
-        let users = this._authManager.allUsers.reduce(function (retObj, aUser) {
+        let defaultUser = this._authManager.getDefaultAccount();
+        let users = this._authManager.allAccounts.reduce(function (retObj, aUser) {
             let isDefault = aUser === defaultUser;
             let state = USER_STATES.UNAUTHORIZED;
             if (aUser.authorized) {
@@ -101,7 +98,7 @@ const auth = {
         if (aUser.isSocial) {
             url = "http://" + this._authManager.authdefs.DOMAINS.MAIN_DOMAIN;
         }
-        misc.navigateBrowser({
+        this._application.core.Lib.misc.navigateBrowser({
             url: url,
             target: "current tab"
         });
@@ -110,7 +107,7 @@ const auth = {
         switch (topic) {
         case this._authManager.EVENTS.AUTH_STATE_CHANGED:
             if (this._switchedUserInfo) {
-                let defaultUser = data.defaultUser;
+                let defaultUser = data.defaultAccount;
                 if (this._switchedUserInfo === (defaultUser && defaultUser.uid)) {
                     this._openInitialPageForUser(defaultUser);
                 }

@@ -1,3 +1,3 @@
-<!ENTITY suggestions.url "http://api.browser.yandex.com.tr/suggest/get-elements?brandid={brandID}&amp;locale=ru&amp;part={searchTerms}">
-<!ENTITY search.url "http://yandex.com.tr/yandsearch?clid={clid6}&amp;text=">
+<!ENTITY suggestions.url "https://api.browser.yandex.com.tr/suggest/get-elements?brandid={brandID}&amp;locale=ru&amp;part={searchTerms}">
+<!ENTITY search.url "http://yandex.com.tr/search/?clid={clid6}&amp;text=">
 <!ENTITY search.site "http://www.yandex.com.tr">

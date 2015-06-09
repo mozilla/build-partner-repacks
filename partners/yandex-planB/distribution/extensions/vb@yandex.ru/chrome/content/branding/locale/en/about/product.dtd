@@ -26,8 +26,8 @@
 <!ENTITY product.note.fx "for Firefox">
 <!ENTITY product.note.ie "for Internet Explorer">
 <!ENTITY product.homepage "http://visual.yandex.ru">
-<!ENTITY product.copyright "© 2012—2014 &quot;[Yandex](http://www.yandex.ru)&quot;">
+<!ENTITY product.copyright "© 2012—2015 &quot;[Yandex](http://www.yandex.ru)&quot;">
 <!ENTITY product.copyright.ie "&product.copyright;">
-<!ENTITY product.copyright.fx "© 2012—2014 &quot;[Yandex](http://www.yandex.ru)&quot;">
+<!ENTITY product.copyright.fx "© 2012—2015 &quot;[Yandex](http://www.yandex.ru)&quot;">
 <!ENTITY product.license.url.ie "http://legal.yandex.ru/desktop_software_agreement/?lang=en">
 <!ENTITY product.license.url.fx "http://legal.yandex.ru/desktop_software_agreement/?lang=en">

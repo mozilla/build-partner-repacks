@@ -13,3 +13,5 @@
 <!ENTITY login.showLogin.label "Показывать логин на панели">
 
 <!ENTITY noauth.label "Пожалуйста, авторизуйтесь">
+
+<!ENTITY login.menu.other-account.label "Другие аккаунты">

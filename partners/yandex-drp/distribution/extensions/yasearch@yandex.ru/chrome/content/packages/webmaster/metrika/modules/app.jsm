@@ -4,7 +4,6 @@ var module = function (app, common) {
     const MINIMUM_DELAY_MS = 5000;
     const MAX_UPDATE_ERROR_MS = 3600000;
     let timers = Object.create(null);
-    let yauthMgr = null;
     app.config = {
         useClickStatistics: true,
         observeBranding: false,
@@ -16,54 +15,40 @@ var module = function (app, common) {
             add: "https://metrika.yandex.ru/add/"
         }
     };
-    app.init = function metrika_init() {
+    app.init = function () {
         this.module = this.importModule("api");
         this.module.init({
             api: this.api,
             onUpdate: this.onUpdate.bind(this)
         });
-        let yauthTimer = null;
-        yauthMgr = app.commonModule("yauth");
-        yauthMgr.init(function yauthMgr_init(login) {
-            if (yauthTimer) {
-                yauthTimer.cancel();
-                yauthTimer = null;
-            }
-            if (login && !yauthMgr.userLogin) {
-                yauthTimer = common.timers.setTimeout(yauthMgr_init.bind(this, login), 50);
-                return;
-            }
-            if (login) {
-                this.onLogin();
-            }
-            this.updateData();
-        }, this);
+        this._authManager = this.api.Passport;
+        this._authManager.addListener(this._authManager.EVENTS.AUTH_STATE_CHANGED, this);
         if (this.isAuth()) {
-            this.module.configure("user", yauthMgr.userLogin);
+            this.module.configure("user", this._authManager.defaultAccount.uid);
         }
     };
-    app.finalize = function metrika_finalize() {
+    app.finalize = function () {
         this._cancelUpdateTimer();
-        yauthMgr = null;
+        this._authManager.removeListener(this._authManager.EVENTS.AUTH_STATE_CHANGED, this);
     };
     app.dayuseStatProvider = {
-        isAuthorized: function dayuseStatProvider_isAuthorized() {
-            return app.isAuth();
+        isAuthorized: function () {
+            return app._authManager.isAuthorized();
         },
-        hasSavedLogins: function dayuseStatProvider_hasSavedLogins() {
-            return common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.ru" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.ua" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.com.tr" });
+        hasSavedLogins: function () {
+            return app._authManager.hasSavedLogins();
         }
     };
     app.instancePrototype = {
-        init: function metrika_instancePrototype_init() {
+        init: function () {
             app.updateData(this.WIID);
         }
     };
     app.uiCommands = {
-        update: function metrika_uiCommands_update(command, eventInfo) {
+        update: function (command, eventInfo) {
             this.updateData(this.WIID, true);
         },
-        go: function metrika_uiCommands_go(command, eventInfo) {
+        go: function (command, eventInfo) {
             let cid = eventInfo.param;
             let url = "https://metrika.yandex.ru/stat/?counter_id=" + cid;
             this.api.Controls.navigateBrowser({
@@ -72,19 +57,62 @@ var module = function (app, common) {
             });
         }
     };
-    app.onSettingChange = function metrika_onSettingChange(key, value, instanceId) {
+    app.onSettingChange = function (key, value, instanceId) {
         switch (key) {
         case "update-interval":
             let updateInterval = this.module.getUpdateInterval(this.WIID, true) * 1000;
             let lastUpdate = this.module.getLastUpdateTime(this.WIID);
             let delay = updateInterval - (Date.now() - lastUpdate);
             delay = Math.max(delay, MINIMUM_DELAY_MS);
-            this.cleanData(this.WIID);
+            this._cleanData(this.WIID);
             this._setUpdateTimer(this.WIID, delay);
             break;
         }
     };
-    app._cancelUpdateTimer = function metrika_cancelTimer(aWIID) {
+    app.updateData = function (aWIID, manual, force) {
+        this._cancelUpdateTimer(aWIID);
+        if (!this.isAuth()) {
+            this._onLogout();
+            return;
+        }
+        if (manual) {
+            force = true;
+            common.observerService.notify("throbber", aWIID ? JSON.stringify({
+                wiid: aWIID,
+                value: true
+            }) : null);
+        }
+        if (!aWIID) {
+            let widgets = this.api.Controls.getAllWidgetItems();
+            widgets.forEach(function (item) {
+                this.module.update(item.WIID || this.WIID, force);
+            }.bind(this));
+        } else {
+            this.module.update(aWIID, force);
+        }
+    };
+    app.isAuth = function () {
+        return this._authManager.isAuthorized();
+    };
+    app.getUserData = function (aWIID, aAction) {
+        return this.module.getUserData(aWIID, aAction);
+    };
+    app.onUpdate = function (aWIID) {
+        let notificationObject = aWIID ? JSON.stringify({ wiid: aWIID }) : null;
+        common.observerService.notify("throbber", notificationObject);
+        common.observerService.notify("display", notificationObject);
+    };
+    app._cleanData = function (aWIID) {
+        this.module.cleanData(aWIID);
+    };
+    app._setUpdateTimer = function (aWIID, aDelay) {
+        this._cancelUpdateTimer(aWIID);
+        if (typeof aDelay == "undefined") {
+            aDelay = MINIMUM_DELAY_MS;
+        }
+        timers[aWIID] = this.api.SysUtils.Timer(this.updateData.bind(this, aWIID, false, true), aDelay);
+    };
+    app._cancelUpdateTimer = function (aWIID) {
         function cancelTimer(aWIID) {
             let timer = timers[aWIID];
             if (timer) {
@@ -100,54 +128,24 @@ var module = function (app, common) {
             cancelTimer(wiid);
         }
     };
-    app._setUpdateTimer = function metrika__setUpdateTimer(aWIID, aDelay) {
-        this._cancelUpdateTimer(aWIID);
-        if (typeof aDelay == "undefined") {
-            aDelay = MINIMUM_DELAY_MS;
-        }
-        timers[aWIID] = new this.api.SysUtils.Timer(this.updateData.bind(this, aWIID, false, true), aDelay);
+    app._onLogin = function (aDefaultAccountUid) {
+        this.module.configure("user", aDefaultAccountUid);
+        this.updateData();
     };
-    app.updateData = function metrika_updateData(aWIID, manual, force) {
-        this._cancelUpdateTimer(aWIID);
-        if (!this.isAuth()) {
-            this.onLogout();
-            this.onUpdate();
+    app._onLogout = function () {
+        this._cleanData();
+        this.onUpdate();
+    };
+    app._onAuthStateChanged = function (aData) {
+        if (!aData.accounts.length) {
+            this._onLogout();
             return;
         }
-        if (manual) {
-            force = true;
-            common.observerService.notify("throbber", aWIID ? JSON.stringify({
-                wiid: aWIID,
-                value: true
-            }) : null);
+        this._onLogin(aData.defaultAccount.uid);
+    };
+    app.observe = function (aSubject, aTopic, aData) {
+        if (aTopic === this._authManager.EVENTS.AUTH_STATE_CHANGED) {
+            this._onAuthStateChanged(aData);
         }
-        if (!aWIID) {
-            let widgets = this.api.Controls.getAllWidgetItems();
-            widgets.forEach(function update_updater(item) {
-                this.module.update(item.WIID, force);
-            }.bind(this));
-        } else {
-            this.module.update(aWIID, force);
-        }
-    };
-    app.isAuth = function metrika_isAuth() {
-        return yauthMgr.isAuth();
-    };
-    app.getUserData = function metrika_getUserData(aWIID, aAction) {
-        return this.module.getUserData(aWIID, aAction);
-    };
-    app.cleanData = function metrika_cleanData(aWIID) {
-        this.module.cleanData(aWIID);
-    };
-    app.onLogin = function metrika_onLogin() {
-        this.module.configure("user", yauthMgr.userLogin);
-    };
-    app.onLogout = function metrika_onLogout() {
-        this.cleanData();
-    };
-    app.onUpdate = function metrika_onUpdate(aWIID) {
-        let notificationObject = aWIID ? JSON.stringify({ wiid: aWIID }) : null;
-        common.observerService.notify("throbber", notificationObject);
-        common.observerService.notify("display", notificationObject);
     };
 };

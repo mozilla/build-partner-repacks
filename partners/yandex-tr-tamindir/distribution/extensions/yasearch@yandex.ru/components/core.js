@@ -77,9 +77,9 @@ Log.getLogLevelHandler = function Log_getLogLevelHandler(appender) {
         appender.level = level;
     };
 };
-Log.getPrefname = function Log_getPrefname(name) {
+Log.getPrefName = function Log_getPrefName(name) {
     return [
-        CB_CONFIG.APP.NAME,
+        "extensions." + CB_CONFIG.APP.ID,
         "xbcore",
         "logging",
         name
@@ -95,7 +95,7 @@ Log.APPENDERS = [
             appLogger.removeAppender(appender);
         };
         this.prefs = {};
-        this.prefs[Log.getPrefname("console.level")] = Log.getLogLevelHandler(appender);
+        this.prefs[Log.getPrefName("console.level")] = Log.getLogLevelHandler(appender);
     },
     function Log_APPENDERS_stdout(libs) {
         let appender = new libs.Log4Moz.DumpAppender();
@@ -105,7 +105,7 @@ Log.APPENDERS = [
             rootLogger.removeAppender(appender);
         };
         this.prefs = {};
-        this.prefs[Log.getPrefname("stdout.level")] = Log.getLogLevelHandler(appender);
+        this.prefs[Log.getPrefName("stdout.level")] = Log.getLogLevelHandler(appender);
     },
     function Log_APPENDERS_file(libs, rootDir) {
         rootDir.append("debug.log");
@@ -118,7 +118,7 @@ Log.APPENDERS = [
             rootLogger.removeAppender(appender);
         };
         this.prefs = {};
-        this.prefs[Log.getPrefname("file.level")] = Log.getLogLevelHandler(appender);
+        this.prefs[Log.getPrefName("file.level")] = Log.getLogLevelHandler(appender);
     },
     function Log_APPENDERS_socket(libs) {
         let xmlFormatter = new libs.Log4Moz.XMLFormatter();
@@ -126,8 +126,8 @@ Log.APPENDERS = [
         let appender = getSocket("localhost:4448");
         this.stop = closeSocket;
         this.prefs = {};
-        this.prefs[Log.getPrefname("socket.level")] = Log.getLogLevelHandler(appender);
-        this.prefs[Log.getPrefname("socket.address")] = function Log_APPENDERS_socket_pref_address(address) {
+        this.prefs[Log.getPrefName("socket.level")] = Log.getLogLevelHandler(appender);
+        this.prefs[Log.getPrefName("socket.address")] = function Log_APPENDERS_socket_pref_address(address) {
             if (address) {
                 closeSocket();
                 appender = getSocket(address);
@@ -182,14 +182,14 @@ CustomBarCore.prototype = {
     get buidRevision() {
         return CB_CONFIG.BUILD.REVISION;
     },
-    get xbWidgetsPrefsPath() {
-        return CB_CONFIG.PREFS_PATH.XB_WIDGETS;
+    get extensionPrefsPath() {
+        return "extensions." + CB_CONFIG.APP.ID + ".";
     },
     get nativesPrefsPath() {
-        return CB_CONFIG.PREFS_PATH.NATIVES;
+        return this.extensionPrefsPath + "native_comps.";
     },
     get staticPrefsPath() {
-        return CB_CONFIG.PREFS_PATH.STATIC;
+        return this.extensionPrefsPath + "static.";
     },
     get application() {
         return this._appObj;

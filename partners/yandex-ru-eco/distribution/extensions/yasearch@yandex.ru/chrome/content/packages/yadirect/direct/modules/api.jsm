@@ -10,64 +10,64 @@ var module = function (app, common) {
         get app() {
             return this._app;
         },
-        init: function direct_direct_init(application) {
+        init: function (application) {
             this._app = application;
             exportMgr = app.commonModule("export");
             exportMgr.init(_handlers);
         },
-        finalize: function direct_direct_finalize() {
+        finalize: function () {
             this._app = null;
             exportMgr = null;
         },
-        _onSuccess: function direct_direct__onSuccess(aWIID, data) {
-            this.app.onUpdate(aWIID);
-        },
-        _onFail: function direct_direct__onFail(aWIID, data) {
-            this.app.onUpdate(aWIID);
-        },
-        configure: function direct_direct_configure(aName, aValue, aAction) {
+        configure: function (aName, aValue, aAction) {
             let configActionName = aAction || "_defaults";
             if (!this._config[configActionName]) {
                 this._config[configActionName] = Object.create(null);
             }
             this._config[configActionName][aName] = aValue;
         },
-        getConfigValue: function direct_direct_getConfigValue(aName, aValue, aAction) {
+        getConfigValue: function (aName, aValue, aAction) {
             let configActionName = aAction || "_defaults";
             return this._config[configActionName] && this._config[configActionName][aName];
         },
-        cleanData: function direct_direct_cleanData(aWIID) {
+        cleanData: function (aWIID) {
             exportMgr.cleanData(aWIID);
         },
-        getUpdateInterval: function direct_direct_getUpdateInterval(aWIID, force) {
+        getUpdateInterval: function (aWIID, force) {
             if (!this._updateIntervals[aWIID] || force) {
                 this._updateIntervals[aWIID] = parseInt(this.app.api.Settings.getValue("update-interval"), 10) * 60;
             }
             return this._updateIntervals[aWIID];
         },
-        getLastUpdateTime: function direct_direct_getLastUpdateTime(aWIID) {
+        getLastUpdateTime: function (aWIID) {
             return exportMgr.getLastUpdateTime(aWIID);
         },
-        getError: function direct_direct_getError(aWIID) {
+        getError: function (aWIID) {
             return exportMgr.getError(aWIID);
         },
-        getUserData: function direct_direct_getUserData(aWIID, aAction) {
+        getUserData: function (aWIID, aAction) {
             return exportMgr.getServerData(aWIID, aAction);
         },
-        update: function direct_direct_update(aWIID, force) {
+        update: function (aWIID, force) {
             exportMgr.update(aWIID, force);
+        },
+        _onSuccess: function (aWIID, data) {
+            this.app.onUpdate(aWIID);
+        },
+        _onFail: function (aWIID, data) {
+            this.app.onUpdate(aWIID);
         }
     };
     let _handlers = Object.create(null);
     _handlers._defaults = {
-        cacheKeys: function direct_direct__handlers_main_cacheKeys() {
+        cacheKeys: function () {
             return { login: res.getConfigValue("user") };
         },
-        updateInterval: function direct_direct__handlers_main_updateInterval(aWIID) {
+        updateInterval: function (aWIID) {
             return res.getUpdateInterval(aWIID);
         },
         expiryInterval: EXPIRY_TIME,
-        errback: function direct_direct__handlers_main_errback(aXhr) {
+        errback: function (aXhr) {
             return { _error: true };
         },
         onSuccess: res._onSuccess.bind(res),
@@ -76,7 +76,7 @@ var module = function (app, common) {
     _handlers.main = [
         {
             url: "http://direct.yandex.ru/widget/export?format=xml&bar=1",
-            callback: function direct_direct__handlers_main_callback(aXhr) {
+            callback: function (aXhr) {
                 let data = {};
                 let result = {
                     common: data,
@@ -127,7 +127,7 @@ var module = function (app, common) {
             }
         },
         {
-            url: function direct_direct__handlers_main_2nd_url(aWIID, aAction) {
+            url: function (aWIID, aAction) {
                 let url = "http://direct.yandex.ru/widget/export?format=xml&bar=1&cid=";
                 let currentData = res.getUserData(aWIID, "main");
                 let campsList = currentData.common && currentData.common.campsList;
@@ -138,7 +138,7 @@ var module = function (app, common) {
                     return campObj.cid;
                 }).sort().join(",");
             },
-            callback: function direct_direct__handlers_main_2nd_callback(aXhr) {
+            callback: function (aXhr) {
                 let data = {};
                 let result = {
                     menu: data,
@@ -166,7 +166,7 @@ var module = function (app, common) {
                 data.campsInfo = campsInfo;
                 return result;
             },
-            errback: function direct_direct__handlers_main_errback(aXhr) {
+            errback: function (aXhr) {
                 return {
                     menu: {},
                     _menuError: true

@@ -276,16 +276,17 @@ const animator = {
     get hiddenDocument() {
         if (!this._hiddenFrame) {
             const CONTENT_PATH = "chrome://" + notifications._application.name + "/content/";
-            let hiddenFrame = misc.hiddenWindows.getFrame("notifications-frame", CONTENT_PATH + "overlay/hiddenwindow.xul");
-            let hiddenDoc = hiddenFrame.contentDocument;
-            if (!hiddenDoc) {
-                return null;
-            }
-            let styleElement = hiddenDoc.createElementNS("http://www.w3.org/1999/xhtml", "style");
-            hiddenDoc.documentElement.appendChild(styleElement);
-            let stylesheet = styleElement.sheet;
-            stylesheet.insertRule("@import url('" + CONTENT_PATH + "dialogs/notifications/notification.css');", stylesheet.cssRules.length);
-            this._hiddenFrame = hiddenFrame;
+            misc.hiddenWindows.getFramePromise("notifications-frame", CONTENT_PATH + "overlay/hiddenwindow.xul").then(hiddenFrame => {
+                let hiddenDoc = hiddenFrame.contentDocument;
+                if (!hiddenDoc) {
+                    return null;
+                }
+                let DOMUtils = hiddenDoc.defaultView.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+                let sheetURI = Services.io.newURI(CONTENT_PATH + "dialogs/notifications/notification.css", null, null);
+                DOMUtils.loadSheet(sheetURI, DOMUtils.AUTHOR_SHEET);
+                this._hiddenFrame = hiddenFrame;
+            });
+            return null;
         }
         return this._hiddenFrame.contentDocument;
     },

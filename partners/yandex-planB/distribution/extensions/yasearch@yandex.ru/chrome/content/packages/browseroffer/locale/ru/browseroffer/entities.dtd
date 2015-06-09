@@ -25,3 +25,7 @@
 <!ENTITY pagetranslator.tutorial.button.yaBrowser "Открыть">
 <!ENTITY pagetranslator.tutorial.text.noYaBrowser "Попробуйте все возможности перевода в Яндекс.Браузере.">
 <!ENTITY pagetranslator.tutorial.text.yaBrowser "Попробуйте все возможности перевода в Яндекс.Браузере.">
+<!ENTITY browseroffer.video.button.noYaBrowser "Установить Яндекс.Браузер">
+<!ENTITY browseroffer.video.button.yaBrowser "Открыть">
+<!ENTITY browseroffer.video.text.noYaBrowser "Режим Турбо ускорит загрузку роликов на {domain} при медленном интернете.">
+<!ENTITY browseroffer.video.text.yaBrowser "Откройте {domain} в Яндекс.Браузере. Режим Турбо ускорит загрузку роликов при медленном интернете.">

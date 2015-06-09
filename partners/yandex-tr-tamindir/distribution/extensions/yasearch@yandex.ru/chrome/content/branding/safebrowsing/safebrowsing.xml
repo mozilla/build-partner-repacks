@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <SafeBrowsing>
     <DetailsUrl>http://yandex.com.tr/infected?l10n={lang}&amp;url={url}</DetailsUrl>
-    <FraudDetailsUrl>http://yardim.yandex.com.tr/yabrowser/security/sms-fraud.xml</FraudDetailsUrl>
+    <FraudDetailsUrl>https://yardim.yandex.com.tr/yabrowser/security/sms-fraud.xml</FraudDetailsUrl>
 </SafeBrowsing>

@@ -17,8 +17,12 @@
 <!ENTITY browseroffer.notification.wdgt-suggest.vk "VK">
 <!ENTITY browseroffer.settings.showSuggest "Show Yandex.Elements contextual ads">
 <!ENTITY browseroffer.notification.button.deny "No">
-<!ENTITY browseroffer.notification.button.no "Нет">
-<!ENTITY pagetranslator.tutorial.button.noYaBrowser "Подробнее">
-<!ENTITY pagetranslator.tutorial.button.yaBrowser "Открыть">
-<!ENTITY pagetranslator.tutorial.text.noYaBrowser "Попробуйте все возможности перевода в Яндекс.Браузере.">
-<!ENTITY pagetranslator.tutorial.text.yaBrowser "Попробуйте все возможности перевода в Яндекс.Браузере.">
+<!ENTITY browseroffer.notification.button.no "No">
+<!ENTITY pagetranslator.tutorial.button.noYaBrowser "More">
+<!ENTITY pagetranslator.tutorial.button.yaBrowser "Open">
+<!ENTITY pagetranslator.tutorial.text.noYaBrowser "Try out all Yandex.Browser&#39;s translation features.">
+<!ENTITY pagetranslator.tutorial.text.yaBrowser "Try out all Yandex.Browser&#39;s translation features.">
+<!ENTITY browseroffer.video.button.noYaBrowser "Install Yandex.Browser">
+<!ENTITY browseroffer.video.button.yaBrowser "Open">
+<!ENTITY browseroffer.video.text.noYaBrowser "Turbo Mode speeds up video downloads on {domain} when the internet is slow.">
+<!ENTITY browseroffer.video.text.yaBrowser "Open {domain} in Yandex.Browser. Turbo Mode speeds up video downloads when the internet is slow.">

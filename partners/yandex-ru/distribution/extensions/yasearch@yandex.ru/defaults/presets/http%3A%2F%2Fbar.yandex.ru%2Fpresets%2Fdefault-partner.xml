@@ -1,19 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <preset format-version="2.2" version="7.2.5">
     <url>http://bar.yandex.ru/presets/default-partner.xml</url>
-    
+
     <author lang="ru">Яндекс</author>
     <name lang="ru">Базовый</name>
-    
+
     <author lang="uk">Яндекс</author>
     <name lang="uk">Базовый</name>
-    
+
     <author lang="en">Yandex</author>
     <name lang="en">Basic</name>
-    
+
     <author lang="be">Яндекс</author>
     <name lang="be">Базавы</name>
-    
+
     <author lang="kk">Яндекс</author>
     <name lang="kk">Бастапқы</name>
     <packages>
@@ -24,11 +24,10 @@
         <package file="facebook_ff_1.3.zip" id="http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml" platform-min="5" version="3.0"/>
         <package file="mailru_ff_3.zip" id="http://bar-widgets.yandex.ru/packages/approved/82/manifest.xml" platform-min="5" version="3.0"/>
         <package file="gmail3008.zip" id="http://bar-widgets.yandex.ru/packages/approved/97/manifest.xml" platform-min="3" version="3.8"/>
-        <package file="twitter_ff_2.zip" id="http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml" platform-min="5" version="2.0"/>
         <package file="rambler_1002.zip" id="http://bar-widgets.yandex.ru/packages/approved/75/manifest.xml" platform-min="4" version="2.1"/>
         <package file="radio.zip" id="http://bar-widgets.yandex.ru/packages/approved/118/manifest.xml" platform-min="6" version="2.4"/>
     </packages>
-    
+
     <widget id="http://bar.yandex.ru/packages/yandexbar#logo" important="true" visible="true"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#mail" important="true" visible="true"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#town" important="true" visible="true">
@@ -52,10 +51,9 @@
         <setting force="true" name="show-messages">false</setting>
         <setting force="true" name="show-guests">false</setting>
     </widget>
-    <widget id="http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml#facebook" important="true" visible="auto"/>
+    <widget id="http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml#facebook" visible="false"/>
     <widget id="http://bar-widgets.yandex.ru/packages/approved/75/manifest.xml#rambler" important="true" visible="auto"/>
     <widget id="http://bar-widgets.yandex.ru/packages/approved/97/manifest.xml#gmail" important="true" visible="auto"/>
-    <widget id="http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml#twitter" important="true" visible="auto"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#login" visible="false"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#yaru" important="true" visible="auto"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#moikrug" important="true" visible="auto"/>
@@ -65,11 +63,10 @@
         <setting force="true" name="show_name">false</setting>
     </widget>
     <widget id="http://bar.yandex.ru/packages/yandexbar#quote" important="true" visible="auto"/>
-    
+
     <widget id="http://bar.yandex.ru/packages/yandexbar#zakladki" visible="false"/>
-    <widget id="http://bar.yandex.ru/packages/yandexbar#lenta" visible="false"/>
     <widget id="http://bar.yandex.ru/packages/yandexbar#cy" visible="false"/>
-    
+
     <plugin id="http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox"/>
     <plugin id="http://bar.yandex.ru/packages/yandexbar#translator"/>
     <plugin id="http://bar.yandex.ru/packages/yandexbar#pagetranslator"/>

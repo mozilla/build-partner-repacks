@@ -68,8 +68,8 @@ const core = {
     get stringBundle() {
         return this._stringBundle || (this._stringBundle = this._api.Localization.createStringBundle("/native/fx/cy.properties"));
     },
-    _MODULES: { utils: "common-auth/utils.jsm" },
     _CY_URL: "http://www.yandex.ru/cy?",
+    _MODULES: { utils: "utils.jsm" },
     _loadModules: function CYWidget__loadModules() {
         let shAPI = this._api.shareableAPI;
         for (let [

@@ -6,36 +6,34 @@ BarPlatform.CachedResources = {
         this._downloaders = Object.create(null);
         this._logger = BarPlatform._getLogger("NetResources");
         this._logger.level = Log4Moz.Level.Config;
-        let cacheFile = barApp.directories.appRootDir;
-        cacheFile.append("netcache.sqlite");
-        this._cache = new Database.DatedValues(cacheFile);
     },
     finalize: function Cached_finalize(doCleanup, callback) {
         this.removeAllListeners();
-        misc.mapValsToArray(this._resources).forEach(function (resource) {
+        for (let key of Object.keys(this._resources)) {
             try {
-                resource._finalize();
+                this._resources[key]._finalize();
             } catch (e) {
                 this._logger.error("Error finalizing resource. " + strutils.formatError(e));
             }
-        }, this);
-        misc.mapValsToArray(this._downloaders).forEach(function (downloader) {
+        }
+        for (let key of Object.keys(this._downloaders)) {
             try {
-                downloader._finalize();
+                this._downloaders[key]._finalize();
             } catch (e) {
                 this._logger.error("Error finalizing downloader. " + strutils.formatError(e));
             }
-        }, this);
+        }
         this._resources = null;
         this._downloaders = null;
-        if (this._cache) {
-            let storageFile = this._cache.storageFile;
-            this._cache.close(function () {
+        if (this.__cache) {
+            let storageFile = this.__cache.storageFile;
+            this.__cache.close(function () {
                 if (doCleanup) {
                     fileutils.removeFileSafe(storageFile);
                 }
                 callback();
             });
+            this.__cache = null;
             return true;
         }
         callback();
@@ -63,6 +61,15 @@ BarPlatform.CachedResources = {
     requestFinished: function Cached_requestFinished(requestID) {
         requestID = parseInt(requestID, 10);
         return requestID > 0 && requestID < this._requestID && !(requestID in this._activeRequests);
+    },
+    __cache: null,
+    get _cache() {
+        if (!this.__cache) {
+            let cacheFile = barApp.directories.appRootDir;
+            cacheFile.append("netcache.sqlite");
+            this.__cache = new Database.DatedValues(cacheFile);
+        }
+        return this.__cache;
     },
     _activeRequests: Object.create(null),
     _resources: null,

@@ -19,6 +19,9 @@ define("slice/common-logic/yauth", ["browser-adapter"], function (adapter) {
     function userId(user) {
         return user ? user.id : "";
     }
+    function getUrlForDomain(domain, srcUrl) {
+        return srcUrl ? srcUrl.replace("{passport}", domain) : "";
+    }
     function User(cfg, passp) {
         this.data = {};
         this.requests = {};
@@ -29,7 +32,7 @@ define("slice/common-logic/yauth", ["browser-adapter"], function (adapter) {
     User.prototype = {
         constructor: User,
         getUrl: function (srcUrl) {
-            return srcUrl ? srcUrl.replace("{passport}", this.passport) : "";
+            return getUrlForDomain(this.passport, srcUrl);
         },
         setUserInfo: function (cfg, passp) {
             var arrEmail = cfg.login.split("@");
@@ -51,19 +54,12 @@ define("slice/common-logic/yauth", ["browser-adapter"], function (adapter) {
                 delete this.data.messages;
             }
             if (this.data.messages) {
-                newMessages = newMessages.filter(function (message) {
-                    for (var i = 0, l = this.data.messages.length; i < l; i++) {
-                        var oldMessage = this.data.messages[i];
-                        if (oldMessage.id === message.id) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }.bind(this));
+                newMessages = newMessages.filter(this._filterMessage.bind(this));
             }
             if (newMessages) {
                 this.data.messages = newMessages.concat(this.data.messages || []);
             }
+            return newMessages ? newMessages.length > 0 : false;
         },
         deleteMessageById: function (id) {
             if (!this.data.messages) {
@@ -74,12 +70,22 @@ define("slice/common-logic/yauth", ["browser-adapter"], function (adapter) {
                 return oldMessage.id !== id;
             });
             return oldLength !== this.data.messages.length;
+        },
+        _filterMessage: function (message) {
+            for (var i = 0, l = this.data.messages.length; i < l; i++) {
+                var oldMessage = this.data.messages[i];
+                if (oldMessage.id === message.id) {
+                    return false;
+                }
+            }
+            return true;
         }
     };
     function YAuth() {
         this._users = [];
         this._userMap = {};
         this._currentUser = null;
+        this._domain = null;
     }
     YAuth.prototype = {
         constructor: YAuth,
@@ -89,6 +95,7 @@ define("slice/common-logic/yauth", ["browser-adapter"], function (adapter) {
             "user:all": function (topic, data) {
                 adapter.log("Yauth: catch user:all event");
                 adapter.log("Yauth: received domain - " + data.domain);
+                this._domain = data.domain;
                 var users = data.list;
                 var i, user;
                 var logoutUsers = [];
@@ -182,6 +189,18 @@ define("slice/common-logic/yauth", ["browser-adapter"], function (adapter) {
         },
         getCurrentUser: function () {
             return this._currentUser;
+        },
+        getUrl: function (user, template) {
+            var domain;
+            if (!user) {
+                domain = this._domain;
+            } else {
+                domain = user.passport;
+            }
+            return getUrlForDomain(domain, template);
+        },
+        hasAuth: function () {
+            return this._currentUser !== null;
         },
         forEach: function (authOnly, callback, ctx) {
             for (var i = 0; i < this._users.length; ++i) {
@@ -382,60 +401,36 @@ define("slice/logic/mail-api", [
     "slice/logic/folders"
 ], function (adapter, http, xml, config, messages, folders) {
     function API() {
-        this._url = config.URL_API;
-        this._counterUrl = config.URL_COUNTER;
     }
     API.prototype = {
         constructor: API,
-        getCounter: function (user, callback, ctx) {
-            return http.GET({
-                url: user.getUrl(this._counterUrl),
-                ctx: this,
-                params: { services: 43 },
-                responseType: "xml",
-                callback: function (data) {
-                    var mailTag = xml.select("mail", data);
-                    if (!mailTag) {
-                        callback.call(ctx, { text: "bad response for counters" });
-                        return;
-                    }
-                    var count = +xml.getAttr(mailTag, "v");
-                    callback.call(ctx, null, count);
-                },
-                errback: function (status, text) {
-                    adapter.log("MailApi: getCounter error: " + status + " " + text);
-                    callback.call(ctx, {
-                        status: status,
-                        text: text
-                    });
-                }
-            });
-        },
-        getAllCounters: function (callback, ctx) {
+        getAllCounters: function (options) {
             return http.GET({
                 url: config.URL_COUNTERS_ALL,
                 ctx: this,
                 responseType: "json",
-                callback: function (data) {
-                    var error = data ? data.error : "empty response";
-                    if (error) {
-                        adapter.log("MailApi: getAllCounters error: " + error);
-                        callback.call(ctx, error);
-                        return;
-                    }
-                    callback.call(ctx, null, data);
-                },
-                errback: function (status, text) {
-                    adapter.log("MailApi: getCounter error: " + status + " " + text);
-                    callback.call(ctx, {
-                        status: status,
-                        text: text
-                    });
-                }
+                callback: this._onGetAllCounters.bind(this, options),
+                errback: this._onGetAllCountersError.bind(this, options)
             });
         },
-        getMessages: function (user, callback, ctx) {
-            var url = user.getUrl(config.URL_API) + "mailbox_list";
+        _onGetAllCounters: function (options, data) {
+            var error = data ? data.error : "empty response";
+            if (error) {
+                adapter.log("MailApi: getAllCounters error: " + error);
+                options.callback.call(options.ctx, error);
+                return;
+            }
+            options.callback.call(options.ctx, null, data);
+        },
+        _onGetAllCountersError: function (options, status, text) {
+            adapter.log("MailApi: getAllCounters error: " + status + " " + text);
+            options.callback.call(options.ctx, {
+                status: status,
+                text: text
+            });
+        },
+        getMessages: function (options) {
+            var url = config.URL_API + "mailbox_list";
             return http.GET({
                 url: url,
                 ctx: this,
@@ -447,138 +442,202 @@ define("slice/logic/mail-api", [
                     elmt: "mail"
                 },
                 responseType: "xml",
-                callback: function (data) {
-                    messages.parse(data, callback, ctx);
-                },
-                errback: function (status, text) {
-                    adapter.log("MailApi: getMessages error: " + status + " " + text);
-                    callback.call(ctx, {
-                        status: status,
-                        text: text
-                    });
-                }
+                callback: this._createRedirectCatcher("getMessages", options, this._onGetMessages.bind(this, options)),
+                errback: this._onGetMessagesError.bind(this, options)
             });
         },
-        getFolders: function (user, callback, ctx) {
-            var url = user.getUrl(config.URL_API) + "folder_list";
+        _onGetMessages: function (options, data) {
+            messages.parse(data, options.callback, options.ctx);
+        },
+        _onGetMessagesError: function (options, status, text) {
+            adapter.log("MailApi: getMessages error: " + status + " " + text);
+            options.callback.call(options.ctx, {
+                status: status,
+                text: text
+            });
+        },
+        getFolders: function (options) {
+            var url = config.URL_API + "folder_list";
             return http.GET({
                 url: url,
                 ctx: this,
                 responseType: "xml",
-                callback: function (data) {
-                    folders.parse(data, callback, ctx);
-                },
-                errback: function (status, text) {
-                    adapter.log("MailApi: getfolders error: " + status + " " + text);
-                    callback.call(ctx, {
-                        status: status,
-                        text: text
-                    });
-                }
+                callback: this._createRedirectCatcher("getFolders", options, this._onGetFolders.bind(this, options)),
+                errback: this._onGetFoldersError.bind(this, options)
             });
         },
-        changeMessageState: function (user, message, action, callback, ctx) {
-            var url = user.getUrl(config.URL_API) + "mailbox_oper";
+        _onGetFolders: function (options, data) {
+            folders.parse(data, options.callback, options.ctx);
+        },
+        _onGetFoldersError: function (options, status, text) {
+            adapter.log("MailApi: getfolders error: " + status + " " + text);
+            options.callback.call(options.ctx, {
+                status: status,
+                text: text
+            });
+        },
+        changeMessageState: function (options) {
+            var url = config.URL_API + "mailbox_oper";
             var params = {
-                "oper": action,
-                "ids": [message.id]
+                "oper": options.action,
+                "ids": [options.message.id]
             };
-            if (user.data.ckey) {
-                params.ckey = user.data.ckey;
+            if (options.user.data.ckey) {
+                params.ckey = options.user.data.ckey;
             }
             return http.POST({
                 url: url,
                 ctx: this,
                 params: params,
                 responseType: "xml",
-                callback: function (data) {
-                    var errorTag = data.getElementsByTagName("error");
-                    var error = errorTag ? errorTag[0] : null;
-                    if (!error) {
-                        callback.call(ctx);
+                callback: this._createRedirectCatcher("changeMessageState", options, this._onChangeMessageState.bind(this, options)),
+                errback: this._onChangeMessageStateError.bind(this, options)
+            });
+        },
+        _onChangeMessageState: function (options, data) {
+            var errorTag = data.getElementsByTagName("error");
+            var error = errorTag ? errorTag[0] : null;
+            if (!error) {
+                options.callback.call(options.ctx);
+            } else {
+                adapter.log("MailApi: changeMessageState error: " + error);
+                options.callback.call(options.ctx, error);
+            }
+        },
+        _onChangeMessageStateError: function (options, status, text) {
+            adapter.log("MailApi: changeMessageState error: " + status + " " + text);
+            options.callback.call(options.ctx, {
+                status: status,
+                text: text
+            });
+        },
+        getUserSettings: function (options) {
+            var url = config.URL_API + "settings_setup";
+            return http.GET({
+                url: url,
+                ctx: this,
+                responseType: "xml",
+                callback: this._createRedirectCatcher("getUserSettings", options, this._onGetUserSettings.bind(this, options)),
+                errback: this._onGetUserSettingsError.bind(this, options)
+            });
+        },
+        _onGetUserSettings: function (options, data) {
+            var error;
+            try {
+                error = xml.select("error", data);
+                if (!error) {
+                    var body = xml.select("body", data);
+                    var email = xml.getText(body, "default_email");
+                    var name = xml.getText(body, "from_name");
+                    options.callback.call(options.ctx, null, {
+                        user: options.user,
+                        email: email,
+                        name: name
+                    });
+                }
+            } catch (e) {
+                error = e;
+            }
+            if (error) {
+                adapter.log("MailApi: getUserSettings error");
+                var errorCode = parseInt(xml.getAttr(error, "code"), 10);
+                options.callback.call(options.ctx, {
+                    status: errorCode,
+                    text: ""
+                });
+            }
+        },
+        _onGetUserSettingsError: function (options, status, text) {
+            adapter.log("MailApi: getUserSettings network error:", status, text);
+            options.callback.call(options.ctx, {
+                status: status,
+                text: text
+            });
+        },
+        getAccountInfo: function (options) {
+            var url = config.URL_API + "account_information";
+            return http.GET({
+                url: url,
+                ctx: this,
+                responseType: "xml",
+                callback: this._createRedirectCatcher("getAccountInfo", options, this._onGetAccountInfo.bind(this, options)),
+                errback: this._onGetAccountInfoError.bind(this, options)
+            });
+        },
+        _onGetAccountInfo: function (options, data) {
+            var error;
+            try {
+                error = xml.select("error", data);
+                if (!error) {
+                    var info = xml.select("account_information", data);
+                    var ckey = xml.getText(info, "ckey");
+                    options.callback.call(options.ctx, null, {
+                        user: options.user,
+                        ckey: ckey
+                    });
+                }
+            } catch (e) {
+                error = e;
+            }
+            if (error) {
+                adapter.log("getAccountInfo error");
+                var errorCode = parseInt(xml.getAttr(error, "code"), 10);
+                options.callback.call(options.ctx, {
+                    status: errorCode,
+                    text: ""
+                });
+            }
+        },
+        _onGetAccountInfoError: function (options, status, text) {
+            adapter.log("getAccountInfo network error, status: %s, text: %s", status, text);
+            options.callback.call(options.ctx, {
+                status: status,
+                text: text
+            });
+        },
+        _createRedirectCatcher: function (methodName, methodOptions, methodCallback) {
+            return function (responseData) {
+                var requestRedirected = false;
+                if (!methodOptions || !methodOptions.noFurtherRedirects) {
+                    requestRedirected = this._tryCatchRedirect(responseData, methodName, methodOptions, methodCallback);
+                }
+                if (!requestRedirected) {
+                    methodCallback.call(this, responseData);
+                }
+            };
+        },
+        _tryCatchRedirect: function (responseData, methodName, methodOptions, methodCallback) {
+            try {
+                var redirect = xml.select("redirect", responseData);
+                var redirectUrl = xml.getText(redirect, "redirect_to");
+                if (redirectUrl) {
+                    adapter.log("Catch redirect for method: " + methodName + ", redirect url: " + redirectUrl);
+                    this._goToRedirect(redirectUrl, methodName, methodOptions, methodCallback);
+                    return true;
+                }
+            } catch (e) {
+                adapter.log("Can not parse response for redirects");
+            }
+            return false;
+        },
+        _goToRedirect: function (url, callbackName, callbackOptions, errback) {
+            return http.GET({
+                url: url,
+                ctx: this,
+                responseType: "xml",
+                callback: function () {
+                    if (typeof this[callbackName] === "function") {
+                        callbackOptions = callbackOptions || {};
+                        callbackOptions.noFurtherRedirects = true;
+                        this[callbackName].call(this, callbackOptions);
                     } else {
-                        adapter.log("MailApi: changeMessageState error: " + error);
-                        callback.call(ctx, error);
+                        adapter.log("Bad callback for name: " + callbackName);
                     }
                 },
                 errback: function (status, text) {
-                    adapter.log("MailApi: changeMessageState error: " + status + " " + text);
-                    callback.call(ctx, {
-                        status: status,
-                        text: text
-                    });
-                }
-            });
-        },
-        getUserSettings: function (user, callback, ctx) {
-            var url = user.getUrl(config.URL_API) + "settings_setup";
-            return http.GET({
-                url: url,
-                ctx: this,
-                responseType: "xml",
-                callback: function (data) {
-                    var error;
-                    try {
-                        error = xml.select("error", data);
-                        if (!error) {
-                            var body = xml.select("body", data);
-                            var email = xml.getText(body, "default_email");
-                            var name = xml.getText(body, "from_name");
-                            callback.call(ctx, null, {
-                                user: user,
-                                email: email,
-                                name: name
-                            });
-                        }
-                    } catch (e) {
-                        error = e;
-                    }
-                    if (error) {
-                        adapter.log("MailApi: getUserSettings error");
-                        callback.call(ctx, error);
-                    }
-                },
-                errback: function (status, text) {
-                    adapter.log("MailApi: getUserSettings network error:", status, text);
-                    callback.call(ctx, {
-                        status: status,
-                        text: text
-                    });
-                }
-            });
-        },
-        getAccountInfo: function (user, callback, ctx) {
-            var url = user.getUrl(config.URL_API) + "account_information";
-            return http.GET({
-                url: url,
-                ctx: this,
-                responseType: "xml",
-                callback: function (data) {
-                    var error;
-                    try {
-                        error = xml.select("error", data);
-                        if (!error) {
-                            var info = xml.select("account_information", data);
-                            var ckey = xml.getText(info, "ckey");
-                            callback.call(ctx, null, {
-                                user: user,
-                                ckey: ckey
-                            });
-                        }
-                    } catch (e) {
-                        error = e;
-                    }
-                    if (error) {
-                        adapter.log("getAccountInfo error");
-                        callback.call(ctx, error);
-                    }
-                },
-                errback: function (status, text) {
-                    adapter.log("getAccountInfo network error, status: %s, text: %s", status, text);
-                    callback.call(ctx, {
-                        status: status,
-                        text: text
-                    });
+                    adapter.log("Error while going to redirect after: " + callbackName);
+                    adapter.log("Status: " + status + ", text: " + text);
+                    errback(null);
                 }
             });
         }
@@ -865,8 +924,13 @@ define("slice/common-logic/notify", [
     "browser-adapter",
     "api/manager",
     "api/stat",
+    "api/branding",
     "slice/common-logic/plural"
-], function (adapter, manager, stat, plural) {
+], function (adapter, manager, stat, branding, plural) {
+    var config = {
+        ENABLE_NOTIF: true,
+        browser: { fx: { ENABLE_NOTIF: !/Linux/i.test(navigator.platform) } }
+    };
     var queue = [];
     var showTimeoutId;
     var options = {
@@ -904,7 +968,7 @@ define("slice/common-logic/notify", [
             type: notification.type,
             title: notification.title || options.defaultTitle,
             text: ((notification.mainText || "") + "\n" + (notification.subText || "")).trim(),
-            mainText: notification.mainText,
+            mainText: notification.mainText || "",
             subText: notification.subText || "",
             template: options.useMailTemplates ? platformApi.TEMPLATE_MAIL : platformApi.TEMPLATE_MESSAGE,
             context: notification.context || options.defaultClickUrl,
@@ -916,26 +980,34 @@ define("slice/common-logic/notify", [
     function createCumulativeNotification(notifications) {
         var platformApi = adapter.getNotificationManager();
         var count = notifications.length;
-        var pluralForms;
         var oneType = getNotificationsType(notifications);
-        if (oneType) {
-            pluralForms = options.pluralForms[oneType];
+        var retValue;
+        if (options.ongroup) {
+            retValue = options.ongroup(notifications, oneType);
+            adapter.logObj(retValue);
         } else {
-            pluralForms = options.pluralForms.mix;
+            var pluralForms;
+            if (oneType) {
+                pluralForms = options.pluralForms[oneType];
+            } else {
+                pluralForms = options.pluralForms.mix;
+            }
+            var message = plural.form(count, pluralForms).replace(options.pluralPlaceholder, count, "gm");
+            retValue = {
+                title: message,
+                mainText: message,
+                subText: "",
+                template: platformApi.TEMPLATE_GROUP,
+                isDefaultIcon: true
+            };
         }
-        var message = plural.form(count, pluralForms).replace(options.pluralPlaceholder, count, "gm");
-        return {
-            defaultTitle: options.defaultTitle,
-            title: message,
-            mainText: message,
-            subText: "",
-            type: oneType || "mix",
-            template: platformApi.TEMPLATE_GROUP,
-            context: options.defaultClickUrl,
-            icon: options.defaultIconUrl,
-            groupSize: count,
-            isDefaultIcon: true
-        };
+        retValue.text = ((retValue.mainText || "") + "\n" + (retValue.subText || "")).trim();
+        retValue.groupSize = count;
+        retValue.type = retValue.type || oneType || "mix";
+        retValue.defaultTitle = retValue.defaultTitle || options.defaultTitle;
+        retValue.icon = retValue.icon || options.defaultIconUrl;
+        retValue.context = retValue.context || options.defaultClickUrl;
+        return retValue;
     }
     function getNotificationsType(notifications) {
         var type = notifications[0].type;
@@ -948,10 +1020,11 @@ define("slice/common-logic/notify", [
     }
     function sendStat(groupSize, action) {
         var notificationType = groupSize > 1 ? "group" : "one";
-        stat.logNotification(options.serviceName + ".{version}." + notificationType + "." + action);
+        stat.logNotification(notificationType + "." + action);
     }
     var notify = {
         init: function () {
+            branding.brandingObject(config);
             var platformApi = adapter.getNotificationManager();
             platformApi.addListener(this.handlers);
         },
@@ -974,7 +1047,11 @@ define("slice/common-logic/notify", [
                 case platformApi.CLICK_TARGET_OTHER:
                 case platformApi.CLICK_TARGET_TITLE:
                     sendStat(data.groupSize, "click");
-                    adapter.navigate(data.context, "new tab");
+                    if (options.onclick) {
+                        options.onclick(data);
+                    } else {
+                        adapter.navigate(data.context, "new tab");
+                    }
                     break;
                 }
             },
@@ -999,6 +1076,9 @@ define("slice/common-logic/notify", [
             }
         },
         show: function (notificationData) {
+            if (!config.ENABLE_NOTIF) {
+                return;
+            }
             queue.push(notificationData);
             clearTimeout(showTimeoutId);
             showTimeoutId = setTimeout(showNotification, options.delayInMs);
@@ -1026,8 +1106,11 @@ define("slice/logic/notify", [
             },
             requestShowPermission: function (callback) {
                 var showOption = String(adapter.getOption("showTextAlert"));
-                adapter.log("Notify: requestShowPermission, showTextAlert option - " + showOption);
-                if (showOption === "false") {
+                var isWindowVisible = adapter.isWindowVisible();
+                if (isWindowVisible || showOption === "false") {
+                    adapter.log("Notify: requestShowPermission denied");
+                    adapter.log("isWindowVisible: " + isWindowVisible);
+                    adapter.log("showOption: " + showOption);
                     callback(false);
                     return;
                 }
@@ -1047,10 +1130,9 @@ define("slice/logic/notify", [
             notify.show({
                 type: "mail",
                 title: message.from || message.email,
-                mainText: message.subject,
-                subText: message.firstline,
+                mainText: ((message.subject || "") + "\n" + (message.firstline || "")).trim(),
                 icon: null,
-                context: user.getUrl(config.URL_WEB) + "neo2/#inbox/message/" + message.id
+                context: user.getUrl(config.URL_WEB) + "neo2/?" + config.linkParam + "#message/" + message.id
             });
         }
     };
@@ -2098,9 +2180,9 @@ define("slice/logic/xiva", [
             auth.forEach(true, this.disconnect, this);
         },
         observers: {
-            "slice:auth:current": function (topic, data) {
+            "slice:auth:current": function () {
                 if (WebSocket) {
-                    this.disconnect(auth.getUser(data.oldCurrent));
+                    auth.forEach(false, this.disconnect, this);
                     this.connect(auth.getCurrentUser());
                 }
             }
@@ -2145,19 +2227,27 @@ define("slice/logic/xiva", [
             }.bind(this), timeout);
         },
         disconnect: function (user) {
-            if (!user || !user.data.xivaConnect) {
+            if (!user) {
                 return;
             }
-            this.removeListenersFromSocket(user.data.xivaConnect, user.data.xivaConnectHandlers);
+            this._closeSocket(user);
+            this._clearTimers(user);
+        },
+        _closeSocket: function (user) {
+            if (user.data.xivaConnect) {
+                this.removeListenersFromSocket(user.data.xivaConnect, user.data.xivaConnectHandlers);
+                user.data.xivaConnect.close();
+                delete user.data.xivaConnect;
+                delete user.data.xivaConnectHandlers;
+                adapter.log("XIVA: socket disconnected for user:" + user.login);
+            }
+        },
+        _clearTimers: function (user) {
             clearTimeout(user.data.xivaReconnectTimeoutId);
             delete user.data.xivaReconnectTimeoutId;
+            user.data.xivaReconnectTimeout = 0;
             clearTimeout(user.data.xivaPingReconnectTimeoutId);
             delete user.data.xivaPingReconnectTimeoutId;
-            delete user.data.xivaConnectHandlers;
-            user.data.xivaConnect.close();
-            delete user.data.xivaConnect;
-            user.data.xivaReconnectTimeout = 0;
-            adapter.log("XIVA: socket disconnected for user:" + user.login);
         },
         openSocket: function (user) {
             if (!user || user.data.xivaConnect) {
@@ -2318,8 +2408,12 @@ define("slice/logic/xiva", [
                                 date: date
                             }
                         };
-                        user.setMessages([notificationData.message]);
-                        this.notify(notificationData);
+                        var isMessagesAdded = user.setMessages([notificationData.message]);
+                        if (isMessagesAdded) {
+                            this.notify(notificationData);
+                        } else {
+                            adapter.log("XIVA: new message have been declined as a duplicate");
+                        }
                     }
                 }
             } else if (receivedData.operation !== "ping") {
@@ -2348,15 +2442,25 @@ define("slice/logic/main", [
     "slice/common-libs/async",
     "slice/logic/xiva"
 ], function (adapter, manager, utils, stat, config, MailApi, timers, auth, notify, async) {
+    var NO_AUTH_STATUS = 2001;
+    var COUNTER_OPTION_NAME = "allAccountsCounter";
     var yamail = {
         _timer: null,
         _mailApi: null,
         _updateCounterDelayed: null,
         init: function () {
             this._mailApi = new MailApi();
+            this._updateCounterDelayed = utils.debounce(this.updateAllCounters.bind(this), 1000);
+            this._addListeners();
+            this._initPollingTimer();
+            adapter.log("Send user:get-all to platform");
+            adapter.sendOuterMessage("user:get-all");
+        },
+        _initPollingTimer: function () {
             this._timer = timers.create(config.UPDATE_TIME_MS, this.handleTimerTick, this);
             this._timer.start();
-            this._updateCounterDelayed = utils.debounce(this.updateCounter.bind(this), 1000);
+        },
+        _addListeners: function () {
             adapter.addListener("slice:auth:list-updated", this.handleListUpdatedEvent, this);
             adapter.addListener("slice:auth:current", this.handleAuthCurrentEvent, this);
             adapter.addListener("mail:xiva:notify", this.handleXivaNotifyEvent, this);
@@ -2366,8 +2470,7 @@ define("slice/logic/main", [
             adapter.addListener("mail:compose", this.handleComposeEvent, this);
             adapter.addListener("mail:open", this.handleOpenEvent, this);
             adapter.addListener("slice-event-show", this.handleSliceShowEvent, this);
-            adapter.log("Send user:get-all to platform");
-            adapter.sendOuterMessage("user:get-all");
+            adapter.addListener("options:change", this.handleOptionChangeEvent, this);
         },
         finalize: function () {
             auth.forEach(true, this.abortRequests, this);
@@ -2375,15 +2478,18 @@ define("slice/logic/main", [
         },
         handleTimerTick: function () {
             adapter.log("TIMER TICK");
-            adapter.sendMessage("timer:tick");
-            this.updateCounter(auth.getCurrentUser());
+            this.updateAllCounters();
         },
         handleSliceShowEvent: function (topic, data) {
             var statString = data && data.sender === "menu" ? "menu" : "button";
-            stat.logWidget("yamail.{version}." + statString);
+            stat.logWidget(statString);
         },
-        handleListUpdatedEvent: function () {
+        handleListUpdatedEvent: function (topic, summary) {
             this.sendUsers();
+            if (!summary.currentChanged) {
+                adapter.log("update counters in list updated handler");
+                this.updateAllCounters();
+            }
         },
         handleAuthCurrentEvent: function (topic, data) {
             var old = auth.getUser(data.oldCurrent);
@@ -2391,7 +2497,9 @@ define("slice/logic/main", [
             if (old) {
                 delete old.data.count;
                 this.abortRequests(old);
-                this.sendCounter(current);
+            }
+            if (current) {
+                this.sendAllCounters();
             }
             this.updateUser(current);
         },
@@ -2399,16 +2507,20 @@ define("slice/logic/main", [
             var user = auth.getUser(data.uid);
             if (data.message) {
                 adapter.log("New message from xiva");
-                this.updateCounter(user);
+                this.updateAllCounters();
                 this.sendMessages(user);
                 notify.createNotification(user, data.message);
             } else {
                 adapter.log("New notification from xiva, call updateCounterDelayed");
-                this._updateCounterDelayed(user);
+                this._updateCounterDelayed();
             }
         },
         handleRequestAllEvent: function () {
             var user = auth.getCurrentUser();
+            if (!user) {
+                this.handleError();
+                return;
+            }
             adapter.log("mail:ui:request: start update logic for user: " + user.login);
             this.updateUser(user);
             this.sendUsers();
@@ -2425,25 +2537,29 @@ define("slice/logic/main", [
                 adapter.log("Change message state - action: " + data.action + " id: " + data.message.id);
                 this.sendMessages(currentUser);
                 currentUser.data.count = Math.max(0, currentUser.data.count - 1);
-                this.sendCounter(currentUser);
+                this.sendAllCounters();
                 this.changeMessageState(currentUser, data.message, data.action, function () {
                     adapter.log("Change message state success - action: " + data.action + " id: " + data.message.id);
-                    this._updateCounterDelayed(currentUser);
+                    this._updateCounterDelayed();
                 }.bind(this));
             }
         },
         handleComposeEvent: function (topic, data) {
-            var currentUser = auth.getCurrentUser();
-            this.compose(currentUser, data);
+            var user = auth.getCurrentUser();
+            this.compose(user, data);
         },
         handleOpenEvent: function (topic, data) {
-            var currentUser = auth.getCurrentUser();
-            var params = "";
+            var user = auth.getCurrentUser();
+            var params = "?" + config.linkParam;
             if (data && data.message) {
-                params = "neo2/#message/" + data.message.id + "/";
+                params = "neo2/" + params + "#message/" + data.message.id + "/";
             }
-            params += "?" + config.linkParam;
-            adapter.navigate(currentUser.getUrl(config.URL_WEB) + params, "new tab");
+            adapter.navigate(auth.getUrl(user, config.URL_WEB) + params, "new tab");
+        },
+        handleOptionChangeEvent: function (topic, data) {
+            if (data.name === COUNTER_OPTION_NAME) {
+                this.sendAllCounters();
+            }
         },
         abortRequests: function (user) {
             if (!user) {
@@ -2465,7 +2581,7 @@ define("slice/logic/main", [
             async.parallel([
                 this.getUserCkey.bind(this, user),
                 this.updateUserEmail.bind(this, user),
-                this.updateCounter.bind(this, user)
+                this.updateAllCounters.bind(this)
             ], function (error) {
                 if (error) {
                     return;
@@ -2485,150 +2601,173 @@ define("slice/logic/main", [
             if (!user || user.requests.getUserCkey) {
                 return;
             }
-            user.requests.getUserCkey = this._mailApi.getAccountInfo(user, function (error, data) {
-                delete user.requests.getUserCkey;
-                if (error) {
-                    this.handleError(user, error);
-                    call(callback, true);
-                    return;
-                }
-                if (data.ckey) {
-                    adapter.log("Ckey for " + user.login + ": " + data.ckey);
-                    user.data.ckey = data.ckey;
-                }
-                call(callback, null);
-            }, this);
+            user.requests.getUserCkey = this._mailApi.getAccountInfo({
+                user: user,
+                callback: function (error, data) {
+                    delete user.requests.getUserCkey;
+                    if (error) {
+                        this.handleError(user, error);
+                        call(callback, true);
+                        return;
+                    }
+                    if (data.ckey) {
+                        adapter.log("Ckey for " + user.login + ": " + data.ckey);
+                        user.data.ckey = data.ckey;
+                    }
+                    call(callback, null);
+                },
+                ctx: this
+            });
         },
         updateUserEmail: function (user, callback) {
             if (!user || user.requests.updateUserEmail) {
                 return;
             }
-            user.requests.updateUserEmail = this._mailApi.getUserSettings(user, function (error, data) {
-                delete user.requests.updateUserEmail;
-                if (data && data.email) {
-                    adapter.log("Default email for " + user.login + " is - " + data.email);
-                    this.fixDisplayEmail(data.email);
-                    user.data.displayEmail = data.email;
-                    this.sendUsers();
-                }
-                call(callback, null);
-            }, this);
-        },
-        updateCounter: function (user, callback) {
-            if (!user || user.requests.updateCounter) {
-                return;
-            }
-            user.requests.updateCounter = this._mailApi.getCounter(user, function (error, count) {
-                delete user.requests.updateCounter;
-                if (error) {
-                    this.handleError(user, error);
-                    call(callback, true);
-                    return;
-                }
-                user.data.count = count;
-                adapter.log("Counter updated for user: " + user.login);
-                adapter.log("Counter value: " + count);
-                this.sendCounter(user);
-                call(callback, null);
-            }, this);
+            user.requests.updateUserEmail = this._mailApi.getUserSettings({
+                user: user,
+                callback: function (error, data) {
+                    delete user.requests.updateUserEmail;
+                    if (data && data.email) {
+                        adapter.log("Default email for " + user.login + " is - " + data.email);
+                        this.fixDisplayEmail(data.email);
+                        user.data.displayEmail = data.email;
+                        this.sendUsers();
+                    }
+                    call(callback, null);
+                },
+                ctx: this
+            });
         },
         updateAllCounters: function (callback) {
-            this._mailApi.getAllCounters(function (error, data) {
-                if (error) {
-                    call(callback, true);
-                    this.handleError(null, error);
-                    return;
-                }
-                data.forEach(function (chunk) {
-                    var counters = chunk.data.counters;
-                    var user = null;
-                    if (chunk.uid && counters) {
-                        user = auth.getUser(chunk.uid);
-                        if (user) {
-                            user.data.count = counters.unread;
-                        }
+            if (!auth.hasAuth()) {
+                call(callback, true);
+                return;
+            }
+            this._mailApi.getAllCounters({
+                callback: function (error, data) {
+                    if (error) {
+                        call(callback, true);
+                        this.handleError(null, error);
+                        return;
                     }
-                });
-                this.sendAllCounters();
-                this.sendUsers();
-                call(callback, null);
-            }, this);
+                    var receivedUids = [];
+                    data.forEach(function (chunk) {
+                        var counters = chunk.data.counters;
+                        var user = null;
+                        if (chunk.uid && counters) {
+                            receivedUids.push(chunk.uid);
+                            user = auth.getUser(chunk.uid);
+                            if (user) {
+                                user.data.count = counters.unread;
+                            }
+                        }
+                    });
+                    auth.forEach(true, function (user) {
+                        if (receivedUids.indexOf(user.id) === -1) {
+                            user.data.count = 0;
+                        }
+                    });
+                    this.sendAllCounters();
+                    this.sendUsers();
+                    call(callback, null);
+                },
+                ctx: this
+            });
         },
         updateFolders: function (user, callback) {
             if (!user || user.requests.updateFolders) {
                 return;
             }
-            user.requests.updateFolders = this._mailApi.getFolders(user, function (error, data) {
-                delete user.requests.updateFolders;
-                if (error) {
-                    call(callback, true);
-                    this.handleError(user, error);
-                    return;
-                }
-                user.data.folders = data;
-                adapter.sendMessage("mail:folders", data);
-                call(callback, null);
-            }, this);
+            user.requests.updateFolders = this._mailApi.getFolders({
+                user: user,
+                callback: function (error, data) {
+                    delete user.requests.updateFolders;
+                    if (error) {
+                        call(callback, true);
+                        this.handleError(user, error);
+                        return;
+                    }
+                    user.data.folders = data;
+                    adapter.sendMessage("mail:folders", data);
+                    call(callback, null);
+                },
+                ctx: this
+            });
         },
         updateMessages: function (user, callback) {
             if (!user || user.requests.updateMessages) {
                 return;
             }
-            user.requests.updateMessages = this._mailApi.getMessages(user, function (error, data) {
-                delete user.requests.updateMessages;
-                if (error) {
-                    this.handleError(user, error);
-                    call(callback, true);
-                    return;
-                }
-                user.setMessages(data.messages, true);
-                this.sendMessages(user);
-                adapter.log("updateMessages: new messages for user: " + user.login);
-                call(callback, null);
-            }, this);
+            user.requests.updateMessages = this._mailApi.getMessages({
+                user: user,
+                callback: function (error, data) {
+                    delete user.requests.updateMessages;
+                    if (error) {
+                        this.handleError(user, error);
+                        call(callback, true);
+                        return;
+                    }
+                    user.setMessages(data.messages, true);
+                    this.sendMessages(user);
+                    adapter.log("updateMessages: new messages for user: " + user.login);
+                    call(callback, null);
+                },
+                ctx: this
+            });
         },
         changeMessageState: function (user, message, action, callback) {
             if (!user) {
                 return;
             }
-            user.requests.changeMessageState = this._mailApi.changeMessageState(user, message, action, function (error) {
-                delete user.requests.changeMessageState;
-                if (error) {
-                    call(callback, true);
-                    this.handleMessageStateError(this, user, message);
-                    return;
-                }
-                user.deleteMessageById(message.id);
-                this.sendMessages(user);
-                call(callback, null);
-            }, this);
+            user.requests.changeMessageState = this._mailApi.changeMessageState({
+                user: user,
+                message: message,
+                action: action,
+                callback: function (error) {
+                    delete user.requests.changeMessageState;
+                    if (error) {
+                        call(callback, true);
+                        this.handleMessageStateError(this, user, message);
+                        return;
+                    }
+                    user.deleteMessageById(message.id);
+                    this.sendMessages(user);
+                    call(callback, null);
+                },
+                ctx: this
+            });
         },
         compose: function (user, data) {
             var messageId;
             if (data && data.message) {
                 messageId = data.message.id;
             }
-            adapter.navigate(user.getUrl(config.URL_WEB) + "neo2/#compose" + (messageId ? "/oper=reply&ids=" + messageId : ""), "new tab");
+            adapter.navigate(auth.getUrl(user, config.URL_WEB) + "neo2/?" + config.linkParam + "#compose" + (messageId ? "/oper=reply&ids=" + messageId : ""), "new tab");
         },
-        sendCounter: function (user, counterError) {
-            if (user) {
-                adapter.sendOuterMessage("mail:data", { count: user.data.count || 0 });
-                adapter.sendMessage("mail:counter", {
-                    count: user.data.count || 0,
-                    counterError: counterError
-                });
+        sendAllCounters: function () {
+            var allUsersCounter = this._getAllUsersCounter();
+            var currentCount = this._getCurrentUserCounter();
+            var isSendAllCounter = adapter.getOption(COUNTER_OPTION_NAME);
+            adapter.sendOuterMessage("mail:data", { count: isSendAllCounter ? allUsersCounter : currentCount });
+            adapter.sendMessage("mail:counter", {
+                currentUserCount: currentCount,
+                count: allUsersCounter || 0
+            });
+        },
+        _getCurrentUserCounter: function () {
+            var currentUser = auth.getCurrentUser();
+            if (currentUser) {
+                return currentUser.data.count || 0;
+            } else {
+                return 0;
             }
         },
-        sendAllCounters: function (counterError) {
+        _getAllUsersCounter: function () {
             var counter = 0;
             auth.forEach(true, function (user) {
-                counter += user.data.count;
+                counter += user.data.count || 0;
             }, this);
-            adapter.sendOuterMessage("mail:data", { count: counter || 0 });
-            adapter.sendMessage("mail:counter", {
-                count: counter || 0,
-                counterError: counterError
-            });
+            return counter;
         },
         sendUsers: function () {
             var users = [];
@@ -2651,10 +2790,11 @@ define("slice/logic/main", [
         },
         handleError: function (user, error) {
             error = error || {};
-            if (error.status === 0 && user) {
+            if (error.status === NO_AUTH_STATUS && user) {
                 user.data.count = 0;
+                this.sendAllCounters();
+                this.sendUsers();
             }
-            this.sendCounter(user, true);
             adapter.sendMessage("mail:error", {
                 status: error.status,
                 text: error.text
@@ -2663,7 +2803,7 @@ define("slice/logic/main", [
         handleMessageStateError: function (user, message) {
             user.setMessages([message]);
             this.sendMessages(user);
-            this.updateCounter(user);
+            this.updateAllCounters();
         },
         fixDisplayEmail: function (email) {
             auth.forEach(false, function (user) {

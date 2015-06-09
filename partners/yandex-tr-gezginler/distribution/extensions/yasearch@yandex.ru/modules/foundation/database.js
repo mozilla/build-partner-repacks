@@ -116,27 +116,7 @@ Database.prototype = {
         }
     },
     execQuerySpinningly: function Database_execQuerySpinningly(query, parameters) {
-        let working = true;
-        let result;
-        let error;
-        try {
-            this.execQueryAsync(query, parameters, function Database_execQuerySpinningly_onCompletion(res, err) {
-                working = false;
-                result = res;
-                error = err;
-            });
-        } catch (ex) {
-            working = false;
-            error = ex;
-        }
-        let thread = Services.tm.currentThread;
-        while (working) {
-            thread.processNextEvent(true);
-        }
-        if (error) {
-            throw error;
-        }
-        return result;
+        throw new Error("Deprecated since platform 28 (8.10.1)");
     },
     get lastInsertRowID() {
         return this._connection && this._connection.lastInsertRowID || 0;

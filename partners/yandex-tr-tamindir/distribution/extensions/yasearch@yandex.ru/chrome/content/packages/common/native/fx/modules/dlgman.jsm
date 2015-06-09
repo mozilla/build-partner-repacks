@@ -14,31 +14,10 @@ const dlgman = {
             return;
         }
         this._api = api;
-        Cu.import(this._api.Package.resolvePath("/native/fx/modules/common-auth/utils.jsm"));
+        Cu.import(this._api.Package.resolvePath("/native/fx/modules/utils.jsm"));
         this._welcome = this._getModule("welcome", "/native/fx/modules/welcome.jsm");
-        this._feeds = this._getModule("feeds", "/native/fx/modules/feeds.jsm");
         utils.NotificationSource.objectMixIn(this);
         this._initialized = true;
-    },
-    openFeedsDialog: function yDlgMan_openFeedsDialog() {
-        let dialog = this._openWindow({
-            url: this._api.Package.resolvePath("native/fx/dialogs/feeds/add-feeds-dialog.xul"),
-            name: "FeedsDialog",
-            parent: utils.mostRecentBrowserWindow,
-            features: "chrome,dialog,centerscreen",
-            arguments: {
-                services: this._feeds,
-                api: this._api
-            }
-        }, true);
-        this._subscribeToClose(dialog);
-        return dialog;
-    },
-    closeFeedsDialog: function yDlgMan_closeFeedsDialog() {
-        let dialog = Services.ww.getWindowByName("FeedsDialog", utils.mostRecentBrowserWindow);
-        if (dialog && !dialog.closed) {
-            dialog.close();
-        }
     },
     EVENTS: { ON_DIALOG_CLOSE: "dlgman-dialog-close" },
     _subscribeToClose: function yDlgMan__subscribeToClose(dialog, callback) {

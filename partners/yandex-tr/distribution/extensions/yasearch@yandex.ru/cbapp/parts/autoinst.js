@@ -208,9 +208,9 @@ const autoinstaller = {
         queryOptions.queryType = queryOptions.QUERY_TYPE_HISTORY;
         queryOptions.resultType = queryOptions.RESULTS_AS_URI;
         queryOptions.sortingMode = queryOptions.SORT_BY_DATE_DESCENDING;
+        let defaultBeginTime = -HIST_DAYS_CHECKED * 24 * 60 * 60 * 1000000;
         let histQuery = historyService.getNewQuery();
         histQuery.beginTimeReference = histQuery.TIME_RELATIVE_NOW;
-        histQuery.beginTime = -HIST_DAYS_CHECKED * 24 * 60 * 60 * 1000000;
         histQuery.endTimeReference = histQuery.TIME_RELATIVE_NOW;
         histQuery.endTime = 0;
         histQuery.domainIsHost = false;
@@ -233,6 +233,11 @@ const autoinstaller = {
                 continue;
             }
             histQuery.domain = histDomain;
+            if ("maxAge" in historyCondition) {
+                histQuery.beginTime = -historyCondition.maxAge * 1000;
+            } else {
+                histQuery.beginTime = defaultBeginTime;
+            }
             let queryResult = historyService.executeQuery(histQuery, queryOptions);
             let resultRoot = queryResult.root;
             resultRoot.containerOpen = true;

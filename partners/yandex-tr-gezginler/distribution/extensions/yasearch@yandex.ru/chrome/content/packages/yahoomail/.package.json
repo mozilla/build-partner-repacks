@@ -1,6 +1,6 @@
 {
   "id": "http://bar-widgets.yandex.ru/packages/approved/126/manifest.xml",
   "uri": "http://bar-widgets.yandex.ru/packages/approved/126/manifest.xml",
-  "version": "3.1.1",
-  "platformMin": 7
+  "version": "3.2.1",
+  "platformMin": 21
 }

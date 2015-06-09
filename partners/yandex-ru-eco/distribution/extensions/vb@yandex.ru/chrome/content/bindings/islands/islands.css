@@ -3,3 +3,4 @@ button{-moz-binding:url(controls/controls.xml#button);margin:2px 0 2px 10px}
 button:first-child{margin-left:0}
 button:last-child{margin-right:0}
 checkbox{-moz-binding:url(controls/controls.xml#checkbox);margin:3px 0}
+[hidden=true]{display:none}

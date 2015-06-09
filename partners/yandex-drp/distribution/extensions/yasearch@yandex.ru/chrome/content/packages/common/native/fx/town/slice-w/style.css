@@ -4,7 +4,8 @@ input::-ms-clear{display:none}
 .b-table{display:table;height:100%;width:100%;border:0}
 .b-table .b-table-cell{display:table-cell;vertical-align:middle}
 .b-table .b-table-cell .b-table-center-block{margin:0 auto;text-align:center}
-.b-spinner[data-state=loading],[data-state=loading] .b-spinner-child{background-image:url(common-ui/b-spinner/images/45.gif);background-position:50% 50%;background-repeat:no-repeat}
+[data-command]{cursor:pointer}
+.b-spinner[data-state=loading],[data-state=loading] .b-spinner-child{background-image:url(common-ui/b-spinner/images/28.gif);background-position:50% 50%;background-repeat:no-repeat}
 .b-spinner-small[data-state=loading],[data-state=loading] .b-spinner-child-small{background-image:url(common-ui/b-spinner/images/20.gif);background-position:50% 50%;background-repeat:no-repeat}
 .b-spinner-small-dark[data-state=loading],[data-state=loading] .b-spinner-child-small-dark{background-image:url(common-ui/b-spinner/images/20-dark.gif);background-position:50% 50%;background-repeat:no-repeat}
 .b-dayparts{width:324px;overflow:hidden;clear:both;padding-top:10px}

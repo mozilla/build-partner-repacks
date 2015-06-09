@@ -131,9 +131,6 @@
         rootBranchInternal.addObserver(val, this.preferences, false);
         prefs.set(this.name, val);
     }
-    if (!this.batching) {
-        this.preferences.service.savePrefFile(null);
-    }
     return val;]]></setter>
             </property>
 

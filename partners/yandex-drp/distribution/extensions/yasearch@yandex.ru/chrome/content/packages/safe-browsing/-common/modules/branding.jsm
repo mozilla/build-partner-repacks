@@ -1,9 +1,5 @@
 var EXPORTED_SYMBOLS = ["module"];
 function module(app, common) {
-    var BRANDING_PROVIDER_ID = "ru.yandex.custombar.branding";
-    var BRANDING_SERVICE_NAME = "package";
-    var BRANDING_TOPIC_UPDATED = "package updated";
-    var BRANDING_DEFAULT_ID = "";
     var srcConfig = {
         domains: {
             ya: "yandex.ru",
@@ -18,60 +14,54 @@ function module(app, common) {
             ua: { domains: { ya: "yandex.ua" } }
         }
     };
-    var config = null;
-    function brandingConfig() {
-        config = {
-            notLocalized: brandingModule.brandingObject(srcConfig, false),
-            full: brandingModule.brandingObject(srcConfig)
-        };
-    }
     var log = function (str, method) {
         common.log("[-common.branding]: " + str, method);
     };
     var logr = function (str, method) {
         common.logr("[-common.branding]: " + str, method);
     };
-    var barAPI = common.api;
-    var brandingService = null;
-    var brID = "";
-    var onbridchange = null;
-    var inited = false;
-    function getBrandId() {
-        var retVal = BRANDING_DEFAULT_ID;
-        if (!brandingService) {
-            return retVal;
+    var getBridOldResult = null;
+    function getBridOld() {
+        if (getBridOldResult) {
+            return getBridOldResult;
         }
-        try {
-            retVal = String(brandingService.getBrandID());
-        } catch (e) {
-            Components.utils.reportError(e);
-        }
-        return retVal;
-    }
-    var brandingServiceListener = {
-        observeServiceEvent: function (providerID, serviceName, topic, data) {
-            if (topic == BRANDING_TOPIC_UPDATED) {
-                var oldBrid = brID;
-                brID = getBrandId();
-                if (oldBrid != brID) {
-                    brandingConfig();
-                    if (onbridchange) {
-                        onbridchange(brID, oldBrid);
-                    }
-                }
+        var BRANDING_PROVIDER_ID = "ru.yandex.custombar.branding";
+        var BRANDING_SERVICE_NAME = "package";
+        var brandingServiceListener = {
+            observeServiceEvent: function (providerID, serviceName, topic, data) {
             }
+        };
+        try {
+            var brandingService = common.api.Services.obtainService(BRANDING_PROVIDER_ID, BRANDING_SERVICE_NAME, brandingServiceListener);
+            if (brandingService) {
+                try {
+                    getBridOldResult = String(brandingService.getBrandID());
+                } catch (exc) {
+                }
+                common.api.Services.releaseService(BRANDING_PROVIDER_ID, BRANDING_SERVICE_NAME, brandingServiceListener);
+            }
+        } catch (exc) {
         }
-    };
+        log(getBridOldResult);
+        return getBridOldResult;
+    }
+    var config = null;
     var brandingModule = {
         getBrandId: function () {
-            return brID;
+            return common.api.Environment.branding && common.api.Environment.branding.brandID || getBridOld();
         },
         getDomain: function (withKUBR) {
+            if (!config) {
+                config = {
+                    notLocalized: brandingModule.brandingObject(srcConfig, false),
+                    full: brandingModule.brandingObject(srcConfig)
+                };
+            }
             return config[withKUBR ? "full" : "notLocalized"].domains.ya;
         },
         brandingObject: function (obj, lang) {
             if (lang !== false) {
-                lang = lang || barAPI.Environment.addon.locale.language;
+                lang = lang || common.api.Environment.addon.locale.language;
             }
             function brandingLocalize(obj, brid, loc, ret) {
                 if (!obj || !brid && !loc && !ret || typeof obj != "object") {
@@ -112,47 +102,16 @@ function module(app, common) {
                 }
                 return ret;
             }
-            return brandingLocalize(obj, brID, lang);
+            return brandingLocalize(obj, brandingModule.getBrandId(), lang);
         },
-        init: function (callback) {
-            if (inited) {
-                return;
-            }
-            inited = true;
-            onbridchange = callback;
-            this.start();
-            brandingConfig();
+        init: function () {
             return this;
         },
         start: function () {
-            if (brandingService) {
-                return;
-            }
-            try {
-                brandingService = barAPI.Services.obtainService(BRANDING_PROVIDER_ID, BRANDING_SERVICE_NAME, brandingServiceListener);
-            } catch (exc) {
-                brandingService = null;
-                logr("[common.branding]: service error", "error");
-                return;
-            }
-            brID = getBrandId();
         },
         stop: function () {
-            if (!brandingService) {
-                return;
-            }
-            barAPI.Services.releaseService(BRANDING_PROVIDER_ID, BRANDING_SERVICE_NAME, brandingServiceListener);
-            brandingService = null;
         },
         finalize: function () {
-            if (!inited) {
-                return;
-            }
-            log("finalize");
-            inited = false;
-            this.stop();
-            brID = "";
-            onbridchange = null;
         }
     };
     return brandingModule;

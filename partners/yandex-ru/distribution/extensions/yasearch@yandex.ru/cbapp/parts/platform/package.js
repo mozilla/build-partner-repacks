@@ -30,8 +30,21 @@ BarPlatform.FilePackage = Base.extend({
         return this._rootDir.clone();
     },
     getXMLDocument: function FilePkg_getXMLDocument(path, usePrivilegedParser) {
+        let cacheFile = this.cache.getFile(path);
+        if (cacheFile.exists()) {
+            try {
+                return fileutils.xmlDocFromFile(cacheFile);
+            } catch (e) {
+                this._logger.error("Can not get XML from cache");
+                this._logger.debug(e);
+            }
+        }
         let channel = this.newChannelFromPath(path);
-        return fileutils.xmlDocFromStream(channel.open(), channel.originalURI, channel.originalURI, usePrivilegedParser);
+        let xmlDocument = fileutils.xmlDocFromStream(channel.open(), channel.originalURI, channel.originalURI, usePrivilegedParser);
+        channel = this.newChannelFromPath(path);
+        let xmlDocumentClone = fileutils.xmlDocFromStream(channel.open(), channel.originalURI, channel.originalURI, usePrivilegedParser);
+        fileutils.writeTextFile(cacheFile, xmlutils.xmlSerializer.serializeToString(xmlDocumentClone).replace(/\<\?xml[^>]+\>[\r\n]*/, "").replace(/<!ENTITY((.|\n|\r)*?)["']>/g, "").replace(/<!DOCTYPE((.|\n|\r)*?)["'\]]>/g, ""));
+        return xmlDocument;
     },
     resolvePath: function FilePkg_resolvePath(path, base) {
         if (typeof path != "string") {
@@ -67,7 +80,7 @@ BarPlatform.FilePackage = Base.extend({
         channel.setURI(aURI);
         channel.originalURI = aURI;
         channel.contentStream = filesStream;
-        channel.owner = sysutils.scriptSecurityManager.getSystemPrincipal();
+        channel.owner = Services.scriptSecurityManager.getSystemPrincipal();
         return channel;
     },
     findFile: function FilePkg_findFile(path) {
@@ -128,6 +141,27 @@ BarPlatform.FilePackage = Base.extend({
             }
         }
         return this._files[path] = file;
+    },
+    get cache() {
+        let filePackage = this;
+        const getCacheDir = function () {
+            let dir = filePackage.rootDirectory;
+            dir.append(".cache");
+            return dir;
+        };
+        return {
+            purge: function () {
+                fileutils.removeFileSafe(getCacheDir());
+            },
+            getFile: function (filePath) {
+                let file = getCacheDir();
+                file.append(barApp.branding.brandID);
+                file.append(barApp.locale.language);
+                fileutils.forceDirectories(file);
+                file.append(misc.crypto.createHash("md5").update(filePath).digest("hex"));
+                return file;
+            }
+        };
     },
     _consts: {
         ERR_FILE_NOT_FOUND: "File not found",

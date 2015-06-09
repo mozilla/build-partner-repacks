@@ -9,26 +9,35 @@
     <html:script type="application/x-javascript;version=1.8"><![CDATA[
         let JSProtoObject = {
             init: function () {
-                let ns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+                const XUL_NS = 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul';
 
-                let translateOptionList = document.getElementById("{{UNIC_STR}}-translate-option"),
-                    menupopup = translateOptionList.menupopup;
+                let translateOptionList = document.getElementById('{{UNIC_STR}}-translate-option');
+                let menupopup = translateOptionList.menupopup;
 
-                let optPrefValue = this._pluginCore.translateOnHoverOption;
+                let isMac = this._pluginCore.API.Environment.os.name === 'mac';
 
-                let isMac = this._pluginCore.API.Environment.os.name === "mac";
-                [{"key": this._pluginCore.TRANSLATE_ON_CTRLKEY, "uiname": isMac ? "Cmd" : "Ctrl"}, {"key": this._pluginCore.TRANSLATE_ON_SHIFTKEY, "uiname": "Shift"}].forEach(function (el) {
-                    let selectNode = document.createElementNS(ns, "menuitem");
-                    selectNode.setAttribute("label", el.uiname);
-                    selectNode.setAttribute("value", el.key);
+                [
+                    {
+                        key: this._pluginCore.TRANSLATE_ON_CTRLKEY,
+                        uiname: isMac ? 'Cmd' : 'Ctrl'
+                    },
+                    {
+                        key: this._pluginCore.TRANSLATE_ON_SHIFTKEY,
+                        uiname: 'Shift'
+                    }
+                ].forEach(function (el) {
+                    let selectNode = document.createElementNS(XUL_NS, 'menuitem');
+                    selectNode.setAttribute('label', el.uiname);
+                    selectNode.setAttribute('value', el.key);
                     menupopup.appendChild(selectNode);
                 });
 
-                translateOptionList.selectedItem = menupopup.querySelector("menuitem[value='"+ optPrefValue +"']");
+                let optPrefValue = this._pluginCore.translateOnHoverOption;
+                translateOptionList.selectedItem = menupopup.querySelector('menuitem[value="' + optPrefValue + '"]');
             },
 
             onApply: function () {
-                let menulist = document.getElementById("{{UNIC_STR}}-translate-option");
+                let menulist = document.getElementById('{{UNIC_STR}}-translate-option');
                 if (menulist) {
                     this._pluginCore.Prefs.setValue(this._pluginCore.TRANSLATE_ON_HOVER_OPTION_PREF, menulist.value);
                 }

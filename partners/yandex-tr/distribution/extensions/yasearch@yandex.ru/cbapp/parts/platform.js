@@ -2,7 +2,6 @@
 const EXPORTED_SYMBOLS = ["BarPlatform"];
 const PLATFORM_SCRIPTS = [
     "preset.js",
-    "manifest.js",
     "preset-with-manifest.js",
     "package.js",
     "unit.js",
@@ -110,7 +109,6 @@ const BarPlatform = {
         let barCore = this._application.core;
         Services.obs.notifyObservers(null, barCore.eventTopics.EVT_BEFORE_GLOBAL_RESET, null);
         try {
-            Preferences.resetBranch(barCore.xbWidgetsPrefsPath);
             Preferences.resetBranch(barCore.nativesPrefsPath);
             fileutils.removeFileSafe(this._application.directories.nativeStorageDir);
         } finally {
@@ -169,13 +167,19 @@ const BarPlatform = {
             delete aNavigateData.unsafeURL;
         }
         if (aNavigateData.target === "new popup") {
-            this.openPopupBrowser(aNavigateData);
-        } else {
-            let win = misc.navigateBrowser(aNavigateData);
-            if (win) {
-                win.focus();
-            }
+            return {
+                tab: null,
+                window: this.openPopupBrowser(aNavigateData)
+            };
         }
+        let {window, tab} = misc.navigateBrowser(aNavigateData);
+        if (window) {
+            window.focus();
+        }
+        return {
+            tab: tab,
+            window: window
+        };
     },
     openPopupBrowser: function BarPlatform_openPopupBrowser(aNavigateData) {
         const popupChromeURL = "chrome://" + barApp.name + "/content/dialogs/popup_browser/popup_browser.xul";
@@ -190,12 +194,14 @@ const BarPlatform = {
             referrer: aNavigateData.referrer || null
         };
         args.wrappedJSObject = args;
+        let window;
         let sourceWindow = aNavigateData.sourceWindow || misc.getTopBrowserWindow();
         if (sourceWindow) {
-            sourceWindow.openDialog(popupChromeURL, null, winFeatures, args);
+            window = sourceWindow.openDialog(popupChromeURL, null, winFeatures, args);
         } else {
-            Services.ww.openWindow(null, popupChromeURL, null, winFeatures, args);
+            window = Services.ww.openWindow(null, popupChromeURL, null, winFeatures, args);
         }
+        return window;
     },
     _parsers: {},
     _application: null,
@@ -207,8 +213,9 @@ const BarPlatform = {
         const xbDirPath = this._application.partsURL + "platform/";
         const SCRIPT_LOADER = Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader);
         PLATFORM_SCRIPTS.forEach(function BarPlatform_loadModule(scriptFileName) {
-            this._logger.debug("  Including script " + scriptFileName);
+            let startTime = Date.now();
             SCRIPT_LOADER.loadSubScript(xbDirPath + scriptFileName);
+            this._logger.debug("  Including script " + scriptFileName + " (" + (Date.now() - startTime) + " ms)");
         }, this);
     },
     _getLogger: function BarPlatform__getLogger(name) {

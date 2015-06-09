@@ -1,15 +1,15 @@
-<!ENTITY suggestions.url "http://suggest.yandex.ua/suggest-ff.cgi?part={searchTerms}">
+<!ENTITY suggestions.url "https://suggest.yandex.ua/suggest-ff.cgi?uil=uk&amp;part={searchTerms}">
 
 <!ENTITY yandex.label "Яндекс">
 <!ENTITY yandex.context.label "Знайти у Яндексі: &#34;{searchTermsCropped}&#34;">
 <!ENTITY yandex.url "http://www.yandex.ua">
 <!ENTITY yandex.search.tooltip "Пошукати в Яндексі">
-<!ENTITY yandex.search.url "http://yandex.ua/yandsearch?text={searchTerms}">
-<!ENTITY yandex.qs.url "http://yandex.ua/yandsearch?clid={clid6}&amp;text={searchTerms}">
+<!ENTITY yandex.search.url "http://yandex.ua/search/?text={searchTerms}">
+<!ENTITY yandex.qs.url "http://yandex.ua/search/?clid={clid6}&amp;text={searchTerms}">
 <!ENTITY yandex.qs.suggestions "&suggestions.url;">
 
 <!ENTITY catalog.label "Каталог">
-<!ENTITY catalog.search.url "http://yaca.yandex.ua/yca?text={searchTerms}&amp;yaca=1">
+<!ENTITY catalog.search.url "https://yaca.yandex.ua/yca?text={searchTerms}&amp;yaca=1">
 
 <!ENTITY market.label "Маркет">
 <!ENTITY market.search.url "http://market.yandex.ua/search.xml?text={searchTerms}">
@@ -21,26 +21,26 @@
 <!ENTITY images.search.url "http://images.yandex.ua/yandsearch?stype=image&amp;text={searchTerms}">
 
 <!ENTITY blogs.label "Блоги">
-<!ENTITY blogs.search.url "http://blogs.yandex.ua/search.xml?how=tm&amp;rd=2&amp;text={searchTerms}">
+<!ENTITY blogs.search.url "https://blogs.yandex.ua/search.xml?how=tm&amp;rd=2&amp;text={searchTerms}">
 
 <!ENTITY dicts.label "Словники">
-<!ENTITY dicts.search.url "http://slovari.yandex.ua/search.xml?text={searchTerms}">
+<!ENTITY dicts.search.url "https://slovari.yandex.ua/search.xml?text={searchTerms}">
 
 <!ENTITY lingvo.label "Lingvo">
 <!ENTITY lingvo.context.find.label "Знайти переклад &#34;{searchTermsCropped}&#34;">
-<!ENTITY lingvo.search.find.url "http://slovari.yandex.ru/{searchTerms}/перевод">
+<!ENTITY lingvo.search.find.url "https://slovari.yandex.ru/{searchTerms}/перевод">
 
 <!ENTITY maps.label "Карти">
-<!ENTITY maps.search.url "http://maps.yandex.ua/?text={searchTerms}">
+<!ENTITY maps.search.url "https://maps.yandex.ua/?text={searchTerms}">
 
 <!ENTITY job.label "Робота">
-<!ENTITY job.search.url "http://rabota.yandex.ua/search.xml?text={searchTerms}">
+<!ENTITY job.search.url "https://rabota.yandex.ua/search.xml?text={searchTerms}">
 
 <!ENTITY photos.label "Фотки">
-<!ENTITY photos.search.url "http://fotki.yandex.ua/search.xml?text={searchTerms}">
+<!ENTITY photos.search.url "https://fotki.yandex.ua/search.xml?text={searchTerms}">
 
 <!ENTITY mycircle.label "Мой Круг">
-<!ENTITY mycircle.search.url "http://moikrug.ru/search/?ok=1&amp;charset=utf-8&amp;keywords={searchTerms}">
+<!ENTITY mycircle.search.url "https://moikrug.ru/search/?ok=1&amp;charset=utf-8&amp;keywords={searchTerms}">
 
 <!ENTITY find.label "Знахідки">
 <!ENTITY find.search.url "http://nahodki.yandex.ua/results.xml?search={searchTerms}">
@@ -49,13 +49,13 @@
 <!ENTITY news.search.url "http://news.yandex.ua/yandsearch?rpt=nnews2&amp;grhow=clutop&amp;text={searchTerms}">
 
 <!ENTITY tv.label "Телепрограма">
-<!ENTITY tv.search.url "http://tv.yandex.ua/search/?text={searchTerms}">
+<!ENTITY tv.search.url "https://tv.yandex.ua/search/?text={searchTerms}">
 
 <!ENTITY video.label "Відео">
 <!ENTITY video.search.url "http://video.yandex.ua/search.xml?text={searchTerms}">
 
 <!ENTITY afisha.label "Афіша">
-<!ENTITY afisha.search.url "http://afisha.yandex.ua/search/?text={searchTerms}">
+<!ENTITY afisha.search.url "https://afisha.yandex.ua/search/?text={searchTerms}">
 
 <!ENTITY cards.label "Листівки">
 <!ENTITY cards.url "http://cards.yandex.ua">

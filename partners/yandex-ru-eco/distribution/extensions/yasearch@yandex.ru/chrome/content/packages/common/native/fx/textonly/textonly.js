@@ -27,7 +27,7 @@ const core = {
         return new URLBarItem(itemElement, itemClass, this);
     },
     get utils() {
-        let {utils} = Cu.import(this.api.Package.resolvePath("/native/fx/modules/common-auth/utils.jsm"));
+        let {utils} = Cu.import(this.api.Package.resolvePath("/native/fx/modules/utils.jsm"));
         delete this.utils;
         return this.utils = utils;
     }

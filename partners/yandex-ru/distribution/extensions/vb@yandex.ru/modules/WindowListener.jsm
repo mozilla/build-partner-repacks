@@ -9,7 +9,7 @@ const {
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 const ABOUT_BLANK_URI = Services.io.newURI("about:blank", null, null);
-const {STATE_IS_NETWORK, STATE_START, STATE_STOP} = Ci.nsIWebProgressListener;
+const {STATE_IS_NETWORK, STATE_START, STATE_STOP, LOCATION_CHANGE_SAME_DOCUMENT} = Ci.nsIWebProgressListener;
 function warnOnceAboutWebProgress() {
     Cu.reportError("'webProgress' getter is deprecated");
     warnOnceAboutWebProgress = function _warnOnceAboutWebProgress() {
@@ -41,6 +41,149 @@ BrowserProgressListener.prototype = {
         }
         return false;
     }
+};
+const FRAME_SCRIPT = function () {
+    const {
+        classes: Cc,
+        interfaces: Ci,
+        results: Cr,
+        utils: Cu
+    } = Components;
+    Cu.import("resource://gre/modules/Services.jsm");
+    [
+        "load",
+        "pageshow",
+        "pagehide",
+        "DOMContentLoaded",
+        "DOMTitleChanged"
+    ].forEach(function (eventType) {
+        addEventListener(eventType, function contentEventListener(event) {
+            if (!event.isTrusted || content.document !== event.originalTarget) {
+                return;
+            }
+            let tab = docShell.chromeEventHandler;
+            if (!tab) {
+                return;
+            }
+            let type = typeof tab.getAttribute === "function" ? tab.getAttribute("type") : null;
+            if (!(type === null || type === "content-primary" || type === "content-targetable")) {
+                return;
+            }
+            let messageData = {
+                url: String(content.document.location),
+                originalURL: undefined,
+                responseStatus: undefined,
+                docShellProps: {
+                    referringURI: undefined,
+                    currentDocumentChannel: {
+                        originalURL: undefined,
+                        responseStatus: undefined
+                    },
+                    loadType: docShell.loadType
+                }
+            };
+            if (eventType !== "DOMTitleChanged" && eventType !== "pagehide") {
+                if (docShell.referringURI) {
+                    messageData.docShellProps.referringURI = docShell.referringURI.spec;
+                }
+                try {
+                    let originalURI = docShell.currentDocumentChannel.originalURI;
+                    if (originalURI && originalURI.spec) {
+                        messageData.docShellProps.currentDocumentChannel.originalURL = originalURI.spec;
+                    }
+                } catch (e) {
+                }
+                try {
+                    messageData.docShellProps.currentDocumentChannel.responseStatus = docShell.currentDocumentChannel.QueryInterface(Ci.nsIHttpChannel).responseStatus;
+                } catch (e) {
+                }
+            }
+            sendSyncMessage("{{PREFIX}}" + eventType, messageData);
+        }, true);
+    });
+    let WebProgressListener = {
+        init: function () {
+            let flags = Ci.nsIWebProgress.NOTIFY_LOCATION | Ci.nsIWebProgress.NOTIFY_STATE_WINDOW | Ci.nsIWebProgress.NOTIFY_STATE_NETWORK;
+            this._filter = Cc["@mozilla.org/appshell/component/browser-status-filter;1"].createInstance(Ci.nsIWebProgress);
+            this._filter.addProgressListener(this, flags);
+            let webProgress = docShell.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIWebProgress);
+            webProgress.addProgressListener(this._filter, flags);
+        },
+        _isTopWindowWebProgress: function (webProgress) {
+            if ("isTopLevel" in webProgress) {
+                return webProgress.isTopLevel;
+            }
+            try {
+                return webProgress.DOMWindow === webProgress.DOMWindow.top;
+            } catch (ex) {
+            }
+            return false;
+        },
+        _requestSpec: function (request, propertyName) {
+            if (!request || !(request instanceof Ci.nsIChannel)) {
+                return null;
+            }
+            return request.QueryInterface(Ci.nsIChannel)[propertyName].spec;
+        },
+        _setupJSON: function (webProgress, request) {
+            if (webProgress) {
+                webProgress = {
+                    isTopLevel: webProgress.isTopLevel,
+                    isLoadingDocument: webProgress.isLoadingDocument,
+                    loadType: webProgress.loadType
+                };
+            }
+            return {
+                webProgress: webProgress || null,
+                requestURI: this._requestSpec(request, "URI"),
+                originalRequestURI: this._requestSpec(request, "originalURI")
+            };
+        },
+        _setupObjects: function (webProgress) {
+            let domWindow = null;
+            try {
+                domWindow = webProgress.DOMWindow;
+            } catch (e) {
+            }
+            return {
+                contentWindow: content,
+                DOMWindow: domWindow
+            };
+        },
+        onStateChange: function onStateChange(webProgress, request, stateFlags, status) {
+            if (!this._isTopWindowWebProgress(webProgress)) {
+                return;
+            }
+            let json = this._setupJSON(webProgress, request);
+            let objects = this._setupObjects(webProgress);
+            json.stateFlags = stateFlags;
+            json.status = status;
+            try {
+                sendAsyncMessage("{{PREFIX}}Frame:StateChange", json, objects);
+            } catch (e) {
+            }
+        },
+        onLocationChange: function onLocationChange(webProgress, request, locationURI, flags) {
+            let json = this._setupJSON(webProgress, request);
+            let objects = this._setupObjects(webProgress);
+            json.location = locationURI ? locationURI.spec : "";
+            json.flags = flags;
+            sendAsyncMessage("{{PREFIX}}Frame:LocationChange", json, objects);
+        },
+        onProgressChange: function () {
+        },
+        onStatusChange: function () {
+        },
+        onSecurityChange: function () {
+        },
+        QueryInterface: function QueryInterface(aIID) {
+            if (aIID.equals(Ci.nsIWebProgressListener) || aIID.equals(Ci.nsISupportsWeakReference) || aIID.equals(Ci.nsISupports)) {
+                return this;
+            }
+            throw Cr.NS_ERROR_NO_INTERFACE;
+        }
+    };
+    WebProgressListener.init();
 };
 const frameMessageListener = {
     _inited: false,
@@ -102,7 +245,7 @@ const frameMessageListener = {
         }
         switch (name) {
         case "Frame:LocationChange":
-            windowListener.onPageLocationChange(data.location, tab, data.requestURI);
+            windowListener.onPageLocationChange(data.location, tab, data.requestURI, data.flags & LOCATION_CHANGE_SAME_DOCUMENT);
             break;
         case "Frame:StateChange":
             if (data.stateFlags & STATE_IS_NETWORK) {
@@ -153,9 +296,8 @@ const frameMessageListener = {
             throw new Error("Unknown message name ('" + name + "')");
         }
     },
-    _FRAME_SCRIPT: "function messageListener__FRAME_SCRIPT() {" + "        const {" + "            classes: Cc," + "            interfaces: Ci," + "            results: Cr," + "            utils: Cu" + "        } = Components;" + "        Cu.import('resource://gre/modules/Services.jsm');" + "        [" + "            'load'," + "            'pageshow'," + "            'pagehide'," + "            'DOMContentLoaded'," + "            'DOMTitleChanged'" + "        ].forEach(function (eventType) {" + "            addEventListener(eventType, function contentEventListener(event) {" + "                if (!event.isTrusted || content.document !== event.originalTarget) {" + "                    return;" + "                }" + "                let tab = docShell.chromeEventHandler;" + "                if (!tab) {" + "                    return;" + "                }" + "                let type = typeof tab.getAttribute === 'function' ? tab.getAttribute('type') : null;" + "                if (!(type === null || type === 'content-primary' || type === 'content-targetable')) {" + "                    return;" + "                }" + "                let messageData = {" + "                    url: String(content.document.location)," + "                    originalURL: undefined," + "                    responseStatus: undefined," + "                    docShellProps: {" + "                        referringURI: undefined," + "                        currentDocumentChannel: {" + "                            originalURL: undefined," + "                            responseStatus: undefined" + "                        }," + "                        loadType: docShell.loadType" + "                    }" + "                };" + "                if (eventType !== 'DOMTitleChanged' && eventType !== 'pagehide') {" + "                    if (docShell.referringURI) {" + "                        messageData.docShellProps.referringURI = docShell.referringURI.spec;" + "                    }" + "                    try {" + "                        let originalURI = docShell.currentDocumentChannel.originalURI;" + "                        if (originalURI && originalURI.spec) {" + "                            messageData.docShellProps.currentDocumentChannel.originalURL = originalURI.spec;" + "                        }" + "                    } catch (e) {}" + "                    try {" + "                        messageData.docShellProps.currentDocumentChannel.responseStatus =" + "                            docShell.currentDocumentChannel.QueryInterface(Ci.nsIHttpChannel).responseStatus;" + "                    } catch (e) {}" + "                }" + "                sendSyncMessage('{{PREFIX}}' + eventType, messageData);" + "            }, true);" + "        });" + "        let WebProgressListener = {" + "            init: function() {" + "                let flags = Ci.nsIWebProgress.NOTIFY_LOCATION |" + "                    Ci.nsIWebProgress.NOTIFY_STATE_WINDOW |" + "                    Ci.nsIWebProgress.NOTIFY_STATE_NETWORK;" + "                this._filter = Cc['@mozilla.org/appshell/component/browser-status-filter;1']" + "                                 .createInstance(Ci.nsIWebProgress);" + "                this._filter.addProgressListener(this, flags);" + "                let webProgress = docShell.QueryInterface(Ci.nsIInterfaceRequestor)" + "                                          .getInterface(Ci.nsIWebProgress);" + "                webProgress.addProgressListener(this._filter, flags);" + "            }," + "            _isTopWindowWebProgress: function (webProgress) {" + "                if ('isTopLevel' in webProgress) {" + "                    return webProgress.isTopLevel;" + "                }" + "                try {" + "                    return webProgress.DOMWindow === webProgress.DOMWindow.top;" + "                } catch (ex) {}" + "                return false;" + "            }," + "            _requestSpec: function (request, propertyName) {" + "                if (!request || !(request instanceof Ci.nsIChannel)) {" + "                    return null;" + "                }" + "                return request.QueryInterface(Ci.nsIChannel)[propertyName].spec;" + "            }," + "            _setupJSON: function (webProgress, request) {" + "                if (webProgress) {" + "                    webProgress = {" + "                        isTopLevel: webProgress.isTopLevel," + "                        isLoadingDocument: webProgress.isLoadingDocument," + "                        loadType: webProgress.loadType" + "                    };" + "                }" + "                return {" + "                    webProgress: webProgress || null," + "                    requestURI: this._requestSpec(request, 'URI')," + "                    originalRequestURI: this._requestSpec(request, 'originalURI')" + "                };" + "            }," + "            _setupObjects: function (webProgress) {" + "                let domWindow = null;" + "                try {" + "                    domWindow = webProgress.DOMWindow;" + "                } catch (e) {}" + "                return {" + "                    contentWindow: content," + "                    DOMWindow: domWindow" + "                };" + "            }," + "            onStateChange: function onStateChange(webProgress, request, stateFlags, status) {" + "                if (!this._isTopWindowWebProgress(webProgress)) {" + "                    return;" + "                }" + "                let json = this._setupJSON(webProgress, request);" + "                let objects = this._setupObjects(webProgress);" + "                json.stateFlags = stateFlags;" + "                json.status = status;" + "                try {" + "                    sendAsyncMessage('{{PREFIX}}Frame:StateChange', json, objects);" + "                } catch (e) {}" + "            }," + "            onLocationChange: function onLocationChange(webProgress, request, locationURI, flags) {" + "                let json = this._setupJSON(webProgress, request);" + "                let objects = this._setupObjects(webProgress);" + "                json.location = locationURI ? locationURI.spec : '';" + "                json.flags = flags;" + "               sendAsyncMessage('{{PREFIX}}Frame:LocationChange', json, objects);" + "            }," + "            onProgressChange: function () {}," + "            onStatusChange: function () {}," + "            onSecurityChange: function () {}," + "            QueryInterface: function QueryInterface(aIID) {" + "                if (aIID.equals(Ci.nsIWebProgressListener) ||" + "                    aIID.equals(Ci.nsISupportsWeakReference) ||" + "                    aIID.equals(Ci.nsISupports)) {" + "                    return this;" + "                }" + "                throw Cr.NS_ERROR_NO_INTERFACE;" + "            }" + "        };" + "        WebProgressListener.init();" + "    }",
     get _FRAME_SCRIPT_URL() {
-        return "data:application/javascript;charset=utf-8," + encodeURIComponent("(" + this._FRAME_SCRIPT.replace(/\{\{PREFIX\}\}/g, this.FRAME_MESSAGES_PREFIX) + ")()");
+        return "data:application/javascript;charset=utf-8," + encodeURIComponent("(" + FRAME_SCRIPT.toSource().replace(/\{\{PREFIX\}\}/g, this.FRAME_MESSAGES_PREFIX) + ")()");
     },
     get FRAME_MESSAGES_PREFIX() {
         let prefix;
@@ -514,8 +656,8 @@ WindowListener.prototype = {
         }
         return spec;
     },
-    onPageLocationChange: function WindowListener_onPageLocationChange(aLocation, tab, requestURL) {
-        this.notifyListeners("PageLocationChange", this._makePageEventParams(tab, requestURL));
+    onPageLocationChange: function WindowListener_onPageLocationChange(aLocation, tab, requestURL, sameDocument) {
+        this.notifyListeners("PageLocationChange", this._makePageEventParams(tab, requestURL, sameDocument));
     },
     onPageStateStart: function WindowListener_onPageStateStart(tab, requestURL) {
         this._tabsContentInfo.delete(tab);
@@ -524,7 +666,7 @@ WindowListener.prototype = {
     onPageStateStop: function WindowListener_onPageStateStop(tab, requestURL) {
         this.notifyListeners("PageStateStop", this._makePageEventParams(tab, requestURL));
     },
-    _makePageEventParams: function WindowListener__makePageEventParams(tab, requestURL) {
+    _makePageEventParams: function WindowListener__makePageEventParams(tab, requestURL, sameDocument) {
         return {
             tab: tab,
             request: {
@@ -538,7 +680,8 @@ WindowListener.prototype = {
                     return null;
                 }
             },
-            isCurrentTab: isCurrentTab(tab)
+            isCurrentTab: isCurrentTab(tab),
+            sameDocument: sameDocument
         };
     }
 };

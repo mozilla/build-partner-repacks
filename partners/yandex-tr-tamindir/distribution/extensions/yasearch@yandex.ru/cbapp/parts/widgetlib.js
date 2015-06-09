@@ -13,17 +13,18 @@ const widgetLibrary = {
         this._barPlatform = application.BarPlatform;
         this._barCore.Lib.sysutils.copyProperties(this._barCore.Lib, GLOBAL);
         this._logger = application.getLogger("WLib");
-        this._useParserCache = application.preferences.get("barplatform.components.parsercache") !== false;
         this._loadBundleLists();
         this._checkPreinstalledPackages();
         this._loadComponentsInfo();
         if (application.addonManager.info.addonVersionChanged) {
-            try {
-                this._logger.config("Removing parsers cache...");
-                fileutils.removeFileSafe(application.directories.parsedCompsDir);
-            } catch (e) {
-                this._logger.error("Parser cache cleanup failed. " + strutils.formatError(e));
-                this._logger.debug(e.stack);
+            this._logger.config("Removing packages cache...");
+            let packagesDirEntries = application.directories.packagesDir.directoryEntries;
+            while (packagesDirEntries.hasMoreElements()) {
+                let packageDir = packagesDirEntries.getNext().QueryInterface(Ci.nsIFile);
+                if (packageDir.isDirectory()) {
+                    packageDir.append(".cache");
+                    fileutils.removeFileSafe(packageDir);
+                }
             }
         }
     },
@@ -38,9 +39,6 @@ const widgetLibrary = {
         this._packages = Object.create(null);
         this._knownWidgets = Object.create(null);
         this._pluginsData = Object.create(null);
-    },
-    cleanPackageParserCache: function WidgetLibrary_cleanPackageParserCache(packageID) {
-        fileutils.removeFileSafe(this._getParserCacheDir(packageID));
     },
     activatePlugins: function WidgetLibrary_activatePlugins() {
         let timeStart = Date.now();
@@ -58,13 +56,12 @@ const widgetLibrary = {
         if (!componentData) {
             throw new Error(strutils.formatString("No such component (%1)", [componentID]));
         }
-        let componentInfo = componentData.info || (componentData.info = this._loadComponentInfo(componentID));
-        return sysutils.copyObj(componentInfo);
+        return componentData.info;
     },
     getComponentsInfo: function WidgetLibrary_getComponentsInfo(fromPackageID) {
         return this.getWidgetsInfo(fromPackageID).concat(this.getPluginsInfo(fromPackageID));
     },
-    registerWidgets: function WidgetLibrary_registerWidgets(newWidgetIDs, dontFail) {
+    registerWidgets: function WidgetLibrary_registerWidgets(newWidgetIDs, lazyInfoParse) {
         let registered = 0;
         if (!Array.isArray(newWidgetIDs)) {
             newWidgetIDs = [newWidgetIDs];
@@ -73,14 +70,14 @@ const widgetLibrary = {
                     ,
                     widgetID
                 ] in Iterator(newWidgetIDs)) {
-            registered += this._registerComponent(widgetID, "widget", dontFail);
+            registered += this._registerComponent(widgetID, "widget", lazyInfoParse);
         }
         if (registered > 0) {
             this._logger.debug("Registered " + registered + " widgets.");
         }
         return registered;
     },
-    registerPlugins: function WidgetLibrary_registerPlugins(newPluginIDs, dontFail) {
+    registerPlugins: function WidgetLibrary_registerPlugins(newPluginIDs, lazyInfoParse) {
         let registered = 0;
         if (!Array.isArray(newPluginIDs)) {
             newPluginIDs = [newPluginIDs];
@@ -89,7 +86,7 @@ const widgetLibrary = {
                     ,
                     pluginID
                 ] in Iterator(newPluginIDs)) {
-            registered += this._registerComponent(pluginID, "plugin", dontFail);
+            registered += this._registerComponent(pluginID, "plugin", lazyInfoParse);
         }
         if (registered > 0) {
             this._logger.debug("Registered " + registered + " plugins.");
@@ -102,14 +99,9 @@ const widgetLibrary = {
             if (!(protoID in this._knownWidgets)) {
                 return;
             }
-            let widgetInfo = this.getWidgetInfo(protoID);
             unregistered++;
             delete this._knownWidgets[protoID];
-            if (widgetInfo.barAPI == "xb") {
-                fileutils.removeFileSafe(this._getParserCacheFile(protoID));
-            } else {
-                fileutils.removeFileSafe(this._barApp.NativeComponents.getComponentStorage(protoID));
-            }
+            fileutils.removeFileSafe(this._barApp.NativeComponents.getComponentStorage(protoID));
         }, this);
         if (unregistered > 0) {
             this._logger.debug("Forgot " + unregistered + " widgets.");
@@ -152,8 +144,7 @@ const widgetLibrary = {
         if (!(pluginID in this._pluginsData)) {
             throw new Error(strutils.formatString("No such plugin (%1).", [pluginID]));
         }
-        let pluginData = this._pluginsData[pluginID];
-        return (pluginData ? pluginData.component : null) || this._loadPlugin(pluginID);
+        return this._pluginsData[pluginID].component;
     },
     getPlugins: function WidgetLibrary_getPlugins(fromPackageID, activeOnly) {
         return this._forEachKnownPlugin(fromPackageID, function id2plugin(pluginID) {
@@ -173,9 +164,7 @@ const widgetLibrary = {
         if (!(pluginID in this._pluginsData)) {
             throw new Error(strutils.formatString("No such plugin (%1).", [pluginID]));
         }
-        let pluginData = this._pluginsData[pluginID];
-        let pluginInfo = pluginData.info || (pluginData.info = this._loadComponentInfo(pluginID));
-        return sysutils.copyObj(pluginInfo);
+        return this._pluginsData[pluginID].info;
     },
     getPluginsInfo: function WidgetLibrary_getPluginsInfo(fromPackageID) {
         return this._forEachKnownPlugin(fromPackageID, function id2info(pluginID) {
@@ -214,9 +203,7 @@ const widgetLibrary = {
         if (!(protoID in this._knownWidgets)) {
             throw new Error(strutils.formatString(this._consts.ERR_NO_SUCH_WIDGET, [protoID]));
         }
-        let widgetData = this._knownWidgets[protoID];
-        let widgetInfo = widgetData.info || (widgetData.info = this._loadComponentInfo(protoID));
-        return sysutils.copyObj(widgetInfo);
+        return this._knownWidgets[protoID].info;
     },
     getWidgetsInfo: function WidgetLibrary_getWidgetsInfo(fromPackageID) {
         return this._forEachKnownWidget(fromPackageID, function id2info(protoID) {
@@ -234,8 +221,7 @@ const widgetLibrary = {
         if (!(protoID in this._knownWidgets)) {
             throw new Error(strutils.formatString(this._consts.ERR_NO_SUCH_WIDGET, [protoID]));
         }
-        let widgetData = this._knownWidgets[protoID];
-        return widgetData.component || (widgetData.component = this._loadWidgetProto(protoID));
+        return this._knownWidgets[protoID].component;
     },
     getWidgetProtos: function WidgetLibrary_getWidgetProtos(fromPackageID) {
         return this._forEachKnownWidget(fromPackageID, function id2proto(protoID) {
@@ -308,52 +294,43 @@ const widgetLibrary = {
     _prevPluginsState: undefined,
     _pluginsData: Object.create(null),
     _internalPackagesInfo: Object.create(null),
-    _useParserCache: true,
-    _registerComponent: function WidgetLibrary__registerComponent(componentID, componentType, dontFail) {
+    _registerComponent: function WidgetLibrary__registerComponent(componentID, componentType, lazyInfoParse) {
         let registry = componentType == "widget" ? this._knownWidgets : this._pluginsData;
         if (componentID in registry) {
             return 0;
         }
-        try {
-            let componentInfo = this._loadComponentInfo(componentID);
-            if (componentInfo.barAPI === "xb") {
-                fileutils.removeFileSafe(this._getParserCacheFile(componentID));
-                return 0;
+        let registryEntry = {
+            get component() {
+                delete this.component;
+                let component = componentType == "widget" ? widgetLibrary._loadWidgetProto(componentID) : widgetLibrary._loadPlugin(componentID);
+                return this.component = component;
+            },
+            get info() {
+                delete this.info;
+                let componentInfo = widgetLibrary._loadComponentInfo(componentID);
+                if (componentInfo.barAPI === "xb") {
+                    throw new TypeError("xb API is deprecated");
+                }
+                if (componentType != componentInfo.type) {
+                    throw new TypeError(strutils.formatString("Component type missmatch. Expected: '%1', got '%2'", [
+                        componentType,
+                        componentInfo.type
+                    ]));
+                }
+                Object.freeze(componentInfo);
+                return this.info = componentInfo;
             }
-            if (componentType != componentInfo.type) {
-                throw new TypeError(strutils.formatString("Component type missmatch. Expected: '%1', got '%2'", [
-                    componentType,
-                    componentInfo.type
-                ]));
-            }
-            registry[componentID] = {
-                component: null,
-                info: componentInfo
-            };
-            return 1;
-        } catch (e) {
-            if (dontFail) {
+        };
+        if (lazyInfoParse !== true) {
+            try {
+                let tmp = registryEntry.info;
+            } catch (e) {
                 this._logger.warn("Could not register component '" + componentID + "'. " + strutils.formatError(e));
                 return 0;
             }
-            throw e;
         }
-    },
-    _getParserCacheDir: function WidgetLibrary__getParserCacheDir(packageID) {
-        let cacheDir = this._barApp.directories.parsedCompsDir;
-        cacheDir.append(misc.CryptoHash.getFromString(packageID, "MD5"));
-        return cacheDir;
-    },
-    _getParserCacheFile: function WidgetLibrary__getParserCacheFile(componentID) {
-        let [
-            packageID,
-            compName
-        ] = this._barPlatform.parseComponentID(componentID);
-        let cacheFile = this._getParserCacheDir(packageID);
-        cacheFile.append(compName);
-        cacheFile.append(this._barApp.localeString);
-        cacheFile.append(compName);
-        return cacheFile;
+        registry[componentID] = registryEntry;
+        return 1;
     },
     _loadBundleLists: function WidgetLibrary__loadBundleLists() {
         let addonFS = this._barApp.addonFS;
@@ -370,10 +347,9 @@ const widgetLibrary = {
             for (let pkgID in this._internalPackagesInfo) {
                 if (this._barApp.packageManager.isPackageInstalled(pkgID)) {
                     this._barApp.packageManager.uninstallPackage(pkgID);
-                    this.cleanPackageParserCache(pkgID);
                 }
             }
-            this._extractBuiltinPackages(misc.mapKeysToArray(this._internalPackagesInfo));
+            this._extractBuiltinPackages(Object.keys(this._internalPackagesInfo));
             this._barApp.packageManager.rescanPackages();
         } else {
             let missingPackages = [];
@@ -381,7 +357,6 @@ const widgetLibrary = {
                 this._logger.debug("  Checking package " + pkgID);
                 if (!this._barApp.packageManager.isPackageInstalled(pkgID)) {
                     missingPackages.push(pkgID);
-                    this.cleanPackageParserCache(pkgID);
                     continue;
                 }
             }
@@ -460,7 +435,7 @@ const widgetLibrary = {
             this._logger.error("Could not load active plugins list. " + strutils.formatError(e));
         }
         if (this._prevPluginsState) {
-            this.registerPlugins(misc.mapKeysToArray(this._prevPluginsState), true);
+            this.registerPlugins(Object.keys(this._prevPluginsState), true);
         }
     },
     _makeComponentID: function WidgetLibrary__makeComponentID(packageID, componentName) {
@@ -477,15 +452,6 @@ const widgetLibrary = {
         let componentInfo = unit.componentInfo;
         if (componentInfo.type != "widget") {
             throw new Error(this._consts.ERR_UNIT_HAS_NO_WIDGET);
-        }
-        if (this._useParserCache) {
-            let cacheFile = this._getParserCacheFile(protoID);
-            let cacheFileExists = cacheFile.exists();
-            let proto = unit.getComponent(cacheFileExists ? cacheFile : undefined);
-            if (!cacheFileExists) {
-                unit.tryCacheComponent(cacheFile);
-            }
-            return proto;
         }
         return unit.getComponent();
     },

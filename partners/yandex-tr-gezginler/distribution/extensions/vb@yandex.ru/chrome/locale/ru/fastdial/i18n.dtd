@@ -19,6 +19,7 @@
 <!ENTITY footer.closedTabs "Закрытые вкладки">
 <!ENTITY footer.downloads "Загрузки">
 <!ENTITY footer.history "История">
+<!ENTITY footer.addThumb "Добавить закладку">
 <!ENTITY settings "Настройки">
 <!ENTITY settings.upload "Загрузить">
 <!--Фоновое изображение-->
@@ -107,6 +108,12 @@
 <!ENTITY advertisement.yandexBrowser.docs "Открывайте документы прямо в Яндекс.Браузере">
 <!ENTITY advertisement.yandexBrowser.downloads "Скачать">
 <!ENTITY advertisement.yandexBrowser.open "Открыть Яндекс.Браузер">
+<!ENTITY advertisement.search.setDefault "Сделать Яндекс [поиском по умолчанию]">
+<!ENTITY advertisement.search.done "Яндекс установлен поиском по умолчанию">
+<!ENTITY advertisement.homepage.setDefault "Сделать Яндекс [стартовой страницей]">
+<!ENTITY advertisement.homepage.done "Яндекс установлен стартовой страницей">
+<!ENTITY advertisement.addThumb.text "Для добавления новой закладки нажмите сюда">
+<!ENTITY advertisement.backgrounds.done "Готово">
 
 <!-- Новый год 2015 -->
 <!ENTITY newyear.18.12.2014.header "До Нового года осталось 13 дней">
@@ -114,7 +121,7 @@
 <!ENTITY newyear.18.12.2014.button "Выбрать ёлку">
 
 <!ENTITY newyear.19.12.2014.header "До Нового года осталось 12 дней">
-<!ENTITY newyear.19.12.2014.text "У Деда Мороза уже полный мешок подарков.">
+<!ENTITY newyear.19.12.2014.text "У&#x00A0;Деда&#x00A0;Мороза уже полный мешок подарков.">
 <!ENTITY newyear.19.12.2014.button "Не отставайте!">
 
 <!ENTITY newyear.20.12.2014.header "До Нового года осталось 11 дней">
@@ -164,3 +171,7 @@
 <!ENTITY newyear.31.12.2014.header "Новый год уже сегодня">
 <!ENTITY newyear.31.12.2014.text "Написать желание на салфетке, сжечь, высыпать пепел&#x00A0;в&#x00A0;бокал с&#x00A0;шампанским и&#x00A0;выпить под&#x00A0;бой&#x00A0;курантов.">
 <!ENTITY newyear.31.12.2014.button "Как ещё загадать желание">
+
+<!ENTITY restorepopup.button "Отменить">
+<!ENTITY restorepopup.tumb "Закладка удалена">
+<!ENTITY restorepopup.tumbs "{N} закладка удалена;{N} закладки удалены;{N} закладок удалено">

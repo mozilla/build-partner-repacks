@@ -70,24 +70,28 @@
     <em:id>yasearch@yandex.ru</em:id>
     <em:name>Yandex Elements</em:name>
     <em:type>2</em:type>
-    <em:version>8.8.1</em:version>
+    <em:version>8.11.0</em:version>
     <em:description>Quick access to all Yandex features</em:description>
     <em:creator>Yandex</em:creator>
     <em:contributor>Aleksey Rybakov</em:contributor>
     <em:contributor>Alexander Bykov</em:contributor>
     <em:contributor>Alexander Borodach</em:contributor>
     <em:contributor>Alexander Ermolaev</em:contributor>
+    <em:contributor>Alexander Samsonov</em:contributor>
+    <em:contributor>Anatoliy Ostrovskiy</em:contributor>
     <em:contributor>Danil Ivanov</em:contributor>
     <em:contributor>Dmitriy Alekseev</em:contributor>
     <em:contributor>Dmitriy Karlovskiy</em:contributor>
     <em:contributor>Dmitriy Sorin</em:contributor>
+    <em:contributor>Guro Bokum</em:contributor>
     <em:contributor>Maxim Breev</em:contributor>
+    <em:contributor>Maxim Grishaev</em:contributor>
     <em:contributor>Nikolay Jaremko</em:contributor>
     <em:contributor>Roman Ivanov</em:contributor>
+    <em:contributor>Roman Sukhorukov</em:contributor>
     <em:contributor>Sergey Petrenko</em:contributor>
     <em:contributor>Valentin Shergin</em:contributor>
     <em:contributor>Vasily Chekalkin</em:contributor>
-    <em:contributor>Guro Bokum</em:contributor>
 
     <em:iconURL>yasearch://branding/about/logo-fx-small.png</em:iconURL>
     <em:icon64URL>yasearch://branding/about/logo-fx-large.png</em:icon64URL>
@@ -101,7 +105,7 @@
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>27.0</em:minVersion>
-        <em:maxVersion>36.*</em:maxVersion>
+        <em:maxVersion>38.*</em:maxVersion>
       </Description>
     </em:targetApplication>
 

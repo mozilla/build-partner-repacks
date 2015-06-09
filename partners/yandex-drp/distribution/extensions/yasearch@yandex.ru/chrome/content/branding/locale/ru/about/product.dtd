@@ -27,9 +27,9 @@
 <!ENTITY product.note.ie "для Internet Explorer">
 <!ENTITY product.homepage "https://element.yandex.ru">
 <!ENTITY product.welcomepage "https://element.yandex.ru/welcome">
-<!ENTITY product.copyright "© 2012—2014 ООО «ЯНДЕКС»">
+<!ENTITY product.copyright "© 2012—2015 ООО «ЯНДЕКС»">
 <!ENTITY product.copyright.ie "&product.copyright;">
-<!ENTITY product.copyright.fx "© 2012—2014 ООО «ЯНДЕКС»">
+<!ENTITY product.copyright.fx "© 2012—2015 ООО «ЯНДЕКС»">
 <!ENTITY product.license.url.ie "http://legal.yandex.ru/desktop_software_agreement/">
 <!ENTITY product.license.url.fx "http://legal.yandex.ru/desktop_software_agreement/">
-<!ENTITY product.help.url.ie "http://help.yandex.ru/element">
+<!ENTITY product.help.url.ie "https://help.yandex.ru/element">

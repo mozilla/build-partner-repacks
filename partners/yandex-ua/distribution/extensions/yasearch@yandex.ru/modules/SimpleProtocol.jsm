@@ -165,8 +165,7 @@ SimpleURI.prototype = {
     },
     QueryInterface: XPCOMUtils.generateQI([
         Ci.nsIURI,
-        Ci.nsIURL,
-        Ci.nsIFileURL
+        Ci.nsIURL
     ]),
     get hostPort() {
         return CB_CONFIG.APP.NAME;
@@ -190,13 +189,6 @@ SimpleURI.prototype = {
         scheme = scheme.toLowerCase();
         return scheme == this.scheme || scheme == "chrome" && /\.dtd$/.test(this.spec);
     },
-    get file() {
-        return this.dataProvider.findFile(this.filePath);
-    },
-    set file(val) {
-        throw Cr.NS_ERROR_NOT_IMPLEMENTED;
-    },
-    _dataProvider: null,
     _standardURL: null
 };
 [

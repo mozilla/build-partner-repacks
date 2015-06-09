@@ -14,6 +14,9 @@
         <content>
             <toolbarbutton anonid="login-button" class="chromeclass-toolbar-additional toolbarbutton-1 yauth-button" label="&login.enter.label;" noauth-tooltip-text="&login.tooltiptext;" tooltip="yb-login-tooltip" type="menu" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" yb-button-icon-hidden="true" yb-default-tooltip-hidden="true">
                 <menupopup anonid="login-menupopup">
+                    <menu anonid="other-logins" label="&login.menu.other-account.label;">
+                        <menupopup/>
+                    </menu>
                     <menuitem anonid="login-menuitem-switch" label="&login.switch.label;"/>
                     <menuseparator anonid="login-menuitem-users-sep"/>
                     <menuitem anonid="login-menuitem-setting" label="&login.settings.label;"/>
@@ -29,14 +32,15 @@
             <field name="title">"&login.name;"</field>
             <field name="ID">this.getAttribute("id")</field>
             <field name="API">this.module.API</field>
-            <field name="yauth">this.module.authManager</field>
+            <field name="yauth">this.API.Passport</field>
 
             <field name="_button" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "login-button")</field>
             <field name="_menu" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "login-menupopup")</field>
             <field name="_switch" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "login-menuitem-switch")</field>
+            <field name="_otherLogins" readonly="true">document.getAnonymousElementByAttribute(this, 'anonid', 'other-logins')</field>
             <field name="_logout" readonly="true">document.getAnonymousElementByAttribute(this, "anonid", "login-menuitem-logout")</field>
 
-            <field name="_switchedUserInfo">null</field>
+            <field name="_switchToAccountId">null</field>
 
             <constructor><![CDATA[    this.yauth.addListener(this.yauth.EVENTS.AUTH_STATE_CHANGED, this);
     this._menu.addEventListener("command", this);]]></constructor>
@@ -46,48 +50,55 @@
     this._menu.removeEventListener("command", this);]]></body>
             </method>
 
-            <method name="updateMenu">
+            <method name="_updateMenu">
                 <parameter name="aMenuItems"/>
                 <body><![CDATA[    let target = this._menu.firstChild;
-    while (this._menu.firstChild && this._menu.firstChild !== this._switch) {
+    while (this._menu.firstChild && this._menu.firstChild !== this._otherLogins) {
         this._menu.removeChild(this._menu.firstChild);
     }
-    for (let i = 0; i < aMenuItems.length; i++) {
-        let child = aMenuItems[i];
-        this._menu.insertBefore(child, this._switch);
-    }]]></body>
-            </method>
-
-            <method name="_logoutUser">
-                <body><![CDATA[    let user = this.yauth.getTopUser();
-    if (!user) {
-        return;
+    let desiredTopLevelMenuAccountsNumber = 7;
+    let subMenuMinimumItemsThreshold = 2;
+    let topLevelItemsNumber = 7;
+    let useSubmenu = aMenuItems.length > desiredTopLevelMenuAccountsNumber;
+    if (useSubmenu) {
+        let diff = aMenuItems.length - desiredTopLevelMenuAccountsNumber;
+        if (diff < subMenuMinimumItemsThreshold) {
+            topLevelItemsNumber -= subMenuMinimumItemsThreshold - diff;
+        }
+    } else {
+        this._otherLogins.hidden = true;
+        topLevelItemsNumber = aMenuItems.length;
     }
-    this.module.logoutUser(user);]]></body>
-            </method>
-
-            <method name="_logoutAll">
-                <body><![CDATA[    this.module.logoutAll();]]></body>
+    for (let i = 0; i < topLevelItemsNumber; i++) {
+        this._menu.insertBefore(aMenuItems[i], this._otherLogins);
+    }
+    if (useSubmenu) {
+        this._otherLogins.hidden = false;
+        let subMenu = this._otherLogins.firstChild;
+        while (subMenu.firstChild) {
+            subMenu.removeChild(subMenu.firstChild);
+        }
+        for (let i = topLevelItemsNumber; i < aMenuItems.length; i++) {
+            subMenu.appendChild(aMenuItems[i]);
+        }
+    }]]></body>
             </method>
 
             <method name="_goToAddress">
                 <parameter name="aAddress"/>
                 <body><![CDATA[    let url;
     switch (aAddress) {
-    case "settings":
-        url = "http://tune." + this.yauth.authdefs.DOMAINS.MAIN_DOMAIN;
-        break;
     case "passport":
         url = this.yauth.authdefs.LINKS.AUTH_PASSPORT_URL + "/passport?mode=passport";
+        break;
+    case "settings":
+        url = "http://tune." + this.yauth.authdefs.DOMAINS.MAIN_DOMAIN;
         break;
     case "mail":
         url = "https://mail." + this.yauth.authdefs.DOMAINS.MAIN_DOMAIN;
         break;
     case "main":
         url = "https://" + this.yauth.authdefs.DOMAINS.MAIN_DOMAIN;
-        break;
-    case "main":
-        url = "https://" + this.yauth.yauth.authdefs.DOMAINS.MAIN_DOMAIN;
         break;
     default:
         return;
@@ -106,17 +117,49 @@
                 <body><![CDATA[    while (tooltip.firstChild) {
         tooltip.removeChild(tooltip.firstChild);
     }
-    let labels = this.yauth.users.map(u => u.fullName);
+    let labels = this.yauth.authorizedAccounts.map(u => u.fullName);
     if (!labels.length) {
         labels = [this._button.getAttribute("noauth-tooltip-text")];
     }
-    let defaultUser = labels.pop();
-    labels.splice(0, 0, defaultUser);
+    let defaultAccount = labels.pop();
+    labels.splice(0, 0, defaultAccount);
     labels.forEach(function (labelValue) {
         let label = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "label");
         label.setAttribute("value", labelValue);
         tooltip.appendChild(label);
     });]]></body>
+            </method>
+
+            <method name="_sendAccountMenuItemCommandStatistics">
+                <parameter name="aTarget"/>
+                <body><![CDATA[    let menuItemIndex = 1;
+    let prevSiblingNode = aTarget;
+    while (prevSiblingNode = prevSiblingNode.previousElementSibling) {
+        menuItemIndex++;
+    }
+    this.module.sendStatistics("slice.loginlist." + menuItemIndex);]]></body>
+            </method>
+
+            <method name="_doAccountMenuItemCommandAction">
+                <parameter name="aMenuItem"/>
+                <body><![CDATA[    if (aMenuItem.getAttribute("yb-default-user")) {
+        let goToKey = "mail";
+        let defaultAccount = this.yauth.defaultAccount;
+        if (defaultAccount.isSocial) {
+            goToKey = "main";
+        }
+        this._goToAddress(goToKey);
+        return;
+    }
+    let accountUid = aMenuItem.getAttribute("yb-user-uid");
+    if (!accountUid) {
+        return;
+    }
+    let account = this.yauth.getAuthorizedAccount(accountUid);
+    if (account) {
+        this._switchToAccountId = account.uid;
+    }
+    this.module.switchAccount(accountUid);]]></body>
             </method>
 
             <method name="handleEvent">
@@ -133,7 +176,7 @@
         switch (anonid) {
         case "login-menuitem-switch":
             action = "slice.enternewname";
-            this.module.switchUser();
+            this.module.switchAccount();
             break;
         case "login-menuitem-setting":
             action = "slice.settings";
@@ -145,7 +188,7 @@
             break;
         case "login-menuitem-logout":
             action = "slice.logout";
-            this._logoutUser();
+            this.module.logoutDefaultAccount();
             break;
         default:
             break;
@@ -154,30 +197,8 @@
             this.module.sendStatistics(action);
             return;
         }
-        let menuItemIndex = 1;
-        let prevSiblingNode = target;
-        while (prevSiblingNode = prevSiblingNode.previousElementSibling) {
-            menuItemIndex++;
-        }
-        this.module.sendStatistics("slice.loginlist." + menuItemIndex);
-        if (target.getAttribute("yb-default-user")) {
-            let goToKey = "mail";
-            let defaultUser = this.yauth.getTopUser();
-            if (defaultUser.isSocial) {
-                goToKey = "main";
-            }
-            this._goToAddress(goToKey);
-            return;
-        }
-        let userUid = target.getAttribute("yb-user-uid");
-        if (!userUid) {
-            return;
-        }
-        let user = this.yauth.getUser(userUid);
-        if (user) {
-            this._switchedUserInfo = user.uid;
-        }
-        this.module.switchUser(userUid);
+        this._sendAccountMenuItemCommandStatistics(target);
+        this._doAccountMenuItemCommandAction(target);
         break;
     }]]></body>
             </method>
@@ -188,11 +209,11 @@
                 <parameter name="data"/>
                 <body><![CDATA[    switch (topic) {
     case this.yauth.EVENTS.AUTH_STATE_CHANGED:
-        let defaultUser = data.defaultUser;
-        if (this._switchedUserInfo) {
-            if (this._switchedUserInfo === (defaultUser && defaultUser.uid)) {
+        let defaultAccount = data.defaultAccount;
+        if (this._switchToAccountId) {
+            if (this._switchToAccountId === (defaultAccount && defaultAccount.uid)) {
                 let url = "https://mail." + this.yauth.authdefs.DOMAINS.MAIN_DOMAIN;
-                if (defaultUser.isSocial) {
+                if (defaultAccount.isSocial) {
                     url = "http://" + this.yauth.authdefs.DOMAINS.MAIN_DOMAIN;
                 }
                 this.API.Controls.navigateBrowser({
@@ -200,7 +221,7 @@
                     target: "new tab"
                 });
             }
-            this._switchedUserInfo = null;
+            this._switchToAccountId = null;
         }
         break;
     default:
@@ -210,13 +231,15 @@
         </implementation>
 
         <handlers>
-            <handler event="popupshowing"><![CDATA[    let authorized = this.yauth.authorized;
+            <handler event="popupshowing"><![CDATA[    if (event.originalTarget !== this._menu) {
+        return;
+    }
+    let authorized = this.yauth.isAuthorized();
     if (authorized) {
         this.module.sendStatistics("button.authon");
         let menu = this.module.buildMenu();
-        this.updateMenu(menu);
-    }
-    if (event.originalTarget == this._menu && !authorized) {
+        this._updateMenu(menu);
+    } else {
         this.module.onButtonClick(event, this);
         return false;
     }

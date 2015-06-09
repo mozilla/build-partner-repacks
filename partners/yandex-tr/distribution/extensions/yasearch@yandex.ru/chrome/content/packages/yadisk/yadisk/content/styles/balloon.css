@@ -1,3 +1,7 @@
-@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);tooltip{-moz-appearance:none;background:0 0;border:0;width:32px;height:32px;margin:0;padding:10px 10px 0 0}
-[anonid=button]{list-style-image:url(../icons/balloon-button.png);opacity:.5;cursor:pointer}
-[anonid=button]:hover{opacity:1}
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);panel{-moz-appearance:none;background:0 0;border:0;width:28px;height:28px;margin:0;padding:0}
+[anonid=container]{color:#fff;background:rgba(0,0,0,.2);border-radius:14px;width:28px;height:28px;cursor:pointer}
+[anonid=container]:hover{background:rgba(0,0,0,.6)}
+[anonid=container]:active{background:rgba(0,0,0,.7)}
+[anonid=container]:hover [anonid=button]{opacity:1}
+[anonid=button]{list-style-image:url(../icons/button-disk.svg);width:20px;height:14px;opacity:.6}
+.activated [anonid=button]{list-style-image:url(../icons/button-activated.svg)}

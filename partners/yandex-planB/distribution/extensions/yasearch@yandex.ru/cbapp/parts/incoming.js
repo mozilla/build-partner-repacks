@@ -31,7 +31,6 @@ const incomingCompMgr = {
         if (!newComponentEntries || !newComponentEntries.length) {
             return;
         }
-        let spring = firstWndController.getToolbarSpring();
         let widgetLibrary = this._application.widgetLibrary;
         for (let [
                     ,
@@ -42,7 +41,7 @@ const incomingCompMgr = {
                 switch (compEntry.componentType) {
                 case compEntry.TYPE_WIDGET:
                     if (entryIsActive && !firstWndController.getWidgetItems(compEntry.componentID).length) {
-                        let [widget] = firstWndController.placeWidget(compEntry.componentID, spring);
+                        let [widget] = firstWndController.placeWidget(compEntry.componentID);
                         if (compEntry.settings) {
                             widget.applySettings(compEntry.settings, true);
                         }
@@ -59,10 +58,7 @@ const incomingCompMgr = {
             }
         }
     },
-    _consts: {
-        PREF_DEFAULT_PRESET_URL: ".default.preset.url",
-        DEF_PRESET_FILE_NAME: "default.xml"
-    },
+    _consts: { DEF_PRESET_FILE_NAME: "default.xml" },
     _checkIncoming: function incomingCompMgr__checkIncoming() {
         this._newComponentEntries = [];
         let incomingEntriesFile = this._incomingEntriesFile;
@@ -119,11 +115,11 @@ const incomingCompMgr = {
             }
             switch (entry.componentType) {
             case entry.TYPE_WIDGET:
-                widgetLibrary.registerWidgets(compID, true);
+                widgetLibrary.registerWidgets(compID);
                 weHaveNewWidgets = true;
                 break;
             case entry.TYPE_PLUGIN:
-                widgetLibrary.registerPlugins(compID, true);
+                widgetLibrary.registerPlugins(compID);
                 weHaveNewPlugins = true;
                 break;
             default:
@@ -208,10 +204,8 @@ const incomingCompMgr = {
         }
     },
     _trySetAsDefaultPreset: function incomingCompMgr__trySetAsDefaultPreset(presetUrl) {
-        let defaultPresetUrlPrefPath = this._application.name + this._consts.PREF_DEFAULT_PRESET_URL;
-        let instPresetURL = Preferences.get(defaultPresetUrlPrefPath);
-        if (!instPresetURL) {
-            Preferences.set(defaultPresetUrlPrefPath, presetUrl);
+        if (!this._application.defaultPresetURL) {
+            this._application.defaultPresetURL = presetUrl;
         }
     },
     _filterPackagesInfo: function incomingCompMgr__filterPackagesInfo(packagesInfo) {

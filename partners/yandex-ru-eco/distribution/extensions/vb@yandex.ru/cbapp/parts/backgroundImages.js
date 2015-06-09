@@ -392,9 +392,8 @@ const backgroundImages = {
                 }
             }
             let defaultBackground = this.defaultBackground;
-            let hasJustMigrated = appInfo.isFreshAddonInstall && this._application.preferences.get("yabar.migrated", false) || appInfo.addonUpgraded && /^1\./.test(appInfo.addonLastVersion);
-            let force = forceChangeBg || defaultBackground.force || hasJustMigrated && this._application.preferences.get(PREF_SELECTED_SKIN).length === 0;
-            if (force || appInfo.isFreshAddonInstall && this._application.preferences.get("yabar.migrated", false) === false) {
+            let force = forceChangeBg || defaultBackground.force || appInfo.isFreshAddonInstall && !this._application.preferences.get(PREF_SELECTED_SKIN).length;
+            if (force) {
                 this._application.preferences.set(PREF_SELECTED_SKIN, defaultBackground.file);
             }
         }

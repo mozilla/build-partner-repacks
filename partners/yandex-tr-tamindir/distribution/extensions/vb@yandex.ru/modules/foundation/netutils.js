@@ -1,14 +1,14 @@
 "use strict";
 EXPORTED_SYMBOLS.push("netutils");
 const netutils = {
-    ioService: Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService),
-    cookieService: Cc["@mozilla.org/cookieService;1"].getService().QueryInterface(Ci.nsICookieService),
-    cookieManager: Cc["@mozilla.org/cookiemanager;1"].getService(Ci.nsICookieManager2),
+    get ioService() {
+        return Services.io;
+    },
     newURI: function netutils_newURI(spec, origCharset, baseURI) {
-        return this.ioService.newURI(spec, origCharset || null, baseURI || null);
+        return Services.io.newURI(spec, origCharset || null, baseURI || null);
     },
     resolveRelativeURL: function netutils_resolveRelativeURL(spec, baseURI) {
-        return this.ioService.newURI(spec, null, baseURI).spec;
+        return Services.io.newURI(spec, null, baseURI).spec;
     },
     findCookieValue: function netutils_findCookieValue(URLorURI, cookieName, incHttpOnly, checkExpired, strictMatch) {
         let [cookie] = this.findCookies.apply(this, arguments);
@@ -16,11 +16,11 @@ const netutils = {
     },
     findCookies: function netutils_findCookies(URLorURI, cookieName, includeHttpOnly, checkExpired, strictMatch) {
         let cookieURI = URLorURI instanceof Ci.nsIURI ? URLorURI : this.newURI(URLorURI, null, null);
+        let timeNow = parseInt(Date.now() / 1000, 10);
         function cookieFilter(cookie) {
             if (cookie.name !== cookieName || cookie.isHttpOnly && !includeHttpOnly || !netutils.cookieMatchesURI(cookie, cookieURI, strictMatch)) {
                 return false;
             }
-            let timeNow = parseInt(Date.now() / 1000, 10);
             return !checkExpired || (cookie.expires === 0 || timeNow < cookie.expires);
         }
         return this.getCookiesFromHost(cookieURI.host).filter(cookieFilter).sort(this.cmpCookiesByPriority);
@@ -28,7 +28,7 @@ const netutils = {
     getCookiesFromHost: function netutils_getCookiesFromHost(aHost) {
         const nsICookie2 = Ci.nsICookie2;
         let cookies = [];
-        let cookiesEnum = this.cookieManager.getCookiesFromHost(aHost);
+        let cookiesEnum = Services.cookies.getCookiesFromHost(aHost);
         while (cookiesEnum.hasMoreElements()) {
             cookies.push(cookiesEnum.getNext().QueryInterface(nsICookie2));
         }
@@ -63,6 +63,44 @@ const netutils = {
             return hostDiff;
         }
         return cookie2.path.length - cookie1.path.length;
+    },
+    sendRequest: function (aUrl, aDetails) {
+        let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+        if (aDetails.background) {
+            request.mozBackgroundRequest = true;
+        }
+        request.open(aDetails.data ? "POST" : "GET", aUrl, !aDetails.sync);
+        if (aDetails.bypassCache) {
+            request.channel.loadFlags |= Ci.nsIRequest.LOAD_BYPASS_CACHE;
+        }
+        if (aDetails.data) {
+            request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            request.setRequestHeader("Connection", "close");
+        }
+        if (aDetails.referrer) {
+            request.setRequestHeader("Referrer", aDetails.referrer);
+        }
+        if (aDetails.timeout) {
+            request.timeout = aDetails.timeout;
+        }
+        if (aDetails.callbackFunc) {
+            let target = request.QueryInterface(Ci.nsIDOMEventTarget);
+            target.addEventListener("load", aDetails.callbackFunc, false);
+            target.addEventListener("error", aDetails.callbackFunc, false);
+            target.addEventListener("timeout", aDetails.callbackFunc, false);
+        }
+        request.send(aDetails.data || null);
+        return request;
+    },
+    isReqError: function (req) {
+        return !req || req.type === "error" || !req.target || req.target.status !== 200;
+    },
+    tryCreateFixupURI: function (aString) {
+        try {
+            return Services.uriFixup.createFixupURI(aString, Services.uriFixup.FIXUP_FLAG_NONE);
+        } catch (e) {
+        }
+        return null;
     }
 };
 netutils.querystring = {
@@ -117,7 +155,7 @@ netutils.querystring = {
 };
 netutils.DownloadTask = function DownloadTask(urlString, output, channelProperties, bypassCache, httpHeaders) {
     try {
-        this._originalURI = netutils.ioService.newURI(urlString, null, null);
+        this._originalURI = Services.io.newURI(urlString, null, null);
     } catch (e) {
         throw this._error = new Error(e.message + " " + urlString);
     }
@@ -268,7 +306,7 @@ netutils.DownloadTask.prototype = {
             let modeFlags = fileutils.MODE_WRONLY | fileutils.MODE_CREATE | fileutils.MODE_TRUNCATE;
             this._outputStream.init(this._outputFile, modeFlags, fileutils.PERMS_FILE, 0);
         }
-        this._channel = netutils.ioService.newChannelFromURI(this._originalURI);
+        this._channel = Services.io.newChannelFromURI(this._originalURI);
         if (this._channelProps) {
             this._writeProps(this._channelProps, this._channel);
         }

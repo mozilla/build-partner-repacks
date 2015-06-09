@@ -1,2 +1,10 @@
-<!ENTITY locationbar.search.url "http://yandex.ua/yandsearch?clid={clid9}&amp;text=">
-<!ENTITY yandex.qs.keywordsearch "http://yandex.ua/yandsearch?clid={clid9}&amp;text={searchTerms}">
+<!ENTITY locationbar.search.url "http://yandex.ua/search/?clid={clid9}&amp;text=">
+
+<!ENTITY yandex.label "Яндекс">
+<!ENTITY yandex.url "http://www.yandex.ua">
+<!ENTITY yandex.search.tooltip "Пашукаць у Яндексе">
+<!ENTITY yandex.search.url "http://yandex.ua/search/?text={searchTerms}">
+<!ENTITY yandex.search.site-url "&yandex.search.url;&amp;surl_manually=true&amp;surl={searchSite}">
+<!ENTITY yandex.qs.url "http://yandex.ua/search/?clid={clid6}&amp;text={searchTerms}">
+<!ENTITY yandex.qs.suggestions "http://suggest.yandex.ua/suggest-ff.cgi?uil=be&amp;part={searchTerms}">
+<!ENTITY yandex.qs.keywordsearch "http://yandex.ua/search/?clid={clid9}&amp;text={searchTerms}">

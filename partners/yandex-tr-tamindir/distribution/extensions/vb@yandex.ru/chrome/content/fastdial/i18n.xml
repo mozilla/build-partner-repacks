@@ -19,6 +19,7 @@
     <key name="footer.history" value="&footer.history;"/>
     <key name="footer.downloads" value="&footer.downloads;"/>
     <key name="footer.closedTabs" value="&footer.closedTabs;"/>
+    <key name="footer.addThumb" value="&footer.addThumb;"/>
     <key name="settings" value="&settings;"/>
     <key name="settings.releaseDate" value="&settings.releaseDate;"/>
     <key name="settings.otherSoft" value="&settings.otherSoft;"/>
@@ -46,6 +47,15 @@
     <key name="settings.editTitle" value="&settings.editTitle;"/>
     <key name="settings.popularSites" value="&settings.popularSites;"/>
     <key name="settings.lastVisited" value="&settings.lastVisited;"/>
+    <key name="restorepopup.button" value="&restorepopup.button;"/>
+    <key name="restorepopup.tumb" value="&restorepopup.tumb;"/>
+    <key name="restorepopup.tumbs" value="&restorepopup.tumbs;"/>
+    <key name="modalStat.header" value="&modalStat.header;"/>
+    <key name="modalStat.text" value="&modalStat.text;"/>
+    <key name="modalStat.moreInfoText" value="&modalStat.moreInfoText;"/>
+    <key name="modalStat.moreInfoLink" value="&modalStat.moreInfoLink;"/>
+    <key name="modalStat.accept" value="&modalStat.accept;"/>
+    <key name="modalStat.cancel" value="&modalStat.cancel;"/>
     <key name="app.searchTutorial.description" value="&app.searchTutorial.description;"/>
     <key name="app.searchTutorial.example" value="&app.searchTutorial.example;"/>
     <key name="app.searchTutorial.thanks" value="&app.searchTutorial.thanks;"/>
@@ -66,6 +76,8 @@
     <key name="dialog.yes" value="&dialog.yes;"/>
     <key name="dialog.no" value="&dialog.no;"/>
     <key name="app.noInternet" value="&app.noInternet;"/>
+
+    <key name="advertisement.backgrounds.done" value="&advertisement.backgrounds.done;"/>
 
     <key name="auth.signin" value="&auth.signin;"/>
     <key name="auth.signout" value="&auth.signout;"/>

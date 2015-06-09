@@ -1,12 +1,8 @@
 <?xml version='1.0'?>
-<?xml-stylesheet href="browser.css"?>
 
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <window id="main-window">
         <script src="browser.js" type="application/x-javascript"/>
-        <script src="addonsubst.js" type="application/x-javascript"/>
-
-        
         <script src="contextMenu.js" type="application/x-javascript"/>
     </window>
 </overlay>

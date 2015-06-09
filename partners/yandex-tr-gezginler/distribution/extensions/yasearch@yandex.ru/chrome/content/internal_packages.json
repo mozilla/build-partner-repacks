@@ -29,9 +29,6 @@
   "http://bar-widgets.yandex.ru/packages/approved/135/manifest.xml": {
     "dirName": "gmail"
   },
-  "http://bar-widgets.yandex.ru/packages/approved/136/manifest.xml": {
-    "dirName": "twitter"
-  },
   "http://bar-widgets.yandex.ru/packages/approved/143/manifest.xml": {
     "dirName": "safe-browsing"
   },

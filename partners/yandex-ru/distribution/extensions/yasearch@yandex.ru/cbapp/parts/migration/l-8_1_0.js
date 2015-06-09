@@ -47,14 +47,14 @@ const migrator = {
     _migrateCommonQuotes: function migrator__migrateCommonQuotes() {
         const quotesID = "http://bar.yandex.ru/packages/yandexbar#quote";
         const oldQuotesPrefPath = "yasearch.xbwidgets." + quotesID;
-        const newQuotesPrefPath = "yasearch.native_comps." + quotesID;
+        const newQuotesPrefPath = "extensions.yasearch@yandex.ru.native_comps." + quotesID;
         this._migrationModule.movePrefBranch(oldQuotesPrefPath, newQuotesPrefPath);
     },
     _migrateTRQuotes: function migrator__migrateTRQuotes() {
         const oldQuotesID = "http://bar-widgets.yandex.ru/packages/approved/138/manifest.xml#quotebtn";
         const oldQuotesPrefPath = "yasearch.xbwidgets." + oldQuotesID;
         const newQuotesID = "http://bar.yandex.ru/packages/yandexbar#quote";
-        const newQuotesPrefPath = "yasearch.native_comps." + newQuotesID;
+        const newQuotesPrefPath = "extensions.yasearch@yandex.ru.native_comps." + newQuotesID;
         this._migrationModule.movePrefBranch(oldQuotesPrefPath, newQuotesPrefPath);
         const oldBtnPrefix = this._makeWidgetIdPrefix(oldQuotesID);
         const newBtnPrefix = this._makeWidgetIdPrefix(newQuotesID);
@@ -70,12 +70,12 @@ const migrator = {
         const oldMetrikaID = "http://bar-widgets.yandex.ru/packages/175/manifest.xml#metrika";
         const oldMetrikaPrefPath = "yasearch.xbwidgets." + oldMetrikaID;
         const newMetrikaID = "http://bar-widgets.yandex.ru/packages/approved/76/manifest.xml#metrika";
-        const newMetrikaPrefPath = "yasearch.native_comps." + newMetrikaID;
+        const newMetrikaPrefPath = "extensions.yasearch@yandex.ru.native_comps." + newMetrikaID;
         this._migrationModule.movePrefBranch(oldMetrikaPrefPath, newMetrikaPrefPath);
         const oldSiteID = "http://bar-widgets.yandex.ru/packages/175/manifest.xml#site";
         const oldSitePrefPath = "yasearch.xbwidgets." + oldSiteID;
         const newSiteID = "http://bar-widgets.yandex.ru/packages/approved/76/manifest.xml#site";
-        const newSitePrefPath = "yasearch.native_comps." + newSiteID;
+        const newSitePrefPath = "extensions.yasearch@yandex.ru.native_comps." + newSiteID;
         this._migrationModule.movePrefBranch(oldSitePrefPath, newSitePrefPath);
         const oldMetrikaBtnPrefix = this._makeWidgetIdPrefix(oldMetrikaID);
         const newMetrikaBtnPrefix = this._makeWidgetIdPrefix(newMetrikaID);
@@ -98,7 +98,7 @@ const migrator = {
     _migrateDirect: function migrator__migrateDirect() {
         const directIDPrefix = "http://bar-widgets.yandex.ru/packages/approved/17/manifest";
         const oldDirectPrefPath = "yasearch.xbwidgets." + directIDPrefix;
-        const newDirectPrefPath = "yasearch.native_comps." + directIDPrefix;
+        const newDirectPrefPath = "extensions.yasearch@yandex.ru.native_comps." + directIDPrefix;
         this._migrationModule.movePrefBranch(oldDirectPrefPath, newDirectPrefPath);
     },
     _migrateYandexMoney: function migrator__migrateYandexMoney() {

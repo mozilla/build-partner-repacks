@@ -34,10 +34,17 @@ var module = function (app, common) {
                 }
             }
         },
-        _openMainWindow: function () {
-            var mainWindow = common.api.Browser.getHiddenFrame();
-            mainWindow.contentWindow.location.href = wrapper_window;
-            return mainWindow.contentWindow;
+        _openMainWindow: function (callback) {
+            if ("getHiddenFramePromise" in common.api.Browser) {
+                common.api.Browser.getHiddenFramePromise().then(mainWindow => {
+                    mainWindow.contentWindow.location.href = wrapper_window;
+                    callback(mainWindow.contentWindow);
+                });
+            } else {
+                var mainWindow = common.api.Browser.getHiddenFrame();
+                mainWindow.contentWindow.location.href = wrapper_window;
+                callback(mainWindow.contentWindow);
+            }
         },
         _closeMainWindow: function () {
             if (this._window && !this._window.closed) {
@@ -186,7 +193,9 @@ var module = function (app, common) {
         _resetPlayer: function () {
             var wtmr = false;
             if (!this._window || this._window.closed) {
-                this._window = this._openMainWindow();
+                this._openMainWindow(function (win) {
+                    this._window = win;
+                }.bind(this));
                 log("this._window = this._openMainWindow();");
                 wtmr = true;
             } else {

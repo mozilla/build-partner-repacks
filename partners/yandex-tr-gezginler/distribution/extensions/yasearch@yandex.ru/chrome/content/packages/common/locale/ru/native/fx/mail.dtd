@@ -27,3 +27,4 @@
 <!ENTITY mail.alert.sound.select.label "Выбрать">
 <!ENTITY mail.alert.sound.preview.label "Прослушать">
 <!ENTITY mail.openServiceOnClick.label "По нажатию на кнопку открывать страницу сервиса">
+<!ENTITY mail.settings.allAccountsCounter.label "Показывать счетчик писем для всех авторизованных аккаунтов">

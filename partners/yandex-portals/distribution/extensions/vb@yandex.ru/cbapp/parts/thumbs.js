@@ -7,320 +7,219 @@ const {
     results: Cr
 } = Components;
 const GLOBAL = this;
-const DB_FILENAME = "fastdial.sqlite";
-const DAILY_IDLE_EVENT = "idle-daily";
 const OLDEST_THUMB_TIME_SECONDS = 86400 * 30;
-const MAX_HISTORY_RESULTS = 100;
-const MAX_PICKUP_LENGTH = 49 + 24 + 3;
-const REFRESH_INTERVAL = 86400;
-const BRANDING_PAGES_BOOST = 5;
+const WEEK_UPDATE = 60 * 24 * 7;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyServiceGetter(GLOBAL, "UUID_SVC", "@mozilla.org/uuid-generator;1", "nsIUUIDGenerator");
-Cu.import("resource://gre/modules/PlacesUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+const urlToThumbs = Object.create(null);
+const hostToThumbs = Object.create(null);
 const thumbs = {
-    init: function Thumbs_init(application) {
-        application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
-        this._application = application;
-        this._logger = application.getLogger("Thumbs");
-        this._pickupLogger = application.getLogger("Pickup");
-        Services.obs.addObserver(this, DAILY_IDLE_EVENT, false);
-        this._initDatabase();
-        let appInfo = this._application.addonManager.info;
-        if (appInfo.isFreshAddonInstall && this._application.preferences.get("yabar.migrated", false) === false) {
-            this._application.preferences.set("ftabs.emptyLastThumb", true);
-        }
-        if (appInfo.isFreshAddonInstall) {
-            this.pickupThumbs({ withForceThumbs: true });
-            return;
-        }
-        const DATADIR_CRASH_PREF = "ftabs.dataDirCrash";
-        if (this._application.preferences.get(DATADIR_CRASH_PREF, false)) {
-            this._application.preferences.reset(DATADIR_CRASH_PREF);
-            this.pickupThumbs({ withForceThumbs: true });
-            return;
-        }
-        this._fetchThumbs(function fetchThumbsOnInitCallback(err) {
-            if (err) {
-                this._logger.error(err);
-                return;
+    init: function (app) {
+        app.core.Lib.sysutils.copyProperties(app.core.Lib, GLOBAL);
+        this._application = app;
+        this._logger = app.getLogger("Thumbs");
+        let dataproviders = this._application.dataproviders;
+        this.screenshotsProvider = dataproviders.getProvider("screenshots");
+        this.faviconsProvider = dataproviders.getProvider("favicons");
+        this.logosProvider = dataproviders.getProvider("logos");
+        this.titlesProvider = dataproviders.getProvider("titles");
+        this.screenshotsProvider.addListener("change", this._updateThumbs);
+        this.faviconsProvider.addListener("change", this._updateThumbs);
+        this.logosProvider.addListener("change", this._updateThumbs);
+        this.titlesProvider.addListener("change", this._updateThumbsTitles);
+        this._application.alarms.restoreOrCreate("updateAllThumbsData", {
+            timeout: WEEK_UPDATE,
+            isInterval: true,
+            triggerIfCreated: false,
+            handler: () => {
+                this.updateThumbsData();
             }
-            let now = Math.round(Date.now() / 1000);
-            let lastPickupTime = this._application.preferences.get("ftabs.lastPickupTime", 0);
-            let pickupDateDiff = Math.abs(now - lastPickupTime);
-            if (pickupDateDiff > this._pickupInterval) {
-                if (this.scheduledPickup()) {
-                    return;
-                }
-            }
-            this._pickupTimer = new sysutils.Timer(this.scheduledPickup.bind(this), Math.max(this._pickupInterval - pickupDateDiff, 0) * 1000);
-            Services.obs.notifyObservers(this, this._application.core.eventTopics.THUMBS_STRUCTURE_READY_EVENT, null);
-            new sysutils.Timer(function () {
-                if (!this._application) {
-                    return;
-                }
-                if (this._isRefreshNeeded) {
-                    this._refreshThumbsData();
-                } else {
-                    this._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
-                        this.getMissingData(thumbData);
-                    }, this);
-                    let lastRefreshTime = this._application.preferences.get("ftabs.lastRefreshThumbsTime", 0);
-                    let lastRefreshDiff = Math.abs(now - lastRefreshTime);
-                    this._refreshThumbsTimer = new sysutils.Timer(this._refreshThumbsData.bind(this), Math.max(REFRESH_INTERVAL - lastRefreshDiff, 0) * 1000);
-                    this.getScreenshotsAndLogos();
-                }
-            }.bind(this), 5000);
-        }.bind(this));
+        });
     },
-    finalize: function Thumbs_finalize(doCleanup, callback) {
-        Services.obs.removeObserver(this, DAILY_IDLE_EVENT);
-        if (this._pickupTimer) {
-            this._pickupTimer.cancel();
-            this._pickupTimer = null;
-        }
-        let dbClosedCallback = function Thumbs_finalize_dbClosedCallback() {
-            this.structure = null;
-            this._database = null;
-            this._application = null;
-            this._logger = null;
-            this._pickupLogger = null;
-            callback();
-        }.bind(this);
-        if (this._database) {
-            this._database.close(dbClosedCallback);
-            return true;
-        }
-        dbClosedCallback();
+    finalize: function (doCleanup, callback) {
+        this.screenshotsProvider.removeListener("change", this._updateThumbs);
+        this.faviconsProvider.removeListener("change", this._updateThumbs);
+        this.logosProvider.removeListener("change", this._updateThumbs);
+        this.titlesProvider.removeListener("change", this._updateThumbsTitles);
+        this.screenshotsProvider = null;
+        this.faviconsProvider = null;
+        this.logosProvider = null;
+        this.titlesProvider = null;
+        this._application = null;
+        this._logger = null;
     },
-    observe: function Thumbs_observe(aSubject, aTopic, aData) {
-        switch (aTopic) {
-        case DAILY_IDLE_EVENT:
-            this._database.executeQueryAsync({
-                query: "DELETE FROM thumbs WHERE insertTimestamp < :oldestTime " + "AND rowid NOT IN (SELECT thumb_id FROM thumbs_shown)",
-                parameters: { oldestTime: Math.round(Date.now() / 1000) - OLDEST_THUMB_TIME_SECONDS }
+    updateThumbsData: function () {
+        new sysutils.Timer(() => {
+            this._logger.info("Updating all thumbs data");
+            this._application.internalStructure.iterate(thumb => {
+                thumb.requestData(true);
             });
-            break;
+        }, 3000);
+    },
+    _updateThumbs: function (eventName, target, data) {
+        let thumbs = hostToThumbs[target.host];
+        if (thumbs) {
+            thumbs.forEach(thumb => thumb.update());
         }
     },
-    swap: function Thumbs_swap(oldIndex, newIndex) {
-        if (oldIndex === newIndex || oldIndex < 0 || newIndex < 0) {
+    _updateThumbsTitles: function (eventName, target, newTitle) {
+        if (!newTitle) {
             return;
         }
-        let pos1ThumbData = this._application.internalStructure.getItem(oldIndex);
-        let pos2ThumbData = this._application.internalStructure.getItem(newIndex);
-        this._logger.trace("Swap thumbs #" + oldIndex + " and #" + newIndex);
-        try {
-            this._logger.trace("Old index data: " + JSON.stringify(pos1ThumbData));
-        } catch (ex) {
-            this._logger.trace("Old index data: {nsIURI}");
+        let thumbs = hostToThumbs[target.host];
+        if (thumbs) {
+            thumbs.forEach(thumb => {
+                if (thumb.title) {
+                    return;
+                }
+                thumb.title = newTitle;
+            });
         }
-        try {
-            this._logger.trace("New index data: " + JSON.stringify(pos2ThumbData));
-        } catch (ex) {
-            this._logger.trace("New index data: {nsIURI}");
+    },
+    onContextmenu: function (thumbIndex, state) {
+        this._hoveredThumbIndex = thumbIndex;
+        this.uiState = state;
+    },
+    get hoveredThumbIndex() {
+        let index = this._hoveredThumbIndex;
+        if (typeof this._hoveredThumbIndex === "undefined") {
+            this._hoveredThumbIndex = -1;
         }
-        if (!pos1ThumbData) {
+        return this._hoveredThumbIndex;
+    },
+    changePinState: function (index, value) {
+        let thumb = this._application.internalStructure.getItem(index);
+        thumb.pinned = value;
+        thumb.statParam = "userthumb";
+        this._logger.info("Thumb #" + index + " " + (value ? "pinned" : "unpinned"));
+    },
+    saveThumb: function (index, data) {
+        if (index < 0 || sysutils.isEmptyObject(data)) {
             return;
         }
-        let currentThumbsNum = this._application.layout.getThumbsNum();
-        if (newIndex === currentThumbsNum - 1) {
-            this._application.preferences.set("ftabs.emptyLastThumb", false);
+        this._application.advertisement.conditions.thumbWasAdded = true;
+        let currentThumb = this._application.internalStructure.getItem(index);
+        if (currentThumb && currentThumb.url === data.url && currentThumb.title !== data.title) {
+            currentThumb.title = data.title;
+            currentThumb.statParam = "userthumb";
+            currentThumb.pinned = true;
+            this._logger.info("User changed title in" + currentThumb);
+            return;
         }
-        this._application.internalStructure.removeItem(oldIndex);
-        this._application.internalStructure.removeItem(newIndex);
-        pos1ThumbData.pinned = true;
-        pos1ThumbData.thumb = pos1ThumbData.thumb || {};
-        pos1ThumbData.thumb.statParam = "userthumb";
-        pos1ThumbData.sync = pos1ThumbData.sync || {};
-        pos1ThumbData.sync.id = this._application.sync.generateId();
-        pos1ThumbData.sync.instance = this._application.name;
-        pos1ThumbData.sync.timestamp = Math.round(Date.now() / 1000);
-        this._application.internalStructure.overwriteItem(newIndex, pos1ThumbData);
-        if (pos2ThumbData) {
-            pos2ThumbData.thumb = pos2ThumbData.thumb || {};
-            pos2ThumbData.thumb.statParam = "userthumb";
-            pos2ThumbData.sync = pos2ThumbData.sync || {};
-            pos2ThumbData.sync.id = this._application.sync.generateId();
-            pos2ThumbData.sync.instance = this._application.name;
-            pos2ThumbData.sync.timestamp = Math.round(Date.now() / 1000);
-            this._application.internalStructure.overwriteItem(oldIndex, pos2ThumbData);
+        let thumb = this.createThumbFromFrontendData(data);
+        if (!thumb) {
+            this._sendThumbChangedEvent({ index: index });
+            return;
         }
-        let evtData = {};
-        evtData[newIndex] = this._application.frontendHelper.getDataForIndex(newIndex);
-        evtData[oldIndex] = this._application.frontendHelper.getDataForIndex(oldIndex);
-        this._application.fastdial.sendRequest("thumbChanged", evtData);
+        if ("pinned" in data) {
+            thumb.pinned = data.pinned;
+        }
+        if ("statParam" in data) {
+            thumb.statParam = data.statParam;
+        }
+        this._application.blacklist.deleteDomain(thumb.host);
+        this._logger.info(thumb + " created at " + index);
+        this._application.internalStructure.setItem(index, thumb);
+        this._sendThumbChangedEvent({ index: index });
+        this._application.fastdial.sendRequest("action", { type: "closePopups" });
         this._application.syncPinned.save();
     },
-    remove: function Thumbs_remove(aIndex) {
-        let thumbData = this._application.internalStructure.getItem(aIndex);
-        if (aIndex < 0 || !thumbData) {
+    remove: function Thumbs_remove(index, {addToBlacklist}) {
+        if (index < 0) {
             return;
         }
-        this._logger.trace("Remove thumb #" + aIndex);
-        this._application.usageHistory.logAction("delete", { index: aIndex });
-        this._application.internalStructure.removeItem(aIndex);
+        let thumb = this._application.internalStructure.getItem(index);
+        if (!thumb) {
+            return;
+        }
+        this._logger.info("Removing thumb #" + index + " (" + thumb.host + ")");
+        this._application.internalStructure.removeItem(index, true);
         let isStandardURL = false;
         try {
-            thumbData.location.QueryInterface(Ci.nsIURL);
+            thumb.uri.QueryInterface(Ci.nsIURL);
             isStandardURL = true;
         } catch (ex) {
         }
-        if (isStandardURL) {
+        if (isStandardURL && addToBlacklist) {
             let hasSameDomain = false;
-            let thumbHost = thumbData.location.asciiHost.replace(/^www\./, "");
-            let source = thumbData.source;
-            let hasSameURL = false;
-            this._application.internalStructure.iterate({
-                nonempty: true,
-                visible: true
-            }, function (thumbData, thumbIndex) {
-                if (aIndex === thumbIndex) {
+            let thumbHost = thumb.asciiHost.replace(/^www\./, "");
+            this._application.internalStructure.iterate(function (thumb, thumbIndex) {
+                if (index === thumbIndex) {
                     return;
                 }
-                if (thumbHost === thumbData.location.asciiHost) {
+                if (thumbHost === thumb.asciiHost) {
                     hasSameDomain = true;
-                }
-                if (source === thumbData.source) {
-                    hasSameURL = true;
                 }
             });
             if (!hasSameDomain) {
                 this._application.blacklist.upsertDomain(thumbHost);
             }
-            if (!hasSameURL) {
-                this._application.screenshots.createScreenshotInstance(thumbData.source).remove();
-            }
+        }
+        this._application.fastdial.sendRequest("action", { type: "closePopups" });
+        this._application.syncPinned.save();
+    },
+    swap: function (oldIndex, newIndex) {
+        if (oldIndex === newIndex || oldIndex < 0 || newIndex < 0) {
+            return;
+        }
+        let thumb = this._application.internalStructure.getItem(oldIndex);
+        let internalStructure = this._application.internalStructure;
+        internalStructure.swap(oldIndex, newIndex);
+        internalStructure.getItem(newIndex).statParam = "userthumb";
+        internalStructure.getItem(newIndex).pinned = true;
+        if (oldIndex > newIndex) {
+            [
+                oldIndex,
+                newIndex
+            ] = [
+                newIndex,
+                oldIndex
+            ];
+        }
+        this._application.fastdial.sendRequest("action", { type: "closePopups" });
+        for (let i = oldIndex; i <= newIndex; i++) {
+            let thumb = internalStructure.getItem(oldIndex);
+            thumb.sync = thumb.sync || {};
+            thumb.sync.id = this._application.sync.generateId();
+            thumb.sync.instance = this._application.name;
+            thumb.sync.timestamp = Math.round(Date.now() / 1000);
         }
         this._application.syncPinned.save();
-        let emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
-        let currentThumbsNum = this._application.layout.getThumbsNum();
-        if (emptyLastThumb) {
-            currentThumbsNum -= 1;
-        }
-        this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
     },
-    save: function Thumbs_save(index, data) {
-        let currentThumbsNum = this._application.layout.getThumbsNum();
-        let originalURL = data.url;
-        let uri;
-        if (index < 0 || sysutils.isEmptyObject(data)) {
-            return;
-        }
-        data.title = data.title.trim() || "";
-        try {
-            uri = netutils.newURI(data.url);
-        } catch (ex) {
-            if (!/(ht|f)tps?:\/\//.test(data.url)) {
-                data.url = "http://" + data.url;
-            }
-            try {
-                uri = netutils.newURI(data.url);
-            } catch (ex2) {
-                this._logger.warn("Saved URL is not valid: " + originalURL);
-            }
-        }
-        if (!uri) {
-            let evtData = {};
-            evtData[index] = this._application.frontendHelper.getDataForIndex(index);
-            this._application.fastdial.sendRequest("thumbChanged", evtData);
-            return;
-        }
-        try {
-            uri = uri.QueryInterface(Ci.nsIURL);
-        } catch (err) {
-        }
-        if (this._application.isYandexURL(uri.spec)) {
-            let parsedQuery = netutils.querystring.parse(uri.query || "");
-            delete parsedQuery.nugt;
-            uri.query = netutils.querystring.stringify(parsedQuery);
-        }
-        data.url = uri.spec;
-        this._logger.trace("Save thumb #" + index + " (" + JSON.stringify(data) + ")");
-        let currentThumbData = this._application.internalStructure.getItem(index);
-        (currentThumbData || {}).pinned = true;
-        if (currentThumbData && currentThumbData.source && currentThumbData.thumb && currentThumbData.source === data.url && currentThumbData.thumb.title !== data.title) {
-            currentThumbData.thumb.title = data.title;
-            currentThumbData.thumb.statParam = "userthumb";
-            this._application.internalStructure.overwriteItem(index, currentThumbData);
-            let evtData = {};
-            evtData[index] = this._application.frontendHelper.getDataForIndex(index);
-            this._application.fastdial.sendRequest("thumbChanged", evtData);
-            return;
-        }
-        this._application.internalStructure.iterate({
-            pinned: true,
-            nonempty: true
-        }, function (thumbData, index) {
-            if (!thumbData.source || thumbData.source !== data.url || index < currentThumbsNum) {
+    get pinnedPositions() {
+        let output = [];
+        this._application.internalStructure.iterate({ pinned: true }, function (thumbData, index) {
+            output.push(index);
+        });
+        return output;
+    },
+    _compactUnpinned: function (gapIndex) {
+        let index = gapIndex;
+        let compactedNum = 0;
+        this._application.internalStructure.iterate({ pinned: false }, function (thumb, thumbIndex) {
+            if (thumbIndex <= gapIndex) {
                 return;
             }
-            this._application.internalStructure.removeItem(index);
-            this._compactUnpinned(index);
+            this._application.internalStructure.setItem(index, thumb);
+            this._application.internalStructure.removeItem(thumbIndex);
+            index = thumbIndex;
+            compactedNum += 1;
         }, this);
-        if (index === currentThumbsNum - 1) {
-            this._application.preferences.set("ftabs.emptyLastThumb", false);
-        }
-        if (!currentThumbData) {
-            this._application.usageHistory.logAction("add", {
-                url: data.url,
-                index: index,
-                title: data.title || ""
-            });
-        }
-        let host = this._application.fastdial.getDecodedUrlHost(data.url);
-        if (host) {
-            this._application.blacklist.deleteDomain(host);
-        }
-        let dbRecord = {
-            url: data.url,
-            title: data.title || null,
-            syncId: this._application.sync.generateId(),
-            syncInternalId: this._application.sync.generateId(),
-            syncInstance: this._application.name,
-            syncTimestamp: Math.round(Date.now() / 1000),
-            statParam: "userthumb"
-        };
-        let internalThumbData = this._application.internalStructure.convertDbRow(dbRecord, true);
-        this._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
-            if (thumbData.source === data.url) {
-                internalThumbData.favicon = thumbData.favicon;
-                internalThumbData.background = thumbData.background;
-                internalThumbData.screenshot = thumbData.screenshot;
-            }
-        });
-        let historyThumb = this._application.fastdial._historyThumbs[data.url];
-        if (historyThumb) {
-            internalThumbData.favicon = internalThumbData.favicon || historyThumb.favicon || null;
-            internalThumbData.background = internalThumbData.background || historyThumb.background || null;
-            internalThumbData.screenshot = internalThumbData.screenshot || historyThumb.screenshot || null;
-        }
-        this._application.internalStructure.overwriteItem(index, internalThumbData);
-        let evtData = {};
-        evtData[index] = this._application.frontendHelper.getDataForIndex(index);
-        if (!evtData[index].favicon) {
-            evtData[index].favicon = this._application.favicons.getYandexNetFaviconURL(uri);
-        }
-        this._application.fastdial.sendRequest("thumbChanged", evtData);
-        this._application.syncPinned.save();
-        this._application.cloudSource.fetchThumbLogo(internalThumbData.location, { force: true });
-        this.getScreenshotsAndLogos();
+        return compactedNum;
     },
-    updateCurrentSet: function Thumbs_updateCurrentSet(removePositions, saveData) {
+    updateCurrentSet: function (removePositions, saveData) {
         this._logger.trace("Update current set with data: " + JSON.stringify([
             removePositions,
             saveData
         ]));
-        let currentThumbsNum = this._application.layout.getThumbsNum();
-        let requestData = {};
+        let currentThumbsNum = this._application.internalStructure.length;
+        let requestData = Object.create(null);
         removePositions.forEach(function (pos) {
             this._application.internalStructure.removeItem(pos);
-            requestData[pos] = {};
+            requestData[pos] = null;
         }, this);
         Object.keys(saveData).forEach(function (index) {
-            if (index == currentThumbsNum - 1) {
-                this._application.preferences.set("ftabs.emptyLastThumb", false);
-            }
             let dbRecord = {
                 url: saveData[index].url,
                 title: saveData[index].title.trim() || null,
@@ -328,492 +227,26 @@ const thumbs = {
                 syncInternalId: saveData[index].internalId,
                 syncInstance: saveData[index].instance,
                 syncTimestamp: saveData[index].timestamp,
-                statParam: "userthumb"
+                statParam: "userthumb",
+                pinned: true
             };
-            let internalThumbData = this._application.internalStructure.convertDbRow(dbRecord, true);
-            this._application.internalStructure.overwriteItem(index, internalThumbData);
-            requestData[index] = this._application.frontendHelper.getDataForIndex(index);
-            this.getMissingData(internalThumbData, {
+            let thumb = this.createThumbFromDBRow(dbRecord);
+            this._application.internalStructure.setItem(index, thumb);
+            requestData[index] = thumb.frontendState;
+            this.getMissingData(thumb, {
                 force: true,
                 syncOnly: true
             });
         }, this);
         this._application.fastdial.sendRequest("thumbChanged", requestData);
     },
-    changePinnedState: function Thumbs_changePinnedState(index, isPinned) {
-        let current = this._application.internalStructure.getItem(index);
-        let structureNeedsChanges = true;
-        let syncId;
-        let syncInstance;
-        let syncTimestamp;
-        let syncInternalId;
-        let needSync;
-        let logMessage = strutils.formatString("%1 thumb #%2", [
-            isPinned ? "Pin" : "Unpin",
-            index
-        ]);
-        this._logger.trace(logMessage);
-        if (isPinned && current && current.source) {
-            syncId = this._application.sync.generateId();
-            syncInstance = this._application.name;
-            syncTimestamp = Math.round(Date.now() / 1000);
-            syncInternalId = this._application.sync.generateId();
-        } else {
-            syncId = syncInstance = syncTimestamp = syncInternalId = null;
-        }
-        let lastThumbIndex = this._application.layout.getThumbsNum() - 1;
-        let emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
-        let knowsAboutLastThumb = index === lastThumbIndex;
-        if (knowsAboutLastThumb) {
-            this._application.preferences.set("ftabs.emptyLastThumb", false);
-        }
-        if (isPinned) {
-            needSync = current && current.source;
-        } else {
-            needSync = current && current.source && current.pinned;
-        }
-        if (knowsAboutLastThumb && emptyLastThumb) {
-            this._application.internalStructure.removeItem(lastThumbIndex);
-            structureNeedsChanges = false;
-        }
-        if (current && !current.source && !isPinned) {
-            this._application.internalStructure.removeItem(index);
-            structureNeedsChanges = false;
-        }
-        if (structureNeedsChanges) {
-            current = current || {};
-            current.pinned = isPinned;
-            current.thumb.statParam = "userthumb";
-            if (current.source) {
-                current.sync.id = syncId;
-                current.sync.internalId = syncInternalId;
-                current.sync.timestamp = syncTimestamp;
-                current.sync.instance = syncInstance;
-            }
-            this._application.internalStructure.setItem(index, current);
-        }
-        let requestData = {};
-        requestData[index] = this._application.frontendHelper.getDataForIndex(index);
-        this._application.fastdial.sendRequest("thumbChanged", requestData);
-        if (needSync) {
-            this._application.syncPinned.save();
-        }
-    },
-    scheduledPickup: function Thumbs_scheduledPickup() {
-        this.resetPickupTimer();
-        let holesExist = false;
-        let emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
-        let currentThumbsNum = this._application.layout.getThumbsNum();
-        if (emptyLastThumb) {
-            currentThumbsNum--;
-        }
-        for (let i = 0; i < currentThumbsNum; i++) {
-            if (!this._application.internalStructure.getItem(i)) {
-                holesExist = true;
-                break;
-            }
-        }
-        let now = Math.round(Date.now() / 1000);
-        let lastPickupTime = this._application.preferences.get("ftabs.lastPickupTime", 0);
-        let timeHasCome = Math.abs(now - lastPickupTime) >= REFRESH_INTERVAL;
-        if (holesExist || timeHasCome) {
-            this.pickupThumbs();
-            return true;
-        }
-        return false;
-    },
-    pickupThumbs: function Thumbs_pickupThumbs(options) {
-        let self = this;
-        let pickupLogger = this._pickupLogger;
-        options = options || {};
-        options.withForceThumbs = options.withForceThumbs || false;
-        options.num = options.num || 1;
-        if (options.num > 3) {
-            this._application.frontendHelper.mute = false;
-            this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
-            return;
-        }
-        let pickupStartTime = Date.now();
-        pickupLogger.debug("[start] Thumbs_pickupThumbs");
-        if (this._pickupTimer) {
-            this._pickupTimer.cancel();
-        }
-        let now = Math.round(Date.now() / 1000);
-        this._application.preferences.set("ftabs.lastPickupTime", now);
-        async.parallel({
-            blacklist: function Thumbs_pickupThumbs_blacklist(callback) {
-                self._application.blacklist.getAll(callback);
-            },
-            topHistory: function Thumbs_pickupThumbs_topHistory(callback) {
-                callback(null, self._application.syncTopHistory.requestData());
-            },
-            unsafe: function Thumbs_pickupThumbs_unsafe(callback) {
-                self._application.safebrowsing.listUnsafeDomains(callback);
-            }
-        }, function Thumbs_pickupThumbs_onDataReceived(err, results) {
-            if (err) {
-                throw new Error(err);
-            }
-            results.pinned = {};
-            self._application.internalStructure.iterate({ pinned: true }, function (thumbData, index) {
-                let newThumb = results.pinned[index] = {
-                    url: thumbData.source,
-                    title: null,
-                    backgroundColor: null,
-                    favicon: null,
-                    screenshot: null,
-                    position: index,
-                    fixed: 1,
-                    statParam: null
-                };
-                if (thumbData.thumb) {
-                    newThumb.title = thumbData.thumb.title || null;
-                    newThumb.screenshot = thumbData.thumb.screenshot || null;
-                    newThumb.statParam = thumbData.thumb.statParam || null;
-                }
-                if (thumbData.favicon) {
-                    newThumb.backgroundColor = (thumbData.favicon || {}).color;
-                }
-                if (thumbData.background) {
-                    newThumb.backgroundColor = (thumbData.background || {}).color;
-                }
-                [
-                    "id",
-                    "instance",
-                    "timestamp",
-                    "internalId"
-                ].forEach(function (syncField) {
-                    if (thumbData.sync && thumbData.sync[syncField]) {
-                        let fieldName = "sync" + syncField[0].toUpperCase() + syncField.substr(1);
-                        newThumb[fieldName] = thumbData.sync[syncField];
-                    }
-                });
-            });
-            results.branded = self.getBrandedThumbs(results.pinned, false);
-            pickupLogger.trace("Start data: " + JSON.stringify(results));
-            let blockedDomains = Array.concat(results.unsafe, results.blacklist.domains);
-            let existingPinnedThumbs = results.pinned;
-            let {
-                local: historyEntries,
-                tophistory: topHistoryEntries
-            } = self._getMergedHistoryQueue(results.topHistory, results.unsafe, results.branded);
-            pickupLogger.debug("Local history entries: " + JSON.stringify(historyEntries.map(page => ({
-                page: page.url,
-                visits: page.visits
-            }))));
-            pickupLogger.trace("Top history entries: " + JSON.stringify(topHistoryEntries.map(page => page.url)));
-            let fixedThumbs = options.withForceThumbs ? self._getForceAndPinnedThumbs(existingPinnedThumbs) : existingPinnedThumbs;
-            let pinnedDomains = [];
-            for (let [
-                        ,
-                        thumbData
-                    ] in Iterator(fixedThumbs)) {
-                if (thumbData.url) {
-                    let host = self._application.fastdial.getDecodedUrlHost(thumbData.url);
-                    if (host) {
-                        pinnedDomains.push(host);
-                    }
-                }
-            }
-            results.branded.sort((pageA, pageB) => pageB.boost - pageA.boost);
-            let free = Math.max(MAX_PICKUP_LENGTH - Object.keys(fixedThumbs).length, 0);
-            let allBlockedDomains = blockedDomains.concat(pinnedDomains);
-            allBlockedDomains.forEach(function (blockedDomain) {
-                allBlockedDomains = allBlockedDomains.concat(this._application.getHostAliases(blockedDomain));
-            }, self);
-            pickupLogger.debug("All blocked domains: " + JSON.stringify(allBlockedDomains));
-            let mostVisitedList = self._getMostVisitedQueue(allBlockedDomains, results.blacklist.regexps, results.branded, historyEntries, free);
-            let prevMostVisitedList = self._getPrevMostVisited();
-            pickupLogger.trace("Most visited list: " + JSON.stringify(mostVisitedList.map(page => page.url)));
-            pickupLogger.trace("Previous most visited list: " + JSON.stringify(prevMostVisitedList.map(page => page.url)));
-            prevMostVisitedList.forEach(function (prevEntry) {
-                let foundInCurrentList = false;
-                let host = self._application.fastdial.getDecodedUrlHost(prevEntry.url);
-                mostVisitedList.forEach(function (entry) {
-                    if (entry.url === prevEntry.url) {
-                        foundInCurrentList = true;
-                        entry.visits = Math.max(entry.visits || 0, prevEntry.visits);
-                        return;
-                    }
-                    let entryHost = self._application.fastdial.getDecodedUrlHost(entry.url);
-                    if (host === entryHost) {
-                        foundInCurrentList = true;
-                    } else {
-                        self._application.getHostAliases(entryHost).some(function (alias) {
-                            if (alias === host) {
-                                foundInCurrentList = true;
-                                return true;
-                            }
-                            return false;
-                        });
-                    }
-                });
-                if (foundInCurrentList) {
-                    return;
-                }
-                let foundInPinned = Object.keys(fixedThumbs).some(function (thumbIndex) {
-                    let fixedThumb = fixedThumbs[thumbIndex];
-                    return fixedThumb.url === prevEntry.url;
-                });
-                if (foundInPinned) {
-                    return;
-                }
-                let foundInUnsafe = host && results.unsafe.indexOf(host) !== -1 || false;
-                if (foundInUnsafe) {
-                    return;
-                }
-                mostVisitedList.push(prevEntry);
-            });
-            self._saveMostVisited(mostVisitedList);
-            topHistoryEntries = topHistoryEntries.filter(function (entry) {
-                let host = self._application.fastdial.getDecodedUrlHost(entry.url);
-                return !host || results.unsafe.indexOf(host) === -1;
-            });
-            let currentThumbsNum = self._application.layout.getThumbsNum();
-            let emptyLastThumb = self._application.preferences.get("ftabs.emptyLastThumb", false);
-            if (emptyLastThumb) {
-                currentThumbsNum--;
-            }
-            let unpinnedCount = currentThumbsNum - Object.keys(fixedThumbs).length;
-            let newThumbs = {};
-            for (let i = 0; Object.keys(fixedThumbs).length > 0; i++) {
-                if (!fixedThumbs[i]) {
-                    continue;
-                }
-                let thumbData = fixedThumbs[i];
-                delete fixedThumbs[i];
-                newThumbs[i] = self._application.internalStructure.convertDbRow(thumbData, thumbData.fixed);
-            }
-            let sql = "SELECT thumbs.url, shown.position " + "FROM thumbs_shown AS shown " + "LEFT JOIN thumbs ON thumbs.rowid = shown.thumb_id";
-            let rowsData = [];
-            try {
-                rowsData = self._database.execQuery(sql);
-            } catch (err2) {
-            }
-            let urlToPosition = rowsData.reduce(function (obj, item) {
-                if (item.position < currentThumbsNum && item.url) {
-                    obj[item.url] = item.position;
-                }
-                return obj;
-            }, {});
-            mostVisitedList.sort(function (a, b) {
-                let aVisits = a.visits || 0;
-                let bVisits = b.visits || 0;
-                return bVisits - aVisits;
-            });
-            if (mostVisitedList.length > 1) {
-                let isShuffled = true;
-                while (isShuffled) {
-                    isShuffled = false;
-                    for (let i = 1; i < mostVisitedList.length; i++) {
-                        let currentItem = mostVisitedList[i];
-                        let prevItem = mostVisitedList[i - 1];
-                        let currentItemPosition = urlToPosition[currentItem.url];
-                        let prevItemPosition = urlToPosition[prevItem.url];
-                        if (typeof currentItemPosition === "number" && prevItem.visits === currentItem.visits) {
-                            if (typeof prevItemPosition !== "number") {
-                                [
-                                    mostVisitedList[i - 1],
-                                    mostVisitedList[i]
-                                ] = [
-                                    currentItem,
-                                    prevItem
-                                ];
-                                isShuffled = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                for (let i = 0; i < mostVisitedList.length; i++) {
-                    mostVisitedList[i].index = i;
-                }
-                isShuffled = true;
-                while (isShuffled) {
-                    isShuffled = false;
-                    for (let i = 1; i < mostVisitedList.length; i++) {
-                        let currentItem = mostVisitedList[i];
-                        let prevItem = mostVisitedList[i - 1];
-                        let currentItemPosition = urlToPosition[currentItem.url];
-                        let prevItemPosition = urlToPosition[prevItem.url];
-                        if (typeof currentItemPosition === "number" && prevItem.visits === currentItem.visits) {
-                            if (typeof prevItemPosition === "number" && prevItem.index < currentItem.index) {
-                                [
-                                    mostVisitedList[i - 1],
-                                    mostVisitedList[i]
-                                ] = [
-                                    currentItem,
-                                    prevItem
-                                ];
-                                isShuffled = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            pickupLogger.debug("Resorted and merged most visited list: " + JSON.stringify(mostVisitedList.map(page => page.url)));
-            mostVisitedList = mostVisitedList.map(function (thumbData, i) {
-                let converted = self._application.internalStructure.convertDbRow(thumbData);
-                converted.position = urlToPosition[thumbData.url];
-                return converted;
-            });
-            let visibleMostVisitedList = mostVisitedList.slice(0, unpinnedCount);
-            let invisibleMostVisitedList = mostVisitedList.slice(unpinnedCount, mostVisitedList.length);
-            let freePositions = [];
-            invisibleMostVisitedList.forEach(function (thumbData) {
-                if (typeof thumbData.position === "number") {
-                    freePositions.push(thumbData.position);
-                    delete thumbData.position;
-                }
-            });
-            let withFixPosition = [];
-            let visibleWithoutPosition = [];
-            visibleMostVisitedList.forEach(function (thumbData) {
-                if (freePositions.length && typeof thumbData.position !== "number") {
-                    thumbData.position = freePositions.shift();
-                }
-                if (typeof thumbData.position === "number") {
-                    withFixPosition.push(thumbData);
-                } else {
-                    visibleWithoutPosition.push(thumbData);
-                }
-            });
-            pickupLogger.debug("Visible with fix position: " + JSON.stringify(withFixPosition.map(page => page.source)));
-            pickupLogger.debug("Visible without fix position: " + JSON.stringify(visibleWithoutPosition.map(page => page.source)));
-            invisibleMostVisitedList = visibleWithoutPosition.concat(invisibleMostVisitedList);
-            withFixPosition.forEach(function (thumbData) {
-                if (!newThumbs[thumbData.position]) {
-                    newThumbs[thumbData.position] = thumbData;
-                } else {
-                    invisibleMostVisitedList.unshift(thumbData);
-                }
-            });
-            let i = 0;
-            pickupLogger.trace("Invisible most visited list: " + JSON.stringify(invisibleMostVisitedList.map(page => page.url)));
-            while (invisibleMostVisitedList.length) {
-                newThumbs[i] = newThumbs[i] || invisibleMostVisitedList.shift();
-                i++;
-            }
-            pickupLogger.trace("Result: " + JSON.stringify(newThumbs));
-            let urlsToMissingData = {};
-            self._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
-                let thumb = thumbData.thumb;
-                urlsToMissingData[thumbData.source] = {
-                    favicon: thumbData.favicon,
-                    background: thumbData.background,
-                    screenshot: thumbData.screenshot,
-                    statParam: thumb ? thumb.statParam : null
-                };
-            });
-            for (let [
-                        index,
-                        thumbData
-                    ] in Iterator(newThumbs)) {
-                let urlToMissingData = urlsToMissingData[thumbData.source];
-                if (urlToMissingData) {
-                    thumbData.favicon = urlToMissingData.favicon;
-                    thumbData.background = urlToMissingData.background;
-                    thumbData.screenshot = urlToMissingData.screenshot;
-                    thumbData.thumb = thumbData.thumb || {};
-                    thumbData.thumb.statParam = urlToMissingData.statParam;
-                }
-            }
-            self._application.internalStructure.clear();
-            self._application.internalStructure.setItem(newThumbs);
-            Services.obs.notifyObservers(this, self._application.core.eventTopics.THUMBS_STRUCTURE_READY_EVENT, null);
-            self._application.fastdial.sendRequest("thumbChanged", self._application.frontendHelper.fullStructure);
-            self.resetPickupTimer();
-            if (self._isRefreshNeeded) {
-                self._refreshThumbsData();
-            } else {
-                self._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
-                    self.getMissingData(thumbData, { force: options.withForceThumbs });
-                });
-            }
-            self._application.safebrowsing.checkUnpinnedDomains(options.num, topHistoryEntries);
-            self.getScreenshotsAndLogos();
-            let existingScreenshotNames = Object.create(null);
-            self._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
-                existingScreenshotNames[this._application.screenshots.createScreenshotInstance(thumbData.source).name] = true;
-            }, self);
-            let entries = self._application.screenshots.shotsDir.directoryEntries;
-            while (entries.hasMoreElements()) {
-                let file = entries.getNext().QueryInterface(Ci.nsIFile);
-                if (file.isFile() && !existingScreenshotNames[file.leafName]) {
-                    fileutils.removeFileSafe(file);
-                }
-            }
-            pickupLogger.debug("[finish] Thumbs_pickupThumbs (" + (Date.now() - pickupStartTime) + " msec.)");
-        });
-    },
-    _getPrevMostVisited: function Thumbs__getPrevMostVisited() {
-        let pickupCacheFile = this._pickupCacheFile;
-        try {
-            return fileutils.jsonFromFile(pickupCacheFile).mostVisited;
-        } catch (err) {
-            return [];
-        }
-    },
-    _saveMostVisited: function Thumbs__saveMostVisited(mostVisited) {
-        let pickupCacheFile = this._pickupCacheFile;
-        fileutils.jsonToFile({ mostVisited: mostVisited }, pickupCacheFile);
-    },
-    get _pickupCacheFile() {
-        let shotsDir = this._application.core.rootDir;
-        shotsDir.append("pickup_cache.json");
-        return shotsDir;
-    },
-    getBrandedThumbs: function Thumbs_getBrandedThumbs(ignoredThumbs, onlyWithForceThumbs) {
-        let domains = {};
-        for (let [
-                    ,
-                    thumb
-                ] in Iterator(ignoredThumbs)) {
-            let host = this._application.fastdial.getDecodedUrlHost(thumb.url);
-            if (host) {
-                domains[host] = 1;
-            }
-        }
-        let branded = [];
-        let query = onlyWithForceThumbs ? "pages > page[force='true']" : "pages > page";
-        Array.forEach(this._application.fastdial.brandingXMLDoc.querySelectorAll(query), function (page) {
-            let boost = page.getAttribute("boost");
-            let index = parseInt(page.getAttribute("index"), 10) - 1;
-            boost = boost === null ? BRANDING_PAGES_BOOST : parseInt(boost, 10);
-            let url = this._application.fastdial.expandBrandingURL(page.getAttribute("url"));
-            let host = this._application.fastdial.getDecodedUrlHost(url);
-            if (!domains[host]) {
-                branded.push({
-                    url: url,
-                    title: page.getAttribute("custom_title"),
-                    fixed: Number(onlyWithForceThumbs),
-                    preferedIndex: index,
-                    boost: boost,
-                    statParam: "defthumb"
-                });
-            }
-        }, this);
-        return branded;
-    },
-    resetPickupTimer: function Thumbs_resetPickupTimer() {
-        if (this._pickupTimer) {
-            this._pickupTimer.cancel();
-        }
-        this._pickupTimer = new sysutils.Timer(function () {
-            this.scheduledPickup();
-        }.bind(this), this._pickupInterval * 1000);
-    },
     fastPickup: function Thumbs_fastPickup(unpinned) {
         let blockedDomains = [];
-        this._application.internalStructure.iterate({
-            nonempty: true,
-            pinned: true
-        }, function (thumbData, index) {
+        this._application.internalStructure.iterate({ pinned: true }, function (thumbData, index) {
             try {
-                let domain = thumbData.location.asciiHost.replace(/^www\./, "");
-                blockedDomains.push(domain);
-                this._application.getHostAliases(domain).forEach(function (alias) {
+                let host = thumbData.host;
+                blockedDomains.push(host);
+                this._application.getHostAliases(host).forEach(function (alias) {
                     blockedDomains.push(alias);
                 });
             } catch (ex) {
@@ -830,7 +263,7 @@ const thumbs = {
                     thumbData
                 ] in Iterator(unpinned)) {
             try {
-                let domain = thumbData.location.asciiHost.replace(/^www\./, "");
+                let domain = thumbData.asciiHost;
                 if (blockedDomains.indexOf(domain) !== -1) {
                     structureNeedsChanges = true;
                     dropPositions.push(index);
@@ -844,8 +277,8 @@ const thumbs = {
             });
         }
         unpinnedList.sort(function (a, b) {
-            let aVisits = a.thumbData.thumb.visits || 0;
-            let bVisits = b.thumbData.thumb.visits || 0;
+            let aVisits = a.thumbData.visits;
+            let bVisits = b.thumbData.visits;
             return bVisits - aVisits;
         });
         this._logger.trace("Unpinned list: " + JSON.stringify(unpinnedList));
@@ -868,399 +301,340 @@ const thumbs = {
         if (!structureNeedsChanges) {
             return;
         }
-        this._application.internalStructure.iterate(null, function (thumbData, index) {
-            if (thumbData.source && thumbData.pinned) {
-                return;
-            }
+        this._application.internalStructure.iterate({ pinned: false }, function (thumbData, index) {
             if (dropPositions.indexOf(index) !== -1) {
                 this._application.internalStructure.removeItem(index);
             }
         }, this);
         this._logger.trace("Set records: " + JSON.stringify(setRecords));
-        this._application.internalStructure.overwriteItem(setRecords);
-        this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
-        this.getScreenshotsAndLogos();
+        this._application.internalStructure.overwriteItems(setRecords);
     },
-    getMissingData: function Thumbs_getMissingData(thumbData, options) {
-        if (!thumbData.source) {
-            return;
+    createThumbFromDBRow: function (thumbData) {
+        if (!thumbData.url) {
+            return null;
+        }
+        return new Thumb(thumbData);
+    },
+    isIndexPage: function (uri) {
+        let isIndexPage = true;
+        if (thumbs._application.isYandexHost(uri.asciiHost)) {
+            try {
+                uri.QueryInterface(Ci.nsIURL);
+            } catch (err) {
+            }
+            isIndexPage = !uri.filePath || uri.filePath === "/";
+        } else {
+            isIndexPage = uri.path === "/";
+        }
+        return isIndexPage;
+    },
+    createThumbFromFrontendData: function ({url, title}) {
+        let uri = this._getURIFromRawURL(url);
+        if (!uri) {
+            return null;
+        }
+        if (this._application.isYandexURL(uri.spec)) {
+            let parsedQuery = netutils.querystring.parse(uri.query || "");
+            delete parsedQuery.nugt;
+            uri.query = netutils.querystring.stringify(parsedQuery);
+        }
+        let dbRecord = {
+            url: uri.spec,
+            pinned: true,
+            title: title || null,
+            syncId: this._application.sync.generateId(),
+            syncInternalId: this._application.sync.generateId(),
+            syncInstance: this._application.name,
+            syncTimestamp: Math.round(Date.now() / 1000),
+            statParam: "userthumb"
+        };
+        this.logosProvider.requestData(uri.spec, { requestSource: true });
+        return this.createThumbFromDBRow(dbRecord);
+    },
+    _sendThumbChangedEvent: function Thumbs__sendThumbChangedEvent({index, url}) {
+        let eventThumbStructure = {};
+        if (typeof index !== "undefined") {
+            let thumb = this._application.internalStructure.getItem(index);
+            eventThumbStructure[index] = thumb && thumb.frontendState || null;
+        }
+        if (typeof url !== "undefined") {
+            this._application.internalStructure.iterate({ url: url }, (thumb, index) => {
+                eventThumbStructure[index] = thumb.frontendState;
+            });
+        }
+        if (Object.keys(eventThumbStructure).length) {
+            this._application.fastdial.sendRequest("thumbChanged", eventThumbStructure);
+        }
+    },
+    _getURIFromRawURL: function (url) {
+        let originalURL = url;
+        let uri;
+        try {
+            uri = netutils.newURI(url);
+        } catch (ex) {
+            if (!/^(ht|f)tps?:\/\//.test(url)) {
+                url = "http://" + url;
+            }
+            try {
+                uri = netutils.newURI(url);
+            } catch (ex2) {
+                this._logger.warn("Saved URL is not valid: " + originalURL);
+            }
+        }
+        if (!uri) {
+            return null;
         }
         try {
-            this._logger.trace("Get missing: " + JSON.stringify(thumbData));
-        } catch (ex) {
-            this._logger.trace("Get missing: {nsIURI} " + thumbData.location.spec);
-        }
-        let stopValues = [
-            undefined,
-            null
-        ];
-        let backgroundImageMissing = !Boolean(thumbData.background);
-        let thumbDataMerged = thumbData;
-        options = options || {};
-        if (stopValues.indexOf(thumbData.thumb.title) !== -1) {
-            this._application.fastdial.requestTitleForURL(thumbData.source, function (err, title) {
-                if (err) {
-                    return;
-                }
-                let dataStructure = {};
-                this._application.internalStructure.iterate({ nonempty: true }, function (data, index) {
-                    if (thumbData.source !== data.source) {
-                        return;
-                    }
-                    data.thumb.title = title;
-                    dataStructure[index] = data;
-                });
-                this._application.internalStructure.setItem(dataStructure);
-                this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
-                let cachedHistoryData = this._application.fastdial.cachedHistoryThumbs[thumbData.source];
-                if (cachedHistoryData) {
-                    cachedHistoryData.thumb.title = title;
-                    this._application.fastdial.sendRequest("historyThumbChanged", this._application.frontendHelper.getDataForThumb(cachedHistoryData));
-                }
-            }.bind(this));
-        }
-        if (!thumbData.favicon || !thumbData.favicon.url || options.force) {
-            this._application.favicons.requestFaviconForURL(thumbData.location, function (faviconURL, dominantColor) {
-                if (!faviconURL) {
-                    return;
-                }
-                let dataStructure = {};
-                this._application.internalStructure.iterate({ nonempty: true }, function (data, index) {
-                    if (thumbData.source !== data.source) {
-                        return;
-                    }
-                    data.favicon = {
-                        url: faviconURL,
-                        color: dominantColor
-                    };
-                    dataStructure[index] = data;
-                });
-                this._application.internalStructure.setItem(dataStructure);
-                this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
-                let historyThumb = this._application.fastdial.cachedHistoryThumbs[thumbData.source];
-                let faviconData = {
-                    url: faviconURL,
-                    color: dominantColor
-                };
-                if (historyThumb) {
-                    historyThumb.favicon = faviconData;
-                    this._application.fastdial.sendRequest("historyThumbChanged", this._application.frontendHelper.getDataForThumb(historyThumb));
-                }
-            }.bind(this));
-        } else if (thumbData.favicon && !thumbData.favicon.color && (!thumbData.background || !thumbData.background.url)) {
-            this._application.colors.requestImageDominantColor(thumbData.favicon.url, function (err, dominantColor) {
-                if (err || dominantColor === null) {
-                    return;
-                }
-                let dataStructure = {};
-                this._application.internalStructure.iterate({ nonempty: true }, function (data, index) {
-                    if (thumbData.source !== data.source) {
-                        return;
-                    }
-                    data.favicon.color = dominantColor;
-                    dataStructure[index] = data;
-                });
-                this._application.internalStructure.setItem(dataStructure);
-                this._application.fastdial.sendRequest("thumbChanged", this._application.frontendHelper.fullStructure);
-                let cachedHistoryData = this._application.fastdial.cachedHistoryThumbs[thumbData.source];
-                if (cachedHistoryData) {
-                    cachedHistoryData.favicon.color = dominantColor;
-                    this._application.fastdial.sendRequest("historyThumbChanged", this._application.frontendHelper.getDataForThumb(cachedHistoryData));
-                }
-            }.bind(this));
-        }
-        this._application.cloudSource.fetchThumbLogo(thumbData.location, { force: options.force && !options.syncOnly });
-    },
-    getScreenshotsAndLogos: function Thumbs_getScreenshotsAndLogos(thumbData) {
-        this._application.internalStructure.iterate({
-            nonempty: true,
-            visible: true
-        }, function (thumbData) {
-            let screenshot = this._application.screenshots.createScreenshotInstance(thumbData.source);
-            if (!screenshot.fileAvailable) {
-                screenshot.shot();
-            }
-            this._application.cloudSource.fetchThumbLogo(thumbData.location);
-        }.bind(this));
-    },
-    onContextmenu: function Thumbs_onContextmenu(thumbIndex) {
-        this._hoveredThumbIndex = thumbIndex;
-    },
-    get hoveredThumbIndex() {
-        let index = this._hoveredThumbIndex;
-        if (typeof this._hoveredThumbIndex === "undefined") {
-            this._hoveredThumbIndex = -1;
-        }
-        return this._hoveredThumbIndex;
-    },
-    get numberOfFilled() {
-        let total = 0;
-        this._application.internalStructure.iterate({
-            visible: true,
-            nonempty: true
-        }, function () {
-            total += 1;
-        });
-        if (this._application.preferences.get("ftabs.emptyLastThumb", false)) {
-            total -= 1;
-        }
-        return total;
-    },
-    get pinnedPositions() {
-        let thumbsNumX = this._application.layout.layoutX;
-        let thumbsNumY = this._application.layout.layoutY;
-        let emptyLastThumb = this._application.preferences.get("ftabs.emptyLastThumb", false);
-        let currentThumbsNum = this._application.layout.getThumbsNum();
-        let output = [];
-        let lastThumbProcessed = false;
-        this._application.internalStructure.iterate({ visible: true }, function (thumbData, index) {
-            if (index === currentThumbsNum - 1) {
-                lastThumbProcessed = true;
-                if (emptyLastThumb) {
-                    thumbData = { pinned: true };
-                }
-            }
-            if (!thumbData || !thumbData.pinned) {
-                return;
-            }
-            let yPosition = Math.floor(parseInt(index, 10) / thumbsNumX);
-            let xPosition = parseInt(index, 10) - yPosition * thumbsNumX;
-            output.push(yPosition + "." + xPosition);
-        });
-        if (!lastThumbProcessed && emptyLastThumb) {
-            let lastThumbIndex = currentThumbsNum - 1;
-            let yPosition = Math.floor(lastThumbIndex / thumbsNumX);
-            let xPosition = lastThumbIndex - yPosition * thumbsNumX;
-            output.push(yPosition + "." + xPosition);
-        }
-        return output;
-    },
-    get _pickupInterval() {
-        let prefValue = this._application.preferences.get("ftabs.pickupInterval", 3600);
-        return Math.max(parseInt(prefValue, 10), 0);
-    },
-    get _isRefreshNeeded() {
-        let now = Math.round(Date.now() / 1000);
-        let lastRefreshTime = this._application.preferences.get("ftabs.lastRefreshThumbsTime", 0);
-        let lastRefreshDiff = Math.abs(now - lastRefreshTime);
-        return !lastRefreshTime || lastRefreshDiff > REFRESH_INTERVAL;
-    },
-    _refreshThumbsData: function Thumbs__refreshThumbsData() {
-        this._logger.debug("Start updating thumb's data...");
-        let now = Math.round(Date.now() / 1000);
-        let lastRefreshTime = this._application.preferences.get("ftabs.lastRefreshThumbsTime", now);
-        this._application.internalStructure.iterate({ nonempty: true }, function (thumbData) {
-            this.getMissingData(thumbData, { force: true });
-        }, this);
-        this._application.preferences.set("ftabs.lastRefreshThumbsTime", now);
-        this._refreshThumbsTimer = new sysutils.Timer(this._refreshThumbsData.bind(this), REFRESH_INTERVAL * 1000);
-        this.getScreenshotsAndLogos();
-    },
-    _getMergedHistoryQueue: function Thumbs__getMergedHistoryQueue(topHistoryData, unsafeDomains, branded) {
-        let mergedTopHistory = [];
-        let queueDomains = Object.create(null);
-        let historyEntries = branded.map(function (entry) {
-            return this._application.sync.prepareUrlForServer(entry.url);
-        }, this);
-        let topHistoryHash = {};
-        topHistoryData.forEach(function (elem) {
-            topHistoryHash[elem.url] = elem.id;
-        });
-        let query = PlacesUtils.history.getNewQuery();
-        let options = PlacesUtils.history.getNewQueryOptions();
-        query.minVisits = 3;
-        options.sortingMode = options.SORT_BY_VISITCOUNT_DESCENDING;
-        let result = PlacesUtils.history.executeQuery(query, options);
-        let resultRoot = result.root;
-        resultRoot.containerOpen = true;
-        let placesCounter = 0;
-        let topHistoryCounter = 0;
-        while (mergedTopHistory.length < MAX_HISTORY_RESULTS) {
-            let historyNode = placesCounter < resultRoot.childCount ? resultRoot.getChild(placesCounter) : null;
-            let topHistoryElem = topHistoryCounter < topHistoryData.length ? topHistoryData[topHistoryCounter] : null;
-            if (!historyNode && !topHistoryElem) {
-                break;
-            }
-            if (!topHistoryElem || historyNode && historyNode.accessCount >= topHistoryElem.visits) {
-                placesCounter += 1;
-                if (!historyNode.title) {
-                    continue;
-                }
-                if (!/^(https?|ftp):\/\//.test(historyNode.uri)) {
-                    continue;
-                }
-                if (/(social\.yandex\.|\Woauth\d?|\/login\.php|logout)/i.test(historyNode.uri)) {
-                    continue;
-                }
-                historyEntries.push(historyNode.uri);
-                let host = this._application.fastdial.getDecodedUrlHost(historyNode.uri);
-                if (host && (queueDomains[host] || unsafeDomains.indexOf(host) !== -1)) {
-                    continue;
-                }
-                mergedTopHistory.push({
-                    id: topHistoryHash[historyNode.uri] || null,
-                    url: historyNode.uri,
-                    title: historyNode.title,
-                    visits: historyNode.accessCount,
-                    isLocal: true
-                });
-                if (host) {
-                    queueDomains[host] = 1;
-                }
+            uri = uri.QueryInterface(Ci.nsIURL);
+            let host = uri.host;
+        } catch (err) {
+            if (/^\w+:\w+$/.test(uri.spec)) {
+                uri = this._fixURI(uri);
             } else {
-                topHistoryCounter += 1;
-                let host = this._application.fastdial.getDecodedUrlHost(topHistoryElem.url);
-                if (host && (queueDomains[host] || unsafeDomains.indexOf(host) !== -1)) {
-                    continue;
-                }
-                mergedTopHistory.push(topHistoryElem);
-                if (host) {
-                    queueDomains[host] = 1;
-                }
+                uri = null;
             }
         }
-        let mergedLocalHistory = mergedTopHistory.map(function (entry) {
-            entry = sysutils.copyObj(entry);
-            entry.statParam = "autothumb";
-            if (entry.isLocal) {
-                return entry;
-            }
-            entry.url = this._application.syncTopHistory.saveLocalClidState(entry.url, historyEntries);
-            return entry;
-        }, this);
-        resultRoot.containerOpen = false;
-        return {
-            local: mergedLocalHistory,
-            tophistory: mergedTopHistory
-        };
+        return uri;
     },
-    _fetchThumbs: function Thumbs__fetchThumbs(callback) {
-        this._logger.trace("Fetching thumbs...");
-        let sql = "SELECT thumbs.url, thumbs.title, thumbs.backgroundColor, thumbs.screenshotColor, " + "thumbs.favicon, thumbs.statParam, shown.* " + "FROM thumbs_shown AS shown LEFT JOIN thumbs ON thumbs.rowid = shown.thumb_id " + "ORDER BY shown.position";
-        this._database.executeQueryAsync({
-            query: sql,
-            columns: [
-                "url",
-                "title",
-                "backgroundColor",
-                "screenshotColor",
-                "favicon",
-                "statParam",
-                "thumb_id",
-                "position",
-                "fixed",
-                "syncInstance",
-                "syncId",
-                "syncTimestamp"
-            ],
-            callback: function (rowsData, storageError) {
-                if (storageError) {
-                    let err = new Error(strutils.formatString("Fetch thumbs error: %1 (code %2)", [
-                        storageError.message,
-                        storageError.result
-                    ]));
-                    if (callback) {
-                        callback(err);
-                    } else {
-                        Cu.reportError(err);
-                    }
-                    return;
-                }
-                rowsData.forEach(function (thumbData) {
-                    let internalThumbData = this._application.internalStructure.convertDbRow(thumbData, thumbData.fixed);
-                    this._application.internalStructure.setItem(thumbData.position, internalThumbData);
-                    if (internalThumbData.background && internalThumbData.background.url && !internalThumbData.background.color) {
-                        this._application.cloudSource.fetchThumbLogo(internalThumbData.location);
-                    }
-                }, this);
-                this._application.frontendHelper.mute = false;
-                this._logger.trace("Thumbs fetched");
-                if (callback) {
-                    callback(null);
-                }
-            }.bind(this)
-        });
-    },
-    _getForceAndPinnedThumbs: function Thumbs__getForceAndPinnedThumbs(existingPinnedThumbs) {
-        let output = {};
-        let emptyPositions = [];
-        for (let i = 0; i < MAX_PICKUP_LENGTH; i++) {
-            if (existingPinnedThumbs[i]) {
-                output[i] = existingPinnedThumbs[i];
-            } else {
-                emptyPositions.push(i);
-            }
-        }
-        this.getBrandedThumbs(existingPinnedThumbs, true).forEach(function (brandedThumb) {
-            let pageDomain = this._application.fastdial.getDecodedUrlHost(brandedThumb.url);
-            if (output[brandedThumb.preferedIndex] === undefined) {
-                output[brandedThumb.preferedIndex] = brandedThumb;
-            } else {
-                if (emptyPositions.length) {
-                    let index = emptyPositions.shift();
-                    output[index] = brandedThumb;
-                }
-            }
-        }, this);
-        return output;
-    },
-    _getMostVisitedQueue: function Thumbs__getMostVisitedQueue(blocked, regexps, branded, historyEntries, free) {
-        let output = [];
-        let queueDomains = Object.create(null);
-        while (branded.length || historyEntries.length || output.length < free) {
-            let brandedPage = branded.length ? branded[0] : null;
-            let historyPage = historyEntries.length ? historyEntries[0] : null;
-            if (!historyPage && !brandedPage) {
-                break;
-            }
-            let page = !historyPage || brandedPage && brandedPage.boost > historyPage.visits ? branded.shift() : historyEntries.shift();
-            let domain = this._application.fastdial.getDecodedUrlHost(page.url);
-            if (!domain || queueDomains[domain] || blocked.indexOf(domain) !== -1) {
-                continue;
-            }
-            let isDeniedByRegexp = regexps.some(function (regexpString) {
-                let regex = new RegExp(regexpString);
-                return regex.test(page.url);
-            });
-            if (isDeniedByRegexp) {
-                continue;
-            }
-            queueDomains[domain] = 1;
-            this._application.getHostAliases(domain).forEach(function (alias) {
-                queueDomains[alias] = 1;
-            });
-            page.fixed = 0;
-            page.visits = page.visits || page.boost;
-            output.push(page);
-        }
-        return output;
-    },
-    _initDatabase: function Thumbs__initDatabase() {
-        let dbFile = this._application.core.rootDir;
-        dbFile.append(DB_FILENAME);
-        this._database = new Database(dbFile);
-    },
-    _compactUnpinned: function Thumbs__compactUnpinned(gapIndex) {
-        let evtData = {};
-        let index = gapIndex;
-        let compactedNum = 0;
-        this._application.internalStructure.iterate({ nonempty: true }, function (thumbData, thumbIndex) {
-            if (thumbIndex <= gapIndex || thumbData.pinned) {
-                return;
-            }
-            this._application.internalStructure.overwriteItem(index, thumbData);
-            evtData[index] = this._application.frontendHelper.getDataForIndex(index);
-            this._application.internalStructure.removeItem(thumbIndex);
-            evtData[thumbIndex] = {};
-            index = thumbIndex;
-            compactedNum += 1;
-        }, this);
-        this._application.fastdial.sendRequest("thumbChanged", evtData);
-        return compactedNum;
+    _fixURI: function (uri) {
+        let fixedURI = Object.create(uri);
+        fixedURI.__defineGetter__("isInternalURL", () => true);
+        fixedURI.__defineGetter__("sourceURI", () => uri);
+        fixedURI.__defineGetter__("host", () => fixedURI.spec);
+        fixedURI.__defineGetter__("asciiHost", () => fixedURI.host);
+        fixedURI.__defineGetter__("clone", () => () => this._fixURI(uri.clone()));
+        return fixedURI;
     },
     _application: null,
-    _logger: null,
-    _database: null,
-    _pickupTimer: null,
-    _refreshThumbsTimer: null
+    _logger: null
+};
+let ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
+function registerThumb(thumb) {
+    let uri = thumb.uri;
+    let registeredThumbs = urlToThumbs[uri.spec] = urlToThumbs[uri.spec] || [];
+    registeredThumbs.push(thumb);
+    registeredThumbs = hostToThumbs[uri.host] = hostToThumbs[uri.host] || [];
+    registeredThumbs.push(thumb);
+}
+function unregisterThumb(thumb) {
+    let thumbs = urlToThumbs[thumb.url];
+    let index = -1;
+    if (thumbs) {
+        index = thumbs.indexOf(thumb);
+    }
+    if (index !== -1) {
+        thumbs.splice(index, 1);
+    }
+    thumbs = hostToThumbs[thumb.host];
+    if (!thumbs) {
+        index = -1;
+    } else {
+        index = thumbs.indexOf(thumb);
+    }
+    if (index !== -1) {
+        thumbs.splice(index, 1);
+    }
+}
+function Thumb(thumbData) {
+    this._url = thumbData.url;
+    this.pinned = Boolean(thumbData.pinned);
+    this._title = thumbData.title;
+    this._pickupInfo = { visits: thumbData.visits || thumbData.pickupInfo && thumbData.pickupInfo.visits || 0 };
+    this._statParam = thumbData.statParam;
+    this._sync = thumbData.sync || Object.create(null);
+    this._statParam = thumbData.statParam;
+    this._updateTimer = null;
+    registerThumb(this);
+    this._getMissingData();
+}
+Thumb.prototype = {
+    constructor: Thumb,
+    get isEmpty() {
+        thumbs._logger.error(".isEmpty is deprecated");
+        try {
+            throw new Error();
+        } catch (err) {
+            thumbs._logger.error(err.stack);
+        }
+        return false;
+    },
+    get host() {
+        if (this._host) {
+            return this._host;
+        }
+        this._host = this._uri.host.replace(/^www\./, "") || this.url.replace(/^(ht|f)tps?:\/\//, "");
+        return this._host;
+    },
+    get asciiHost() {
+        return this._uri.asciiHost.replace(/^www\./, "");
+    },
+    get visible() {
+        let index = this.index;
+        if (index === -1) {
+            return false;
+        }
+        let currentThumbsNum = thumbs._application.internalStructure.length;
+        if (!currentThumbsNum) {
+            return false;
+        }
+        if (index < currentThumbsNum) {
+            return true;
+        }
+        return false;
+    },
+    _url: null,
+    get url() {
+        return this._uri.spec;
+    },
+    get visits() {
+        return this._pickupInfo.visits;
+    },
+    get uri() {
+        if (!this._uri) {
+            this._uri = thumbs._getURIFromRawURL(this._url);
+        }
+        return this._uri.clone();
+    },
+    get thumb() {
+        throw new Error(".thumb property is deprecated");
+    },
+    get index() {
+        return thumbs._application.internalStructure.getThumbIndex(this);
+    },
+    get title() {
+        return this._title;
+    },
+    set title(val) {
+        if (typeof val !== "string" && val !== null) {
+            throw new TypeError("Title of thumb should be string or null. Got " + val);
+        }
+        this._title = val;
+        this.update();
+    },
+    get pinned() {
+        return this._pinned;
+    },
+    set pinned(val) {
+        if (typeof val !== "boolean") {
+            throw new TypeError("Pinned prop of thumb should be typeof boolean. Got " + val);
+        }
+        this._pinned = val;
+        this.update();
+        thumbs._application.syncPinned.save();
+    },
+    get statParam() {
+        return this._statParam || "userthumb";
+    },
+    set statParam(param) {
+        this._statParam = param;
+        this.update();
+    },
+    get internalState() {
+        return {
+            pinned: this.pinned,
+            sync: this.sync,
+            url: this.url,
+            title: this.title,
+            pickupInfo: this._pickupInfo,
+            statParam: this.statParam
+        };
+    },
+    get sync() {
+        return this._sync;
+    },
+    set sync(val) {
+        this._sync = val;
+    },
+    get screenshot() {
+        return thumbs.screenshotsProvider.get("screenshot", { url: this.url }) || null;
+    },
+    get favicon() {
+        return thumbs.faviconsProvider.get("favicon", { host: this.host }) || null;
+    },
+    get background() {
+        let background = thumbs.logosProvider.get("logo", { host: this.host });
+        if (background && background.logoMain && background.color) {
+            return background;
+        }
+        return null;
+    },
+    get frontendState() {
+        let app = thumbs._application;
+        let currentThumbsNum = app.internalStructure.length;
+        let output = Object.create(null);
+        let uri = this.uri;
+        output.url = uri.spec;
+        output.pinned = false;
+        output.isIndexPage = thumbs.isIndexPage(uri);
+        let host = this.host;
+        output.title = this.title || thumbs.titlesProvider.get("title", { url: uri.spec });
+        let favicon = this.favicon;
+        if (favicon) {
+            output.favicon = favicon.url;
+            if (favicon.color) {
+                output.backgroundColor = favicon.color;
+                output.fontColor = thumbs._application.colors.getFontColorByBackgroundColor(favicon.color);
+            }
+        }
+        let background = this.background;
+        if (background) {
+            output.fontColor = thumbs._application.colors.getFontColorByBackgroundColor(background.color);
+            output.backgroundColor = background.color;
+            output.backgroundImage = output.isIndexPage ? background.logoMain : background.logoSub;
+        }
+        let screenshot = this.screenshot;
+        if (screenshot && screenshot.canBeUsedWithThumb(output)) {
+            output.screenshot = screenshot.getDataForThumb();
+        }
+        let ownTitle = this.title;
+        if (ownTitle) {
+            output.title = ownTitle;
+        }
+        output.pinned = this.pinned;
+        output.statParam = this.statParam;
+        return output;
+    },
+    _dataRequested: false,
+    requestData: function (force = false) {
+        if (this._dataRequested && !force) {
+            return;
+        }
+        if (this.visible) {
+            this._dataRequested = true;
+            thumbs.screenshotsProvider.requestData(this.uri);
+            thumbs.faviconsProvider.requestData({ host: this.host }, { force: force });
+            thumbs.logosProvider.requestData({ host: this.host }, { force: force });
+        }
+    },
+    update: function () {
+        if (this._updateTimer) {
+            this._updateTimer.cancel();
+        }
+        this._updateTimer = new sysutils.Timer(() => {
+            if (!thumbs._application) {
+                return;
+            }
+            if (!this.visible) {
+                return;
+            }
+            this.requestData();
+            thumbs._sendThumbChangedEvent({ url: this.url });
+        }, 100);
+    },
+    toString: function () {
+        return "[Thumb " + this.url + "]";
+    },
+    toJSON: function () {
+        return this.toString();
+    },
+    destruct: function () {
+        unregisterThumb(this);
+    },
+    _getMissingData: function () {
+        if (this._title === null) {
+            thumbs._application.fastdial.requestTitleForURL(this._url, (err, title) => {
+                this.title = title || "";
+            });
+        }
+    }
 };

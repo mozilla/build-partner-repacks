@@ -1,4 +1,4 @@
-<!ENTITY location.bar.search "http://yandex.com.tr/yandsearch?clid={clid9}&amp;text=">
+<!ENTITY location.bar.search "http://yandex.com.tr/search/?clid={clid9}&amp;text=">
 <!ENTITY ctxmenu.search "Search in Yandex">
 <!ENTITY fd.home.tooltip "Go to Yandex Home">
 
@@ -19,10 +19,10 @@
 <!ENTITY yandex.label "Yandex">
 <!ENTITY yandex.search.tooltip "Search in Yandex">
 <!ENTITY yandex.url "http://www.yandex.com.tr/">
-<!ENTITY yandex.search.url "http://yandex.com.tr/yandsearch?text={searchTerms}">
-<!ENTITY yandex.search.site-url "http://yandex.com.tr/yandsearch?text={searchTerms}&amp;surl_manually=true&amp;surl={searchSite}">
-<!ENTITY yandex.suggestions.url "http://suggest.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=tr">
-<!ENTITY yandex.qs.keywordsearch "http://yandex.com.tr/yandsearch?clid={clid9}&amp;text={searchTerms}">
+<!ENTITY yandex.search.url "http://yandex.com.tr/search/?text={searchTerms}">
+<!ENTITY yandex.search.site-url "http://yandex.com.tr/search/?text={searchTerms}&amp;surl_manually=true&amp;surl={searchSite}">
+<!ENTITY yandex.suggestions.url "http://suggest.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=en">
+<!ENTITY yandex.qs.keywordsearch "http://yandex.com.tr/search/?clid={clid9}&amp;text={searchTerms}">
 
 <!ENTITY wikipedia.label "Wikipedia">
 <!ENTITY wikipedia.url "http://tr.wikipedia.org/">
@@ -35,14 +35,14 @@
 <!ENTITY yagorsel.url "http://www.gorsel.yandex.com.tr/">
 <!ENTITY yagorsel.search.url "http://gorsel.yandex.com.tr/yandsearch?text={searchTerms}">
 <!ENTITY yagorsel.search.site-url "http://gorsel.yandex.com.tr/yandsearch?text={searchTerms}&amp;surl_manually=true&amp;site={searchSite}">
-<!ENTITY yagorsel.suggestions.url "http://suggest-images.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=tr">
+<!ENTITY yagorsel.suggestions.url "http://suggest-images.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=en">
 <!ENTITY yagorsel.qs.keywordsearch "http://gorsel.yandex.com.tr/yandsearch?clid={clid9}&amp;text={searchTerms}">
 
 <!ENTITY yavideo.label "Yandex.Video">
 <!ENTITY yavideo.search.tooltip "Search in Yandex.Video">
 <!ENTITY yavideo.url "http://www.video.yandex.com.tr/">
 <!ENTITY yavideo.search.url "http://video.yandex.com.tr/#search?text={searchTerms}">
-<!ENTITY yavideo.suggestions.url "http://suggest-video.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=tr">
+<!ENTITY yavideo.suggestions.url "http://suggest-video.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&amp;uil=en">
 <!ENTITY yavideo.qs.keywordsearch "http://video.yandex.com.tr/#search?clid={clid9}&amp;text={searchTerms}">
 
 <!ENTITY yahaber.label "Yandex.News">

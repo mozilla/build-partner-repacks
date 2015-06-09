@@ -22,3 +22,7 @@
 <!ENTITY pagetranslator.tutorial.button.yaBrowser "Адчыніць">
 <!ENTITY pagetranslator.tutorial.text.noYaBrowser "Паспрабуйце ўсе магчымасці перакладу ў Яндекс.Браўзеры.">
 <!ENTITY pagetranslator.tutorial.text.yaBrowser "Паспрабуйце ўсе магчымасці перакладу ў Яндекс.Браўзеры.">
+<!ENTITY browseroffer.video.button.noYaBrowser "Усталяваць Яндекс.Браўзер">
+<!ENTITY browseroffer.video.button.yaBrowser "Адчыніць">
+<!ENTITY browseroffer.video.text.noYaBrowser "Рыжым Турба паскорыць запампаванне ролікаў на {domain} з павольным інтэрнэтам.">
+<!ENTITY browseroffer.video.text.yaBrowser "Адчыніце {domain} у Яндекс.Браўзеры. Рыжым Турба паскорыць запампаванне ролікаў з павольным інтэрнэтам.">

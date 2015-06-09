@@ -21,7 +21,7 @@ const branding = {
             this._logger.error("Failed replacing the same BP with internal version. \n" + strutils.formatError(e));
             this._logger.debug(e.stack);
         }
-        this._trySetAddonDescription();
+        new sysutils.Timer(this._trySetAddonDescription.bind(this), 5000);
     },
     updateFrom: function Branding_updateFrom(newPkgDir, newProductInfo, responseDate) {
         this._logger.config(strutils.formatString("Preparing to update to a new branding package. BrandID: '%1', date: %2", [
@@ -56,16 +56,6 @@ const branding = {
     },
     get brandingDate() {
         return this._brandingDate;
-    },
-    get barless() {
-        if (this._barless === null) {
-            try {
-                this._barless = strutils.xmlAttrToBool(this.productInfo.Barless && this.productInfo.Barless.enabled);
-            } catch (e) {
-                this._barless = false;
-            }
-        }
-        return this._barless;
     },
     get brandTemplateMap() {
         return this._brandTemplateMap;
@@ -156,7 +146,6 @@ const branding = {
     _productInfo: undefined,
     _browserConf: undefined,
     _updateUrl: undefined,
-    _barless: null,
     _consts: {
         GCASES: [
             "nom",
@@ -204,10 +193,10 @@ const branding = {
     _loadPackage: function PartnerPack__loadPackage() {
         let package_;
         let productInfo;
+        let currPkgDir = this._currPackageDir;
         try {
-            let currPkgDir = this._currPackageDir;
             if (!currPkgDir.exists()) {
-                this._application.addonFS.copySource("$content/branding", this._application.directories.vendorDir, this._consts.PKG_DIR_NAME);
+                this._copyInternalPackage();
             }
             [
                 package_,
@@ -216,16 +205,19 @@ const branding = {
         } catch (e) {
             this._logger.error("Existing branding package is invalid! Will try internal version. \n" + strutils.formatError(e));
             this._logger.debug(e.stack);
-            fileutils.removeFileSafe(this._currPackageDir);
-            this._application.addonFS.copySource("$content/branding", this._application.directories.vendorDir, this._consts.PKG_DIR_NAME);
+            fileutils.removeFileSafe(currPkgDir);
+            this._copyInternalPackage();
             [
                 package_,
                 productInfo
-            ] = this._validateBrandPkg(this._currPackageDir);
+            ] = this._validateBrandPkg(currPkgDir);
             this._brandingDate = this._application.core.buildDate;
         }
         this._package = package_;
         this._productInfo = productInfo;
+    },
+    _copyInternalPackage: function PartnerPack__copyInternalPackage() {
+        this._application.addonFS.copySource("$content/branding", this._application.directories.vendorDir, this._consts.PKG_DIR_NAME);
     },
     _checkBPAndReplaceIfSame: function PartnerPack__checkBPAndReplaceIfSame() {
         let currentPackage = this._package;
@@ -259,14 +251,7 @@ const branding = {
                     internalProductInfo.BrandingURL
                 ]));
             }
-            let currentIsBarless = strutils.xmlAttrToBool(currentProductInfo.Barless && currentProductInfo.Barless.enabled);
-            let internalIsBarless = strutils.xmlAttrToBool(internalProductInfo.Barless && internalProductInfo.Barless.enabled);
-            let viewModeChanged = currentIsBarless != internalIsBarless;
-            this._logger.debug(strutils.formatString("Barless modes are: %1, %2", [
-                currentIsBarless,
-                internalIsBarless
-            ]));
-            canUpdatePackage = sameAddresses || viewModeChanged;
+            canUpdatePackage = sameAddresses;
         }
         if (canUpdatePackage) {
             this._logger.debug("Replacing existing BP with internal one");
@@ -276,6 +261,9 @@ const branding = {
         }
     },
     _trySetAddonDescription: function PartnerPack__trySetAddonDescription() {
+        if (!this._application) {
+            return;
+        }
         let productInfo = this.productInfo;
         let prefs = this._application.preferences;
         try {

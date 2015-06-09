@@ -69,24 +69,6 @@ const migrator = {
         if (oldScreensDB.exists() && oldScreensDB.isFile()) {
             oldScreensDB.remove(true);
         }
-        let delayedTmpCleanupTimer = new sysutils.Timer(function () {
-            let theTempDir = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("TmpD", Ci.nsIFile);
-            try {
-                if (theTempDir.isDirectory()) {
-                    let dirEntries = theTempDir.directoryEntries;
-                    while (dirEntries.hasMoreElements()) {
-                        let file = dirEntries.getNext().QueryInterface(Ci.nsIFile);
-                        if (!file.isFile()) {
-                            continue;
-                        }
-                        if (/^\d{13}$/.test(file.leafName)) {
-                            fileutils.removeFileSafe(file);
-                        }
-                    }
-                }
-            } catch (e) {
-            }
-        }, 60 * 100);
         let ftabsXmlDataFile = app.core.rootDir;
         ftabsXmlDataFile.append("ftab.data.xml");
         if (ftabsXmlDataFile.exists() && ftabsXmlDataFile.isFile()) {

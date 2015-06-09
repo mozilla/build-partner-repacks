@@ -15,7 +15,6 @@ const dayuse = {
         this._application = aApplication;
         aApplication.core.Lib.sysutils.copyProperties(aApplication.core.Lib, GLOBAL);
         this._logger = aApplication.getLogger("Dayuse");
-        this._database = new this._application.core.Lib.Database(this._logsFile, [this._consts.INIT_QUERIES_TABLE_QUERY]);
         this._startTimers();
     },
     finalize: function dayuse_finalize(aDoCleanup, callback) {
@@ -27,9 +26,9 @@ const dayuse = {
             this._requestTimer.cancel();
             this._requestTimer = null;
         }
-        if (this._database) {
+        if (this.__database) {
             let logsFile = this._logsFile;
-            this._database.close(function dayuse__onDBClosed() {
+            this.__database.close(function dayuse__onDBClosed() {
                 if (aDoCleanup) {
                     fileutils.removeFileSafe(logsFile);
                 }
@@ -37,7 +36,7 @@ const dayuse = {
             });
             return true;
         }
-        this._database = null;
+        this.__database = null;
         return false;
     },
     updateScrollInfo: function dayuse_updateScrollInfo(pageHasVerticalScroll) {
@@ -92,14 +91,20 @@ const dayuse = {
     _collectTimer: null,
     _requestTimer: null,
     _sendingLogId: null,
-    _database: null,
+    __database: null,
+    get _database() {
+        if (!this.__database) {
+            this.__database = new this._application.core.Lib.Database(this._logsFile, [this._consts.INIT_QUERIES_TABLE_QUERY]);
+        }
+        return this.__database;
+    },
     _consts: {
         LAST_COLLECT_TIME_PREF_NAME: "dayuse.collect",
         LAST_SEND_TIME_PREF_NAME: "dayuse.send",
         VB_SCROLL_INFO_PREF_NAME: "dayuse.vb.scroll",
         CHECK_INTERVAL: 24 * 60 * 60 * 1000,
         get STAT_URL() {
-            return "http://clck.yandex.ru/click/dtype=elduse/product=" + (dayuse._application.core.CONFIG.APP.TYPE === "vbff" ? "vb" : "elmnt") + "/path=batch/*";
+            return "https://clck.yandex.ru/click/dtype=elduse/product=" + (dayuse._application.core.CONFIG.APP.TYPE === "vbff" ? "vb" : "elmnt") + "/path=batch/*";
         },
         INIT_QUERIES_TABLE_QUERY: "CREATE TABLE IF NOT EXISTS queries (" + " id INTEGER PRIMARY KEY," + " query BLOB," + " timeCreated INTEGER," + " sendAttempts INTEGER" + " )"
     },
@@ -262,26 +267,26 @@ const dayuseDataCollector = {
     get _application() {
         return dayuse._application;
     },
-    _calcCommonData: function dayuseDataCollector__calcCommonData(productCTag, topBrowserWindow) {
-        this._calcLocal(productCTag);
-        this._calcDayuse(productCTag);
-        this._calcHomepage(productCTag);
-        this._calcQS(productCTag);
-        this._calcStatUsageSend(productCTag);
-        this._calcBookmarksPanel(productCTag, topBrowserWindow);
-        this._calcBookmarksSidebar(productCTag, topBrowserWindow);
-        this._calcBookmarksCount(productCTag);
-        this._calcYaDisk(productCTag);
+    _calcCommonData: function dayuseDataCollector__calcCommonData(rootCTag, topBrowserWindow) {
+        this._calcLocal(rootCTag);
+        this._calcDayuse(rootCTag);
+        this._calcHomepage(rootCTag);
+        this._calcQS(rootCTag);
+        this._calcStatUsageSend(rootCTag);
+        this._calcBookmarksPanel(rootCTag, topBrowserWindow);
+        this._calcBookmarksSidebar(rootCTag, topBrowserWindow);
+        this._calcBookmarksCount(rootCTag);
+        this._calcYaDisk(rootCTag);
     },
-    _calcLocal: function dayuseDataCollector__calcLocal(productCTag) {
+    _calcLocal: function dayuseDataCollector__calcLocal(rootCTag) {
         let localTag = new CTag("local");
         localTag.addVars({
             brand: this._application.branding.brandID,
             lang: this._application.locale.language
         });
-        productCTag.addChildren(localTag);
+        rootCTag.addChildren(localTag);
     },
-    _calcDayuse: function dayuseDataCollector__calcDayuse(productCTag) {
+    _calcDayuse: function dayuseDataCollector__calcDayuse(rootCTag) {
         let installTimeInSec = this._application.preferences.get("general.install.time");
         if (!installTimeInSec) {
             return;
@@ -290,9 +295,9 @@ const dayuseDataCollector = {
         ageInDays = Math.max(ageInDays, 0);
         let dayuseTag = new CTag("dayuse" + this._productTagName);
         dayuseTag.addVars({ count: ageInDays });
-        productCTag.addChildren(dayuseTag);
+        rootCTag.addChildren(dayuseTag);
     },
-    _calcHomepage: function dayuseDataCollector__calcHomepage(productCTag) {
+    _calcHomepage: function dayuseDataCollector__calcHomepage(rootCTag) {
         let browserHomePage = this._application.installer.getBrowserHomePage();
         let hpTag = new CTag("hp");
         let hpTagVar = "diff";
@@ -302,29 +307,29 @@ const dayuseDataCollector = {
             hpTagVar = "ya";
         }
         hpTag.addVars({ name: hpTagVar });
-        productCTag.addChildren(hpTag);
+        rootCTag.addChildren(hpTag);
     },
-    _calcQS: function dayuseDataCollector__calcQS(productCTag) {
+    _calcQS: function dayuseDataCollector__calcQS(rootCTag) {
         let qsTag = new CTag("qs");
         qsTag.addVars({ name: this._application.installer.isCurrentQSOverridable() ? "diff" : "ya" });
-        productCTag.addChildren(qsTag);
+        rootCTag.addChildren(qsTag);
     },
-    _calcStatUsageSend: function dayuseDataCollector__calcStatUsageSend(productCTag) {
+    _calcStatUsageSend: function dayuseDataCollector__calcStatUsageSend(rootCTag) {
         let statTag = new CTag("stsendon");
-        productCTag.addChildren(statTag);
+        rootCTag.addChildren(statTag);
     },
-    _calcBookmarksPanel: function dayuseDataCollector__calcBookmarksPanel(productCTag, topBrowserWindow) {
+    _calcBookmarksPanel: function dayuseDataCollector__calcBookmarksPanel(rootCTag, topBrowserWindow) {
         let personalToolbar = topBrowserWindow.document.getElementById("PersonalToolbar");
         let bmTag = new CTag(personalToolbar && personalToolbar.collapsed === false ? "bmbaron" : "bmbaroff");
-        productCTag.addChildren(bmTag);
+        rootCTag.addChildren(bmTag);
     },
-    _calcBookmarksSidebar: function dayuseDataCollector__calcBookmarksSidebar(productCTag, topBrowserWindow) {
+    _calcBookmarksSidebar: function dayuseDataCollector__calcBookmarksSidebar(rootCTag, topBrowserWindow) {
         let sidebar = topBrowserWindow.document.getElementById("sidebar-box");
         let isBookmarksSidebar = sidebar && sidebar.getAttribute("hidden") !== "true" && sidebar.getAttribute("src").indexOf("chrome://browser/content/bookmarks/") === 0;
         let sidebarTag = new CTag(isBookmarksSidebar ? "sidebaron" : "sidebaroff");
-        productCTag.addChildren(sidebarTag);
+        rootCTag.addChildren(sidebarTag);
     },
-    _calcBookmarksCount: function dayuseDataCollector__calcBookmarksCount(productCTag) {
+    _calcBookmarksCount: function dayuseDataCollector__calcBookmarksCount(rootCTag) {
         let bmcountTag = new CTag("bmcount");
         let {PlacesUtils} = Cu.import("resource://gre/modules/PlacesUtils.jsm", {});
         let dbConnection = PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase).DBConnection;
@@ -346,12 +351,12 @@ const dayuseDataCollector = {
             bmcountVar = ceil(bmcountVar, 5);
         }
         bmcountTag.addVars({ count: bmcountVar });
-        productCTag.addChildren(bmcountTag);
+        rootCTag.addChildren(bmcountTag);
     },
-    _calcYaDisk: function dayuseDataCollector__calcYaDisk(productCTag) {
+    _calcYaDisk: function dayuseDataCollector__calcYaDisk(rootCTag) {
         let diskVersion = this._application.integration.yandexDisk.version;
         let discTag = new CTag(diskVersion ? "discon" : "discoff");
-        productCTag.addChildren(discTag);
+        rootCTag.addChildren(discTag);
     }
 };
 const vbDayuseDataCollector = Object.create(dayuseDataCollector, {
@@ -365,17 +370,13 @@ const vbDayuseDataCollector = Object.create(dayuseDataCollector, {
             }
             this._application.fastdial.requestSettings(function (settings) {
                 let productCTag = new CTag("vb");
-                let [
-                    layoutX,
-                    layoutY
-                ] = this._application.layout.getThumbsNumXY();
-                let gridTag = new CTag("grid_" + layoutX + "_" + layoutY);
-                productCTag.addChildren(gridTag);
-                let gridIsAuto = this._application.layout.getXYLayoutOfScreen().join(":") === [
-                    layoutX,
-                    layoutY
-                ].join(":");
-                let gridAutoTag = new CTag(gridIsAuto ? "grauto" : "gruser");
+                let versionTag = new CTag(this._application.addonManager.addonVersion.replace(/\./g, "_"));
+                productCTag.addChildren(versionTag);
+                let gridTag = new CTag("grid_" + this._application.internalStructure.length);
+                versionTag.addChildren(gridTag);
+                let currentThumbsNum = this._application.internalStructure.length;
+                let initialThumbsCount = this._application.preferences.get("ftabs.initialThumbsCount", -1);
+                let gridAutoTag = new CTag(currentThumbsNum === initialThumbsCount ? "grauto" : "gruser");
                 gridTag.addChildren(gridAutoTag);
                 let thumbs = this._application.frontendHelper.fullStructure;
                 for (let [
@@ -401,13 +402,6 @@ const vbDayuseDataCollector = Object.create(dayuseDataCollector, {
                         let thumbTypeTag = new CTag(thumbType);
                         positionTag.addChildren(thumbTypeTag);
                     }
-                    if (thumbData.url) {
-                        let fillTag = new CTag("thumbfill");
-                        positionTag.addChildren(fillTag);
-                    } else {
-                        let emptyTag = new CTag("thumbempty");
-                        positionTag.addChildren(emptyTag);
-                    }
                     let pinTag = new CTag(thumbData.pinned ? "thumbpin" : "thumbpinoff");
                     positionTag.addChildren(pinTag);
                     gridTag.addChildren(positionTag);
@@ -430,9 +424,9 @@ const vbDayuseDataCollector = Object.create(dayuseDataCollector, {
                     name: backgroundName,
                     set: backgroundType
                 });
-                productCTag.addChildren(backgroundTag);
+                versionTag.addChildren(backgroundTag);
                 let searchTag = new CTag(settings.showSearchForm ? "searchon" : "searchoff");
-                productCTag.addChildren(searchTag);
+                versionTag.addChildren(searchTag);
                 let viewType = "thumbviewlogo";
                 switch (settings.thumbStyle) {
                 case 2:
@@ -443,10 +437,10 @@ const vbDayuseDataCollector = Object.create(dayuseDataCollector, {
                     break;
                 }
                 let viewTypeTag = new CTag(viewType);
-                productCTag.addChildren(viewTypeTag);
+                versionTag.addChildren(viewTypeTag);
                 let showbookmarksTag = new CTag(settings.showBookmarks ? "bookpanelon" : "bookpaneloff");
-                productCTag.addChildren(showbookmarksTag);
-                this._calcCommonData(productCTag, topBrowserWindow);
+                versionTag.addChildren(showbookmarksTag);
+                this._calcCommonData(versionTag, topBrowserWindow);
                 callback(productCTag);
             }.bind(this));
         }
@@ -464,10 +458,12 @@ const elmntDayuseDataCollector = Object.create(dayuseDataCollector, {
                 callback(null);
                 return;
             }
-            let statUsageSend = application.preferences.get("stat.usage.send", false);
+            let statUsageSend = application.statistics.sendUsageStat;
             let productCTag = new CTag("elmnt");
+            let versionTag = new CTag(this._application.addonManager.addonVersion.replace(/\./g, "_"));
+            productCTag.addChildren(versionTag);
             let widgetsTag = new CTag("widgets");
-            productCTag.addChildren(widgetsTag);
+            versionTag.addChildren(widgetsTag);
             let overlayProvider = application.overlayProvider;
             let allWidgetItems = overlayController.getWidgetItems();
             let getWidgetPosition = function getWidgetPosition(aToolbarItem) {
@@ -560,12 +556,12 @@ const elmntDayuseDataCollector = Object.create(dayuseDataCollector, {
                 }
             }, this);
             if (extentionsTag.childrenLength) {
-                productCTag.addChildren(extentionsTag);
+                versionTag.addChildren(extentionsTag);
             }
             let themeTag = new CTag("theme");
             let themeSelected = Preferences.get("lightweightThemes.isThemeSelected") === true || Preferences.get("general.skins.selectedSkin") !== "classic/1.0";
             themeTag.addVars({ name: themeSelected ? "user" : "def" });
-            productCTag.addChildren(themeTag);
+            versionTag.addChildren(themeTag);
             let newtabTag = new CTag("newtabext");
             let newtabVar;
             switch (Preferences.get("browser.newtab.url", "about:newtab")) {
@@ -581,7 +577,7 @@ const elmntDayuseDataCollector = Object.create(dayuseDataCollector, {
                 break;
             }
             newtabTag.addVars({ name: newtabVar });
-            productCTag.addChildren(newtabTag);
+            versionTag.addChildren(newtabTag);
             let diffbarTag = new CTag("diffbar");
             let builtinToolbars = {
                 "toolbar-menubar": true,
@@ -595,7 +591,7 @@ const elmntDayuseDataCollector = Object.create(dayuseDataCollector, {
                 return !(toolbar.id in builtinToolbars);
             });
             diffbarTag.addVars({ count: diffToolbars.length });
-            productCTag.addChildren(diffbarTag);
+            versionTag.addChildren(diffbarTag);
             if (statUsageSend) {
                 let isYandexHost = function isYandexHost(url) {
                     url = (url || "").replace(/^https?:\/\//, "").replace(/((:\d+)?\/)?$/, "");
@@ -607,9 +603,9 @@ const elmntDayuseDataCollector = Object.create(dayuseDataCollector, {
                     return isYandexHost(login.hostname);
                 }).length;
                 yaloginTag.addVars({ count: yaloginVar });
-                productCTag.addChildren(yaloginTag);
+                versionTag.addChildren(yaloginTag);
             }
-            this._calcCommonData(productCTag, topBrowserWindow);
+            this._calcCommonData(versionTag, topBrowserWindow);
             callback(productCTag);
         }
     },

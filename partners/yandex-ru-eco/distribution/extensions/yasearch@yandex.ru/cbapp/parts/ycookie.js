@@ -72,9 +72,9 @@ const yCookie = {
         return null;
     },
     _setYCookie: function YCookie__setYCookie(aCookieName, aFieldName, aFieldValue, aFieldExpire) {
-        this.TRUSTED_DOMAINS.forEach(function (aDomain) {
-            this._setYCookieOnDomain(aDomain, aCookieName, aFieldName, aFieldValue, aFieldExpire);
-        }, this);
+        for (let domain of this.TRUSTED_DOMAINS) {
+            this._setYCookieOnDomain(domain, aCookieName, aFieldName, aFieldValue, aFieldExpire);
+        }
     },
     _setYCookieOnDomain: function YCookie__setYCookieOnDomain(aDomain, aCookieName, aFieldName, aFieldValue, aFieldExpire) {
         let yCookieValue = this._getYCookie(aCookieName, aDomain);

@@ -563,7 +563,8 @@ var OmniBoxAutoCompleteSearch = {
         return this.OmniBoxSearchAutoCompleteResult;
     },
     _notifySearchListener: function OmniBoxAutoCompleteSearch__notifySearchListener(aResultStatus, aResults, autocompleteSearchSuggest) {
-        if (!this._searchListener) {
+        let searchListenerCallback = this._searchListener && (this._searchListener.onUpdateSearchResult || this._searchListener.onSearchResult);
+        if (!searchListenerCallback) {
             return;
         }
         if (this._previousResult && this._previousResult.searchString == this._searchString && this._searchString.length > 0) {
@@ -582,10 +583,7 @@ var OmniBoxAutoCompleteSearch = {
             completeDefaultIndex = 0;
         }
         let result = new this.OmniBoxSearchAutoCompleteResult(this._searchString, aResultStatus, aResults, aResults.length, completeDefaultIndex, "");
-        let resultFunction = this._searchListener.onUpdateSearchResult || this._searchListener.onSearchResult;
-        if (resultFunction) {
-            resultFunction(this, result);
-        }
+        searchListenerCallback(this, result);
     },
     _previousSearchData: null
 };

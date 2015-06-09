@@ -20,7 +20,7 @@ var YaSearchPrefs = {
             homepageButton.hidden = false;
         }
         function getYandexFeatureState(aFeatureName) {
-            return ProductBranding.partnerPackSvc.getYandexFeatureState(aFeatureName);
+            return ProductBranding.getYandexFeatureState(aFeatureName);
         }
         let yaFeatures = { "homepage-protection": "homepage-protection-box" };
         for (let [

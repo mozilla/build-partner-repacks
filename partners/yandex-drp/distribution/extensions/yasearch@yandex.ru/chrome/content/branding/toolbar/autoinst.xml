@@ -129,16 +129,6 @@
             </history>
         </component>
 
-        <component id="http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml#facebook" group-id="social" statistics-id="facebook">
-            <cookies>
-                <cookie url="http://facebook.com/" name="c_user"/>
-                <cookie url="https://facebook.com/" name="c_user"/>
-            </cookies>
-            <history min-visits="10">
-                <url domain="facebook.com"/>
-            </history>
-        </component>
-
         <component id="http://bar-widgets.yandex.ru/packages/approved/75/manifest.xml#rambler" group-id="mail" statistics-id="mailrambler">
             <cookies>
                 <cookie url="http://rambler.ru/" name="rsid"/>
@@ -154,15 +144,6 @@
             </cookies>
             <history min-visits="10">
                 <url domain="mail.google.com"/>
-            </history>
-        </component>
-
-        <component id="http://bar-widgets.yandex.ru/packages/approved/172/manifest.xml#twitter" group-id="social" statistics-id="twitter">
-            <cookies>
-                <cookie url="https://twitter.com/" name="auth_token"/>
-            </cookies>
-            <history min-visits="10">
-                <url domain="twitter.com"/>
             </history>
         </component>
 
@@ -210,12 +191,6 @@
         <component id="http://bar.yandex.ru/packages/yandexbar#cy" group-id="service" statistics-id="yatic">
             <history min-visits="4">
                 <url domain="yaca.yandex.ru"/>
-            </history>
-        </component>
-
-        <component id="http://bar.yandex.ru/packages/yandexbar#lenta" group-id="service" statistics-id="yasubscription">
-            <history min-visits="4">
-                <url domain="lenta.yandex.ru"/>
             </history>
         </component>
 

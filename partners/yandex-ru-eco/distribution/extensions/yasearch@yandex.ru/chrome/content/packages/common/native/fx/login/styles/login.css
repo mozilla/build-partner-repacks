@@ -17,6 +17,7 @@ menuseparator{-moz-appearance:none!important;background-color:#ddd;border:0;heig
 menupopup{-moz-appearance:none;border:1px solid #ddd!important;font-size:1.222em;padding:0}
 menu menupopup{font-size:1em}
 menupopup menuitem,menupopup menu{-moz-appearance:none;background-color:#fff;border:1px solid transparent;color:#000;font-family:Arial,sans-serif!important;font-size:15px;max-width:20em;height:2em;padding:0;-moz-padding-end:40px}
+menupopup menu{-moz-padding-end:10px}
 menupopup menuitem[_moz-menuactive=true],menupopup menu[_moz-menuactive=true]{color:#000;background-color:#ffecaf}
 menuitem.menuitem-iconic>.avatar-container{min-width:1.45em;width:35px;padding:0 5px}
 .menu-iconic-avatar-icon{background-size:100%;border-radius:8px;width:18px;height:18px}

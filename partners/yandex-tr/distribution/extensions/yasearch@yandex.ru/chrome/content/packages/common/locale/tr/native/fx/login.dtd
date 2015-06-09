@@ -13,3 +13,4 @@
 <!ENTITY noauth.label "Lütfen oturum açın">
 <!ENTITY login.passport.label "Pasaport">
 <!ENTITY login.settings.label "&vendor.gen; ayarları">
+<!ENTITY login.menu.other-account.label "Другие аккаунты">

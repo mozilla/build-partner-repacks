@@ -15,7 +15,7 @@ const core = {
     counterValue: 0,
     mailSlices: Object.create(null),
     get authManager() {
-        return this.authAdapter.authManager;
+        return this.API.Passport;
     },
     get API() {
         return this._api;
@@ -23,14 +23,14 @@ const core = {
     get canShowNotifications() {
         return this.API.Environment.os.name !== "linux";
     },
-    init: function MailWidget_init(api) {
+    init: function (api) {
         this._api = api;
         this._logger = api.logger;
         this._pkgRootURL = api.Package.resolvePath("/");
         this._loadModules();
         this.authManager.addListener(this.authManager.EVENTS.AUTH_STATE_CHANGED, this);
     },
-    finalize: function MailWidget_finalize() {
+    finalize: function () {
         this.authManager.removeListener(this.authManager.EVENTS.AUTH_STATE_CHANGED, this);
         delete this._pkgRootURL;
         delete this.utils;
@@ -38,15 +38,15 @@ const core = {
         delete this._logger;
         delete this.__stringBundle;
     },
-    buildWidget: function MailWidget_buildWidget(WIID, item) {
+    buildWidget: function (WIID, item) {
         item.setAttribute("yb-native-widget-name", WIDGET_NAME);
         item.setAttribute("yb-native-widget-wiid", WIID);
         item.module = this;
-        if (this.authManager.authorized) {
+        if (this.authManager.isAuthorized()) {
             this._createInstSlice(WIID);
         }
     },
-    destroyWidget: function MailWidget_destroyWidget(WIID, item, context) {
+    destroyWidget: function (WIID, item, context) {
         try {
             if (typeof item.destroy == "function") {
                 item.destroy();
@@ -56,45 +56,45 @@ const core = {
             item.removeAttribute("yb-native-widget-wiid");
         }
     },
-    onNoMoreInstProjections: function MailWidget_onNoMoreInstProjections(WIID) {
+    onNoMoreInstProjections: function (WIID) {
         this._destroyInstSlice(WIID);
     },
     Settings: {
-        getMainTemplate: function MailWidget_getMainTemplate(aWidgetUnitName, aWidgetInstanceId) {
+        getMainTemplate: function (aWidgetUnitName, aWidgetInstanceId) {
             return core.API.Package.getFileInputChannel("/native/fx/mail/settings.xml").contentStream;
         }
     },
     dayuseStatProvider: {
-        isAuthorized: function dayuseStatProvider_isAuthorized() {
-            return core.authManager.authorized;
+        isAuthorized: function () {
+            return core.authManager.isAuthorized();
         },
-        hasSavedLogins: function dayuseStatProvider_hasSavedLogins() {
-            return core.authManager.pwdmng.hasSavedAccounts;
+        hasSavedLogins: function () {
+            return core.authManager.hasSavedLogins();
         },
-        isNotificationsEnabled: function dayuseStatProvider_isNotificationsEnabled() {
+        isNotificationsEnabled: function () {
             return core.canShowNotifications && core.getPref("showTextAlert", true) === true;
         }
     },
-    getPref: function MailWidget_getPref(strPrefName, defaultValue) {
+    getPref: function (strPrefName, defaultValue) {
         return this.API.Settings.getValue(strPrefName);
     },
-    setPref: function MailWidget_setPref(strPrefName, strPrefValue) {
+    setPref: function (strPrefName, strPrefValue) {
         this.API.Settings.setValue(strPrefName, strPrefValue);
     },
-    mailto: function MailWidget_mailto(event, mailAddress) {
+    mailto: function (event, mailAddress) {
         let strMailURL = this.getYaMailURL();
         let mailURL = strMailURL + "compose?mailto=" + encodeURIComponent(mailAddress.replace(/^mailto\:/, ""));
         this._navigateToMailURL(mailURL, event);
     },
-    onButtonClick: function MailWidget_onButtonClick(event, widget) {
+    onButtonClick: function (event, widget) {
     },
-    refreshData: function MailWidget_refreshData(event, callback) {
+    refreshData: function (event, callback) {
     },
-    sendPageToYaMail: function MailWidget_sendPageToYaMail(event) {
+    sendPageToYaMail: function (event) {
         let url = this.getYaMailURL() + "compose";
         this._sendPage(url, event);
     },
-    openAuthDialog: function MailWidget_openAuthDialog() {
+    openAuthDialog: function () {
         this.authManager.openAuthDialog({ retpath: this.getYaMailURL() });
     },
     __stringBundle: null,
@@ -107,42 +107,41 @@ const core = {
     get _stringBundle() {
         return this.__stringBundle || (this.__stringBundle = this.API.Localization.createStringBundle("/native/fx/mail.properties"));
     },
-    _navigateToMailURL: function MailWidget__navigateToMailURL(strMailURL, origEvent) {
+    _navigateToMailURL: function (strMailURL, origEvent) {
         this.API.Controls.navigateBrowser({
             url: strMailURL,
             eventInfo: origEvent
         });
     },
-    _makeSliceURL: function MailWidget__makeSliceURL(WIID) {
+    _makeSliceURL: function (WIID) {
         return this._pkgRootURL + "native/fx/mail/slice/index.html";
     },
-    _makeUsersDataForNotification: function MailWidget__makeUsersDataForNotification() {
-        let auth = this.authManager;
-        let defaultUser = auth.getTopUser();
-        let usersData = {
-            domain: auth.authdefs.DOMAINS.MAIN_DOMAIN,
-            defaultUid: defaultUser && defaultUser.uid || "",
+    _makeUsersDataForNotification: function () {
+        let defaultAccount = this.authManager.defaultAccount;
+        let accountsData = {
+            domain: this.authManager.authdefs.DOMAINS.MAIN_DOMAIN,
+            defaultUid: defaultAccount && defaultAccount.uid || "",
             list: []
         };
-        auth.allUsers.filter(function (aUser) {
-            return !aUser.isSocial;
-        }).forEach(function (user) {
-            usersData.list.push({
-                uid: user.uid,
-                login: user.login,
-                displayName: user.displayName,
-                isAuthorized: user.authorized
+        this.authManager.allAccounts.filter(function (aAccount) {
+            return !aAccount.isSocial;
+        }).forEach(function (aAccount) {
+            accountsData.list.push({
+                uid: aAccount.uid,
+                login: aAccount.login,
+                displayName: aAccount.displayName,
+                isAuthorized: aAccount.authorized
             });
         });
-        return usersData;
+        return accountsData;
     },
-    _notifySliceAboutAllUsers: function MailWidget__notifySliceAboutAllUsers() {
+    _notifySliceAboutAllUsers: function () {
         this._notifySlices({
             message: "user:all",
             data: this._makeUsersDataForNotification()
         });
     },
-    _messageHandler: function MailWidget__messageHandler(aMessage) {
+    _messageHandler: function (aMessage) {
         switch (aMessage.message) {
         case "mail:data":
             this.counterValue = aMessage.data.count;
@@ -155,14 +154,16 @@ const core = {
         case "user:get-all":
             this._notifySliceAboutAllUsers();
             break;
-        case "user:logout": {
-                this.authManager.initLogoutProcess(aMessage.data.uid);
-                break;
-            }
+        case "user:auth-error":
+            this.authManager.logoutAccount(aMessage.data.uid, { silent: true });
+            break;
+        case "user:logout":
+            this.authManager.logoutAccount(aMessage.data.uid);
+            break;
         case "user:login": {
                 let {uid} = aMessage.data;
                 if (uid) {
-                    this.authManager.switchUser(uid);
+                    this.authManager.switchAccount(uid);
                 } else {
                     this.openAuthDialog();
                 }
@@ -170,7 +171,7 @@ const core = {
             }
         }
     },
-    _createInstSlice: function MailWidget__createInstSlice(WIID) {
+    _createInstSlice: function (WIID) {
         if (this.mailSlices[WIID]) {
             return;
         }
@@ -179,14 +180,14 @@ const core = {
             messageHandler: this._messageHandler.bind(this)
         }, WIID);
     },
-    _destroyInstSlice: function MailWidget__destroyInstSlice(WIID) {
+    _destroyInstSlice: function (WIID) {
         let slice = this.mailSlices[WIID];
         if (slice) {
             slice.destroy();
             delete this.mailSlices[WIID];
         }
     },
-    _notifySlices: function MailWidget__notifySlices(aData) {
+    _notifySlices: function (aData) {
         for (let [
                     ,
                     slice
@@ -194,13 +195,13 @@ const core = {
             slice.notify(aData);
         }
     },
-    getYaMailURL: function MailWidget_getYaMailURL() {
+    getYaMailURL: function () {
         return "https://" + this._MAIL_HOST + "/";
     },
-    _getBuildMailURL: function MailWidget__getBuildMailURL(strDomain) {
+    _getBuildMailURL: function (strDomain) {
         return this.getYaMailURL() + "message?ids=";
     },
-    _sendPage: function MailWidget__sendPage(strURL, origEvent) {
+    _sendPage: function (strURL, origEvent) {
         let currentWindow = this.utils.mostRecentBrowserWindow;
         let dataToSend = {
             body: this.utils.getDocumentDescription(currentWindow.content.document) + currentWindow.content.location.href,
@@ -210,20 +211,14 @@ const core = {
         if (strParams.length > 8192 && /^https?:\/\/mail\.yandex\./.test(strURL)) {
             strURL = strURL.replace("/compose?", "/classic/compose?");
         }
-        let stringStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
-        stringStream.setData(strParams, strParams.length);
-        let postData = Cc["@mozilla.org/network/mime-input-stream;1"].createInstance(Ci.nsIMIMEInputStream);
-        postData.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        postData.addContentLength = true;
-        postData.setData(stringStream);
         this.API.Controls.navigateBrowser({
             target: "new tab",
             url: strURL,
             eventInfo: origEvent,
-            postData: postData
+            postData: strParams
         });
     },
-    shareContent: function MailWidget_shareContent(shareData, event) {
+    shareContent: function (shareData, event) {
         const LINE_BREAK = "\n\n";
         const srcChromeWnd = event.target.ownerDocument.defaultView;
         const sharedDoc = srcChromeWnd.content.document;
@@ -261,7 +256,7 @@ const core = {
         }
         this._send(this.getYaMailURL() + "compose?mailto=", dataToSend);
     },
-    _send: function MailWidget__send(url, dataToSend) {
+    _send: function (url, dataToSend) {
         let postParams = [];
         for (let [
                     paramName,
@@ -271,20 +266,13 @@ const core = {
                 postParams.push(paramName + "=" + encodeURIComponent(paramValue.substr(0, 1000000)));
             }
         }
-        postParams = postParams.join("&");
-        let postStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
-        postStream.setData(postParams, postParams.length);
-        let postData = Cc["@mozilla.org/network/mime-input-stream;1"].createInstance(Ci.nsIMIMEInputStream);
-        postData.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        postData.addContentLength = true;
-        postData.setData(postStream);
         this.API.Controls.navigateBrowser({
             url: url,
             target: "new tab",
-            postData: postData
+            postData: postParams.join("&")
         });
     },
-    _getDescriptionMeta: function MailWidget__getDescriptionMeta(doc) {
+    _getDescriptionMeta: function (doc) {
         let metaElements = doc.getElementsByTagName("meta");
         for (let i = 0, len = metaElements.length; i < len; i++) {
             let metaElement = metaElements[i];
@@ -295,10 +283,10 @@ const core = {
         }
         return null;
     },
-    observe: function MailWidget_observe(aSubject, aTopic, aData) {
+    observe: function (aSubject, aTopic, aData) {
         switch (aTopic) {
         case this.authManager.EVENTS.AUTH_STATE_CHANGED:
-            if (this.authManager.authorized) {
+            if (this.authManager.isAuthorized()) {
                 this.API.Controls.getAllWidgetItems().forEach(function (item) {
                     if ("updateCounterText" in item) {
                         item.updateCounterText(this.counterValue);
@@ -319,11 +307,10 @@ const core = {
         }
     },
     _MODULES: {
-        utils: "common-auth/utils.jsm",
-        dlgman: "dlgman.jsm",
-        authAdapter: "yauth.jsm"
+        utils: "utils.jsm",
+        dlgman: "dlgman.jsm"
     },
-    _loadModules: function MailWidget__loadModules() {
+    _loadModules: function () {
         let shAPI = this._api.shareableAPI;
         for (let [
                     moduleName,

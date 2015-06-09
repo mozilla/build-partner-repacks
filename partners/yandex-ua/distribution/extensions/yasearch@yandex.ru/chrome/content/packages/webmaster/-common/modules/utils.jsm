@@ -135,6 +135,16 @@ var module = function (app, common, path) {
         var data = "";
         try {
             if (format == "properties") {
+                try {
+                    if (path.startsWith("xb://")) {
+                        const IOService = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
+                        let xbURI = IOService.newURI(path, null, null);
+                        xbURI.QueryInterface(Components.interfaces.nsIFileURL);
+                        path = "file://" + xbURI.file.path;
+                    }
+                } catch (e) {
+                    Cu.reportError(e);
+                }
                 var bundle = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService).createBundle(path);
                 data = {
                     get: function (name) {

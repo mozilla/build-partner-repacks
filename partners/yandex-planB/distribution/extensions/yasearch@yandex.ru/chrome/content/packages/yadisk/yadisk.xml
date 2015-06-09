@@ -1,7 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE widget SYSTEM "yadisk/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="yadisk/content/icons/ico.png" icon-vector="yadisk/content/icons/ico.svg" name="&widget.name;" unique="true">
+<!DOCTYPE widget SYSTEM "yadisk/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="yadisk/content/icons/ico.png" icon-vector="yadisk/content/icons/ico.svg" name="&widget.name;" xmlns:ui="http://bar.yandex.ru/dev/gui" unique="true">
+
+    <f:setting default="true" name="showPopupSuggest" scope="widget">
+        <control label="&widget.options.save-checkbox.title;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="true" name="showSaveDocumentSuggest" scope="widget">
+        <control label="&widget.options.save-document-checkbox.title;" type="checkbox"/>
+    </f:setting>
 
     <f:setting default="" name="yadisk-tokens" scope="widget"/>
+    <f:setting default="" name="slice-data" scope="widget"/>
+
+    <f:setting default="true" name="show-notifications" scope="widget">
+        
+        <ui:control fx-value-type="boolean" type="custom"/>
+    </f:setting>
 
     <modules>
         <module browser="firefox" file="yadisk/core/widget.jsm"/>

@@ -20,7 +20,7 @@ const migrator = {
             try {
                 application.widgetLibrary.getPlugin(textonlyPluginId).enabled = enabledTextonly;
             } catch (e) {
-                this._logger.config("Couldn't change Textonly plugin state. " + strutils.formatError(e));
+                this._migrationModule.logger.config("Couldn't change Textonly plugin state. " + strutils.formatError(e));
             }
             Preferences.reset(oldTextonlyPrefBranch + "enabled");
         }

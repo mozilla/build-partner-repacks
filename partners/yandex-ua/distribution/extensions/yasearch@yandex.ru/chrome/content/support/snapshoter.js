@@ -40,10 +40,6 @@
         /^network\.proxy\./,
         /\.print_to_filename$/
     ];
-    const COMPONENTS_BLACK_LIST = [
-        "http://bar.yandex.ru/packages/yandexbar#spring",
-        "http://bar.yandex.ru/packages/yandexbar#separator"
-    ];
     let dataProviders = {
         extension: function dataProviders_extension(done) {
             let data = {
@@ -125,9 +121,6 @@
                         };
                     }
                     widgetLibrary.getComponentsInfo(packageID).forEach(function (componentInfo) {
-                        if (COMPONENTS_BLACK_LIST.indexOf(componentInfo.id) !== -1) {
-                            return;
-                        }
                         let enabled = componentInfo.type == "widget" ? widgetLibrary.widgetProtoInstantiated(componentInfo.id) : widgetLibrary.pluginEnabled(componentInfo.id);
                         componentsByPackage[packageID].components.push({
                             id: componentInfo.id.replace(packageID + "#", ""),

@@ -6,7 +6,6 @@ const {
     utils: Cu
 } = Components;
 const GLOBAL = this;
-const DB_FILENAME = "fastdial.sqlite";
 const SERVER_URL = "http://download.cdn.yandex.net/bar/vb/bl.xml";
 const SYNC_INTERVAL_SEC = 86400;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -16,29 +15,27 @@ const blacklist = {
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         this._application = application;
         this._logger = application.getLogger("Blacklist");
-        this._initDatabase();
+        this._blacklist = [];
         this._application.alarms.restoreOrCreate("syncBlacklist", {
             isInterval: true,
             timeout: 60 * 24,
             triggerIfCreated: true,
             handler: this._syncServerXML.bind(this)
         });
+        this.loadData();
     },
     finalize: function Blacklist_finalize(doCleanup, callback) {
-        if (this._timer && this._timer.isRunning) {
-            this._timer.cancel();
-        }
-        let dbClosedCallback = function Backup_finalize_dbClosedCallback() {
-            this._database = null;
-            this._application = null;
-            this._logger = null;
-            callback();
-        }.bind(this);
-        if (this._database) {
-            this._database.close(dbClosedCallback);
-            return true;
-        }
-        dbClosedCallback();
+        this._application = null;
+        this._logger = null;
+    },
+    loadData: function Blacklist_loadData(data) {
+        this._blacklist = data || [];
+    },
+    saveData: function Blacklist_saveData(save, options = {}) {
+        save(this._blacklist, options);
+    },
+    getBlacklist: function Blacklist_getBlacklist() {
+        return this._blacklist;
     },
     getAll: function Blacklist_getAll(callback) {
         let serverFile = this._serverFile;
@@ -65,59 +62,21 @@ const blacklist = {
                 this._logger.debug(ex.stack);
             }
         }
-        this._database.executeQueryAsync({
-            query: "SELECT domain FROM blacklist",
-            columns: ["domain"],
-            callback: function (rowsData, storageError) {
-                if (storageError) {
-                    let errorMsg = strutils.formatString("DB error while fetching blacklist: %1 (code %2)", [
-                        storageError.message,
-                        storageError.result
-                    ]);
-                    throw new Error(errorMsg);
-                }
-                rowsData.forEach(function (row) {
-                    output.domains.push(row.domain);
-                });
-                callback(null, output);
-            }
-        });
+        output.domains = output.domains.concat(this._blacklist);
+        callback(null, output);
     },
-    upsertDomain: function Blacklist_upsertDomain(domain, callback) {
-        this._database.executeQueryAsync({
-            query: "INSERT OR REPLACE INTO blacklist (domain) VALUES (:domain)",
-            parameters: { domain: domain },
-            callback: function (rowsData, storageError) {
-                if (storageError) {
-                    let errorMsg = strutils.formatString("DB error while upserting item into blacklist: %1 (code %2)", [
-                        storageError.message,
-                        storageError.result
-                    ]);
-                    throw new Error(errorMsg);
-                }
-                if (callback) {
-                    callback();
-                }
-            }
-        });
+    upsertDomain: function Blacklist_upsertDomain(domain) {
+        this._blacklist.push(domain);
+        this.saveData();
     },
-    deleteDomain: function Blacklist_deleteDomain(domain, callback) {
-        this._database.executeQueryAsync({
-            query: "DELETE FROM blacklist WHERE domain = :domain",
-            parameters: { domain: domain },
-            callback: function (rowsData, storageError) {
-                if (storageError) {
-                    let errorMsg = strutils.formatString("DB error while deleting item from blacklist: %1 (code %2)", [
-                        storageError.message,
-                        storageError.result
-                    ]);
-                    throw new Error(errorMsg);
-                }
-                if (callback) {
-                    callback();
-                }
+    deleteDomain: function Blacklist_deleteDomain(domain) {
+        this._blacklist = this._blacklist.filter(host => {
+            if (host === domain) {
+                return false;
             }
+            return true;
         });
+        this.saveData();
     },
     get _brandingDoc() {
         delete this._brandingDoc;
@@ -128,11 +87,6 @@ const blacklist = {
         let file = this._application.directories.appRootDir;
         file.append("blacklist.xml");
         return file;
-    },
-    _initDatabase: function Blacklist__initDatabase() {
-        let dbFile = this._application.core.rootDir;
-        dbFile.append(DB_FILENAME);
-        this._database = new Database(dbFile);
     },
     _syncServerXML: function Blacklist__syncServerXML() {
         let self = this;
@@ -172,6 +126,5 @@ const blacklist = {
         request.send();
     },
     _application: null,
-    _logger: null,
-    _timer: null
+    _logger: null
 };

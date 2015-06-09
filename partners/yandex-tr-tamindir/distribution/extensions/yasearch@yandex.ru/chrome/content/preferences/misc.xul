@@ -46,7 +46,7 @@
             <groupbox>
                 <caption label="&yasearch.pref.confidentiality.caption;"/>
                 <hbox align="center">
-                    <checkbox id="send-usage-stat-checkbox" preference="extensions.&addon.id;.stat.usage.send"/>
+                    <checkbox id="send-usage-stat-checkbox" oncommand="Preferences.onStatisticsCheckboxCommand(event); return true;" preference="extensions.&addon.id;.stat.usage.send"/>
                     <description class="plain" flex="1" onclick="return Preferences.onConfidentialBlockClick(event);">
                         &yasearch.pref.stat.usage.send.label;
                     </description>

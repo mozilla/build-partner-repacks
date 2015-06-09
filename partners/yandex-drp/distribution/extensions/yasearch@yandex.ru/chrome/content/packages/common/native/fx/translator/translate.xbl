@@ -7,59 +7,35 @@
 
   <binding id="button">
 
-    <implementation implements="nsIDOMEventListener, nsIObserver">
-        <field name="contextMenu">document.getElementById("contentAreaContextMenu")</field>
+    <implementation implements="nsIDOMEventListener, nsIObserver, nsIMessageListener">
+        <field name="contextMenu">document.getElementById('contentAreaContextMenu')</field>
 
-        <field name="tooltipHTML">document.getElementById("aHTMLTooltip")</field>
-
-        <field name="_lastTimeStamp">0</field>
-        <field name="_boundHideBalloonCb">null</field>
-
-        <field name="content">gBrowser.mPanelContainer</field>
+        <field name="tooltipHTML">document.getElementById('aHTMLTooltip')</field>
 
         <field name="_tooltip"/>
+
         <field name="tooltip"><![CDATA[    this._tooltip || (this._tooltip = this.createTooltip());]]></field>
 
-        <field name="_isMac"><![CDATA[    this.module.API.Environment.os.name === "mac";]]></field>
         <field name="_deactivateTimeoutId">null</field>
-        <field name="_showBalloonTimeoutId">null</field>
 
         <field name="_logger" readonly="true">this.module.API.logger</field>
 
-        <field name="checked"/>
-        <field name="_lastMouseMoveData"/>
-        <field name="_lastCtrlKeydown"/>
-        <field name="_mouseEventSending"/>
-        <field name="showTooltipTimeoutID"/>
+        <field name="_showBalloonTimeoutId"/>
+
+        <field name="EVENT_MESSAGE_NAME">'yasearch@yandex.ru:translator:event'</field>
 
         <constructor><![CDATA[    if (!this.module) {
         return;
     }
-    [
-        "mousemove",
-        "mouseout",
-        "keydown",
-        "scroll",
-        "keyup"
-    ].forEach(function (eventType) {
-        this.content.addEventListener(eventType, this, false);
-    }, this);
     this.listenToVisibilityChange(true);
     this._windowListener = this.module.API.Browser.getWindowListener(window);
     this._windowListener.addListener("WindowLocationChange", this);
-    this._windowListener.addListener("PageHide", this);]]></constructor>
+    this._windowListener.addListener("PageHide", this);
+    window.messageManager.addMessageListener(this.EVENT_MESSAGE_NAME, this);]]></constructor>
 
-        <destructor><![CDATA[    this.clearShowTimeout();
+        <destructor><![CDATA[    window.messageManager.removeMessageListener(this.EVENT_MESSAGE_NAME, this);
+    this.clearShowTimeout();
     this.clearDeactivateTimeout();
-    [
-        "mousemove",
-        "mouseout",
-        "keydown",
-        "scroll",
-        "keyup"
-    ].forEach(function (eventType) {
-        this.content.removeEventListener(eventType, this, false);
-    }, this);
     if (this.request) {
         this.request.abort();
         this.request = null;
@@ -67,46 +43,63 @@
     this.hideBalloon();
     this.listenToVisibilityChange(false);
     if (this._tooltip) {
+        this._tooltip.removeEventListener("popupshown", this, false);
+        this._tooltip.removeEventListener("popuphidden", this, false);
+        this._tooltip.parentNode.removeChild(this._tooltip);
         this._tooltip.tooltipController = null;
         this._tooltip = null;
+        this.tooltipHTML.removeEventListener("popupshowing", this, true);
     }
     if (this._windowListener) {
         this._windowListener.removeListener("WindowLocationChange", this);
         this._windowListener.removeListener("PageHide", this);
-    }
-    if (this._htmlTooltipHider) {
-        this.tooltipHTML.removeEventListener("popupshowing", this._htmlTooltipHider, true);
     }]]></destructor>
+
+        <method name="receiveMessage">
+            <parameter name="message"/>
+            <body><![CDATA[    let {name, data, target, objects} = message;
+    switch (data.type) {
+    case "hideBalloon":
+        if (data.doNotShowBalloon) {
+            this.doNotShowBalloonNow();
+        }
+        this.hideBalloon();
+        break;
+    case "translate":
+        this.translateIt({
+            text: data.text,
+            clientX: data.clientX,
+            clientY: data.clientY,
+            begin: data.begin,
+            end: data.end,
+            surroundingText: data.surroundingText
+        });
+        break;
+    case "mouseout":
+        if (!this.isPopupOpen(this.tooltip)) {
+            this.doNotShowBalloonNow();
+        }
+        break;
+    case "keyup":
+        if (this.request && !this.request.doNotShow) {
+            this.clearShowTimeout();
+        }
+        break;
+    }]]></body>
+        </method>
 
         <method name="listenToVisibilityChange">
             <parameter name="enable"/>
-            <body><![CDATA[    if (this._boundHideBalloonCb === null) {
-        let timeout = this.module.API.Environment.os.name === "windows" ? 200 : 0;
-        this._boundHideBalloonCb = function _boundHideBalloonCb() {
-            this.clearShowTimeout();
-            if (this._showBalloonTimeoutId) {
-                window.clearTimeout(this._showBalloonTimeoutId);
-            }
-            this._deactivateTimeoutId = window.setTimeout(function _timedDeactivate() {
-                if (typeof this.hideBalloon === "function") {
-                    this.hideBalloon();
-                }
-            }.bind(this), timeout);
-        }.bind(this);
-    }
-    [
+            <body><![CDATA[    [
         "deactivate",
         "visibilitychange"
     ].forEach(function (eventType) {
         if (enable) {
-            window.addEventListener(eventType, this._boundHideBalloonCb, false);
+            window.addEventListener(eventType, this, false);
         } else {
-            window.removeEventListener(eventType, this._boundHideBalloonCb, false);
+            window.removeEventListener(eventType, this, false);
         }
-    }, this);
-    if (!enable) {
-        this._boundHideBalloonCb = null;
-    }]]></body>
+    }, this);]]></body>
         </method>
 
         <method name="createTooltip">
@@ -114,66 +107,14 @@
     let tooltip = document.createElementNS(XUL_NS, "tooltip");
     tooltip.setAttribute("noautohide", "true");
     let osName = this.module.API.Environment.os.name;
-    tooltip.setAttribute("yaIsLinux", osName == "linux");
+    tooltip.setAttribute("yaIsLinux", osName === "linux");
     tooltip.style.MozBinding = "url('" + this.module.URI + "native/fx/translator/balloon.xbl#balloon')";
     tooltip.tooltipController = this;
-    let self = this;
-    tooltip.addEventListener("popupshown", function () {
-        window.setTimeout(function () {
-            if (tooltip.state === "open") {
-                self.module.API.Statistics.logShortAction(5510);
-            }
-        }, 100);
-    }, false);
-    tooltip.addEventListener("popuphidden", function () {
-        tooltip.removeAttribute("data-translations");
-    }, false);
+    tooltip.addEventListener("popupshown", this, false);
+    tooltip.addEventListener("popuphidden", this, false);
     document.getElementById("mainPopupSet").appendChild(tooltip);
-    this._htmlTooltipHider = function (event) {
-        if (self.isPopupOpen(self.tooltip)) {
-            event.preventDefault();
-        }
-    };
-    this.tooltipHTML.addEventListener("popupshowing", this._htmlTooltipHider, true);
+    this.tooltipHTML.addEventListener("popupshowing", this, true);
     return tooltip;]]></body>
-        </method>
-
-        <method name="tryTranslateNode">
-            <parameter name="mouseMoveEvent"/>
-            <body><![CDATA[    let aNode = mouseMoveEvent.rangeParent;
-    if (!aNode || aNode.nodeType !== Node.TEXT_NODE) {
-        return false;
-    }
-    try {
-        if (/^(chrome|about|yafd|bar):/.test(aNode.ownerDocument.documentURI)) {
-            return false;
-        }
-    } catch (e) {
-    }
-    let parent;
-    try {
-        parent = aNode.ownerDocument.elementFromPoint(mouseMoveEvent.clientX, mouseMoveEvent.clientY);
-    } catch (e) {
-    }
-    if (!parent || aNode.parentNode !== parent) {
-        return false;
-    }
-    let aOffset = mouseMoveEvent.rangeOffset;
-    let [
-        text,
-        begin,
-        end
-    ] = this.module.getTranslatableTextFromString(aNode.nodeValue, aOffset);
-    if (this.module.isBadText(text) || !this.isEventInRange(aNode, begin, end, mouseMoveEvent)) {
-        return false;
-    }
-    return this.translateIt({
-        text: text,
-        x: mouseMoveEvent.screenX + 1,
-        y: mouseMoveEvent.screenY + 1,
-        begin: begin,
-        end: end
-    });]]></body>
         </method>
 
         <method name="translateIt">
@@ -187,15 +128,9 @@
     if (aBalloon.translations) {
         this.showBalloon(aBalloon);
     } else {
-        let isSeznamSlovnik = aBalloon.from == "cs" || aBalloon.to == "cs";
-        if (isSeznamSlovnik && !this.module.storageSsid) {
-            return true;
-        }
         let addonLocale = this.module.API.Environment.addon.locale;
         let localeLang = addonLocale && addonLocale.language || "en";
-        let sendData = null;
-        let baseURL = isSeznamSlovnik ? this.module.TRANSLATE_URL_CZ : this.module.TRANSLATE_URL;
-        let requestUrl = baseURL + "?text=" + encodeURIComponent(aBalloon.text) + "&from=all" + "&to=" + this.module.defaultLanguage + "&brid=" + this.module.brandId + "&locale=" + localeLang;
+        let requestUrl = this.module.TRANSLATE_URL + "?text=" + encodeURIComponent(aBalloon.text) + "&from=all" + "&to=" + this.module.defaultLanguage + "&brid=" + this.module.brandId + "&locale=" + localeLang;
         if (this.request) {
             if (this.request.url === requestUrl) {
                 return false;
@@ -207,22 +142,8 @@
         let target = this.request.QueryInterface(Ci.nsIDOMEventTarget);
         target.addEventListener("load", this, false);
         target.addEventListener("error", this, false);
-        if (isSeznamSlovnik) {
-            let trlang = aBalloon.from.replace("cs", "cz") + "_" + aBalloon.to.replace("cs", "cz");
-            aBalloon.url = "";
-            sendData = this.module.xutils.xrpcRequest("toolbar.search", [
-                aBalloon.text,
-                trlang,
-                0,
-                4,
-                this.module.storageSsid
-            ]);
-        }
-        this.request.open(isSeznamSlovnik ? "POST" : "GET", requestUrl, true);
-        if (isSeznamSlovnik) {
-            this.request.setRequestHeader("Content-Type", "text/xml");
-        }
-        this.request.send(sendData);
+        this.request.open("GET", requestUrl, true);
+        this.request.send(null);
     }
     return true;]]></body>
         </method>
@@ -237,61 +158,48 @@
     if (status < 200 || status > 399) {
         return;
     }
-    var rxml = request.responseXML;
+    let rxml = request.responseXML;
     let balloon = this.balloon;
-    if (balloon.from === "cs" || balloon.to === "cs") {
-        var obj = this.module.xutils.xrpcResponse(rxml)[0];
-        if (!obj || obj.status != 200 || !obj.translations || !obj.translations.length) {
-            return;
-        }
-        balloon.translations = obj.translations.map(function (t) {
-            return t.translatedPhrase;
-        });
-        balloon.translations.unshift(obj.translations[0].phrase);
-        balloon.url = "http://slovnik.seznam.cz/" + balloon.from.replace("cs", "cz") + "-" + balloon.to.replace("cs", "cz") + "/word/?q=" + encodeURIComponent(balloon.text);
-    } else {
-        let balloon = this.balloon;
-        let errorElement = rxml.querySelector("error");
-        let errorStatus = parseInt(errorElement && errorElement.getAttribute("status"), 10);
-        if (errorStatus !== 0) {
-            this.hideBalloon();
-            return;
-        }
-        balloon.to = rxml.querySelector("to").textContent;
-        balloon.request = rxml.querySelector("request").textContent;
-        balloon.translations = {};
-        Array.forEach(rxml.querySelectorAll("translations[from]"), function (translations) {
-            let lang = translations.getAttribute("from");
-            balloon.translations[lang] = [];
-            Array.forEach(translations.querySelectorAll("translation"), function (translation) {
-                let word = translation.getAttribute("word");
-                let part = {};
-                let parts = [];
-                Array.forEach(translation.querySelectorAll("variant"), function (variant) {
-                    let partOfSpeech = variant.getAttribute("class");
-                    if (parts.indexOf(partOfSpeech) === -1) {
-                        parts.push(partOfSpeech);
-                        part[partOfSpeech] = [];
-                    }
-                    let variantStr = variant.textContent;
-                    if (part[partOfSpeech].indexOf(variantStr) === -1) {
-                        part[partOfSpeech].push(variantStr);
-                    }
-                });
-                if (parts.length) {
-                    balloon.translations[lang].push({
-                        word: word,
-                        parts: parts,
-                        part: part
-                    });
+    let errorElement = rxml.querySelector("error");
+    let errorStatus = parseInt(errorElement && errorElement.getAttribute("status"), 10);
+    if (errorStatus !== 0) {
+        this.hideBalloon();
+        return;
+    }
+    balloon.to = rxml.querySelector("to").textContent;
+    balloon.request = rxml.querySelector("request").textContent;
+    balloon.translations = {};
+    Array.forEach(rxml.querySelectorAll("translations[from]"), function (translations) {
+        let lang = translations.getAttribute("from");
+        balloon.translations[lang] = [];
+        Array.forEach(translations.querySelectorAll("translation"), function (translation) {
+            let word = translation.getAttribute("word");
+            let part = {};
+            let parts = [];
+            Array.forEach(translation.querySelectorAll("variant"), function (variant) {
+                let partOfSpeech = variant.getAttribute("class");
+                if (parts.indexOf(partOfSpeech) === -1) {
+                    parts.push(partOfSpeech);
+                    part[partOfSpeech] = [];
+                }
+                let variantStr = variant.textContent;
+                if (part[partOfSpeech].indexOf(variantStr) === -1) {
+                    part[partOfSpeech].push(variantStr);
                 }
             });
-            let url = translations.querySelector("url");
-            if (url) {
-                balloon.translations[lang].url = url.textContent;
+            if (parts.length) {
+                balloon.translations[lang].push({
+                    word: word,
+                    parts: parts,
+                    part: part
+                });
             }
         });
-    }
+        let url = translations.querySelector("url");
+        if (url) {
+            balloon.translations[lang].url = url.textContent;
+        }
+    });
     this.module._cache.storeBalloon(balloon);
     if (request.doNotShow) {
         return;
@@ -314,22 +222,26 @@
             this.tooltipHTML.hidePopup();
         }
         let tooltip = this.tooltip;
-        if (tooltip.getAttribute("data-translations") === JSON.stringify(balloon.translations)) {
+        let translationsJSON = JSON.stringify(balloon.translations);
+        if (tooltip.getAttribute("data-translations") === translationsJSON) {
             return;
         }
+        tooltip.setAttribute("data-translations", translationsJSON);
         tooltip.clearHideTimeout();
         tooltip.hidePopup();
-        tooltip.setAttribute("data-translations", JSON.stringify(balloon.translations));
+        let surroundingTextLanguage = this.module.getTextLanguage(balloon.surroundingText);
         let langs = Object.keys(balloon.translations);
-        let currentURI = gBrowser.mCurrentBrowser.currentURI.spec;
-        let contentDocument = gBrowser.mCurrentBrowser.contentDocument;
-        let pageLang = this.module.getPageLanguage(currentURI, contentDocument);
-        langs.active = langs.indexOf(pageLang) !== -1 ? pageLang : langs[0];
+        langs.active = langs.indexOf(surroundingTextLanguage) !== -1 ? surroundingTextLanguage : langs[0];
         tooltip.langs = langs;
         tooltip.translations = balloon.translations;
-        tooltip.pageZoom = gBrowser.selectedBrowser.markupDocumentViewer.fullZoom;
-        tooltip.openAtY = balloon.y;
-        tooltip.openPopupAtScreen(balloon.x, balloon.y, false);
+        let {
+            screenX: browserX,
+            screenY: browserY
+        } = gBrowser.boxObject;
+        let x = browserX + balloon.clientX + 2;
+        let y = browserY + balloon.clientY + 2;
+        tooltip.openAtY = y;
+        tooltip.openPopupAtScreen(x, y, false);
         this.module.logClickStatistics("word.show." + langs.active);
     }.bind(this);
     if (this.__translateItCallTimestamp) {
@@ -358,12 +270,10 @@
         </method>
 
         <method name="clearShowTimeout">
-            <body><![CDATA[    if (!(this.showTooltipTimeoutID || this._showBalloonTimeoutId)) {
+            <body><![CDATA[    if (!this._showBalloonTimeoutId) {
         return;
     }
-    clearTimeout(this.showTooltipTimeoutID);
     clearTimeout(this._showBalloonTimeoutId);
-    this.showTooltipTimeoutID = null;
     this._showBalloonTimeoutId = null;]]></body>
         </method>
 
@@ -375,74 +285,6 @@
     this._deactivateTimeoutId = null;]]></body>
         </method>
 
-        <method name="checkForNewNode">
-            <parameter name="aRangeParent"/>
-            <parameter name="aRangeOffset"/>
-            <body><![CDATA[    if (this._checkForNewNode(aRangeParent, aRangeOffset)) {
-        this.hideBalloon();
-    }]]></body>
-        </method>
-
-        <method name="_checkForNewNode">
-            <parameter name="aRangeParent"/>
-            <parameter name="aRangeOffset"/>
-            <body><![CDATA[    if (!this.isPopupOpen(this.tooltip) || !this.balloon) {
-        return false;
-    }
-    return aRangeOffset < this.balloon.begin || aRangeOffset > this.balloon.end;]]></body>
-        </method>
-
-        <method name="sendMouseEvent">
-            <body><![CDATA[    this.clearShowTimeout();
-    let mouseData = this._lastMouseMoveData;
-    if (!mouseData) {
-        return;
-    }
-    let eventView = mouseData.weakWindow.get(mouseData);
-    if (!eventView) {
-        return;
-    }
-    this._sendMouseEvent(mouseData.x, mouseData.y, eventView);]]></body>
-        </method>
-
-        <method name="_sendMouseEvent">
-            <parameter name="aClientX"/>
-            <parameter name="aClientY"/>
-            <parameter name="aEventView"/>
-            <body><![CDATA[    if (!aEventView) {
-        return;
-    }
-    try {
-        let node = aEventView.document.elementFromPoint(aClientX, aClientY);
-        if (node && /\[object XrayWrapper \[object HTML(Object|Embed)Element\]\]/.test(String(node))) {
-            return;
-        }
-    } catch (e) {
-    }
-    this._mouseEventSending = true;
-    try {
-        let domWindowUtils = aEventView.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-        domWindowUtils.sendMouseEvent("mousemove", aClientX, aClientY, 0, 0, 0);
-    } catch (e) {
-    }
-    this._mouseEventSending = false;]]></body>
-        </method>
-
-        <method name="isEventInRange">
-            <parameter name="aNode"/>
-            <parameter name="aStart"/>
-            <parameter name="aEnd"/>
-            <parameter name="aEvent"/>
-            <body><![CDATA[    let nodeRange = aNode.ownerDocument.createRange();
-    nodeRange.setStart(aNode, aStart);
-    nodeRange.setEnd(aNode, aEnd);
-    let nodeBCR = nodeRange.getBoundingClientRect();
-    if (nodeBCR.left > aEvent.clientX || nodeBCR.right < aEvent.clientX || nodeBCR.top > aEvent.clientY || nodeBCR.bottom < aEvent.clientY) {
-        return false;
-    }
-    return true;]]></body>
-        </method>
-
         <method name="isPopupOpen">
             <parameter name="aPopupNode"/>
             <body><![CDATA[    return aPopupNode && [
@@ -451,125 +293,48 @@
     ].indexOf(aPopupNode.state || "") > -1;]]></body>
         </method>
 
-        <method name="shouldTranslate">
-            <parameter name="aEvent"/>
-            <body><![CDATA[    if (this.module.translateOnHover) {
-        return true;
-    }
-    if (!aEvent) {
-        return false;
-    }
-    let translateKeyPref = this.module.translateOnHoverOption;
-    let isMac = this._isMac;
-    let ctrlKey = isMac ? "metaKey" : "ctrlKey";
-    let shiftKey = "shiftKey";
-    let ctrlKeyConst = this.module.TRANSLATE_ON_CTRLKEY;
-    let shiftKeyConst = this.module.TRANSLATE_ON_SHIFTKEY;
-    if (translateKeyPref == ctrlKeyConst || translateKeyPref == this.shiftKeyConst) {
-        if (aEvent[ctrlKey] && aEvent.shiftKey) {
-            return false;
-        }
-    }
-    if (translateKeyPref == ctrlKeyConst) {
-        if (aEvent instanceof Ci.nsIDOMMouseEvent) {
-            return aEvent[ctrlKey];
-        }
-        return aEvent.keyCode === isMac ? aEvent.DOM_VK_META : aEvent.DOM_VK_CONTROL;
-    }
-    if (translateKeyPref == shiftKeyConst) {
-        if (aEvent instanceof Ci.nsIDOMMouseEvent) {
-            return aEvent[shiftKey];
-        }
-        return aEvent.keyCode === aEvent.DOM_VK_SHIFT;
-    }
-    this._logger.debug("Translate modifier key preference value is inconsistent.");
-    return false;]]></body>
-        </method>
-
         <method name="handleEvent">
             <parameter name="event"/>
-            <body><![CDATA[    let target = event.originalTarget;
-    switch (event.type) {
-    case "mousemove":
-        if (this.isPopupOpen(this.tooltip) && this.tooltip._mouseOver) {
-            return;
-        }
-        if (this._mouseEventSending) {
-            event.stopPropagation();
-            if (!this.tryTranslateNode(event)) {
-                this.hideBalloon();
-            }
-        } else {
-            let lastX = this._lastMouseMoveData && this._lastMouseMoveData.x;
-            let lastY = this._lastMouseMoveData && this._lastMouseMoveData.y;
-            let dX = lastX !== undefined ? Math.abs(event.clientX - lastX) : 0;
-            let dY = lastY !== undefined ? Math.abs(event.clientY - lastY) : 0;
-            if (dX < 3 && dY < 3) {
-                return;
-            }
-            this._lastMouseMoveData = {
-                x: event.clientX,
-                y: event.clientY,
-                weakWindow: new WeakMap()
-            };
-            this._lastMouseMoveData.weakWindow.set(this._lastMouseMoveData, event.view);
-            if (this.shouldTranslate(event)) {
-                this._lastTimeStamp = event.timeStamp;
-                this.clearShowTimeout();
-                this.showTooltipTimeoutID = setTimeout(this.sendMouseEvent.bind(this), this.module.intervalShow);
-            } else {
-                this.showTooltipTimeoutID = setTimeout(function (that) {
-                    if (!(that._tooltip && that._tooltip._mouseOver)) {
-                        that.hideBalloon();
+            <body><![CDATA[    switch (event.type) {
+    case "popupshown": {
+            switch (event.target) {
+            case this._tooltip:
+                window.setTimeout(function () {
+                    if (this._tooltip && this._tooltip.state === "open") {
+                        this.module.API.Statistics.logShortAction(5510);
                     }
-                }, this.module.intervalShow, this);
+                }, 100);
+                break;
+            case this.tooltipHTML:
+                if (this._tooltip && this.isPopupOpen(this._tooltip)) {
+                    event.preventDefault();
+                }
+                break;
+            default:
+                break;
             }
+            break;
         }
-        break;
-    case "mouseout":
-        this._lastMouseMoveData = null;
-        if (!this.isPopupOpen(this.tooltip)) {
-            this.doNotShowBalloonNow();
+    case "popuphidden":
+        if (event.target === this._tooltip) {
+            this._tooltip.removeAttribute("data-translations");
         }
-        break;
-    case "keydown":
-        if (this.shouldTranslate()) {
-            if (this.isPopupOpen(this.tooltip)) {
-                this.hideBalloon();
-            }
-            return;
-        }
-        if (!this.shouldTranslate(event)) {
-            this.doNotShowBalloonNow();
-            this.hideBalloon();
-            return;
-        }
-        if (this._lastCtrlKeydown) {
-            return;
-        }
-        this._lastCtrlKeydown = Date.now();
-        this.clearShowTimeout();
-        this.showTooltipTimeoutID = setTimeout(this.sendMouseEvent.bind(this), this.module.intervalShow);
-        break;
-    case "keyup":
-        if (this.shouldTranslate() || !this.shouldTranslate(event)) {
-            return;
-        }
-        this._lastCtrlKeydown = null;
-        if (this.request && !this.request.doNotShow) {
-            this.clearShowTimeout();
-            this.sendMouseEvent();
-        }
-        break;
-    case "scroll":
-        this.doNotShowBalloonNow();
-        this.hideBalloon();
         break;
     case "load":
         this.response(event);
         break;
     case "error":
         break;
+    case "deactivate":
+    case "visibilitychange": {
+            this.clearShowTimeout();
+            this._deactivateTimeoutId = window.setTimeout(function _timedDeactivate() {
+                if (typeof this.hideBalloon === "function") {
+                    this.hideBalloon();
+                }
+            }.bind(this), 200);
+            break;
+        }
     default:
         break;
     }]]></body>

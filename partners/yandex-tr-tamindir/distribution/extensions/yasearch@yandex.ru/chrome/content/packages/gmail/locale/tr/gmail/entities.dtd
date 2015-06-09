@@ -18,8 +18,8 @@
 <!ENTITY gmail.button.text.write "Yaz">
 
 <!ENTITY gmail.menu.update "Posta kutunu kontrol et">
-<!ENTITY gmail.menu.write "Posta yaz">
-<!ENTITY gmail.menu.read "Posta oku">
+<!ENTITY gmail.menu.write "E-posta yaz">
+<!ENTITY gmail.menu.read "E-posta oku">
 <!ENTITY gmail.menu.addressbook "Kişileri aç">
 <!ENTITY gmail.menu.yandex "E-postalarımı Yandex.Mail&#39;e aktar">
 

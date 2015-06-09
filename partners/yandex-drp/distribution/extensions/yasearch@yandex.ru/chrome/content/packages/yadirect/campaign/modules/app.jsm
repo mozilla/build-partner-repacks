@@ -4,7 +4,6 @@ var module = function (app, common) {
     const MINIMUM_DELAY_MS = 5000;
     const MAX_UPDATE_ERROR_MS = 3600000;
     let timers = Object.create(null);
-    let yauthMgr = null;
     app.config = {
         useClickStatistics: true,
         observeBranding: false,
@@ -16,52 +15,38 @@ var module = function (app, common) {
             sincdebt: "http://balance.yandex.ru/invoices.xml?service_cc=PPC&ref_service_id=7"
         }
     };
-    app.init = function campaign_init() {
+    app.init = function () {
         this.module = this.importModule("api");
         this.module.init({
             api: this.api,
             onUpdate: this.onUpdate.bind(this)
         });
-        let yauthTimer = null;
-        yauthMgr = app.commonModule("yauth");
-        yauthMgr.init(function yauthMgr_init(login) {
-            if (yauthTimer) {
-                yauthTimer.cancel();
-                yauthTimer = null;
-            }
-            if (login && !yauthMgr.userLogin) {
-                yauthTimer = common.timers.setTimeout(yauthMgr_init.bind(this, login), 50);
-                return;
-            }
-            if (login) {
-                this.onLogin();
-            }
-            this.updateData();
-        }, this);
+        this._authManager = this.api.Passport;
+        this._authManager.addListener(this._authManager.EVENTS.AUTH_STATE_CHANGED, this);
         if (this.isAuth()) {
-            this.module.configure("user", yauthMgr.userLogin);
+            this.module.configure("user", this._authManager.defaultAccount.uid);
         }
     };
-    app.finalize = function campaign_finalize() {
-        yauthMgr = null;
+    app.finalize = function () {
         this._cancelUpdateTimer();
+        this._authManager.removeListener(this._authManager.EVENTS.AUTH_STATE_CHANGED, this);
     };
     app.dayuseStatProvider = {
-        isAuthorized: function dayuseStatProvider_isAuthorized() {
+        isAuthorized: function () {
             return app.isAuth();
         },
-        hasSavedLogins: function dayuseStatProvider_hasSavedLogins() {
-            return common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.ru" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.ua" }) || common.loginManager.hasSavedLogins({ formSubmitURL: "https://passport.yandex.com.tr" });
+        hasSavedLogins: function () {
+            return app._authManager.hasSavedLogins();
         }
     };
     app.instancePrototype = {
-        init: function campaign_instancePrototype_init() {
+        init: function () {
             app.updateData(this.WIID);
         },
-        finalize: function campaign_instansePrototype_finalize() {
+        finalize: function () {
             app.cleanData(this.WIID);
         },
-        onSettingChange: function campaign_onSettingChange(key, value, instanceId) {
+        onSettingChange: function (key, value, instanceId) {
             switch (key) {
             case "campaign":
                 app.updateData(this.WIID, true);
@@ -78,10 +63,10 @@ var module = function (app, common) {
         }
     };
     app.uiCommands = {
-        update: function campaign_uiCommands_update(command, eventInfo) {
+        update: function (command, eventInfo) {
             this.updateData(eventInfo.widget.WIID, true);
         },
-        camp: function campaign_uiCommands_camp(command, eventInfo) {
+        camp: function (command, eventInfo) {
             let url = "http://direct.yandex.ru/registered/main.pl";
             let cid = parseInt(this.api.Settings.getValue("campaign", eventInfo.widget.WIID), 10);
             cid = cid ? cid : this.directInfo && this.directInfo.campNumber || null;
@@ -93,7 +78,7 @@ var module = function (app, common) {
                 eventInfo: eventInfo.event
             });
         },
-        pay: function campaign_uiCommands_pay(command, eventInfo) {
+        pay: function (command, eventInfo) {
             let url = "http://direct.yandex.ru/registered/main.pl";
             let cid = parseInt(this.api.Settings.getValue("campaign", eventInfo.widget.WIID), 10);
             cid = cid ? cid : this.directInfo && this.directInfo.campNumber || null;
@@ -105,7 +90,7 @@ var module = function (app, common) {
                 eventInfo: eventInfo.event
             });
         },
-        auth: function campaign_uiCommands_auth(command, eventInfo) {
+        auth: function (command, eventInfo) {
             let url = "http://passport.yandex.ru/passport?mode=auth&retpath=http%3A%2F%2Fdirect.yandex.ru%2Fregistered%2Fmain.pl";
             let cid = parseInt(this.api.Settings.getValue("campaign", eventInfo.widget.WIID), 10);
             cid = cid ? cid : this.directInfo && this.directInfo.campNumber || null;
@@ -118,34 +103,10 @@ var module = function (app, common) {
             });
         }
     };
-    app._cancelUpdateTimer = function campaign_cancelTimer(aWIID) {
-        function cancelTimer(aWIID) {
-            let timer = timers[aWIID];
-            if (timer) {
-                timer.cancel();
-                timers[aWIID] = null;
-            }
-        }
-        if (aWIID) {
-            cancelTimer(aWIID);
-            return;
-        }
-        for (let wiid in timers) {
-            cancelTimer(wiid);
-        }
-    };
-    app._setUpdateTimer = function campaign__setUpdateTimer(aWIID, aDelay) {
-        this._cancelUpdateTimer(aWIID);
-        if (typeof aDelay == "undefined") {
-            aDelay = MINIMUM_DELAY_MS;
-        }
-        timers[aWIID] = new this.api.SysUtils.Timer(this.updateData.bind(this, aWIID, false, true), aDelay);
-    };
-    app.updateData = function campaign_updateData(aWIID, manual, force) {
+    app.updateData = function (aWIID, manual, force) {
         this._cancelUpdateTimer(aWIID);
         if (!this.isAuth()) {
-            this.onLogout();
-            this.onUpdate();
+            this._onLogout();
             return;
         }
         if (manual) {
@@ -164,24 +125,64 @@ var module = function (app, common) {
             this.module.update(aWIID, force);
         }
     };
-    app.isAuth = function campaign_isAuth() {
-        return yauthMgr.isAuth();
+    app.isAuth = function () {
+        return this._authManager.isAuthorized();
     };
-    app.getUserData = function campaign_getUserData(aWIID, aAction) {
+    app.getUserData = function (aWIID, aAction) {
         return this.module.getUserData(aWIID, aAction);
     };
-    app.cleanData = function campaign_cleanData(aWIID) {
+    app.cleanData = function (aWIID) {
         this.module.cleanData(aWIID);
     };
-    app.onLogin = function campaign_onLogin() {
-        this.module.configure("user", yauthMgr.userLogin);
-    };
-    app.onLogout = function campaign_onLogout() {
-        this.cleanData();
-    };
-    app.onUpdate = function campaign_onUpdate(aWIID) {
+    app.onUpdate = function (aWIID) {
         let notificationObject = aWIID ? JSON.stringify({ wiid: aWIID }) : null;
         common.observerService.notify("throbber", notificationObject);
         common.observerService.notify("display", notificationObject);
+    };
+    app._setUpdateTimer = function (aWIID, aDelay) {
+        this._cancelUpdateTimer(aWIID);
+        if (typeof aDelay == "undefined") {
+            aDelay = MINIMUM_DELAY_MS;
+        }
+        timers[aWIID] = this.api.SysUtils.Timer(this.updateData.bind(this, aWIID, false, true), aDelay);
+    };
+    app._cancelUpdateTimer = function (aWIID) {
+        function cancelTimer(aWIID) {
+            let timer = timers[aWIID];
+            if (timer) {
+                timer.cancel();
+                timers[aWIID] = null;
+            }
+        }
+        if (aWIID) {
+            cancelTimer(aWIID);
+            return;
+        }
+        for (let wiid in timers) {
+            cancelTimer(wiid);
+        }
+    };
+    app._cleanData = function (aWIID) {
+        this.module.cleanData(aWIID);
+    };
+    app._onLogin = function (aDefaultAccountUid) {
+        this.module.configure("user", aDefaultAccountUid);
+        this.updateData();
+    };
+    app._onLogout = function () {
+        this._cleanData();
+        this.onUpdate();
+    };
+    app._onAuthStateChanged = function (aData) {
+        if (!aData.accounts.length) {
+            this._onLogout();
+            return;
+        }
+        this._onLogin(aData.defaultAccount.uid);
+    };
+    app.observe = function (aSubject, aTopic, aData) {
+        if (aTopic === this._authManager.EVENTS.AUTH_STATE_CHANGED) {
+            this._onAuthStateChanged(aData);
+        }
     };
 };

@@ -10,7 +10,6 @@
     if (app === null) {
         return;
     }
-    const kBrowserMajorVersion = parseFloat(app.core.Lib.sysutils.platformInfo.browser.version, 10);
     const OS_NAME = app.core.Lib.sysutils.platformInfo.os.name;
     const FTAB_URL = app.protocolSupport.url;
     const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
@@ -126,7 +125,7 @@
             }
             if (lastKeyCodePressed === keyCode) {
                 lastKeyCodePressed = null;
-                if (keysPressed.length === 1 && app.layout.getThumbsNum() < 10) {
+                if (keysPressed.length === 1 && app.internalStructure.length < 10) {
                     app.fastdial.sendRequest("modifierPressed", { pressed: false });
                     onShortcutPressed();
                     return;
@@ -149,20 +148,6 @@
             let {availWidth, availHeight} = app.core.Lib.misc.hiddenWindows.appWindow.screen;
             app.core.Lib.misc.hiddenWindows.appWindow.resizeTo(availWidth, availHeight);
             window.setTimeout(this.create.bind(this), PRELOADER_INIT_DELAY_MS);
-            let E10SUtils;
-            try {
-                E10SUtils = Cu.import("resource:///modules/E10SUtils.jsm", {}).E10SUtils;
-            } catch (e) {
-            }
-            if (E10SUtils) {
-                let originalShouldBrowserBeRemote = E10SUtils.shouldBrowserBeRemote;
-                E10SUtils.shouldBrowserBeRemote = function hiddenTabManager_shouldBrowserBeRemote(url) {
-                    if (url && url.toLowerCase().startsWith(FTAB_URL)) {
-                        return false;
-                    }
-                    return originalShouldBrowserBeRemote.apply(E10SUtils, arguments);
-                };
-            }
             let originalBrowserOpenTabFn = window.BrowserOpenTab;
             let self = this;
             window.BrowserOpenTab = function BrowserOpenTab() {
@@ -206,10 +191,8 @@
         finalize: function hiddenTabManager_finalize() {
             this._tab = null;
             if (this._iframe) {
-                if (kBrowserMajorVersion > 23) {
-                    let doc = app.core.Lib.misc.hiddenWindows.appWindow.document;
-                    doc.documentElement.removeChild(this._iframe);
-                }
+                let doc = app.core.Lib.misc.hiddenWindows.appWindow.document;
+                doc.documentElement.removeChild(this._iframe);
             }
             this._iframe = null;
         },
@@ -255,9 +238,6 @@
             gURLBar.addEventListener("keyup", shortCutListener, false);
             gBrowser.tabContainer.addEventListener("TabOpen", this, false);
             gBrowser.tabContainer.addEventListener("TabClose", this, false);
-            if (app.installer.anonymousStatistic) {
-                this.askAnonymousStatistic();
-            }
             this._windowListener.addListener("PageShow", this);
         },
         finalize: function OverlayController_finalize() {
@@ -286,9 +266,6 @@
                 break;
             }
         },
-        askAnonymousStatistic: function WndCtrl_askAnonymousStatistic() {
-            new AnonymousStatisticController(this, this._windowListener).notify();
-        },
         _setBoostOpenTab: function OverlayController__setBoostOpenTab() {
             if (BROWSER_NEW_TAB_URL !== FTAB_URL) {
                 return;
@@ -296,9 +273,7 @@
             if (!app.preferences.get("ftabs.preload")) {
                 return;
             }
-            if (kBrowserMajorVersion >= 18) {
-                hiddenTabManager.init();
-            }
+            hiddenTabManager.init();
         },
         _setBrowserOpenTab: function OverlayController__setBrowserOpenTab() {
             if (!this._cachedBrowserOpenTab) {
@@ -352,144 +327,24 @@
         _preloadTabTimeoutId: null,
         _hiddenTab: null
     };
-    function AnonymousStatisticController(aOverlayController, aWindowListener) {
-        this._overlayController = aOverlayController;
-        this._logger = app.getLogger("AnonymousStatisticController");
-        this._windowListener = aWindowListener;
-        this._windowListener.addListener("PageShow", this);
-    }
-    AnonymousStatisticController.prototype = {
-        observe: function AnonStatCtrl_observe(aSubject, aTopic, aData) {
-            switch (aTopic) {
-            case "PageShow":
-                this._showAnonymousStatisticNotification();
-                break;
-            default:
-                break;
-            }
-        },
-        notify: function AnonStatCtrl_notify() {
-            core.Lib.misc.getBrowserWindows().forEach(function (win) {
-                let tabbrowser = win.gBrowser;
-                tabbrowser.browsers.forEach(function (browser, i) {
-                    this._showAnonymousStatisticNotification(tabbrowser, browser);
-                }, this);
-            }, this);
-        },
-        _finalize: function AnonStatCtrl_finalize() {
-            this._windowListener.removeListener("PageShow", this);
-            this._overlayController = null;
-            this._logger = null;
-            this._windowListener = null;
-        },
-        _showAnonymousStatisticNotification: function AnonStatCtrl__showAnonymousStatisticNotification(aGBrowser, aBrowser) {
-            let tabbrowser = aGBrowser || gBrowser;
-            let notificationBox = tabbrowser.getNotificationBox(aBrowser);
-            let notification = notificationBox.getNotificationWithValue(this.ANONYMOUS_STATISTIC_NOTIFICATION);
-            if (notification) {
+    window.addEventListener("visibilitychange", function (evt) {
+        if (evt.target.location.href === FTAB_URL && evt.target.hidden) {
+            app.fastdial.sendRequest("action", { type: "closeSettings" });
+            app.fastdial.sendRequest("modifierPressed", { pressed: false });
+        }
+        if (evt.target.hidden === false && evt.target.location.href === FTAB_URL) {
+            let win = gBrowser.getBrowserForTab(gBrowser.selectedTab).contentWindow;
+            if (!win) {
                 return;
             }
-            let stringBundle = new app.appStrings.StringBundle("notification/anonymous-statistic.properties");
-            let label = stringBundle.get("notification.label", [this.helpURL]);
-            let acceptButton = {
-                label: stringBundle.get("notification.accept"),
-                callback: this._enableAnonymousStatistic.bind(this),
-                accessKey: ""
-            };
-            let rejectButton = {
-                label: stringBundle.get("notification.reject"),
-                callback: this._disableAnonymousStatistic.bind(this),
-                accessKey: ""
-            };
-            notification = notificationBox.appendNotification(label, this.ANONYMOUS_STATISTIC_NOTIFICATION, null, notificationBox.PRIORITY_INFO_HIGH, [
-                acceptButton,
-                rejectButton
-            ], null);
-            notification.setAttribute("hideclose", "true");
-            let link = notification.ownerDocument.createElementNS(XUL_NS, "label");
-            link.setAttribute("anonid", "link");
-            link.setAttribute("value", stringBundle.get("notification.help"));
-            link.setAttribute("href", this.helpURL);
-            link.classList.add("text-link");
-            let description = notification.ownerDocument.getAnonymousElementByAttribute(notification, "anonid", "messageText");
-            description.appendChild(link);
-        },
-        _closeAllAnonymousStatisticNotifications: function AnonStatCtrl__closeAllNotificationsStatisticNotifications() {
-            core.Lib.misc.getBrowserWindows().forEach(function (win) {
-                let tabbrowser = win.gBrowser;
-                tabbrowser.browsers.forEach(function (browser) {
-                    let notificationBox = tabbrowser.getNotificationBox(browser);
-                    let notification = notificationBox.getNotificationWithValue(this.ANONYMOUS_STATISTIC_NOTIFICATION);
-                    if (notification) {
-                        notificationBox.removeNotification(notification);
-                    }
-                }, this);
-            }, this);
-        },
-        _enableAnonymousStatistic: function AnonStatCtrl__enableAnonymousStatistic() {
-            this._onAnswerAnonymousStatistic(true);
-        },
-        _disableAnonymousStatistic: function AnonStatCtrl__disableAnonymousStatistic() {
-            this._onAnswerAnonymousStatistic(false);
-        },
-        _onAnswerAnonymousStatistic: function AnonStatCtrl__onAnswerAnonymousStatistic(aEnable) {
-            this._closeAllAnonymousStatisticNotifications();
-            app.installer.anonymousStatistic = aEnable;
-            this._finalize();
-        },
-        get helpURL() {
-            let domain = "legal.yandex.ru";
-            let postfix = "";
-            switch (app.branding.productInfo.BrandID.toString()) {
-            case "ua":
-                domain = "legal.yandex.ua";
-                break;
-            case "tb":
-                domain = "legal.yandex.com.tr";
-                break;
-            }
-            switch (app.locale.language) {
-            case "en":
-                postfix = "?lang=en";
-                break;
-            case "tr":
-                postfix = "?lang=en";
-                break;
-            case "uk":
-                postfix = "?lang=uk";
-                break;
-            }
-            return "http://" + domain + "/confidential/" + postfix;
-        },
-        get ANONYMOUS_STATISTIC_NOTIFICATION() {
-            return app.name + "-anonymous-statistic-notification";
+            let utils = win.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+            let outerWindowID = utils.outerWindowID;
         }
-    };
-    let hidden;
-    let visibilityChange;
-    if (typeof document.hidden !== "undefined") {
-        hidden = "hidden";
-        visibilityChange = "visibilitychange";
-    } else if (typeof document.mozHidden !== "undefined") {
-        hidden = "mozHidden";
-        visibilityChange = "mozvisibilitychange";
-    }
-    if (visibilityChange !== undefined) {
-        window.addEventListener(visibilityChange, function (evt) {
-            if (evt.target.location.href === FTAB_URL && evt.target[hidden]) {
-                app.fastdial.sendRequest("modifierPressed", { pressed: false });
-            }
-            if (evt.target[hidden] === false && evt.target.location.href === FTAB_URL) {
-                let win = gBrowser.getBrowserForTab(gBrowser.selectedTab).contentWindow;
-                if (!win) {
-                    return;
-                }
-                let utils = win.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-                let outerWindowID = utils.outerWindowID;
-            }
-        }, false);
-    }
+    }, false);
     window.addEventListener("deactivate", function (evt) {
+        if (gBrowser.selectedBrowser.currentURI.spec === FTAB_URL) {
+            app.fastdial.sendRequest("action", { type: "closeSettings" });
+        }
         app.fastdial.sendRequest("modifierPressed", { pressed: false });
     }, false);
     window[app.name + "OverlayController"] = overlayController;
@@ -497,9 +352,7 @@
         window.removeEventListener("DOMContentLoaded", onDOMContentLoaded, false);
         overlayController.init();
         window.addEventListener("unload", function unLoad() {
-            if (kBrowserMajorVersion >= 18) {
-                hiddenTabManager.finalize();
-            }
+            hiddenTabManager.finalize();
             overlayController.finalize();
         }, false);
     }, false);

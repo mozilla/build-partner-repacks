@@ -1,7 +1,9 @@
+<!ENTITY title "Yandex.Disk">
+<!ENTITY widget.name "Yandex.Disk">
+<!ENTITY widget.description "Yandex.Disk">
 
 <!ENTITY context-menu.upload-image "Upload image">
 <!ENTITY context-menu.upload-title "Save image to Yandex.Disk">
-<!ENTITY error.limit "You&#39;ve ran out of space on Yandex.Disk">
 <!ENTITY slice.link-copied "Link copied">
 <!ENTITY slice.link-copied-buffer "Link copied to clipboard">
 <!ENTITY slice.links "Links">
@@ -28,29 +30,62 @@
 <!ENTITY slice.tooltip.homelink "Go to Yandex.Disk">
 <!ENTITY slice.tooltip.retry "Retry file upload to Yandex.Disk">
 <!ENTITY slice.tooltip.share "Get public link to file">
-<!ENTITY title "Yandex.Disk">
+<!ENTITY slice.empty-list "List of uploaded files on Yandex.Disk empty.">
+<!ENTITY slice.empty-list-2 "How to upload file">
+<!ENTITY slice.waiting-upload-url "Sending request...">
+<!ENTITY slice.error.file-not-loaded "File not loaded">
+<!ENTITY slice.error.filename-not-loaded "{filename} not loaded">
+<!ENTITY slice.error.limit-comp "Not enough free space on computer to save file">
+<!ENTITY slice.error.limit-disk "Not enough free space on Yandex.Disk to save file">
+<!ENTITY slice.tooltip.error-cancel "Cancel file upload on Yandex.Disk">
+
 <!ENTITY widget.button.authorized "List of recently saved files on Yandex.Disk">
 <!ENTITY widget.button.unauthorized "Please sign in to Yandex">
 <!ENTITY widget.button.upload-complete "File saved successfully to Yandex.Disk">
 <!ENTITY widget.button.upload-error "Failed to save file to Yandex.Disk">
 <!ENTITY widget.button.uploading "File is being saved to Yandex.Disk">
-<!ENTITY widget.description "Yandex.Disk">
 <!ENTITY widget.menu.save "Save to Yandex Disk">
-<!ENTITY widget.name "Yandex.Disk">
-<!ENTITY widget.options.save-checkbox.title "Show save icon while mousing over images">
 <!ENTITY widget.pagebutton.title "Save">
 <!ENTITY widget.pagebutton.tooltip "Save file to Yandex.Disk">
 <!ENTITY widget.save-button.title "Save image to Yandex.Disk">
 <!ENTITY widget.save-file-button.title "Save file to Yandex.Disk">
-<!ENTITY error.cmd.try-again "Try *again*">
-<!ENTITY error.network "Connection error.">
-<!ENTITY slice.empty-list "List of uploaded files on Yandex.Disk empty.">
-<!ENTITY slice.empty-list-2 "How to upload file">
 <!ENTITY widget.chrome-name "Yandex Elements: Disk">
-<!ENTITY slice.waiting-upload-url "Sending request...">
 <!ENTITY widget.chrome-description "Save files and images from the internet to Yandex.Disk in one click">
 <!ENTITY widget.chrome-full-description "This add-on lets you save files and images from the internet to the Yandex.Disk cloud and open them using any device. You need to enter your Yandex username and password for it to work.">
 <!ENTITY widget.opera.forbidden "You need to have Opera version 26 or later for the Disk extension to work.">
+
+<!ENTITY error.cmd.try-again "Try *again*">
+<!ENTITY error.limit "You&#39;ve ran out of space on Yandex.Disk">
+<!ENTITY error.network "Connection error.">
 <!ENTITY error.cmd-auth "Please go through *authorization*">
-<!ENTITY slice.error.file-not-loaded "File not loaded">
-<!ENTITY slice.error.filename-not-loaded "{filename} not loaded">
+
+<!ENTITY widget.settings.showPopupSuggest "Show pop-up button &context-menu.upload-title;">
+<!ENTITY widget.settings.save-document.title "Show the Disk button on top of open documents in the browser">
+
+<!ENTITY file-dialog.all-files "All files">
+<!ENTITY file-dialog.title "Choose files for downloading">
+
+<!ENTITY slice.help "Help">
+<!ENTITY slice.settings "Settings">
+<!ENTITY slice.upload "Upload">
+<!ENTITY widget.options.save-checkbox.title "Show button while mousing over images">
+<!ENTITY widget.options.save-document-checkbox.title "Show button above open documents in browser">
+<!ENTITY slice.download "Download">
+<!ENTITY slice.public "Share">
+<!ENTITY slice.size.b "bytes">
+<!ENTITY slice.size.gb "GB">
+<!ENTITY slice.size.kb "KB">
+<!ENTITY slice.size.mb "MB">
+<!ENTITY widget.options.show-notifications.title "Show notifications">
+<!ENTITY slice.notif.saved-new "File saved to &#34;Downloads&#34; folder on your Yandex.Disk">
+<!ENTITY widget.options.notifications-enable.title "Show notifications when files are uploaded">
+<!ENTITY slice.notif.yabrowser-save "File saved{new_line}To your &#34;Downloads&#34; folder on Yandex.Disk">
+<!ENTITY file-dialog.error.empty-file "Cannot upload a file which is 0 bytes in size">
+<!ENTITY widget.save-button.tutorial.confirmButton "Okay, thanks">
+<!ENTITY widget.save-button.tutorial.moreInfo "Help">
+<!ENTITY widget.save-button.tutorial.settings "Settings">
+<!ENTITY widget.save-button.tutorial.text "Click on the icon to save your favorite images to your Yandex.Disk. Collect all your interests on Yandex.Disk.">
+<!ENTITY widget.save.tutorial.text "Click on the icon to see recenty-saved images. You can download these files to a computer, quickly share them with friends, or go to Disk to view files and work with them.">
+<!ENTITY slice.uploading "Uploading">
+<!ENTITY widget.save.tutorial.header "Yandex.Disk in browser">
+<!ENTITY widget.save-button.tutorial.confirmButton.short "Okay">

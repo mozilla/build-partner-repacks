@@ -22,8 +22,34 @@ const statistics = {
     get alwaysSendUsageStat() {
         return this._application.preferences.get("stat.usage.send", null);
     },
+    get sendUsageStat() {
+        return this._application.preferences.get("stat.usage.send", false);
+    },
+    set sendUsageStat(val) {
+        if (typeof val !== "boolean") {
+            throw new Error("sendUsageStat value must be boolean.");
+        }
+        this._application.preferences.set("stat.usage.send", val);
+        let neighborhoodAddonId;
+        switch (this._application.core.CONFIG.APP.TYPE) {
+        case "barff":
+            neighborhoodAddonId = "vb@yandex.ru";
+            break;
+        case "vbff":
+            neighborhoodAddonId = "yasearch@yandex.ru";
+            break;
+        default:
+            return;
+        }
+        AddonManager.getAddonByID(neighborhoodAddonId, addonData => {
+            if (Boolean(addonData)) {
+                let statPrefName = "extensions." + neighborhoodAddonId + ".stat.usage.send";
+                Preferences.set(statPrefName, val);
+            }
+        });
+    },
     logClickStatistics: function statistics_logClickStatistics({dtype, pid, cid, path}) {
-        if (!this.alwaysSendUsageStat) {
+        if (!this.sendUsageStat) {
             return;
         }
         if (typeof dtype === "undefined") {
@@ -47,13 +73,19 @@ const statistics = {
             throw new TypeError("Wrong pid type ('" + typeof pid + "'). Number required.");
         }
         if (typeof cid === "number") {
-            if (cid <= 0) {
+            if (cid <= 0 || isNaN(cid)) {
                 throw new RangeError("Invalid cid value (" + cid + ")");
             }
         } else {
             throw new TypeError("Wrong cid type ('" + typeof cid + "'). Number required.");
         }
-        let url = "http://clck.yandex.ru/click" + "/dtype=" + encodeURIComponent(dtype) + "/pid=" + pid + "/cid=" + cid + "/path=" + encodeURIComponent(path);
+        if (this._application.core.CONFIG.APP.TYPE === "vbff") {
+            path = path.replace(/^(fx\.)?/, "$1" + this.addonVersion);
+        }
+        if (path.indexOf("fx.") !== 0) {
+            path = "fx." + path;
+        }
+        let url = "https://clck.yandex.ru/click" + "/dtype=" + encodeURIComponent(dtype) + "/pid=" + pid + "/cid=" + cid + "/path=" + encodeURIComponent(path);
         let extraString = "";
         let processedKeys = [
             "dtype",
@@ -80,6 +112,11 @@ const statistics = {
         request.open("GET", url, true);
         request.send(null);
     },
+    get addonVersion() {
+        let versionArray = this._application.addonManager.addonVersion.split(".");
+        delete this.addonVersion;
+        return this.addonVersion = versionArray.join("_") + ".";
+    },
     _loadSubscripts: function statistics__loadSubscripts() {
         const statisticsDirPath = this._application.partsURL + "statistics/";
         this._subscripts = Object.create(null);
@@ -98,6 +135,7 @@ const statistics = {
     },
     _finalizeSubscripts: function statistics__finalizeSubscripts() {
         this._subscriptsNames.reverse().forEach(function (subscriptName) {
+            subscriptName = subscriptName.replace(/\.js$/, "");
             let subscript = this._subscripts[subscriptName];
             if (subscript && typeof subscript.finalize == "function") {
                 this._logger.debug("Finalizing " + subscriptName + " subscript");

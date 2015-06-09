@@ -29,13 +29,17 @@ function Application() {
                 return $.widget && $.widget.isAuth() || false;
             },
             hasSavedLogins: function dayuseStatProvider_hasSavedLogins() {
-                var propertyBag = Components.classes["@mozilla.org/hash-property-bag;1"].createInstance(Components.interfaces.nsIWritablePropertyBag);
-                propertyBag.setProperty("formSubmitURL", "https://login.yahoo.com");
-                propertyBag.QueryInterface(Components.interfaces.nsIPropertyBag).QueryInterface(Components.interfaces.nsIPropertyBag2).QueryInterface(Components.interfaces.nsIWritablePropertyBag2);
-                var loginManager = Components.classes["@mozilla.org/login-manager;1"].getService(Components.interfaces.nsILoginManager);
-                return loginManager.searchLogins({}, propertyBag).filter(function (login) {
-                    return !!login.formSubmitURL;
-                }).length;
+                function hasSavedLogins(formSubmitURL) {
+                    var propertyBag = Components.classes["@mozilla.org/hash-property-bag;1"].createInstance(Components.interfaces.nsIWritablePropertyBag);
+                    propertyBag.setProperty("formSubmitURL", formSubmitURL);
+                    propertyBag.QueryInterface(Components.interfaces.nsIPropertyBag).QueryInterface(Components.interfaces.nsIPropertyBag2).QueryInterface(Components.interfaces.nsIWritablePropertyBag2);
+                    var loginManager = Components.classes["@mozilla.org/login-manager;1"].getService(Components.interfaces.nsILoginManager);
+                    var logins = loginManager.searchLogins({}, propertyBag).filter(function (login) {
+                        return !!login.formSubmitURL;
+                    }).length;
+                    return Boolean(logins);
+                }
+                return hasSavedLogins("https://login.yahoo.com");
             }
         }
     };
@@ -48,15 +52,7 @@ function Application() {
         $.importModule("application.notify.jsm");
         $.XMLHttpRequest = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"];
         $.loadLibrary("jsOAuth-1.1.js");
-        $.isYa = true;
-        var service = $.api.Services.obtainService("ru.yandex.custombar.branding", "package", function () {
-        });
-        if (service) {
-            let brandID = service.getBrandID();
-            if (brandID != "yandex") {
-                $.isYa = false;
-            }
-        }
+        $.isYa = $.api.Environment.branding.brandID === "yandex";
         $.start();
     };
     $.finalize = function () {

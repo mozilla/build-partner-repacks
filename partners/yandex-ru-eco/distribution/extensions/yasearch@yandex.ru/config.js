@@ -4,23 +4,19 @@ const CB_CONFIG = function () {
     const APP_NAME = "yasearch";
     let config = {
         APP: {
+            ID: "yasearch@yandex.ru",
             NAME: APP_NAME,
             TYPE: "barff",
             COOKIE: "bar.ff"
         },
         BUILD: {
-            DATE: 'Thu Feb 12 2015 15:11:28 GMT+0000',
-            REVISION: 5
+            DATE: 'Mon Jun 08 2015 13:52:28 GMT+0000',
+            REVISION: 4
         },
-        PLATFORM: { VERSION: 25 },
+        PLATFORM: { VERSION: 28 },
         CORE: {
             CONTRACT_ID: "@yandex.ru/custombarcore;" + APP_NAME,
             CLASS_ID: "{F25B83DE-5817-11DE-8EB3-C9A656D89593}"
-        },
-        PREFS_PATH: {
-            XB_WIDGETS: APP_NAME + ".xbwidgets.",
-            NATIVES: APP_NAME + ".native_comps.",
-            STATIC: APP_NAME + ".static."
         }
     };
     config.PROTOCOLS = Object.create(null);

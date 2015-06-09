@@ -8,7 +8,6 @@ const {
 } = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/FileUtils.jsm");
 const safeBrowsing = {
     init: function safeBrowsing_init(aApplication) {
         this._application = aApplication;

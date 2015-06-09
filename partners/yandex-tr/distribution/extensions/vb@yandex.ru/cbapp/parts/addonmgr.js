@@ -61,35 +61,17 @@ const addonManager = {
         });
         return defer.promise;
     },
-    disableAddon: function AddonManager_disableAddon() {
-        AddonManager.disableAddonByID(this.addonId, function AddonManager__disableAddon() {
-            let timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-            timer.initWithCallback({
-                notify: function AddonManager__disableAddonTimed() {
-                    const nsIAppStartup = Ci.nsIAppStartup;
-                    Services.startup.quit(nsIAppStartup.eForceQuit | nsIAppStartup.eRestart);
-                }
-            }, 50, timer.TYPE_ONE_SHOT);
-        });
-    },
-    removeAddon: function AddonManager_removeAddon() {
-        let ftabUrl = this._application.protocolSupport.url;
-        this._application.installer.closeTabs(ftabUrl);
-        AddonManager.uninstallAddonsByIDs([this.addonId], true, function AddonManager_getAddonByID(addon) {
-            Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore).getBrowserState();
-        });
-    },
     get _addonLastInstalledVersion() {
-        return Preferences.get("extensions." + this.addonId + ".versions.lastAddon", "0");
+        return this._application.preferences.get("versions.lastAddon", "0");
     },
     set _addonLastInstalledVersion(aValue) {
-        Preferences.set("extensions." + this.addonId + ".versions.lastAddon", aValue);
+        this._application.preferences.set("versions.lastAddon", aValue);
     },
     get _lastRunBuildNumber() {
-        return Preferences.get("extensions." + this.addonId + ".versions.lastBuild", 0);
+        return this._application.preferences.get("versions.lastBuild", 0);
     },
     set _lastRunBuildNumber(aValue) {
-        Preferences.overwrite("extensions." + this.addonId + ".versions.lastBuild", aValue);
+        this._application.preferences.set("versions.lastBuild", aValue);
     },
     _checkVersions: function AddonManager__checkVersions() {
         let currentVersion = this.addonVersion;

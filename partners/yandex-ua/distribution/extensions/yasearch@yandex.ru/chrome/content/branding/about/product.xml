@@ -3,11 +3,11 @@
     <BrandID>ua</BrandID>
 
     <ProductName1 acc='&product.name.acc;' dat='&product.name.dat;' ex1='&product.name.nom;' ex2='&product.name.nom;' gen='&product.name.gen;' ins='&product.name.ins;' loc='&product.name.loc;' nom='&product.name.nom;' pre='&product.name.pre;'/>
-    
+
     <ProductName2 acc='&product.shortname.acc;' dat='&product.shortname.dat;' ex1='&product.shortname.nom;' ex2='&product.shortname.nom;' gen='&product.shortname.gen;' ins='&product.shortname.ins;' loc='&product.shortname.loc;' nom='&product.shortname.nom;' pre='&product.shortname.pre;'/>
-    
+
     <VendorName acc='&vendor.name.acc;' dat='&vendor.name.dat;' ex1='&vendor.name.nom;' ex2='&vendor.name.nom;' gen='&vendor.name.gen;' ins='&vendor.name.ins;' loc='&vendor.name.loc;' nom='&vendor.name.nom;' pre='&vendor.name.pre;'/>
-    
+
     <ProductDescription fx='&product.description;' ie='&product.description;'/>
     <NoteLine fx='&product.note.fx;' ie='&product.note.ie;'/>
     <HomePage action='3010'>&product.homepage;</HomePage>
@@ -20,17 +20,16 @@
     <Help>
         <IE action='3000'>&product.help.url.ie;</IE>
     </Help>
-  
+
     <YandexFeatures geolocation='true' homepage-protection='true' mailto-integration='true' praetorian='true' url-corrector='true' visual-bookmarks='true'/>
-    
+
     <Barless enabled='true'/>
-    
+
     <Languages>ru, en, uk, kk, be</Languages>
-    
+
     <Setup>
-        <License checked='true' display='false'/>
+        <License checked='false' display='false'/>
         <HomePage checked='false' display='false'/>
         <DefaultSearch checked='false' display='false'/>
-        <UsageStat checked='false' display='false' multipack='true'/>
     </Setup>
 </Product>

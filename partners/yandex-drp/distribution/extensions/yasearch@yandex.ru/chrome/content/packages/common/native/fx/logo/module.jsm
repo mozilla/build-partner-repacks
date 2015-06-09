@@ -10,25 +10,17 @@ const {
     utils: Cu
 } = Components;
 const resources = { browser: { styles: ["/native/fx/bindings.css"] } };
-const PARTNER_PACK_COMPID = "ru.yandex.custombar.branding";
-const PARTNER_PACK_SVCNAME = "package";
 const PARTNER_PACK_LOGO_XML = "/logobutton/logoconf.xml";
 const WIDGET_ID = "http://bar.yandex.ru/packages/yandexbar#logo";
 const core = {
     init: function LogoWidget_init(api) {
         this._api = api;
         this._logger = api.logger;
-        this._partnerPackSvc = api.Services.obtainService(PARTNER_PACK_COMPID, PARTNER_PACK_SVCNAME, this);
-        this._loadPartnerPack();
     },
     finalize: function LogoWidget_finalize() {
         this._saveHistory();
-        this._api.Services.releaseService(PARTNER_PACK_COMPID, PARTNER_PACK_SVCNAME, this);
         delete this._api;
         delete this._linkTags;
-        delete this._partnerXml;
-        delete this._templater;
-        delete this._partnerPackSvc;
         delete this._logger;
     },
     buildWidget: function LogoWidget_buildWidget(WIID, toolbarItem) {
@@ -45,59 +37,29 @@ const core = {
     onAfterReset: function LogoWidget_onAfterReset() {
         this._getInitialHistory();
     },
-    observeServiceEvent: function LogoWidget_observeServiceEvent(providerID, serviceName, topic, data) {
-        if (providerID != PARTNER_PACK_COMPID || serviceName != PARTNER_PACK_SVCNAME) {
-            return;
-        }
-        switch (topic) {
-        case "registered":
-            this._logger.info("logo button registered");
-            this._partnerPackSvc = data;
-            this._loadPartnerPack();
-            break;
-        case "package updated":
-            this._logger.info("logo button updated");
-            delete this._linkTags;
-            delete this.navigateMainPage.params;
-            this._historyLength = null;
-            this._loadPartnerPack();
-            this._forEachToolbarItem(function (toolbarItem) {
-                if ("reload" in toolbarItem) {
-                    toolbarItem.reload();
-                }
-            });
-            break;
-        default:
-            break;
-        }
-    },
-    _loadPartnerPack: function LogoWidget__loadPartnerPack() {
-        try {
-            let partnerPackageService = this._partnerPackSvc;
-            this._templater = function (str) {
-                return partnerPackageService.expandBrandTemplatesEscape(str);
-            };
-            this._partnerXml = this._partnerPackSvc.getXMLDocument(PARTNER_PACK_LOGO_XML);
-        } catch (e) {
-            this._logger.error("Could not load branding content. " + e);
-        }
-    },
     _api: null,
     get API() {
         return this._api;
     },
     get logoImagePath() {
-        return this._partnerPackSvc.resolvePath("fx/logobutton/logo.svg");
+        return this._api.Environment.branding.resolvePath("fx/logobutton/logo.svg");
     },
     get aboutImagePath() {
-        return this._partnerPackSvc.resolvePath("about/logo-fx-tiny.png");
+        return this._api.Environment.branding.resolvePath("about/logo-fx-tiny.png");
     },
     get vendorName() {
-        return this._partnerPackSvc.expandBrandTemplates("{vendor.nom}");
+        return this._api.Environment.branding.expandBrandTemplates("{vendor.nom}");
     },
     get logoTooltip() {
         let tooltip = this._partnerXml.querySelector("Tooltip");
         return tooltip && tooltip.textContent || "";
+    },
+    get _partnerXml() {
+        delete this._partnerXml;
+        return this._partnerXml = this._api.Environment.branding.getXMLDocument(PARTNER_PACK_LOGO_XML);
+    },
+    _templater: function LogoWidget__templater(str) {
+        return this._api.Environment.branding.expandBrandTemplatesEscape(str);
     },
     get _historyStorage() {
         if (!this.__historyStorage || !this.__historyStorage.exists()) {
@@ -167,7 +129,7 @@ const core = {
         }
     },
     logAction: function LogoWidget_logAction(aActionValue) {
-        if (this._partnerPackSvc.getBrandID() == "yandex") {
+        if (this._api.Environment.branding.brandID === "yandex") {
             this._api.Statistics.logShortAction(aActionValue);
         } else {
             this._api.Statistics.logCustomAction(aActionValue);
@@ -191,7 +153,7 @@ const core = {
     },
     _transformMenuXSLT: function LogoWidget__transformMenuXSLT(xmlDoc, aDocument) {
         let xsltProcessor = Cc["@mozilla.org/document-transformer;1?type=xslt"].createInstance(Ci.nsIXSLTProcessor);
-        xsltProcessor.setParameter(null, "packagePath", this._partnerPackSvc.resolvePath(""));
+        xsltProcessor.setParameter(null, "packagePath", this._api.Environment.branding.resolvePath(""));
         const IOService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
         let uri = IOService.newURI(this.API.Package.resolvePath("/native/fx/logo/services-menu.xsl"), null, null);
         let channel = IOService.newChannelFromURI(uri);

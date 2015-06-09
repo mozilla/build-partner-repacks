@@ -39,10 +39,6 @@ const YaGeolocation = {
     lastIP: "",
     position: null,
     _watchingTimer: null,
-    get canRun() {
-        delete this.canRun;
-        return this.canRun = Ci.nsIWifiMonitor && (core.api.Environment.os.name === "windows" || !core.api.Environment.browser.version.isLessThan("25.a1"));
-    },
     get WifiMonitorService() {
         delete this.WifiMonitorService;
         return this.WifiMonitorService = Cc["@mozilla.org/wifi/monitor;1"].getService(Ci.nsIWifiMonitor);
@@ -66,9 +62,6 @@ const YaGeolocation = {
         return this.PrefsModule.set(this.prefBranchPath + aName, aValue);
     },
     startup: function YaGeolocation_startup() {
-        if (!this.canRun) {
-            return;
-        }
         let dataStr = this.getPref("position");
         let savedPosition = null;
         try {
@@ -84,9 +77,6 @@ const YaGeolocation = {
         this.log("Startup\nSaved position: " + dataStr + "\nWiFi: " + this.wifi + "\nLast IP: " + this.lastIP);
     },
     shutdown: function YaGeolocation_shutdown() {
-        if (!this.canRun) {
-            return;
-        }
         this.stopWatching();
         this.log("Shutdown");
     },

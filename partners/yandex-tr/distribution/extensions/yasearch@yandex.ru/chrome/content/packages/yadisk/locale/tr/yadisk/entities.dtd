@@ -1,24 +1,26 @@
+<!ENTITY title "Yandex.Disk">
+<!ENTITY widget.name "Yandex.Disk">
+<!ENTITY widget.description "Yandex.Disk">
 
 <!ENTITY context-menu.upload-image "Görsel yükle">
 <!ENTITY context-menu.upload-title "Görseli Yandex.Disk&#39;e kaydet">
-<!ENTITY error.limit "Yandex.Disk&#39;te boş alan kalmadı">
 <!ENTITY slice.link-copied "Bağlantı kopyalandı">
 <!ENTITY slice.link-copied-buffer "Bağlantı ara belleğe kopyalandı">
 <!ENTITY slice.links "Bağlantılar">
 <!ENTITY slice.load-file "Dosya yükle">
 <!ENTITY slice.loads "İndirilenler">
-<!ENTITY slice.month.short.1 "{D} oca">
-<!ENTITY slice.month.short.10 "{D} eki">
-<!ENTITY slice.month.short.11 "{D} kas">
-<!ENTITY slice.month.short.12 "{D} ara">
-<!ENTITY slice.month.short.2 "{D} şub">
-<!ENTITY slice.month.short.3 "{D} mar">
-<!ENTITY slice.month.short.4 "{D} nis">
-<!ENTITY slice.month.short.5 "{D} may">
-<!ENTITY slice.month.short.6 "{D} haz">
-<!ENTITY slice.month.short.7 "{D} tem">
-<!ENTITY slice.month.short.8 "{D} ağu">
-<!ENTITY slice.month.short.9 "{D} eyl">
+<!ENTITY slice.month.short.1 "{D} Oca">
+<!ENTITY slice.month.short.10 "{D} Eki">
+<!ENTITY slice.month.short.11 "{D} Kas">
+<!ENTITY slice.month.short.12 "{D} Ara">
+<!ENTITY slice.month.short.2 "{D} Şub">
+<!ENTITY slice.month.short.3 "{D} Mar">
+<!ENTITY slice.month.short.4 "{D} Nis">
+<!ENTITY slice.month.short.5 "{D} May">
+<!ENTITY slice.month.short.6 "{D} Haz">
+<!ENTITY slice.month.short.7 "{D} Tem">
+<!ENTITY slice.month.short.8 "{D} Ağu">
+<!ENTITY slice.month.short.9 "{D} Eyl">
 <!ENTITY slice.notif.errors "{N} dosya yüklenmedi;{N} dosya yüklenmedi;{N} dosya yüklenmedi">
 <!ENTITY slice.notif.saved "Dosya kaydedildi">
 <!ENTITY slice.notif.saved-chrome "Dosya Yandex.Disk&#39;e kaydedildi">
@@ -28,29 +30,62 @@
 <!ENTITY slice.tooltip.homelink "Yandex.Disk&#39;e git">
 <!ENTITY slice.tooltip.retry "Dosyanın Yandex.Disk&#39;e yüklenmesini tekrarla">
 <!ENTITY slice.tooltip.share "Genel paylaşıma açık dosyanın bağlantısını al">
-<!ENTITY title "Yandex.Disk">
+<!ENTITY slice.empty-list "Yandex.Disk&#39;e yüklenmiş dosya listesi boş.">
+<!ENTITY slice.empty-list-2 "Dosya nasıl yüklenir">
+<!ENTITY slice.waiting-upload-url "Sorgu gönderildi, yanıt bekleniyor...">
+<!ENTITY slice.error.file-not-loaded "Dosya yüklenmedi">
+<!ENTITY slice.error.filename-not-loaded "{filename} yüklenmedi">
+<!ENTITY slice.error.limit-comp "Dosyanın kaydedilmesi için bilgisayarda yeterli alan yok">
+<!ENTITY slice.error.limit-disk "Dosyanın kaydedilmesi için Yandex.Disk&#39;te yeterli alan yok">
+<!ENTITY slice.tooltip.error-cancel "Dosyanın Yandex.Disk&#39;e kaydedilmesini iptal et">
+
 <!ENTITY widget.button.authorized "Yandex.Disk&#39;e en son kaydedilen dosyaların listesi">
 <!ENTITY widget.button.unauthorized "Lütfen Yandex&#39;e giriş yapın">
 <!ENTITY widget.button.upload-complete "Dosya Yandex.Disk&#39;e başarıyla kaydedildi">
 <!ENTITY widget.button.upload-error "Dosya Yandex.Disk&#39;e kaydedilemedi">
 <!ENTITY widget.button.uploading "Dosya Yandex.Disk&#39;e kaydediliyor">
-<!ENTITY widget.description "Yandex.Disk">
 <!ENTITY widget.menu.save "Yandex.Disk&#39;e kaydet">
-<!ENTITY widget.name "Yandex.Disk">
-<!ENTITY widget.options.save-checkbox.title "İmleç üzerine getirildiğinde kaydetme simgesini göster">
 <!ENTITY widget.pagebutton.title "Kaydet">
 <!ENTITY widget.pagebutton.tooltip "Dosyayı Yandex.Disk&#39;e kaydet">
 <!ENTITY widget.save-button.title "Görseli Yandex.Disk&#39;e kaydet">
 <!ENTITY widget.save-file-button.title "Dosyayı Yandex.Disk&#39;e kaydet">
-<!ENTITY error.cmd.try-again "*Tekrar* deneyin">
-<!ENTITY error.network "Bağlantı hatası.">
-<!ENTITY slice.empty-list "Yandex.Disk&#39;e yüklenmiş dosya listesi boş.">
-<!ENTITY slice.empty-list-2 "Dosya nasıl yüklenir">
 <!ENTITY widget.chrome-name "Yandex Elements: Disk">
-<!ENTITY slice.waiting-upload-url "Sorgu gönderildi, yanıt bekleniyor...">
 <!ENTITY widget.chrome-description "İnternette bulduğunuz dosya ve görselleri Yandex.Disk&#39;e tek tıklamayla kaydedin">
 <!ENTITY widget.chrome-full-description "Eklenti, internette bulduğunuz dosya ve görselleri Yandex.Disk&#39;e kaydetmenizi ve bunları herhangi bir cihazda açmanızı sağlar. Eklentinin çalışması için Yandex kullanıcı adınızı ve şifrenizi girmeniz gerekiyor.">
 <!ENTITY widget.opera.forbidden "Disk eklentisinin çalışması için Opera 26 ve üst sürümler gerekiyor.">
+
+<!ENTITY error.cmd.try-again "*Tekrar* deneyin">
+<!ENTITY error.limit "Yandex.Disk&#39;te boş alan kalmadı">
+<!ENTITY error.network "Bağlantı hatası.">
 <!ENTITY error.cmd-auth "Lütfen *giriş yapın*">
-<!ENTITY slice.error.file-not-loaded "Dosya yüklenmedi">
-<!ENTITY slice.error.filename-not-loaded "{filename} yüklenmedi">
+
+<!ENTITY widget.settings.showPopupSuggest "">
+<!ENTITY widget.settings.save-document.title "Disk butonunu tarayıcıda açık olan belgelerin üstünde göster">
+
+<!ENTITY file-dialog.all-files "Tüm dosyalar">
+<!ENTITY file-dialog.title "İndirilecek dosya seçimi">
+
+<!ENTITY slice.help "Yardım">
+<!ENTITY slice.settings "Ayarlar">
+<!ENTITY slice.upload "Yükle">
+<!ENTITY widget.options.save-checkbox.title "Butonu, sitelerde bulunan görsellerin üzerinde göster">
+<!ENTITY widget.options.save-document-checkbox.title "Butonu, tarayıcıda açık olan belgelerin üzerinde göster">
+<!ENTITY slice.download "İndir">
+<!ENTITY slice.public "Paylaş">
+<!ENTITY slice.size.b "bayt">
+<!ENTITY slice.size.gb "GB">
+<!ENTITY slice.size.kb "KB">
+<!ENTITY slice.size.mb "MB">
+<!ENTITY widget.options.show-notifications.title "Bildirimleri göster">
+<!ENTITY slice.notif.saved-new "Dosya kaydedildi. Dosyayı Yandex.Disk&#39;inizde &#34;İndirilenler&#34; klasöründe bulabilirsiniz.">
+<!ENTITY widget.options.notifications-enable.title "Dosyaların yüklenme bildirimlerini göster">
+<!ENTITY slice.notif.yabrowser-save "Dosya kaydedildi.{new_line}Dosyayı Yandex.Disk&#39;inizde &#34;İndirilenler&#34; klasöründe bulabilirsiniz.">
+<!ENTITY file-dialog.error.empty-file "Sıfır bayt olan bir dosya yüklenemez">
+<!ENTITY widget.save-button.tutorial.confirmButton "Tamam, teşekkürler">
+<!ENTITY widget.save-button.tutorial.moreInfo "Yardım">
+<!ENTITY widget.save-button.tutorial.settings "Ayarlar ">
+<!ENTITY widget.save-button.tutorial.text "Beğendiğiniz görseli Yandex.Disk&#8217;inize kaydetmek için simgeye tıklayın. İlginizi çeken her şeyi Yandex.Disk&#8217;te biriktirin.">
+<!ENTITY widget.save.tutorial.text "En son kaydedilen görselleri görmek için simgeye tıklayın. Bu dosyaları bilgisayarınıza indirebilir, arkadaşlarınızla hızlıca paylaşabilir veya dosyaları görüntülemek veya bunlarla çalışmak için Disk&#8217;e geçebilirsiniz.">
+<!ENTITY slice.uploading "Yükleniyor">
+<!ENTITY widget.save.tutorial.header "Yandex.Disk tarayıcıda">
+<!ENTITY widget.save-button.tutorial.confirmButton.short "Tamam">

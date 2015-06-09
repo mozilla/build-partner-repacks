@@ -4,7 +4,7 @@ BarPlatform.Preset = Base.extend({
         this._packageIDs = Object.create(null);
         this._compEntries = [];
         if (address !== undefined) {
-            this._baseURI = netutils.ioService.newURI(address, null, null);
+            this._baseURI = Services.io.newURI(address, null, null);
             this._address = address;
         }
         let loggerName = this._baseURI ? this._baseURI.QueryInterface(Ci.nsIURL).fileBaseName : "?";
@@ -190,7 +190,7 @@ BarPlatform.Preset = Base.extend({
         this._url = urlNode ? urlNode.textContent : undefined;
         if (!this._baseURI) {
             try {
-                this._baseURI = netutils.ioService.newURI(this._url, null, null);
+                this._baseURI = Services.io.newURI(this._url, null, null);
             } catch (e) {
                 this._logger.warn("Preset URL in the <url> node is malformed.");
             }

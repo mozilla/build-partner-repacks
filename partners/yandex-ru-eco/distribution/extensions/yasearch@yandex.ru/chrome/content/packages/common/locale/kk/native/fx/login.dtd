@@ -13,3 +13,4 @@
 <!ENTITY noauth.label "Авторизациядан өтуіңізді сұраймыз">
 <!ENTITY login.passport.label "Паспорт">
 <!ENTITY login.settings.label "&vendor.gen; Баптауы">
+<!ENTITY login.menu.other-account.label "Басқа аккаунттар">

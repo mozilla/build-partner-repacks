@@ -15,6 +15,9 @@ XPCOMUtils.defineLazyGetter(this, "browserCustomizableUI", function () {
     }
     return null;
 });
+XPCOMUtils.defineLazyGetter(this, "AUSTRALIS_UI", function () {
+    return !sysutils.platformInfo.browser.version.isLessThan("29.a1");
+});
 const overlayProvider = {
     init: function Overlay_init(barApplication) {
         this._application = barApplication;
@@ -78,7 +81,7 @@ const overlayProvider = {
         let filterAppIds = function _filterAppIds(id) {
             return Boolean(id && this._commonItemPattern.test(id));
         }.bind(this);
-        if (browserCustomizableUI) {
+        if (AUSTRALIS_UI) {
             browserCustomizableUI.areas.map(area => browserCustomizableUI.getWidgetIdsInArea(area)).reduce((a, b) => a.concat(b)).filter(filterAppIds).forEach(id => browserCustomizableUI.removeWidgetFromArea(id));
         }
         if ("nsIXULStore" in Ci) {
@@ -130,7 +133,7 @@ const overlayProvider = {
         let omniboxId = "http://bar-widgets.yandex.ru/packages/approved/176/manifest.xml#smartbox";
         let omniboxQSPref = this._application.NativeComponents.makeWidgetPrefPath(omniboxId, "nativeqs.removed");
         Preferences.reset(omniboxQSPref);
-        if (!browserCustomizableUI) {
+        if (!AUSTRALIS_UI) {
             this._returnNativeElements28();
             return;
         }
@@ -253,7 +256,7 @@ const overlayProvider = {
         }
         let appToolbar = overlayDoc.getElementById(this._application.name + "-bar");
         appToolbar.setAttribute("defaultset", ids.join(","));
-        appToolbar.setAttribute("cb-australis", Boolean(browserCustomizableUI));
+        appToolbar.setAttribute("cb-australis", AUSTRALIS_UI);
         appToolbar.parentNode.setAttribute("cb-default-theme", this._defaultThemeActive);
         let toolbox = overlayDoc.getElementById("navigator-toolbox");
         toolbox.setAttribute("cb-os", sysutils.platformInfo.os.name);
@@ -273,6 +276,10 @@ const overlayProvider = {
         let avaibleWidgetIDs = widgetLibrary.getAvaibleWidgetIDs();
         for (let i = 0, len = avaibleWidgetIDs.length; i < len; i++) {
             let widgetInfo = widgetLibrary.getWidgetInfo(avaibleWidgetIDs[i]);
+            if (!widgetInfo) {
+                this._logger.error("Can not find widgetInfo for protoID " + avaibleWidgetIDs[i]);
+                continue;
+            }
             let isUsed = false;
             let protoInstHash = currentSetIDsData[widgetInfo.id] || null;
             if (protoInstHash) {
@@ -317,7 +324,7 @@ const overlayProvider = {
     _getAllIdsFromCurrentSets: function Overlay__getAllIdsFromCurrentSets() {
         let result = [];
         let state;
-        if (browserCustomizableUI) {
+        if (AUSTRALIS_UI) {
             let migratedAustralis = this._application.preferences.get("migrated.australis", false);
             try {
                 state = JSON.parse(Preferences.get("browser.uiCustomization.state", "{}"));
@@ -475,17 +482,27 @@ const customizer = {
     init: function customizer_init(barApplication) {
         this._application = barApplication;
         this._logger = this._application.getLogger("Customizer");
-        if (browserCustomizableUI) {
-            browserCustomizableUI.addListener(this);
-            this.AREA_NAVBAR = browserCustomizableUI.AREA_NAVBAR;
+        if (AUSTRALIS_UI) {
+            Services.obs.addObserver(this, "sessionstore-windows-restored", false);
         }
     },
     finalize: function customizer_finalize() {
-        if (browserCustomizableUI) {
-            browserCustomizableUI.removeListener(this);
+        if (AUSTRALIS_UI) {
+            Services.obs.removeObserver(this, "sessionstore-windows-restored", false);
+            if (this._customizableUIListen) {
+                browserCustomizableUI.removeListener(this);
+                this._customizableUIListen = false;
+            }
         }
         this._logger = null;
         this._application = null;
+    },
+    observe: function downloads_observe(subject, topic, data) {
+        if (topic === "sessionstore-windows-restored") {
+            this._customizableUIListen = true;
+            browserCustomizableUI.addListener(this);
+            this.AREA_NAVBAR = browserCustomizableUI.AREA_NAVBAR;
+        }
     },
     AREA_NAVBAR: "nav-bar",
     onWidgetRemoved: function customizer_onWidgetRemoved(aWidgetId, aArea) {
@@ -531,5 +548,7 @@ const customizer = {
         if (prefsWindow) {
             prefsWindow.document.documentElement.cancelDialog();
         }
-    }
+    },
+    QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver]),
+    _customizableUIListen: false
 };

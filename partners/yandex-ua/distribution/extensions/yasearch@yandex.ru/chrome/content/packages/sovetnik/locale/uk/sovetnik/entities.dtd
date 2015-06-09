@@ -1,0 +1,5 @@
+<!ENTITY sovetnik.name "Порадник">
+<!ENTITY sovetnik.options.town.label "Місто">
+<!ENTITY sovetnik.options.town.autodetect "Визначати автоматично">
+<!ENTITY sovetnik.options.showOtherRegionsSuggest "Показувати пропозиції з доставкою з інших регіонів">
+<!ENTITY sovetnik.options.showShopListOnHover "Показувати список магазинів у разі наведення миші">

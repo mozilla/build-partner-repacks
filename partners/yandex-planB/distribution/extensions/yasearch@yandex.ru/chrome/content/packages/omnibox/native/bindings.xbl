@@ -274,7 +274,7 @@
     let data = Object.keys(params).map(function (k) {
         return k + "=" + encodeURIComponent(params[k]);
     });
-    let url = "http://clck.yandex.ru/jclck/" + data.join("/");
+    let url = "https://clck.yandex.ru/jclck/" + data.join("/");
     let request = new XMLHttpRequest();
     request.open("GET", url, true);
     request.send(null);]]></body>
@@ -328,7 +328,7 @@
     let data = Object.keys(params).map(function (k) {
         return k + "=" + encodeURIComponent(params[k]);
     });
-    let url = "http://clck.yandex.ru/jclck/" + data.join("/");
+    let url = "https://clck.yandex.ru/jclck/" + data.join("/");
     let request = new XMLHttpRequest();
     request.open("GET", url, true);
     request.send(null);
@@ -457,9 +457,6 @@
         let controller = this.mController;
         let searchString = controller.searchString;
         this.popup.selectedIndex = searchString ? 0 : -1;
-        if (controller.searchStatus != controller.STATUS_COMPLETE_MATCH) {
-            return;
-        }
         if (!controller.matchCount) {
             return;
         }
@@ -1651,8 +1648,9 @@
     this.height = "";
     let originalOnPopupClick = this.onPopupClick.toSource();
     let strForInject1 = "let yaReferrerURI = null;" + "if (this.selectedIndex != null && this.selectedIndex !== -1) {" + "    let navType = controller.getStyleAt(this.selectedIndex);" + "    if (/(^|\\s)ya(Super)?NavigationSuggest($|\\s)/.test(navType)) {" + "        let iOService = Cc['@mozilla.org/network/io-service;1'].getService(Ci.nsIIOService);" + "        yaReferrerURI = iOService.newURI('http://www.yandex.ru', null, null);" + "    }" + "}";
-    let strForInject2 = "let parsedYaAction = this.mInput._yaParseActionURL(url);" + "if (parsedYaAction && parsedYaAction.actionurl) {" + "    url = parsedYaAction.actionurl;" + "}";
-    originalOnPopupClick = Function("return " + originalOnPopupClick.replace(/(\.nsIAutoCompleteController\);)/, "$1 " + strForInject1).replace(/(controller\.handleEnter)/, "gURLBar._yaLastSelectedIndex = this.selectedIndex;\n $1").replace(/(this\.closePopup)/, strForInject2 + " $1").replace(/(openUILink\(url, aEvent)/, "$1, false, false, false, null, yaReferrerURI"))();
+    let strForInject2 = "gURLBar._yaLastSelectedIndex = this.selectedIndex;" + "gURLBar.handleCommand();" + "return;\n";
+    let strForInject3 = "let parsedYaAction = this.mInput._yaParseActionURL(url);" + "if (parsedYaAction && parsedYaAction.actionurl) {" + "    url = parsedYaAction.actionurl;" + "}";
+    originalOnPopupClick = Function("return " + originalOnPopupClick.replace(/(\.nsIAutoCompleteController\);)/, "$1 " + strForInject1).replace(/(controller\.handleEnter)/, strForInject2 + " $1").replace(/(this\.closePopup)/, strForInject3 + " $1").replace(/(openUILink\(url, aEvent)/, "$1, false, false, false, null, yaReferrerURI"))();
     this.onPopupClick = function onPopupClick() {
         gURLBar._yaInfoCollector.metric = "mouse";
         gURLBar._yaProcessInput();

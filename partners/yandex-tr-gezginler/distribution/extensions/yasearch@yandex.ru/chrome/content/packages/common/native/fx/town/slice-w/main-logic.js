@@ -163,7 +163,7 @@ define("slice/common-logic/town-importer", [
             },
             "slice-event-show": function (topic, data) {
                 var statString = data && data.sender == "menu" ? "menu" : "button";
-                stat.logWidget(this._statName + ".{version}." + statString);
+                stat.logWidget(statString);
                 if (Date.now() - this._lastUpdateTime > 5 * 60 * 1000) {
                     this._update("popup");
                 }
@@ -187,7 +187,7 @@ define("slice/common-logic/town-importer", [
                 this._update("popup");
             },
             "navigate": function (topic, data) {
-                stat.logWidget(this._statName + ".{version}.button");
+                stat.logWidget("button");
                 adapter.navigate(this._savedUrl || config.defaultHomeUrl, data);
             }
         },

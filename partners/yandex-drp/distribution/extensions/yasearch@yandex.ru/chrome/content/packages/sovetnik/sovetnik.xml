@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE plugin SYSTEM "/sovetnik/entities.dtd"><plugin bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="/icons/16.png" name="&sovetnik.name;" xmlns="http://bar.yandex.ru/dev/gui">
+
+    <f:setting default="" name="geoid" scope="plugin">
+        <control autocomplete="true" free-input="false" label="&sovetnik.options.town.label;:" source="/geobase/source.xml" template="/geobase/template.xsl" type="combobox"/>
+    </f:setting>
+
+    <f:setting default="true" name="showOtherRegionsSuggest" scope="plugin">
+        <control label="&sovetnik.options.showOtherRegionsSuggest;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="true" name="showShopListOnHover" scope="plugin">
+        <control label="&sovetnik.options.showShopListOnHover;" type="checkbox"/>
+    </f:setting>
+
+    <f:setting default="0" name="lastUpdate" scope="plugin"/>
+    <f:setting default="" name="jsonLastModified" scope="plugin"/>
+
+    <f:setting default="false" name="specialVendorChecked" scope="plugin">
+        <control fx-value-type="boolean" type="custom"/>
+    </f:setting>
+
+    <modules>
+        <module browser="firefox" file="/js/main.js"/>
+    </modules>
+</plugin>

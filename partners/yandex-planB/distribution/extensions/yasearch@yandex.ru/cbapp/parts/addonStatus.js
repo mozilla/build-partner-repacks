@@ -166,7 +166,7 @@ const addonStatus = {
         LAST_SEND_TIME_PREF_NAME: "daylyaddonstat.send",
         CLIDS_DATE_PREF_NAME: "clids.creationDate",
         CHECK_INTERVAL: 24 * 60 * 60 * 1000,
-        STAT_URL: "http://soft.export.yandex.ru/status.xml",
+        STAT_URL: "https://soft.export.yandex.ru/status.xml",
         INIT_QUERIES_TABLE_QUERY: "CREATE TABLE IF NOT EXISTS queries (" + " id INTEGER PRIMARY KEY," + " query BLOB," + " timeCreated INTEGER," + " sendAttempts INTEGER" + ")",
         INIT_ADDONEVENTS_TABLE_QUERY: "CREATE TABLE IF NOT EXISTS addonevents (" + " key TEXT," + " value BLOB" + ")"
     },
@@ -239,44 +239,6 @@ const addonStatus = {
                 for (let key in mailruData) {
                     data[key] = mailruData[key];
                 }
-            }
-            let syncPlugin;
-            try {
-                let syncPluginId = "http://bar-widgets.yandex.ru/packages/approved/284/manifest.xml#esync";
-                syncPlugin = this._application.widgetLibrary.getPlugin(syncPluginId);
-            } catch (e) {
-            }
-            if (syncPlugin) {
-                let authorized = false;
-                let syncService;
-                if (syncPlugin.enabled) {
-                    try {
-                        syncService = Cc["@yandex.ru/esync;1"].getService().wrappedJSObject;
-                        authorized = Boolean(syncService.authorized);
-                    } catch (ex) {
-                        Cu.reportError(ex);
-                    }
-                }
-                let syncStatData = [authorized ? 1 : 0];
-                if (authorized) {
-                    [
-                        "Pinned",
-                        "Bookmarks",
-                        "TypedURLs",
-                        "Passwords",
-                        "Autofill"
-                    ].forEach(function (engineName) {
-                        let enabled = 0;
-                        try {
-                            if (syncService.getEngine(engineName).enabled) {
-                                enabled = 1;
-                            }
-                        } catch (e) {
-                        }
-                        syncStatData.push(enabled);
-                    });
-                }
-                data.esync = syncStatData.join("-");
             }
         }
         if (aData) {
@@ -416,7 +378,7 @@ const addonStatus = {
         let sendTimePrefValue = this._application.preferences.get(this._consts.LAST_SEND_TIME_PREF_NAME, 0);
         let lastSendTime = parseInt(sendTimePrefValue, 10) || 0;
         if (!lastSendTime && this._appType === "barff") {
-            let oldBarSendTime = this._application.core.Lib.Preferences.get("yasearch.guid.time", 0);
+            let oldBarSendTime = this._application.preferences.get("guid.time", 0);
             oldBarSendTime = oldBarSendTime && new Date(parseInt(oldBarSendTime, 10)).valueOf();
             lastSendTime = Math.floor(oldBarSendTime && oldBarSendTime / 1000 || 0);
         }
@@ -429,7 +391,7 @@ const addonStatus = {
     get _clidsCreationDate() {
         let dateString = this._application.preferences.get(this._consts.CLIDS_DATE_PREF_NAME, "");
         if (!dateString && this._appType === "barff") {
-            dateString = this._application.core.Lib.Preferences.get("yasearch.guid.clids.creationDate", "");
+            dateString = this._application.preferences.get("guid.clids.creationDate", "");
         }
         if (!dateString) {
             return "";

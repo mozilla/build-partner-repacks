@@ -7,3 +7,5 @@
 <!ENTITY notification.thanks "я знаю, спасибо">
 
 <!ENTITY welcome.close "закрыть">
+
+<!ENTITY welcome.tutorial.confirm-button.short "Хорошо">

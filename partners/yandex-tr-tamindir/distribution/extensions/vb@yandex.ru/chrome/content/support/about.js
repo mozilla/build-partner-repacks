@@ -236,7 +236,7 @@ default:
                 radioInput.value = fileData.name;
                 return create("li", [create("label", [
                         radioInput,
-                        create("span", new Date(fileData.date).toDateString(), "backup-name")
+                        create("span", new Date(fileData.date).toLocaleDateString(), "backup-name")
                     ])]);
             }));
             show($("backup-list"));

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>ico-plus-black</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <path d="M9,7 L9,1.00087166 C9,0.444630861 8.55228475,0 8,0 C7.44386482,0 7,0.448105505 7,1.00087166 L7,7 L1.00087166,7 C0.444630861,7 9.50500275e-17,7.44771525 6.123234e-17,8 C2.71788817e-17,8.55613518 0.448105505,9 1.00087166,9 L7,9 L7,14.9991283 C7,15.5553691 7.44771525,16 8,16 C8.55613518,16 9,15.5518945 9,14.9991283 L9,9 L14.9991283,9 C15.5553691,9 16,8.55228475 16,8 C16,7.44386482 15.5518945,7 14.9991283,7 L9,7 Z" id="ico-plus-black" fill="#000000" sketch:type="MSShapeGroup"></path>
+    </g>
+</svg>

@@ -9,9 +9,6 @@
         <control label="&browseroffer.settings.showSuggest;" type="checkbox"/>
     </f:setting>
 
-    <f:setting default="0" name="noflash.userActionTime" scope="plugin"/>
-    <f:setting default="0" name="noflash.closedCounter" scope="plugin"/>
-
     <modules>
         <module browser="firefox" file="browseroffer/core/plugin.jsm"/>
     </modules>

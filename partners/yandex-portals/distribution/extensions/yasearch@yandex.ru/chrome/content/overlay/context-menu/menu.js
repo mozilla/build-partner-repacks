@@ -148,7 +148,7 @@
             let selectedText = "";
             let cmTarget = gContextMenu.target;
             if (gContextMenu.isContentSelected) {
-                let focusedWindow = gContextMenu.focusedWindow;
+                let focusedWindow = "focusedWindow" in gContextMenu ? gContextMenu.focusedWindow : window.document.commandDispatcher.focusedWindow;
                 let selection = focusedWindow ? focusedWindow.getSelection().toString() : "";
                 selectedText = this._cropSelectionText(selection);
             } else if (gContextMenu.onTextInput && !cmTarget.readOnly && cmTarget.type != "password") {
@@ -322,13 +322,7 @@
                         value = this._application.branding.expandBrandTemplates(value);
                         postParams.push(key + "=" + encodeURIComponent(value));
                     }
-                    postParams = postParams.join("&");
-                    let postStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
-                    postStream.setData(postParams, postParams.length);
-                    postData = Cc["@mozilla.org/network/mime-input-stream;1"].createInstance(Ci.nsIMIMEInputStream);
-                    postData.addHeader("Content-Type", "application/x-www-form-urlencoded");
-                    postData.addContentLength = true;
-                    postData.setData(postStream);
+                    postData = postParams.join("&");
                     break;
                 }
             default:

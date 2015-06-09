@@ -23,6 +23,7 @@ function NativeBarAPI(componentInfo, logger) {
         "Network",
         "Notifications",
         "Overlay",
+        "Passport",
         "Package",
         "Promise",
         "Protocols",
@@ -32,6 +33,7 @@ function NativeBarAPI(componentInfo, logger) {
         "StrUtils",
         "SysUtils",
         "Task",
+        "Tutorial",
         "WinReg",
         "XMLUtils"
     ].forEach(function inst(apiName) {
@@ -120,6 +122,9 @@ NativeBarAPI.Services.prototype = {
         return NativeComponents.unregisterService(this._componentInfo.id, serviceName);
     },
     obtainService: function NativeAPI_obtainService(providerID, serviceName, eventListener) {
+        if (providerID === "ru.yandex.custombar.branding") {
+            Cu.reportError("Warning! Obtaining branding as a service is deprecated.");
+        }
         return NativeComponents.obtainService(providerID, serviceName, eventListener, this);
     },
     releaseService: function NativeAPI_releaseService(providerID, serviceName, eventListener) {
@@ -150,11 +155,7 @@ NativeBarAPI.Environment.addon = {
         return this.id;
     },
     get version() {
-        let version = AddonManager.getAddonVersion(appCore.extensionURI);
-        this.__defineGetter__("version", function NativeAPI_Env_addon_version() {
-            return version;
-        });
-        return this.version;
+        return application.addonManager.addonVersion;
     },
     get locale() {
         let localeString = application.localeString;
@@ -217,6 +218,9 @@ NativeBarAPI.Environment.branding = {
     },
     getXMLDocument: function NativeAPI_branding_getXMLDocument(docPath, privilegedParser) {
         return application.branding.brandPackage.getXMLDocument(docPath, privilegedParser);
+    },
+    resolvePath: function NativeAPI_branding_resolvePath(filePath) {
+        return application.branding.brandPackage.resolvePath(filePath);
     }
 };
 NativeBarAPI.Environment.prototype = NativeBarAPI.Environment;
@@ -296,6 +300,12 @@ NativeBarAPI.Controls.prototype = {
         return application.widgetLibrary.pluginEnabled(aPluginID);
     },
     createSlice: function NativeAPI_createSlice(sliceProps, WIID) {
+        if (arguments.length > 1 && !WIID) {
+            this._logger.error("Empty widget instance id.");
+        }
+        if (!sliceProps || typeof sliceProps !== "object") {
+            throw new Error("Wrong slice properties object.");
+        }
         return createSliceWrapper(sliceProps, this._api, WIID);
     }
 };
@@ -689,8 +699,11 @@ NativeBarAPI.Promise.prototype = {
     reject: function NativeAPI_Promise_reject() {
         return promise.reject.apply(promise, arguments);
     },
-    promised: function NativeAPI_Promise_promised() {
-        return promise.promised.apply(promise, arguments);
+    all: function NativeAPI_Promise_all() {
+        return promise.all.apply(promise, arguments);
+    },
+    race: function NativeAPI_Promise_race() {
+        return promise.race.apply(promise, arguments);
     }
 };
 NativeBarAPI.Task = function NativeBarAPI_Task(componentInfo, logger) {
@@ -812,6 +825,8 @@ NativeBarAPI.SysUtils.prototype = {
 NativeBarAPI.Browser = function Browser(componentInfo, logger) {
     this._componentInfo = componentInfo;
     this._logger = logger;
+    this._hiddenFrameAccessed = false;
+    this._messageManager = null;
 };
 NativeBarAPI.Browser.prototype = {
     getWindowListener: function NativeAPI_getWindowListener(window) {
@@ -821,20 +836,197 @@ NativeBarAPI.Browser.prototype = {
         return NativeComponents._getWindowController(window).windowDataIsland;
     },
     get globalHiddenWindow() {
-        return misc.hiddenWindows.getWindow(this.HIDDEN_CHROME_WINDOW_URL);
+        throw new Error("Deprecated since platform 28 (8.10.1)");
     },
     getHiddenFrame: function NativeAPI_getHiddenFrame() {
+        throw new Error("Deprecated since platform 28 (8.10.1)");
+    },
+    getHiddenFramePromise: function NativeAPI_getHiddenFramePromise() {
         this._hiddenFrameAccessed = true;
-        return misc.hiddenWindows.getFrame(this._componentInfo.id, this.HIDDEN_CHROME_WINDOW_URL);
+        return misc.hiddenWindows.getFramePromise(this._componentInfo.id, this.HIDDEN_CHROME_WINDOW_URL);
     },
     removeHiddenFrame: function NativeAPI_removeHiddenFrame() {
         return misc.hiddenWindows.removeFrame(this._componentInfo.id);
     },
     HIDDEN_CHROME_WINDOW_URL: "chrome://" + application.name + "/content/overlay/hiddenwindow.xul",
-    _hiddenFrameAccessed: false,
+    get messageManager() {
+        if (!this._messageManager) {
+            this._messageManager = new MessageManager();
+            Services.ww.registerNotification(this._messageManager);
+        }
+        return this._messageManager;
+    },
     _finalize: function NativeAPI_Browser__finalize() {
         if (this._hiddenFrameAccessed) {
             this.removeHiddenFrame();
+        }
+        if (this._messageManager) {
+            Services.ww.unregisterNotification(this._messageManager);
+            this._messageManager = null;
+        }
+    }
+};
+function MessageManager() {
+    this._urlsToLoad = Object.create(null);
+    misc.getBrowserWindows().forEach(browserWindow => {
+        if (browserWindow.document && browserWindow.document.readyState === "complete") {
+            this._onWindowLoad(browserWindow);
+        }
+    });
+}
+MessageManager.prototype = {
+    loadFrameScript: function MessageManager_loadFrameScript({url, target, allowDelayedLoad, runInGlobalScope}) {
+        this._validateArgument("url", url);
+        this._validateArgument("allowDelayedLoad", allowDelayedLoad);
+        this._validateArgument("runInGlobalScope", runInGlobalScope);
+        if (typeof target === "undefined") {
+            this._loadFrameScriptInExistsWindows({
+                url: url,
+                runInGlobalScope: runInGlobalScope
+            });
+            return;
+        }
+        if (url.startsWith("xb://")) {
+            let xbURI = Services.io.newURI(url, null, null);
+            xbURI.QueryInterface(Ci.nsIFileURL);
+            url = "file://" + xbURI.file.path;
+        }
+        this._getMessageManager(target).loadFrameScript(url, allowDelayedLoad || false, runInGlobalScope || false);
+    },
+    removeDelayedFrameScript: function MessageManager_removeDelayedFrameScript({url, target}) {
+        this._validateArgument("url", url);
+        if (typeof target === "undefined") {
+            delete this._urlsToLoad[url];
+            if (this._loadScriptInWindow) {
+                misc.getBrowserWindows().forEach(function (browserWindow) {
+                    this.removeDelayedFrameScript({
+                        url: url,
+                        target: browserWindow
+                    });
+                }, this);
+            }
+            return;
+        }
+        this._getMessageManager(target).removeDelayedFrameScript(url);
+    },
+    addMessageListener: function MessageManager_addMessageListener({target, messageName, listener}) {
+        this._validateArgument("messageName", messageName);
+        this._getMessageManager(target).addMessageListener(messageName, listener);
+    },
+    removeMessageListener: function MessageManager_removeMessageListener({target, messageName, listener}) {
+        this._validateArgument("messageName", messageName);
+        this._getMessageManager(target).removeMessageListener(messageName, listener);
+    },
+    sendAsyncMessage: function MessageManager_sendAsyncMessage({target, messageName, obj, objects, principal}) {
+        this._validateArgument("messageName", messageName);
+        this._getMessageManager(target).sendAsyncMessage(messageName, obj, objects, principal);
+    },
+    broadcastAsyncMessage: function MessageManager_broadcastAsyncMessage({target, messageName, obj, objects}) {
+        this._validateArgument("messageName", messageName);
+        this._getMessageManager(target).broadcastAsyncMessage(messageName, obj, objects);
+    },
+    observe: function WML_observe(subject, topic, data) {
+        if (topic === "domwindowopened") {
+            subject.addEventListener("load", this, false);
+        }
+    },
+    handleEvent: function MessageManager_handleEvent(event) {
+        switch (event.type) {
+        case "load": {
+                let window = event.currentTarget;
+                window.removeEventListener("load", this, false);
+                this._onWindowLoad(window);
+                break;
+            }
+        case "unload": {
+                let window = event.currentTarget;
+                this._onWindowUnload(window);
+                break;
+            }
+        case "TabOpen":
+            this._loadFrameScriptsInBrowser(event.target.linkedBrowser);
+            break;
+        }
+    },
+    _onWindowLoad: function MessageManager__onWindowLoad(window) {
+        if (!(window.gBrowser && window.gBrowser.tabContainer)) {
+            return;
+        }
+        if (this._loadScriptInWindow) {
+            this._loadFrameScriptsInWindow(window);
+            return;
+        }
+        window.addEventListener("unload", this, false);
+        this._loadFrameScriptsInWindow(window);
+        window.gBrowser.tabContainer.addEventListener("TabOpen", this, false);
+    },
+    _onWindowUnload: function MessageManager__onWindowUnload(window) {
+        window.removeEventListener("unload", this, false);
+        window.gBrowser.tabContainer.removeEventListener("TabOpen", this, false);
+    },
+    _loadFrameScriptInExistsWindows: function MessageManager__loadFrameScriptInExistsWindows({url, runInGlobalScope}) {
+        this._urlsToLoad[url] = { runInGlobalScope: Boolean(runInGlobalScope) };
+        misc.getBrowserWindows().forEach(function (browserWindow) {
+            this._loadFrameScriptsInWindow(browserWindow);
+        }, this);
+    },
+    _loadFrameScriptsInWindow: function MessageManager__loadFrameScriptsInWindow(window) {
+        if (this._loadScriptInWindow) {
+            Object.keys(this._urlsToLoad).forEach(function (url) {
+                this.loadFrameScript({
+                    url: url,
+                    target: window,
+                    runInGlobalScope: this._urlsToLoad[url].runInGlobalScope,
+                    allowDelayedLoad: true
+                });
+            }, this);
+            return;
+        }
+        let gBrowser = window.gBrowser;
+        if (!gBrowser || !Array.isArray(gBrowser.browsers)) {
+            return;
+        }
+        gBrowser.browsers.forEach(function (browser) {
+            this._loadFrameScriptsInBrowser(browser);
+        }, this);
+    },
+    _loadFrameScriptsInBrowser: function MessageManager__loadFrameScriptsInBrowser(browser) {
+        Object.keys(this._urlsToLoad).forEach(function (url) {
+            this.loadFrameScript({
+                url: url,
+                target: browser,
+                runInGlobalScope: this._urlsToLoad[url].runInGlobalScope
+            });
+        }, this);
+    },
+    get _loadScriptInWindow() {
+        let loadScriptInWindow = sysutils.platformInfo.browser.version.isGreaterThan("38.a0");
+        this.__defineGetter__("_loadScriptInWindow", () => loadScriptInWindow);
+        return this._loadScriptInWindow;
+    },
+    _getMessageManager: function MessageManager__getMessageManager(target) {
+        let messageManager = typeof target === "undefined" || target === "global" ? Cc["@mozilla.org/globalmessagemanager;1"].getService(Ci.nsIMessageListenerManager) : target.messageManager;
+        if (!messageManager) {
+            throw new Error("Can not find message manager.");
+        }
+        return messageManager;
+    },
+    _validateArgument: function MessageManager__validateArgument(argumentType, argumentValue) {
+        switch (argumentType) {
+        case "url":
+        case "messageName":
+            if (typeof argumentValue !== "string" || !argumentValue) {
+                throw new TypeError("'" + argumentType + "' must be a string.");
+            }
+            break;
+        case "allowDelayedLoad":
+        case "runInGlobalScope":
+            if (typeof argumentValue !== "boolean" && typeof argumentValue !== "undefined") {
+                throw new TypeError("'" + argumentType + "' must be boolean.");
+            }
+            break;
+        default:
+            break;
         }
     }
 };
@@ -961,7 +1153,7 @@ for (let p in application.notifications) {
     }
     NativeBarAPI.Notifications.prototype[p] = application.notifications[p];
 }
-NativeBarAPI.Integration = function NativeAPI_Integration(componentInfo, logger) {
+NativeBarAPI.Integration = function NativeAPI_Integration() {
 };
 NativeBarAPI.Integration.prototype = {
     yandexBrowser: {
@@ -997,5 +1189,73 @@ NativeBarAPI.ElementsPlatform.prototype = {
             this.removeObjectProvider(provider);
         }, this);
         this._objectProviders = null;
+    }
+};
+NativeBarAPI.Passport = function NativeAPI_Integration(componentInfo, logger) {
+};
+NativeBarAPI.Passport.prototype = {
+    get EVENTS() {
+        return application.passport.authManager.EVENTS;
+    },
+    get defaultAccount() {
+        return application.passport.authManager.getDefaultAccount();
+    },
+    get authorizedAccounts() {
+        return application.passport.authManager.accounts;
+    },
+    get allAccounts() {
+        return application.passport.authManager.allAccounts;
+    },
+    get authdefs() {
+        return application.passport.authManager.authdefs;
+    },
+    addListener: function (aEventType, aListener) {
+        application.passport.authManager.addListener(aEventType, aListener);
+    },
+    removeListener: function (aEventType, aListener) {
+        application.passport.authManager.removeListener(aEventType, aListener);
+    },
+    isAuthorized: function () {
+        return application.passport.authManager.authorized;
+    },
+    hasSavedAccounts: function () {
+        return application.passport.authManager.hasSavedAccounts();
+    },
+    hasSavedLogins: function () {
+        return application.passport.authManager.hasSavedLogins();
+    },
+    getAuthorizedAccount: function (aAccountLoginOrUid) {
+        return application.passport.authManager.getAuthorizedAccount(aAccountLoginOrUid);
+    },
+    getAccount: function (aAccountLoginOrUid) {
+        return application.passport.authManager.getAccount(aAccountLoginOrUid);
+    },
+    switchAccount: function (aAccountLoginOrUid) {
+        return application.passport.authManager.switchAccount(aAccountLoginOrUid);
+    },
+    logoutAccount: function (aAccount, aParams) {
+        return application.passport.authManager.initLogoutProcess(aAccount, aParams);
+    },
+    logoutAllAccounts: function () {
+        return application.passport.authManager.initLogoutAll();
+    },
+    openAuthDialog: function (dialogParams) {
+        application.passport.authManager.openAuthDialog(dialogParams);
+    }
+};
+NativeBarAPI.Tutorial = function NativeAPI_Tutorial(componentInfo, logger) {
+};
+NativeBarAPI.Tutorial.prototype = {
+    showHighlight: function (window, target, effect) {
+        return application.tutorial.showHighlight(window, target, effect);
+    },
+    showInfo: function (window, target, tutorialData) {
+        return application.tutorial.showInfo(window, target, tutorialData);
+    },
+    hideHighlight: function (window) {
+        return application.tutorial.hideHighlight(window);
+    },
+    hideInfo: function (window) {
+        return application.tutorial.hideInfo(window);
     }
 };

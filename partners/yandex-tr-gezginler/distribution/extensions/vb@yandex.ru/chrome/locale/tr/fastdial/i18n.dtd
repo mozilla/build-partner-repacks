@@ -57,7 +57,7 @@
 <!ENTITY modalStat.cancel "İptal">
 <!ENTITY modalStat.header "Tarayıcı kullanımıyla ilgili istatistiklerin alınması için {vendor.dat} firmasına izin verin">
 <!ENTITY modalStat.moreInfoText "Daha fazla bilgi">
-<!ENTITY modalStat.moreInfoLink "http://legal.yandex.com/confidential/">
+<!ENTITY modalStat.moreInfoLink "http://legal.yandex.com.tr/confidential/">
 <!ENTITY modalStat.text "Kişisel bilgilerinizi kullanmadığı gibi tarayıcının çalışmasını da etkilemez. {vendor.nom}, bu bilgileri, kendi servislerini geliştirmek için kullanır.">
 <!ENTITY sync.settings "Eşitleme ayarları">
 <!ENTITY sync.turnOn "Aç">
@@ -98,45 +98,56 @@
 <!ENTITY settings.editTitle "Açıklamayı düzenle">
 <!ENTITY settings.lastVisited "Kısa süre önce ziyaret edilen">
 <!ENTITY settings.popularSites "Popüler">
-<!ENTITY newyear.18.12.2014.button "Посмотреть">
-<!ENTITY newyear.18.12.2014.text "Текст про новый год">
-<!ENTITY newyear.19.12.2014.button "Показать">
-<!ENTITY newyear.19.12.2014.text "Текст про новый год. Второй день.">
-<!ENTITY newyear.20.12.2014.button "Скачать">
-<!ENTITY newyear.20.12.2014.text "Текст про новый год. Третий день.">
-<!ENTITY newyear.21.12.2014.button "Купить">
-<!ENTITY newyear.21.12.2014.text "Текст про новый год. Четвертый день.">
-<!ENTITY newyear.22.12.2014.button "Установить">
-<!ENTITY newyear.22.12.2014.text "Текст про новый год. Пятый день.">
-<!ENTITY newyear.23.12.2014.button "Попробовать">
-<!ENTITY newyear.23.12.2014.text "Текст про новый год. Шестой день.">
-<!ENTITY newyear.24.12.2014.button "Посмотреть">
-<!ENTITY newyear.24.12.2014.text "Текст про новый год. Седьмой день.">
-<!ENTITY newyear.25.12.2014.button "Посмотреть">
-<!ENTITY newyear.25.12.2014.text "Текст про новый год. Восьмой день.">
-<!ENTITY newyear.26.12.2014.button "Посмотреть">
-<!ENTITY newyear.26.12.2014.text "Текст про новый год. Девятый день.">
-<!ENTITY newyear.27.12.2014.button "Посмотреть">
-<!ENTITY newyear.27.12.2014.text "Текст про новый год. Десятый день.">
-<!ENTITY newyear.28.12.2014.button "Посмотреть">
-<!ENTITY newyear.28.12.2014.text "Текст про новый год. Одиннадцатый день.">
-<!ENTITY newyear.29.12.2014.button "Посмотреть">
-<!ENTITY newyear.29.12.2014.text "Текст про новый год. Двенадцатый день.">
-<!ENTITY newyear.30.12.2014.button "Посмотреть">
-<!ENTITY newyear.30.12.2014.text "Текст про новый год. Тринадцатый день.">
-<!ENTITY newyear.31.12.2014.button "Посмотреть">
-<!ENTITY newyear.31.12.2014.text "Текст про новый год. Четырнадцатый день.">
-<!ENTITY newyear.18.12.2014.header "Yılbaşına 14 gün kaldı">
-<!ENTITY newyear.19.12.2014.header "Yılbaşına 13 gün kaldı">
-<!ENTITY newyear.20.12.2014.header "Yılbaşına 12 gün kaldı">
-<!ENTITY newyear.21.12.2014.header "Yılbaşına 11 gün kaldı">
-<!ENTITY newyear.22.12.2014.header "Yılbaşına 10 gün kaldı">
-<!ENTITY newyear.23.12.2014.header "Yılbaşına 9 gün kaldı">
-<!ENTITY newyear.24.12.2014.header "Yılbaşına 8 gün kaldı">
-<!ENTITY newyear.25.12.2014.header "Yılbaşına 7 gün kaldı">
-<!ENTITY newyear.26.12.2014.header "Yılbaşına 6 gün kaldı">
-<!ENTITY newyear.27.12.2014.header "Yılbaşına 5 gün kaldı">
-<!ENTITY newyear.28.12.2014.header "Yılbaşına 4 gün kaldı">
-<!ENTITY newyear.29.12.2014.header "Yılbaşına 3 gün kaldı">
-<!ENTITY newyear.30.12.2014.header "Yılbaşına 2 gün kaldı">
-<!ENTITY newyear.31.12.2014.header "До Нового года остался 1 день">
+<!ENTITY newyear.18.12.2014.button "">
+<!ENTITY newyear.18.12.2014.text "">
+<!ENTITY newyear.19.12.2014.button "">
+<!ENTITY newyear.19.12.2014.text "">
+<!ENTITY newyear.20.12.2014.button "">
+<!ENTITY newyear.20.12.2014.text "">
+<!ENTITY newyear.21.12.2014.button "">
+<!ENTITY newyear.21.12.2014.text "">
+<!ENTITY newyear.22.12.2014.button "">
+<!ENTITY newyear.22.12.2014.text "">
+<!ENTITY newyear.23.12.2014.button "">
+<!ENTITY newyear.23.12.2014.text "">
+<!ENTITY newyear.24.12.2014.button "">
+<!ENTITY newyear.24.12.2014.text "">
+<!ENTITY newyear.25.12.2014.button "">
+<!ENTITY newyear.25.12.2014.text "">
+<!ENTITY newyear.26.12.2014.button "">
+<!ENTITY newyear.26.12.2014.text "">
+<!ENTITY newyear.27.12.2014.button "">
+<!ENTITY newyear.27.12.2014.text "">
+<!ENTITY newyear.28.12.2014.button "">
+<!ENTITY newyear.28.12.2014.text "">
+<!ENTITY newyear.29.12.2014.button "">
+<!ENTITY newyear.29.12.2014.text "">
+<!ENTITY newyear.30.12.2014.button "">
+<!ENTITY newyear.30.12.2014.text "">
+<!ENTITY newyear.31.12.2014.button "">
+<!ENTITY newyear.31.12.2014.text "">
+<!ENTITY newyear.18.12.2014.header "">
+<!ENTITY newyear.19.12.2014.header "">
+<!ENTITY newyear.20.12.2014.header "">
+<!ENTITY newyear.21.12.2014.header "">
+<!ENTITY newyear.22.12.2014.header "">
+<!ENTITY newyear.23.12.2014.header "">
+<!ENTITY newyear.24.12.2014.header "">
+<!ENTITY newyear.25.12.2014.header "">
+<!ENTITY newyear.26.12.2014.header "">
+<!ENTITY newyear.27.12.2014.header "">
+<!ENTITY newyear.28.12.2014.header "">
+<!ENTITY newyear.29.12.2014.header "">
+<!ENTITY newyear.30.12.2014.header "">
+<!ENTITY newyear.31.12.2014.header "">
+<!ENTITY advertisement.homepage.done "Yandex açılış sayfası olarak ayarlandı">
+<!ENTITY advertisement.homepage.setDefault "Yandex&#39;i [açılış sayfası] olarak ayarla">
+<!ENTITY advertisement.search.done "Yandex varsayılan arama motoru olarak ayarlandı">
+<!ENTITY advertisement.search.setDefault "Yandex&#39;i [varsayılan arama motoru] olarak ayarla">
+<!ENTITY footer.addThumb "Favori ekle">
+<!ENTITY advertisement.addThumb.text "Yeni favori eklemek için buraya tıklayın">
+<!ENTITY advertisement.backgrounds.done "Bitti">
+
+<!ENTITY restorepopup.button "İptal et">
+<!ENTITY restorepopup.tumb "Favori silindi">
+<!ENTITY restorepopup.tumbs "{N} favori silindi">

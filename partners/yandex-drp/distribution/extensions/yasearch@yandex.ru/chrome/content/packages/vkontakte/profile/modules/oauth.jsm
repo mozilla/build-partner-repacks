@@ -78,7 +78,7 @@ var module = function (app, common) {
                 if ("undefined" !== typeof params.error) {
                     app.logr("[OAuth] ERROR: Authorization error has occurred.");
                     app.logr("[OAuth] ERROR: Error reason: " + params.error_reason);
-                    app.logr("[OAuth] ERROR: Error description: " + params.error_description.replace("%20", " ", "g"));
+                    app.logr("[OAuth] ERROR: Error description: " + params.error_description.replace(/%20/g, " "));
                     return false;
                 }
                 this.credentials = {

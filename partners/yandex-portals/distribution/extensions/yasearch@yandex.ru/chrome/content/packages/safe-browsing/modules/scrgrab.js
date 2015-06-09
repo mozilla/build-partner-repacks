@@ -289,8 +289,15 @@ ScrGrabber.prototype = {
     },
     get isGrabberFrameReady() !!this._frameLoader,
     get _frameLoader() {
-        if (!this.__frameLoader)
-            this.__frameLoader = this.api.Browser.getHiddenFrame();
+        if (!this.__frameLoader) {
+            if ("getHiddenFramePromise" in this.api.Browser) {
+                this.api.Browser.getHiddenFramePromise().then(frame => {
+                    this.__frameLoader = frame;
+                });
+            } else {
+                this.__frameLoader = this.api.Browser.getHiddenFrame();
+            }
+        }
         return this.__frameLoader;
     },
     get _framesArray() {

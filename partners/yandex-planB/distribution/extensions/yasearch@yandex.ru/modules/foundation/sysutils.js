@@ -140,30 +140,18 @@ const sysutils = {
             }
         }, this);
     },
-    freezeObj: function SysUtils_freezeObj_factory() {
-        const watcher = function SysUtils_freezeObj_watcher(key, oldValue, newValue) {
-            throw new TypeError("Can not modify property [" + key + "]: " + this + " is frozen");
-        };
-        return function SysUtils_freezeObj(obj) {
-            if (obj.Object_freeze_self) {
-                obj.Object_freeze_self();
-                return;
-            }
-            let hasOwnProperty = Object.prototype.hasOwnProperty;
-            for (let key in obj) {
-                if (hasOwnProperty.call(obj, key)) {
-                    let value = obj[key];
-                    if (value && typeof value === "object") {
-                        sysutils.freezeObj(value);
-                    }
+    freezeObj: function SysUtils_freezeObj(obj) {
+        Object.freeze(obj);
+        let hasOwnProperty = Object.prototype.hasOwnProperty;
+        for (let key in obj) {
+            if (hasOwnProperty.call(obj, key)) {
+                let value = obj[key];
+                if (value && typeof value === "object") {
+                    sysutils.freezeObj(value);
                 }
-                obj.watch(key, watcher);
             }
-            if (Object.seal) {
-                Object.seal(obj);
-            }
-        };
-    }(),
+        }
+    },
     copyObj: function SysUtils_copyObj(src, deep) {
         if (typeof src != "object" || !src) {
             return src;
@@ -203,23 +191,6 @@ const sysutils = {
             if (hasOwnProperty.call(from, propName) && (!filterFunc || filterFunc(propName, passValues ? from[propName] : undefined))) {
                 to[propName] = from[propName];
             }
-        }
-    },
-    sleep: function sysutils_sleep(aTimeout, aConditionFunction) {
-        let func = typeof aConditionFunction == "function" ? aConditionFunction : function () {
-            return true;
-        };
-        let timeout = 1;
-        if (typeof aTimeout == "number" && aTimeout > 0) {
-            timeout = aTimeout;
-        }
-        let t = Date.now();
-        let conditionFunc = function () {
-            return Date.now() - t < timeout && func();
-        };
-        let thread = Cc["@mozilla.org/thread-manager;1"].getService().currentThread;
-        while (conditionFunc()) {
-            thread.processNextEvent(true);
         }
     },
     promiseSleep: function sysutils_promiseSleep(timeout, condition) {
@@ -301,7 +272,7 @@ const sysutils = {
         }
         let inst = function weakRefInitializer() {
             let __storedObject = object;
-            return {
+            return new Proxy({
                 get isValid() {
                     return __storedObject !== undefined;
                 },
@@ -316,13 +287,17 @@ const sysutils = {
                     let args = Array.slice(arguments, 1);
                     return method.apply(__storedObject, args);
                 },
-                __noSuchMethod__: function WeakObjectProxy___noSuchMethod__(methodName, methodArguments) {
-                    return this.invoke.apply(this, [methodName].concat(methodArguments));
-                },
                 clear: function WeakObjectProxy_clear() {
                     __storedObject = undefined;
                 }
-            };
+            }, {
+                get: function (obj, name) {
+                    if (name in obj) {
+                        return obj[name];
+                    }
+                    return obj.invoke.bind(obj, name);
+                }
+            });
         }();
         return inst;
     },
@@ -548,18 +523,6 @@ sysutils.DataContainer.prototype = {
             arr.push(k + ": " + v);
         }
         return "{" + arr.join(", ") + "}";
-    },
-    __iterator__: function DataContainer___iterator__() {
-        this._checkExpiredAll();
-        for (let [
-                    key,
-                    item
-                ] in Iterator(this._data)) {
-            yield [
-                this._unconvertKey(key),
-                item.value
-            ];
-        }
     },
     _checkExpiredByKey: function DataContainer__checkExpiredByKey(aKey) {
         let key = this._convertKey(aKey);

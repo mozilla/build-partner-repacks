@@ -24,11 +24,8 @@ const counters = {
             return;
         }
         this._api = api;
-        let scope = Object.create(null);
-        Cu.import(api.Package.resolvePath("/native/fx/modules/yauth.jsm"), scope);
-        scope.authAdapter.init(api);
-        this.authManager = scope.authAdapter.authManager;
-        this.authManager.addListener(this.authManager.EVENTS.AUTH_STATE_CHANGED, this);
+        this._authManager = api.Passport;
+        this._authManager.addListener(this._authManager.EVENTS.AUTH_STATE_CHANGED, this);
         this._watchUpdIntervalPref();
         this._initialized = true;
     },
@@ -38,7 +35,7 @@ const counters = {
             return;
         }
         listeners.push(dataListener);
-        if (this.authManager.authorized) {
+        if (this._authManager.isAuthorized()) {
             if (!this._reqTimer) {
                 this._schedule();
             }
@@ -137,8 +134,8 @@ const counters = {
         this._sendRequest();
     },
     observe: function yCounters_observe(subject, topic, data) {
-        if (subject == this.authManager && topic == this.authManager.EVENTS.AUTH_STATE_CHANGED) {
-            this._onAuthStateChange(data.hasAuth);
+        if (topic === this._authManager.EVENTS.AUTH_STATE_CHANGED) {
+            this._onAuthStateChange(Boolean(data.accounts.length));
         }
     },
     get _COUNTERS_EXPORT_URL() {
@@ -296,7 +293,7 @@ const counters = {
     _createRequestHandler: function yCounters__createRequestHandler(srvIDs) {
         let paramList = [];
         srvIDs = srvIDs || [];
-        if (srvIDs) {
+        if (srvIDs.length) {
             for (let [
                         key,
                         svcID

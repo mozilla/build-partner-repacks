@@ -12,13 +12,10 @@ const clids = {
         this._application = aApplication;
         this._logger = aApplication.getLogger("Clids");
         if (aApplication.addonManager.info.addonVersionChanged) {
-            if (aApplication.addonManager.info.isFreshAddonInstall) {
-                if (aApplication.core.CONFIG.APP.TYPE == "vbff") {
-                    this._migrateBarsClidsOnInstall();
-                }
-            } else {
-                this._mergeWithInternalData();
+            if (aApplication.addonManager.info.isFreshAddonInstall && aApplication.core.CONFIG.APP.TYPE == "vbff") {
+                this._migrateBarsClidsOnInstall();
             }
+            this._mergeWithInternalData();
         }
     },
     finalize: function clids_finalize(aDoCleanup) {
@@ -235,9 +232,9 @@ const clids = {
             }
             if (qsXML) {
                 let urlNode = qsXML.querySelector("SearchPlugin > Url[type=\"text/html\"]");
-                let clid10Node = urlNode && urlNode.querySelector("MozParam[name=\"clid\"][purpose=\"contextmenu\"][value]");
+                let clid10Node = urlNode && (urlNode.querySelector("MozParam[name=\"clid\"][purpose=\"contextmenu\"][value]") || urlNode.querySelector("Param[name=\"clid\"][value]"));
                 clids.clid10 = clid10Node && clid10Node.getAttribute("value") || null;
-                if (!clids.clid10 && this._application.locale.language === "ru" && this._application.core.Lib.sysutils.platformInfo.browser.version.isGreaterThan("35.0")) {
+                if (!clids.clid10) {
                     this._logger.error("Can not get clid10 from Yandex QS.");
                 }
             }

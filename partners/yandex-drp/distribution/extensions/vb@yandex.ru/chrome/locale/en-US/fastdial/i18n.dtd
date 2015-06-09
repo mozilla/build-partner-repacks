@@ -98,45 +98,55 @@
 <!ENTITY settings.editTitle "Edit description">
 <!ENTITY settings.lastVisited "Recently visited">
 <!ENTITY settings.popularSites "Popular">
-<!ENTITY newyear.18.12.2014.button "Посмотреть">
-<!ENTITY newyear.18.12.2014.text "Текст про новый год">
-<!ENTITY newyear.19.12.2014.button "Показать">
-<!ENTITY newyear.19.12.2014.text "Текст про новый год. Второй день.">
-<!ENTITY newyear.20.12.2014.button "Скачать">
-<!ENTITY newyear.20.12.2014.text "Текст про новый год. Третий день.">
-<!ENTITY newyear.21.12.2014.button "Купить">
-<!ENTITY newyear.21.12.2014.text "Текст про новый год. Четвертый день.">
-<!ENTITY newyear.22.12.2014.button "Установить">
-<!ENTITY newyear.22.12.2014.text "Текст про новый год. Пятый день.">
-<!ENTITY newyear.23.12.2014.button "Попробовать">
-<!ENTITY newyear.23.12.2014.text "Текст про новый год. Шестой день.">
-<!ENTITY newyear.24.12.2014.button "Посмотреть">
-<!ENTITY newyear.24.12.2014.text "Текст про новый год. Седьмой день.">
-<!ENTITY newyear.25.12.2014.button "Посмотреть">
-<!ENTITY newyear.25.12.2014.text "Текст про новый год. Восьмой день.">
-<!ENTITY newyear.26.12.2014.button "Посмотреть">
-<!ENTITY newyear.26.12.2014.text "Текст про новый год. Девятый день.">
-<!ENTITY newyear.27.12.2014.button "Посмотреть">
-<!ENTITY newyear.27.12.2014.text "Текст про новый год. Десятый день.">
-<!ENTITY newyear.28.12.2014.button "Посмотреть">
-<!ENTITY newyear.28.12.2014.text "Текст про новый год. Одиннадцатый день.">
-<!ENTITY newyear.29.12.2014.button "Посмотреть">
-<!ENTITY newyear.29.12.2014.text "Текст про новый год. Двенадцатый день.">
-<!ENTITY newyear.30.12.2014.button "Посмотреть">
-<!ENTITY newyear.30.12.2014.text "Текст про новый год. Тринадцатый день.">
-<!ENTITY newyear.31.12.2014.button "Посмотреть">
-<!ENTITY newyear.31.12.2014.text "Текст про новый год. Четырнадцатый день.">
-<!ENTITY newyear.18.12.2014.header "До Нового года осталось 14 дней">
-<!ENTITY newyear.19.12.2014.header "До Нового года осталось 13 дней">
-<!ENTITY newyear.20.12.2014.header "До Нового года осталось 12 дней">
-<!ENTITY newyear.21.12.2014.header "До Нового года осталось 11 дней">
-<!ENTITY newyear.22.12.2014.header "До Нового года осталось 10 дней">
-<!ENTITY newyear.23.12.2014.header "До Нового года осталось 9 дней">
-<!ENTITY newyear.24.12.2014.header "До Нового года осталось 8 дней">
-<!ENTITY newyear.25.12.2014.header "До Нового года осталось 7 дней">
-<!ENTITY newyear.26.12.2014.header "До Нового года осталось 6 дней">
-<!ENTITY newyear.27.12.2014.header "До Нового года осталось 5 дней">
-<!ENTITY newyear.28.12.2014.header "До Нового года осталось 4 дня">
-<!ENTITY newyear.29.12.2014.header "До Нового года осталось 3 дня">
-<!ENTITY newyear.30.12.2014.header "До Нового года осталось 2 дня">
-<!ENTITY newyear.31.12.2014.header "До Нового года остался 1 день">
+<!ENTITY newyear.18.12.2014.button "">
+<!ENTITY newyear.18.12.2014.text "">
+<!ENTITY newyear.19.12.2014.button "">
+<!ENTITY newyear.19.12.2014.text "">
+<!ENTITY newyear.20.12.2014.button "">
+<!ENTITY newyear.20.12.2014.text "">
+<!ENTITY newyear.21.12.2014.button "">
+<!ENTITY newyear.21.12.2014.text "">
+<!ENTITY newyear.22.12.2014.button "">
+<!ENTITY newyear.22.12.2014.text "">
+<!ENTITY newyear.23.12.2014.button "">
+<!ENTITY newyear.23.12.2014.text "">
+<!ENTITY newyear.24.12.2014.button "">
+<!ENTITY newyear.24.12.2014.text "">
+<!ENTITY newyear.25.12.2014.button "">
+<!ENTITY newyear.25.12.2014.text "">
+<!ENTITY newyear.26.12.2014.button "">
+<!ENTITY newyear.26.12.2014.text "">
+<!ENTITY newyear.27.12.2014.button "">
+<!ENTITY newyear.27.12.2014.text "">
+<!ENTITY newyear.28.12.2014.button "">
+<!ENTITY newyear.28.12.2014.text "">
+<!ENTITY newyear.29.12.2014.button "">
+<!ENTITY newyear.29.12.2014.text "">
+<!ENTITY newyear.30.12.2014.button "">
+<!ENTITY newyear.30.12.2014.text "">
+<!ENTITY newyear.31.12.2014.button "">
+<!ENTITY newyear.31.12.2014.text "">
+<!ENTITY newyear.18.12.2014.header "">
+<!ENTITY newyear.19.12.2014.header "">
+<!ENTITY newyear.20.12.2014.header "">
+<!ENTITY newyear.21.12.2014.header "">
+<!ENTITY newyear.22.12.2014.header "">
+<!ENTITY newyear.23.12.2014.header "">
+<!ENTITY newyear.24.12.2014.header "">
+<!ENTITY newyear.25.12.2014.header "">
+<!ENTITY newyear.26.12.2014.header "">
+<!ENTITY newyear.27.12.2014.header "">
+<!ENTITY newyear.28.12.2014.header "">
+<!ENTITY newyear.29.12.2014.header "">
+<!ENTITY newyear.30.12.2014.header "">
+<!ENTITY newyear.31.12.2014.header "">
+<!ENTITY advertisement.homepage.done "Yandex set as home page">
+<!ENTITY advertisement.homepage.setDefault "Make Yandex your [home page]">
+<!ENTITY advertisement.search.done "Yandex set as default search engine">
+<!ENTITY advertisement.search.setDefault "Make Yandex your [default search engine]">
+<!ENTITY footer.addThumb "Add bookmark">
+<!ENTITY advertisement.addThumb.text "Click here to add a new bookmark">
+<!ENTITY advertisement.backgrounds.done "Done">
+<!ENTITY restorepopup.button "Undo">
+<!ENTITY restorepopup.tumb "Bookmark deleted">
+<!ENTITY restorepopup.tumbs "{N} bookmark deleted;{N} bookmarks deleted;{N} bookmarks deleted">

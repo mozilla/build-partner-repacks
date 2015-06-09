@@ -7,7 +7,6 @@ pref("extensions.vb@yandex.ru.ftabs.searchStatus", 0);
 pref("extensions.vb@yandex.ru.ftabs.searchStudyOmnibox", true);
 pref("extensions.vb@yandex.ru.backgroundImages.lastVersion", 0);
 pref("extensions.vb@yandex.ru.sync.enabled", false);
-pref("extensions.vb@yandex.ru.metrika.counter", 22883260);
 pref("extensions.vb@yandex.ru.logging.console.level", 50);
 pref("extensions.vb@yandex.ru.logging.file.level", 20);
 

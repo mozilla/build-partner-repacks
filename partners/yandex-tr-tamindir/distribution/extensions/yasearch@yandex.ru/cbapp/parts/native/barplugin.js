@@ -52,6 +52,7 @@ NativeComponents.NativePlugin.prototype = {
         if (this._enabled) {
             return;
         }
+        this._enabled = true;
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_BEFORE_ENABLED, null);
         let startTime = Date.now();
         let pluginCore = this._module.core;
@@ -66,7 +67,6 @@ NativeComponents.NativePlugin.prototype = {
         }
         Services.obs.addObserver(this, appCore.eventTopics.EVT_BEFORE_GLOBAL_RESET, false);
         Services.obs.addObserver(this, appCore.eventTopics.EVT_AFTER_GLOBAL_RESET, false);
-        this._enabled = true;
         this._logger.debug("Plugin enabled (" + (Date.now() - startTime) + " ms): " + this._id);
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_ENABLED, null);
     },
@@ -74,6 +74,7 @@ NativeComponents.NativePlugin.prototype = {
         if (!this._enabled) {
             return;
         }
+        this._enabled = false;
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_BEFORE_DISABLED, null);
         let pluginCore = this._module.core;
         if (pluginCore && typeof pluginCore.finalize == "function") {
@@ -96,7 +97,6 @@ NativeComponents.NativePlugin.prototype = {
         }
         Services.obs.removeObserver(this, appCore.eventTopics.EVT_BEFORE_GLOBAL_RESET);
         Services.obs.removeObserver(this, appCore.eventTopics.EVT_AFTER_GLOBAL_RESET);
-        this._enabled = false;
         this._logger.debug("Plugin disabled: " + this._id);
         this._tryNotify(appCore.eventTopics.EVT_PLUGIN_DISABLED, null);
     },

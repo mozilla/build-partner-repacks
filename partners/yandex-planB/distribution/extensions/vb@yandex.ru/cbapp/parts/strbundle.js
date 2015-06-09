@@ -10,22 +10,31 @@ const appStrings = {
     init: function StringBundlePart_init(application) {
         this._application = application;
         this.defaultPrefixForURL = "chrome://" + application.name + "/locale/";
+    },
+    get getPluralForm() {
+        this._lazyPluralFormLoader();
+        return this.getPluralForm;
+    },
+    get getNumForms() {
+        this._lazyPluralFormLoader();
+        return this.getNumForms;
+    },
+    _lazyPluralFormLoader: function StringBundlePart__lazyPluralFormLoader() {
+        delete this.getPluralForm;
+        delete this.getNumForms;
         let globalPropsBundle = Services.strings.createBundle(this.defaultPrefixForURL + "global.properties");
         let pluralRule = parseInt(globalPropsBundle.GetStringFromName("pluralRule"), 10);
-        Cu.import("resource://gre/modules/PluralForm.jsm", this._pluralFormModule);
+        const {PluralForm} = Cu.import("resource://gre/modules/PluralForm.jsm", {});
         [
             this.getPluralForm,
             this.getNumForms
-        ] = this._pluralFormModule.PluralForm.makeGetter(pluralRule);
+        ] = PluralForm.makeGetter(pluralRule);
     },
     defaultPrefixForURL: undefined,
-    getPluralForm: undefined,
-    getNumForms: undefined,
-    _application: null,
-    _pluralFormModule: {}
+    _application: null
 };
 appStrings.StringBundle = function StringBundle(aURL) {
-    this._url = this._createURL(aURL);
+    this._url = aURL;
 };
 appStrings.StringBundle.prototype = {
     get: function StringBundle_get(key, args) {
@@ -59,10 +68,15 @@ appStrings.StringBundle.prototype = {
         return defaultString || "";
     },
     _createURL: function StringBundle__createURL(aURL) {
+        if (aURL.startsWith("xb://")) {
+            let xbURI = Services.io.newURI(aURL, null, null);
+            xbURI.QueryInterface(Ci.nsIFileURL);
+            aURL = "file://" + xbURI.file.path;
+        }
         return (/^[a-z]+:\/\//.test(aURL) ? "" : appStrings.defaultPrefixForURL) + aURL;
     },
     get _stringBundle() {
-        let stringBundle = Services.strings.createBundle(this._url);
+        let stringBundle = Services.strings.createBundle(this._createURL(this._url));
         this.__defineGetter__("_stringBundle", function _stringBundle() {
             return stringBundle;
         });

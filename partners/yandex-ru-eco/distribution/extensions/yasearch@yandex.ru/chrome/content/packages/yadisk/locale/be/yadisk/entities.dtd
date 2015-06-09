@@ -1,12 +1,14 @@
+<!ENTITY title "Яндекс.Дыск">
+<!ENTITY widget.name "Яндекс.Дыск">
+<!ENTITY widget.description "Яндекс.Дыск">
 
 <!ENTITY context-menu.upload-image "Запампаваць выяву">
 <!ENTITY context-menu.upload-title "Захаваць выяву на Яндекс.Дыск">
-<!ENTITY error.limit "Скончылася вольнае месца на Я.Дыску">
 <!ENTITY slice.link-copied "Спасылка скапіявана">
 <!ENTITY slice.link-copied-buffer "Спасылка скапіявана ў кішэню">
 <!ENTITY slice.links "Спасылкі">
 <!ENTITY slice.load-file "Заладаваць файл">
-<!ENTITY slice.loads "Ладаванні">
+<!ENTITY slice.loads "Пампаванні">
 <!ENTITY slice.month.short.1 "{D} студз">
 <!ENTITY slice.month.short.10 "{D} кастр">
 <!ENTITY slice.month.short.11 "{D} ліст">
@@ -21,36 +23,69 @@
 <!ENTITY slice.month.short.9 "{D} вер">
 <!ENTITY slice.notif.errors "{N} файл не запампаваны;{N} файлы не запампаваныя;{N} файлаў не запампавана">
 <!ENTITY slice.notif.saved "Файл захаваны">
-<!ENTITY slice.notif.saved-chrome "Файл захаваны ў Яндекс.Дыск">
+<!ENTITY slice.notif.saved-chrome "Файл захаваны на Яндекс.Дыск">
 <!ENTITY slice.notif.saves "{N} файл захаваны;{N} файлы захаваныя;{N} файлаў захавана">
 <!ENTITY slice.tooltip.cancel "Спыніць запампаванне файла на Яндекс.Дыск">
 <!ENTITY slice.tooltip.download "Спампаваць файл">
 <!ENTITY slice.tooltip.homelink "Перайсці на Яндекс.Дыск">
 <!ENTITY slice.tooltip.retry "Паўтарыць запампаванне файла на Яндекс.Дыск">
 <!ENTITY slice.tooltip.share "Атрымаць публічную спасылку на файл">
-<!ENTITY title "Яндекс.Дыск">
+<!ENTITY slice.empty-list "Спіс запампаваных файлаў на Яндекс.Дыск пусты.">
+<!ENTITY slice.empty-list-2 "Як запампаваць файл">
+<!ENTITY slice.waiting-upload-url "Адбываецца запыт...">
+<!ENTITY slice.error.file-not-loaded "Файл не запампаваны">
+<!ENTITY slice.error.filename-not-loaded "{filename} не запампаваны">
+<!ENTITY slice.error.limit-comp "Не хапае вольнага месца на камп&#39;ютары для захавання файла">
+<!ENTITY slice.error.limit-disk "Не хапае вольнага месца на Я.Дыску для захавання файла">
+<!ENTITY slice.tooltip.error-cancel "Скасаваць пампаванне файла на Яндекс.Дыск">
+
 <!ENTITY widget.button.authorized "Спіс апошніх захаваных файлаў на Яндекс.Дыск">
 <!ENTITY widget.button.unauthorized "Калі ласка, аўтарызуйцеся на Яндексе">
 <!ENTITY widget.button.upload-complete "Файл паспяхова захаваны на Яндекс.Дыск">
 <!ENTITY widget.button.upload-error "Не атрымалася захаваць файл на Яндекс.Дыск">
 <!ENTITY widget.button.uploading "Адбываецца запампаванне файлаў на Яндекс.Дыск">
-<!ENTITY widget.description "Яндекс.Дыск">
 <!ENTITY widget.menu.save "Захаваць на Яндекс.Дыск">
-<!ENTITY widget.name "Яндекс.Дыск">
-<!ENTITY widget.options.save-checkbox.title "Паказваць значак захавання па навядзенні">
 <!ENTITY widget.pagebutton.title "Захаваць">
 <!ENTITY widget.pagebutton.tooltip "Захаваць файл на Яндекс.Дыск">
 <!ENTITY widget.save-button.title "Захаваць выяву на Яндекс.Дыск">
 <!ENTITY widget.save-file-button.title "Захаваць файл на Яндекс.Дыск">
-<!ENTITY error.cmd.try-again "Паспрабуйце *зноў*">
-<!ENTITY error.network "Памылка злучэння">
-<!ENTITY slice.empty-list "Спіс запампаваных файлаў на Яндекс.Дыск пусты.">
-<!ENTITY slice.empty-list-2 "Як запампаваць файл">
 <!ENTITY widget.chrome-name "Элементы Яндекса: Дыск">
-<!ENTITY slice.waiting-upload-url "Адбываецца запыт...">
 <!ENTITY widget.chrome-description "Захоўвайце файлы і выявы з інтэрнэта на Яндекс.Дыск адным пстрыкам">
 <!ENTITY widget.chrome-full-description "Дадатак дазволіць вам захоўваць файлы і выявы з інтэрнэта ў воблацы Яндекс.Дыска і адчыняць іх з любой прылады. Каб ён пачаў працаваць, трэба ўвесці свой лагін і пароль на Яндексе.">
 <!ENTITY widget.opera.forbidden "Для працы дадатку Дыск неабходная Opera версіі 26 і вышэйшых.">
+
+<!ENTITY error.cmd.try-again "Паспрабуйце *зноў*">
+<!ENTITY error.limit "Скончылася вольнае месца на Я.Дыску">
+<!ENTITY error.network "Памылка злучэння">
 <!ENTITY error.cmd-auth "Калі ласка, *аўтарызуйцеся*">
-<!ENTITY slice.error.file-not-loaded "Файл не запампаваны">
-<!ENTITY slice.error.filename-not-loaded "{filename} не запампаваны">
+
+<!ENTITY widget.settings.showPopupSuggest "Паказваць выплыўную кнопку &context-menu.upload-title;">
+<!ENTITY widget.settings.save-document.title "Паказваць кнопку Дыска поверх адчыненых дакументаў у браўзеры">
+
+<!ENTITY file-dialog.all-files "Усе файлы">
+<!ENTITY file-dialog.title "Выбар файла для запампавання">
+
+<!ENTITY slice.help "Даведка">
+<!ENTITY slice.settings "Наладкі">
+<!ENTITY slice.upload "Заладаваць">
+<!ENTITY widget.options.save-checkbox.title "Паказваць кнопку поверх выяў на сайтах">
+<!ENTITY widget.options.save-document-checkbox.title "Паказваць кнопку поверх адчыненых дакументаў у браўзеры">
+<!ENTITY slice.download "Спампаваць">
+<!ENTITY slice.public "Падзяліцца">
+<!ENTITY slice.size.b "байт">
+<!ENTITY slice.size.gb "ГБ">
+<!ENTITY slice.size.kb "КБ">
+<!ENTITY slice.size.mb "МБ">
+<!ENTITY widget.options.show-notifications.title "Паказваць апавяшчэнні">
+<!ENTITY slice.notif.saved-new "Файл захаваны на ваш Яндекс.Дыск у папку &#34;Пампаванні&#34;">
+<!ENTITY widget.options.notifications-enable.title "Паказваць апавяшчэнні пра запампаванне файлаў">
+<!ENTITY slice.notif.yabrowser-save "Файл захаваны{new_line}на ваш Яндекс.Дыск у папку &#34;Пампаванні&#34;">
+<!ENTITY file-dialog.error.empty-file "Немагчыма запампаваць файл памерам 0 байт">
+<!ENTITY widget.save-button.tutorial.confirmButton "Добра, дзякуй">
+<!ENTITY widget.save-button.tutorial.moreInfo "Даведка">
+<!ENTITY widget.save-button.tutorial.settings "Наладкі">
+<!ENTITY widget.save-button.tutorial.text "Націсніце на значак, каб захаваць упадабаную выяву сабе на Яндекс.Дыск. Збірайце ўсё цікавае на Яндекс.Дыску.">
+<!ENTITY widget.save.tutorial.text "Націсніце на значак, каб убачыць апошнія захаваныя выявы. Вы можаце спампаваць гэтыя файлы на камп&#39;ютар, хутка падзяліцца імі з сябрамі або перайсці ў Дыск для прагляду файлаў і працы з імі.">
+<!ENTITY slice.uploading "Ідзе запампаванне">
+<!ENTITY widget.save.tutorial.header "Яндекс.Дыск ў браўзеры">
+<!ENTITY widget.save-button.tutorial.confirmButton.short "Добра">

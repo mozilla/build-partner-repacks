@@ -11,7 +11,7 @@ const DAY_MSECS = 86400000;
 const welcome = {
     _PREF_NAME: "services.response",
     get _SOC_PROVS() {
-        return this._brandId + ".xml";
+        return this._api.Environment.branding.brandID + ".xml";
     },
     init: function Welcome_init(api, expiredDays) {
         if (this._initialized) {
@@ -20,7 +20,7 @@ const welcome = {
         this._initialized = true;
         this._api = api;
         this._tempDoc = this._api.XMLUtils.getDOMParser(null, null, true).parseFromString("<emptyDoc/>", "text/xml");
-        Cu.import(this._api.Package.resolvePath("/native/fx/modules/common-auth/utils.jsm"));
+        Cu.import(this._api.Package.resolvePath("/native/fx/modules/utils.jsm"));
         utils.NotificationSource.objectMixIn(this);
         this._responseExpiredTime = DAY_MSECS * (expiredDays || 14);
     },
@@ -80,25 +80,5 @@ const welcome = {
     },
     ignoreYaRuService: function Welcome_ignoreYaRuService(listener) {
         this.removeListener("yaru", listener);
-    },
-    __brandId: null,
-    get _brandId() {
-        if (this.__brandId) {
-            return this.__brandId;
-        }
-        try {
-            let listener = {
-                observeServiceEvent: function () {
-                }
-            };
-            let service = this._api.Services.obtainService("ru.yandex.custombar.branding", "package", listener);
-            try {
-                this.__brandId = service ? service.getBrandID() : "";
-            } finally {
-                this._api.Services.releaseService("ru.yandex.custombar.branding", "package", listener);
-            }
-        } catch (ex) {
-        }
-        return this.__brandId;
     }
 };

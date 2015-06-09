@@ -83,53 +83,8 @@ const AddonManager = {
         }
         throw new Error("AddonManager: can't get addon id from install.rdf");
     },
-    disableAddonByID: function AM_disableAddonByID(aAddonId, aCallback) {
-        this.gre_AddonManager.getAddonByID(aAddonId, function AM_disableAddonByID_callback(aAddon) {
-            if (aAddon) {
-                aAddon.userDisabled = true;
-            }
-            this._applyCallback(aCallback);
-        }.bind(this));
-    },
-    uninstallAddonsByIDs: function AM_uninstallAddonsByIDs(aAddonIds, aRestartBrowser, aCallback) {
-        let onUninstall = function onUninstall(addons, restart) {
-            this._applyCallback(aCallback);
-            if (Boolean(aRestartBrowser) && (restart || addons && addons.length)) {
-                let timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-                timer.initWithCallback({
-                    notify: function AM_uninstallAddonsByIDs_onUninstall() {
-                        const nsIAppStartup = Ci.nsIAppStartup;
-                        Cc["@mozilla.org/toolkit/app-startup;1"].getService(nsIAppStartup).quit(nsIAppStartup.eForceQuit | nsIAppStartup.eRestart);
-                    }
-                }, 150, timer.TYPE_ONE_SHOT);
-            }
-        }.bind(this);
-        let addonsUninstallCallback = false;
-        try {
-            AddonManager.getAddonsByIDs(aAddonIds, function (addons) {
-                if (addonsUninstallCallback) {
-                    return;
-                }
-                addonsUninstallCallback = true;
-                addons.forEach(function (addon) {
-                    try {
-                        addon.uninstall();
-                    } catch (e) {
-                    }
-                });
-                onUninstall(addons);
-            });
-        } catch (e) {
-        }
-        let timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-        timer.initWithCallback({
-            notify: function AM_uninstallAddonsByIDs_wait() {
-                if (!addonsUninstallCallback) {
-                    addonsUninstallCallback = true;
-                    onUninstall(null, true);
-                }
-            }
-        }, 3000, timer.TYPE_ONE_SHOT);
+    getAddonByID: function AM_getAddonByID(aId, aCallback) {
+        this.gre_AddonManager.getAddonByID(aId, aCallback);
     },
     getAddonsByIDs: function AM_getAddonsByIDs(aIds, aCallback) {
         this.gre_AddonManager.getAddonsByIDs(aIds, aCallback);
@@ -204,20 +159,6 @@ const AddonManager = {
         };
         this.addAddonListener(this);
     },
-    isAddonUserDisabled: function AM_isAddonUserDisabled(aAddonId, aSleepTimeout) {
-        let result = null;
-        let callback = false;
-        this.gre_AddonManager.getAddonByID(aAddonId, function AM_isAddonUserDisabled_callback(aAddon) {
-            callback = true;
-            if (aAddon) {
-                result = Boolean(aAddon.userDisabled);
-            }
-        });
-        sleep(aSleepTimeout ? aSleepTimeout : 10000, function () {
-            return !callback;
-        });
-        return result;
-    },
     isAddonUninstalling: function AM_isAddonUninstalling(aAddonId) {
         let watchingAddon = this._watchingAddons[aAddonId] || null;
         return watchingAddon && watchingAddon.installed === false;
@@ -245,21 +186,4 @@ const AddonManager = {
         });
     }
 };
-function sleep(aTimeout, aConditionFunction) {
-    let func = typeof aConditionFunction == "function" ? aConditionFunction : function () {
-        return true;
-    };
-    let timeout = 1;
-    if (typeof aTimeout == "number" && aTimeout > 0) {
-        timeout = aTimeout;
-    }
-    let t = Date.now();
-    let conditionFunc = function conditionFunc() {
-        return Date.now() - t < timeout && func();
-    };
-    let thread = Cc["@mozilla.org/thread-manager;1"].getService().currentThread;
-    while (conditionFunc()) {
-        thread.processNextEvent(true);
-    }
-}
 Services.obs.addObserver(AddonManager, "browser-ui-startup-complete", false);

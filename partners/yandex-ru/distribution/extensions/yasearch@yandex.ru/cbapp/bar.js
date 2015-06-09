@@ -14,6 +14,7 @@ const barApplication = {
         this._logger = Log4Moz.repository.getLogger(core.appName + ".App");
         this._dirs._barApp = this;
         this._wndControllerName = this.name + "OverlayController";
+        this._migrateOldPreferences();
         this._init();
         this.addonManager.saveBuildDataToPreferences();
         try {
@@ -28,7 +29,7 @@ const barApplication = {
             } catch (e) {
                 this._logger.error("Failed cleaning preferences. " + strutils.formatError(e));
             }
-        }.bind(this), 2 * 60 * 1000);
+        }.bind(this), 15 * 60 * 1000);
     },
     finalize: function BarApp_finalize(callback) {
         let doFinalCleanup = this.addonManager.isAddonUninstalling;
@@ -74,14 +75,11 @@ const barApplication = {
     get name() {
         return this._barCore.appName;
     },
-    get barless() {
-        if (this._barless === null) {
-            this._barless = this.branding.barless;
-        }
-        return this._barless;
-    },
     get defaultPresetURL() {
-        return Preferences.get(this.name + this._consts.PREF_DEFAULT_PRESET_URL, null);
+        return this.preferences.get(this._consts.PREF_DEFAULT_PRESET_URL, null);
+    },
+    set defaultPresetURL(url) {
+        this.preferences.set(this._consts.PREF_DEFAULT_PRESET_URL, url);
     },
     get defaultPreset() {
         return this._defaultPreset;
@@ -100,7 +98,7 @@ const barApplication = {
         return this._usingInternalPreset;
     },
     get preferencesBranch() {
-        let appPrefsBranch = "extensions." + this.addonManager.addonId + ".";
+        let appPrefsBranch = this.core.extensionPrefsPath;
         delete this.preferencesBranch;
         this.__defineGetter__("preferencesBranch", () => appPrefsBranch);
         return appPrefsBranch;
@@ -206,74 +204,8 @@ const barApplication = {
     openAboutDialog: function BarApp_openAboutDialog() {
         return this.openSettingsDialog(null, undefined, "about");
     },
-    selectBestPackage: function BarApp_selectBestPackage(manifest) {
-        if (!(manifest instanceof this.BarPlatform.PackageManifest)) {
-            throw new CustomErrors.EArgType("manifest", "PackageManifest", manifest);
-        }
-        let platformInfo = sysutils.platformInfo;
-        let platformVersion = this._barCore.CONFIG.PLATFORM.VERSION;
-        let bestPackageInfo = null;
-        let bestVersion = "0";
-        let bestPackageInfo2 = null;
-        let bestVersion2 = "0";
-        let comparator = sysutils.versionComparator;
-        let packagesInfo = manifest.packagesInfo;
-        for (let i = 0, length = packagesInfo.length; i < length; i++) {
-            let packageInfo = packagesInfo[i];
-            if (packageInfo.browser && packageInfo.browser != platformInfo.browser.name) {
-                this._logger.trace("Package '" + packageInfo.id + "' for browser '" + packageInfo.browser + "' " + "is not usable on '" + platformInfo.browser.name + "'");
-                continue;
-            }
-            if (packageInfo.os && packageInfo.os != platformInfo.os.name) {
-                this._logger.trace("Package '" + packageInfo.id + "' for os '" + packageInfo.os + "' " + "is not usable on '" + platformInfo.os.name + "'");
-                continue;
-            }
-            if (packageInfo.architecture && packageInfo.architecture != platformInfo.browser.simpleArchitecture) {
-                this._logger.trace("Package '" + packageInfo.id + "' for architecture '" + packageInfo.architecture + "' " + "is not usable on '" + platformInfo.browser.simpleArchitecture + "'");
-                continue;
-            }
-            if (packageInfo.platformMin <= platformVersion) {
-                let newerPackage = comparator.compare(packageInfo.version, bestVersion) > 0;
-                let newerPlatform = bestPackageInfo && packageInfo.platformMin > bestPackageInfo.platformMin;
-                if (newerPackage || newerPlatform) {
-                    bestPackageInfo = packageInfo;
-                    bestVersion = packageInfo.version;
-                }
-            } else {
-                if (comparator.compare(packageInfo.version, bestVersion2) > 0) {
-                    bestPackageInfo2 = packageInfo;
-                    bestVersion2 = packageInfo.version;
-                }
-            }
-        }
-        return [
-            bestPackageInfo,
-            bestPackageInfo2
-        ];
-    },
     isYandexHost: function BarApp_isYandexHost(hostName) {
         return this._yandexHostsPattern.test(hostName);
-    },
-    isPrivilegedPackageURL: function BarApp_isPrivilegedPackageURL(url) {
-        return this.isPrivilegedPackageURI(netutils.newURI(url));
-    },
-    isPrivilegedPackageURI: function BarApp_isPrivilegedPackageURI(uri) {
-        if (!(uri instanceof Ci.nsIURI)) {
-            throw new CustomErrors.EArgType("uri", "nsIURI", uri);
-        }
-        if (uri.scheme != "http" && uri.scheme != "https") {
-            return false;
-        }
-        return uri.host == this._consts.WIDGET_LIBRARY_HOST && /^\/packages\/(approved|249|250|251)\//.test(uri.path) || uri.host in this._consts.BAR_HOSTS && uri.path.indexOf("/packages/") === 0 || uri.host == this._consts.DOWNLOAD_HOST_NAME || this.isBarQADebuggingURI(uri) || false;
-    },
-    isTrustedPackageURL: function BarApp_isTrustedPackageURL(url) {
-        return this.isTrustedPackageURI(netutils.newURI(url));
-    },
-    isTrustedPackageURI: function BarApp_isTrustedPackageURI(uri) {
-        return uri.host == this._consts.WIDGET_LIBRARY_HOST && uri.path.indexOf("/packages/") === 0 || this.isPrivilegedPackageURI(uri) || false;
-    },
-    isBarQADebuggingURI: function BarApp_isBarQADebuggingURI(uri) {
-        return uri.host == this._consts.BARQA_HOST_NAME && uri.path.indexOf("/notapp/") == -1;
     },
     onNewBrowserReady: function BarApp_onNewBrowserReady(controller) {
         let isFirstWindow = ++this._navigatorID == 1;
@@ -297,18 +229,10 @@ const barApplication = {
         }
     },
     _consts: {
-        PREF_DEFAULT_PRESET_URL: ".default.preset.url",
-        DEF_PRESET_FILE_NAME: "default.xml",
-        DOWNLOAD_HOST_NAME: "download.yandex.ru",
-        BARQA_HOST_NAME: "bar.qa.yandex.net",
-        BAR_HOSTS: {
-            "bar.yandex.ru": 0,
-            "toolbar.yandex.ru": 0
-        },
-        WIDGET_LIBRARY_HOST: "bar-widgets.yandex.ru"
+        PREF_DEFAULT_PRESET_URL: "default.preset.url",
+        DEF_PRESET_FILE_NAME: "default.xml"
     },
     _barCore: null,
-    _barless: null,
     _logger: null,
     _defaultPreset: null,
     _usingInternalPreset: false,
@@ -333,12 +257,6 @@ const barApplication = {
             packagesDir.append("packages");
             this._forceDir(packagesDir);
             return packagesDir;
-        },
-        get parsedCompsDir() {
-            let parsedDir = this.appRootDir;
-            parsedDir.append("parsed_comps");
-            this._forceDir(parsedDir);
-            return parsedDir;
         },
         get presetsDir() {
             let presetsDir = this.appRootDir;
@@ -428,6 +346,10 @@ const barApplication = {
             file: "distribution.js"
         },
         {
+            name: "statistics",
+            file: "statistics.js"
+        },
+        {
             name: "installer",
             file: "installer.js"
         },
@@ -438,10 +360,6 @@ const barApplication = {
         {
             name: "defender",
             file: "defender.js"
-        },
-        {
-            name: "statistics",
-            file: "statistics.js"
         },
         {
             name: "vendorCookie",
@@ -480,8 +398,8 @@ const barApplication = {
             file: "incoming.js"
         },
         {
-            name: "updater",
-            file: "update.js"
+            name: "tutorial",
+            file: "tutorial.js"
         },
         {
             name: "integration",
@@ -516,10 +434,6 @@ const barApplication = {
             file: "slices.js"
         },
         {
-            name: "anonymousStatistic",
-            file: "anonymousStatistic.js"
-        },
-        {
             name: "mailruStat",
             file: "mailruStat.js"
         },
@@ -534,30 +448,14 @@ const barApplication = {
     ],
     _finalCleanup: function BarApp__finalCleanup(aAddonId) {
         this._logger.debug("Cleanup...");
-        let prefBranches = [
-            this._barCore.xbWidgetsPrefsPath,
-            this._barCore.nativesPrefsPath,
-            this._barCore.staticPrefsPath,
-            this.name + ".versions."
-        ];
-        if (aAddonId) {
-            prefBranches.push("extensions." + aAddonId + ".");
-        }
-        prefBranches.forEach(function (prefBranch) {
+        let prefBranches = ["extensions." + aAddonId + "."];
+        for (let prefBranch of prefBranches) {
             try {
                 Preferences.resetBranch(prefBranch);
             } catch (e) {
                 this._logger.error("Final cleanup: can't reset branch '" + prefBranch + "'. " + strutils.formatError(e));
             }
-        }, this);
-        let prefs = [this.name + this._consts.PREF_DEFAULT_PRESET_URL];
-        prefs.forEach(function (pref) {
-            try {
-                Preferences.reset(pref);
-            } catch (e) {
-                this._logger.error("Final cleanup: can't reset pref '" + pref + "'. " + strutils.formatError(e));
-            }
-        }, this);
+        }
         this._logger.debug("Removing all files");
         this._barCore.stop();
         fileutils.removeFileSafe(this.directories.appRootDir);
@@ -623,20 +521,14 @@ const barApplication = {
                 this._logger.debug(e.stack);
             }
         }
-        let normalWidgetIDs = Object.keys(this._defaultPreset.widgetIDs).filter(function (id) {
-            return [
-                "http://bar.yandex.ru/packages/yandexbar#spring",
-                "http://bar.yandex.ru/packages/yandexbar#settings",
-                "http://bar.yandex.ru/packages/yandexbar#separator"
-            ].indexOf(id) === -1;
-        });
+        let normalWidgetIDs = Object.keys(this._defaultPreset.widgetIDs);
         this._introducedWEntries.forEach(widgetEntry => normalWidgetIDs.push(widgetEntry.componentID));
-        this.widgetLibrary.registerWidgets(normalWidgetIDs, true);
+        this.widgetLibrary.registerWidgets(normalWidgetIDs);
         let pluginIDs = Object.keys(this._defaultPreset.pluginIDs);
-        this.widgetLibrary.registerPlugins(pluginIDs, true);
+        this.widgetLibrary.registerPlugins(pluginIDs);
         this._introducedPEntries.forEach(function (pluginEntry) {
             let pluginID = pluginEntry.componentID;
-            this.widgetLibrary.registerPlugins(pluginID, true);
+            this.widgetLibrary.registerPlugins(pluginID);
             if (pluginEntry.enabled != pluginEntry.ENABLED_YES) {
                 return;
             }
@@ -649,6 +541,22 @@ const barApplication = {
         this.widgetLibrary.activatePlugins();
         this.addonStatus.onApplicationInitialized();
         this._logger.config("Init done in " + (Date.now() - startTime) + "ms");
+    },
+    _migrateOldPreferences: function () {
+        try {
+            let oldPrefBranchPath = this.name + ".";
+            let newPrefBranchPath = this.preferencesBranch;
+            Services.prefs.getBranch(oldPrefBranchPath).getChildList("", {}).forEach(function (key) {
+                let prefValue = Preferences.get(oldPrefBranchPath + key, null);
+                if (prefValue !== null) {
+                    Preferences.set(newPrefBranchPath + key, prefValue);
+                }
+            });
+            Preferences.resetBranch(oldPrefBranchPath);
+        } catch (e) {
+            this._logger.error("Failed migrating old preferences branch.");
+            this._logger.debug(e);
+        }
     },
     _replaceDefaultPresetWith: function BarApp__replaceDefaultPresetWith(newPreset) {
         this._defaultPreset = newPreset;
@@ -672,27 +580,16 @@ const barApplication = {
             this._logger.error("Could not modify default preset. " + strutils.formatError(e));
             this._logger.debug(e.stack);
         }
-        const separatorID = "http://bar.yandex.ru/packages/yandexbar#separator";
         const searchFieldID = "http://bar.yandex.ru/packages/yandexbar#search";
-        let separatedVisWidgets = 0;
         let activatedComponentIds = [];
         this._defaultPreset.allEntries.forEach(function (compEntry) {
-            if (compEntry.enabled == compEntry.ENABLED_AUTO) {
+            switch (compEntry.enabled) {
+            case compEntry.ENABLED_AUTO:
                 compEntry.enabled = compEntry.ENABLED_NO;
-            }
-            let entryID = compEntry.componentID;
-            let isSearchField = entryID == searchFieldID;
-            if (isSearchField || entryID == separatorID) {
-                if (separatedVisWidgets > 0) {
-                    separatedVisWidgets = 0;
-                } else if (!isSearchField) {
-                    compEntry.enabled = compEntry.ENABLED_NO;
-                }
-            } else if (compEntry.enabled == compEntry.ENABLED_YES) {
-                separatedVisWidgets++;
-            }
-            if (compEntry.enabled == compEntry.ENABLED_YES) {
+                break;
+            case compEntry.ENABLED_YES:
                 activatedComponentIds.push(compEntry.componentID);
+                break;
             }
         });
         this.autoinstaller.activatedComponentIds = activatedComponentIds;
@@ -708,7 +605,6 @@ const barApplication = {
             let partPath = partsDirPath + partDescr.file;
             let loadPartStart = Date.now();
             Cu.import(partPath, this._parts);
-            this._logger.debug("Loading " + partName + " part from " + partPath + " (" + (Date.now() - loadPartStart) + " ms)");
             let part = this._parts[partName];
             if (!part) {
                 throw new Error("Part " + partName + " not loaded!");
@@ -717,6 +613,7 @@ const barApplication = {
             if (typeof part.init == "function") {
                 part.init(this);
             }
+            this._logger.debug("Loading " + partName + " part from " + partPath + " (" + (Date.now() - loadPartStart) + " ms)");
         }
     },
     _finalizeParts: function BarApp__finalizeParts(doCleanup, partsFinalizedCallback) {
@@ -757,11 +654,10 @@ const barApplication = {
     },
     _findDefaultPreset: function BarApp__findDefaultPreset() {
         this._logger.config("Looking for default preset...");
-        let defaultPresetUrlPrefPath = this.name + this._consts.PREF_DEFAULT_PRESET_URL;
         let internalPresetPath = "$content/presets/" + this._consts.DEF_PRESET_FILE_NAME;
         let presetFile;
         try {
-            let presetUrl = Preferences.get(defaultPresetUrlPrefPath, null);
+            let presetUrl = this.defaultPresetURL;
             if (!presetUrl) {
                 throw new Error("Can't get default preset preference value.");
             }
@@ -784,7 +680,7 @@ const barApplication = {
                 let preset = new this.BarPlatform.Preset(extPresetFile);
                 try {
                     extPresetFile.moveTo(null, encodeURIComponent(preset.url));
-                    Preferences.set(defaultPresetUrlPrefPath, preset.url);
+                    this.defaultPresetURL = preset.url;
                 } catch (ex1) {
                     this._logger.error("Could not set external default preset as active. " + strutils.formatError(ex1));
                 }
@@ -801,7 +697,7 @@ const barApplication = {
                         let destFileName = encodeURIComponent(preset.url);
                         let fMask = parseInt("0755", 8);
                         this.addonFS.copySource(internalPresetPath, this.directories.presetsDir, destFileName, fMask);
-                        Preferences.set(defaultPresetUrlPrefPath, preset.url);
+                        this.defaultPresetURL = preset.url;
                     } catch (ex3) {
                         this._logger.error("Could not extract internal preset.\n" + strutils.formatError(ex3));
                     }
@@ -867,7 +763,6 @@ const barApplication = {
                 }
             });
         }
-        checkBranch(Services.prefs.getBranch(this._barCore.xbWidgetsPrefsPath));
         checkBranch(Services.prefs.getBranch(this._barCore.nativesPrefsPath));
     },
     _openWindow: function BarApp__openWindow(navigatorWindow, path, windowClass, focusIfOpened, resizeable, modal, windowArgs) {

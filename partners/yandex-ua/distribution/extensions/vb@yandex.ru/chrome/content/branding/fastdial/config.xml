@@ -2,9 +2,9 @@
 <!DOCTYPE fastdial SYSTEM "config.dtd"><fastdial>
     <logo alt="&logo.alt;" img_clear="logo.png" title="&logo.title;" url="http://www.yandex.ua/?clid={clid7}"/>
 
-    <auth mail="https://mail.yandex.ua/" main="https://www.yandex.ua/" passport="https://passport.yandex.ru/passport?mode=passport" redirect="http://api.browser.yandex.ru/elements/embeddedauth.html" settings="https://tune.yandex.ru/"/>
+    <auth mail="https://mail.yandex.ua/" main="https://www.yandex.ua/" passport="https://passport.yandex.ru/passport?mode=passport" redirect="https://api.browser.yandex.ru/elements/embeddedauth.html" settings="https://tune.yandex.ru/"/>
 
-    <search design="arrow" example_domain="http://api.browser.yandex.ua" navigate_title="&search.navigate.title;" placeholder="" suggest="http://api.browser.yandex.ua/suggest/get-elements?part={searchTerms}&amp;brandID={brandID}" suggest_url="http://suggest-internal.yandex.ua/suggest-v-tablo?part={searchTerms}" url="http://yandex.ua/yandsearch?text={searchTerms}&amp;clid={clid8}"/>
+    <search design="arrow" example_domain="https://api.browser.yandex.ua" navigate_title="&search.navigate.title;" placeholder="" suggest="https://api.browser.yandex.ua/suggest/get-elements?part={searchTerms}&amp;brandID={brandID}" suggest_url="http://suggest-internal.yandex.ua/suggest-v-tablo?part={searchTerms}" url="http://yandex.ua/search/?text={searchTerms}&amp;clid={clid8}"/>
 
     <background file="earth.jpg" force="false"/>
 
@@ -17,7 +17,24 @@
         <page custom_title="&thumb.vkontakte;" force="false" index="6" url="http://vk.com/"/>
         <page custom_title="&thumb.korrespondent;" force="false" index="7" url="http://korrespondent.net/"/>
         <page custom_title="&thumb.yasoft;" force="false" index="8" url="http://soft.yandex.ua/?from=vb_dist"/>
-        <page boost="0" custom_title="&thumb.youtube;" force="false" index="9" url="http://youtube.com/"/>
+        <page custom_title="&thumb.youtube;" force="false" index="9" url="http://youtube.com/"/>
+        <page force="false" index="10" url="http://www.kinopoisk.ru/"/>
+        <page force="false" index="11" url="https://uk.wikipedia.org/"/>
+        <page force="false" index="12" url="http://tv.yandex.ua/"/>
+        <page force="false" index="13" url="http://news.yandex.ua"/>
+        <page force="false" index="14" url="http://ria.ru/"/>
+        <page force="false" index="15" url="http://ok.ru/"/>
+        <page force="false" index="16" url="http://pogoda.yandex.ua/"/>
+        <page force="false" index="17" url="http://images.yandex.ua/"/>
+        <page force="false" index="18" url="http://disk.yandex.ua/"/>
+        <page force="false" index="19" url="http://auto.ru/"/>
+        <page force="false" index="20" url="http://www.avito.ru/"/>
+        <page force="false" index="21" url="http://translate.yandex.ua/"/>
+        <page force="false" index="22" url="https://www.facebook.com/"/>
+        <page force="false" index="23" url="https://twitter.com/"/>
+        <page force="false" index="24" url="https://instagram.com/"/>
+        <page force="false" index="25" url="http://www.sportbox.ru/"/>
+        <page force="false" index="26" url="https://www.coursera.org/"/>
     </pages>
 
 </fastdial>

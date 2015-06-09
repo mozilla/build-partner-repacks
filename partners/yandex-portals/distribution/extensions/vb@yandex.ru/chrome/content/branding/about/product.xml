@@ -3,7 +3,7 @@
   <BrandID>yandex</BrandID>
 
   <ProductName1 acc="&product.name.acc;" dat="&product.name.dat;" ex1="&product.name.nom;" ex2="&product.name.nom;" gen="&product.name.gen;" ins="&product.name.ins;" loc="&product.name.loc;" nom="&product.name.nom;" pre="&product.name.pre;"/>
-    
+
   <ProductName2 acc="&product.shortname.acc;" dat="&product.shortname.dat;" ex1="&product.shortname.nom;" ex2="&product.shortname.nom;" gen="&product.shortname.gen;" ins="&product.shortname.ins;" loc="&product.shortname.loc;" nom="&product.shortname.nom;" pre="&product.shortname.pre;"/>
 
   <VendorName acc="&vendor.name.acc;" dat="&vendor.name.dat;" ex1="&vendor.name.nom;" ex2="&vendor.name.nom;" gen="&vendor.name.gen;" ins="&vendor.name.ins;" loc="&vendor.name.loc;" nom="&vendor.name.nom;" pre="&vendor.name.pre;"/>
@@ -25,6 +25,5 @@
     <License display="false"/>
     <HomePage checked="false" display="false"/>
     <DefaultSearch checked="false" display="false"/>
-    <UsageStat checked="false" display="false"/>
   </Setup>
 </Product>

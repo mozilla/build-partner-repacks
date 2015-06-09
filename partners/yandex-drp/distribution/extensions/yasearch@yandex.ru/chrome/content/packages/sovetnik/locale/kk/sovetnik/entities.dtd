@@ -1,0 +1,5 @@
+<!ENTITY sovetnik.name "Ақылшы">
+<!ENTITY sovetnik.options.town.label "Қала">
+<!ENTITY sovetnik.options.town.autodetect "Автоматты түрде анықтау">
+<!ENTITY sovetnik.options.showOtherRegionsSuggest "Басқа өңірлерден жеткізуі бар ұсыныстарды көрсету">
+<!ENTITY sovetnik.options.showShopListOnHover "Тінтуірді шерткенде дүкендер тізімін көрсету">

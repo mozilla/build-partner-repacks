@@ -182,6 +182,15 @@ define("browser-adapter", ["api/dispatcher"], function (Dispatcher) {
         getNotificationManager: function () {
             return getPlatform().Notifications;
         },
+        sendClickerStatistics: function (options) {
+            var platform = getPlatform();
+            if ("sendClickerStatistics" in platform) {
+                platform.sendClickerStatistics(options);
+                return true;
+            } else {
+                return false;
+            }
+        },
         getSlicePath: function () {
             return location.href.replace(/index\.html$/, "");
         },
@@ -419,38 +428,162 @@ define("api/branding", ["browser-adapter"], function (adapter) {
     };
     return brandingModule;
 });
+define("api/stat", ["browser-adapter"], function (adapter) {
+    function log(str) {
+        adapter.log("[api/stat]: " + str);
+    }
+    var stat = {
+        _statName: null,
+        log: function (params) {
+            if (adapter.sendClickerStatistics({
+                    cid: params.cid,
+                    param: params.param,
+                    statisticsId: this._statName
+                })) {
+                return;
+            }
+            var dtype = params.dtype;
+            var pid = params.pid;
+            var cid = params.cid;
+            var param = params.param;
+            if (typeof dtype === "undefined") {
+                dtype = "stred";
+            }
+            if (typeof pid === "undefined") {
+                pid = 12;
+            }
+            if (typeof dtype === "string") {
+                if (!dtype) {
+                    throw new RangeError("dtype is empty string");
+                }
+            } else {
+                throw new TypeError("Invalid dtype type ('" + typeof dtype + "')");
+            }
+            if (typeof pid === "number") {
+                if (pid < 0) {
+                    throw new RangeError("Invalid pid value (" + pid + ")");
+                }
+            } else {
+                throw new TypeError("Wrong pid type ('" + typeof pid + "'). Number required.");
+            }
+            if (typeof cid === "number") {
+                if (cid <= 0) {
+                    throw new RangeError("Invalid cid value (" + cid + ")");
+                }
+            } else {
+                throw new TypeError("Wrong cid type ('" + typeof cid + "'). Number required.");
+            }
+            var prodInfo = adapter.getProductInfo();
+            param = adapter.browser + "." + this._statName + "." + (prodInfo ? prodInfo.version.replace(/\./g, "-") + "." : "") + param;
+            var url = "https://clck.yandex.ru/click" + "/dtype=" + encodeURIComponent(dtype) + "/pid=" + pid + "/cid=" + cid + "/path=" + encodeURIComponent(param);
+            var extraString = "";
+            var processedKeys = [
+                "dtype",
+                "pid",
+                "cid",
+                "param"
+            ];
+            for (var key in params) {
+                if (!params.hasOwnProperty(key)) {
+                    continue;
+                }
+                if (processedKeys.indexOf(key) !== -1) {
+                    continue;
+                }
+                var value = params[key];
+                if (key === "*") {
+                    extraString = value;
+                    continue;
+                }
+                url += "/" + key + "=" + encodeURIComponent(value);
+            }
+            url += "/*" + extraString;
+            log("stat log " + url);
+            var xhr = adapter.createXHR();
+            xhr.open("GET", url, true);
+            xhr.send();
+        },
+        logWidget: function (path) {
+            this.log({
+                cid: 72359,
+                param: path
+            });
+        },
+        logNotification: function (path) {
+            this.log({
+                cid: 72358,
+                param: path
+            });
+        },
+        setStatName: function (name) {
+            this._statName = name || null;
+        }
+    };
+    return stat;
+});
 define("slice/locale", [], function () {
     return {
-        "ru": {
-            "address": "Адрес",
-            "balls": "баллов",
-            "balls1": "балл",
-            "balls234": "балла",
+        "be": {
+            "address": "Адрас",
+            "balls": "балаў",
+            "balls1": "бал",
+            "balls234": "балы",
             "domain": "http://maps.yandex.ru/",
             "domain.suggest": "http://suggest-maps.yandex.ru/suggest-geo",
-            "error.longroute": "некоторые участки маршрута перекрыты.",
-            "error.map": "Произошла ошибка при открытии карты.<br>Попробуйте открыть позднее или обновить.",
-            "error.net": "Нет подключения к интернету",
-            "error.route": "Невозможно проложить маршрут между заданными точками.",
-            "error.server": "Нет данных о пробках",
+            "error.longroute": "некаторыя ўчасткі маршруту перекрытыя.",
+            "error.map": "Адбылася памылка падчас адчынення мапы.<br>Паспрабуйце адчыніць пазней або абнавіць.",
+            "error.net": "Няма далучэння да інтэрнета",
+            "error.route": "Немагчыма пракласці маршрут паміж зададзенымі пунктамі.",
+            "error.server": "Няма звестак пра пробкі",
             "home": "Дом",
-            "last.resp": "по последним данным на <i18n:param>content</i18n:param>",
-            "link.map": "На большой карте",
-            "make.route": "Проложить",
+            "last.resp": "паводле апошніх звестак на <i18n:param>content</i18n:param>",
+            "link.map": "На вялікай мапе",
+            "make.route": "Пракласці",
             "my.route": "Мой маршрут",
-            "notraffic": "Нет данных о пробках",
-            "remove.route": "Удалить",
+            "notraffic": "Няма звестак пра пробкі",
+            "remove.route": "Выдаліць",
             "route.begin.title": "А",
             "route.end.title": "Б",
-            "set.points": "Указать маршрут",
-            "time.h": "ч.",
-            "time.m": "мин.",
-            "title": "Виджет пробок",
-            "to.home": "домой добираться <i18n:param>content</i18n:param>",
-            "to.url": "как объехать",
-            "to.work": "на работу добираться <i18n:param>content</i18n:param>",
-            "work": "Работа",
-            "error.refresh": "Обновить"
+            "set.points": "Указаць маршрут",
+            "time.h": "гадз.",
+            "time.m": "хв.",
+            "title": "Віджэт пробак",
+            "to.home": "дамой дабірацца <i18n:param>content</i18n:param>",
+            "to.url": "як аб'ехаць",
+            "to.work": "на працу дабірацца <i18n:param>content</i18n:param>",
+            "work": "Праца",
+            "error.refresh": "Абнавіць"
+        },
+        "en": {
+            "address": "Address",
+            "balls": "points",
+            "balls1": "point",
+            "balls234": "points",
+            "domain": "http://maps.yandex.com/",
+            "domain.suggest": "http://suggest-maps.yandex.ru/suggest-geo",
+            "error.longroute": "some sections of the route are closed.",
+            "error.map": "Error occurred when opening maps.<br>Try again later or refresh the page.",
+            "error.net": "No internet connection",
+            "error.route": "Unable to create route between these points",
+            "error.server": "No traffic info",
+            "home": "Home",
+            "last.resp": "last updated <i18n:param>content</i18n:param>",
+            "link.map": "Main map",
+            "make.route": "Get directions",
+            "my.route": "My route",
+            "notraffic": "No traffic data",
+            "remove.route": "Remove",
+            "route.begin.title": "A",
+            "route.end.title": "B",
+            "set.points": "Create route",
+            "time.h": "hr.",
+            "time.m": "min.",
+            "title": "Traffic widget",
+            "to.home": "journey time home <i18n:param>content</i18n:param>",
+            "to.url": "avoid traffic",
+            "to.work": "journey time to work <i18n:param>content</i18n:param>",
+            "work": "Work",
+            "error.refresh": "Refresh"
         },
         "kk": {
             "address": "Мекен-жай",
@@ -483,6 +616,37 @@ define("slice/locale", [], function () {
             "work": "Жұмыс",
             "error.refresh": "Жаңарту"
         },
+        "ru": {
+            "address": "Адрес",
+            "balls": "баллов",
+            "balls1": "балл",
+            "balls234": "балла",
+            "domain": "http://maps.yandex.ru/",
+            "domain.suggest": "http://suggest-maps.yandex.ru/suggest-geo",
+            "error.longroute": "некоторые участки маршрута перекрыты.",
+            "error.map": "Произошла ошибка при открытии карты.<br>Попробуйте открыть позднее или обновить.",
+            "error.net": "Нет подключения к интернету",
+            "error.route": "Невозможно проложить маршрут между заданными точками.",
+            "error.server": "Нет данных о пробках",
+            "home": "Дом",
+            "last.resp": "по последним данным на <i18n:param>content</i18n:param>",
+            "link.map": "На большой карте",
+            "make.route": "Проложить",
+            "my.route": "Мой маршрут",
+            "notraffic": "Нет данных о пробках",
+            "remove.route": "Удалить",
+            "route.begin.title": "А",
+            "route.end.title": "Б",
+            "set.points": "Указать маршрут",
+            "time.h": "ч.",
+            "time.m": "мин.",
+            "title": "Виджет пробок",
+            "to.home": "домой добираться <i18n:param>content</i18n:param>",
+            "to.url": "как объехать",
+            "to.work": "на работу добираться <i18n:param>content</i18n:param>",
+            "work": "Работа",
+            "error.refresh": "Обновить"
+        },
         "tr": {
             "address": "Adres",
             "balls": "derece",
@@ -513,68 +677,6 @@ define("slice/locale", [], function () {
             "to.work": "işe <i18n:param>content</i18n:param>",
             "work": "İş",
             "error.refresh": "Yenile"
-        },
-        "en": {
-            "address": "Address",
-            "balls": "points",
-            "balls1": "point",
-            "balls234": "points",
-            "domain": "http://maps.yandex.com/",
-            "domain.suggest": "http://suggest-maps.yandex.ru/suggest-geo",
-            "error.longroute": "some sections of the route are closed.",
-            "error.map": "Unable to open map. Please try again later.",
-            "error.net": "No internet connection",
-            "error.route": "Unable to create route between these points",
-            "error.server": "No traffic info",
-            "home": "Home",
-            "last.resp": "last updated <i18n:param>content</i18n:param>",
-            "link.map": "Main map",
-            "make.route": "Get directions",
-            "my.route": "My route",
-            "notraffic": "No traffic data",
-            "remove.route": "Remove",
-            "route.begin.title": "A",
-            "route.end.title": "B",
-            "set.points": "Create route",
-            "time.h": "hr.",
-            "time.m": "min.",
-            "title": "Traffic widget",
-            "to.home": "journey time home <i18n:param>content</i18n:param>",
-            "to.url": "avoid traffic",
-            "to.work": "journey time to work <i18n:param>content</i18n:param>",
-            "work": "Work",
-            "error.refresh": "Refresh"
-        },
-        "be": {
-            "address": "Адрас",
-            "balls": "балаў",
-            "balls1": "бал",
-            "balls234": "балы",
-            "domain": "http://maps.yandex.ru/",
-            "domain.suggest": "http://suggest-maps.yandex.ru/suggest-geo",
-            "error.longroute": "некаторыя ўчасткі маршруту перекрытыя.",
-            "error.map": "Адбылася памылка падчас адчынення мапы.<br>Паспрабуйце адчыніць пазней або абнавіць.",
-            "error.net": "Няма далучэння да інтэрнета",
-            "error.route": "Немагчыма пракласці маршрут паміж зададзенымі пунктамі.",
-            "error.server": "Няма звестак пра пробкі",
-            "home": "Дом",
-            "last.resp": "паводле апошніх звестак на <i18n:param>content</i18n:param>",
-            "link.map": "На вялікай мапе",
-            "make.route": "Пракласці",
-            "my.route": "Мой маршрут",
-            "notraffic": "Няма звестак пра пробкі",
-            "remove.route": "Выдаліць",
-            "route.begin.title": "А",
-            "route.end.title": "Б",
-            "set.points": "Указаць маршрут",
-            "time.h": "гадз.",
-            "time.m": "хв.",
-            "title": "Віджэт пробак",
-            "to.home": "дамой дабірацца <i18n:param>content</i18n:param>",
-            "to.url": "як аб'ехаць",
-            "to.work": "на працу дабірацца <i18n:param>content</i18n:param>",
-            "work": "Праца",
-            "error.refresh": "Абнавіць"
         },
         "uk": {
             "address": "Адреса",
@@ -610,12 +712,13 @@ define("slice/locale", [], function () {
     };
 });
 define("slice/logic/config", {
+    statName: "yamaps",
     COOKIE_DOMAIN: "yandex.{tld}",
     EXPORT_URL: "https://export.yandex.{tld}/bar/reginfo.xml",
     MAP_API_URL: "https://api-maps.yandex.ru/2.1.11/?load=package.full&ns=&onload={onload}&lang={lang}",
-    SUGGEST_URL: "http://suggest-maps.yandex.{tld}/suggest-geo",
-    MAP_URL: "http://maps.yandex.{tld}/",
-    defaultHomeUrl: "http://maps.yandex.{tld}/?l=map%2Ctrf&trfm=cur",
+    SUGGEST_URL: "https://suggest-maps.yandex.{tld}/suggest-geo",
+    MAP_URL: "https://maps.yandex.{tld}/",
+    defaultHomeUrl: "https://maps.yandex.{tld}/?l=map%2Ctrf&trfm=cur",
     SUGGEST_LANGS: [
         "ru",
         "uk",
@@ -637,7 +740,6 @@ define("slice/logic/config", {
     linkParam: "elmt=traffic",
     branding: {
         tb: {
-            EXPORT_URL: "http://export.yandex.{tld}/bar/reginfo.xml",
             SUGGEST_LANGS: [
                 "tr",
                 "en"
@@ -646,11 +748,10 @@ define("slice/logic/config", {
                 "tr",
                 "en"
             ],
-            MAP_URL: "http://harita.yandex.com.tr/",
-            defaultHomeUrl: "http://harita.yandex.com.tr/?l=map%2Ctrf&trfm=cur"
+            MAP_URL: "https://harita.yandex.com.tr/",
+            defaultHomeUrl: "https://harita.yandex.com.tr/?l=map%2Ctrf&trfm=cur"
         },
         ua: {
-            EXPORT_URL: "http://export.yandex.{tld}/bar/reginfo.xml",
             SUGGEST_LANGS: ["uk"],
             API_LANGS: ["uk"]
         }
@@ -661,11 +762,13 @@ define("slice/adapter/main", [
     "browser-adapter",
     "api/manager",
     "api/branding",
+    "api/stat",
     "slice/locale",
     "slice/logic/config"
-], function (adapter, manager, branding, localesMap, config) {
+], function (adapter, manager, branding, stat, localesMap, config) {
     manager.onReady(function () {
         branding.brandingObject(config);
+        stat.setStatName(config.statName);
         if (localesMap && localesMap.ru !== undefined) {
             var locales = localesMap[adapter.getLang()] || localesMap.ru;
             adapter.getString = function (key, params) {
@@ -688,6 +791,151 @@ define("slice/adapter/main", [
         }
     });
 });
+define("api/dom", [], function () {
+    function escapeStringForRegexp(str) {
+        return String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
+    }
+    function createRx(className) {
+        return new RegExp("(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$)");
+    }
+    function getEventData(e, self) {
+        var node = e.target || e.srcElement;
+        var data = {
+            self: self,
+            target: node,
+            event: e
+        };
+        while (node) {
+            if (!data.parent && node.getAttribute("data-cmd-parent")) {
+                data.parent = node;
+            }
+            data.param = data.param || node.getAttribute("data-cmd-param") || "";
+            data.command = data.command || node.getAttribute("data-command") || "";
+            if (node == self) {
+                break;
+            }
+            node = node.parentNode;
+        }
+        return data;
+    }
+    return {
+        getClickHandler: function (self) {
+            return function (e) {
+                e = e || window.event;
+                var eventInfo = getEventData(e, this);
+                if (!self.commands || !eventInfo.command || !self.commands[eventInfo.command]) {
+                    return;
+                }
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                } else {
+                    e.cancelBubble = true;
+                }
+                return self.commands[eventInfo.command].call(self, eventInfo);
+            };
+        },
+        addClass: function (elem, className) {
+            if (!elem || !className) {
+                return;
+            }
+            if (elem.classList) {
+                elem.classList.add(className);
+                return;
+            }
+            var rx = new RegExp("^(?!.*(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$))");
+            elem.className = elem.className.replace(rx, className + " ").trim();
+        },
+        removeClass: function (elem, className) {
+            if (!elem || !className) {
+                return;
+            }
+            if (elem.classList) {
+                elem.classList.remove(className);
+                return;
+            }
+            var rx = createRx(className);
+            elem.className = elem.className.replace(rx, " ").trim();
+        },
+        toggleClass: function (elem, className) {
+            if (!elem || !className) {
+                return false;
+            }
+            if (elem.classList) {
+                return elem.classList.toggle(className);
+            }
+            if (this.hasClass(elem, className)) {
+                this.removeClass(elem, className);
+            } else {
+                this.addClass(elem, className);
+            }
+        },
+        hasClass: function (elem, className) {
+            if (!elem || !className) {
+                return false;
+            }
+            if (elem.classList) {
+                return elem.classList.contains(className);
+            }
+            var rx = createRx(className);
+            return rx.test(elem.className);
+        },
+        dragNDropCore: function (prm) {
+            var dragInfo = null;
+            function onMM(e) {
+                if (!dragInfo) {
+                    return;
+                }
+                dragInfo.oldX = dragInfo.pageX;
+                dragInfo.oldY = dragInfo.pageY;
+                dragInfo.pageX = e.pageX;
+                dragInfo.pageY = e.pageY;
+                prm.onmove.call(prm.ctx, dragInfo, e);
+                return false;
+            }
+            function onMU(e) {
+                if (!dragInfo) {
+                    return;
+                }
+                document.removeEventListener("mousemove", onMM, false);
+                document.removeEventListener("mouseup", onMU, false);
+                if (prm.onstop) {
+                    prm.onstop.call(prm.ctx, dragInfo, e);
+                }
+                dragInfo = null;
+                return false;
+            }
+            function onMD(e) {
+                onMU();
+                dragInfo = {
+                    elem: this,
+                    target: e.target,
+                    startX: e.pageX,
+                    startY: e.pageY,
+                    pageX: e.pageX,
+                    pageY: e.pageY
+                };
+                if (prm.start) {
+                    if (prm.start.call(prm.ctx, dragInfo, e) === false) {
+                        dragInfo = null;
+                        return;
+                    }
+                }
+                document.addEventListener("mousemove", onMM, false);
+                document.addEventListener("mouseup", onMU, false);
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            }
+            if (prm.elems.tagName) {
+                prm.elems.addEventListener("mousedown", onMD, false);
+            } else {
+                for (var i = 0; i < prm.elems.length; ++i) {
+                    prm.elems[i].addEventListener("mousedown", onMD, false);
+                }
+            }
+        }
+    };
+});
 define("api/utils", ["browser-adapter"], function (adapter) {
     var utils = {
         copy: function (src, dest) {
@@ -704,6 +952,9 @@ define("api/utils", ["browser-adapter"], function (adapter) {
         emptyFunc: function () {
         },
         navigate: function (url, event) {
+            if (!url) {
+                return;
+            }
             var target = event && event.shiftKey ? "new window" : "new tab";
             if (event) {
                 if (event.preventDefault) {
@@ -776,26 +1027,24 @@ define("api/http", [
         return buffer.join("&");
     }
     function createRequest(obj) {
-        var txt = null;
         var xhr = adapter.createXHR();
         var mpBoundary = obj.multipart ? "-----8a7gadg1ahSDCV" + Date.now() : null;
         var url = obj.url;
-        var params = obj.params;
-        if (params) {
-            if (typeof params === "object") {
-                params = makeParamStr(params, mpBoundary ? "--" + mpBoundary : null);
-            }
-            if (obj.method !== "POST" && params) {
-                url += (url.indexOf("?") === -1 ? "?" : "&") + params;
-            } else {
-                txt = params;
-            }
-        }
+        var txt = null;
+        var query = makeParamStr(obj.query);
+        var params = makeParamStr(obj.params, mpBoundary ? "--" + mpBoundary : null);
         if (obj.data) {
-            if (txt) {
-                url += (url.indexOf("?") === -1 ? "?" : "&") + txt;
-            }
-            txt = obj.data;
+            query = query || params;
+            params = "";
+        }
+        if (obj.method === "POST") {
+            txt = obj.data || params || "";
+        } else {
+            txt = obj.data || null;
+            query = query || params;
+        }
+        if (query) {
+            url += (url.indexOf("?") === -1 ? "?" : "&") + query;
         }
         xhr.open(obj.method, url, !obj.sync);
         if (obj.overrideMimeType && xhr.overrideMimeType) {
@@ -926,11 +1175,16 @@ define("api/http", [
         GET: function (obj) {
             obj.method = "GET";
             if (obj.noCache) {
-                obj.params = obj.params || {};
-                if (typeof obj.params == "string") {
-                    obj.params = obj.params + "&_randomparameter=" + Date.now();
+                var query = obj.query || obj.params || {};
+                if (typeof query == "string") {
+                    query = query + "&_randomparameter=" + Date.now();
                 } else {
-                    obj.params._randomparameter = Date.now();
+                    query._randomparameter = Date.now();
+                }
+                if (obj.params) {
+                    obj.params = query;
+                } else {
+                    obj.query = query;
                 }
             }
             return ajax(obj);
@@ -946,205 +1200,6 @@ define("api/http", [
         PUT: function (obj) {
             obj.method = "PUT";
             return ajax(obj);
-        }
-    };
-});
-define("api/stat", ["browser-adapter"], function (adapter) {
-    function log(str) {
-        adapter.log("[api/stat]: " + str);
-    }
-    var stat = {
-        log: function (params) {
-            var dtype = params.dtype;
-            var pid = params.pid;
-            var cid = params.cid;
-            var path = params.path;
-            if (typeof dtype === "undefined") {
-                dtype = "stred";
-            }
-            if (typeof pid === "undefined") {
-                pid = 12;
-            }
-            if (typeof dtype === "string") {
-                if (!dtype) {
-                    throw new RangeError("dtype is empty string");
-                }
-            } else {
-                throw new TypeError("Invalid dtype type ('" + typeof dtype + "')");
-            }
-            if (typeof pid === "number") {
-                if (pid < 0) {
-                    throw new RangeError("Invalid pid value (" + pid + ")");
-                }
-            } else {
-                throw new TypeError("Wrong pid type ('" + typeof pid + "'). Number required.");
-            }
-            if (typeof cid === "number") {
-                if (cid <= 0) {
-                    throw new RangeError("Invalid cid value (" + cid + ")");
-                }
-            } else {
-                throw new TypeError("Wrong cid type ('" + typeof cid + "'). Number required.");
-            }
-            var browserPathPrefix = adapter.browser + ".";
-            if (path.indexOf(browserPathPrefix) !== 0) {
-                path = browserPathPrefix + path;
-            }
-            var prodInfo = adapter.getProductInfo();
-            if (prodInfo && prodInfo.version) {
-                path = path.replace("{version}", prodInfo.version.replace(/\./g, "-"));
-            } else {
-                path = path.replace(/\.{version}\.*/, ".");
-            }
-            var url = "http://clck.yandex.ru/click" + "/dtype=" + encodeURIComponent(dtype) + "/pid=" + pid + "/cid=" + cid + "/path=" + encodeURIComponent(path);
-            var extraString = "";
-            var processedKeys = [
-                "dtype",
-                "pid",
-                "cid",
-                "path"
-            ];
-            for (var key in params) {
-                if (!params.hasOwnProperty(key)) {
-                    continue;
-                }
-                if (processedKeys.indexOf(key) !== -1) {
-                    continue;
-                }
-                var value = params[key];
-                if (key === "*") {
-                    extraString = value;
-                    continue;
-                }
-                url += "/" + key + "=" + encodeURIComponent(value);
-            }
-            url += "/*" + extraString;
-            var xhr = adapter.createXHR();
-            xhr.open("GET", url, true);
-            xhr.send();
-        },
-        logWidget: function (path) {
-            this.log({
-                cid: 72359,
-                path: path
-            });
-        },
-        logNotification: function (path) {
-            this.log({
-                cid: 72358,
-                path: path
-            });
-        }
-    };
-    return stat;
-});
-define("api/dom", [], function () {
-    function escapeStringForRegexp(str) {
-        return String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
-    }
-    function createRx(className) {
-        return new RegExp("(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$)");
-    }
-    return {
-        addClass: function (elem, className) {
-            if (!elem || !className) {
-                return;
-            }
-            if (elem.classList) {
-                elem.classList.add(className);
-                return;
-            }
-            var rx = new RegExp("^(?!.*(^|\\s)" + escapeStringForRegexp(className) + "(\\s|$))");
-            elem.className = elem.className.replace(rx, className + " ").trim();
-        },
-        removeClass: function (elem, className) {
-            if (!elem || !className) {
-                return;
-            }
-            if (elem.classList) {
-                elem.classList.remove(className);
-                return;
-            }
-            var rx = createRx(className);
-            elem.className = elem.className.replace(rx, " ").trim();
-        },
-        toggleClass: function (elem, className) {
-            if (!elem || !className) {
-                return false;
-            }
-            if (elem.classList) {
-                return elem.classList.toggle(className);
-            }
-            if (this.hasClass(elem, className)) {
-                this.removeClass(elem, className);
-            } else {
-                this.addClass(elem, className);
-            }
-        },
-        hasClass: function (elem, className) {
-            if (!elem || !className) {
-                return false;
-            }
-            if (elem.classList) {
-                return elem.classList.contains(className);
-            }
-            var rx = createRx(className);
-            return rx.test(elem.className);
-        },
-        dragNDropCore: function (prm) {
-            var dragInfo = null;
-            function onMM(e) {
-                if (!dragInfo) {
-                    return;
-                }
-                dragInfo.oldX = dragInfo.pageX;
-                dragInfo.oldY = dragInfo.pageY;
-                dragInfo.pageX = e.pageX;
-                dragInfo.pageY = e.pageY;
-                prm.onmove.call(prm.ctx, dragInfo, e);
-                return false;
-            }
-            function onMU(e) {
-                if (!dragInfo) {
-                    return;
-                }
-                document.removeEventListener("mousemove", onMM, false);
-                document.removeEventListener("mouseup", onMU, false);
-                if (prm.onstop) {
-                    prm.onstop.call(prm.ctx, dragInfo, e);
-                }
-                dragInfo = null;
-                return false;
-            }
-            function onMD(e) {
-                onMU();
-                dragInfo = {
-                    elem: this,
-                    target: e.target,
-                    startX: e.pageX,
-                    startY: e.pageY,
-                    pageX: e.pageX,
-                    pageY: e.pageY
-                };
-                if (prm.start) {
-                    if (prm.start.call(prm.ctx, dragInfo, e) === false) {
-                        dragInfo = null;
-                        return;
-                    }
-                }
-                document.addEventListener("mousemove", onMM, false);
-                document.addEventListener("mouseup", onMU, false);
-                e.stopPropagation();
-                e.preventDefault();
-                return false;
-            }
-            if (prm.elems.tagName) {
-                prm.elems.addEventListener("mousedown", onMD, false);
-            } else {
-                for (var i = 0; i < prm.elems.length; ++i) {
-                    prm.elems[i].addEventListener("mousedown", onMD, false);
-                }
-            }
         }
     };
 });

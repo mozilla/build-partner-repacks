@@ -10,7 +10,8 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const {RESULT_SUCCESS, RESULT_NOMATCH} = Ci.nsIAutoCompleteResult;
 const {MATCH_ANYWHERE, MATCH_BOUNDARY_ANYWHERE} = Ci.mozIPlacesAutoComplete;
-const SEARCH_BEHAVIOR = Ci.mozIPlacesAutoComplete.BEHAVIOR_RESTRICT ? Ci.mozIPlacesAutoComplete.BEHAVIOR_HISTORY | Ci.mozIPlacesAutoComplete.BEHAVIOR_BOOKMARK | Ci.mozIPlacesAutoComplete.BEHAVIOR_TITLE | Ci.mozIPlacesAutoComplete.BEHAVIOR_URL | Ci.mozIPlacesAutoComplete.BEHAVIOR_TYPED : 0;
+const SEARCH_BEHAVIOR_URL = Ci.mozIPlacesAutoComplete.BEHAVIOR_HISTORY | Ci.mozIPlacesAutoComplete.BEHAVIOR_BOOKMARK | Ci.mozIPlacesAutoComplete.BEHAVIOR_URL;
+const SEARCH_BEHAVIOR_TITLE = Ci.mozIPlacesAutoComplete.BEHAVIOR_HISTORY | Ci.mozIPlacesAutoComplete.BEHAVIOR_BOOKMARK | Ci.mozIPlacesAutoComplete.BEHAVIOR_TITLE;
 const FIRST_PACKET_TIMEOUT = 500;
 const PACKET_TIMEOUT = 300;
 const RESULTS_LIMIT_NUMBER = 50;
@@ -103,7 +104,7 @@ let placesWrapper = {
         }
         return this.__databaseWrapper;
     },
-    _SQL_QUERY: "SELECT h.id, h.url, h.title, " + "EXISTS(SELECT 1 FROM moz_bookmarks WHERE fk = h.id) AS bookmarked, " + "( " + "SELECT title FROM moz_bookmarks WHERE fk = h.id AND title NOTNULL " + "ORDER BY lastModified DESC LIMIT 1 " + ") AS bookmark_title " + "FROM moz_places h " + "WHERE h.frecency <> 0 " + "AND h.url NOT NULL " + "AND (" + "bookmarked " + "OR (h.last_visit_date >= :lastVisitDate)" + ") " + "AND AUTOCOMPLETE_MATCH(:searchString, h.url, " + "IFNULL(bookmark_title, h.title), NULL, " + "h.visit_count, h.typed, " + "bookmarked, NULL, " + ":matchBehavior, " + SEARCH_BEHAVIOR + ") " + "ORDER BY h.frecency DESC " + "LIMIT " + RESULTS_LIMIT_NUMBER,
+    _SQL_QUERY: "SELECT h.id, h.url, h.title, " + "EXISTS(SELECT 1 FROM moz_bookmarks WHERE fk = h.id) AS bookmarked, " + "( " + "SELECT title FROM moz_bookmarks WHERE fk = h.id AND title NOTNULL " + "ORDER BY lastModified DESC LIMIT 1 " + ") AS bookmark_title " + "FROM moz_places h " + "WHERE h.frecency <> 0 " + "AND h.url NOT NULL " + "AND (" + "bookmarked " + "OR (h.last_visit_date >= :lastVisitDate)" + ") " + (Ci.mozIPlacesAutoComplete.BEHAVIOR_RESTRICT ? "AND (" + "AUTOCOMPLETE_MATCH(:searchString, h.url, " + "NULL, NULL, " + "h.visit_count, h.typed, " + "bookmarked, NULL, " + ":matchBehavior, " + SEARCH_BEHAVIOR_URL + ") " + "OR " + "AUTOCOMPLETE_MATCH(:searchString, NULL, " + "IFNULL(bookmark_title, h.title), NULL, " + "h.visit_count, h.typed, " + "bookmarked, NULL, " + ":matchBehavior, " + SEARCH_BEHAVIOR_TITLE + ")" + ") " : "AND AUTOCOMPLETE_MATCH(:searchString, h.url, " + "IFNULL(bookmark_title, h.title), NULL, " + "h.visit_count, h.typed, " + "bookmarked, NULL, " + ":matchBehavior, 0) ") + "ORDER BY h.frecency DESC " + "LIMIT " + RESULTS_LIMIT_NUMBER,
     _SQL_QUERY_INDEX: "CREATE INDEX IF NOT EXISTS moz_places_yandex_omnibox " + "ON moz_places (frecency, last_visit_date, url, title, visit_count, typed)"
 };
 var DataProvider = {
@@ -216,25 +217,16 @@ var DataProvider = {
         }, timeout, Ci.nsITimer.TYPE_ONE_SHOT);
     },
     _getStyleForBookmark: function PlacesDataProvider__getStyleForBookmark(url, originalSearchString) {
-        try {
-            let uri = this.URLEngine.getURIFromString(url);
-            let keyword = this._BookmarksService.getKeywordForURI(uri);
-            return keyword.indexOf(originalSearchString) === 0 ? "keyword" : "bookmark";
-        } catch (e) {
-        }
         return "bookmark";
     },
     _processSearchResult: function PlacesDataProvider__processSearchResult(searchResult) {
         let originalSearchString = searchResult.searchString;
         let originalSearchStringLowerCase = originalSearchString.toLowerCase();
         let urlsHash = Object.create(null);
-        this._suggestions.forEach(function (s) {
-            urlsHash[s.value] = true;
-        });
+        this._suggestions.forEach(s => urlsHash[s.value] = true);
         let titles = [];
         let styles = [];
         let images = [];
-        let suggestions = [];
         searchResult.results.forEach(function (result) {
             let title = result.title;
             if (title === "404") {
@@ -253,7 +245,7 @@ var DataProvider = {
                 case "bookmark":
                     style = this._getStyleForBookmark(url, originalSearchString);
                 case "keyword":
-                    suggestions[urlsHash[url]].style += " " + style;
+                    this._suggestions[urlsHash[url]].style += " " + style;
                     break;
                 default:
                     break;
@@ -290,7 +282,7 @@ var DataProvider = {
             titles.push(title);
             styles.push(style);
             images.push("");
-            urlsHash[url] = suggestions.length;
+            urlsHash[url] = this._suggestions.length;
             let httpSchemeRE = /^(https?:\/\/)/;
             if (!searchTextFromURL && !httpSchemeRE.test(url) && httpSchemeRE.test(result.url)) {
                 url = RegExp.$1 + url;
@@ -305,9 +297,8 @@ var DataProvider = {
                     value: url
                 }
             };
-            suggestions.push(suggestion);
+            this._suggestions.push(suggestion);
         }, this);
-        this._suggestions = this._suggestions.concat(suggestions);
     },
     onSearchResult: function PlacesDataProvider_onSearchResult(searchResult) {
         if (!this._suggestions) {

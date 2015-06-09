@@ -3,25 +3,25 @@
         {
             "id": "yandex",
             "name": "Яндекс",
-            "query": "http://yandex.ua/yandsearch?clid=1917066-1001&text={searchTerms}",
+            "query": "http://yandex.ua/search/?clid=1917066-1001&text={searchTerms}",
             "action": 1
         },
         {
             "id": "google",
             "name": "Google",
-            "query": "http://www.google.ru/search?hl=ru&q={searchTerms}",
+            "query": "http://www.google.ru/search/?hl=ru&q={searchTerms}",
             "action": 2
         },
         {
             "id": "mail",
             "name": "Mail.ru",
-            "query": "http://go.mail.ru/search?q={searchTerms}&utf8in=1",
+            "query": "http://go.mail.ru/search/?q={searchTerms}&utf8in=1",
             "action": 3
         },
         {
             "id": "bing",
             "name": "Bing",
-            "query": "http://www.bing.com/search?q={searchTerms}",
+            "query": "http://www.bing.com/search/?q={searchTerms}",
             "action": 6
         }
     ]

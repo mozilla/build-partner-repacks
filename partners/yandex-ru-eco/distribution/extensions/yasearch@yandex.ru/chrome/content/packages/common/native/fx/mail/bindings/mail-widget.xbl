@@ -5,6 +5,7 @@
 <!ENTITY % auth SYSTEM "/native/fx/login.dtd">
 %auth;
 ]>
+
 <bindings xmlns="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
     <binding extends="../../bindings/buttons.xbl#ycounter-widget" id="widget">
@@ -59,7 +60,7 @@
                 <parameter name="fromPicker"/>
                 <parameter name="aEvent"/>
                 <body><![CDATA[    let sender = fromPicker ? "menu" : "button";
-    if (!this.authManager.authorized) {
+    if (!this.authManager.isAuthorized()) {
         this._goToService(aEvent, sender);
         return;
     }

@@ -23,6 +23,9 @@
         get navigatorMajorVersion() {
             return parseInt(app.core.Lib.sysutils.platformInfo.browser.version, 10);
         },
+        get locale() {
+            return app.locale.language;
+        },
         getLocalizedString: function VBDOMObject_getLocalizedString(key) {
             typesCheck(arguments, ["string"]);
             return app.fastdial.getLocalizedString(key);
@@ -37,11 +40,11 @@
         },
         pinThumb: function VBDOMObject_pinThumb(index) {
             typesCheck(arguments, ["number"]);
-            app.thumbs.changePinnedState(index, true);
+            app.thumbs.changePinState(index, true);
         },
         unpinThumb: function VBDOMObject_unpinThumb(index) {
             typesCheck(arguments, ["number"]);
-            app.thumbs.changePinnedState(index, false);
+            app.thumbs.changePinState(index, false);
         },
         requestAppsList: function VBDOMObject_requestAppsList(callback) {
         },
@@ -73,33 +76,40 @@
             typesCheck(arguments, ["string"]);
             app.thumbsSuggest.requestThumbData(url);
         },
-        applySettings: function VBDOMObject_applySettings(layout, showBookmarks, showSearchForm, showAdvertisement, thumbStyle) {
+        applySettings: function VBDOMObject_applySettings(showBookmarks, showSearchForm, showAdvertisement, thumbStyle) {
             typesCheck(arguments, [
-                "string",
                 "boolean",
                 "boolean",
                 "boolean",
                 "number"
             ]);
-            return app.fastdial.applySettings(layout, showBookmarks, showSearchForm, showAdvertisement, thumbStyle);
+            return app.fastdial.applySettings(showBookmarks, showSearchForm, showAdvertisement, thumbStyle);
+        },
+        setThumbsCount: function VBDOMObject_setThumbsCount(thumbsCount) {
+            typesCheck(arguments, ["number"]);
+            return app.fastdial.setThumbsCount(thumbsCount);
+        },
+        restoreThumbs: function VBDOMObject_restoreThumbs(thumbs) {
+            typesCheck(arguments, ["object"]);
+            return app.fastdial.restoreThumbs(thumbs);
         },
         setSendStatistics: function VBDOMObject_setSendStatistics(sendStat, isModalChoice) {
             typesCheck(arguments, [
                 "boolean",
                 "boolean"
             ]);
-            app.preferences.set("stat.usage.send", sendStat);
+            app.statistics.sendUsageStat = sendStat;
         },
         saveThumb: function VBDOMObject_saveThumb(index, data) {
             typesCheck(arguments, [
                 "number",
                 "object"
             ]);
-            app.thumbs.save(index, data);
+            app.thumbs.saveThumb(index, data);
         },
         removeThumb: function VBDOMObject_removeThumb(index) {
             typesCheck(arguments, ["number"]);
-            app.thumbs.remove(index);
+            app.thumbs.remove(index, { addToBlacklist: true });
         },
         swapThumbs: function VBDOMObject_swapThumb(oldIndex, newIndex) {
             typesCheck(arguments, [
@@ -162,9 +172,12 @@
             typesCheck(arguments, ["string"]);
             app.fastdial.sendClickerRequest(param);
         },
-        onContextmenu: function VBDOMObject_onContextmenu(thumbId) {
-            typesCheck(arguments, ["number"]);
-            app.thumbs.onContextmenu(thumbId);
+        onContextmenu: function VBDOMObject_onContextmenu(thumbId, state) {
+            typesCheck(arguments, [
+                "number",
+                "number"
+            ]);
+            app.thumbs.onContextmenu(thumbId, state);
         },
         onLinkClicked: function VBDOMObject_onLinkClicked() {
         },
@@ -221,8 +234,9 @@
                 typesCheck(arguments, ["number"]);
                 app.advertisement.refuse(timeout);
             },
-            hide: function VBDOMObject_advertisement_hide() {
-                app.advertisement.hideActiveAd();
+            hide: function VBDOMObject_advertisement_hide(timeout) {
+                typesCheck(arguments, ["number"]);
+                app.advertisement.hideActiveAd(timeout);
             },
             getLocalizedString: function VBDOMObject_advertisement_getLocalizedString(str, callback) {
                 typesCheck(arguments, [
@@ -246,6 +260,12 @@
             stat: function VBDOMObject_advertisement_stat(param) {
                 typesCheck(arguments, ["string"]);
                 app.advertisement.sendClickerRequest(param);
+            },
+            setYandexAsCurrentSearchEngine: function VBDOMObject_advertisement_setYandexAsCurrentSearchEngine() {
+                app.searchOffer.setYandexAsCurrentSearchEngine();
+            },
+            setYandexAsHomePage: function VBDOMObject_advertisement_setYandexAsHomePage() {
+                app.searchOffer.setYandexAsHomePage();
             }
         },
         onRequest: {
@@ -262,13 +282,10 @@
         },
         debug: {
             pickupThumbs: function VBDOMObject_Debug_pickupThumbs(options) {
-                app.thumbs.pickupThumbs(options);
+                app.pickup.run(options);
             },
-            getFrontendStructure: function VBDOMObject_Debug_getFrontendStructure() {
-                return app.frontendHelper.fullStructure;
-            },
-            getInternalStructure: function VBDOMObject_Debug_getInternalStructure() {
-                return app.internalStructure.fullStructure;
+            get thumbs() {
+                return app.internalStructure.fullDebugStructure;
             }
         }
     };

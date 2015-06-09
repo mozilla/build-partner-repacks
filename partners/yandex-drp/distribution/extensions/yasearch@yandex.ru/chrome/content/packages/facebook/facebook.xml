@@ -1,36 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE widget SYSTEM "facebook/entities.dtd"><widget bar-api="native" xmlns:f="http://bar.yandex.ru/dev/functional" icon="facebook/content/img/facebook.png" icon-vector="facebook/content/img/facebook.svg" name="&facebook.widget.name;" xmlns:ui="http://bar.yandex.ru/dev/gui" unique="true">
 
-    <f:setting default="false" name="show-friends-button" scope="widget">
-        <control label="&facebook.settings.friend;" type="checkbox"/>
-    </f:setting>
-
-    <f:setting default="false" name="show-messages-button" scope="widget">
-        <control label="&facebook.settings.messages;" type="checkbox"/>
-    </f:setting>
-
-    <f:setting default="false" name="show-notifications-button" scope="widget">
-        <control label="&facebook.settings.notifications;" type="checkbox"/>
-    </f:setting>
-
-    <f:setting default="false" name="show-share-button" scope="widget">
-        <control label="&facebook.settings.share;" type="checkbox"/>
-    </f:setting>
-
-    <f:setting default="true" name="show-notifications" scope="widget">
-        <ui:control fx-value-type="boolean" type="custom"/>
-    </f:setting>
-
-    <f:setting default="true" name="show-notif-messages" scope="widget">
-        <ui:control fx-value-type="boolean" type="custom"/>
-    </f:setting>
-    <f:setting default="true" name="show-notif-friends" scope="widget">
-        <ui:control fx-value-type="boolean" type="custom"/>
-    </f:setting>
-    <f:setting default="true" name="show-notif-notifications" scope="widget">
-        <ui:control fx-value-type="boolean" type="custom"/>
-    </f:setting>
-
     <modules>
         <module browser="firefox" file="facebook/core/widget.jsm"/>
     </modules>

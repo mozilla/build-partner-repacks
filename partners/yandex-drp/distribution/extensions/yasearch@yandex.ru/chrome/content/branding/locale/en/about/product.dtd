@@ -26,11 +26,11 @@
 <!ENTITY product.note.fx "for Firefox">
 <!ENTITY product.note.ie "for Internet Explorer">
 <!ENTITY product.homepage "https://element.yandex.ru">
-<!ENTITY product.copyright "© 2012—2014 YANDEX">
+<!ENTITY product.copyright "© 2012—2015 YANDEX">
 <!ENTITY product.copyright.ie "&product.copyright;">
-<!ENTITY product.copyright.fx "© 2012—2014 YANDEX">
+<!ENTITY product.copyright.fx "© 2012—2015 YANDEX">
 <!ENTITY product.license.url.ie "http://legal.yandex.ru/desktop_software_agreement/?lang=en">
 <!ENTITY product.license.url.fx "http://legal.yandex.ru/desktop_software_agreement/?lang=en">
-<!ENTITY product.help.url.ie "http://help.yandex.com/element">
+<!ENTITY product.help.url.ie "https://help.yandex.com/element">
 
 <!ENTITY product.welcomepage "https://element.yandex.ru/welcome/">

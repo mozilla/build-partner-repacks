@@ -49,7 +49,7 @@
         if (this.api.Package.info && this.api.Package.info.version) {
             version = this.api.Package.info.version;
         }
-        version = version.replace(".", "-", "g");
+        version = version.replace(/\./g, "-");
     }]]></field>
 
             <property name="currentBrowser" onget="return gBrowser.mCurrentBrowser;" readonly="true"/>

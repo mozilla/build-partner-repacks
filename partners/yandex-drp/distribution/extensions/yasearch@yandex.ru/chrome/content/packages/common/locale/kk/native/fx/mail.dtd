@@ -28,3 +28,4 @@
 <!ENTITY mail.alert.sound.select.label "Таңдау">
 <!ENTITY mail.alert.sound.preview.label "Тыңдау">
 <!ENTITY mail.openServiceOnClick.label "Батырманы басу кезінде сервис бетін ашу">
+<!ENTITY mail.settings.allAccountsCounter.label "Авторизациядан өткен барлық аккаунттарға арналған хат есептеуішін көрсету">

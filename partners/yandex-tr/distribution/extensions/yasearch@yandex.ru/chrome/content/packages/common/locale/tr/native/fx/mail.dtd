@@ -27,3 +27,4 @@
 <!ENTITY mail.alert.sound.select.label "Seç ">
 <!ENTITY mail.alert.sound.preview.label "Dinle ">
 <!ENTITY mail.openServiceOnClick.label "Butonuna tıklandığında servis sayfasını aç">
+<!ENTITY mail.settings.allAccountsCounter.label "Girişin yapıldığı tüm hesaplar için e-posta sayacını göster">

@@ -1,22 +1,8 @@
 @namespace xul url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);button{-moz-appearance:none!important;margin:0 1px 0 0!important;padding:0!important;border:0!important;width:17px;-moz-box-orient:vertical;-moz-user-focus:none}
-button>.top{height:10px}
-button>.middle{-moz-box-flex:1;-moz-box-align:center;-moz-box-pack:center}
-button>.bottom{height:10px}
-toolbox[cb-barless=true] toolbar button image{list-style-image:url(images/down.svg)}
-toolbox[cb-barless=true][cb-theme-color=dark] toolbar button image{list-style-image:url(images/down-inverted.svg)}
-toolbox[cb-barless=true] toolbar button[animated=true] image{list-style-image:url(images/down.animated.svg)}
-button[cb-collapsed-state=false] image,toolbar[xb-toolbar-multiline] button image{list-style-image:url(images/up.png)}
-toolbox[cb-barless=true] button[cb-collapsed-state=false] image,toolbox[cb-barless=true] toolbar[xb-toolbar-multiline] button image{list-style-image:url(images/up.svg)}
-toolbox[cb-barless=true][cb-theme-color=dark] button[cb-collapsed-state=false] image,toolbox[cb-barless=true][cb-theme-color=dark] toolbar[xb-toolbar-multiline] button image{list-style-image:url(images/up-inverted.svg)}
-toolbox[cb-barless=true] toolbar button>.top,toolbox[cb-barless=true] toolbar button>.bottom{display:none}
-toolbox:not([cb-barless=true]) toolbar button image{list-style-image:url(images/down.png);width:5px;height:8px;margin:-10px 0!important}
-toolbox:not([cb-barless=true]) toolbar button>.top{background:url(images/normal/top.png)}
-toolbox:not([cb-barless=true]) toolbar button>.middle{background:url(images/normal/middle.png)}
-toolbox:not([cb-barless=true]) toolbar button>.bottom{background:url(images/normal/bottom.png)}
-toolbox:not([cb-barless=true]) toolbar button:hover>.top{background:url(images/hover/top.png)}
-toolbox:not([cb-barless=true]) toolbar button:hover>.middle{background:url(images/hover/middle.png)}
-toolbox:not([cb-barless=true]) toolbar button:hover>.bottom{background:url(images/hover/bottom.png)}
-toolbox:not([cb-barless=true]) toolbar button:active>.top{background:url(images/active/top.png)}
-toolbox:not([cb-barless=true]) toolbar button:active>.middle{background:url(images/active/middle.png)}
-toolbox:not([cb-barless=true]) toolbar button:active>.bottom{background:url(images/active/bottom.png)}
+button>box{-moz-box-flex:1;-moz-box-align:center;-moz-box-pack:center}
+toolbar button image{list-style-image:url(images/down.svg)}
+toolbox[cb-theme-color=dark] toolbar button image{list-style-image:url(images/down-inverted.svg)}
+button[cb-collapsed-state=false] image{list-style-image:url(images/up.png)}
+button[cb-collapsed-state=false] image{list-style-image:url(images/up.svg)}
+toolbox[cb-theme-color=dark] button[cb-collapsed-state=false] image{list-style-image:url(images/up-inverted.svg)}
 toolbox[customizing=true] toolbar button{display:none!important}

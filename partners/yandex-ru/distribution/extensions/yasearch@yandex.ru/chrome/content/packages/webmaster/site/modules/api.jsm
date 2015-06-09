@@ -11,22 +11,22 @@ var module = function (app, common) {
         get app() {
             return this._app;
         },
-        init: function site_site_init(application) {
+        init: function (application) {
             this._app = application;
             exportMgr = app.commonModule("export");
             exportMgr.init(_handlers);
         },
-        finalize: function site_site_finalize() {
+        finalize: function () {
             this._app = null;
             exportMgr = null;
         },
-        _createURLforWIID: function site_site__createURLforWIID(aWIID, type) {
+        _createURLforWIID: function (aWIID, type) {
             if (type == "metrika") {
                 return METRIKA_URL + "?id=" + (this._Helper.getMetrikaID(aWIID) || "");
             }
             return WEBMASTER_URL + "?host=" + (this._Helper.getMasterID(aWIID) || "");
         },
-        _onSuccess: function site_site__onSuccess(aWIID, aAction, data) {
+        _onSuccess: function (aWIID, aAction, data) {
             if (data) {
                 if (data.master && data.master.siteInList) {
                     let masterIDSetting = "";
@@ -43,43 +43,43 @@ var module = function (app, common) {
             }
             this.app.onUpdate(aWIID);
         },
-        _onFail: function site_site__onFail(aWIID, action, data) {
+        _onFail: function (aWIID, action, data) {
             this.app.onUpdate(aWIID);
         },
-        configure: function site_site_configure(aName, aValue, aAction) {
+        configure: function (aName, aValue, aAction) {
             let configActionName = aAction || "_defaults";
             if (!this._config[configActionName]) {
                 this._config[configActionName] = Object.create(null);
             }
             this._config[configActionName][aName] = aValue;
         },
-        getConfigValue: function site_site_getConfigValue(aName, aValue, aAction) {
+        getConfigValue: function (aName, aValue, aAction) {
             let configActionName = aAction || "_defaults";
             return this._config[configActionName] && this._config[configActionName][aName];
         },
-        cleanData: function site_site_cleanData(aWIID) {
+        cleanData: function (aWIID) {
             exportMgr.cleanData(aWIID);
         },
-        getUpdateInterval: function site_site_getUpdateInterval(aWIID, force) {
+        getUpdateInterval: function (aWIID, force) {
             if (!this._updateIntervals[aWIID] || force) {
                 this._updateIntervals[aWIID] = parseInt(this.app.api.Settings.getValue("updateInterval", aWIID), 10) * 3600;
             }
             return this._updateIntervals[aWIID];
         },
-        getLastUpdateTime: function site_site_getLastUpdateTime(aWIID) {
+        getLastUpdateTime: function (aWIID) {
             return exportMgr.getLastUpdateTime(aWIID);
         },
-        getError: function site_site_getError(aWIID) {
+        getError: function (aWIID) {
             return exportMgr.getError(aWIID);
         },
-        getUserData: function site_site_getUserData(aWIID, aAction) {
+        getUserData: function (aWIID, aAction) {
             return exportMgr.getServerData(aWIID, aAction);
         },
-        update: function site_site_update(aWIID, force) {
+        update: function (aWIID, force) {
             exportMgr.update(aWIID, force);
         },
         _Helper: {
-            getMasterID: function site__Helper_getMasterID(aWIID) {
+            getMasterID: function (aWIID) {
                 let siteName = res.app.api.Settings.getValue("selectedSitenameSetting", aWIID);
                 try {
                     let siteID = null;
@@ -104,7 +104,7 @@ var module = function (app, common) {
                 }
                 return null;
             },
-            getMetrikaID: function site__Helper_getMetrikaID(aWIID) {
+            getMetrikaID: function (aWIID) {
                 let siteName = res.app.api.Settings.getValue("selectedSitenameSetting", aWIID);
                 try {
                     let siteID = null;
@@ -133,16 +133,16 @@ var module = function (app, common) {
     };
     let _handlers = Object.create(null);
     _handlers._defaults = {
-        cacheKeys: function site_site__handlers_main_cacheKeys() {
+        cacheKeys: function () {
             return { login: res.getConfigValue("user") };
         },
-        updateInterval: function site_site__handlers_main_updateInterval(aWIID) {
+        updateInterval: function (aWIID) {
             return res.getUpdateInterval(aWIID);
         },
-        expiryInterval: function site_site__handlers_main_expiryInterval(aWIID) {
+        expiryInterval: function (aWIID) {
             return res.getUpdateInterval(aWIID) + 2;
         },
-        errback: function site_site__handlers_main_errback(aXhr) {
+        errback: function (aXhr) {
             return { _error: true };
         },
         onSuccess: res._onSuccess.bind(res),
@@ -151,7 +151,7 @@ var module = function (app, common) {
     _handlers.main = [
         {
             url: "https://export.yandex.ru/bar/metrika.xml",
-            callback: function site_site__handlers_main_exportData_callback(aXhr, aWIID, aAction) {
+            callback: function (aXhr, aWIID, aAction) {
                 let data = {};
                 let result = {
                     metrika: data,
@@ -180,15 +180,15 @@ var module = function (app, common) {
                 data.exportData = hostsList;
                 return result;
             },
-            errback: function site_site__handlers_main_exportData_errback(aXhr) {
+            errback: function (aXhr) {
                 return { _exportError: true };
             },
-            onSuccess: function site_site__handlers_main_exportData_onSuccess() {
+            onSuccess: function () {
             }
         },
         {
             url: "http://api-metrika.yandex.ru/counters.json",
-            callback: function site_site__handlers_main_countersData_callback(aXhr, aWIID, aAction) {
+            callback: function (aXhr, aWIID, aAction) {
                 let data = {};
                 let result = {
                     counters: data,
@@ -207,18 +207,18 @@ var module = function (app, common) {
                 data.countersData = xhrData;
                 return result;
             },
-            errback: function site_site__handlers_main_countersData_errback(aXhr) {
+            errback: function (aXhr) {
                 return { _countersError: true };
             },
-            onSuccess: function site_site__handlers_main_countersData_onSuccess() {
+            onSuccess: function () {
             }
         },
         {
-            url: function site_site__handlers_main_1st_url(aWIID, aAction) {
+            url: function (aWIID, aAction) {
                 let url = res._createURLforWIID(aWIID);
                 return url;
             },
-            callback: function site_site__handlers_main_1st_callback(aXhr, aWIID, aAction) {
+            callback: function (aXhr, aWIID, aAction) {
                 let data = {};
                 let result = {
                     master: data,
@@ -254,7 +254,7 @@ var module = function (app, common) {
                     result._masterErrors = true;
                     return result;
                 }
-                let host = xhrData.querySelector("page > data > host[id=\"" + masterID + "\"]");
+                let host = xhrData.querySelector("page > data > host[id='" + masterID + "']");
                 if (!host) {
                     return result;
                 }
@@ -277,11 +277,11 @@ var module = function (app, common) {
             }
         },
         {
-            url: function site_site__handlers_main_2nd_url(aWIID, aAction) {
+            url: function (aWIID, aAction) {
                 let url = res._createURLforWIID(aWIID, "metrika");
                 return url;
             },
-            callback: function site_site__handlers_main_2nd_callback(aXhr, aWIID, aAction) {
+            callback: function (aXhr, aWIID, aAction) {
                 let data = {};
                 let result = {
                     metrikaSpec: data,

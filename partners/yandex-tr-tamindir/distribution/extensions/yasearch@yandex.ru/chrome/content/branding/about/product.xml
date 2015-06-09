@@ -1,36 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE Product SYSTEM "product.dtd"><Product>
     <BrandID>tb</BrandID>
-    
+
     <ProductName1 acc='&product.name.acc;' dat='&product.name.dat;' ex1='&product.name.nom;' ex2='&product.name.nom;' gen='&product.name.gen;' ins='&product.name.ins;' loc='&product.name.loc;' nom='&product.name.nom;' pre='&product.name.pre;'/>
-    
+
     <ProductName2 acc='&product.shortname.acc;' dat='&product.shortname.dat;' ex1='&product.shortname.nom;' ex2='&product.shortname.nom;' gen='&product.shortname.gen;' ins='&product.shortname.ins;' loc='&product.shortname.loc;' nom='&product.shortname.nom;' pre='&product.shortname.pre;'/>
-    
+
     <VendorName acc='&vendor.name.acc;' dat='&vendor.name.dat;' ex1='&vendor.name.nom;' ex2='&vendor.name.nom;' gen='&vendor.name.gen;' ins='&vendor.name.ins;' loc='&vendor.name.loc;' nom='&vendor.name.nom;' pre='&vendor.name.pre;'/>
-    
+
     <ProductDescription fx='&product.description;' ie='&product.description;'/>
     <NoteLine fx='&product.note.fx;' ie='&product.note.ie;'/>
     <HomePage action='3010'>&product.homepage;</HomePage>
     <Copyright fx='&product.copyright.fx;' ie='&product.copyright.ie;'>&product.copyright;</Copyright>
     <LicenseURL fx='&product.license.url.fx;' ie='&product.license.url.ie;'/>
-    <BrandingURL>http://download.yandex.ru/bar/wwt/branding/tb/branding.zip</BrandingURL>
+    <BrandingURL>https://download.yandex.ru/bar/wwt/branding/tb/branding.zip</BrandingURL>
     <SoftURL>http://soft.yandex.com.tr/?from=el_sett</SoftURL>
 
     <YandexFeatures geolocation='false' homepage-protection='false' mailto-integration='false' praetorian='false' url-corrector='false' visual-bookmarks='true'/>
-    
+
     <Help>
-        <IE action='3000'>http://yardim.yandex.com.tr/element/</IE>
-        <FX action='3000'>http://yardim.yandex.com.tr/element/</FX>
+        <IE action='3000'>https://yardim.yandex.com.tr/element/</IE>
+        <FX action='3000'>https://yardim.yandex.com.tr/element/</FX>
     </Help>
-    
+
     <Barless enabled='true'/>
-    
+
     <Languages>ru, en, tr</Languages>
-    
+
     <Setup>
         <License checked='false' display='false'/>
         <HomePage checked='false' display='false'/>
         <DefaultSearch checked='false' display='false'/>
-        <UsageStat checked='false' display='false' multipack='true'/>
     </Setup>
 </Product>

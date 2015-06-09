@@ -99,13 +99,13 @@
 <!ENTITY settings.lastVisited "Нещодавно відвідані">
 <!ENTITY settings.popularSites "Популярні">
 <!ENTITY newyear.18.12.2014.button "Вибрати ялинку">
-<!ENTITY newyear.18.12.2014.text "Іди, каже, і без ялинки не повертайся. А зате з ялинкою, каже, — повертайся!">
+<!ENTITY newyear.18.12.2014.text "Іди, каже, і без ялинки не повертайся. А&#x00A0;зате з ялинкою, каже, - повертайся!">
 <!ENTITY newyear.19.12.2014.button "Не відставайте!">
-<!ENTITY newyear.19.12.2014.text "У Діда Мороза вже повний мішок подарунків.">
+<!ENTITY newyear.19.12.2014.text "У&#x00A0;Діда&#x00A0;Мороза вже повний мішок подарунків.">
 <!ENTITY newyear.20.12.2014.button "Є ідеї">
 <!ENTITY newyear.20.12.2014.text "Як новий рік зустрінеш, так його і проведеш.">
 <!ENTITY newyear.21.12.2014.button "Вибрати костюм">
-<!ENTITY newyear.21.12.2014.text "Дід Мороз уже забрав із хімчистки свою синю шубу. А ви?">
+<!ENTITY newyear.21.12.2014.text "Дід Мороз вже забрав з хімчистки свою&#x00A0;червону&#x00A0;шубу. А&#x00A0;ви?">
 <!ENTITY newyear.22.12.2014.button "Зробити своїми руками">
 <!ENTITY newyear.22.12.2014.text "У вас під ялинкою вже є овечка?">
 <!ENTITY newyear.23.12.2014.button "Хочу щось новеньке">
@@ -125,7 +125,7 @@
 <!ENTITY newyear.30.12.2014.button "Вибрати">
 <!ENTITY newyear.30.12.2014.text "Що робити у ніч із 31 грудня на 4 січня?">
 <!ENTITY newyear.31.12.2014.button "Як ще загадати бажання">
-<!ENTITY newyear.31.12.2014.text "Написати бажання на серветці, спалити, висипати попіл у келих із шампанським і випити опівночі.">
+<!ENTITY newyear.31.12.2014.text "Написати бажання на серветці, спалити, висипати попіл&#x00A0;у&#x00A0;келих із&#x00A0;шампанським і&#x00A0;випити&#x00A0;опівночі.">
 <!ENTITY newyear.18.12.2014.header "До Нового року залишилося 14 днів">
 <!ENTITY newyear.19.12.2014.header "До Нового року залишилося 13 днів">
 <!ENTITY newyear.20.12.2014.header "До Нового года осталось 12 дней">
@@ -140,3 +140,13 @@
 <!ENTITY newyear.29.12.2014.header "До Нового року залишилося 3 дні">
 <!ENTITY newyear.30.12.2014.header "До Нового года осталось 2 дня">
 <!ENTITY newyear.31.12.2014.header "Новий рік уже сьогодні!">
+<!ENTITY advertisement.homepage.done "Яндекс встановлено стартовою сторінкою">
+<!ENTITY advertisement.homepage.setDefault "Зробити Яндекс [стартовою сторінкою]">
+<!ENTITY advertisement.search.done "Яндекс встановлено пошуком за замовчуванням">
+<!ENTITY advertisement.search.setDefault "Зробити Яндекс [пошуком за замовчуванням]">
+<!ENTITY footer.addThumb "Додати закладку">
+<!ENTITY advertisement.addThumb.text "Для додавання нової закладки натисніть сюди">
+<!ENTITY advertisement.backgrounds.done "Готово">
+<!ENTITY restorepopup.button "Скасувати">
+<!ENTITY restorepopup.tumb "Закладку видалено">
+<!ENTITY restorepopup.tumbs "{N} закладку видалено;{N} закладки видалено;{N} закладок видалено">

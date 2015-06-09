@@ -33,7 +33,6 @@
     <Message key="slice.notif.saved" value="&slice.notif.saved;"/>
     <Message key="slice.notif.saved-chrome" value="&slice.notif.saved-chrome;"/>
     <Message key="slice.notif.saves" value="&slice.notif.saves;"/>
-    <Message key="widget.options.save-checkbox.title" value="&widget.options.save-checkbox.title;"/>
     <Message key="widget.pagebutton.tooltip" value="&widget.pagebutton.tooltip;"/>
     <Message key="context-menu.upload-title" value="&context-menu.upload-title;"/>
     <Message key="error.limit" value="&error.limit;"/>
@@ -55,4 +54,34 @@
     <Message key="error.cmd-auth" value="&error.cmd-auth;"/>
     <Message key="slice.error.file-not-loaded" value="&slice.error.file-not-loaded;"/>
     <Message key="slice.error.filename-not-loaded" value="&slice.error.filename-not-loaded;"/>
+    <Message key="widget.settings.showPopupSuggest" value="&widget.settings.showPopupSuggest;"/>
+    <Message key="file-dialog.all-files" value="&file-dialog.all-files;"/>
+    <Message key="file-dialog.title" value="&file-dialog.title;"/>
+    <Message key="slice.tooltip.error-cancel" value="&slice.tooltip.error-cancel;"/>
+    <Message key="slice.error.limit-comp" value="&slice.error.limit-comp;"/>
+    <Message key="slice.error.limit-disk" value="&slice.error.limit-disk;"/>
+    <Message key="widget.settings.save-document.title" value="&widget.settings.save-document.title;"/>
+    <Message key="slice.help" value="&slice.help;"/>
+    <Message key="slice.settings" value="&slice.settings;"/>
+    <Message key="slice.upload" value="&slice.upload;"/>
+    <Message key="widget.options.save-checkbox.title" value="&widget.options.save-checkbox.title;"/>
+    <Message key="widget.options.save-document-checkbox.title" value="&widget.options.save-document-checkbox.title;"/>
+    <Message key="slice.download" value="&slice.download;"/>
+    <Message key="slice.public" value="&slice.public;"/>
+    <Message key="slice.size.b" value="&slice.size.b;"/>
+    <Message key="slice.size.gb" value="&slice.size.gb;"/>
+    <Message key="slice.size.kb" value="&slice.size.kb;"/>
+    <Message key="slice.size.mb" value="&slice.size.mb;"/>
+    <Message key="widget.options.show-notifications.title" value="&widget.options.show-notifications.title;"/>
+    <Message key="slice.notif.saved-new" value="&slice.notif.saved-new;"/>
+    <Message key="widget.options.notifications-enable.title" value="&widget.options.notifications-enable.title;"/>
+    <Message key="slice.notif.yabrowser-save" value="&slice.notif.yabrowser-save;"/>
+    <Message key="file-dialog.error.empty-file" value="&file-dialog.error.empty-file;"/>
+    <Message key="widget.save-button.tutorial.confirmButton" value="&widget.save-button.tutorial.confirmButton;"/>
+    <Message key="widget.save-button.tutorial.moreInfo" value="&widget.save-button.tutorial.moreInfo;"/>
+    <Message key="widget.save-button.tutorial.settings" value="&widget.save-button.tutorial.settings;"/>
+    <Message key="widget.save-button.tutorial.text" value="&widget.save-button.tutorial.text;"/>
+    <Message key="widget.save.tutorial.text" value="&widget.save.tutorial.text;"/>
+    <Message key="slice.uploading" value="&slice.uploading;"/>
+    <Message key="widget.save.tutorial.header" value="&widget.save.tutorial.header;"/>
 </Messages>

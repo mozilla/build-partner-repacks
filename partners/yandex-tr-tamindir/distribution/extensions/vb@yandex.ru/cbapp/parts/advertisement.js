@@ -9,6 +9,7 @@ const {
 const GLOBAL = this;
 const PREF_HEADER_LASTMODIFIED = "advertisement.lastModified";
 const WEB_CONFIG_FILE_URL = "https://download.cdn.yandex.net/bar/vb/ad.json";
+const ADVERTISEMENT_DELAY_SEC = 10;
 const STATES = {
     NOT_SHOWN: 0,
     READY_TO_SHOW: 1,
@@ -20,6 +21,7 @@ const advertisement = {
         application.core.Lib.sysutils.copyProperties(application.core.Lib, GLOBAL);
         this._application = application;
         this._logger = this._application.getLogger("Advertisement");
+        this._inited = false;
         let preferences = this._application.preferences;
         let conditions = this.conditions = Object.create(null);
         let self = this;
@@ -29,7 +31,9 @@ const advertisement = {
             "yandexBrowserInstalled",
             "yandexBrowserIsDefault",
             "downloadedDocFiles",
-            "newBackgrounds"
+            "newBackgrounds",
+            "fourDaysPassed",
+            "thumbWasAdded"
         ].forEach(function (condition) {
             Object.defineProperty(conditions, condition, {
                 get: function () {
@@ -53,7 +57,10 @@ const advertisement = {
             "vbadbbdoc",
             "vbadbbnewver",
             "vbadbbnewverrun",
-            "newyear2015"
+            "vbsethome",
+            "vbsetsearch",
+            "vbaddthumb",
+            "vbsendstat"
         ].forEach(function (adId) {
             Object.defineProperty(ads, adId, {
                 get: function () {
@@ -86,44 +93,59 @@ const advertisement = {
         if (!conditions.downloadedDocFiles) {
             Services.obs.addObserver(downloadsHelper, "sessionstore-windows-restored", false);
         }
-        Services.obs.addObserver(this, this._application.core.eventTopics.BACKGROUNDS_SYNCED, false);
         let alarms = this._application.alarms;
-        alarms.restoreOrCreate("advertisementConfigNeedUpdate", {
-            timeout: 60 * 24,
-            isInterval: true,
-            triggerIfCreated: true,
-            condition: () => self.enabled,
-            handler: this.getConfigFromWeb,
-            ctx: this
-        });
-        alarms.restoreOrCreate("checkAdJSON", {
-            timeout: 60,
-            isInterval: true,
-            condition: () => !Boolean(self.config),
-            handler: this.getConfigFromWeb,
-            ctx: this
-        });
-        alarms.restoreOrCreate("checkAdsConditions", {
-            timeout: 30,
-            isInterval: true,
-            triggerIfCreated: true,
-            condition: function () {
-                return self.enabled && Boolean(self.config) && !Boolean(self.readyToShowAd) && !self._isSilentPeriod();
-            },
-            handler: this.checkAdsConditions,
-            ctx: this
-        });
+        if (!conditions.fourDaysPassed) {
+            alarms.restoreOrCreate("fourDaysPassed", {
+                timeout: 60 * 24 * 4,
+                handler: () => conditions.fourDaysPassed = true
+            });
+        }
+        new sysutils.Timer(() => {
+            this._inited = true;
+            Services.obs.addObserver(this, this._application.core.eventTopics.BACKGROUNDS_SYNCED, false);
+            alarms.restoreOrCreate("checkAdsConditions", {
+                timeout: 30,
+                isInterval: true,
+                triggerIfCreated: true,
+                condition: function () {
+                    return self.enabled && Boolean(self.config) && !Boolean(self.readyToShowAd) && !self._isSilentPeriod();
+                },
+                handler: this.checkAdsConditions,
+                ctx: this
+            });
+            alarms.restoreOrCreate("advertisementConfigNeedUpdate", {
+                timeout: 60 * 24,
+                isInterval: true,
+                triggerIfCreated: true,
+                condition: () => self.enabled,
+                handler: this.getConfigFromWeb,
+                ctx: this
+            });
+            alarms.restoreOrCreate("checkAdJSON", {
+                timeout: 60,
+                isInterval: true,
+                condition: () => !Boolean(self.config),
+                handler: this.getConfigFromWeb,
+                ctx: this
+            });
+        }, ADVERTISEMENT_DELAY_SEC * 1000);
         if (this.activeAd) {
+            this._logger.info("Active ad is " + this.activeAd.id);
             this._startAd();
         }
     },
     finalize: function advertisement_finalize() {
         let alarms = this._application.alarms;
         if (alarms.exists("refuseAd")) {
-            alarms.reset("refuseAd");
-            this._refuseActiveAd();
+            this._hideActiveAd(true);
         }
-        Services.obs.removeObserver(this, this._application.core.eventTopics.BACKGROUNDS_SYNCED, false);
+        if (alarms.exists("hideAd")) {
+            this._hideActiveAd(false);
+        }
+        try {
+            Services.obs.removeObserver(this, this._application.core.eventTopics.BACKGROUNDS_SYNCED, false);
+        } catch (err) {
+        }
         if (this._downloadsObserversAdded) {
             let {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm");
             Downloads.getList(Downloads.PUBLIC).then(list => list.removeView(downloadsHelper));
@@ -182,7 +204,7 @@ const advertisement = {
             this._logger.trace("Reseting condition downloadedDocFiles");
             this.conditions.downloadedDocFiles = false;
         }
-        this._logger.debug("Starting ad " + adId);
+        this._logger.info("Starting ad " + adId);
         this._application.alarms.reset("stopActiveAd");
         let ad = this._ads[adId];
         ad.showCount = (parseInt(ad.showCount, 10) || 0) + 1;
@@ -207,8 +229,14 @@ const advertisement = {
         case "vbadbbnewverrun":
             param = "adbbinstall";
             break;
+        case "vbsendstat":
+            this._application.fastdial.sendClickerRequest("settings.statdialog.show");
+            break;
         case "newbackground":
         case "setbackground":
+        case "vbsetsearch":
+        case "vbsethome":
+        case "vbaddthumb":
             param = "show";
             break;
         }
@@ -237,26 +265,20 @@ const advertisement = {
         ad.showState = STATES.READY_TO_SHOW;
         this._ads[adId] = ad;
     },
-    checkAdsConditions: function advertisement_checkAdsConditions(firstCheck = false, forceCheck = false) {
-        if (!forceCheck && this._application.alarms.exists("delayCheckAdsCondition")) {
+    checkAdsConditions: function advertisement_checkAdsConditions() {
+        if (!this._inited) {
             return;
         }
-        this._application.alarms.create("delayCheckAdsCondition", {
-            timeout: firstCheck ? 1 : 0,
-            handler: function checkConditions() {
-                let yandexBrowserInfo = this.yandexBrowserInfo;
-                let conditions = this.conditions;
-                conditions.yandexBrowserInstalled = yandexBrowserInfo.isInstalled;
-                conditions.yandexBrowserLastLaunch = yandexBrowserInfo.lastLaunch.toString();
-                conditions.yandexBrowserVersion = yandexBrowserInfo.version;
-                conditions.yandexBrowserIsDefault = yandexBrowserInfo.isDefaultBrowser;
-                conditions.newBackgrounds = JSON.stringify(this._application.backgroundImages.newBackgrounds);
-                this._logger.trace("New ads conditions:");
-                this._logger.trace(JSON.stringify(conditions));
-                this._updateState();
-            },
-            ctx: this
-        });
+        let yandexBrowserInfo = this.yandexBrowserInfo;
+        let conditions = this.conditions;
+        conditions.yandexBrowserInstalled = yandexBrowserInfo.isInstalled;
+        conditions.yandexBrowserLastLaunch = yandexBrowserInfo.lastLaunch.toString();
+        conditions.yandexBrowserVersion = yandexBrowserInfo.version;
+        conditions.yandexBrowserIsDefault = yandexBrowserInfo.isDefaultBrowser;
+        conditions.newBackgrounds = JSON.stringify(this._application.backgroundImages.newBackgrounds);
+        this._logger.trace("New ads conditions:");
+        this._logger.trace(JSON.stringify(conditions));
+        this._updateState();
     },
     _startAd: function advertisement__startAd() {
         this._updateState();
@@ -284,6 +306,9 @@ const advertisement = {
                         break;
                     case "newbackground":
                     case "setbackground":
+                    case "vbsethome":
+                    case "vbsetsearch":
+                    case "vbaddthumb":
                         param = "timeoutclose";
                         break;
                     }
@@ -292,7 +317,7 @@ const advertisement = {
                     }
                 }
                 this.activeAd = null;
-                this.checkAdsConditions(false, true);
+                this.checkAdsConditions();
             },
             ctx: this
         });
@@ -316,29 +341,35 @@ const advertisement = {
         }
     },
     refuse: function advertisement_refuse(timeout) {
+        this._hideActiveAdTimed(timeout, true);
+    },
+    hideActiveAd: function advertisement_hideActive(timeout) {
+        this._hideActiveAdTimed(timeout, false);
+    },
+    _hideActiveAdTimed: function advertisement__hideActiveAdTimed(timeout, increaseRefuseCount = true) {
         if (!this.activeAd) {
             throw new Error("There's no ad to refuse");
         }
-        let alarms = this._application.alarms;
         if (timeout) {
-            if (!alarms.exists("refuseAd")) {
-                alarms.restoreOrCreate("refuseAd", {
+            let alarmName = increaseRefuseCount ? "refuseAd" : "hideAd";
+            let alarms = this._application.alarms;
+            if (!alarms.exists(alarmName)) {
+                alarms.restoreOrCreate(alarmName, {
                     timeout: timeout / 60000,
-                    handler: () => this._refuseActiveAd()
+                    handler: () => this._hideActiveAd(increaseRefuseCount)
                 });
             }
         } else {
-            alarms.reset("refuseAd");
-            this._refuseActiveAd();
+            this._hideActiveAd(increaseRefuseCount);
         }
     },
-    hideActiveAd: function advertisement_hideActive() {
-        this._refuseActiveAd(false);
-    },
-    _refuseActiveAd: function advertisement__refuseActiveAd(increaseRefuseCount = true) {
+    _hideActiveAd: function advertisement__hideActiveAd(increaseRefuseCount = true) {
         let currentActive = this.activeAd;
         if (increaseRefuseCount) {
+            this._application.alarms.reset("refuseAd");
             currentActive.refuseCount = (parseInt(currentActive.refuseCount, 10) || 0) + 1;
+        } else {
+            this._application.alarms.reset("hideAd");
         }
         this._ads[currentActive.id] = currentActive;
         this.activeAdRefused = true;
@@ -383,6 +414,10 @@ const advertisement = {
             let conditions;
             let isWindows = sysutils.platformInfo.os.name === "windows";
             let utils = this._application.commonUtils;
+            if (!(adId in this.config.ads)) {
+                this._logger.warn("Not found in ad.json " + adId + " ad");
+                return;
+            }
             this._logger.trace("Checking conditions of ad " + adId);
             switch (adId) {
             case "vbadbbdoc":
@@ -458,44 +493,44 @@ const advertisement = {
                         val: true
                     }];
                 break;
-            case "newyear2015":
-                let newyear2015Config = this.config.ads.newyear2015;
-                if (!newyear2015Config) {
-                    return;
-                }
-                let additional = newyear2015Config.additional;
-                let startDate = additional["start-date"];
-                let endDate = additional["end-date"];
-                let today = utils.getTodayDateString();
-                let brandID = this._application.branding.brandID;
-                let locale = this._application.localeString;
-                if (Array.isArray(additional.locales)) {
-                    if (additional.locales.indexOf(locale) === -1) {
-                        this._logger.trace("Locale " + locale + " doesn't match new year's rules");
-                        return;
-                    }
-                } else {
-                    return;
-                }
-                if (Array.isArray(additional.brandings)) {
-                    if (additional.brandings.indexOf(brandID) === -1) {
-                        this._logger.trace("Branding " + brandID + " doesn't match new year's rules");
-                        return;
-                    }
-                } else {
-                    return;
-                }
+            case "vbaddthumb":
                 conditions = [
                     {
-                        name: "startDate",
-                        val: utils.compareDate(today, startDate) >= 0
+                        name: "hasEmptySpace",
+                        val: this._application.layout.hasEmptySpace
                     },
                     {
-                        name: "endDate",
-                        val: utils.compareDate(today, endDate) <= 0
+                        name: "thumbWasntAdded",
+                        val: !this.conditions.thumbWasAdded
                     }
                 ];
                 break;
+            case "vbsethome":
+                conditions = [{
+                        name: "yandexIsNotHomepage",
+                        val: !this._application.searchOffer.isYandexHomepage
+                    }];
+                break;
+            case "vbsetsearch":
+                conditions = [{
+                        name: "yandexIsNotDefaultSearch",
+                        val: this._application.searchOffer.isCurrentQSOverridable
+                    }];
+                break;
+            case "vbsendstat": {
+                    let anyStatEnabled = this._application.statistics.sendUsageStat || this._application.core.Lib.Preferences.get("extensions.yasearch@yandex.ru.stat.usage.send", false);
+                    conditions = [
+                        {
+                            name: "fourDaysPassed",
+                            val: this.conditions.fourDaysPassed
+                        },
+                        {
+                            name: "statIsNotSending",
+                            val: !anyStatEnabled
+                        }
+                    ];
+                    break;
+                }
             default:
                 return;
             }
@@ -626,7 +661,7 @@ const advertisement = {
     observe: function advertisement_observe(subject, topic, data) {
         switch (topic) {
         case this._application.core.eventTopics.BACKGROUNDS_SYNCED:
-            this.checkAdsConditions(false, true);
+            this.checkAdsConditions();
             break;
         }
     },

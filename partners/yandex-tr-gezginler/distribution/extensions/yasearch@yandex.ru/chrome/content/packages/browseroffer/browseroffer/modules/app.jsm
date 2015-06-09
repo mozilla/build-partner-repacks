@@ -6,13 +6,11 @@ const {
     results: Cr,
     utils: Cu
 } = Components;
+Cu.import("resource://gre/modules/Services.jsm");
+const PREFERENCES_MESSAGE_NAME = "yasearch@yandex.ru:browseroffer:preferences";
 let module = function (app, common) {
-    app._elementsProvider = null;
-    app._showWidgetSuggestSetting = null;
-    app._widgetSuggestHistorySettingName = "widgetSuggest.history";
-    app._widgetSuggestHistory = Object.create(null);
     app.config = {
-        pagesToCheck: [
+        socialPagesInfo: [
             {
                 domain: ["vk.com"],
                 widgetID: "http://bar-widgets.yandex.ru/packages/approved/91/manifest.xml#profile",
@@ -29,27 +27,18 @@ let module = function (app, common) {
                 ],
                 widgetID: "http://bar-widgets.yandex.ru/packages/approved/140/manifest.xml#odnoklassniki",
                 name: "ok"
-            },
-            {
-                domain: ["facebook.com"],
-                cookie: ["c_user"],
-                widgetID: "http://bar-widgets.yandex.ru/packages/approved/115/manifest.xml#facebook",
-                name: "fb"
             }
         ],
         browserLinks: {
             install: "http://browser.yandex.ru/desktop/?head=security&from=link_element_neyb_safe_|&banerid=0456000000#safe",
             launch: "http://browser.yandex.ru/desktop/?head=security&from=link_element_yabr-installed_safe_|&banerid=0456000000#safe",
-            noflash: "http://browser.yandex.ru/desktop/?head=flash&from=link_element_neyb_no-flash_|&banerid=0456510000"
+            noflash: "http://browser.yandex.ru/desktop/?head=flash&from=link_element_neyb_no-flash_|&banerid=0456510000",
+            turbo: "http://browser.yandex.ru/?from=strip_element_neyb_green_&banerid=0156640000#turbo",
+            turboBrowser: "http://browser.yandex.ru/?from=strip_element_yabr-installed_green_&banerid=0156650000#turbo"
         },
         branding: {
             tb: {
-                pagesToCheck: [{
-                        domain: ["facebook.com"],
-                        cookie: ["c_user"],
-                        widgetID: "http://bar-widgets.yandex.ru/packages/approved/131/manifest.xml#facebook",
-                        name: "fb"
-                    }],
+                socialPagesInfo: [],
                 browserLinks: {
                     install: "http://browser.yandex.com.tr/desktop/?head=security&from=link_element_neyb_safe_|&banerid=0456000000#safe",
                     launch: "http://browser.yandex.com.tr/desktop/?head=security&from=link_element_yabr-installed_safe_|&banerid=0456000000#safe",
@@ -66,7 +55,7 @@ let module = function (app, common) {
         }
     };
     app.Settings = {
-        getMainTemplate: function browseroffer_Settings_getMainTemplate(aWidgetUnitName, aWidgetInstanceID) {
+        getMainTemplate: function (aWidgetUnitName, aWidgetInstanceID) {
             if ([
                     "mac",
                     "windows"
@@ -76,176 +65,89 @@ let module = function (app, common) {
             return common.utils.readFile("content/settings.xml");
         }
     };
-    app.init = function browseroffer_init(common, resources) {
+    app.init = function (common, resources) {
         resources.browser.urlBarItems = { button: 10050 };
         resources.browser.styles.push("/browseroffer/content/styles/browser.css");
-        this.ETLDService = Cc["@mozilla.org/network/effective-tld-service;1"].getService(Ci.nsIEffectiveTLDService);
-        this._initElementsProvider();
-        this._initWidgetSuggestHistory();
-        let widgetsIds = this.config.pagesToCheck.reduce(function (aIds, socObj) {
-            aIds.push(socObj.widgetID);
-            return aIds;
-        }, []);
-        let widgetsInfo = this._checkWidgetsAreActive(widgetsIds);
-        for (let widgetID in widgetsInfo) {
-            if (widgetsInfo[widgetID]) {
-                this.markWidgetAdded(widgetID);
-            }
-        }
+        this._initSettingsValues();
+        this._initModules();
+        this.api.Browser.messageManager.addMessageListener({
+            messageName: PREFERENCES_MESSAGE_NAME,
+            listener: this
+        });
+        this.api.Browser.messageManager.loadFrameScript({ url: this.api.Package.resolvePath("/browseroffer/modules/frameScript.js") });
     };
-    app.finalize = function browseroffer_finalize() {
-        this._finalizeElementsProvider();
-        this._finalizeWidgetSuggestHistory();
+    app.finalize = function () {
+        this.api.Browser.messageManager.removeMessageListener({
+            messageName: PREFERENCES_MESSAGE_NAME,
+            listener: this
+        });
+        this.api.Browser.messageManager.removeDelayedFrameScript({ url: this.api.Package.resolvePath("/browseroffer/modules/frameScript.js") });
+        this._social = null;
     };
-    app.onSettingChange = function browseroffer_onSettingChange(aSettingName, aValue) {
+    app.onSettingChange = function (aSettingName, aSettingNewValue) {
+        let message = Object.create(null);
         switch (aSettingName) {
         case "showContextWidgetSuggest":
-            this._showWidgetSuggestSetting = aValue;
+            this._showContextSuggests = aSettingNewValue;
+            message.contextSuggest = aSettingNewValue;
+            break;
+        case "showContextMenuLink":
+            this._showContextMenuLink = aSettingNewValue;
+            message.contextMenu = aSettingNewValue;
             break;
         default:
-            break;
+            return;
+        }
+        common.observerService.notify("suggest", JSON.stringify(message));
+    };
+    app.getURIBaseDomain = function (aURI) {
+        try {
+            return Services.eTLD.getBaseDomain(aURI);
+        } catch (e) {
+            return null;
         }
     };
-    app.shouldAmendContextMenu = function browseroffer_shouldAmendContextMenu() {
-        return this.api.Settings.getValue("showContextMenuLink");
+    app.getMostRecentBrowserWindow = function () {
+        return Services.wm.getMostRecentWindow("navigator:browser");
     };
-    app.shouldMonitorFlash = function browseroffer_shouldMonitorFlash() {
-        if ([
-                "mac",
-                "windows"
-            ].indexOf(this.api.Environment.os.name) === -1) {
-            return false;
-        }
-        let pluginHost = Cc["@mozilla.org/plugin/host;1"].getService(Ci.nsIPluginHost);
-        let installed = pluginHost.getPluginTags().some(function (p) {
-            return p.name === "Shockwave Flash";
-        });
-        return !installed;
+    app.getPref = function (strPrefName, defaultValue) {
+        let prefFullName = this.api.Settings.getComponentBranchPath() + strPrefName;
+        let prefsModule = this.api.Settings.PrefsModule;
+        return prefsModule.get(prefFullName, defaultValue);
     };
-    app.shouldPerformSuggest = function browseroffer_shouldPerformSuggest() {
-        if (this._showWidgetSuggestSetting === null) {
-            this._showWidgetSuggestSetting = this.api.Settings.getValue("showContextWidgetSuggest");
-        }
-        return this._showWidgetSuggestSetting;
+    app.setPref = function (strPrefName, strPrefValue) {
+        let prefFullName = this.api.Settings.getComponentBranchPath() + strPrefName;
+        let prefsModule = this.api.Settings.PrefsModule;
+        return prefsModule.set(prefFullName, strPrefValue);
     };
-    app.checkBrowserConditions = function browseroffer_checkBrowserConditions() {
+    app.shouldSocialPageWidgetSuggest = function () {
+        return this._social.shouldMonitor() && this._showContextSuggests;
+    };
+    app.shouldContextMenuSuggest = function () {
+        return this._showContextMenuLink;
+    };
+    app.shouldMakeFlashSuggest = function () {
+        return this._flash.shouldSuggest();
+    };
+    app.shouldMakeTurboSuggest = function () {
+        return this._turbo.shouldSuggest();
+    };
+    app.shouldMakeContenxtMenuSuggest = function () {
         return this.api.Integration.yandexBrowser.isDefault === false;
     };
-    app.checkNoFlashConditions = function browseroffer_checkNoFlashConditions() {
-        if (this.api.Integration.yandexBrowser.isDefault === true) {
-            return false;
-        }
-        let eclipseTime = 7 * 24 * 60 * 60 * 1000;
-        let lastActionTime = this.api.Settings.getValue("noflash.userActionTime");
-        if (Math.abs(Date.now() - lastActionTime) < eclipseTime) {
-            return false;
-        }
-        return true;
+    app.findSocialWidgetForHost = function (aHost) {
+        return this._social.findSocialWidgetForHost(aHost);
     };
-    app.checkWidgetSuggestConditions = function browseroffer_checkWidgetSuggestConditions(aHost) {
-        let emptyResult = [];
-        for (let i = 0; i < this.config.pagesToCheck.length; i++) {
-            let pageObj = this.config.pagesToCheck[i];
-            if (pageObj.domain.indexOf(aHost) === -1) {
-                continue;
-            }
-            let suggestHistory = this._widgetSuggestHistory[pageObj.widgetID];
-            if (suggestHistory.existed || suggestHistory.counter >= 3) {
-                return emptyResult;
-            }
-            let widgetIsActive = this._checkWidgetIsActive(pageObj.widgetID);
-            if (widgetIsActive) {
-                suggestHistory.existed = true;
-                return emptyResult;
-            }
-            if (widgetIsActive === false) {
-                if (this._userSocialAuthorized(pageObj.name)) {
-                    if (suggestHistory.shownAt) {
-                        if (suggestHistory.shownAt < 0) {
-                            let eclipseTime = 60 * 60 * 1000;
-                            let shownAtTime = -suggestHistory.shownAt;
-                            if (Math.abs(Date.now() - shownAtTime) > eclipseTime) {
-                                this.pauseWidgetSuggestion(pageObj.widgetID, shownAtTime + eclipseTime);
-                            }
-                        }
-                        if (suggestHistory.shownAt > 0) {
-                            let eclipseTime = 7 * 24 * 60 * 60 * 1000;
-                            let shownAtTime = suggestHistory.shownAt;
-                            if (Math.abs(Date.now() - shownAtTime) > eclipseTime) {
-                                this._playWidgetSuggestion(pageObj.widgetID);
-                            } else {
-                                return emptyResult;
-                            }
-                        }
-                    } else {
-                        this._playWidgetSuggestion(pageObj.widgetID);
-                    }
-                    return [
-                        pageObj.name,
-                        pageObj.widgetID
-                    ];
-                }
-            }
-            break;
-        }
-        return emptyResult;
+    app.handleFlashSuggestAction = function (aAction) {
+        this._flash.handleUserAction(aAction);
     };
-    app.markWidgetAdded = function browseroffer_markWidgetAdded(aWidgetID) {
-        let suggestHistory = this._widgetSuggestHistory[aWidgetID];
-        if (!suggestHistory) {
-            throw new Error("Unknown social page widget added: " + aWidgetID);
-        }
-        suggestHistory.existed = true;
+    app.handleSocialSuggestAction = function (aAction, aData) {
+        this._social.handleUserAction(aAction, aData);
     };
-    app.pauseWidgetSuggestion = function browseroffer_pauseWidgetSuggestion(aWidgetID, aSinceTime) {
-        let suggestHistory = this._widgetSuggestHistory[aWidgetID];
-        let timestamp = aSinceTime || Date.now();
-        if (!suggestHistory) {
-            throw new Error("Unknown social page for suggest: " + aWidgetID);
-        }
-        if (!suggestHistory.counter) {
-            suggestHistory.counter = 0;
-        }
-        suggestHistory.counter++;
-        suggestHistory.shownAt = timestamp;
+    app.handleTurboSuggestAction = function (aAction, aData) {
+        this._turbo.handleUserAction(aAction, aData);
     };
-    app._playWidgetSuggestion = function browseroffer_playWidgetSuggestion(aWidgetID) {
-        let suggestHistory = this._widgetSuggestHistory[aWidgetID];
-        if (!suggestHistory) {
-            throw new Error("Unknown social page for suggest: " + aWidgetID);
-        }
-        suggestHistory.shownAt = -Date.now();
-    };
-    app._userSocialAuthorized = function browseroffer__userSocialAuthorized(aSocialName) {
-        let socialObj = this.config.pagesToCheck.filter(function (aObj) {
-            return aObj.name === aSocialName;
-        })[0];
-        if (!socialObj) {
-            throw new Error("Unknown social page for checking authorization: " + aSocialName);
-        }
-        if (socialObj.name === "vk") {
-            let regexp = /^remixsid/i;
-            return socialObj.domain.some(function (aDomain) {
-                let cookies = this.api.Network.getCookiesFromHost(aDomain);
-                return cookies.some(function (aCookie) {
-                    return regexp.test(aCookie.name);
-                });
-            }, this);
-        }
-        return socialObj.domain.some(function (aDomain) {
-            return socialObj.cookie.some(function (aCookieName) {
-                return this.api.Network.findCookies("http://" + aDomain, aCookieName, true, true, false).length;
-            }, this);
-        }, this);
-    };
-    app._checkWidgetsAreActive = function browseroffer__checkWidgetsActive(aWidgetIds) {
-        return this.api.Overlay.checkWidgetsInCurrentSet(aWidgetIds);
-    };
-    app._checkWidgetIsActive = function browseroffer__checkWidgetIsActive(aWidgetID) {
-        let widgetsInfo = this.api.Overlay.checkWidgetsInCurrentSet(aWidgetID);
-        return widgetsInfo[aWidgetID];
-    };
-    app.sendStatistic = function browseroffer_sendStatistic(aPart, aAction) {
+    app.sendStatistics = function (aPart, aAction) {
         function validateAction(aValidActions, aSpecifiedAction) {
             let action = aSpecifiedAction || aAction;
             if (aValidActions.indexOf(action) === -1) {
@@ -268,7 +170,7 @@ let module = function (app, common) {
                 this.api.Statistics.BarNavig.sendRequest({ addbb: "sbbb" });
             }
             break;
-        case "contextMenu":
+        case "context-menu":
             validateAction([
                 "addbbrun",
                 "showonlink",
@@ -279,7 +181,7 @@ let module = function (app, common) {
                 path: "fx.cmenu." + aAction
             });
             break;
-        case "noFlash":
+        case "flash-suggest":
             validateAction([
                 "addbbrun",
                 "run",
@@ -293,7 +195,7 @@ let module = function (app, common) {
                 path: "fx.noflash." + aAction
             });
             break;
-        case "wdgtSuggest":
+        case "social-suggest":
             validateAction([
                 "show",
                 "close",
@@ -305,132 +207,104 @@ let module = function (app, common) {
                 path: "fx." + aAction
             });
             break;
+        case "turbo-suggest":
+            validateAction([
+                "addbbrun",
+                "run",
+                "runclose",
+                "addbbinstall",
+                "install",
+                "installclose"
+            ]);
+            common.statistics.log({
+                cid: 72551,
+                path: "fx.turvideo." + aAction
+            });
+            break;
         default:
-            return;
+            throw new Error("Wrong statistics part: " + aPart);
         }
     };
-    app._initWidgetSuggestHistory = function browseroffer__initWidgetSuggestHistory() {
-        function isObject(aObj) {
-            return typeof aObj === "object" && !Array.isArray(aObj);
-        }
-        let prefFullName = this.api.Settings.getComponentBranchPath() + this._widgetSuggestHistorySettingName;
-        let prefsModule = this.api.Settings.PrefsModule;
-        let wsHistory;
-        try {
-            wsHistory = JSON.parse(prefsModule.get(prefFullName));
-        } catch (e) {
-        }
-        if (!isObject(wsHistory)) {
-            wsHistory = this._widgetSuggestHistory;
-        }
-        this.config.pagesToCheck.forEach(function (aSiteObj) {
-            if (!isObject(wsHistory[aSiteObj.widgetID])) {
-                wsHistory[aSiteObj.widgetID] = Object.create(null);
+    app._showContextSuggests = null;
+    app._showContextMenuLink = null;
+    app._initSettingsValues = function () {
+        this._showContextSuggests = this.api.Settings.getValue("showContextWidgetSuggest");
+        this._showContextMenuLink = this.api.Settings.getValue("showContextMenuLink");
+    };
+    app._initModules = function () {
+        this._social = this.importModule("social");
+        this._social.init({
+            api: this.api,
+            log: this.log.bind(this),
+            getPref: this.getPref.bind(this),
+            setPref: this.setPref.bind(this),
+            socialPagesInfo: this.config.socialPagesInfo
+        });
+        this._flash = this.importModule("flash");
+        this._flash.init({
+            api: this.api,
+            log: this.log.bind(this),
+            getPref: this.getPref.bind(this),
+            setPref: this.setPref.bind(this),
+            onMonitorStateChanged: this._onModuleStateChanged.bind(this)
+        });
+        this._safebrowsing = this.importModule("safebrowsing");
+        this._safebrowsing.init({
+            api: this.api,
+            log: this.log.bind(this),
+            getPref: this.getPref.bind(this),
+            setPref: this.setPref.bind(this),
+            sendStatistics: this.sendStatistics.bind(this),
+            browserLinks: this.config.browserLinks
+        });
+        this._turbo = this.importModule("turbo");
+        this._turbo.init({
+            api: this.api,
+            log: this.log.bind(this),
+            getPref: this.getPref.bind(this),
+            setPref: this.setPref.bind(this),
+            onMonitorStateChanged: this._onModuleStateChanged.bind(this)
+        });
+    };
+    app._getSuggestStates = function (aModuleName) {
+        let result = {};
+        let modulesArray = aModuleName ? [aModuleName] : [
+            "flash",
+            "turbo"
+        ];
+        modulesArray.forEach(aModuleName => {
+            result[aModuleName] = this["_" + aModuleName].shouldMonitor();
+        });
+        return result;
+    };
+    app._notifyFrameScriptSuggestChange = function (aModuleName) {
+        this.api.Browser.messageManager.broadcastAsyncMessage({
+            messageName: PREFERENCES_MESSAGE_NAME,
+            obj: {
+                type: "change",
+                states: this._getSuggestStates(aModuleName)
             }
         });
-        this._widgetSuggestHistory = wsHistory;
     };
-    app._finalizeWidgetSuggestHistory = function browseroffer__finalizeWidgetSuggestHistory() {
-        let prefFullName = this.api.Settings.getComponentBranchPath() + this._widgetSuggestHistorySettingName;
-        let prefsModule = this.api.Settings.PrefsModule;
-        let prefValueStr = "";
-        try {
-            prefValueStr = JSON.stringify(this._widgetSuggestHistory);
-        } catch (e) {
-        }
-        return prefsModule.set(prefFullName, prefValueStr);
+    app._notifyFrameScript = function (aData) {
+        this.api.Browser.messageManager.broadcastAsyncMessage({
+            messageName: PREFERENCES_MESSAGE_NAME,
+            obj: aData
+        });
     };
-    app._initElementsProvider = function browseroffer__initElementsProvider() {
-        const ACTION_PREF_PREFIX = "safebrowsing.yandexBrowser.date.action.";
-        let platform = this.api.Environment.os.name;
-        let brandID = this.api.Environment.branding.brandID;
-        function getPref(strPrefName, defaultValue) {
-            let prefFullName = app.api.Settings.getComponentBranchPath() + ACTION_PREF_PREFIX + strPrefName;
-            let prefsModule = app.api.Settings.PrefsModule;
-            return prefsModule.get(prefFullName, defaultValue);
-        }
-        function setPref(strPrefName, strPrefValue) {
-            let prefFullName = app.api.Settings.getComponentBranchPath() + ACTION_PREF_PREFIX + strPrefName;
-            let prefsModule = app.api.Settings.PrefsModule;
-            return prefsModule.set(prefFullName, strPrefValue);
-        }
-        this._elementsProvider = {
-            getListenerForPage: function browseroffer_elementsProvider_getListenerForPage({url}) {
-                if (url.indexOf("about:blocked?") !== 0) {
-                    return null;
-                }
-                let partName = "safebrowsing";
-                return {
-                    onPageMessage: function browseroffer_elementsProvider_onPageMessage(name, data) {
-                        switch (name) {
-                        case "browseroffer":
-                            if (data.command == "sendStat") {
-                                app.sendStatistic(partName, data.value);
-                            }
-                            break;
-                        default:
-                            return;
-                        }
-                    },
-                    onQueryObject: function browseroffer_elementsProvider_onQueryObject(name) {
-                        if (name !== "yandexBrowserIntegration") {
-                            return;
-                        }
-                        return {
-                            get offerType() {
-                                let flags = {
-                                    showNothing: 0,
-                                    showNotInstalled: 1,
-                                    showInstalled: 2
-                                };
-                                if ([
-                                        "mac",
-                                        "windows"
-                                    ].indexOf(platform) === -1) {
-                                    return flags.showNothing;
-                                }
-                                if (brandID !== "yandex") {
-                                    return flags.showNothing;
-                                }
-                                let eclipseTime = 21 * 24 * 60 * 60 * 1000;
-                                let lastActionTime = Math.max(getPref("installed", null), getPref("notInstalled", null));
-                                if (Math.abs(Date.now() - lastActionTime) < eclipseTime) {
-                                    return flags.showNothing;
-                                }
-                                let isDefault = app.api.Integration.yandexBrowser.isDefault;
-                                if (isDefault === false) {
-                                    return flags.showInstalled;
-                                }
-                                if (!isDefault) {
-                                    return flags.showNotInstalled;
-                                }
-                                return flags.showNothing;
-                            },
-                            performBrowser: function browseroffer_elementsProvider_performBrowser() {
-                                if (app.api.Integration.yandexBrowser.isInstalled) {
-                                    setPref("installed", Date.now().toString());
-                                    app.sendStatistic(partName, "run");
-                                    app.api.Integration.yandexBrowser.openBrowser(app.config.browserLinks.launch);
-                                } else {
-                                    setPref("notInstalled", Date.now().toString());
-                                    app.sendStatistic(partName, "install");
-                                    app.api.Controls.navigateBrowser({
-                                        url: app.config.browserLinks.install,
-                                        target: "new tab"
-                                    });
-                                }
-                            }
-                        };
-                    }
-                };
-            }
-        };
-        this.api.ElementsPlatform.addObjectProvider(this._elementsProvider);
+    app._onModuleStateChanged = function (aModuleName) {
+        this._notifyFrameScriptSuggestChange(aModuleName);
     };
-    app._finalizeElementsProvider = function browseroffer__finalizeElementsProvider() {
-        if (this._elementsProvider) {
-            this.api.ElementsPlatform.removeObjectProvider(this._elementsProvider);
-            this._elementsProvider = null;
+    app.receiveMessage = function (message) {
+        let {
+            name,
+            data,
+            target: tab,
+            objects
+        } = message;
+        if (data.type !== "get-suggest-states") {
+            return;
         }
+        return this._getSuggestStates();
     };
 };
