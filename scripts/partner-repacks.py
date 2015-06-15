@@ -303,7 +303,9 @@ def getFileExtension(platform, pretty_names=True):
 class RepackBase(object):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  ftp_platform, repack_info, signing_command, file_mode=0644,
-                 external_signing_formats=None, internal_signing_formats=None):
+                 external_signing_formats=None, internal_signing_formats=None,
+                 upload_user=None, upload_host=None, upload_ssh_key=None,
+                 upload_base_path=None, post_upload_cmd=None, quiet=False):
         self.base_dir = os.getcwd()
         self.build = build
         self.full_build_path = path.join(build_dir, build)
@@ -313,12 +315,19 @@ class RepackBase(object):
         self.full_partner_path = path.join(self.base_dir, partner_dir)
         self.working_dir = working_dir
         self.final_dir = final_dir
+        self.final_build = os.path.join(final_dir, os.path.basename(build))
         self.ftp_platform = ftp_platform
         self.repack_info = repack_info
         self.file_mode = file_mode
         self.signing_command = signing_command
+        self.upload_user = upload_user
+        self.upload_host = upload_host
+        self.upload_ssh_key = upload_ssh_key
+        self.upload_base_path = upload_base_path
+        self.post_upload_cmd = post_upload_cmd
         self.external_signing_formats = external_signing_formats
         self.internal_signing_formats = internal_signing_formats
+        self.quiet = quiet
         mkdir(self.working_dir)
 
     def announceStart(self):
@@ -372,15 +381,29 @@ class RepackBase(object):
         signing_cmd += ' "%s"' % self.build
         shellCommand(signing_cmd)
 
-    def cleanup(self):
+    def stage(self):
         move(self.build, self.final_dir)
-        os.chmod(path.join(self.final_dir, path.basename(self.build)),
-                 self.file_mode)
+        os.chmod(self.final_build, self.file_mode)
         if self.signing_command and 'gpg' in self.external_signing_formats:
             move('%s.asc' % self.build, self.final_dir)
-            os.chmod(path.join(self.final_dir,
-                               path.basename('%s.asc' % self.build)),
-                     self.file_mode)
+            os.chmod("{}.asc".format(self.final_build), self.mode)
+
+    def upload(self):
+        from upload import UploadFiles
+
+        files = [self.final_build]
+        if self.signing_command and 'gpg' in self.external_signing_formats:
+            files.append("{}.asc".format(self.final_build))
+
+        UploadFiles(self.upload_user, self.upload_host, "dummy", files,
+            ssh_key=self.upload_ssh_key, base_path=self.upload_base_path,
+            upload_to_temp_dir=True, post_upload_command=self.post_upload_cmd,
+            verbose=not self.quiet)
+
+    def cleanup(self):
+        os.remove(self.final_build)
+        if self.signing_command and 'gpg' in self.external_signing_formats:
+            os.remove("{}.asc".format(self.final_build))
 
     def doRepack(self):
         self.announceStart()
@@ -393,20 +416,24 @@ class RepackBase(object):
         self.repackBuild()
         if self.signing_command and self.external_signing_formats:
             self.externallySignBuild()
+        self.stage()
+        if self.upload_host:
+            self.upload()
+            self.cleanup()
         self.announceSuccess()
-        self.cleanup()
         os.chdir(self.base_dir)
 
 
 class RepackLinux(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  ftp_platform, repack_info, signing_command,
-                 external_signing_formats=['gpg']):
+                 external_signing_formats=['gpg'], **kwargs):
         super(RepackLinux, self).__init__(build, partner_dir, build_dir,
                                           working_dir, final_dir,
                                           ftp_platform, repack_info,
                                           signing_command,
-                                          external_signing_formats=external_signing_formats)
+                                          external_signing_formats=external_signing_formats,
+                                          **kwargs)
         self.uncompressed_build = build.replace('.bz2', '')
 
     def unpackBuild(self):
@@ -435,13 +462,15 @@ class RepackMac(RepackBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  ftp_platform, repack_info, signing_command,
                  external_signing_formats=['gpg'],
-                 internal_signing_formats=['dmgv2']):
+                 internal_signing_formats=['dmgv2'],
+                 **kwargs):
         super(RepackMac, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
                                         ftp_platform, repack_info,
                                         signing_command,
                                         external_signing_formats=external_signing_formats,
-                                        internal_signing_formats=internal_signing_formats)
+                                        internal_signing_formats=internal_signing_formats,
+                                        **kwargs)
         self.mountpoint = path.join("/tmp", "FirefoxInstaller")
 
     def unpackBuild(self):
@@ -519,23 +548,25 @@ class RepackWinBase(RepackBase):
 class RepackWin(RepackWinBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  ftp_platform, repack_info, signing_command,
-                 external_signing_formats=['gpg', 'signcode']):
+                 external_signing_formats=['gpg', 'signcode'], **kwargs):
         super(RepackWin, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
                                         ftp_platform, repack_info,
                                         signing_command,
-                                        external_signing_formats=external_signing_formats)
+                                        external_signing_formats=external_signing_formats,
+                                        **kwargs)
 
 
 class RepackWin64(RepackWinBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  ftp_platform, repack_info, signing_command,
-                 external_signing_formats=['gpg', 'osslsigncode']):
+                 external_signing_formats=['gpg', 'osslsigncode'], **kwargs):
         super(RepackWin64, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
                                         ftp_platform, repack_info,
                                         signing_command,
-                                        external_signing_formats=external_signing_formats)
+                                        external_signing_formats=external_signing_formats,
+                                        **kwargs)
 
 
 def repackSignedBuilds(repack_dir):
@@ -693,6 +724,21 @@ if __name__ == '__main__':
         help="Check for existing partner repacks"
     )
     parser.add_option(
+        "--upload-user", dest="upload_user",
+        default=None,
+        help="User to upload builds as"
+    )
+    parser.add_option(
+        "--upload-host", dest="upload_host",
+        default=None,
+        help="When set, builds will be uploaded to this host."
+    )
+    parser.add_option(
+        "--upload-ssh-key", dest="upload_ssh_key",
+        default=None,
+        help="SSH key to use when uploading builds"
+    )
+    parser.add_option(
         "-q", "--quiet",  action="store_true", dest="quiet",
         default=False,
         help="Suppress standard output from the packaging tools"
@@ -762,6 +808,20 @@ if __name__ == '__main__':
         if "mac" in options.platforms and \
            not which(options.dmg_extract_script):
             log.error("Error: couldn't find the dmg extract script.")
+            error = True
+
+    if options.upload_host:
+        # This comes from https://github.com/mozilla/gecko-dev/blob/master/build/upload.py
+        # and the caller is responsible for ensuring that it is in PYTHONPATH.
+        try:
+            from upload import UploadFiles
+            assert UploadFiles
+        except ImportError:
+            log.error("Error: couldn't import upload.UploadFiles, which is required when upload_host is set.")
+            error = True
+
+        if options.use_ci_builds:
+            log.error("Error: Uploading is not supported (yet) when using CI builds.")
             error = True
 
     if error:
@@ -906,10 +966,25 @@ if __name__ == '__main__':
                         else:
                             sys.exit(1)
 
+                    if options.upload_host:
+                        if options.use_ci_builds:
+                            raise Exception("CI builds + upload host shouldn't be possible")
+                        else:
+                            post_upload_cmd = \
+                                "post_upload.py -p firefox -n {} -v {} ".format(options.build_number, options.version) \
+                            + "--release-to-candidates-dir --signed"
+                    else:
+                        post_upload_cmd = None
+
                     repackObj = repack_build[ftp_platform](
                         filename, full_partner_dir, local_filepath,
                         working_dir, final_dir, ftp_platform,
-                        repack_info, signing_command)
+                        repack_info, signing_command,
+                        upload_user=options.upload_user,
+                        upload_host=options.upload_host,
+                        upload_ssh_key=options.upload_ssh_key,
+                        upload_base_path=repacked_builds_dir,
+                        post_upload_cmd=post_upload_cmd)
                     repackObj.doRepack()
                     rmdirRecursive(working_dir)
                 else:
