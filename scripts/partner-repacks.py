@@ -386,7 +386,7 @@ class RepackBase(object):
         os.chmod(self.final_build, self.file_mode)
         if self.signing_command and 'gpg' in self.external_signing_formats:
             move('%s.asc' % self.build, self.final_dir)
-            os.chmod("{}.asc".format(self.final_build), self.mode)
+            os.chmod("{}.asc".format(self.final_build), self.file_mode)
 
     def upload(self):
         from upload import UploadFiles
