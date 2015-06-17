@@ -24,6 +24,7 @@ if __name__ == '__main__':
     substitutions = {
         re.compile(r'# Date: .*'): '# Date: %s' % today,
         re.compile(r'yff%s' % args.previous_version): 'yff%s' % args.new_version,
+        re.compile(r'yfb%s' % args.previous_version): 'yff%s' % args.new_version,
         re.compile(r'YFF%s' % args.previous_version): 'YFF%s' % args.new_version,
         re.compile(r'version=1.%s' % args.previous_version):  'version=1.%s' % args.new_version,
         re.compile(r'dist_version="1.%s"' % args.previous_version):  'dist_version="1.%s"' % args.new_version,
