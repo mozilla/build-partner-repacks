@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 
 Name: config.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: XmbbWmNGMZ/zg3XcFsSi1g==
-SHA1-Digest: 64siX2wqJ3eVz8Mr9dCsUm7Upp0=
+MD5-Digest: SjuMM79PZ6/Y9gd5W1XQ5w==
+SHA1-Digest: GuD1WkXgh1lxOcba6gXlnml407Y=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -122,8 +122,8 @@ SHA1-Digest: IPABJZG7IwS7vEgQxnHdmElk2E0=
 
 Name: cbapp/parts/dayuse.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: Ybn/ehPC5DLrbeou7IGBVA==
-SHA1-Digest: W+y2j+/87c5yX+VSQeS6J15mFXM=
+MD5-Digest: UBI2TOZcGXQ4WhjtXFKZjw==
+SHA1-Digest: Y8sCnqGTcSHCYdSopqKXaTvQkC8=
 
 Name: cbapp/parts/native_comps.js
 Digest-Algorithms: MD5 SHA1

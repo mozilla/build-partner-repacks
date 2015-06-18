@@ -558,8 +558,9 @@ const elmntDayuseDataCollector = Object.create(dayuseDataCollector, {
             if (extentionsTag.childrenLength) {
                 versionTag.addChildren(extentionsTag);
             }
+            let {LightweightThemeManager} = Cu.import("resource://gre/modules/LightweightThemeManager.jsm", {});
+            let themeSelected = LightweightThemeManager.currentTheme || Preferences.get("general.skins.selectedSkin") !== "classic/1.0";
             let themeTag = new CTag("theme");
-            let themeSelected = Preferences.get("lightweightThemes.isThemeSelected") === true || Preferences.get("general.skins.selectedSkin") !== "classic/1.0";
             themeTag.addVars({ name: themeSelected ? "user" : "def" });
             versionTag.addChildren(themeTag);
             let newtabTag = new CTag("newtabext");

@@ -10,8 +10,8 @@ const CB_CONFIG = function () {
             COOKIE: "bar.ff"
         },
         BUILD: {
-            DATE: 'Mon Jun 08 2015 13:53:05 GMT+0000',
-            REVISION: 4
+            DATE: 'Tue Jun 16 2015 06:50:00 GMT+0000',
+            REVISION: 8
         },
         PLATFORM: { VERSION: 28 },
         CORE: {

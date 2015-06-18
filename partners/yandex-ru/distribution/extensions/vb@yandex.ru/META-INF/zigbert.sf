@@ -5,8 +5,8 @@ SHA1-Digest: d/6Z68ulBRyiureYHLr1x/FPYaw=
 
 Name: config.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: v0AzG8peM/xUOOd3N4YV1w==
-SHA1-Digest: fKCxmW6owMPQHVenZWqsOKp0XiQ=
+MD5-Digest: Tr4FgFZFDSbJUHjaJgj5nA==
+SHA1-Digest: AXP+CAZsmQCJ/YzbKDsIRDT4Z6Y=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -15,8 +15,8 @@ SHA1-Digest: jRIY5WoDsNNyWB4acAKqRO3sfC4=
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: mKk/C0TcIW5JTrNCyW379Q==
-SHA1-Digest: /8NHbh6SsbbsJLxitF5GzAuNWJs=
+MD5-Digest: gfY+1K4T0taHmajIcB4H8A==
+SHA1-Digest: MQDDC151cd06M4G8cR/Ku3IS4RI=
 
 Name: components/core.js
 Digest-Algorithms: MD5 SHA1
@@ -165,8 +165,8 @@ SHA1-Digest: pmV2WmoS6328dv+nfUX2IMgMvo4=
 
 Name: cbapp/parts/dayuse.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: oVBYGsOraTPV7AKJqJNDDg==
-SHA1-Digest: JNzy58gPvWpctAnDMq+OW7OL0+4=
+MD5-Digest: AiF3pb3B51e8KMHbyPhdxg==
+SHA1-Digest: HcOC2s15vkduAn8pOBHfDJMwohY=
 
 Name: cbapp/parts/dataprovider.js
 Digest-Algorithms: MD5 SHA1
@@ -700,8 +700,8 @@ SHA1-Digest: YeZ8TogHbuDGUFq/COGNUKCBjEE=
 
 Name: chrome/content/fastdial/api.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: nEBwYj4Q3MlUIeNyKQM8vQ==
-SHA1-Digest: O59d5XGD7KnLosXSZCcMHti148E=
+MD5-Digest: JjhqE7Yly8dEPi//RfKl4Q==
+SHA1-Digest: pn6+II1McFv0jCRufRGzQZtfEVc=
 
 Name: chrome/content/fastdial/layout/ui.js
 Digest-Algorithms: MD5 SHA1

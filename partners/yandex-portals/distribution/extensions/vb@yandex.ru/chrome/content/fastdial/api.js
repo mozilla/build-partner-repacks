@@ -230,12 +230,12 @@
             }
         },
         advertisement: {
-            refuse: function VBDOMObject_advertisement_refuse(timeout) {
-                typesCheck(arguments, ["number"]);
+            refuse: function VBDOMObject_advertisement_refuse(timeout = 0) {
+                typesCheck([timeout], ["number"]);
                 app.advertisement.refuse(timeout);
             },
-            hide: function VBDOMObject_advertisement_hide(timeout) {
-                typesCheck(arguments, ["number"]);
+            hide: function VBDOMObject_advertisement_hide(timeout = 0) {
+                typesCheck([timeout], ["number"]);
                 app.advertisement.hideActiveAd(timeout);
             },
             getLocalizedString: function VBDOMObject_advertisement_getLocalizedString(str, callback) {

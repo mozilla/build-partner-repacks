@@ -5,8 +5,8 @@ SHA1-Digest: d/6Z68ulBRyiureYHLr1x/FPYaw=
 
 Name: config.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: N87Ro0bR/ksS1wqWL3Sa4w==
-SHA1-Digest: +cm3Pa1aqbkrlEQhxVjRtsN+3Yo=
+MD5-Digest: fkrEP88GHNts2hRmIdTG9g==
+SHA1-Digest: I6Srk8uMiNT8PIV6Fl87PSf6uvs=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
@@ -125,8 +125,8 @@ SHA1-Digest: ayhRRI5dSumKT7YWoFRxdT9k/cE=
 
 Name: cbapp/parts/dayuse.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: oVBYGsOraTPV7AKJqJNDDg==
-SHA1-Digest: JNzy58gPvWpctAnDMq+OW7OL0+4=
+MD5-Digest: AiF3pb3B51e8KMHbyPhdxg==
+SHA1-Digest: HcOC2s15vkduAn8pOBHfDJMwohY=
 
 Name: cbapp/parts/native_comps.js
 Digest-Algorithms: MD5 SHA1
