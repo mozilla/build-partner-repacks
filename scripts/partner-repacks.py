@@ -548,7 +548,7 @@ class RepackWinBase(RepackBase):
 class RepackWin(RepackWinBase):
     def __init__(self, build, partner_dir, build_dir, working_dir, final_dir,
                  ftp_platform, repack_info, signing_command,
-                 external_signing_formats=['gpg', 'signcode'], **kwargs):
+                 external_signing_formats=['gpg', 'osslsigncode'], **kwargs):
         super(RepackWin, self).__init__(build, partner_dir, build_dir,
                                         working_dir, final_dir,
                                         ftp_platform, repack_info,

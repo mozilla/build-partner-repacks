@@ -1,7 +1,7 @@
 #!/bin/bash
 
 signing_server="signing4.srv.releng.scl3.mozilla.com:9120"
-signing_server_args="-H gpg:osslsigncode:signcode:mar:jar:b2gmar:emevoucher:$signing_server -H dmgv2:mac-v2-signing1.srv.releng.scl3.mozilla.com:9120"
+signing_server_args="-H gpg:osslsigncode:mar:jar:b2gmar:emevoucher:$signing_server -H dmgv2:mac-v2-signing1.srv.releng.scl3.mozilla.com:9120"
 my_ip=`/sbin/ifconfig | grep inet | grep "10\." | cut -f2 -d" "`
 token_file="`pwd`/token"
 nonce_file="`pwd`/nonce"
