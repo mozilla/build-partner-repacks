@@ -1,0 +1,82 @@
+Manifest-Version: 1.0
+
+Name: install.rdf
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 9XDY7TXlIfRNzToHa7CC5g==
+SHA1-Digest: TTVgO4h/HXj7l6VOvSaRBlii5eQ=
+
+Name: chrome.manifest
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: euAKBdaA+VqOI8qxOQUTww==
+SHA1-Digest: Xt7w/DzKK2nbUb3R1lWeH2XumBc=
+
+Name: chrome.jar
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: iFxPKHlC4ish3kbGaEDoxw==
+SHA1-Digest: ZxeZ2vS2nwHOnvzSY+Juuh8mqP4=
+
+Name: components/aboutNetError.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: HKm2LYoMJS94fBFhqhMgxw==
+SHA1-Digest: pUiHizIz8GnBGg917lm2lTEBNuM=
+
+Name: components/mCollectAutoComplete.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 3LnB2Hv13oKaLr0KUqXJaA==
+SHA1-Digest: TC/G4hVbDA+Ih2ev1bzV+aS0wrw=
+
+Name: defaults/preferences/unitedinternet-debug.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 8NJfEfMUrO52UBPAKdKGXA==
+SHA1-Digest: 5zfZn3HbSyoQb3ivZ/zkk1CLrrA=
+
+Name: defaults/preferences/unitedinternet-general.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: y4FkDh7H1blUSbmi5xUO1Q==
+SHA1-Digest: EqghFb+KmrLV9Gxy1Lj064ofHn4=
+
+Name: defaults/preferences/unitedinternet-highlight.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: vwMqzesdpvQzoH2TKJmK9A==
+SHA1-Digest: Y/ePgOQa2fDFRp5OJgEWQYzyHbM=
+
+Name: defaults/preferences/unitedinternet-login.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: ewqXPKu6CkMi6wNQsqAwGg==
+SHA1-Digest: 4/SklxWVGXac0mJB2XsINy8W0ws=
+
+Name: defaults/preferences/unitedinternet-neterror.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 7nDyOj2o8KTlpTHwgSaGXQ==
+SHA1-Digest: 8U5zV0Wt06jY+lRcFkjTYjW3bAc=
+
+Name: defaults/preferences/unitedinternet-newtab.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 0OqW1P2STdUQixiO9DAdAQ==
+SHA1-Digest: QGHpb2dxEiJQwE352KNSqjF/pvc=
+
+Name: defaults/preferences/unitedinternet-pref.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: kpbprL4d7IVmTUodTtlpSA==
+SHA1-Digest: U15RaNYpsMuBCYZMI5mjwMSqz0U=
+
+Name: defaults/preferences/unitedinternet-search.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: QLOSwR54MRpiJ0C9drKExQ==
+SHA1-Digest: aUfUDGK2GoDrQmR6qFsjDbw2arM=
+
+Name: defaults/preferences/unitedinternet-shopping.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: WDCyDWhLZGHElQOtZe7zBA==
+SHA1-Digest: M3cFp0Cx+69HKnjLAlUiIjORBsg=
+
+Name: defaults/preferences/unitedinternet-tracking.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: 3ea5J6lDaAVWrFijzGdp6w==
+SHA1-Digest: FjKJFGF56G72fFUq5sY5PGThl8Y=
+
+Name: defaults/preferences/unitedinternet-util.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: vszZoovGDm+bfjCFiIejrQ==
+SHA1-Digest: +bp0iAGm0guwM3235E5usFQxbs0=
+
