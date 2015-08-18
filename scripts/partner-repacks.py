@@ -341,9 +341,13 @@ class RepackBase(object):
 
     def createOverrideIni(self, partner_path):
         ''' Some partners need to override the migration wizard. This is done
-            by adding an override.ini file to the base install dir.
+            by adding an override.ini file to the browser subdir of the base
+            install dir.
         '''
-        filename = path.join(partner_path, 'override.ini')
+        browserDir = path.join(partner_path, "browser")
+        if not path.exists(browserDir):
+            mkdir(browserDir)
+        filename = path.join(browserDir, 'override.ini')
         if 'migrationWizardDisabled' in self.repack_info:
             if not path.isfile(filename):
                 f = open(filename, 'w')
