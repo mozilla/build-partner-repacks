@@ -37,7 +37,6 @@ overlay chrome://unitedtb/content/pref/pref-window.xul   chrome://unitedtb/conte
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/newtab/pref-newtab.xul
 overlay chrome://unitedtb/content/search/pref-search.xul   chrome://unitedtb/content/highlight/pref-highlight.xul
 overlay chrome://unitedtb/content/search/pref-search.xul   chrome://unitedtb/content/neterror/pref-neterror.xul
-overlay chrome://unitedtb/content/search/pref-search.xul   chrome://unitedtb/content/newtab/pref-store-management.xul
 overlay chrome://unitedtb/content/pref/pref-window.xul   chrome://unitedtb/content/email/pref-login.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/pref/pref-updates.xul
 overlay chrome://unitedtb/content/pref/pref-general.xul   chrome://unitedtb/content/main/pref-minimode.xul

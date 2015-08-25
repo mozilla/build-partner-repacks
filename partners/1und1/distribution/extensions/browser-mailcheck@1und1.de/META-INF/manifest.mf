@@ -2,18 +2,18 @@ Manifest-Version: 1.0
 
 Name: install.rdf
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: C15tL+97dJMfeMyBkRMDUA==
-SHA1-Digest: NeOyCRRC0OJI6Jz57IOX6G3jhms=
+MD5-Digest: mRX8bdk4htCn4C95oY1UKQ==
+SHA1-Digest: jLWCVCjwlhY3bjUHJA1i57dTcuY=
 
 Name: chrome.manifest
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: lvsbe6s1p6VlObI+4KPj4g==
-SHA1-Digest: wdEQbwOvRqtAVfxB3GDN4l0Z0g4=
+MD5-Digest: 6lPSQ78BzxtCJ4soEmRGFw==
+SHA1-Digest: OQpZ+tOWXbLZmr2yAkLZtZZLj5w=
 
 Name: chrome.jar
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: VQlOvDCH61uBZfGj3x5GEg==
-SHA1-Digest: rtc7mdXOO6MqCQjCXTcPTwy+Be8=
+MD5-Digest: 9Esy3WkPlezllY8x6KHtGg==
+SHA1-Digest: D7daqu5yaOdYcPyuQghXVWl5ic8=
 
 Name: components/aboutNetError.js
 Digest-Algorithms: MD5 SHA1
@@ -22,8 +22,8 @@ SHA1-Digest: pUiHizIz8GnBGg917lm2lTEBNuM=
 
 Name: components/mCollectAutoComplete.js
 Digest-Algorithms: MD5 SHA1
-MD5-Digest: 3LnB2Hv13oKaLr0KUqXJaA==
-SHA1-Digest: TC/G4hVbDA+Ih2ev1bzV+aS0wrw=
+MD5-Digest: HGP7unk1hF5qwYUJ+cUqIQ==
+SHA1-Digest: YoJlhff/iDd8oaeqyryn2e4XUFI=
 
 Name: defaults/preferences/unitedinternet-debug.js
 Digest-Algorithms: MD5 SHA1

@@ -213,8 +213,6 @@ mCollectAutoComplete.prototype =
         engine = new mWebSuggest(searchString, searchParam.substr(18));
       else if (searchParam == "places")
         engine = new mPlacesSearch(searchString);
-      else if (searchParam == "psh")
-        engine = new mPSHSearch(searchString);
       else
         throw new NotReached("unknow param '" + searchParam + "'");
       this._currentSearch = new Results(engine, listener, this);
